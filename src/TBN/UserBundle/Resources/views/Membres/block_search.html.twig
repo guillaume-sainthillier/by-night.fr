@@ -1,0 +1,13 @@
+<div class="row">
+    <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+        <form action="{{ path('tbn_user_post_search') }}" method="POST">
+            <div class="input-prepend input-group recherche">
+                <span class="input-group-addon clear"><i class="fa fa-search"></i></span>
+                <input name="term" id="prependedInput" class="form-control" size="16" type="text" value="{{ term }}" placeholder="Recherchez un membre avec son pseudo" autofocus="autofocus"/>
+                <span class="input-group-btn">
+                    <input class="btn btn-primary btn-normal" type="submit" value="Rechercher" />
+                </span>
+            </div>
+        </form>
+    </div>
+</div>    

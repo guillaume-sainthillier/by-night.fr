@@ -1,0 +1,38 @@
+/* 
+    Created on : 13 sept. 2014, 15:14:21
+    Author     : Guillaume S. <guillaume@sainthillier.fr>
+*/
+
+@import "variables.less";
+
+#bread {            
+    border-left: 5px solid #EEE;
+    padding-top: 5px;
+
+    &, #fil-ariane {
+        background-color: white;
+    }
+
+    #fil-ariane {
+        margin:0;
+        a{
+            color: @linkColor;
+            &:hover{
+                color: #222;
+            }
+        }
+        li {
+            padding: 5px;
+        }
+    }
+
+    .breadcrumb>li+li:before {
+        content: '>';
+        color: #222;
+    }
+    
+    // < 992px
+    @media (max-width: @screen-md-min) {
+        border-left: 0;
+    }
+}

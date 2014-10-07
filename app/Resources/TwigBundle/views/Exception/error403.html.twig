@@ -1,0 +1,6 @@
+{% set title = "Erreur 403 (Interdit)" %}
+{% set code = 403 %}
+{% set message = "Accès interdit." %}
+{% set description = "L'accès à cette page requiert une autorisation." %}
+
+{% include "TwigBundle:Exception:errorXXX.html.twig" with({ 'title': title, 'code' : code, 'message' : message, 'description': description }) %}

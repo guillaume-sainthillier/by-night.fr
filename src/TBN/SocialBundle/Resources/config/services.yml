@@ -1,0 +1,17 @@
+parameters:
+#    tbn_social.example.class: TBN\SocialBundle\Example
+
+services:
+#    tbn_social.example:
+#        class: %tbn_social.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
+#SecurityContextInterface $securityContext, RouterInterface $router, SessionInterface $session
+    tbn.social.twitter:
+        class:        TBN\SocialBundle\Social\Twitter
+        arguments:    [{ id: %twitter_app_id% , secret: %twitter_app_secret%}, @site_manager, @security.context, @router, @session]
+    tbn.social.facebook:
+        class:        TBN\SocialBundle\Social\Facebook
+        arguments:    [{ id: %api_facebook_id% , secret: %api_facebook_secret%}, @site_manager, @security.context, @router, @session]
+    tbn.social.google:
+        class:        TBN\SocialBundle\Social\Google
+        arguments:    [{ id: %google_app_id% , secret: %google_app_secret%}, @site_manager, @security.context, @router, @session]

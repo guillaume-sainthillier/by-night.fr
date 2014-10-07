@@ -1,0 +1,35 @@
+tbn_user_participer:
+    pattern: /participer/{id}
+    defaults: { _controller: TBNAgendaBundle:Calendrier:participer, participer: true, interet: false }
+    requirements:
+        method: POST
+        id: (\d+)
+    
+tbn_user_interesser:
+    pattern: /interesser/{id}
+    defaults: { _controller: TBNAgendaBundle:Calendrier:participer, participer: false, interet: true }
+    requirements:
+        method: POST
+        id: (\d+)
+
+tbn_agenda_new:
+    pattern: /nouvelle-soiree
+    defaults: { _controller: TBNUserBundle:Agenda:new }
+
+tbn_agenda_delete:
+    pattern: /supprimer/{id}
+    defaults: { _controller: TBNUserBundle:Agenda:delete }
+    requirements:
+        method: _DELETE
+        id: (\d+)
+        
+tbn_agenda_edit:
+    pattern: /corriger/{id}
+    defaults: { _controller: TBNUserBundle:Agenda:edit }
+    requirements:
+        id: (\d+)
+
+tbn_agenda_list:
+    pattern: /mes-soirees
+    defaults: { _controller: TBNUserBundle:Agenda:list }
+    

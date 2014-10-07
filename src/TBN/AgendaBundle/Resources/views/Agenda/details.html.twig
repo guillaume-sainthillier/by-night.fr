@@ -1,0 +1,215 @@
+{% extends "TBNAgendaBundle::layout-fluid.html.twig" %}
+
+{% set nomSoiree = soiree.nom %}
+{% set descriptionSoiree =  soiree.descriptif|parse_tags|raw  %}
+{% if soiree.webPath %}
+    {% set original = asset(soiree.webPath) %}
+    {% set thumb = original|imagine_filter('thumbs_evenement') %}
+{% elseif soiree.url %}
+    {% set original = soiree.url %}
+    {% set thumb = original %}
+{% else %}
+    {% set original = asset('img/empty_event.png') %}
+    {% set thumb = original|imagine_filter('thumbs_evenement') %}
+{% endif %}
+
+{% block titre_agenda %}
+    {{ block('title') }}
+{% endblock %}
+
+{% block title_agenda %}
+    {{ nomSoiree }}
+{% endblock %}
+
+{% block breadcrumb_agenda %}
+    {% set test = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}    
+{% endblock %}
+    
+{% block meta_description %}{% spaceless %}
+    {{ nomSoiree }}. Plus d'infos sur {{ block('nom_site') }}.
+{% endspaceless %}{% endblock %}
+
+
+{% block og_titre %}{{ nomSoiree }} sur {{ block('nom_site') }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug}) }}{% endblock %}
+{% block og_description %}{{ descriptionSoiree|striptags }}{% endblock %}
+{% block og_image %}{{ original }}{% endblock %}
+
+{% block widgets_agenda %}
+    {% include "TBNAgendaBundle:MenuDroit:details.html.twig" with({'soiree': soiree}) %}
+{% endblock %}
+
+{% block body_agenda %}
+<div id="fb-root"></div>
+
+<div itemtype="http://schema.org/Event" itemscope>
+    <meta itemprop="name" content="{{ nomSoiree }}">
+    <meta itemprop="url" content="{{ path('tbn_agenda_details',{'slug' : soiree.slug} ) }}">
+
+    <div class="row margin_bottom_30" >
+        <div class="col-sm-4">
+            <a href="{{ original }}">
+                <img class="img img-responsive" src="{{ thumb }}" title="{{ nomSoiree }}" itemprop="image" alt="Image Événement" />
+            </a>                    
+        </div>
+        <div class="col-sm-8 block_infos">
+            <ul class="fa-ul">
+                <li>
+                    <i class="fa fa-li fa-clock-o"></i> 
+                    {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
+                    {% set dateFin = soiree.dateFin|date('d/m/Y') %}
+
+                    <meta itemprop="startDate" content="{{ soiree.dateDebut|date('Y-m-d') }}">
+                    {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}
+                        Le <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
+                    {% else %}
+                        Du <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d') }}">{{ dateDebut }}</time>
+                        au <time itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d') }}">{{ dateFin }}</time>
+                        <meta itemprop="endDate" content="{{ soiree.dateFin|date('Y-m-d') }}">
+                    {% endif %}
+
+                    {% if soiree.horaires != "" %}
+                        - {{ soiree.horaires }}
+                    {% endif %}
+                </li>
+                {% if soiree.rue != "" or soiree.codePostal != "" or soiree.commune != "" or soiree.lieuNom != "" %}
+                <li>
+                    <i class="fa fa-li fa-map-marker"></i>
+                    <div itemprop="location" itemscope itemtype="http://schema.org/Place">
+                        
+                        {% if soiree.lieuNom != "" %}
+                            <div itemprop="name">{{ soiree.lieuNom }}</div>
+                        {% endif %}
+
+                        {% if soiree.rue != "" or soiree.codePostal != "" or soiree.ville != "" %}
+                            <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                                {% if soiree.rue != "" %}
+                                    <div itemprop="streetAddress">{{ soiree.rue }}</div>
+                                {% endif %}
+                                {% if soiree.codePostal != "" or soiree.ville != "" %}
+                                    <div>
+                                        {% if soiree.codePostal != "" %}
+                                            <span itemprop="postalCode">{{ soiree.codePostal }} </span>
+                                        {% endif %}
+                                        {% if soiree.ville != "" %}
+                                            <span itemprop="addressLocality">{{ soiree.ville }}</span>
+                                        {% endif %}
+                                    </div>                                    
+                                {% endif %}                                
+                            </div>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endif %}                
+                {% if soiree.tarif%}
+                <li>
+                    <i class="fa fa-li fa-ticket"></i> A partir de : {{ soiree.tarif }}
+                </li>
+                {% endif %}
+                {% if soiree.reservationTelephone != "" %}
+                <li>
+                    <i class="fa fa-li fa-phone"></i> 
+                    {{ soiree.reservationTelephone }}
+                </li>
+                {% endif %}
+                {% for lien in soiree.reservationInternet|split(' ') %}
+                    {% if lien|trim|length > 0 %}
+                    <li>
+                        <i class="fa fa-li fa-globe"></i> 
+                        <a title="Aller sur le site internet de la réservation" rel="nofollow" href="http://{{ lien }}">{{ lien[:35] ~ (lien|length > 35 ? "..." : "") }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                {% if soiree.reservationEmail != "" %}
+                    <li><i class="fa fa-li fa-envelope-o"></i> <a href="mailto:{{ soiree.reservationEmail }}">{{ soiree.reservationEmail }}</a></li>
+                {% endif %}
+                {% if soiree.facebookEventId %}
+                <li>
+                    <i class="fa fa-li fa-facebook"></i> 
+                    {% set lien = "https://facebook.com/events/" ~ soiree.facebookEventId %}
+                    <a href="{{ lien }}">{{ lien }}</a>
+                </li>
+                {% endif %}
+                {% set tags = soiree.themeManifestation|split(",") %}
+                {% set tags = tags|merge(soiree.typeManifestation|split(",")) %}
+                {% if tags|length > 0 %}
+                    {% set tags_displayed = [] %}
+                    <li class="tags">
+                        <i class="fa fa-li fa-tags"></i>
+                        {% for tag in tags %}
+                            {% if not tags_displayed[tag|trim] is defined %}
+                                {% set tags_displayed = tags_displayed|merge({ (''~tag|trim): 'fix' }) %}
+                                <span class="label label-primary">{{ tag|trim }}</span>
+                            {% endif %}                                    
+                        {% endfor %}
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>    
+
+    {% if soiree.modificationDerniereMinute != "" %}
+        <div class="alert alert-warning">
+            <i class="fa fa-warning"></i>
+            <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
+        </div>
+    {% endif %}
+
+    <div itemprop="description" >
+        {{ descriptionSoiree|raw }}
+    </div>    
+
+    <div class="shares">
+        <h3>Partagez cet événement</h3>
+        <br />
+        <div class="row">
+            <div class="col-sm-4 share">
+                <div class="fb-like" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+            </div>
+            <div class="col-sm-4 share">
+                <div class="g-plusone" data-action="share" ></div>                        
+            </div>
+            <div class="col-sm-4 share">
+                <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>                        
+            </div>
+        </div>
+    </div>
+
+    <div class="comments" data-url="{{ path('tbn_comment_list',{'id': soiree.id }) }}">
+        <i class="fa fa-spinner fa-spin fa-2x"></i>
+    </div>
+</div>
+{% endblock %}
+
+{% block css_agenda %}
+    {% stylesheets 
+        'bundles/tbnagenda/css/details.css'
+
+        filter='cssrewrite,?yui_css'
+        output='prod/css/agenda/details.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    {% endstylesheets %}
+{% endblock %}
+        
+{% block head_js_agenda %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/hinclude/0.9.5/hinclude.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        window.fb_app_id = "{{ facebook_app_id }}";
+    </script>
+{% endblock %}
+    
+{% block js_agenda %}
+    {% javascripts 
+        '@TBNAgendaBundle/Resources/public/js/socials.js'
+        '@TBNCommentBundle/Resources/public/js/comments.js'
+
+        filter='?yui_js'
+        output='prod/js/agenda/details.js'
+    %}
+        js_scripts.final.push("{{ asset_url }}");
+    {% endjavascripts %}
+
+    
+{% endblock %}

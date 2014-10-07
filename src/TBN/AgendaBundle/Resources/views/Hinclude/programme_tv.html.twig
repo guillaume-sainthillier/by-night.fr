@@ -1,0 +1,16 @@
+{% for programme in programmes %}
+    <div class="widget_item">
+        <div class="row">
+            <div class="col-md-3">
+                <img class="img-responsive" src="{{ programme.logo }}" title="{{ programme.chaine }}" />
+            </div>
+            <div class="col-md-9">
+                <div>
+                    <a href="{{ programme.lien }}" >{{ programme.nom }}</a>
+                </div>            
+                <div>{{ programme.heure }}</div>
+                <div class="color-primary">{{ programme.type }}</div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

@@ -1,0 +1,20 @@
+parameters:
+#    tbn_city.example.class: TBN\CityBundle\Example
+    #router.class: TBN\MainBundle\Routing\Router
+
+    
+services:
+    site_manager:
+        class: TBN\MainBundle\Site\SiteManager
+      
+    ville_listener:
+        class: TBN\MainBundle\Listener\SubDomainListener
+        arguments: [ @site_manager, @doctrine.orm.entity_manager, "%base_host%"]
+        tags:
+           - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100 }
+           
+    tbn.twig.main_extension:
+        class: TBN\MainBundle\Twig\MainExtension
+        arguments : [ @request_stack, @winzou_cache, @doctrine ]
+        tags:
+            - { name: twig.extension }

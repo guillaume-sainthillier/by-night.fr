@@ -1,0 +1,5 @@
+tbn_search_query:
+    pattern: /
+    defaults: { _controller: TBNMainBundle:Search:search}
+    requirements:
+        method: POST

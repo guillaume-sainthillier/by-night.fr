@@ -1,0 +1,6 @@
+{% set title = "Erreur 500 (Inaccessible)" %}
+{% set code = 500 %}
+{% set message = "Huston, on a un problème !" %}
+{% set description = "La page que vous demandez est temporairement inaccessible." %}
+
+{% include "TwigBundle:Exception:errorXXX.html.twig" with({ 'title': title, 'code' : code, 'message' : message, 'description': description }) %}

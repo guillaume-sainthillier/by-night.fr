@@ -1,0 +1,39 @@
+{% if success_confirmation is defined %}
+    <div class="alert alert-success alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true" title="Fermer">&times;</button>
+        <i class="fa fa-check"></i> 
+        {% block success_confirmation_message %}
+            Merci d'avoir donné votre avis !
+        {% endblock %}        
+    </div>
+{% endif %}
+
+<div class="row comment">
+    <div class="col-xs-3 col-sm-2">
+        <img class="img-rounded img-responsive pull-right" src="http://placehold.it/96&text={{ comment.user.username }}" alt=""/>
+    </div>
+    <div class="col-xs-9 col-sm-10">
+        <div class="infos">
+            <a href="#" title="">{{ comment.user.username }}</a> 
+            <span title="{{ comment.dateCreation|localizeddate('medium','medium')|capitalize}}">
+                <i class="fa fa-clock-o"></i> {{ comment.dateCreation|diff_date }}
+            </span>            
+        </div>
+        <p>
+            {{ comment.commentaire|striptags('<i><b>')|nl2br|parse_tags|raw }}
+        </p>
+        {% block comment_reponses %}
+            <div class="reponses">
+                <div class="infos">
+                    <span class="label label-primary nb_reponses">{{ nb_reponses }}</span> 
+                    <button type="button" class="btn btn-default btn-xs btn-list" data-url="{{ path('tbn_comment_reponse_list', {'id' : comment.id }) }}">
+                        <i class="fa fa-angle-up icon_list"></i>
+                    </button> | 
+                    <a href="#repondre" class="repondre" data-url="{{ path('tbn_comment_reponse_new', {'id' : comment.id }) }}">Répondre</a>
+                </div>
+                <div class="block_poster_reponse"></div>
+                <div class="block_reponses"></div>
+            </div>
+        {% endblock %}
+    </div>
+</div>

@@ -1,0 +1,133 @@
+{% extends "TBNUserBundle::layout.html.twig" %}
+
+{% block titre_espace %}
+    Nouvel événement
+{% endblock %}
+    
+{% block title_espace %}
+    {{ block('titre_espace') }}
+{% endblock %}
+    
+{% block breadcrumb_espace %}
+    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
+    {% set item = menu.addItem("Mes soirées", path('tbn_agenda_list')) %}
+    {% set item = menu.addItem("Nouvelle", path('tbn_agenda_new')) %}
+{% endblock %}
+    
+{% block body_espace %}
+    <div class="mon_evenement">
+        {% block body_form %}
+            {{ form_start(form) }}            
+            <div class="row">
+                <div class="col-md-6">
+                    <h2><span class="label label-primary"><i class="fa fa-globe"></i></span> <span class="underline">Votre événement</span></h2>
+                    {{ form_row(form.nom) }}
+                    {{ form_row(form.descriptif) }}
+                    {{ form_row(form.file) }}
+                </div>      
+                <div class="col-md-6">
+                    <h2><span class="label label-primary"><i class="fa fa-calendar"></i></span> <span class="underline">Informations</span></h2>
+
+                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.dateDebut}) %}
+                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.dateFin}) %}
+
+                    <hr />
+                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.categorieManifestation}) %}
+                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.themeManifestation}) %}         
+                    <hr />
+                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.tarif}) %}      
+                </div> 
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h2><span class="label label-primary"><i class="fa fa-map-marker"></i></span> <span class="underline">Lieux</span></h2>
+                    
+                    {{ form_row(form.address) }}
+                    <div id="map"></div>
+                </div>
+                <div class="col-md-6">
+                    <h2><span class="label label-primary"><i class="fa fa-bullhorn"></i></span> <span class="underline">Communiquez</span></h2>
+                    
+                    {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_facebook}) %}
+                    {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_twitter}) %}
+                    {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_google}) %}
+                    
+                    <hr />
+                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
+                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-4 text-left">
+                    {% block button_submit %}
+                        {{ form_row(form.ajouter) }}
+                    {% endblock %}
+                </div>
+                <div class="col-md-4 text-center">
+                    {{ form_row(form.brouillon) }}
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+            <a href="{{ path('tbn_agenda_list') }}" title="Retourner à mes soirées">Retour</a>
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block css_agenda %}
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/redmond/jquery-ui.min.css" type="text/css" media="screen" >
+    
+    {% stylesheets 
+        'bundles/tbnuser/css/espace_perso.css'
+        'bundles/tbnuser/css/on_off.css'
+
+        filter='cssrewrite,?yui_css'
+        output='prod/css/espace-perso/evenement.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    {% endstylesheets %}
+{% endblock %}
+
+{% block head_js %}
+    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script>
+        var ville = "{{ site.nom }}";
+    </script>
+{% endblock %}
+
+{% block js_espace %}
+
+    js_scripts.lib.push("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.1.2/tinymce.min.js");
+    js_scripts.lib.push("//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js");
+    
+    {% javascripts 
+        '@TBNUserBundle/Resources/public/js/langs/fr_FR.js'
+
+        filter='?yui_js'
+        output='prod/js/espace-perso/tiny-fr.js'
+    %}            
+        window.tiny_base_url = "{{ asset_url }}";
+    {% endjavascripts %}
+    
+    {% javascripts 
+        '@TBNUserBundle/Resources/public/js/jquery.ui.addresspicker.js'
+
+        filter='?yui_js'
+        output='prod/js/espace-perso/plugins.js'
+    %}            
+        js_scripts.plugin.push("{{ asset_url }}");
+    {% endjavascripts %}    
+    
+    {% javascripts 
+        '@TBNUserBundle/Resources/public/js/agenda.js'
+
+        filter='?yui_js'
+        output='prod/js/espace-perso/agenda.js'
+    %}            
+        js_scripts.final.push("{{ asset_url }}");
+    {% endjavascripts %}
+{% endblock %}

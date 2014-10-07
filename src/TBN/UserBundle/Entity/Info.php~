@@ -1,0 +1,149 @@
+<?php
+
+namespace TBN\UserBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Info
+ *
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\InfoRepository")
+ */
+class Info
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="has_see_tuto", type="boolean")
+     */
+    private $hasSeeTuto;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="has_see_asking_social", type="boolean")
+     */
+    private $hasSeeAskingSocial;
+    
+    /**
+     * @ORM\Column(name="facebook_id", type="string", length=255, nullable=true)
+     */
+    private $facebook_id;
+ 
+    /** 
+     * @ORM\Column(name="facebook_access_token", type="string", length=255, nullable=true)
+     */
+    private $facebook_access_token;
+    
+    /**
+     * @ORM\Column(name="facebook_email", type="string", length=255, nullable=true)
+     */
+    private $facebook_email;
+    
+    /**
+     * @ORM\Column(name="facebook_username", type="string", length=255, nullable=true)
+     */
+    private $facebook_username;
+    
+    /**
+     * @ORM\Column(name="facebook_nickname", type="string", length=255, nullable=true)
+     */
+    private $facebook_nickname;
+    
+    /**
+     * @ORM\Column(name="facebook_realname", type="string", length=255, nullable=true)
+     */
+    private $facebook_realname;
+    
+    /**
+     * @ORM\Column(name="facebook_profile_picture", type="string", length=255, nullable=true)
+     */
+    private $facebook_profile_picture;
+ 
+    /** 
+     * @ORM\Column(name="google_id", type="string", length=255, nullable=true)
+     */
+    private $google_id;
+ 
+    /** 
+     * @ORM\Column(name="google_access_token", type="string", length=255, nullable=true)
+     */
+    private $google_access_token;
+    
+    /**
+     * @ORM\Column(name="google_email", type="string", length=255, nullable=true)
+     */
+    private $google_email;
+    
+    /**
+     * @ORM\Column(name="google_username", type="string", length=255, nullable=true)
+     */
+    private $google_username;
+    
+    /**
+     * @ORM\Column(name="google_nickname", type="string", length=255, nullable=true)
+     */
+    private $google_nickname;
+    
+    /**
+     * @ORM\Column(name="google_realname", type="string", length=255, nullable=true)
+     */
+    private $google_realname;
+    
+    /**
+     * @ORM\Column(name="google_profile_picture", type="string", length=255, nullable=true)
+     */
+    private $google_profile_picture;
+    
+    /**
+     * @ORM\Column(name="twitter_id", type="string", length=255, nullable=true)
+     */
+    private $twitter_id;
+ 
+    /** 
+     * @ORM\Column(name="twitter_access_token", type="string", length=255, nullable=true)
+     */
+    private $twitter_access_token;
+    
+    /**
+     * @ORM\Column(name="twitter_email", type="string", length=255, nullable=true)
+     */
+    private $twitter_email;
+    
+    /**
+     * @ORM\Column(name="twitter_username", type="string", length=255, nullable=true)
+     */
+    private $twitter_username;
+    
+    /**
+     * @ORM\Column(name="twitter_nickname", type="string", length=255, nullable=true)
+     */
+    private $twitter_nickname;
+    
+    /**
+     * @ORM\Column(name="twitter_realname", type="string", length=255, nullable=true)
+     */
+    private $twitter_realname;
+    
+    /**
+     * @ORM\Column(name="twitter_profile_picture", type="string", length=255, nullable=true)
+     */
+    private $twitter_profile_picture;
+    
+    
+    public function __construct()
+    {
+        $this->hasSeeTuto = false;
+        $this->hasSeeAskingSocial = false;
+    }
+}

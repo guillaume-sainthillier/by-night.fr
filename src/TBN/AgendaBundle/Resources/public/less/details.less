@@ -1,0 +1,52 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 21 mars 2014, 15:31:24
+    Author     : guillaume
+*/
+
+@import "../../../../../../web/less/bs/mixins";
+@import "../../../../../../web/less/variables";
+@import "comment";
+@import "menu_droit";
+
+.block_infos {
+
+    //margin-top: 15px;
+    border-left: 5px solid #EEE;
+    overflow: hidden;
+    font-size: 120%;
+
+    .fa-ul {
+
+        li {
+            margin-bottom: 10px;
+        }
+    }
+
+    .tags {
+        .label {
+            margin-right: 5px;
+        }
+    }
+}
+
+.preview {
+    .img-responsive {
+        max-height: 250px;
+    }
+}
+
+.shares {
+    margin-top: 30px;
+}
+
+@media (max-width: @screen-xs-min) {
+    
+    .share {
+        margin-bottom: 10px;
+    }
+}

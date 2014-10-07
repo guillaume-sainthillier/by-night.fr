@@ -1,0 +1,62 @@
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a href="{{ path('tbn_agenda_index') }}" class="navbar-brand" title="Accueil"><strong>{{ site.nom }} By Night</strong></a>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a title="Créez votre événement en 1 clic !" href="{{ path('tbn_agenda_new') }}">
+                        Créer un événement
+                    </a>
+                </li>
+                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                    <li>
+                        <a title="Voir mes soirées" href="{{ path('tbn_agenda_list') }}">
+                            Mes événements
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if is_granted("ROLE_ADMIN") %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administration <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ path('tbn_administration_site_index') }}">Sites</a></li>                    
+                        <li><a href="{{ path('tbn_administration_historique_index') }}">Historique</a></li>                    
+                    </ul>
+                </li>
+                {% endif %}
+                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                    <li>
+                        <a title="Accéder à mon compte" href="{{ path('fos_user_profile_show') }}">
+                            Mon compte
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Me déconnecter de {{ site.nom }} By Night" href="{{ path('fos_user_security_logout') }}" >
+                            Déconnexion
+                        </a>                        
+                    </li>                    
+                {% else %}
+                    <li>
+                        <a class="register" title="Inscrivez-vous sur {{ site.nom }} By Night" href="{{ path('fos_user_registration_register') }}" >
+                            Rejoignez-nous
+                        </a>
+                    </li>
+                    <li>
+                        <a class="connexion" title="Connectez-vous sur {{ site.nom }} By Night" href="{{ path('fos_user_security_login') }}" >
+                            Connexion
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>            
+        </div>        
+    </div>
+</div>

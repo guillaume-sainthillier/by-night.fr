@@ -1,0 +1,41 @@
+<div class="text-center" id="pagination">
+    <ul class="pagination">
+        <li class="{{ page == 1 ? 'disabled': '' }}">
+            <a href="{{ page > 1 ? path('tbn_agenda_pagination', {'page': (page -1)}): '#' }}">
+                &laquo; Précédent
+            </a>
+        </li>
+
+        {% set interval = 3 %}
+        {% for i in (page-interval)..(page-1) %}
+            {% if i > 0 and i <= pageTotal %}
+                <li>
+                    <a href="{{ path('tbn_agenda_pagination', {'page': i}) }}">
+                        {{ i }}
+                    </a>
+                </li>
+            {% endif %}                
+        {% endfor %}
+
+        <li class="active">
+            <a href="{{ path('tbn_agenda_pagination', {'page': page}) }}">
+                {{ page }}
+            </a>
+        </li>
+
+        {% for i in (page+1)..(page+interval) %}      
+            {% if i > 0 and i <= pageTotal %}
+                <li>
+                    <a href="{{ path('tbn_agenda_pagination', {'page': i}) }}">
+                        {{ i }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        <li class="{{ page == pageTotal ? 'disabled': '' }}">
+            <a href="{{ page == pageTotal ? "#" : path('tbn_agenda_pagination', {'page': (page + 1)}) }}">
+                Suivant &raquo;
+            </a>
+        </li>
+    </ul>
+</div>

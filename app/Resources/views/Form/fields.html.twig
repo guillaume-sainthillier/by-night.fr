@@ -1,0 +1,59 @@
+{% block form_row %}
+    {% spaceless %}
+        <div class="form-group">
+            {{ form_label(form) }}
+            {{ form_errors(form) }}
+            {{ form_widget(form) }}
+        </div>
+    {% endspaceless %}
+{% endblock form_row %}
+
+{% block form_label %}
+{% spaceless %}
+    {% if label is not sameas(false) %}
+        {% if not compound %}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {% endif %}
+        {% if required %}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {% endif %}
+        {% if label is empty %}
+            {% set label = name|humanize %}
+        {% endif %}
+        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain)|raw }}</label>
+    {% endif %}
+{% endspaceless %}
+{% endblock form_label %}
+
+{% block form_widget_simple %}
+{% spaceless %}
+    {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim}) %}
+    {% set type = type|default('text') %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endspaceless %}
+{% endblock form_widget_simple %}
+
+{% block textarea_widget %}
+{% spaceless %}
+    {% set attr = attr|merge({ 'class': attr.class|default('') ~ 'form-control'}) %}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+{% endspaceless %}
+{% endblock textarea_widget %}
+    
+{% block button_row %}
+{% spaceless %}
+    <span>
+        {{ form_widget(form) }}
+    </span>
+{% endspaceless %}
+{% endblock button_row %}
+
+{% block form_errors %}
+{% spaceless %}
+    {% for error in errors %}
+        <div class="alert alert-danger">
+            <i class="fa fa-warning" ></i> {{ error.message }}
+        </div>
+    {% endfor %}
+{% endspaceless %}
+{% endblock form_errors %}

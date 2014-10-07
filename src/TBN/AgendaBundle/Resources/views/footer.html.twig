@@ -1,0 +1,78 @@
+<div class="row">
+    <div class="col-md-7">
+        <div class="row">                
+            <div class="col-xs-6 footer_border">
+                <h4>{{ site.nom }} By Night</h4>
+                <ul class="fa-ul">
+                    <li>
+                        <i class="fa fa-li fa-angle-right"></i>
+                        <a title="{{ site.nom }} By quoi ?" href="{{ path('tbn_agenda_about') }}">A propos</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-li fa-angle-right"></i>
+                        <a title="En savoir plus sur la création d'événements" href="{{ path('tbn_agenda_plus') }}">En savoir plus</a>
+                    </li>
+                    <li>
+                        <i class="fa fa-li fa-angle-right"></i>
+                        <a title="Accéder aux mentions légales" href="{{ path('tbn_agenda_mention_legales') }}">Mentions légales</a>
+                    </li>
+                </ul>    
+            </div>
+            <div class="col-xs-6">
+                <h4>Recherche par ville</h4>
+                <ul class="fa-ul">
+                    {% for site in sites %}
+                        <li>
+                            <i class="fa fa-li fa-angle-right"></i>
+                            <a title="Découvrir les événements sur {{ site.nom }}" href="{{ path('tbn_agenda_index', {'subdomain' : site.subdomain}) }}">
+                                {{ site.nom }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    
+                </ul>                    
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="row text-center">
+            <div class="col-xs-4 preserve">
+                {% if site.facebookIdPage != "" %}
+                    <div class="social facebook">
+                        <a title="Retrouvez {{ site.nom }} By Night sur Facebook" href="https://www.facebook.com/{{ site.facebookIdPage }}">
+                            <i class="fa fa-facebook fa-3x"></i>
+                        </a>
+                        <strong class="count">
+                            <i class="fa fa-spin fa-spinner"></i>
+                        </strong>
+                    </div>
+                {% endif %}                                
+            </div>
+            <div class="col-xs-4 preserve">
+                {% if site.twitterIdPage != "" %}
+                    <div class="social twitter">
+                        <a title="Retrouvez {{ site.nom }} By Night sur Twitter" href="https://twitter.com/{{ site.twitterIdPage }}">
+                            <i class="fa fa-twitter fa-3x"></i>
+                        </a>
+                        <strong class="count">
+                            <i class="fa fa-spin fa-spinner"></i>
+                        </strong>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-xs-4 preserve">
+                {% if site.googleIdPage != ""  %}
+                    <div class="social google">
+                        <a title="Retrouvez {{ site.nom }} By Night sur Google+" href="https://plus.google.com/{{ site.googleIdPage }}">
+                            <i class="fa fa-google-plus fa-3x"></i>
+                        </a>
+                        <strong class="count">
+                            <i class="fa fa-spin fa-spinner"></i>
+                        </strong>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>    
+<hr />

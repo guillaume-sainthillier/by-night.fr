@@ -1,0 +1,40 @@
+{% extends "TBNAdministrationBundle::layout.html.twig" %}
+
+{% block breadcrumb_administration %}    
+    {% set test = menu.addItem("Site", path('tbn_administration_site_index')) %}
+    {% block breadcrumb_site %}{% endblock %}
+{% endblock %}
+
+{% block title_administration %}
+    {% block title_site %}{% endblock %}
+{% endblock %}
+    
+{% block titre_administration %}
+    {% block titre_site %}{% endblock %}
+{% endblock %}
+    
+{% block body_administration %}
+    {% block body_site %}{% endblock %}
+{% endblock %}
+
+{% block css_administration %}
+    {% stylesheets 
+        'bundles/tbnsocial/css/social_login.css'
+
+        filter='cssrewrite,?yui_css'
+        output='prod/css/administration/site.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    {% endstylesheets %}       
+{% endblock %}
+
+{% block js_administration %}
+    {% javascripts 
+        'bundles/tbnsocial/js/social_login.js'
+
+        filter='?yui_js'
+        output='prod/js/administration/site.js'
+    %}
+        js_scripts.final.push("{{ asset_url }}");
+    {% endjavascripts %}            
+{% endblock %}  

@@ -1,0 +1,12 @@
+{% extends "TBNUserBundle:Espace:new.html.twig" %}
+
+{% block titre_espace %}
+    {{ agenda.nom }}
+{% endblock %}
+
+{% block body_form %}
+    {{ parent() }}
+    <div class="pull-right">
+        {{ form(form_delete) }}
+    </div>
+{% endblock %}

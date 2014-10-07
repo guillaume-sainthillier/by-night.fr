@@ -1,0 +1,38 @@
+{% extends "TBNMainBundle::layout.html.twig" %}
+
+{% block titre_main %}Bienvenue sur By Night!{% endblock %}
+
+{% block title_main %}Choisissez votre ville{% endblock %}
+
+{% block meta_description_main %}
+Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les événements du moment!
+{% endblock %}
+
+    
+{% block meta_keywords_main %}
+    {% for site in site %}
+        {{ site.nom }},
+    {% endfor %}
+{% endblock %}
+
+
+{% block body_main %}
+    <br />
+    <br />
+    <br />
+    <p class="text-center">
+        Pour commencer l'expérience, choisissez votre ville parmis :
+    </p>
+    <br />
+    <div class="row">
+        {% for site in sites %}
+            <div class="col-md-4 col-md-offset-1 text-center">
+                <a title="Accéder aux événements de {{ site.nom }}" href="{{ site.isActif ? path('tbn_agenda_index', {'subdomain': site.subdomain }) : "#" }}">
+                    <div class="well well-lg">
+                        {{ site.nom }}
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

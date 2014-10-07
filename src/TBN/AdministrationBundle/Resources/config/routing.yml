@@ -1,0 +1,41 @@
+tbn_administration_index:
+    path:  /
+    defaults: { _controller: TBNAdministrationBundle:Site:list }
+
+tbn_administration_site_index:
+    path:  /site
+    defaults: { _controller: TBNAdministrationBundle:Site:list }
+    
+tbn_administration_site_new:
+    path:  /site/nouveau
+    defaults: { _controller: TBNAdministrationBundle:Site:new }
+    
+tbn_administration_site_edit:
+    path:  /site/{id}
+    defaults: { _controller: TBNAdministrationBundle:Site:edit }
+    requirements:
+        id: (\d+)
+
+tbn_administration_connect_site:
+    pattern: /connect/{service}
+    defaults: { _controller: TBNAdministrationBundle:Site:connectSite}
+    requirements:
+        service: (facebook|google|twitter)
+
+tbn_administration_site_service_confirm:
+    pattern: /confirmation/deconnexion/{service}
+    defaults: { _controller: TBNSocialBundle:Social:disconnectConfirm, from_site: true }
+    requirements:
+        service: (facebook|google|twitter)
+        _method: GET
+        
+tbn_administration_site_service:
+    pattern: /deconnexion/{service}
+    defaults: { _controller: TBNSocialBundle:Social:disconnectSite}
+    requirements:
+        service: (facebook|google|twitter)
+        _method: POST
+
+tbn_administration_historique_index:
+    path:  /historique
+    defaults: { _controller: TBNAdministrationBundle:Historique:list }

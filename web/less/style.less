@@ -1,0 +1,75 @@
+@import "variables";
+@import "bs/mixins";
+
+html {
+
+    &, body {
+        height: 100%;
+    }
+
+    body {
+        background-color: @bgColor;
+        padding-top: 50px;
+        word-break: break-word;
+
+        #container {
+            margin-bottom: 50px;
+            padding: 20px;
+            padding-top: 0;
+        }
+        
+        //Pubs
+        #ad-footer {
+            margin-top: 40px;
+        }
+
+        //Liens
+        a{
+            font-weight: bold;
+            color: #222;
+            &:hover{
+                color: @linkColor;
+                text-decoration: none;
+            }
+        }
+
+        .page-header {
+            margin-bottom: 50px;
+            .titrebloc strong {
+                font-weight: normal;
+            }
+        }
+
+        #fb-root {
+            display: none;
+        }
+
+        /* To fill the container and nothing else */
+        .fb_iframe_widget, .fb_iframe_widget span, .fb_iframe_widget span iframe[style] {
+            width: 100% !important;
+        }
+
+        .ui-datepicker {
+            z-index: 2;
+        }
+
+        #toTopHover {
+            display: block;
+            overflow: hidden;
+            float: left;
+        }
+
+        #toTop {
+            display: none;
+            text-decoration: none;
+            position: fixed;
+            bottom: 50px;
+            right: 50px;
+            overflow: hidden;
+            width: 60px;
+            height: 60px;
+            border: none;
+            z-index: 100;
+        }
+    }
+} 

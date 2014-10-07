@@ -1,0 +1,24 @@
+{% extends "TBNUserBundle::layout.html.twig" %}
+
+{% block titre_agenda %}
+    {% block titre_membre %}{% endblock %}
+{% endblock %}
+{% block title_agenda %}
+    {% block title_membre %}{% endblock %}
+{% endblock %}
+
+{% block breadcrumb_espace %}
+    {% set item = menu.addItem("Membres", path('tbn_user_list')) %}
+    {% block breadcrumb_membre %}{% endblock %}
+{% endblock %}
+
+{% block meta_keywords_espace %}
+    {% spaceless %}{% block meta_keywords_membre %}{% endblock %}{% endspaceless %}
+{% endblock %}
+        
+{% block body_agenda %}
+    {% block body_membre %}{% endblock %}
+{% endblock %}
+
+{% block css_espace %}{% block css_membre %}{% endblock %}{% endblock %}
+{% block js_espace %}{% block js_membre %}{% endblock %}{% endblock %}

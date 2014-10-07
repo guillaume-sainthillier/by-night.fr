@@ -1,0 +1,10 @@
+<div class="widget panel panel-default {% block widget_class %}{% endblock %}" >
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <strong>{% block titre %}{% endblock %}</strong>
+            <i class="pull-right fa color-primary {% block icone %}{%endblock %}"></i></h3>
+    </div>
+    <div class="panel-body {% block widget_body_class %}{% endblock %}">
+        {% block body %}{% endblock %}
+    </div>
+</div>

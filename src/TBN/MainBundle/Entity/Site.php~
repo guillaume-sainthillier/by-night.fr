@@ -1,0 +1,138 @@
+<?php
+
+namespace TBN\MainBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use TBN\UserBundle\Entity\Info;
+
+/**
+ * Site
+ *
+ * @ORM\Table(
+ *             indexes={@ORM\Index(
+ *                  name="recherche_site_idx",
+ *                  columns={"subdomain"}
+ * )})
+ * @ORM\Entity(repositoryClass="TBN\MainBundle\Entity\SiteRepository")
+ */
+class Site
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="subdomain", type="string", length=255)
+     */
+    protected $subdomain;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nom", type="string", length=255)
+     */
+    protected $nom;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="adjectif_singulier", type="string", length=255)
+     */
+    protected $adjectifSingulier;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="adjectif_pluriel", type="string", length=255)
+     */
+    protected $adjectifPluriel;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255)
+     */
+    protected $description;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="facebook_id_page", type="string", length=127, nullable=true)
+     */
+    protected $facebookIdPage;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="google_id_page", type="string", length=127, nullable=true)
+     */
+    protected $googleIdPage;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="twitter_id_page", type="string", length=127, nullable=true)
+     */
+    protected $twitterIdPage;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="twitter_id_widget", type="string", length=127, nullable=true)
+     */
+    protected $twitterIdWidget;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="twitter_url_widget", type="string", length=255, nullable=true)
+     */
+    protected $twitterURLWidget;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_actif", type="boolean")
+     */
+    protected $isActif;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="distance_max", type="float")
+     */
+    protected $distanceMax;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="latitude", type="float")
+     */
+    protected $latitude;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="longitude", type="float")
+     */
+    protected $longitude;
+
+    /**
+     * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\Info", cascade={"persist", "remove"}, fetch="EAGER")
+     */
+    protected $info;
+
+    public function __construct()
+    {
+        $this->info = new Info();
+        $this->isActif = false;
+    }
+
+}

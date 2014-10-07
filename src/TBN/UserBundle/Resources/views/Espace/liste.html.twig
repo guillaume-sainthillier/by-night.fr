@@ -1,0 +1,47 @@
+{% extends "TBNUserBundle::layout.html.twig" %}
+
+
+{% block titre_espace %}
+    Mes soirées
+{% endblock %}
+
+{% block title_espace %}
+    {{ block('titre_espace') }}
+{% endblock %}
+
+{% block breadcrumb_espace %}
+    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
+    {% set item = menu.addItem("Mes soirées", path('tbn_agenda_list')) %}
+{% endblock %}
+
+{% block body_espace %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th><a class="btn btn-success" href="{{ path('tbn_agenda_new') }}"><i class="fa fa-plus"></i> Nouvel événement</a></th>
+            <th>Titre</th>
+            <th>Date</th>
+        </tr>
+    </thead>    
+    <tbody>
+        {% for soiree in soirees %}
+        <tr>
+            <td><a class="btn btn-primary" href="{{ path('tbn_agenda_edit', {'id': soiree.id}) }}"><i class="fa fa-pencil"></i> Corriger</a></td>
+            <td>{{ soiree.nom }}</td>
+            <td><span title="Modifié le {{ soiree.dateModification|localizeddate('short','medium')|capitalize}}">{{ soiree.dateDebut|localizeddate('full','none')|capitalize}}</span></td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle"></i> Aucun événement créé, publiez dès maintenant vos soirées!
+                </div>
+            </td>
+        </tr>            
+        {% endfor %}  
+    </tbody>
+</table>
+
+
+{% endblock %}

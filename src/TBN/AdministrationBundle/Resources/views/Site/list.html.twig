@@ -1,0 +1,32 @@
+{% extends "TBNAdministrationBundle:Site:layout.html.twig" %}
+
+{% block title_site %}
+    Sites
+{% endblock %}
+    
+{% block titre_site %}
+    Sites
+{% endblock %}
+    
+{% block body_site %}
+    
+    <a href="{{ path('tbn_administration_site_new') }}" class="btn btn-primary">Nouveau</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Actif</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for site in sites %}
+            <tr>
+                <td> {{ site.id }} </td>
+                <td> <a href="{{ path('tbn_administration_site_edit',{'id' : site.id }) }}">{{ site.nom }}</a> </td>
+                <td> {{ site.isActif ? "Oui" : "Non" }} </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

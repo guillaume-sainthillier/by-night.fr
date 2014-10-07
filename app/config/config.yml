@@ -1,0 +1,188 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: custom_parameters.yml }
+    - { resource: security.yml }
+    - { resource: "@TBNMainBundle/Resources/config/services.yml" }
+
+
+
+framework:
+    esi: { enabled: true }
+    translator:      { fallback: %locale% }
+    secret:          %secret%
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    templating:
+        engines: ['twig']
+        hinclude_default_template: TBNAgendaBundle:Hinclude:template.html.twig
+        #assets_version: 1.0
+    default_locale:  "%locale%"
+    trusted_proxies: ~
+    session:         ~
+    fragments:       { path: /_fragment }
+    http_method_override: true    
+
+winzou_cache:
+    options:
+        default_driver: xcache # default is "lifetimefile"
+        
+# Twig Configuration
+twig:
+    debug:            %kernel.debug%
+    strict_variables: %kernel.debug%
+    form:
+        resources:
+            - ':Form:fields.html.twig'
+    globals:
+        site: "@site_manager"
+        menu: "@white_october_breadcrumbs"
+        facebook_app_id: "%api_facebook_id%"
+        twitter: "@tbn.social.twitter"
+        facebook: "@tbn.social.facebook"
+        google: "@tbn.social.google"
+
+# Assetic Configuration
+assetic:
+    debug:          %kernel.debug%
+    use_controller: false
+
+    java: 'java'
+    filters:
+        cssrewrite: ~
+        yui_css:
+            jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar
+        yui_js:
+            jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver:   %database_driver%
+        host:     %database_host%
+        port:     %database_port%
+        dbname:   %database_name%
+        user:     %database_user%
+        password: %database_password%
+        charset:  UTF8
+
+    orm:
+        auto_generate_proxy_classes: %kernel.debug%
+        auto_mapping: true
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: %mailer_transport%
+    host:      %mailer_host%
+    username:  %mailer_user%
+    password:  %mailer_password%
+    port:      %mailer_port%
+    sender_address: %mailer_user%
+    spool:     { type: memory }
+
+stof_doctrine_extensions:
+    orm:
+        default:
+            sluggable: true
+
+fos_user:
+    db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
+    firewall_name: main
+    user_class: TBN\UserBundle\Entity\User
+    profile:
+        form:
+            type: tbn_user_profile
+    
+ivory_google_map:
+    geocoder:
+        # Enable the service
+        enabled: true
+    
+hwi_oauth:
+    #this is my custom user provider, created from FOSUBUserProvider - will manage the 
+    #automatic user registration on your site, with data from the provider (facebook. google, etc.)
+    #and also, the connecting part (get the token and the user_id)
+    connect:
+        account_connector: my_user_provider
+        confirmation: false
+    # name of the firewall in which this bundle is active, this setting MUST be set
+    firewall_name: main
+    http_client:
+        timeout:       10 # Time in seconds, after library will shutdown request, by default: 5
+        verify_peer:   false # Setting allowing you to turn off SSL verification, by default: true
+        ignore_errors: false # Setting allowing you to easier debug request errors, by default: true
+        max_redirects: 1 # Number of HTTP redirection request after which library will shutdown request,
+                         # by default: 5
+    fosub:
+        username_iterations: 30
+        properties:
+            # these properties will be used/redefined later in the custom FOSUBUserProvider service.
+            facebook: facebook_id
+            google: google_id
+            twitter: twitter_id
+    resource_owners:
+        twitter:
+            type:               twitter
+            client_id:          %twitter_app_id%
+            client_secret:      %twitter_app_secret%
+            
+        facebook:
+            type:                facebook
+            client_id:           "%api_facebook_id%"
+            client_secret:       "%api_facebook_secret%"
+            scope:               "email, create_event, publish_actions, manage_pages"
+            infos_url:           "https://graph.facebook.com/me?fields=username,name,email,picture.type(large)"
+            paths:
+                email:          email
+                profilepicture: picture.data.url
+        google:
+            type:                google
+            client_id:           "%google_app_id%"
+            client_secret:       "%google_app_secret%"
+            scope:               "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.stream.read https://www.googleapis.com/auth/plus.stream.write"
+    # here you will add one (or more) configurations for resource owners
+
+be_simple_i18n_routing: ~
+
+white_october_breadcrumbs: ~
+
+genemu_form:
+    tinymce: ~
+    date: ~
+
+liip_imagine:
+    resolvers:
+        default:
+            web_path: ~
+
+    filter_sets:
+        cache: ~
+        thumbs_evenement:
+            quality: 75
+            filters:
+                thumbnail: { size: [200, 200], mode: outbound }
+        thumb_evenement:
+            quality: 100
+            filters:
+                thumbnail: { size: [250, 250], mode: outbound }
+        thumb_user_evenement:
+            quality: 75
+            filters:
+                thumbnail: { size: [128, 128], mode: outbound }
+        thumb_user:
+            quality: 75
+            filters:
+                thumbnail: { size: [200, 200], mode: outbound }
+
+services:
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - { name: twig.extension }
+    twig.extension.text:
+       class: Twig_Extensions_Extension_Text
+       tags:
+           - { name: twig.extension }

@@ -1,0 +1,25 @@
+{% extends "TBNAgendaBundle:Agenda:accueil.html.twig"|partial_extends() %}
+
+{% block soirees %}
+    {% if soirees|length == 0 %}
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i>
+            Aucun événement trouvé
+        </div>
+    {% else %}
+        <div>
+            {% for i,soiree in soirees %}
+                {% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" %}
+                <hr />
+            {% endfor %}
+        </div>
+        {% include "TBNAgendaBundle:Agenda:block_pagination.html.twig" %}                   
+    {% endif %}
+{% endblock %}
+
+{% block title_agenda %}
+    Les prochains événements, soirées, concerts, spectacles
+    {% if page > 1 %}
+        > page {{page}}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,97 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 21 mars 2014, 14:12:15
+    Author     : guillaume
+*/
+
+@import "../../../../../../web/less/bs/mixins";
+@import "../../../../../../web/less/variables";
+@import "menu_droit";
+@import "criteres";
+
+.event {
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    .nom_soiree {
+        display: inline-block;
+        margin-bottom: 5px;
+    }
+
+    .icon {
+        text-align: right;
+        margin-right: 10px;
+        min-width: 25px;
+        position: relative;
+        top: 4px;
+    }
+
+    .evenement_moment {
+        color: @color-primary;
+        padding-left: 5px;
+    }
+
+    &.odd {
+        background-color: darken(#ffffff, 5%);
+    }
+
+    .img {
+        max-height: 200px;
+
+        &.loading {
+            .opacity(0.7);
+        }
+    }
+
+    .image-gallery:hover {
+        cursor: -webkit-zoom-in;
+        cursor: -moz-zoom-in;
+    }
+
+    .infos_evenement {
+        .border_bottom:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .infos_evenement, .description_evenement {
+        min-height: 150px;
+    }
+}
+
+// > 998
+@media (min-width: @screen-md) {
+    .image_soiree {
+        padding-right: 0;
+    }
+}
+
+//Portable
+@media (max-width: @screen-xs-min) {
+
+    .event {
+        .image_soiree {
+            margin-bottom: 10px;
+        }
+    }
+}
+
+// < 781px
+@media (max-width: @screen-sm-max) {
+
+
+    .event {
+        .icon_description {
+            font-size: 1em;
+        }
+
+        .image_soiree {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+    }
+}

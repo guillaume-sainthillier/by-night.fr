@@ -1,0 +1,22 @@
+<div class="row text-center">
+    {% set info = user.info %}
+
+    {% if info.twitterNickname != null %}
+        <div class="col-xs-4">
+            <a class="tbn_tooltip social-twitter social" href="https://twitter.com/{{ info.twitterNickname }}" title="{{ info.twitterRealname }} sur Twitter" data-placement="top">
+            </a>
+        </div>
+    {% endif %}
+    {% if info.facebookAccessToken != null %}
+        <div class="col-xs-4">
+            <a class="tbn_tooltip social-facebook social" href="https://www.facebook.com/{{ info.facebookNickname }}" title="{{ info.facebookRealname }} sur Facebook" data-placement="top">
+            </a>
+        </div>         
+    {% endif %}
+    {% if info.googleAccessToken != null %}
+        <div class="col-xs-4">
+            <a class="tbn_tooltip social-googleplus social" href="https://plus.google.com/{{ info.googleId }}" title="{{ info.googleRealname }} sur Google+" data-placement="top">
+            </a>
+        </div>
+    {% endif %}
+</div>

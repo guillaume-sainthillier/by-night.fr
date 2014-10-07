@@ -1,0 +1,7 @@
+{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+
+{% block titre %}Top membres{% endblock %}
+{% block icone %}fa-users{% endblock %}
+{% block body %}
+    {{ render_hinclude(url('tbn_agenda_top_membres')) }}
+{% endblock %}

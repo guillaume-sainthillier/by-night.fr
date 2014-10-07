@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{{ title }}</title>
+        <link rel="shortcut icon" type="image/png"  href="{{ asset('favicon.png') }}" >
+        <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" media="screen" >
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css" type="text/css" media="screen" >
+        {% stylesheets 
+            'css/erreurs.css'
+
+            filter='cssrewrite,?yui_css'
+            output='prod/css/errors.css'
+        %}
+            <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+        {% endstylesheets %}
+        <!-- ./CSS-->
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row box-error">
+                <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3">
+                    <h1>{{ code }}</h1>
+                    <h2>{{ message }}</h2>
+                    <p>{{ description }}</p>
+                     
+                    {% if site.currentSite != null %}
+                        <form method="POST" action="{{ path('tbn_search_query') }}">
+                            <div class="input-prepend input-group">                        
+                                <span class="input-group-addon clear"><i class="fa fa-search"></i></span>
+                                <input name="term" class="form-control" size="16" type="text" placeholder="Que cherchez vous ?" />
+                                <span class="input-group-btn">
+                                    <input class="btn btn-info" type="submit" value="Rechercher" />
+                                </span>                        
+                            </div>
+                        </form>
+                    {% endif %}                    
+                </div><!--/col-->
+            </div><!--/row-->
+        </div>
+    </body>
+</html>

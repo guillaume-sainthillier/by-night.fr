@@ -1,0 +1,7 @@
+{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+
+{% block titre %}Événements similaires{% endblock %}
+{% block icone %}fa-star{% endblock %}
+{% block body %}
+    {{ render_hinclude(url('tbn_agenda_soirees_similaires',{'slug': soiree.slug})) }}
+{% endblock %}

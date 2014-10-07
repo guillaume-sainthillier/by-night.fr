@@ -1,0 +1,13 @@
+{% extends "TBNAdministrationBundle:Site:new.html.twig" %}
+
+{% block titre_site %}
+    Modification du site {{ edit_site.nom }}
+{% endblock %}
+
+{% block title_site %}
+    Modification du site {{ edit_site.nom }}
+{% endblock %}
+
+{% block breadcrumb_site %}
+    {% set test = menu.addItem(edit_site.nom, path('tbn_administration_site_edit', {'id': site.id})) %}
+{% endblock %}

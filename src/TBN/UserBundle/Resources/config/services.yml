@@ -1,0 +1,31 @@
+parameters:
+    my_user_provider.class: TBN\UserBundle\Security\Core\User\FOSUBUserProvider
+    class.guzzle.response: Guzzle\Http\Message\Response
+    class.guzzle.client: Guzzle\Http\Client
+    class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
+    twitter.baseurl: https://api.twitter.com/1.1
+    twitter.config:
+    consumer_key: %twitter_app_id%
+    consumer_secret: %twitter_app_secret%
+ 
+services:
+    my_user_provider:
+        class: "%my_user_provider.class%"
+        #this is the place where the properties are passed to the UserProvider - see config.yml
+        arguments: [@fos_user.user_manager, @service_container, {facebook: facebook_id, google: google_id, twitter: twitter_id}]
+
+    tbn.registration.form.type:
+        class: TBN\UserBundle\Form\Type\RegistrationFormType
+        arguments: [%fos_user.model.user.class%]
+        tags:
+            - { name: form.type, alias: tbn_user_registration }
+            
+    tbn.profile.form.type:
+        class: TBN\UserBundle\Form\Type\ProfileFormType
+        arguments: [%fos_user.model.user.class%]
+        tags:
+            - { name: form.type, alias: tbn_user_profile }
+    
+    authentication_handler:
+        class: TBN\UserBundle\Handler\AuthenticationHandler
+        arguments: [@translator, @router, @session, @site_manager]

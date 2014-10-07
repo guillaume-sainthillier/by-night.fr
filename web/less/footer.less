@@ -1,0 +1,99 @@
+/* 
+    Created on : 22 mars 2014, 11:18:10
+    Author     : guillaume
+*/
+
+@import "variables";
+@import "bs/mixins";
+
+@tailleFooter: 100px;
+#wrap {
+    margin: 0 auto;
+    min-height: 100%;
+    height: auto;
+
+    .obsolete {
+        display: none;
+    }
+}
+
+.no-mediaqueries 
+{
+    #wrap .obsolete {
+        display: block;
+    }
+}
+
+#footer {
+    min-height: 2*@tailleFooter + 30px;
+    padding: 15px 0;
+    border-top: solid 5px @navbar-default-bg;
+    background-color: rgb(34, 34, 34);
+    color: @bgColor;
+
+    h4 {
+        color: @color-warning;
+    }
+
+    hr:before {
+        margin-top: 0;
+    }
+    
+    .social:hover a{
+        color: @color-warning;
+    }
+    
+    a{
+        color: @color-primary;
+        &:hover {
+            color: @color-warning;
+        }
+    }
+    .sous-header {        
+
+        .footer_border {
+            min-height: @tailleFooter + 10px;
+            border-right: thin dotted rgba(175, 162, 162, 0.78);
+        }
+
+        .social {
+            height: @tailleFooter + 10px;
+            padding: 10px;
+            &:hover {
+                border: 1px dashed rgba(175, 162, 162, 0.78);
+                background-color: rgba(202, 189, 189, 0.09);
+                .opacity(0.7);
+            }
+
+            a {
+                display: block;
+                padding-top: 20px;
+            }
+
+            .count {
+                font-size: 1.5em;
+            }
+        }
+
+        .love {
+            color: @color-danger;
+            font-size: 20px;
+        }
+    }
+}
+
+//Téléphone
+@media (max-width: @screen-xs-min) {
+    #footer {
+        .sous-header {  
+            .footer_border {
+                border-bottom: thin dotted rgba(175, 162, 162, 0.78);
+                border-right: none;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+        }
+    }
+}

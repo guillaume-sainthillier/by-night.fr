@@ -1,0 +1,80 @@
+/* 
+    Created on : 13 sept. 2014, 15:01:14
+    Author     : Guillaume S. <guillaume@sainthillier.fr>
+*/
+
+@import "variables";
+@import "bs/mixins";
+
+html body {
+
+    .color-primary {
+        color: @color-primary;
+    }
+    .color-success {
+        color: @color-success;
+    }
+    .color-info {
+        color: @color-info;
+    }
+    .color-warning {
+        color: @color-warning;
+    }
+    .color-danger {
+        color: @color-danger;
+    }
+
+    .bg-white {
+        background-color: white;
+    }
+    
+    .required:after {
+        content: '*';
+    }
+
+    .border_bottom {
+        border-bottom: 1px dashed darken(#ffffff, 15%);
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .trait {
+        padding-bottom: 10px;
+        padding-top: 10px;
+    }
+
+    .img {
+        margin: 0 auto;
+    }
+    
+    .margin_bottom_30 {
+        margin-bottom: 30px;
+    }
+
+    .separator_left {
+        padding: 0 0 0 20px;
+        font-weight: normal;
+        position: relative;
+        line-height: 50px;
+
+        &.center {
+            margin: 0;
+            display: inline-block;
+            .rotate(40deg);
+        }
+
+        &:after {
+            position: absolute;
+            content: "";
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            border-radius: 2px;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(255, 255, 255, 0.3);
+            background: rgb(0, 170, 255); 
+        }
+    }
+}

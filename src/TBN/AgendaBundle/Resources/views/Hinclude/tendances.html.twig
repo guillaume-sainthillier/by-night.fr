@@ -1,0 +1,19 @@
+<div class="widget_item">
+    <h4>{{ count_participer }}</h4> 
+    <span class="color-info">participant{{ count_participer > 1 ? "s" : "" }}</span>
+</div>
+
+<div class="tendance">
+    {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': tendancesParticipations }) %}
+</div>
+
+
+<div class="widget_item">
+    <h4>{{ count_interets }}</h4> 
+    <span class="color-info">interessé{{ count_interets > 1 ? "s" : "" }}</span>
+</div>
+<br />
+<div class="tendance">
+    {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': tendancesInterets }) %}
+</div>
+

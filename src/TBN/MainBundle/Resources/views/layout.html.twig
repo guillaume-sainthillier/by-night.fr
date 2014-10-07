@@ -1,0 +1,24 @@
+{% extends "::base.html.twig" %}
+
+{% block titre %}{% spaceless %}
+    {% block titre_main %}{% endblock %}
+{% endspaceless %}{% endblock %}
+
+{% block title %}{% spaceless %}
+    {% block title_main %}{{ block('titre_main') }}{% endblock %}
+{% endspaceless %}{% endblock %}
+    
+{% block body %}{% spaceless %}
+    {% block body_main %}{% endblock %}
+{% endspaceless %}{% endblock %}
+
+{% block meta_description %}{% spaceless %}
+    {% block meta_description_main %}{% endblock %}
+{% endspaceless %}{% endblock %}
+
+{% block meta_keywords %}{% spaceless %}
+    {% block meta_keywords_main %}{% endblock %}
+{% endspaceless %}{% endblock %}
+
+{% block menu %}{% endblock %}
+

@@ -1,0 +1,85 @@
+@import "../../../../../../web/less/bs/mixins";
+@import "../../../../../../web/less/variables";
+
+/* 
+    Created on : 13 sept. 2014, 15:19:29
+    Author     : Guillaume S. <guillaume@sainthillier.fr>
+*/
+#widgets {
+
+    @offset: 1;
+    margin-top: 50px;
+    
+    // < 480px
+    @media (max-width: @screen-xs-min)
+    {
+        padding-right: percentage(@offset / (2*@grid-columns));
+        padding-left: percentage(@offset / (2*@grid-columns));
+    }
+    
+    // [480px;781px]
+    @media (min-width: @screen-xs) and (max-width: @screen-md)
+    {
+        padding-right: percentage(@offset / (0.5*@grid-columns));
+        padding-left: percentage(@offset / (0.5*@grid-columns));
+    }
+    
+    // [990px; 1200px;]
+    @media (min-width: @screen-md) and (max-width: @screen-lg)
+    {
+        padding-right: percentage(@offset / (2*@grid-columns));
+        padding-left: percentage(@offset / (2*@grid-columns));
+    }
+    
+    // > 1200px
+    @media (min-width: @screen-lg)
+    {
+        padding-right: percentage(@offset / (1.5*@grid-columns));
+        padding-left: percentage(@offset / (1.5*@grid-columns));
+    }
+
+    h1, h2, h3, h4, h5, h6{
+        color: #222;
+        font-weight: bold;
+    }
+
+    .widget {                
+        margin-bottom: 40px;                
+
+        .widget_item {
+            padding: 10px 0;
+            border-bottom: 1px solid white;
+            border-top: 1px solid #CCC;
+
+            .item_title {
+                margin-top: 2px;
+                font-size: 14px;
+            }
+
+            &:first-child {
+                padding-top: 0;
+                border-top: none;
+            }
+            
+            .min_membre {
+                padding-right: 0;
+                
+                strong {
+                    display: block;
+                }
+            }
+        }
+        
+        .scrollable {
+            max-height: 500px;
+            overflow-y: scroll;
+        }
+    }
+
+    .panel-default {
+        .panel-heading {
+            background-color: white;
+        }                    
+    }
+}
+

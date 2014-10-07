@@ -1,0 +1,12 @@
+parameters:
+#    tbn_administration.example.class: TBN\AdministrationBundle\Example
+
+services:
+    tbn.twig.oauth_extension:
+        class: TBN\AdministrationBundle\Twig\Extension\SocialExtension
+        arguments: [@router]
+        tags:
+            - { name: twig.extension }
+#    tbn_administration.example:
+#        class: %tbn_administration.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

@@ -1,0 +1,47 @@
+tbn_agenda_index:
+    pattern: /
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1}
+
+tbn_agenda_pagination:
+    pattern: /page/{page}
+    defaults: { _controller: TBNAgendaBundle:Event:list}
+    requirements:
+        page: \d+
+        
+tbn_agenda_mention_legales:
+    pattern: /mentions-legales.html
+    defaults: { _controller: TBNAgendaBundle:Legacy:mentionLegales}
+
+tbn_agenda_about:
+    pattern: /a-propos.html
+    defaults: { _controller: TBNAgendaBundle:Legacy:about}
+
+tbn_agenda_plus:
+    pattern: /en-savoir-plus.html
+    defaults: { _controller: TBNAgendaBundle:Legacy:plus}
+
+tbn_agenda_top_soirees:
+    pattern: /top/soirees
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:topSoirees}
+
+tbn_agenda_programme_tv: 
+    pattern: /programme-tv
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:programmeTV}
+    
+tbn_agenda_top_membres:
+    pattern: /top/membres
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:topMembres}
+
+tbn_agenda_details:
+    pattern: /{slug}.html
+    defaults: { _controller: TBNAgendaBundle:Event:details}
+    requirements:
+        slug: (.+)
+
+tbn_agenda_soirees_similaires:
+    pattern: /{slug}.html/autres-soirees
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:soireesSimilaires}
+
+tbn_agenda_soirees_tendances:
+    pattern: /{slug}.html/tendances
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:tendances}

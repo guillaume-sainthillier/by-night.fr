@@ -1,0 +1,8 @@
+{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+
+{% block widget_body_class %}scrollable{% endblock %}
+{% block titre %}Pas envie de sortir ?{% endblock %}
+{% block icone %}fa-coffee{% endblock %}
+{% block body %}
+    {{ render_hinclude(url('tbn_agenda_programme_tv')) }}
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "TBNUserBundle::layout.html.twig" %}
+
+{% block titre_espace %}
+    Mon compte
+{% endblock %}
+    
+{% block breadcrumb_espace %}
+    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
+{% endblock %}
+
+{% block body_espace %}
+    {% include "FOSUserBundle:Profile:show_content.html.twig" %}
+{% endblock body_espace %}
+
+{% block css_espace %}
+    {% stylesheets 
+        'bundles/tbnsocial/css/social_login.css'
+
+        filter='cssrewrite,?yui_css'
+        output='prod/css/espace_perso.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    {% endstylesheets %}       
+{% endblock %}
+
+{% block js_espace %}
+    {% javascripts 
+        'bundles/tbnsocial/js/social_login.js'
+
+        filter='?yui_js'
+        output='prod/js/main_espace_perso.js'
+    %}
+        js_scripts.final.push("{{ asset_url }}");
+    {% endjavascripts %}            
+{% endblock %}    

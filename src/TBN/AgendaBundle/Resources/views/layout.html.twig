@@ -1,0 +1,72 @@
+{% extends "::base.html.twig" %}
+
+{% set site = site.currentSite %}
+{% set ville = site.subdomain %}
+
+{% block title %}{% spaceless %}
+    {% block title_agenda %}{% endblock %}
+{% endspaceless %}{% endblock %}
+
+{% block nom_site %}{% spaceless %}
+    {{ site.nom }} {{ parent() }}
+{% endspaceless %}{% endblock %}
+
+{% block titre %}{% spaceless %}
+    {% block titre_agenda %}{% endblock %}
+{% endspaceless %}{% endblock %}
+
+{% block meta_keywords %}{% spaceless %}
+    {{ site.nom|lower }},
+{% endspaceless %}{% endblock %}
+
+{% block meta_description %}{% spaceless %}
+    Retrouvez tous les derniers événements à {{ site.nom }}. Vous êtes organisateur d'événements ? Publiez vos propres événements et diffusez les automatiquement sur Facebook, Twitter et Google+ !
+{% endspaceless %}{% endblock %}
+    
+{% block body %}{% block body_agenda %}{% endblock %}{% endblock %}
+{% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
+
+{% block breadcrumb %}    
+    {% set test = menu.addItem("Villes", path('tbn_main_index')) %}    
+    {% set test = menu.addItem(site.nom, path('tbn_agenda_index')) %}    
+    {% block breadcrumb_agenda %}{% endblock %}
+    
+    {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}          
+{% endblock %}
+
+{% block twitter %}
+    {% if site.twitterIdPage != "" %}               
+        <meta name="twitter:card" content="summary" >
+        <meta name="twitter:site" content="@{{ site.twitterIdPage }}" >
+    {% endif %}
+{% endblock %}
+
+{% block google %}
+    {% if site.googleIdPage != ""  %}
+        <link rel="author" href="https://plus.google.com/u/{{ site.googleIdPage }}">
+    {% endif %}
+{% endblock %}
+
+{% block facebook %}
+    {% if site.facebookIdPage != ""  %}
+        <meta property="fb:page_id" content="{{ site.facebookIdPage }}">
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {% include "TBNAgendaBundle::footer.html.twig" %}
+{% endblock %}
+
+{% block js %}
+    ville = "{{ site.nom }}";
+    window.get_social_count = "{{ path('tbn_social_counts') }}";
+    {% block js_agenda %}{% endblock %}
+{% endblock %}
+    
+{% block css %}    
+    {% block css_agenda %}{% endblock %}
+{% endblock %}
+    
+{% block head_js %}    
+    {% block head_js_agenda %}{% endblock %}
+{% endblock %}

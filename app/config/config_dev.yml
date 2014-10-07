@@ -1,0 +1,44 @@
+imports:
+    - { resource: config.yml }
+
+framework:
+    router:
+        resource: "%kernel.root_dir%/config/routing_dev.yml"
+        strict_requirements: true
+    templating:
+        engines: ['twig']
+    profiler: { only_exceptions: false }
+
+web_profiler:
+    toolbar: true
+    intercept_redirects: false
+
+doctrine:
+    orm:
+        auto_mapping: true
+        metadata_cache_driver: xcache
+        query_cache_driver: xcache
+        result_cache_driver: xcache
+                
+monolog:
+    handlers:
+        main:
+            type:  stream
+            path:  %kernel.logs_dir%/%kernel.environment%.log
+            level: debug
+        firephp:
+            type:  firephp
+            level: info
+        chromephp:
+            type:  chromephp
+            level: info
+
+assetic:
+    use_controller: true
+
+parameters:
+    domain: "local"
+    force_refresh:     false
+    
+#swiftmailer:
+#    delivery_address: me@example.com

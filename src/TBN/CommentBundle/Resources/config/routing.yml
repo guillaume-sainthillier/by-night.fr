@@ -1,0 +1,31 @@
+tbn_comment_list:
+    path:  /{id}/{page}
+    defaults: { _controller: TBNCommentBundle:Comment:list, page: 1 }
+    requirements:
+        id: (\d+)
+        page: (\d+)
+    
+tbn_comment_new:
+    path:  /{id}/nouveau
+    defaults: { _controller: TBNCommentBundle:Comment:new }    
+    requirements:
+        id: (\d+)
+        method: POST
+        _format: json
+    
+tbn_comment_reponse_list:
+    path:  /{id}/reponses/{page}
+    defaults: { _controller: TBNCommentBundle:Reply:list, page: 1 }    
+    requirements:
+        id: (\d+)
+        method: POST
+        _format: json
+    
+tbn_comment_reponse_new:
+    path:  /{id}/repondre
+    defaults: { _controller: TBNCommentBundle:Reply:new }    
+    requirements:
+        id: (\d+)
+        method: POST
+        _format: json
+    

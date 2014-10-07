@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-sm-2 preview_event">
+        {% if soiree.webPath %}
+            {% set original = asset(soiree.webPath) %}
+            {% set thumb = original|imagine_filter('thumb_user_evenement') %}
+        {% elseif soiree.url %}
+            {% set original = soiree.url %}
+            {% set thumb = original %}
+        {% else %}
+            {% set original = asset('img/empty_event.png') %}
+            {% set thumb = original|imagine_filter('thumb_user_evenement') %}
+        {% endif %}
+        <img class="img-responsive" src="{{ thumb }}" />
+    </div>
+    <div class="col-sm-10">
+        <div class="title">
+            <a class="link" title="Accédez à toutes les informations de {{ event.nom }}" href="{{ path('tbn_agenda_details', {'slug' : soiree.slug}) }}">
+                {{ event.nom }}
+            </a>
+        </div>
+        <div class="color-primary">
+            {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
+            {% set dateFin = soiree.dateFin|date('d/m/Y') %}
+            
+            {% if event.dateFin == null or (event.dateFin != null and event.dateDebut == event.dateFin) %}                        
+                Le {{ dateDebut }}
+            {% else %}
+                Du {{ dateDebut }}
+                au {{ dateFin }}
+            {% endif %}
+        </div>
+        <div class="picture">            
+            {{ soiree.descriptif|striptags|replace({'&#13;' : ' '})|truncate(300, true, '...')|raw }}  
+        </div>                   
+    </div>
+</div>
+<br />

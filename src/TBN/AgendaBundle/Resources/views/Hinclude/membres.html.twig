@@ -1,0 +1,17 @@
+{% for user in membres %}
+<div class="widget_item">
+    <div class="row">
+        <div class="col-xs-3 preserve min_membre">
+            <img class="img-responsive" src="{{ user.profileDefault }}" />
+        </div>
+        <div class="col-xs-9 preserve text-left">
+            <h4 class="item_title">
+                <a href="{{ path('tbn_user_details', {'username': user.username} ) }}" title="Accédez au profil de {{ user.username }}">
+                    {{ user.username }}
+                </a>
+            </h4>
+            <span class="color-primary">Membre depuis le {{ user.dateCreation|date("d/m/Y") }}</span>
+        </div>
+    </div>
+</div>
+{% endfor %}

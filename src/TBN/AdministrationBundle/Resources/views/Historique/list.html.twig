@@ -1,0 +1,43 @@
+{% extends "TBNAdministrationBundle::layout.html.twig" %}
+
+{% block title_administration %}
+    Historique des MAJ
+{% endblock %}
+    
+{% block titre_administration %}
+    Historique des MAJ
+{% endblock %}
+
+{% block breadcrumb_administration %}    
+{% set test = menu.addItem("Historique", path('tbn_administration_historique_index')) %}
+{% endblock %}
+    
+{% block body_administration %}
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Date Début</th>
+                <th>Site</th>
+                <th>Parser</th>
+                <th>Durée</th>
+                <th>Nouvelles Soirées</th>
+                <th>Mise à jour</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for historique in historiques %}
+            <tr>
+                <td>{{ historique.id }}</td>
+                <td>{{ historique.dateDebut|localizeddate('medium', 'medium') }}</td>
+                <td>{{ historique.site ? historique.site.nom : '-' }}</td>
+                <td>{{ historique.fromData ? historique.fromData : '-' }}</td>
+                <td>{{ historique.duree }}s</td>
+                <td>{{ historique.nouvellesSoirees }}</td>
+                <td>{{ historique.updateSoirees }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

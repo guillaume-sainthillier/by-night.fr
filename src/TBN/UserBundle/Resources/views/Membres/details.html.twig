@@ -1,0 +1,167 @@
+{% extends "TBNUserBundle:Membres:layout.html.twig" %}
+
+{% set username = user.username|capitalize %}
+{% block title_membre %}
+    Profil de {{ username }}
+{% endblock %}
+{% block titre_membre %}
+    Profil de {{ username }}
+{% endblock %}
+
+{% block head_js %}
+    <script type="text/javascript">
+        window.datas = {{ etablissements|json_encode()|raw }};
+    </script>
+{% endblock %}
+
+{% block meta_keywords_membre %}
+    {{ username }},
+{% endblock %}
+
+{% block breadcrumb_membre %}
+    {% set item = menu.addItem(username, path('tbn_user_details', {'username' : user.username})) %}
+{% endblock %}
+
+{% set totalCount = count_participations + count_interets %}
+{% block meta_description_espace %}
+{{ username }} est en relation avec {{ totalCount }} événement{{ totalCount > 1 ? "s" : "" }} sur {{ site.nom }} By Night depuis le {{ user.dateCreation|date("d/m/Y") }}.
+{% endblock %}
+
+
+{% block body_membre %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-default fiche_profil">
+                <div class="panel-body">                    
+                    <img class="img img-responsive" src="{{ user.profileDefault }}" />
+                    <h2 class="text-center"><strong>{{ username }}</strong></h2>
+                    <hr />
+                    <div class="row text-center">
+                        <div class="col-xs-6">
+                            <strong>{{ count_participations }}</strong> participation{{ count_participations > 1 ? "s" : "" }}
+                        </div>
+                        <div class="col-xs-6">
+                            <strong>{{ count_interets }}</strong> intérêt{{ count_interets > 1 ? "s" : "" }}
+                        </div>
+                    </div>
+                    <hr />
+                    <p class="text-center">
+                        <i class="fa fa-quote-left fa-2x fa-border" ></i> 
+                        {{ user.description }}
+                    </p>
+                    <hr />
+                    {% include "TBNUserBundle:Membres:social_info.html.twig" %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <ul class="nav nav-tabs">
+                        <li><a href="#passes">Passés</a></li>
+                        <li class="active"><a href="#a-venir">A venir</a></li>
+                    </ul>
+                    <h4>Événements</h4>
+                </div>           
+                <div class="panel-body">                            
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="a-venir">
+                            {% for i, soiree in next_events %}
+                                {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'event' : soiree}) %}
+                                        {% if (i+1) < next_events|length %}
+                                    <hr />
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="tab-pane" id="passes">
+                            {% for i, soiree in previous_events %}
+                                {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'event' : soiree}) %}
+                                {% if (i+1) < previous_events|length %}
+                                    <hr />
+                                {% endif %}
+                            {% endfor %}                                
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4>Lieux préférés</h4>
+                        </div>
+                        <div class="panel-body">                            
+                            <div id="hero-donut" class="chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <ul class="nav nav-tabs" id="chartsActivite">
+                                <li id="chartSemaine"><a href="#semaine">Semaine</a></li>
+                                <li id="chartMois"><a href="#mois">Mois</a></li>
+                                <li id="chartAnnee" class="active"><a href="#annee">Année</a></li>
+                            </ul>
+                            <h4>Activité</h4>
+                        </div>
+                        <div class="panel-body">                            
+                            <div class="tab-content">
+                                <div class="tab-pane" id="semaine">
+                                    <div id="chart-semaine" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'semaine', 'username' : user.username }) }}">
+                                        <div class="text-center">
+                                            <i class="fa fa-spin fa-spinner fa-5x color-warning"></i>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="mois">
+                                    <div id="chart-mois" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'mois', 'username' : user.username }) }}">
+                                        <div class="text-center">
+                                            <i class="fa fa-spin fa-spinner fa-5x color-success"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane active" id="annee">
+                                    <div id="chart-annee" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'annee', 'username' : user.username }) }}">
+                                        <div class="text-center">
+                                            <i class="fa fa-spin fa-spinner fa-5x color-info"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+    
+{% block css_membre %}
+    
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.css" type="text/css" media="screen" >
+    
+    {% stylesheets 
+        'bundles/tbnuser/css/membre.css'
+
+        filter='cssrewrite,?yui_css'
+        output='prod/css/users/membres.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    {% endstylesheets %}
+{% endblock %}
+
+{% block js_membre %}
+    js_scripts.lib.push("//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js");
+    js_scripts.lib.push("//cdnjs.cloudflare.com/ajax/libs/highcharts/4.0.3/highcharts.js");    
+    js_scripts.plugin.push("//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.min.js");     
+
+    {% javascripts 
+        '@TBNUserBundle/Resources/public/js/details_user.js'
+
+        filter='?yui_js'
+        output='prod/js/users/details.js'
+    %}
+        js_scripts.final.push("{{ asset_url }}");
+    {% endjavascripts %}
+{% endblock %}

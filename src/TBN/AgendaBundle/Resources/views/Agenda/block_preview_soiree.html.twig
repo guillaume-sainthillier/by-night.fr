@@ -1,0 +1,77 @@
+<div class="row event" itemscope itemtype="http://schema.org/Event">
+    <div class="col-sm-3 image_soiree">
+        {% if soiree.webPath %}
+            {% set original = asset(soiree.webPath) %}
+            {% set thumb = original|imagine_filter('thumbs_evenement') %}
+        {% elseif soiree.url %}
+            {% set original = soiree.url %}
+            {% set thumb = original %}
+        {% else %}
+            {% set original = asset('img/empty_event.png') %}
+            {% set thumb = original|imagine_filter('thumbs_evenement') %}
+        {% endif %}
+        {% set nomSoiree = soiree.nom %}
+        <meta itemprop="image" content="{{ original }}">
+        <a class="image-gallery" href="{{ original }}" title="{{ nomSoiree }}" >
+            <img class="img img-responsive loading" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ nomSoiree }}" />      
+        </a>
+    </div>
+    <div class="col-sm-9 description_evenement" >
+        <div>
+            <a class="nom_soiree" itemprop="url" title="Tous les détails de {{ nomSoiree }} " href="{{ path('tbn_agenda_details', {'slug': soiree.slug})}}" >
+                <span itemprop="name"><strong>{{ nomSoiree }}</strong></span>
+            </a>
+        </div>
+        {% if soiree.modificationDerniereMinute %}
+        <div class="alert alert-info">
+            <i class="fa fa-warning"></i>
+            <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
+        </div>
+        {% endif %}
+        
+        <div>
+            {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
+            {% set dateFin = soiree.dateFin|date('d/m/Y') %}
+            <i class="fa fa-clock-o pull-left icon"></i>
+            <span class="evenement_moment">
+                {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}                        
+                    Le <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d') }}">{{ dateDebut }}</time>
+                {% else %}
+                    Du <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d') }}">{{ dateDebut }}</time>
+                    au <time itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d') }}">{{ dateFin }}</time>
+                {% endif %}
+                {% if soiree.horaires != "" %}
+                    - {{ soiree.horaires }}
+                {% endif %}
+            </span>
+        </div>                        
+        <div>
+            <i class="fa fa-quote-left fa-2x pull-left icon"></i>
+            <div itemprop="description" class="description">
+                {{ soiree.descriptif|striptags|replace({'&#13;' : ' '})|truncate(300, true, '...')|raw }}
+            </div>
+        </div>
+        {% if soiree.lieuNom != "" or soiree.commune != "" %}  
+            <div class="trait" itemprop="location" itemscope itemtype="http://schema.org/Place">
+                <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                    <i class="fa fa-home pull-left icon"></i>
+                    <span itemprop="addressLocality">{{ soiree.lieuNom }}</span>
+                    {{ soiree.lieuNom and soiree.commune ? ', ' : '' }}
+                    {{ soiree.commune }}                  
+                </div>
+            </div>
+        {% endif %}
+        {% if soiree.tarif != "" %}   
+            <div class="trait">
+                <i class="fa fa-euro pull-left icon"></i>
+                <span itemprop="price">{{ soiree.tarif|raw }}</span>                           
+            </div>
+        {% endif %}
+        {% if soiree.user != null %}   
+            <div class="trait border_bottom">
+                <i class="fa fa-user pull-left icon"></i>
+                Par {{ soiree.user.username }}
+            </div>
+        {% endif %}
+    </div>
+</div>

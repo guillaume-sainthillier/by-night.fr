@@ -12,6 +12,7 @@
 
 # Parameters
 /app/config/parameters.yml
+/app/config/custom_parameters.yml
 /app/config/parameters.ini
 
 # Managed by Composer
@@ -25,6 +26,8 @@
 # Assets and user uploads
 /web/bundles/
 /web/uploads/
+/web/prod/
+/web/media/
 
 # PHPUnit
 /app/phpunit.xml

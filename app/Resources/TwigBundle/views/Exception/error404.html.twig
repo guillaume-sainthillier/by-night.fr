@@ -1,0 +1,6 @@
+{% set title = "Erreur 404 (Introuvable)" %}
+{% set code = 404 %}
+{% set message = "Oops! Vous êtes perdu." %}
+{% set description = "La page que vous demandez est introuvable." %}
+
+{% include "TwigBundle:Exception:errorXXX.html.twig" with({ 'title': title, 'code' : code, 'message' : message, 'description': description }) %}
