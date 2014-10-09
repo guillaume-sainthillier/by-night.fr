@@ -1,1 +1,25 @@
-.tab-content{padding:10px}.bloc_config{margin-top:40px}.no_margin{margin:0}.mon_evenement #map{min-height:300px}.mon_evenement h2{margin-bottom:40px}.mon_evenement h2 .label{margin-right:10px}.mon_evenement h2 .underline{border-bottom:1px dotted #2fa4e7}
+/* 
+    Created on : 13 sept. 2014, 15:15:02
+    Author     : Guillaume S. <guillaume@sainthillier.fr>
+*/
+.tab-content {
+  padding: 10px;
+}
+.bloc_config {
+  margin-top: 40px;
+}
+.no_margin {
+  margin: 0;
+}
+.mon_evenement #map {
+  min-height: 300px;
+}
+.mon_evenement h2 {
+  margin-bottom: 40px;
+}
+.mon_evenement h2 .label {
+  margin-right: 10px;
+}
+.mon_evenement h2 .underline {
+  border-bottom: 1px dotted #2fa4e7;
+}

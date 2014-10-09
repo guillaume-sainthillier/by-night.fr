@@ -6,6 +6,7 @@ use TBN\AgendaBundle\Repository\AgendaRepository;
 use TBN\SocialBundle\Social\Facebook;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\MainBundle\Site\SiteManager;
 
 /**
  *
@@ -22,6 +23,12 @@ class FaceBookParser extends AgendaParser {
      * @var Site
      */
     protected $site;
+    
+    /**
+     *
+     * @var SiteManager
+     */
+    protected $siteManager;
 
     /**
      *
@@ -30,11 +37,12 @@ class FaceBookParser extends AgendaParser {
      * @param type $site le site courant
      * @return \TBN\MajDataBundle\Parser\FaceBookParser
      */
-    public function __construct(AgendaRepository $repo, $api, Site $site, $geocoder) {
+    public function __construct(AgendaRepository $repo, $api, Site $site, SiteManager $siteManager, $geocoder) {
 	parent::__construct($repo, null);
-	$this->api = $api;
-	$this->site = $site;
-	$this->geocoder = $geocoder;
+	$this->api          = $api;
+	$this->site         = $site;
+        $this->siteManager  = $siteManager;
+	$this->geocoder     = $geocoder;
     }
 
     public function parse() {
@@ -45,7 +53,7 @@ class FaceBookParser extends AgendaParser {
 	}, $this->repo->getLieux($this->site))));
 
 	//Récupération des événements depuis le nom des lieux déjà connus
-	$events = $this->filterEvents($this->api->searchEventsFromKeywords($keywords, $this->site->getInfo(), $now));
+	$events = $this->filterEvents($this->api->searchEventsFromKeywords($keywords, $this->siteManager->getSiteInfo(), $now));
 
 	//Récupération d'ID uniques de créateurs d'événements précédemment parsés
 	$owners_id = array_map(function(Agenda $agenda) {
@@ -61,7 +69,7 @@ class FaceBookParser extends AgendaParser {
 		}));
 
 	//Récupération des événements depuis les créateurs des événements parsés
-	$graph = $this->api->searchEventsFromOwnerIds($filetered_owners_id, $this->site->getInfo(), $now);
+	$graph = $this->api->searchEventsFromOwnerIds($filetered_owners_id, $this->siteManager->getSiteInfo(), $now);
 
 	if ($graph->getProperty("error_code")) {
 	    var_dump("erreur");
@@ -108,7 +116,7 @@ class FaceBookParser extends AgendaParser {
 
     protected function getPageInfos($page) {
 	if ($page->getProperty("id")) {
-	    $venue = $this->api->getPageFromId($this->site->getInfo(), $page->getProperty("id"));
+	    $venue = $this->api->getPageFromId($this->siteManager->getSiteInfo(), $page->getProperty("id"));
 
 	    return [
 		"site" => $venue->getProperty("website"),

@@ -7,7 +7,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 
 /**
  * User
- *
+ * 
  * @ORM\Table( name="tbn_user",
  *             indexes={@ORM\Index(
  *                  name="recherche_user_idx",
@@ -30,59 +30,57 @@ class User extends BaseUser
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     protected $nom;
-
+    
     /**
      * @var string
      *
      * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
      */
     protected $firstname;
-
+ 
     /**
      * @var string
      *
      * @ORM\Column(name="lastname", type="string", length=255, nullable=true)
      */
     protected $lastname;
-
+    
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=127, nullable=true)
      */
     protected $description;
-
-
-
+    
     /**
     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Agenda", mappedBy="user")
     * @ORM\OrderBy({"dateModification" = "DESC"})
-    */
+    */  
 
     protected $evenements;
-
+ 
     /**
-     * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\Info", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\UserInfo", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     protected $info;
-
+    
     /**
     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda")
     */
     protected $calendriers;
-
+    
     /**
     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
     * @ORM\JoinColumn(nullable=false)
     */
     protected $site;
-
+    
     /**
      * @ORM\Column(name="from_login", type="boolean", nullable=true)
      */
     protected $from_login;
-
+    
     /**
      * @ORM\Column(name="date_creation", type="datetime", nullable=true)
      */
@@ -94,15 +92,15 @@ class User extends BaseUser
     public function __construct()
     {
         parent::__construct();
-
+        
         $this->setFromLogin(false);
         $this->date_creation = new \DateTime();
         $this->evenements = new \Doctrine\Common\Collections\ArrayCollection();
         $this->calendriers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->info = new Info();
+        $this->info = new UserInfo();
     }
-
-
+    
+      
     public function getProfileDefault()
     {
         $info = $this->info;
@@ -120,18 +118,20 @@ class User extends BaseUser
                 return $info->getGoogleProfilePicture();
             }
         }
-
+        
         return "http://placehold.it/250&text=".$this->getUsername();
     }
-
+    
     public function getUsername() {
         return ucfirst(parent::getUsername());
     }
 
+    
+
     /**
      * Get id
      *
-     * @return integer
+     * @return integer 
      */
     public function getId()
     {
@@ -142,7 +142,6 @@ class User extends BaseUser
      * Set nom
      *
      * @param string $nom
-     *
      * @return User
      */
     public function setNom($nom)
@@ -155,7 +154,7 @@ class User extends BaseUser
     /**
      * Get nom
      *
-     * @return string
+     * @return string 
      */
     public function getNom()
     {
@@ -166,7 +165,6 @@ class User extends BaseUser
      * Set firstname
      *
      * @param string $firstname
-     *
      * @return User
      */
     public function setFirstname($firstname)
@@ -179,7 +177,7 @@ class User extends BaseUser
     /**
      * Get firstname
      *
-     * @return string
+     * @return string 
      */
     public function getFirstname()
     {
@@ -190,7 +188,6 @@ class User extends BaseUser
      * Set lastname
      *
      * @param string $lastname
-     *
      * @return User
      */
     public function setLastname($lastname)
@@ -203,7 +200,7 @@ class User extends BaseUser
     /**
      * Get lastname
      *
-     * @return string
+     * @return string 
      */
     public function getLastname()
     {
@@ -211,10 +208,32 @@ class User extends BaseUser
     }
 
     /**
+     * Set description
+     *
+     * @param string $description
+     * @return User
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string 
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
      * Set from_login
      *
      * @param boolean $fromLogin
-     *
      * @return User
      */
     public function setFromLogin($fromLogin)
@@ -227,7 +246,7 @@ class User extends BaseUser
     /**
      * Get from_login
      *
-     * @return boolean
+     * @return boolean 
      */
     public function getFromLogin()
     {
@@ -235,10 +254,32 @@ class User extends BaseUser
     }
 
     /**
+     * Set date_creation
+     *
+     * @param \DateTime $dateCreation
+     * @return User
+     */
+    public function setDateCreation($dateCreation)
+    {
+        $this->date_creation = $dateCreation;
+
+        return $this;
+    }
+
+    /**
+     * Get date_creation
+     *
+     * @return \DateTime 
+     */
+    public function getDateCreation()
+    {
+        return $this->date_creation;
+    }
+
+    /**
      * Add evenements
      *
      * @param \TBN\AgendaBundle\Entity\Agenda $evenements
-     *
      * @return User
      */
     public function addEvenement(\TBN\AgendaBundle\Entity\Agenda $evenements)
@@ -261,7 +302,7 @@ class User extends BaseUser
     /**
      * Get evenements
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection 
      */
     public function getEvenements()
     {
@@ -271,11 +312,10 @@ class User extends BaseUser
     /**
      * Set info
      *
-     * @param \TBN\UserBundle\Entity\Info $info
-     *
+     * @param \TBN\UserBundle\Entity\UserInfo $info
      * @return User
      */
-    public function setInfo(\TBN\UserBundle\Entity\Info $info = null)
+    public function setInfo(\TBN\UserBundle\Entity\UserInfo $info = null)
     {
         $this->info = $info;
 
@@ -285,7 +325,7 @@ class User extends BaseUser
     /**
      * Get info
      *
-     * @return \TBN\UserBundle\Entity\Info
+     * @return \TBN\UserBundle\Entity\UserInfo 
      */
     public function getInfo()
     {
@@ -296,7 +336,6 @@ class User extends BaseUser
      * Add calendriers
      *
      * @param \TBN\AgendaBundle\Entity\Calendrier $calendriers
-     *
      * @return User
      */
     public function addCalendrier(\TBN\AgendaBundle\Entity\Calendrier $calendriers)
@@ -319,7 +358,7 @@ class User extends BaseUser
     /**
      * Get calendriers
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection 
      */
     public function getCalendriers()
     {
@@ -330,7 +369,6 @@ class User extends BaseUser
      * Set site
      *
      * @param \TBN\MainBundle\Entity\Site $site
-     *
      * @return User
      */
     public function setSite(\TBN\MainBundle\Entity\Site $site)
@@ -343,56 +381,10 @@ class User extends BaseUser
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site
+     * @return \TBN\MainBundle\Entity\Site 
      */
     public function getSite()
     {
         return $this->site;
-    }
-
-    /**
-     * Set date_creation
-     *
-     * @param \DateTime $dateCreation
-     * @return User
-     */
-    public function setDateCreation($dateCreation)
-    {
-        $this->date_creation = $dateCreation;
-
-        return $this;
-    }
-
-    /**
-     * Get date_creation
-     *
-     * @return \DateTime
-     */
-    public function getDateCreation()
-    {
-        return $this->date_creation;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return User
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
     }
 }

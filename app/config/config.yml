@@ -38,7 +38,6 @@ twig:
         resources:
             - ':Form:fields.html.twig'
     globals:
-        site: "@site_manager"
         menu: "@white_october_breadcrumbs"
         facebook_app_id: "%api_facebook_id%"
         twitter: "@tbn.social.twitter"

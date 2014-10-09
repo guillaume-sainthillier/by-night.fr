@@ -15,6 +15,6 @@ services:
            
     tbn.twig.main_extension:
         class: TBN\MainBundle\Twig\MainExtension
-        arguments : [ @request_stack, @winzou_cache, @doctrine ]
+        arguments : [ @request_stack, @site_manager, @winzou_cache, @doctrine ]
         tags:
             - { name: twig.extension }

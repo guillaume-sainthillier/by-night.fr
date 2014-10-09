@@ -3,7 +3,6 @@
 namespace TBN\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use TBN\UserBundle\Entity\Info;
 
 /**
  * Site
@@ -124,17 +123,10 @@ class Site
      */
     protected $longitude;
 
-    /**
-     * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\Info", cascade={"persist", "remove"}, fetch="EAGER")
-     */
-    protected $info;
-
     public function __construct()
     {
-        $this->info = new Info();
         $this->isActif = false;
     }
-
 
     /**
      * Get id
@@ -155,7 +147,7 @@ class Site
     public function setSubdomain($subdomain)
     {
         $this->subdomain = $subdomain;
-    
+
         return $this;
     }
 
@@ -178,7 +170,7 @@ class Site
     public function setNom($nom)
     {
         $this->nom = $nom;
-    
+
         return $this;
     }
 
@@ -201,7 +193,7 @@ class Site
     public function setAdjectifSingulier($adjectifSingulier)
     {
         $this->adjectifSingulier = $adjectifSingulier;
-    
+
         return $this;
     }
 
@@ -224,7 +216,7 @@ class Site
     public function setAdjectifPluriel($adjectifPluriel)
     {
         $this->adjectifPluriel = $adjectifPluriel;
-    
+
         return $this;
     }
 
@@ -247,7 +239,7 @@ class Site
     public function setDescription($description)
     {
         $this->description = $description;
-    
+
         return $this;
     }
 
@@ -270,7 +262,7 @@ class Site
     public function setFacebookIdPage($facebookIdPage)
     {
         $this->facebookIdPage = $facebookIdPage;
-    
+
         return $this;
     }
 
@@ -293,7 +285,7 @@ class Site
     public function setGoogleIdPage($googleIdPage)
     {
         $this->googleIdPage = $googleIdPage;
-    
+
         return $this;
     }
 
@@ -316,7 +308,7 @@ class Site
     public function setTwitterIdPage($twitterIdPage)
     {
         $this->twitterIdPage = $twitterIdPage;
-    
+
         return $this;
     }
 
@@ -339,7 +331,7 @@ class Site
     public function setTwitterIdWidget($twitterIdWidget)
     {
         $this->twitterIdWidget = $twitterIdWidget;
-    
+
         return $this;
     }
 
@@ -362,7 +354,7 @@ class Site
     public function setTwitterURLWidget($twitterURLWidget)
     {
         $this->twitterURLWidget = $twitterURLWidget;
-    
+
         return $this;
     }
 
@@ -385,7 +377,7 @@ class Site
     public function setIsActif($isActif)
     {
         $this->isActif = $isActif;
-    
+
         return $this;
     }
 
@@ -408,7 +400,7 @@ class Site
     public function setDistanceMax($distanceMax)
     {
         $this->distanceMax = $distanceMax;
-    
+
         return $this;
     }
 
@@ -431,7 +423,7 @@ class Site
     public function setLatitude($latitude)
     {
         $this->latitude = $latitude;
-    
+
         return $this;
     }
 
@@ -454,7 +446,7 @@ class Site
     public function setLongitude($longitude)
     {
         $this->longitude = $longitude;
-    
+
         return $this;
     }
 
@@ -466,28 +458,5 @@ class Site
     public function getLongitude()
     {
         return $this->longitude;
-    }
-
-    /**
-     * Set info
-     *
-     * @param \TBN\UserBundle\Entity\Info $info
-     * @return Site
-     */
-    public function setInfo(\TBN\UserBundle\Entity\Info $info = null)
-    {
-        $this->info = $info;
-    
-        return $this;
-    }
-
-    /**
-     * Get info
-     *
-     * @return \TBN\UserBundle\Entity\Info 
-     */
-    public function getInfo()
-    {
-        return $this->info;
     }
 }

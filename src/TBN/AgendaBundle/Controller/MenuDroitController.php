@@ -126,7 +126,7 @@ class MenuDroitController extends Controller {
                 $siteManager = $this->get("site_manager");
                 $site = $siteManager->getCurrentSite();
                 $em = $this->getDoctrine()->getManager();
-                $retour = $api->getEventStats($site->getInfo(), $id);
+                $retour = $api->getEventStats($siteManager->getSiteInfo(), $id);
 
                 $soiree->setFbInterets($retour["interets"]);
                 $soiree->setFbParticipations($retour["participations"]);

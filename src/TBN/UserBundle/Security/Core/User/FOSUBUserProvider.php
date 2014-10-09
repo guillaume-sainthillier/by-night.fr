@@ -128,7 +128,7 @@ class FOSUBUserProvider extends BaseClass
         }
 
         //On met à jour l'utilisateur
-        $this->hydrateUser($user, $response, $service);
+        $this->hydrateUser($user, $response, $service);        
         $this->userManager->updateUser($user);// Mise à jour
 
         return $user;

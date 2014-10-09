@@ -114,11 +114,12 @@ class Facebook extends Social {
 
     public function getNumberOfCount() {
 
-	$site = $this->siteManager->getCurrentSite();
+	$site   = $this->siteManager->getCurrentSite();
+        $info   = $this->siteManager->getSiteInfo();
 
-	if ($site !== null and $site->getInfo() !== null) {
+	if ($site !== null and $info !== null) {
 	    try {
-		$page = $this->getPageFromId($site->getInfo(), $site->getFacebookIdPage());
+		$page = $this->getPageFromId($info, $site->getFacebookIdPage());
 
 		return $page->getProperty("likes");
 	    } catch (\Exception $ex) {
@@ -160,7 +161,7 @@ class Facebook extends Social {
 	if ($user->hasRole("ROLE_FACEBOOK") and $agenda->getFbPostSystemId() == null) {
 	    $site = $this->siteManager->getCurrentSite();
 
-	    $session = new FacebookSession($site->getInfo()->getFacebookAccessToken());
+	    $session = new FacebookSession($this->siteManager->getSiteInfo()->getFacebookAccessToken());
 
 	    $message = $user->getUsername() . " présente :"
 		    . "\n"

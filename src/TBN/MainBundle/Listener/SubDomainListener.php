@@ -21,6 +21,7 @@ class SubDomainListener {
 
     public function onDomainParse(GetResponseEvent $event) {
 
+        //Chargement du site
         if ($this->siteManager->getCurrentSite() === null) {
             $request = $event->getRequest();
             $currentHost = $request->getHttpHost();
@@ -43,6 +44,17 @@ class SubDomainListener {
             
             $this->siteManager->setCurrentSite($site);
         }
+        
+        //Chargement des infos du site
+        if($this->siteManager->getSiteInfo() === null) {
+            
+            $siteInfo = $this->em
+                    ->getRepository('TBNUserBundle:SiteInfo')
+                    ->findOneBy([]);
+                
+            $this->siteManager->setSiteInfo($siteInfo);
+        }
+            
     }
 
     public function getSiteManager() {

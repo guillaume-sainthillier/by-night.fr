@@ -109,9 +109,9 @@ abstract class Social {
         }
     }
 
-    public function disconnectSite(Site $site)
+    public function disconnectSite()
     {
-        $this->disconnectInfo($site->getInfo());
+        $this->disconnectInfo($this->siteManager->getSiteInfo());
     }
 
     protected function connectInfo(Info $info, UserResponseInterface $response)
@@ -141,9 +141,9 @@ abstract class Social {
         $this->connectInfo($user->getInfo(), $response);
     }
 
-    public function connectSite(Site $site, UserResponseInterface $response)
+    public function connectSite(UserResponseInterface $response)
     {
-        $this->connectInfo($site->getInfo(), $response);
+        $this->connectInfo($this->siteManager->getSiteInfo(), $response);
     }
 
     public function poster(Agenda $agenda)

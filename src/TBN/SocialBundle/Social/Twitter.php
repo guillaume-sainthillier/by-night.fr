@@ -91,7 +91,7 @@ class Twitter extends Social
          * @var Site Description
          */
         $site = $this->siteManager->getCurrentSite();
-        $info = $site->getInfo();
+        $info = $site->siteManager->getSiteInfo();
 
         if($user->hasRole("ROLE_TWITTER") and $agenda->getTweetPostSystemId() === null and $agenda->getTweetPostId() !== null and $info->getTwitterAccessToken() !== null)
         {

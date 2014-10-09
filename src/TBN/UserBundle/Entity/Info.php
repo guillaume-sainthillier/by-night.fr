@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
  *                  name="recherche_info_idx",
  *                  columns={"facebook_id", "twitter_id", "google_id"}
  * )})
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"user" = "UserInfo", "site" = "SiteInfo"})
  * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\InfoRepository")
  */
 class Info

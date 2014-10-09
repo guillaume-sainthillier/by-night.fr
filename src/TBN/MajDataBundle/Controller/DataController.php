@@ -84,7 +84,8 @@ class DataController extends Controller
 	if(!$site or $site === "facebook")
         {
 	    $geocoder = $this->get('ivory_google_map.geocoder');
-            $parserManager->addAgendaParser(new FaceBookParser($repo, $this->get("tbn.social.facebook"), $currentSite, $geocoder));
+            $siteManager = $this->get("site_manager");
+            $parserManager->addAgendaParser(new FaceBookParser($repo, $this->get("tbn.social.facebook"), $currentSite, $siteManager, $geocoder));
         }
     }
 
@@ -127,7 +128,8 @@ class DataController extends Controller
         if(!$site or $site === "facebook")
         {
 	    $geocoder = $this->get('ivory_google_map.geocoder');
-            $parserManager->addAgendaParser(new FaceBookParser($repo, $this->get("tbn.social.facebook"), $currentSite, $geocoder));
+            $siteManager = $this->get("site_manager");
+            $parserManager->addAgendaParser(new FaceBookParser($repo, $this->get("tbn.social.facebook"), $currentSite, $siteManager, $geocoder));
         }
     }
 

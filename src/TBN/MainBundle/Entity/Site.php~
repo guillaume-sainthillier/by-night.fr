@@ -124,15 +124,10 @@ class Site
      */
     protected $longitude;
 
-    /**
-     * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\Info", cascade={"persist", "remove"}, fetch="EAGER")
-     */
-    protected $info;
-
     public function __construct()
     {
-        $this->info = new Info();
         $this->isActif = false;
     }
 
+    
 }

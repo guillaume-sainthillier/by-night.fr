@@ -1,1 +1,76 @@
-.panel-heading h4{margin-bottom:2px}.panel-heading .nav-tabs{border:0;float:right}.chart{height:350px}.chart i{margin-top:125px}.preview_event img{max-height:128px;margin-left:auto;margin-right:auto}.record{margin-bottom:10px}.record .label{display:inline-block;font-size:150%}.record i{min-width:40px}.fa-quote-left{-webkit-transition:all .3s ease-in-out;transition:all .3s ease-in-out}.fa-quote-left:hover{background-color:#EEE;-webkit-transform:rotate(-180deg);-ms-transform:rotate(-180deg);transform:rotate(-180deg)}.fiche_profil h2{overflow-x:auto;overflow-y:hidden}.fiche_profil strong{display:block}
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 10 avr. 2014, 19:25:41
+    Author     : guillaume
+*/
+/* 
+    Created on : 13 sept. 2014, 15:15:02
+    Author     : Guillaume S. <guillaume@sainthillier.fr>
+*/
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 13 avr. 2014, 22:13:41
+    Author     : guillaume
+*/
+.panel-heading h4 {
+  margin-bottom: 2px;
+}
+.panel-heading .nav-tabs {
+  border: none;
+  float: right;
+}
+.chart {
+  height: 350px;
+}
+.chart i {
+  margin-top: 125px;
+}
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 14 avr. 2014, 18:03:12
+    Author     : guillaume
+*/
+.preview_event img {
+  max-height: 128px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.record {
+  margin-bottom: 10px;
+}
+.record .label {
+  display: inline-block;
+  font-size: 150%;
+}
+.record i {
+  min-width: 40px;
+}
+.fa-quote-left {
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+.fa-quote-left:hover {
+  background-color: #EEE;
+  -webkit-transform: rotate(-180deg);
+  -ms-transform: rotate(-180deg);
+  transform: rotate(-180deg);
+}
+.fiche_profil h2 {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.fiche_profil strong {
+  display: block;
+}

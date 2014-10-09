@@ -9,6 +9,7 @@
 namespace TBN\MainBundle\Twig;
 
 use Symfony\Component\HttpFoundation\RequestStack;
+use TBN\MainBundle\Site\SiteManager;
 
 /**
  * Description of TBNExtension
@@ -20,12 +21,14 @@ class MainExtension extends \Twig_Extension{
     private $requestStack;
     private $doctrine;
     private $cache;
+    private $siteManager;
 
-    public function __construct(RequestStack $requestStack, $cache, $doctrine)
+    public function __construct(RequestStack $requestStack, SiteManager $siteManager, $cache, $doctrine)
     {
 	$this->requestStack = $requestStack;
-	$this->cache = $cache;
-	$this->doctrine = $doctrine;
+	$this->cache        = $cache;
+	$this->doctrine     = $doctrine;
+        $this->siteManager  = $siteManager;
     }
 
     public function getGlobals()
@@ -35,17 +38,20 @@ class MainExtension extends \Twig_Extension{
 	{
 	    $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
 	    $this->cache->save($key, $repo->findBy([], ["nom" => "ASC"]), 0, 3);
-	}
+	}        
+        
         return [
-            "sites" => $this->cache->fetch($key),
+            "site"      => $this->siteManager->getCurrentSite(),
+            "sites"     => $this->cache->fetch($key),
+            "siteInfo"  => $this->siteManager->getSiteInfo()
         ];
     }
 
     public function getFilters()
     {
         return [
-            'resume' => new \Twig_Filter_Method($this, 'resume'),
-            'partial_extends' => new \Twig_Filter_Method($this, 'partialExtendsFilter')
+            'resume'            => new \Twig_Filter_Method($this, 'resume'),
+            'partial_extends'   => new \Twig_Filter_Method($this, 'partialExtendsFilter')
         ];
     }
 
