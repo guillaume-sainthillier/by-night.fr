@@ -1,0 +1,21 @@
+{% extends "TBNAdministrationBundle:Info:layout.html.twig" %}
+
+{% block titre_info %}
+    Modification des infos
+{% endblock %}
+
+{% block title_info %}
+    Modification des connexions aux Réseaux Sociaux
+{% endblock %}
+
+{% block breadcrumb_info %}
+    {% set test = menu.addItem(info.id, path('tbn_administration_info_edit', {'id': info.id})) %}
+{% endblock %}
+
+{% block body_info %} 
+    {% for service in ['facebook','google','twitter'] %}
+        <div class="bloc_config">
+            {% include "TBNSocialBundle:Social:social_info.html.twig" with { 'info': info, 'service': service } %}
+        </div>    
+    {% endfor %}
+{% endblock %}

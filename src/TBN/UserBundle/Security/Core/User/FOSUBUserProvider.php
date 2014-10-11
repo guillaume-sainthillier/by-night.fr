@@ -20,7 +20,7 @@ class FOSUBUserProvider extends BaseClass
         parent::__construct($userManager, $properties);
     }
 
-    public function connectSite(Site $site, UserResponseInterface $response)
+    public function connectSite(UserResponseInterface $response)
     {
         //$username = $response->getUsername(); //ID de l'user sur le réseau social
 
@@ -28,7 +28,7 @@ class FOSUBUserProvider extends BaseClass
         $service = $response->getResourceOwner()->getName();//google, facebook,...
 
         $social = $this->getSocialService($service);
-        $social->connectSite($site, $response);
+        $social->connectSite($response);
     }
 
     /**

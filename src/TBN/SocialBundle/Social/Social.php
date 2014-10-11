@@ -12,7 +12,7 @@ use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use TBN\SocialBundle\Exception\SocialException;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
-use TBN\MainBundle\Entity\Site;
+use TBN\UserBundle\Entity\SiteInfo;
 use TBN\UserBundle\Entity\Info;
 use TBN\MainBundle\Site\SiteManager;
 use Symfony\Component\Security\Core\SecurityContextInterface;

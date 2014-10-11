@@ -99,7 +99,7 @@ class ConnectController extends BaseController
                     $siteManager = $this->container->get("site_manager");
                     $currentSite = $siteManager->getCurrentSite();
 
-                    $this->container->get('hwi_oauth.account.connector')->connectSite($currentSite, $userInformation);
+                    $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
 
                     $em = $this->container->get("doctrine.orm.entity_manager");
 

@@ -2,6 +2,22 @@ tbn_administration_index:
     path:  /
     defaults: { _controller: TBNAdministrationBundle:Site:list }
 
+tbn_administration_info_index:
+    path:  /info
+    defaults: { _controller: TBNAdministrationBundle:Info:list }
+    requirements:
+        method: GET
+    
+tbn_administration_info_new:
+    path:  /info/new
+    defaults: { _controller: TBNAdministrationBundle:Info:new }
+    
+tbn_administration_info_edit:
+    path:  /info/{id}
+    defaults: { _controller: TBNAdministrationBundle:Info:edit }
+    requirements:
+        id: (\d+)
+
 tbn_administration_site_index:
     path:  /site
     defaults: { _controller: TBNAdministrationBundle:Site:list }
@@ -18,7 +34,7 @@ tbn_administration_site_edit:
 
 tbn_administration_connect_site:
     pattern: /connect/{service}
-    defaults: { _controller: TBNAdministrationBundle:Site:connectSite}
+    defaults: { _controller: TBNAdministrationBundle:Info:connectInfo}
     requirements:
         service: (facebook|google|twitter)
 

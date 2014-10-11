@@ -18,15 +18,6 @@ class SiteController extends Controller
         ]);
     }
 
-    public function connectSiteAction($service)
-    {
-        $session = $this->container->get("session");
-        $session->set("connect_site",true);
-
-        $url = $this->container->get("router")->generate("hwi_oauth_service_redirect", ["service" => $service]);
-        return new \Symfony\Component\HttpFoundation\RedirectResponse($url);
-    }
-
     public function newAction()
     {
         $site = new Site;
