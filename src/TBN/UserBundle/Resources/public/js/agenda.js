@@ -7,27 +7,58 @@
 
 $(document).ready(function()
 {
+    //Checkboxs
+    $("body").off("hasConnected").on("hasConnected", function(event, ui)
+    {
+        var label = ui.target;
+        var bloc_config = $(label).closest(".bloc_config");
+        var ck = bloc_config.find(".onoffswitch-checkbox");
+        ck.data("connected", "1").attr('checked',true).addClass("checked");
+    }).off("wantDisconnect").on("wantDisconnect", function(event, label)
+    {
+        var bloc_config = $(label).closest(".bloc_config");
+        bloc_config.find(".onoffswitch-checkbox").attr('checked',false).removeClass("checked");
+    }).off("wantConnect").on("wantConnect", function(event, label)
+    {
+        var bloc_config = $(label).closest(".bloc_config");
+        var ck = bloc_config.find(".onoffswitch-checkbox");
+        
+        if(!ck.prop("disabled"))
+        {
+            if(!ck.data("connected"))
+            {
+                launch_social_connect(label);
+            }else
+            {
+                bloc_config.find(".onoffswitch-checkbox").attr('checked',true).addClass("checked");
+            }
+        }        
+    });
 
-    //TinyMCE
-    var $configs = {
-        "language_url" : window.tiny_base_url,
-        "mode":"exact",
-        "elements":"tbn_agenda_descriptif",
-
-        toolbar1: "bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | formatselect",
-        toolbar2: "charmap searchreplace | bullist numlist | outdent indent blockquote | link unlink image | preview",
-        menubar: false    
-    };
-    tinyMCE.init($configs);
+    //SummerNote
+    $("#tbn_agenda_descriptif").summernote({
+        lang: 'fr-FR',
+        toolbar: [     
+            ['heading', ['style']],
+            ['style', ['bold', 'italic', 'underline']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link', 'picture', 'video', 'hr']],
+            ['misc', ['undo', 'redo', 'fullscreen']]
+        ],
+        height: 250,
+        codemirror: {
+            mode: 'text/html',
+            htmlMode: true
+        }
+    });
     
     //Google Maps
-
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode( {'address' : ville}, function(results, status)
     {
         if (status === google.maps.GeocoderStatus.OK)
         {
-            var $field = $('#tbn_agenda_address');
+            var $field = $('#tbn_agenda_adresse');
             $field.addresspicker({
                 "regionBias": "fr",
                 "componentsFilter" : "country:FR|administrative_area:" + results[0].address_components[1].short_name,
@@ -43,7 +74,7 @@ $(document).ready(function()
                     "map":"#map",
                     "lat":"#tbn_agenda_latitude",
                     "lng":"#tbn_agenda_longitude",
-                    "locality":"#tbn_agenda_commune",
+                    "locality":"#tbn_agenda_ville",
                     "postal_code": "#tbn_agenda_codePostal"
                 },
                 "updateCallback" : function(result, b)

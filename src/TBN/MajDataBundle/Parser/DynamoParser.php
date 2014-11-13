@@ -13,6 +13,10 @@ class DynamoParser extends LinksParser{
 
     protected $base_url;
 
+    protected $currentEvent;
+
+    protected static $URL_PATTERN = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
+
     public function __construct(AgendaRepository $repo, $url) {
         parent::__construct($repo, $url);
 
@@ -26,51 +30,136 @@ class DynamoParser extends LinksParser{
      */
     protected function getInfosAgenda()
     {
+
         $tab_retour = [];
-        $tab_retour["nom"]              = $this->parser->filter(".t_group")->text();
-        $horaires_prix                  = $this->parser->filter(".ticket")->children()->eq(1)->children();
-        $tab_retour["horaires"]         = $horaires_prix->eq(0)->text();
-        $tab_retour["tarif"]            = preg_replace("/tarif/i","",$horaires_prix->eq(1)->text());
-        $tab_retour["date_affichage"]   = "Le ".$this->parser->filter(".tal_date")->text()." à ".$tab_retour["horaires"];
-        $tab_retour["lieu_nom"]         = "La Dynamo";
-        $tab_retour["reservation_internet"] = implode(" ",$this->parser->filter("#contenu_gauche .boutcss")->each(function($item) { return $item->attr("href"); }));
+        $tab_retour["nom"]              = $this->currentEvent->filter("[itemprop='name']")->text();
+        $date_debut                     = $this->currentEvent->filter("[itemprop='startDate']")->attr("datetime");
+        $date_fin                       = $this->currentEvent->filter("[itemprop='endDate']")->attr("datetime");
+
+        $tab_retour["date_debut"]       = \DateTime::createFromFormat("Y-m-d", $date_debut);
+        $tab_retour["date_fin"]         = \DateTime::createFromFormat("Y-m-d", $date_fin);
+
+        //Description
+        $tab_retour["descriptif"]       = $this->currentEvent->filter("[itemprop='description']")->html();
+
+        //Image
+        $node_image                     = $this->currentEvent->filter(".evo_metarow_fimg");
+        $raw_style                      = $node_image->count() ? $node_image->attr("style") : null;
+        $image                          = null;
+        $matchs_url                     = [];
+
+        if($raw_style and \preg_match(self::$URL_PATTERN, $raw_style, $matchs_url))
+        {
+            $image                      = str_replace(")", "", $matchs_url[0]);
+        }
+        $tab_retour["image"]            = $image;
+
+
+        //Facebook
+        $node_facebook                  = $this->currentEvent->filter(".evo_metarow_cusF2 p");
+        $raw_facebook                   = $node_facebook->count() ? $node_facebook->text() : null;
+        $facebook                       = null;
+        $matchs_id                      = [];
+
+        if($raw_facebook and \preg_match("#events/(\d+)#i", $raw_facebook, $matchs_id))
+        {
+            $facebook                   = $matchs_id[1];            
+        }
+        $tab_retour["facebook_id"]      = $facebook;
+
+        //Tarifs
+        $node_tarifs                    = $this->currentEvent->filter(".evo_metarow_cusF1 p");
+        $tarifs                         = [];
+        $lien                           = null;
+        $liens                          = [];
+        
+        foreach($node_tarifs as $node)
+        {
+            $value = str_replace(["Prévente :", "*"], "", $node->textContent);
+
+            if(\preg_match(self::$URL_PATTERN, $value, $liens)) //Lien présent
+            {
+                $lien = $liens[0];
+                $value = str_replace($lien, "", $value);
+            }
+            $tarifs[] = trim($value);
+        }
+
+        $tab_retour["tarif"]            = implode(", ", $tarifs);
+        $tab_retour["reservation_internet"] = $lien;
+
+        
+        //Horaires
+        $node_horaires                  = $this->currentEvent->filter(".evo_metarow_time p");
+        $raw_horaires                   = $node_horaires->count() ? $node_horaires->text() : null;
+        $horaires                       = null;
+
+        if($raw_horaires)
+        {
+            $value                      = preg_replace("/.*\(.+\)\s?/i", "", $raw_horaires);
+            $value                      = preg_replace("/[^\dh\-]/i", "", $value);
+            $values                     = explode("-", $value);
+            if(count($values) <= 1)
+            {
+                $horaires = "A ".$values[0];
+            }  else
+            {
+                $horaires = "De ".$values[0]." à ".$values[1];
+            }
+        }
+        $tab_retour["horaires"]         = $horaires;
+
+        //Catégorie & Thèmes
+        $themes                         = implode(",", $this->currentEvent
+                                            ->filter(".evcal_desc3 .evcal_event_types em")
+                                            ->reduce(function($node, $i) {
+                                                return $i > 0;
+                                            })->each(function($node)
+                                            {
+                                                return $node->text();
+                                            }));
+        $tab_retour["theme"]            = $themes;
+
+        $categorie                      = $this->currentEvent->filter(".evcal_event_subtitle");
+        $tab_retour["categorie"]        = $categorie->count()?  $categorie->text() : null;
+
+        //Lieux
+        $tab_retour["lieu_nom"]         = "La Dynamo";        
         $tab_retour["rue"]		= "6 rue Amélie";
         $tab_retour["code_postal"]      = "31000";
         $tab_retour["commune"]          = "TOULOUSE";
-        $tab_retour["descriptif"]       = $this->parser->filter(".col_infos")->html();
-        $tab_retour["date"]             = "Le ".$this->parser->filter(".tal_date")->text();
-        $tab_retour["image"]            = $this->base_url.$this->parser->filter(".tal_img img")->attr("src");
 
         return $tab_retour;
     }
 
-    public function getLinks()
+    public function parse(\Symfony\Component\Console\Output\OutputInterface $output)
     {
-        $this->parseContent("XML");
-        $base_url = $this->base_url;
-        return ($this->parser->filter("div.event a")->each(function($item) use($base_url)
+        $this->parseContent();
+
+        return $this->parser->filter(".eventon_list_event")->each(function($node, $i)
         {
-            return $base_url.$item->attr("href");
-        }));
+            $this->currentEvent = $node;
+            $infos_agenda = $this->getInfosAgenda(); //Récupère les infos de l'agenda depuis le lien
+            return $this->hydraterAgenda($infos_agenda); //Créé ou récupère l'agenda associé aux infos
+        });
     }
 
     public function hydraterAgenda($infos_agenda) {
-
         $tab_champs = $infos_agenda;
-
-        $date = $this->parseDate($tab_champs["date_affichage"]);
-
-        $dateDebut = \DateTime::createFromFormat("Y-n-d", $date);
-        $nom = $tab_champs["nom"];
+        
+        $dateDebut  = $tab_champs["date_debut"];
+        $nom        = $tab_champs["nom"];
 
         $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut);
-
         $a->setNom($nom);
         $a->setDescriptif($tab_champs["descriptif"]);
         $a->setLieuNom($tab_champs["lieu_nom"]);
+        $a->setUrl($tab_champs["image"]);
+        $a->setFacebookEventId($tab_champs["facebook_id"]);
 
         $a->setDateDebut($dateDebut);
-        $a->setHoraires("A ".$tab_champs["horaires"]);
+        $a->setDateFin($tab_champs["date_fin"]);
+        $a->setHoraires($tab_champs["horaires"]);
         $a->setReservationInternet(preg_replace("/http:\/\//i","",$tab_champs["reservation_internet"]));
         $a->setTarif($tab_champs["tarif"]);
 
@@ -78,15 +167,19 @@ class DynamoParser extends LinksParser{
         $a->setCodePostal($tab_champs["code_postal"]);
         $a->setCommune($tab_champs["commune"]);
         $a->setVille($tab_champs["commune"]);
-        $a->setTypeManifestation("Musique");
-        $a->setCategorieManifestation("Concert");
-        $a->setThemeManifestation("Musique,");
-        $a->setUrl($tab_champs["image"]);
+
+        $a->setTypeManifestation("Concert,");
+        $a->setCategorieManifestation($tab_champs["categorie"]);
+        $a->setThemeManifestation($tab_champs["theme"]);
 
         return $a;
     }
 
     public function getNomData() {
         return "Dynamo";
+    }
+
+    public function getLinks() {
+        return [];
     }
 }

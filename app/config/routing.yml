@@ -124,3 +124,6 @@ _liip_imagine:
     
 debril: 
     resource: "@DebrilRssAtomBundle/Resources/config/routing.xml"
+    
+sitemap: 
+    resource: "@TBNAgendaBundle/Resources/config/routing_sitemap.yml"

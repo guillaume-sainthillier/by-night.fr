@@ -2,6 +2,15 @@
 {% include "TBNAgendaBundle:Widget:tendances.html.twig" %}
 <!-- ./Tendances -->
 
+{% if site.facebookIdPage %}
+<!-- Facebook -->
+{% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
+<!-- ./Facebook -->
+{% endif %}
+
 <!-- Événements similaires -->
 {% include "TBNAgendaBundle:Widget:evenements_similaires.html.twig" %}
 <!-- ./Événements similaires -->
+
+{% include "TBNAgendaBundle:Widget:ads.html.twig" %}
+

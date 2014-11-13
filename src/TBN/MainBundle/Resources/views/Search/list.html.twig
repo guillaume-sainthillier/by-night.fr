@@ -1,0 +1,35 @@
+{% extends "TBNMainBundle:Search:layout.html.twig" %}
+
+{% block title_search %}Recherche{% endblock %}
+{% block titre_search %}Recherche{% endblock %}
+
+{% block breadcrumb_search -%}   
+    {% if term %}
+    {% set test = menu.addItem(term, path('tbn_search_query',{'q': term})) %}
+    {% endif %}
+{%- endblock %}
+
+{% block body_search_results -%}
+    {% if term %}
+        <h2>
+            <strong class="count date">{{ nbItems }}</strong> 
+            résultat{{ nbItems > 1 ? "s" : "" }} trouvé{{ nbItems > 1 ? "s" : "" }}
+            pour la recherche <strong>{{ term }}</strong>
+        </h2>
+        <hr />
+    {% endif %}    
+{%- endblock %}
+
+{% block body_search_content -%}
+    {% if events|length > 0 %}
+        <h3>Événements</h3>
+        <br>
+        {% include "TBNMainBundle:Search:content_events.html.twig" %}
+    {% endif %}
+
+    {% if users|length > 0 %}
+        <h3>Membres</h3>
+        <br>
+        {% include "TBNMainBundle:Search:content_users.html.twig" %}
+    {% endif %}
+{%- endblock %}

@@ -13,7 +13,6 @@ namespace TBN\SocialBundle\Controller;
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
-use TBN\MainBundle\Entity\Site;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -2,7 +2,9 @@
 
 namespace TBN\MajDataBundle\Parser;
 
+use Symfony\Component\DomCrawler\Crawler;
 use TBN\AgendaBundle\Repository\AgendaRepository;
+use TBN\AgendaBundle\Entity\Agenda;
 
 /**
  * Description of BikiniParser
@@ -27,7 +29,7 @@ class SoonNightParser extends LinksParser{
         return preg_replace_callback("/(.+)(\d{2}) (".implode("|", $tabMois).") (\d{4})(.+)/iu",
                 function($items) use($tabMois)
         {
-            return $items[4]."-".(array_search($items[3],$tabMois) +1)."-".$items[2];
+            return $items[4]."-".(array_search(strtolower($items[3]),$tabMois) +1)."-".$items[2];
         }, $date);
     }
 
@@ -39,43 +41,103 @@ class SoonNightParser extends LinksParser{
     {
         $tab_retour = [];
 
+        //Date & Nom
         $date_lieu                      = preg_split("/-/",$this->parser->filter(".titre h2")->text());
-        $tab_retour["nom"]              = $this->parser->filter(".titre h1")->text()." @ ".$date_lieu[1];
+        $tab_retour["nom"]              = str_replace("&10084;", "❤", $this->parser->filter(".titre h1")->text()." @ ".$date_lieu[1]);
         $tab_retour["lieu_nom"]         = $date_lieu[1];
         $date                           = $this->parseDate($date_lieu[0]);
+
         $tab_retour["date_debut"]       = \DateTime::createFromFormat("Y-n-d",$date);
         $tab_retour["date_affichage"]   = $tab_retour["date_debut"] !== false ? "Le ".$tab_retour["date_debut"]->format("d/m/Y") : "NP";
-        $adresses                       = $this->parser->filter(".lieu")->each(function($e){ return $e->parents()->eq(0)->siblings()->eq(0); });
-
-        foreach($adresses as $adresse)
+        
+        //Lieux
+        $rue                            = null;
+        $code_postal                    = null;
+        $ville                          = null;
+        $lieux                          = $this->getNodeFromHeading($this->parser->filter(".lieu"));
+        if($lieux)
         {
-            $infos                          = $adresse->filter("span");
-            $tab_retour["rue"]		    = implode("",$infos->reduce(function($e){ return ($e->attr("property") == "v:street-address"); })->each(function($e){ return $e->text(); }));
-            $tab_retour["code_postal"]      = implode("",$infos->reduce(function($e){ return $e->attr("property") == "v:postal-code" ; })->each(function($e){ return $e->text(); }));
-            $tab_retour["commune"]          = implode("",$infos->reduce(function($e){ return $e->attr("property") == "v:locality" ; })->each(function($e){ return $e->text(); }));
-        }
+            $node_rue                       = $lieux->filter("span[property='v:street-address']");
+            $node_code_postal               = $lieux->filter("span[property='v:postal-code']");
+            $node_ville                     = $lieux->filter("span[property='v:locality']");
 
-        $tab_retour["tarif"]			= implode("",$this->parser->filter(".prix")->each(function($e){ return $e->parents()->eq(0)->siblings()->eq(0)->text(); }));
-        $tab_retour["reservation_telephone"]    = trim(implode("",$this->parser->filter(".infoline")->eq(0)->each(function($e){ return $e->parents()->eq(0)->siblings()->eq(0)->filter("span")->eq(0)->text(); })));
-        $descriptif_long                        = $this->parser->filter("#bloc_texte span")->reduce(function($e){ return $e->attr("id") != "infoline3"; });
+            $rue                            = $node_rue->count() ? trim($node_rue->text()) : null;
+            $code_postal                    = $node_code_postal->count() ? trim($node_code_postal->text()) : null;
+            $ville                          = $node_ville->count() ? trim($node_ville->text()) : null;
+        }
+        $tab_retour["rue"]		    = $rue;
+        $tab_retour["code_postal"]          = $code_postal;
+        $tab_retour["commune"]              = $ville;
+
+        //Téléphone & Tarifs
+        $telephone                          = null;        
+        $infoline                           = $this->getNodeFromHeading($this->parser->filter(".infoline"));
+        if($infoline)
+        {
+            $telephone = $infoline->text();
+        }
+        $tab_retour["reservation_telephone"]    = $telephone;
+
+        $tarifs                                 = $this->getNodeFromHeading($this->parser->filter(".prix"));
+        $tab_retour["tarif"]                    = $tarifs ? trim($tarifs->text()) : null;
+
+        //Description
+        $descriptif_long                        = $this->parser->filter("#bloc_texte span[property='v:description']");
+        $descriptif                             = null;
 
         //Suppression des foutues pubs
-        $pubs = $descriptif_long->filter("div.case_infos");
-
-        $full_descriptif = trim(implode("",$pubs->each(function($pub) use($descriptif_long)
+        foreach($descriptif_long as $node)
         {
-            return strip_tags(str_replace($pub->html(), "", $descriptif_long->html()),"<br>");
-        })));
+            foreach($node->childNodes as $children)
+            {                
+                if($children->nodeType === XML_TEXT_NODE or ! in_array($children->nodeName, ['span', 'div']))
+                {
+                    $descriptif .= ($children->nodeName === "br" ? "<br>" : $children->textContent." ");
+                }
+            }            
+        }
 
-        $tab_retour["descriptif"]               = str_replace(" Réservation et complément d'information au Afficher le numéro du service de mise en relation ","",$full_descriptif);
-        $tab_retour["descriptif"]               = str_replace("Réservations :  Afficher le numéro du service de mise en relation","",$tab_retour["descriptif"]);
-        $tab_retour["descriptif"]               = str_replace("réservation simple et rapide au Afficher le numéro du service de mise en relation","",$tab_retour["descriptif"]);
-        $tab_retour["descriptif"]               = str_replace("Afficher le numéro du service de mise en relation","",$tab_retour["descriptif"]);
-        $tab_retour["categorie"]                = implode("",$this->parser->filter(".genre")->each(function($e){ return $e->parents()->eq(0)->siblings()->eq(0)->text(); }));
-        $tab_retour["musique"]                  = implode("",$this->parser->filter(".musique")->each(function($e){ return $e->parents()->eq(0)->siblings()->eq(0)->text(); }));
-        $tab_retour["image"]                    = $this->parser->filter(".case_visuel img")->attr("src");
+        $black_list = [
+            "Toute l'équipe répond à vos questions au ",
+            "Réservation et complément d'information au ",
+            "réservation simple et rapide au ",
+            "Afficher le numéro du service de mise en relation"
+        ];
+        $clean_descriptif                       = str_replace($black_list,"",$descriptif);
+        $tab_retour["descriptif"]               = $clean_descriptif;
+
+        //Catégorie & Thème
+        $node_categorie                         = $this->getNodeFromHeading($this->parser->filter(".genre"));
+        $tab_retour["categorie"]                = $node_categorie ? trim($node_categorie->text()) : null;
+
+        $node_musique                           = $this->getNodeFromHeading($this->parser->filter(".musique"));
+        $tab_retour["musique"]                  = $node_musique ? trim($node_musique->text()) : null;
+
+        //Image
+        $image                                  = $this->parser->filter(".case_visuel img");
+        $tab_retour["image"]                    = $image->count() ? $image->attr("src") : null;
 
         return $tab_retour;
+    }
+
+    protected function getNodeFromHeading(Crawler $heading)
+    {
+        $node = null;
+
+        if($heading->count())
+        {
+            $parents = $heading->eq(($heading->count() - 1))->parents();
+            if($parents->count())
+            {
+                $siblings = $parents->eq(0)->siblings();
+                if($siblings->count())
+                {
+                    return $siblings->eq(0);
+                }
+            }
+        }
+        
+        return $node;
     }
 
     public function getLinks()
@@ -94,13 +156,8 @@ class SoonNightParser extends LinksParser{
 
         $dateDebut = $tab_champs["date_debut"];
 
-        if($dateDebut === false)
-        {
-            var_dump("Erreur", $dateDebut);
-        }
 
         $nom = $tab_champs["nom"];
-
         $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut);
 
         $a->setNom($nom);
@@ -109,6 +166,7 @@ class SoonNightParser extends LinksParser{
         $a->setVille($tab_champs["commune"]);
         $a->setRue($tab_champs["rue"]);
         $a->setCommune($tab_champs["commune"]);
+        $a->setVille($tab_champs["commune"]);
         $a->setCodePostal($tab_champs["code_postal"]);
         $a->setTarif($tab_champs["tarif"]);
         $a->setReservationTelephone($tab_champs["reservation_telephone"]);

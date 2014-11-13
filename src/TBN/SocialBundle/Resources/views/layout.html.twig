@@ -2,16 +2,16 @@
 
 {% block titre_main %}
     Espace perso - {% block titre_espace %}Connexion{% endblock %}
-{% endblock %}
+{% endblock titre_main %}
 
 {% block title_main %}
     Espace perso  - {% block title_espace %}Connexion{% endblock %}
-{% endblock %}
+{% endblock title_main %}
 
 {% block breadcrumb_agenda %}
     {% set bla = menu.addItem("Connexion", path('fos_user_security_login')) %}
-{% endblock %}
-{% block body_main %}
-    {% block hwi_oauth_content %}
-    {% endblock hwi_oauth_content %}
-{% endblock %}
+{% endblock breadcrumb_agenda %}
+
+{% block body_agenda %}
+    {% block hwi_oauth_content %}{% endblock hwi_oauth_content %}
+{% endblock body_agenda %}

@@ -29,57 +29,59 @@ class MenuDroitController extends Controller {
 
     //Pas de cache par défaut
     public function soireesSimilairesAction(Request $request, Agenda $soiree) {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        $str_date = $repo->getLastDateAutreSoirees($soiree);
+//        $em = $this->getDoctrine()->getManager();
+//        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+//        $str_date = $repo->getLastDateAutreSoirees($soiree);
+//
+//        $response = $this->cacheVerif($str_date);
+//        if ($response !== null and $response->isNotModified($request)) {
+//            return $response;
+//        }
 
-        $response = $this->cacheVerif($str_date);
-        if ($response !== null and $response->isNotModified($request)) {
-            return $response;
-        }
-
-        return $response->setContent($this->renderView("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-                            "soirees" => $this->getSoireesSimilaires($soiree)
-        ]));
+        return $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
+                    "soirees" => $this->getSoireesSimilaires($soiree)
+        ]);
     }
 
     //Pas de cache par défaut
     public function topSoireesAction(Request $request) {
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
+//
+//        $em = $this->getDoctrine()->getManager();
+//        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+//        $str_date = $repo->getLastDateTopSoiree($site);
+//
+//        $response = $this->cacheVerif($str_date);
+//        if ($response !== null and $response->isNotModified($request)) {
+//            return $response;
+//        }
 
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        $str_date = $repo->getLastDateTopSoiree($site);
-
-        $response = $this->cacheVerif($str_date);
-        if ($response !== null and $response->isNotModified($request)) {
-            return $response;
-        }
-
-        return $response->setContent($this->renderView("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-                            "soirees" => $this->getTopSoirees($site)
-        ]));
+        return $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
+                    "soirees" => $this->getTopSoirees($site)
+        ]);
     }
 
     //Pas de cache par défaut ici (à cause des détails FB)
-    public function tendancesAction(Request $request, Agenda $soiree) {
+    public function tendancesAction(Agenda $soiree) {
         $this->getFBStatsEvent($soiree);
 
-        $response = new Response();
-        $response->setPublic()
-                ->setLastModified($soiree->getDateModification());
-
-        if ($response->isNotModified($request)) {
-            return $response;
+        $membres = [];
+        if ($soiree->getFacebookEventId()) {
+            $key = "fb.stats." . $soiree->getFacebookEventId();
+            $cache = $this->get("winzou_cache");
+            if ($cache->contains($key)) {
+                $membres = $cache->fetch($key);
+            }
         }
 
-        return $response->setContent($this->renderView("TBNAgendaBundle:Hinclude:tendances.html.twig", [
-                            "tendancesParticipations" => $this->getSoireesTendancesParticipations($soiree),
-                            "tendancesInterets" => $this->getSoireesTendancesInterets($soiree),
-                            "count_participer" => $soiree->getParticipations() + $soiree->getFbParticipations(),
-                            "count_interets" => $soiree->getInterets($soiree) + $soiree->getFbInterets()
-        ]));
+        return $this->render("TBNAgendaBundle:Hinclude:tendances.html.twig", [
+                    "tendancesParticipations" => $this->getSoireesTendancesParticipations($soiree),
+                    "tendancesInterets" => $this->getSoireesTendancesInterets($soiree),
+                    "count_participer" => $soiree->getParticipations() + $soiree->getFbParticipations(),
+                    "count_interets" => $soiree->getInterets($soiree) + $soiree->getFbInterets(),
+                    "membres" => $membres
+        ]);
     }
 
     //Pas de cache par défaut ici
@@ -117,16 +119,18 @@ class MenuDroitController extends Controller {
     protected function getFBStatsEvent(Agenda $soiree) {
         $id = $soiree->getFacebookEventId();
         if ($id !== null) {
-            $dureeCache = 24;
+            $dureeCache = 0;
             $dateModification = $soiree->getDateModification();
             $today = new \DateTime;
             $dateModification->modify("+" . $dureeCache . " hours");
-            if ($dateModification < $today or $soiree->getFbParticipations() === null or $soiree->getFbInterets() === null) {
+            if ($dateModification <= $today or $soiree->getFbParticipations() === null or $soiree->getFbInterets() === null) {
                 $api = $this->get("tbn.social.facebook");
                 $siteManager = $this->get("site_manager");
-                $site = $siteManager->getCurrentSite();
                 $em = $this->getDoctrine()->getManager();
                 $retour = $api->getEventStats($siteManager->getSiteInfo(), $id);
+
+                $cache = $this->get("winzou_cache");
+                $cache->save("fb.stats." . $id, $retour["membres"]);
 
                 $soiree->setFbInterets($retour["interets"]);
                 $soiree->setFbParticipations($retour["participations"]);
@@ -139,7 +143,19 @@ class MenuDroitController extends Controller {
     protected function getTopSoirees(Site $site) {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        return $repo->findTopSoiree($site);
+        $soirees = $repo->findTopSoiree($site);
+
+        uasort($soirees, function(Agenda $a, Agenda $b)
+        {
+            if($a->getDateDebut() === $b->getDateDebut())
+            {
+                return 0;
+            }
+
+            return $a->getDateDebut() > $b->getDateFin() ? 1 : -1;
+        });
+
+        return $soirees;
     }
 
     protected function getTopMembres(Site $site) {
@@ -165,4 +181,5 @@ class MenuDroitController extends Controller {
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         return $repo->findAllTendancesInterets($soiree);
     }
+
 }

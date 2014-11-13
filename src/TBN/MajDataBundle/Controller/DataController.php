@@ -23,7 +23,6 @@ class DataController extends Controller
     {
 	$em             = $this->getDoctrine()->getManager();
         $repo           = $em->getRepository("TBNAgendaBundle:Agenda");
-
 	$agendas	= $repo->findBy(["site" => $site], ["dateDebut" => "ASC"]);
 
 	$nbSpam = 0;
@@ -54,10 +53,11 @@ class DataController extends Controller
         $parserManager  = $this->get("parser_manager");
         $em             = $this->getDoctrine()->getManager();
         $repo           = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repoBL         = $em->getRepository("TBNMajDataBundle:BlackList");
 	$env		= $this->get('kernel')->getEnvironment();
 
         $getter = "parse".lcfirst($currentSite->getSubdomain());
-        $this->$getter($parserManager, $repo, $currentSite, $site);
+        $this->$getter($parserManager, $repo, $repoBL, $currentSite, $site);
 
         $this->persistAgendas($em, $currentSite, $parserManager, $site, $env);
 
@@ -69,7 +69,7 @@ class DataController extends Controller
         return $this->redirect($this->generateUrl("tbn_main_index"));
     }
 
-    protected function parseParis($parserManager, $repo, $currentSite, $site)
+    protected function parseParis($parserManager, $repo, $repoBL, $currentSite, $site)
     {
         if(!$site or $site === "soonight")
         {
@@ -85,11 +85,11 @@ class DataController extends Controller
         {
 	    $geocoder = $this->get('ivory_google_map.geocoder');
             $siteManager = $this->get("site_manager");
-            $parserManager->addAgendaParser(new FaceBookParser($repo, $this->get("tbn.social.facebook"), $currentSite, $siteManager, $geocoder));
+            $parserManager->addAgendaParser(new FaceBookParser($repo, $repoBL, $this->get("tbn.social.facebook"), $currentSite, $siteManager, $geocoder));
         }
     }
 
-    protected function parseToulouse($parserManager, $repo, $currentSite, $site)
+    protected function parseToulouse($parserManager, $repo, $repoBL, $currentSite, $site)
     {
         if(!$site or $site === "toulouse")
         {
@@ -104,15 +104,7 @@ class DataController extends Controller
 
         if(!$site or $site === "dynamo")
         {
-            $mois_annee_courante    = date("m")."/".date("Y");
-            $dt_mois_annee_suivante = new \DateTime("next month");
-            if($dt_mois_annee_suivante !== false)
-            {
-                $mois_annee_suivante    = $dt_mois_annee_suivante->format("m/Y");
-                $parserManager
-                ->addAgendaParser(new DynamoParser($repo, $this->container->getParameter("url_dynamo").$mois_annee_courante))
-                ->addAgendaParser(new DynamoParser($repo, $this->container->getParameter("url_dynamo").$mois_annee_suivante));
-            }
+            $parserManager->addAgendaParser(new DynamoParser($repo, $this->container->getParameter("url_dynamo")));
         }
 
         if(!$site or $site === "tourisme")
@@ -129,21 +121,23 @@ class DataController extends Controller
         {
 	    $geocoder = $this->get('ivory_google_map.geocoder');
             $siteManager = $this->get("site_manager");
-            $parserManager->addAgendaParser(new FaceBookParser($repo, $this->get("tbn.social.facebook"), $currentSite, $siteManager, $geocoder));
+            $parserManager->addAgendaParser(new FaceBookParser($repo, $repoBL, $this->get("tbn.social.facebook"), $currentSite, $siteManager, $geocoder));
         }
     }
 
     /**
      * Retourne la recherche d'un doublon en fonction de la pertinance des informations
-     * @param array $event l'événement à rechercher
+     * @param Agenda $event l'événement à rechercher
+     * @param Agenda[] $agendas l'événement à rechercher
      * @return boolean vrai si un événement similaire est déjà présent, faux sinon
     */
-    protected function hasSimilarEvent($event, $agendas)
+    protected function hasSimilarEvent(Agenda $event, $agendas)
     {
-	$clean_descriptif_event     = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", html_entity_decode($event->getDescriptif())));
+	$clean_descriptif_event     = strtolower(preg_replace("/[^a-zA-Z0-9]+/u", " ", html_entity_decode($event->getDescriptif())));
+	$nom_event                  = $event->getNom();
 	$date_debut_event	    = $event->getDateDebut();
 
-	if(strlen($clean_descriptif_event) <= 70) //Moins de 70 caractères, on l'ejecte
+	if(strlen($clean_descriptif_event) <= 50) //Moins de 70 caractères, on l'ejecte
 	{
 	    return true;
 	}
@@ -153,9 +147,13 @@ class DataController extends Controller
             $date_debut_needle  = $agenda->getDateDebut();
             if($date_debut_event->format("Y-m-d") === $date_debut_needle->format("Y-m-d"))
             {
-                $clean_descriptif_needle    = strtolower(preg_replace("/[^a-zA-Z0-9]+/", "", html_entity_decode($agenda->getDescriptif())));
+                $nom_needle                 = $agenda->getNom();
+                if(similar_text($nom_event, $nom_needle) > 70) // Plus de 70% de ressemblance, on l'ejecte
+                {
+                    return true;
+                }   
 
-                if(similar_text($clean_descriptif_event, $clean_descriptif_needle) > 70) // Plus de 70% de ressemblance, on l'ejecte
+                if(stristr($nom_event, $nom_needle) !== false or stristr($nom_needle, $nom_event) !== false)
                 {
                     return true;
                 }
@@ -212,6 +210,7 @@ class DataController extends Controller
     protected function persistAgendas($em, Site $site, $parserManager, $parser, $env)
     {
         $agendas	    = $this->cleanEvents($parserManager->parse());
+        $blackLists         = $parserManager->getBlackLists();
         $nbNewSoirees	    = 0;
         $nbUpdateSoirees    = 0;
 
@@ -229,8 +228,7 @@ class DataController extends Controller
 
                 if($env === "prod" and $agenda->getPath() === null and $agenda->getUrl() !== null) // On récupère l'image distante
                 {
-                    $path = $this->downloadImage($agenda);
-                    $agenda->setPath($path);
+                    $this->downloadImage($agenda);
                 }
 
                 if($agenda->getSite() === null)
@@ -242,11 +240,17 @@ class DataController extends Controller
             }
         }
 
+        foreach($blackLists as $blackList)
+        {
+            $em->persist($blackList);
+        }
+
 	$historique = new HistoriqueMaj();
 	$historique->setFromData($parser)
 		->setSite($site)
 		->setNouvellesSoirees($nbNewSoirees)
-		->setUpdateSoirees($nbUpdateSoirees);
+		->setUpdateSoirees($nbUpdateSoirees)
+                ->setBlackLists(count($blackLists));
 
         $em->persist($historique);
         $em->flush();
@@ -256,28 +260,33 @@ class DataController extends Controller
     {
         try
         {
-            $url = $agenda->getUrl();
-
-
-            $ext = pathinfo($url, PATHINFO_EXTENSION);
+            $url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
+            $agenda->setUrl($url);
+            //En cas d'url du type:  http://u.rl/image.png?params
+            $ext = preg_replace("/\?(.+)/", "", pathinfo($url, PATHINFO_EXTENSION));
 
             $filename = sha1(uniqid(mt_rand(), true)).".".$ext;
-
             $result = file_get_contents($url);
 
-            // Save it to disk
-            $savePath = $agenda->getUploadRootDir()."/".$filename;
-            $fp = fopen($savePath,'x');
-            fwrite($fp, $result);
-            fclose($fp);
+            if($result !== false)
+            {
+                // Save it to disk
+                $savePath = $agenda->getUploadRootDir()."/".$filename;
+                $fp = fopen($savePath,'x');
 
-            return $filename;
+                if($fp !== false)
+                {
+                    fwrite($fp, $result);
+                    fclose($fp);
+                }
+            }
+
+            $agenda->setPath($filename);
         }catch(\Exception $e)
         {
+            $agenda->setPath(null);
             $this->get("logger")->error($e->getMessage());
         }
-
-        return null;
     }
 
     protected function strip_tags($text)

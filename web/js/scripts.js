@@ -9,7 +9,26 @@ $(document).ready(function()
     init_autofocus();
     init_social_counts();
     init_heights();
+    init_more();
 });
+
+
+function init_more(container)
+{
+    $(".more", container || document).click(function(e)
+    {
+        console.log("ok");
+        $(this).attr("disabled", true).prepend("<i class='fa fa-spin fa-spinner'></i> ");
+        var container = $(this).parent();
+        container.load($(this).attr("href"), function()
+        {
+            init_more(container);
+        });
+       
+        e.preventDefault();
+        return false;
+    });
+}
 
 function init_heights()
 {

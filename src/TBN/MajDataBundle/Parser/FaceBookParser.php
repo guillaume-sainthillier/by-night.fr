@@ -2,11 +2,16 @@
 
 namespace TBN\MajDataBundle\Parser;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 use TBN\AgendaBundle\Repository\AgendaRepository;
 use TBN\SocialBundle\Social\Facebook;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MainBundle\Site\SiteManager;
+use TBN\MajDataBundle\Entity\BlackList;
+use TBN\MajDataBundle\Entity\BlackListRepository;
+use TBN\UserBundle\Entity\SiteInfo;
+
 
 /**
  *
@@ -26,9 +31,22 @@ class FaceBookParser extends AgendaParser {
     
     /**
      *
-     * @var SiteManager
+     * @var SiteInfo
      */
-    protected $siteManager;
+    protected $siteInfo;
+
+    /**
+     *
+     * @var BlackListRepository
+     */
+    protected $repoBlackList;
+
+    /**
+     *
+     * @var Geocoder
+     */
+    protected $geocoder;
+
 
     /**
      *
@@ -37,65 +55,106 @@ class FaceBookParser extends AgendaParser {
      * @param type $site le site courant
      * @return \TBN\MajDataBundle\Parser\FaceBookParser
      */
-    public function __construct(AgendaRepository $repo, $api, Site $site, SiteManager $siteManager, $geocoder) {
+    public function __construct(AgendaRepository $repo, BlackListRepository $repoBlackList, Facebook $api, Site $site, SiteInfo $siteInfo, $geocoder) {
 	parent::__construct($repo, null);
-	$this->api          = $api;
-	$this->site         = $site;
-        $this->siteManager  = $siteManager;
-	$this->geocoder     = $geocoder;
+        
+        $this->repoBlackList    = $repoBlackList;
+	$this->api              = $api;
+	$this->site             = $site;
+        $this->siteInfo         = $siteInfo;
+	$this->geocoder         = $geocoder;
     }
 
-    public function parse() {
-	$agendas    = [];
-	$now	    = new \DateTime;
-	$keywords   = array_unique(array_merge([$this->site->getNom()],array_map(function(Agenda $agenda) {
-	    return $agenda->getLieuNom();
-	}, $this->repo->getLieux($this->site))));
+    
+    public function parse(OutputInterface $output) {
+	$agendas        = [];
+        $now            = new \DateTime;
+        $place_events   = $this->getEventsFromPlaces($now, $output);
 
-	//Récupération des événements depuis le nom des lieux déjà connus
-	$events = $this->filterEvents($this->api->searchEventsFromKeywords($keywords, $this->siteManager->getSiteInfo(), $now));
-
-	//Récupération d'ID uniques de créateurs d'événements précédemment parsés
-	$owners_id = array_map(function(Agenda $agenda) {
+        $this->write($output, 'Recherche des utilisateurs...');
+        //Récupération des utilisateurs FB depuis la BD
+        $fb_users   = array_map(function(Agenda $agenda)
+        {
 	    return $agenda->getFacebookOwnerId();
 	}, $this->repo->getFBOwners($this->site));
 
-	//Tri du tableau pour ajouter les ID des owners des événements parsés
-	$filetered_owners_id = array_unique(array_filter($owners_id + array_map(function($event) {
-			    $owner = $event->getProperty("owner");
-			    return $owner ? $owner->getProperty("id") : null;
-			}, $events), function($id) {
-		    return $id !== null;
-		}));
+        //Récupération des utilisateurs FB depuis les événements précédemment parsés
+        $event_users = array_map(function(\Facebook\GraphObject $event)
+        {
+            $owner = $event->getProperty("owner");
+            return $owner ? $owner->getProperty("id") : null;
+        }, $place_events);
 
-	//Récupération des événements depuis les créateurs des événements parsés
-	$graph = $this->api->searchEventsFromOwnerIds($filetered_owners_id, $this->siteManager->getSiteInfo(), $now);
+        //On ne garde que les événements dont le créateur est un utilisateur FB
+        $real_event_users = array_filter($event_users, function($id)
+        {
+            return $id !== null;
+        });
 
-	if ($graph->getProperty("error_code")) {
-	    var_dump("erreur");
-	} else {
-	    $real_owner_ids = $graph->getPropertyNames();
-	    foreach ($real_owner_ids as $id) {
-		$owner_events = $graph->getProperty($id);
-		$events += $this->filterEvents($owner_events->getPropertyAsArray("data"));
-	    }
+        //Fusion des utilisateurs tirés de la BD et ceux parsés
+	$full_users     = array_unique(array_merge($fb_users, $real_event_users));
+        $this->writeln($output, '<info>'.count($full_users).'</info> utilisateurs trouvés');
+
+	//Récupération des événements depuis les utilisateurs FB
+        $this->write($output, 'Recherche d\'événements associés aux utilisateurs...');
+	$user_events    = $this->api->getEventsFromUsers($full_users, $this->siteInfo, $now, $output);
+        $this->writeln($output, '<info>'.count($user_events).'</info> événements trouvés');
+        
+        //Construction de tous les événements
+        $events         = array_merge($place_events, $user_events);
+
+        //Filtrage des événements
+        $this->write($output, 'Filtrage de tous les événements...');
+        $filtered_events = $this->filterEvents($events, $output);
+        $this->writeln($output, '<info>'.(count($filtered_events)).'</info> événéments retenus');
+
+	//Création des instances d'Agenda
+	foreach ($filtered_events as $event) {
+	    $retour = $this->getInfoAgenda($event);
+	    if ($retour instanceof BlackList) {
+		$this->blackLists[] = $retour;
+	    }else
+            {
+                $agendas[] = $this->hydraterAgenda($retour);
+            }
 	}
-
-	//Filtrage des évenements
-	foreach ($events as $event) {
-	    $filtered_event = $this->getInfoAgenda($event);
-	    if ($filtered_event !== null) {
-		$agendas[] = $this->hydraterAgenda($filtered_event);
-	    }
-	}
-
 	return $agendas;
     }
 
+    protected function getEventsFromPlaces(\DateTime $now, OutputInterface $output)
+    {
+        $places     = array_map(function(Agenda $agenda)
+        {
+	    return trim($agenda->getLieuNom());
+	}, $this->repo->getLieux($this->site));
+
+        $this->write($output, "Recherche d'endroits vers [".$this->site->getLatitude()."; ".$this->site->getLongitude()."]...");
+        $fb_places      = $this->api->getPlacesFromGPS($this->siteInfo, $this->site->getLatitude(), $this->site->getLongitude(), $this->site->getDistanceMax()* 10000);
+        $this->writeln($output, " <info>".(count($fb_places))."</info> endroits trouvés");
+
+        $this->write($output, "Recherche d'événements associés aux endroits...");
+        $full_places    = array_unique(array_merge([$this->site->getNom()], $places, $fb_places));
+        $events         = $this->api->searchEventsFromKeywords($full_places, $this->siteInfo, $now, $output);
+        $this->writeln($output, " <info>".(count($events))."</info> événements trouvés");
+        return $events;
+    }
+
     protected function filterEvents($events) {
-	$filtered_events = [];
+        $blackLists         = $this->repoBlackList->findBy(["site" => $this->site]);
+        $blackListIds       = [];
+	$filtered_events    = [];
+
+        foreach($blackLists as $blackList)
+        {
+            $blackListIds[$blackList->getFacebookId()] = $blackList;
+        }
+
 	foreach ($events as $event) {
-	    $filtered_events[$event->getProperty("id")] = $event;
+            $fbId = $event->getProperty("id");
+            if(!isset($blackListIds[$fbId]) and !isset($filtered_events[$fbId]))
+            {
+                $filtered_events[$fbId] = $event;
+            }
 	}
 
 	return $filtered_events;
@@ -116,7 +175,7 @@ class FaceBookParser extends AgendaParser {
 
     protected function getPageInfos($page) {
 	if ($page->getProperty("id")) {
-	    $venue = $this->api->getPageFromId($this->siteManager->getSiteInfo(), $page->getProperty("id"));
+	    $venue = $this->api->getPageFromId($this->siteInfo, $page->getProperty("id"));
 
 	    return [
 		"site" => $venue->getProperty("website"),
@@ -130,18 +189,18 @@ class FaceBookParser extends AgendaParser {
     /**
      * Retourne les informations d'un événement en fonction de l'ID de cet événement sur Facebook
      * @param type $event
-     * @return array l'agenda parsé
+     * @return array|BlackList l'agenda parsé
      */
     public function getInfoAgenda(\Facebook\GraphObject $event) {
-	$tab_retour = [];
+        $blackList      = (new BlackList)->setSite($this->site)->setFacebookId($event->getProperty("id"));
+	$tab_retour     = [];
+	$name           = $event->getProperty("name");
+	$description    = $event->getProperty("description");
+	$location       = $event->getProperty("location");
+	$start_time     = $this->getDateFromEvent($event, "start_time");
 
-	$name = $event->getProperty("name");
-	$description = $event->getProperty("description");
-	$location = $event->getProperty("location");
-	$start_time = $this->getDateFromEvent($event, "start_time");
-
-	if (!$name or ! $description or ! $location or ! $start_time) {
-	    return null;
+	if (!$name or !$description or !$location or !$start_time) {
+            return $blackList->setReason("Informations de base non fournies");
 	}
 
 	$tab_retour["nom"] = $name;
@@ -151,9 +210,10 @@ class FaceBookParser extends AgendaParser {
 	$tab_retour["date_debut"] = $start_time;
 	$tab_retour["date_fin"] = $this->getDateFromEvent($event, "end_time");
 
-	//Récupération des horaires
+
+	//Horaires
+        $horaires = null;
 	if (!$event->getProperty("is_date_only")) {
-	    $horaires = "";
 	    $dateDebut = $tab_retour["date_debut"];
 	    $dateFin = $tab_retour["date_fin"];
 	    if ($dateFin and $this->isSameDay($dateDebut, $dateFin)) {
@@ -161,12 +221,14 @@ class FaceBookParser extends AgendaParser {
 	    } else {
 		$horaires = sprintf("A %s", $dateDebut->format("H\hi"));
 	    }
-	    $tab_retour["horaires"] = $horaires;
 	}
+        $tab_retour["horaires"] = $horaires;
 
+        //Image
 	$tab_retour["image"] = $this->api->getPagePicture($event);
+        
+        //Reservations
 	$tab_retour["reservation_internet"] = $event->getProperty("ticket_uri");
-
 
 	$latitude = null;
 	$longitude = null;
@@ -186,7 +248,7 @@ class FaceBookParser extends AgendaParser {
 	    $longitude = $venue->getProperty("longitude");
 	}
 
-	if (!$latitude and ! $longitude and $location) { //Si rien de précis n'est renseigné, on tente le geocoding
+	if (!$latitude and !$longitude and $location) { //Si rien de précis n'est renseigné, on tente le geocoding
 	    $geocoder = $this->geocoder;
 	    $response = $geocoder->geocode($location);
 	    $status = $response->getStatus();
@@ -227,18 +289,20 @@ class FaceBookParser extends AgendaParser {
 	$tab_retour["latitude"] = $latitude;
 	$tab_retour["longitude"] = $longitude;
 
-	if ($latitude === null or ( $latitude !== null and abs($this->site->getLatitude() - $latitude) > $distanceMax)) {
-	    return null;
+	if ($latitude === null or ($latitude !== null and abs($this->site->getLatitude() - $latitude) > $distanceMax)) {
+	    return $blackList->setReason("Coordonnées non conformes");
 	}
 
-	if ($longitude === null or ( $longitude !== null and abs($this->site->getLongitude() - $longitude) > $distanceMax)) {
-	    return null;
+	if ($longitude === null or ($longitude !== null and abs($this->site->getLongitude() - $longitude) > $distanceMax)) {
+	    return $blackList->setReason("Coordonnées non conformes");
 	}
 
+        $owner_id = null;
 	$owner = $event->getProperty("owner");
 	if ($owner) {
-	    $tab_retour["owner"] = $owner->getProperty("id");
+	    $owner_id = $owner->getProperty("id");
 	}
+        $tab_retour["owner"] = $owner_id;
 
 	return $tab_retour;
     }
@@ -317,5 +381,4 @@ class FaceBookParser extends AgendaParser {
     public function getNomData() {
 	return "Facebook";
     }
-
 }

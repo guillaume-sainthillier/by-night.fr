@@ -43,14 +43,15 @@
 {% block body_agenda %}
 <div id="fb-root"></div>
 
-<div itemtype="http://schema.org/Event" itemscope>
-    <meta itemprop="name" content="{{ nomSoiree }}">
-    <meta itemprop="url" content="{{ path('tbn_agenda_details',{'slug' : soiree.slug} ) }}">
+<div class="details_evenement" itemscope itemtype="http://schema.org/Event">
+    <meta itemprop="name" content="{{ nomSoiree }}" />
+    <meta itemprop="url" content="{{ path('tbn_agenda_details',{'slug' : soiree.slug} ) }}" />
+    <meta itemprop="image" content="{{ original }}" />
 
     <div class="row margin_bottom_30" >
         <div class="col-sm-4">
-            <a href="{{ original }}">
-                <img class="img img-responsive" src="{{ thumb }}" title="{{ nomSoiree }}" itemprop="image" alt="Image Événement" />
+            <a href="{{ original }}" title="{{ nomSoiree }}" >
+                <img class="img img-responsive component" src="{{ thumb }}" itemprop="image" alt="{{ nomSoiree }}" />
             </a>                    
         </div>
         <div class="col-sm-8 block_infos">
@@ -60,13 +61,11 @@
                     {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
                     {% set dateFin = soiree.dateFin|date('d/m/Y') %}
 
-                    <meta itemprop="startDate" content="{{ soiree.dateDebut|date('Y-m-d') }}">
                     {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}
-                        Le <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
+                        Le <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
                     {% else %}
-                        Du <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d') }}">{{ dateDebut }}</time>
-                        au <time itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d') }}">{{ dateFin }}</time>
-                        <meta itemprop="endDate" content="{{ soiree.dateFin|date('Y-m-d') }}">
+                        Du <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
+                        au <time itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\TH:i:sO') }}">{{ soiree.dateFin|localizeddate('full', 'none') }}</time>
                     {% endif %}
 
                     {% if soiree.horaires != "" %}
@@ -76,14 +75,15 @@
                 {% if soiree.rue != "" or soiree.codePostal != "" or soiree.commune != "" or soiree.lieuNom != "" %}
                 <li>
                     <i class="fa fa-li fa-map-marker"></i>
-                    <div itemprop="location" itemscope itemtype="http://schema.org/Place">
-                        
+                    <div itemprop="organizer" itemscope itemtype="http://schema.org/​Organization">
+                        {% set readableAdresse = "" %}
                         {% if soiree.lieuNom != "" %}
+                            {% set readableAdresse = readableAdresse ~ soiree.lieuNom %}
                             <div itemprop="name">{{ soiree.lieuNom }}</div>
                         {% endif %}
 
                         {% if soiree.rue != "" or soiree.codePostal != "" or soiree.ville != "" %}
-                            <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                            <div itemprop="address" itemscope itemtype="http://schema.org/Address">
                                 {% if soiree.rue != "" %}
                                     <div itemprop="streetAddress">{{ soiree.rue }}</div>
                                 {% endif %}
@@ -93,18 +93,30 @@
                                             <span itemprop="postalCode">{{ soiree.codePostal }} </span>
                                         {% endif %}
                                         {% if soiree.ville != "" %}
+                                            {% set readableAdresse = readableAdresse ~ " " ~ soiree.ville %}
                                             <span itemprop="addressLocality">{{ soiree.ville }}</span>
                                         {% endif %}
                                     </div>                                    
                                 {% endif %}                                
                             </div>
                         {% endif %}
+                        
+                        <button 
+                            class="btn btn-info btn-sm" 
+                            id="loadMap"
+                            data-map="https://www.google.com/maps/embed/v1/search?q={{ readableAdresse|raw|url_encode }}&key={{ googleMapKey }}&language=fr&zoom=16"
+                            >Afficher sur une carte</button>
+                        <div id="googleMap"></div>                        
                     </div>
                 </li>
                 {% endif %}                
                 {% if soiree.tarif%}
                 <li>
-                    <i class="fa fa-li fa-ticket"></i> A partir de : {{ soiree.tarif }}
+                    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">                        
+                        <i class="fa fa-li fa-ticket"></i>
+                        <span itemprop="price">{{ soiree.tarif }}</span>
+                        <meta itemprop="priceCurrency" content="EUR" />
+                    </div>
                 </li>
                 {% endif %}
                 {% if soiree.reservationTelephone != "" %}
@@ -117,7 +129,7 @@
                     {% if lien|trim|length > 0 %}
                     <li>
                         <i class="fa fa-li fa-globe"></i> 
-                        <a title="Aller sur le site internet de la réservation" rel="nofollow" href="http://{{ lien }}">{{ lien[:35] ~ (lien|length > 35 ? "..." : "") }}</a>
+                        <a title="Aller sur le site internet de la réservation" rel="nofollow" href="http://{{ lien|replace({'http://' : ''}) }}">{{ lien[:50] ~ (lien|length > 50 ? "..." : "") }}</a>
                     </li>
                     {% endif %}
                 {% endfor %}
@@ -127,8 +139,8 @@
                 {% if soiree.facebookEventId %}
                 <li>
                     <i class="fa fa-li fa-facebook"></i> 
-                    {% set lien = "https://facebook.com/events/" ~ soiree.facebookEventId %}
-                    <a href="{{ lien }}">{{ lien }}</a>
+                    {% set lien = "https://www.facebook.com/events/" ~ soiree.facebookEventId %}
+                    <a href="{{ lien }}" rel="external">{{ lien }}</a>
                 </li>
                 {% endif %}
                 {% set tags = soiree.themeManifestation|split(",") %}
@@ -164,13 +176,13 @@
         <h3>Partagez cet événement</h3>
         <br />
         <div class="row">
-            <div class="col-sm-4 share">
+            <div class="col-xs-4 share">
                 <div class="fb-like" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
             </div>
-            <div class="col-sm-4 share">
+            <div class="col-xs-4 share">
                 <div class="g-plusone" data-action="share" ></div>                        
             </div>
-            <div class="col-sm-4 share">
+            <div class="col-xs-4 share">
                 <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>                        
             </div>
         </div>
@@ -202,6 +214,7 @@
     
 {% block js_agenda %}
     {% javascripts 
+        '@TBNAgendaBundle/Resources/public/js/details.js'
         '@TBNAgendaBundle/Resources/public/js/socials.js'
         '@TBNCommentBundle/Resources/public/js/comments.js'
 

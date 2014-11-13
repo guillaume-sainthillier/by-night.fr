@@ -64,6 +64,13 @@ class HistoriqueMaj
      */
     private $updateSoirees;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="black_lists", type="integer")
+     */
+    private $blackLists;
+
 
     public function __construct()
     {
@@ -77,15 +84,6 @@ class HistoriqueMaj
     {
         $this->dateFin = new \DateTime;
     }
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Get duree
@@ -97,24 +95,35 @@ class HistoriqueMaj
         return $this->dateFin->diff($this->dateDebut)->format("%s");
     }
 
+    
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
     /**
      * Set dateDebut
      *
      * @param \DateTime $dateDebut
-     *
      * @return HistoriqueMaj
      */
     public function setDateDebut($dateDebut)
     {
         $this->dateDebut = $dateDebut;
-
+    
         return $this;
     }
 
     /**
      * Get dateDebut
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getDateDebut()
     {
@@ -122,23 +131,45 @@ class HistoriqueMaj
     }
 
     /**
+     * Set fromData
+     *
+     * @param string $fromData
+     * @return HistoriqueMaj
+     */
+    public function setFromData($fromData)
+    {
+        $this->fromData = $fromData;
+    
+        return $this;
+    }
+
+    /**
+     * Get fromData
+     *
+     * @return string 
+     */
+    public function getFromData()
+    {
+        return $this->fromData;
+    }
+
+    /**
      * Set dateFin
      *
      * @param \DateTime $dateFin
-     *
      * @return HistoriqueMaj
      */
     public function setDateFin($dateFin)
     {
         $this->dateFin = $dateFin;
-
+    
         return $this;
     }
 
     /**
      * Get dateFin
      *
-     * @return \DateTime
+     * @return \DateTime 
      */
     public function getDateFin()
     {
@@ -149,20 +180,19 @@ class HistoriqueMaj
      * Set nouvellesSoirees
      *
      * @param integer $nouvellesSoirees
-     *
      * @return HistoriqueMaj
      */
     public function setNouvellesSoirees($nouvellesSoirees)
     {
         $this->nouvellesSoirees = $nouvellesSoirees;
-
+    
         return $this;
     }
 
     /**
      * Get nouvellesSoirees
      *
-     * @return integer
+     * @return integer 
      */
     public function getNouvellesSoirees()
     {
@@ -178,14 +208,14 @@ class HistoriqueMaj
     public function setUpdateSoirees($updateSoirees)
     {
         $this->updateSoirees = $updateSoirees;
-
+    
         return $this;
     }
 
     /**
      * Get updateSoirees
      *
-     * @return integer
+     * @return integer 
      */
     public function getUpdateSoirees()
     {
@@ -193,36 +223,48 @@ class HistoriqueMaj
     }
 
     /**
+     * Set blackLists
+     *
+     * @param integer $blackLists
+     * @return HistoriqueMaj
+     */
+    public function setBlackLists($blackLists)
+    {
+        $this->blackLists = $blackLists;
+    
+        return $this;
+    }
+
+    /**
+     * Get blackLists
+     *
+     * @return integer 
+     */
+    public function getBlackLists()
+    {
+        return $this->blackLists;
+    }
+
+    /**
      * Set site
      *
      * @param \TBN\MainBundle\Entity\Site $site
-     * @return Agenda
+     * @return HistoriqueMaj
      */
-    public function setSite(\TBN\MainBundle\Entity\Site $site)
+    public function setSite(\TBN\MainBundle\Entity\Site $site = null)
     {
         $this->site = $site;
-
+    
         return $this;
     }
 
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site
+     * @return \TBN\MainBundle\Entity\Site 
      */
     public function getSite()
     {
         return $this->site;
-    }
-
-
-    function getFromData() {
-	return $this->fromData;
-    }
-
-    function setFromData($from_data) {
-	$this->fromData = $from_data;
-
-	return $this;
     }
 }

@@ -28,11 +28,17 @@
     
 {% block head_js %}
     {{ parent() }}  
-    <script type="text/javascript">
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript">        
         if(typeof window.opener !== "undefined" && window.opener !== null && window.opener.parent_elem !== "undefined")
         {
+            window.opener
+                    .$('body')
+                    .trigger("hasConnected", {
+                        'user': {{ userInfo|json_encode|raw }}, 
+                        'target': window.opener.parent_elem
+            });
             window.close();
-            window.opener.on_connected_social(window.opener.parent_elem, {{ userInfo|json_encode|raw }});
         }else
         {
             document.location = "{{ path('tbn_agenda_index') }}";

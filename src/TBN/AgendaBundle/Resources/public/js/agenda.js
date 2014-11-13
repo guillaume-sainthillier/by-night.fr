@@ -6,7 +6,7 @@ $(document).ready(function()
     init_selectpicker();    
     init_pagination();
     init_soirees();
-    init_facebook();
+    //init_facebook();
 });
 
 function init_facebook()

@@ -1,7 +1,9 @@
+{% spaceless %}
 <!DOCTYPE HTML>
 <html prefix="og: http://ogp.me/ns#" lang="fr" xmlns:hx="http://purl.org/NET/hinclude" xmlns:fb="http://ogp.me/ns/fb#">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+        <meta http-equiv="Content-Language" content="fr">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!--[if IE]>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -46,7 +48,8 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
         
         <!-- CSS -->
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" type="text/css" media="screen" >
+        <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" type="text/css" media="screen" >
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" type="text/css" media="screen" >
         
         {% stylesheets 
@@ -67,27 +70,39 @@
         {% endblock %}
         <!-- ./CSS -->
         
-            <!--[if lt IE 9]>
+        <script type="application/ld+json">{% spaceless %}
+            {
+                "@context": "http://schema.org",
+                "@type": "WebSite",
+                "url": "{{ url('tbn_agenda_index') }}",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "{{ url('tbn_search_query', {'term': '{search_term_string}'})|url_decode }}",
+                    "query-input": "required name=search_term_string"
+                }
+            }
+        {% endspaceless %}</script>
+        <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
         {% block head_js %}{% endblock %}
         
     </head>
-    <body>
+    <body itemscope itemtype="http://schema.org/WebPage">
         <div id="wrap">            
             <!-- Menu -->
-            {% spaceless %}{% block menu %}
+            {% block menu -%}
                 {% include "::menu.html.twig" %}
-            {% endblock %}{% endspaceless %}
+            {%- endblock %}
             <!-- ./Menu -->            
             
             <!-- Main -->
-            {% block start_container %}
+            {% block start_container -%}
                 <div class="container bg-white" id="container">
-            {% endblock %}
+            {%- endblock %}
                 <div id="bread">
-                    {% block breadcrumb %}{% endblock %}
+                    {% block breadcrumb -%}{%- endblock %}
                 </div>
 
                 <div class="page-header" id="banner">
@@ -101,7 +116,7 @@
                         </div>
                     {% endfor %}
                 {% endfor %}
-                {% spaceless %}{% block body %}{% endblock %}{% endspaceless %}
+                {% block body -%}{%- endblock %}
                 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                 <!-- Bannière Footer Responsive -->
                 <ins class="adsbygoogle" id="ad-footer"
@@ -112,9 +127,9 @@
                 <script>
                 (adsbygoogle = window.adsbygoogle || []).push({});
                 </script>                                
-            {% block end_container %}
+            {% block end_container -%}
             </div>                        
-            {% endblock %}
+            {%- endblock %}
             <!-- ./Main -->
         </div>
             
@@ -127,7 +142,7 @@
         <footer>
             <div id="footer">
                 <div class="container sous-header">
-                        {% block footer %}{% endblock %}                        
+                        {% block footer -%}{%- endblock %}                        
                         <p class="pull-left">
                             <a href="{{ path('tbn_main_index') }}"><strong>By Night</strong></a>                            
                             | © {{ "now"|date('Y') }} - Tous droits réservés
@@ -168,7 +183,7 @@
                     js_scripts.base.push("{{ asset_url }}");
                 {% endjavascripts %}
 
-                js_scripts.lib = ["//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js",
+                js_scripts.lib = ["//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.0/js/bootstrap.min.js",
                 "//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js"];
                 js_scripts.plugin = [];
 
@@ -193,7 +208,7 @@
                 {% endjavascripts %}
             {% endspaceless %}
           
-            {% spaceless %}{% block js %}{% endblock %}{% endspaceless %}
+            {% block js -%}{%- endblock %}
 
         </script>
         
@@ -203,8 +218,9 @@
             filter='?yui_js'
             output='prod/js/load.js'
         %}
-            <script src="{{ asset_url }}"></script>
+            <script src="{{ asset_url }}" async></script>
         {% endjavascripts %}
         
     </body>
 </html>
+{% endspaceless %}

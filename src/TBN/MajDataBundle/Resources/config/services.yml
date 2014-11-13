@@ -1,5 +1,5 @@
 parameters:
-    url_dynamo: http://www.ladynamo-toulouse.com/agenda/
+    url_dynamo: http://www.ladynamo-toulouse.com/pages/agenda/
     url_soonnight_tlse: http://www.soonnight.com/midi-pyrenees/sortir-midi-pyrenees,4.html
     url_soonnight_paris: http://www.soonnight.com/paris/sortir-paris,4.html
     url_bikini: http://www.lebikini.com/programmation/rss

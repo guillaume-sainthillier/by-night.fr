@@ -1,0 +1,31 @@
+{% extends "TBNMainBundle:Search:layout.html.twig"|partial_extends %}
+
+{% block title_search %}Recherche d'événements{% endblock %}
+{% block titre_search %}Recherche d'événements à {{ site.nom }}{% endblock %}
+
+{% block breadcrumb_search %}
+    {% set test = menu.addItem('Événements', path('tbn_search_query', {'type': 'evenements'})) %}    
+    {% if term %}
+    {% set test = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'evenements'})) %}
+    {% endif %}
+{% endblock %}
+
+{% block form_url %}{{ path('tbn_search_query', {'type': 'evenements'}) }}{% endblock %}
+{% block form_placeholder %}Quel événément cherchez-vous ?{% endblock %}
+
+{% block body_search_results -%}
+    {% if term %}
+        <h2>
+            <strong class="count date">{{ nbSoirees }}</strong> 
+            événement{{ nbSoirees > 1 ? "s" : "" }} trouvé{{ nbSoirees > 1 ? "s" : "" }}
+            pour la recherche <strong>{{ term }}</strong>
+        </h2>
+        <hr>
+    {% endif %}    
+{%- endblock %}
+
+{% block body_search_content -%}
+    {% if term %}
+        {% include "TBNMainBundle:Search:content_events.html.twig" %}
+    {% endif %}    
+{%- endblock %}

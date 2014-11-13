@@ -1,15 +1,13 @@
-
 {{ form_errors(elem) }}
-<div class="form-horizontal">
+<div class="form-horizontal bloc_config">
     <div class="form-group">
         {{ form_label(elem, null, {'label_attr': {'class': 'col-sm-7 control-label'}}) }}
         <div class="col-sm-3">
             <div class="onoffswitch">
-
-                {{ form_widget(elem, {'attr': {'class': 'onoffswitch-checkbox'}}) }}
+                {{ form_widget(elem) }}
                 {{ form_label(elem, null, {
                     'label' : '<div class="onoffswitch-inner"></div><div class="onoffswitch-switch"></div>',
-                    'label_attr' : {'class' : 'onoffswitch-label' }
+                    'label_attr' : {'class' : 'onoffswitch-label', 'data-href-connect': hwi_oauth_login_url(service)}
                 }) }}
             </div>
         </div>

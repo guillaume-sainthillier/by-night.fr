@@ -1,0 +1,99 @@
+<?php
+
+namespace TBN\MajDataBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * HistoriqueMaj
+ *
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="TBN\MajDataBundle\Entity\HistoriqueMajRepository")
+ * @ORM\HasLifecycleCallbacks
+ */
+class HistoriqueMaj
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"merge"}, fetch="EAGER")
+    * @ORM\JoinColumn(nullable=true)
+    */
+    protected $site;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_debut", type="datetime")
+     */
+    private $dateDebut;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="from_data", type="string", length=127)
+     */
+    private $fromData;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_fin", type="datetime")
+     */
+    private $dateFin;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="nouvelles_soirees", type="integer")
+     */
+    private $nouvellesSoirees;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="update_soirees", type="integer")
+     */
+    private $updateSoirees;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="black_lists", type="integer")
+     */
+    private $blackLists;
+
+
+    public function __construct()
+    {
+        $this->dateDebut = new \DateTime;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function majDateFin()
+    {
+        $this->dateFin = new \DateTime;
+    }
+
+    /**
+     * Get duree
+     *
+     * @return integer
+     */
+    public function getDuree()
+    {
+        return $this->dateFin->diff($this->dateDebut)->format("%s");
+    }
+
+    
+}

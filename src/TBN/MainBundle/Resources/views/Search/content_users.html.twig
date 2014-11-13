@@ -1,0 +1,12 @@
+{% for user in users %}
+    {% include "TBNUserBundle:Membres:block_details_user.html.twig" %}
+{% endfor %}
+
+{% if true %}
+    <div>
+        <a class="btn btn-lg btn-block btn-primary more" 
+           href="{{ path('tbn_search_query', {'q' : term, 'page': page+1, 'type' : 'membres'}) }}">
+            Plus
+        </a>
+    </div>
+{% endif %}

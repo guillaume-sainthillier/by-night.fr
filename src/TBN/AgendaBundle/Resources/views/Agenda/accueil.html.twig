@@ -11,20 +11,20 @@
     Agenda des <strong>événements {{ site.adjectifPluriel }}</strong>
 {% endblock %}
     
-{% block body_agenda %}
+{% block body_agenda -%}
     {% include "TBNAgendaBundle:Agenda:block_criteres.html.twig" %}    
 
     <div id="pjax-search-container">
-        {% block soirees %}{% endblock %}                
+        {% block soirees -%}{%- endblock %}                
     </div>  
-{% endblock %}
+{%- endblock %}
 
 {% block widgets_agenda %}{% include "TBNAgendaBundle:MenuDroit:accueil.html.twig" %}{% endblock %}
 
 {% block css_agenda %}
     
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/redmond/jquery-ui.min.css" type="text/css" media="screen" >
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.min.css" type="text/css" media="screen" >
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/css/bootstrap-select.min.css" type="text/css" media="screen" >
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" type="text/css" media="screen" >
     
     {% stylesheets 
@@ -45,7 +45,7 @@
     js_scripts.plugin.push("//cdnjs.cloudflare.com/ajax/libs/jquery.pjax/1.9.2/jquery.pjax.min.js");
     js_scripts.plugin.push("//cdnjs.cloudflare.com/ajax/libs/unveil/1.3.0/jquery.unveil.min.js");
     js_scripts.plugin.push("//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.pack.js");
-    js_scripts.plugin.push("//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.5.4/bootstrap-select.min.js");
+    js_scripts.plugin.push("//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js");
     
     {% javascripts 
         '@TBNAgendaBundle/Resources/public/js/jquery-ui.min.js'
@@ -56,7 +56,8 @@
     %}            
         js_scripts.plugin.push("{{ asset_url }}");
     {% endjavascripts %}
-        
+    
+    js_scripts.final.push("//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/i18n/defaults-fr_FR.js");
     {% javascripts 
         '@TBNAgendaBundle/Resources/public/js/datepicker-fr.js'
         '@TBNAgendaBundle/Resources/public/js/agenda.js'

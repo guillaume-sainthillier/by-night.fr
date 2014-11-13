@@ -9,31 +9,31 @@
 
     @offset: 1;
     margin-top: 50px;
-    
+
     // < 480px
     @media (max-width: @screen-xs-min)
-    {
+        {
         padding-right: percentage(@offset / (2*@grid-columns));
         padding-left: percentage(@offset / (2*@grid-columns));
     }
-    
+
     // [480px;781px]
     @media (min-width: @screen-xs) and (max-width: @screen-md)
-    {
+        {
         padding-right: percentage(@offset / (0.5*@grid-columns));
         padding-left: percentage(@offset / (0.5*@grid-columns));
     }
-    
+
     // [990px; 1200px;]
     @media (min-width: @screen-md) and (max-width: @screen-lg)
-    {
+        {
         padding-right: percentage(@offset / (2*@grid-columns));
         padding-left: percentage(@offset / (2*@grid-columns));
     }
-    
+
     // > 1200px
     @media (min-width: @screen-lg)
-    {
+        {
         padding-right: percentage(@offset / (1.5*@grid-columns));
         padding-left: percentage(@offset / (1.5*@grid-columns));
     }
@@ -60,20 +60,37 @@
                 padding-top: 0;
                 border-top: none;
             }
-            
+
             .min_membre {
                 padding-right: 0;
                 
-                strong {
-                    display: block;
+                .month {
+                    font-size: 1.3em;
                 }
             }
+
+            .count {
+                font-size: 2em;
+                font-weight: 300;
+            }
         }
-        
+
         .scrollable {
             max-height: 500px;
             overflow-y: scroll;
         }
+
+        .membres {
+            max-height: 300px;
+            
+            .fb_membres {
+                a {
+                    display: block;
+                    float: left;
+                }
+            }
+        }
+
     }
 
     .panel-default {

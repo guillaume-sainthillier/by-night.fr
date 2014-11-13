@@ -1,0 +1,33 @@
+{% extends "TBNAgendaBundle::layout.html.twig" %}
+
+{% block title_agenda -%}{% block title_search -%}{%- endblock %}{%- endblock %}
+{% block titre_agenda -%}{% block titre_search -%}{%- endblock %}{%- endblock %}
+
+{% block breadcrumb_agenda -%}
+    {% set test = menu.addItem('Recherche', path('tbn_search_query')) %}
+    {% block breadcrumb_search -%}{%- endblock %}
+{%- endblock %}
+
+{% block body_agenda -%}
+    <div class="row">
+        <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+            <form method="GET" action="{% block form_url %}{{ path('tbn_search_query') }}{% endblock %}">
+                <div class="input-prepend input-group">                        
+                    <span class="input-group-addon clear"><i class="fa fa-search"></i></span>
+                    <input name="q" class="form-control" size="16" type="text" 
+                           placeholder="{% block form_placeholder %}Que cherchez-vous ?{% endblock %}" 
+                           value="{{ term }}" >
+                    <span class="input-group-btn">
+                        <input class="btn btn-info btn-normal" type="submit" value="Rechercher" />
+                    </span>                        
+                </div>
+            </form>
+            <br>
+            <br>
+        </div>
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            {% block body_search_results -%}{%- endblock %}
+            {% block body_search_content -%}{%- endblock %}
+        </div>
+    </div>
+{%- endblock %}

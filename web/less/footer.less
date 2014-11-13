@@ -38,11 +38,11 @@
     hr:before {
         margin-top: 0;
     }
-    
+
     .social:hover a{
         color: @color-warning;
     }
-    
+
     a{
         color: @color-primary;
         &:hover {
@@ -59,6 +59,8 @@
         .social {
             height: @tailleFooter + 10px;
             padding: 10px;
+            border: 1px solid transparent;
+
             &:hover {
                 border: 1px dashed rgba(175, 162, 162, 0.78);
                 background-color: rgba(202, 189, 189, 0.09);
@@ -67,12 +69,9 @@
 
             a {
                 display: block;
-                padding-top: 20px;
             }
 
-            .count {
-                font-size: 1.5em;
-            }
+            
         }
 
         .love {

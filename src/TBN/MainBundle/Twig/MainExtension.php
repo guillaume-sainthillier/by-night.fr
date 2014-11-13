@@ -51,8 +51,14 @@ class MainExtension extends \Twig_Extension{
     {
         return [
             'resume'            => new \Twig_Filter_Method($this, 'resume'),
-            'partial_extends'   => new \Twig_Filter_Method($this, 'partialExtendsFilter')
+            'partial_extends'   => new \Twig_Filter_Method($this, 'partialExtendsFilter'),
+            'url_decode'        => new \Twig_Filter_Method($this, 'urlDecode')
         ];
+    }
+
+    public function urlDecode($value)
+    {
+        return urldecode($value);
     }
 
     public function resume($texte)
@@ -82,7 +88,7 @@ class MainExtension extends \Twig_Extension{
 	    return $template;
 	}
 
-	$isPJAX = $request->headers->has("X-PJAX");
+	$isPJAX = ($request->headers->has("X-PJAX") or $request->isXmlHttpRequest());
 
 	if(! $isPJAX)
 	{

@@ -197,9 +197,9 @@ class AgendaRepository extends EntityRepository{
         ->select('a')
         ->from('TBNAgendaBundle:Agenda',"a")
         ->where("a.site = :site")
-        ->andWhere("a.dateDebut >= :du")
-        ->orderBy("a.participations", "DESC")
-        ->addOrderBy("a.fbParticipations", "DESC")
+        ->andWhere("a.dateDebut >= :du")        
+        ->orderBy("a.fbParticipations", "DESC")
+        ->addOrderBy("a.participations", "DESC")
         ->addOrderBy("a.interets", "DESC")
         ->addOrderBy("a.fbInterets", "DESC")
         ->setParameters([":site" => $site->getId(), "du" => \date("Y-m-d")])
@@ -245,10 +245,16 @@ class AgendaRepository extends EntityRepository{
 
                 $params[":au"] = $search->getAu()->format("Y-m-d");
             }
+        }else
+        {
+            $qb->andWhere("a.dateDebut >= :now");
+            $params[":now"] = new \DateTime;
         }
+
+
         if($search->getTerm() !== null and trim($search->getTerm()) !== "")
         {
-            $qb->andWhere("a.nom LIKE :mot_clefs");
+            $qb->andWhere("(a.nom LIKE :mot_clefs OR a.descriptif LIKE :mot_clefs)");
             $params[":mot_clefs"] = "%".$search->getTerm()."%";
         }
 
@@ -288,13 +294,13 @@ class AgendaRepository extends EntityRepository{
             ->getSingleScalarResult();
     }
 
-    public function findWithSearch(Site $site, SearchAgenda $search, $page = 1, $limit = 15)
+    public function findWithSearch(Site $site, SearchAgenda $search, $page = 1, $limit = 15, $orderDesc = true)
     {
         $qb = $this->_em
                 ->createQueryBuilder()
                 ->select('a')
                 ->from('TBNAgendaBundle:Agenda','a')
-                ->orderBy('a.dateDebut','DESC');
+                ->orderBy('a.dateDebut', $orderDesc ? 'DESC' : 'ASC');
 
         $soirees = $this->makeQuery($qb, $site, $search);
 

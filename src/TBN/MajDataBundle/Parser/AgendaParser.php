@@ -2,8 +2,11 @@
 
 namespace TBN\MajDataBundle\Parser;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 use TBN\AgendaBundle\Repository\AgendaRepository;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\MajDataBundle\Entity\BlackList;
 
 /*
  * Classe abstraite représentant le parse des données d'un site Internet
@@ -17,23 +20,31 @@ use TBN\AgendaBundle\Entity\Agenda;
 
 abstract class AgendaParser {
 
-    /*
+    /**
      * Url du site à parser
      */
     protected $url;
 
-    /*
+    /**
      * @var $repo AgendaRepository
      */
     protected $repo;
 
+    /**
+     *
+     * @var BlackList[]
+     */
+    protected $blackLists;
+
     public function __construct(AgendaRepository $repo, $url)
     {
-        $this->repo = $repo;
-        $this->url = $url;
+        $this->repo         = $repo;
+        $this->url          = $url;
+        $this->blackLists   = [];
 
         return $this;
     }
+    
 
     public function setURL($url)
     {
@@ -46,8 +57,6 @@ abstract class AgendaParser {
     {
         return $this->url;
     }
-
-
 
     protected function parseDate($date)
     {
@@ -89,10 +98,25 @@ abstract class AgendaParser {
 	return [];
     }
 
+    public function getBlackLists() {
+        return $this->blackLists;
+    }
+
+    protected function write(OutputInterface $output, $text)
+    {
+        $output->write(\utf8_decode($text));
+    }
+
+    protected function writeln(OutputInterface $output, $text)
+    {
+        $output->writeln(\utf8_decode($text));
+    }
+
+
     /**
      * @return Agenda[] un tableau d'Agenda parsé
      */
-    public abstract function parse();
+    public abstract function parse(OutputInterface $output);
 
     /*
      * @return string le nom de la classe

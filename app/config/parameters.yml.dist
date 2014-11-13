@@ -13,3 +13,16 @@ parameters:
 
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
+
+    mailer_port:            ~
+    app_name:               ~
+    api_facebook_nom:       ~
+    api_facebook_id:        ~
+    api_facebook_secret:    ~
+    api_facebook_name:      ~
+    api_facebook_server:    ~
+    google_app_id:          ~
+    google_app_secret:      ~
+    twitter_app_id:         ~
+    twitter_app_secret:     ~
+    base_host:              ~

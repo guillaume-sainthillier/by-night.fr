@@ -10,7 +10,7 @@ namespace TBN\MajDataBundle\Parser;
  */
 class ToulouseParser extends AgendaParser{
 
-    public function parse()
+    public function parse(\Symfony\Component\Console\Output\OutputInterface $output)
     {
         $fichier = $this->downloadCSV();
         if($fichier !== null)

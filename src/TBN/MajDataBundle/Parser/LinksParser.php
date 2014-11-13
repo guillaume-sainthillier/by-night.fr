@@ -30,8 +30,9 @@ abstract class LinksParser extends AgendaParser {
         return $this;
     }
 
-    public function parse() {
+    public function parse(\Symfony\Component\Console\Output\OutputInterface $output) {
         $links = $this->getLinks(); //Récupère les différents liens à parser depuis une page d'accueil / flux RSS
+
         return array_filter(array_map(function($link) {            
             try {
                 $this->setUrl($link);
@@ -40,7 +41,7 @@ abstract class LinksParser extends AgendaParser {
                 return $this->hydraterAgenda($infos_agenda); //Créé ou récupère l'agenda associé aux infos
             }catch(\Exception $e)
             {
-                var_dump($link, $e->getMessage(), $e->getFile(), $e->getLine());
+                var_dump($link, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
                 return null;
             }
         }, $links), function($agenda)

@@ -5,3 +5,9 @@
 {% block body %}
     {{ render_hinclude(url('tbn_agenda_soirees_similaires',{'slug': soiree.slug})) }}
 {% endblock %}
+
+{% block footer %}
+    <div class="panel-footer">
+        <button class="btn btn-primary btn-block">Plus</button>
+    </div>
+{% endblock %}

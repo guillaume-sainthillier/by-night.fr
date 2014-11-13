@@ -33,15 +33,17 @@
         <div class="col-md-3">
             <div class="panel panel-default fiche_profil">
                 <div class="panel-body">                    
-                    <img class="img img-responsive" src="{{ user.profileDefault }}" />
+                    <img class="img img-responsive component" src="{{ user.profileDefault }}" />
                     <h2 class="text-center"><strong>{{ username }}</strong></h2>
                     <hr />
                     <div class="row text-center">
-                        <div class="col-xs-6">
-                            <strong>{{ count_participations }}</strong> participation{{ count_participations > 1 ? "s" : "" }}
+                        <div class="col-xs-6 preserve">
+                            <strong class="count">{{ count_participations }}</strong> 
+                            <span class="color-info">participation{{ count_participations > 1 ? "s" : "" }}</span>
                         </div>
-                        <div class="col-xs-6">
-                            <strong>{{ count_interets }}</strong> intérêt{{ count_interets > 1 ? "s" : "" }}
+                        <div class="col-xs-6 preserve">
+                            <strong class="count">{{ count_interets }}</strong> 
+                            <span class="color-info">intérêt{{ count_interets > 1 ? "s" : "" }}</span>
                         </div>
                     </div>
                     <hr />

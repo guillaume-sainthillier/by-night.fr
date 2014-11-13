@@ -21,37 +21,42 @@
 {% block body_membre %}
     {% include "TBNUserBundle:Membres:block_search.html.twig" with({ 'term' : null }) %}
     
-    <div class="row">
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4>Dernières connexions</h4>
-                </div>
-                <div class="panel-body">
-                    {% for i, user in last_actifs %}
-                        {% include "TBNUserBundle:Membres:block_details_user.html.twig" %}
-                        {% if (i+1) < last_actifs|length %}
-                            <hr />
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4>Nouveaux membres</h4>
-                </div>
-                <div class="panel-body">
-                    {% for i, user in new_membres %}
-                        {% include "TBNUserBundle:Membres:block_details_user.html.twig" %}
-                        {% if (i+1) < new_membres|length %}
-                            <hr />
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    {% for i, user in new_membres %}
+
+        {% include "TBNUserBundle:Membres:block_details_user.html.twig" %}
+        {% if (i+1) < new_membres|length %}
+        {% endif %}
+
+    {% endfor %}
+    {% for i, user in last_actifs %}
+
+        {% include "TBNUserBundle:Membres:block_details_user.html.twig" %}
+        {% if (i+1) < new_membres|length %}
+        {% endif %}
+
+    {% endfor %}
+    {% for i, user in new_membres %}
+
+        {% include "TBNUserBundle:Membres:block_details_user.html.twig" %}
+        {% if (i+1) < new_membres|length %}
+        {% endif %}
+
+    {% endfor %}
+    {% for i, user in last_actifs %}
+
+        {% include "TBNUserBundle:Membres:block_details_user.html.twig" %}
+        {% if (i+1) < new_membres|length %}
+        {% endif %}
+
+    {% endfor %}
+    {% for i, user in new_membres %}
+
+        {% include "TBNUserBundle:Membres:block_details_user.html.twig" %}
+        {% if (i+1) < new_membres|length %}
+        {% endif %}
+
+    {% endfor %}
     </div>
 {% endblock %}
 
@@ -67,7 +72,7 @@
     {% endstylesheets %}
 {% endblock %}
 
-{% block js_membre %}    
+{% block js_membre %}
     {% javascripts 
         '@TBNUserBundle/Resources/public/js/list_user.js'
 

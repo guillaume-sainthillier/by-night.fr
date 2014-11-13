@@ -2,7 +2,7 @@
 <div class="widget_item">
     <div class="row">
         <div class="col-xs-3 preserve min_membre">
-            <img class="img-responsive" src="{{ user.profileDefault }}" />
+            <img class="img-responsive component" src="{{ user.profileDefault }}" />
         </div>
         <div class="col-xs-9 preserve text-left">
             <h4 class="item_title">
@@ -10,7 +10,7 @@
                     {{ user.username }}
                 </a>
             </h4>
-            <span class="color-primary">Membre depuis le {{ user.dateCreation|date("d/m/Y") }}</span>
+                    <span class="color-primary">Membre depuis le <span class="date">{{ user.dateCreation|date("d/m/Y") }}</span></span>
         </div>
     </div>
 </div>

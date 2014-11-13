@@ -1,21 +1,16 @@
 {% extends "TBNUserBundle::layout.html.twig" %}
 
 
-{% block titre_espace %}
-    Mes soirées
-{% endblock %}
+{% block titre_espace %}Mes événements{% endblock %}
 
-{% block title_espace %}
-    {{ block('titre_espace') }}
-{% endblock %}
+{% block title_espace %}{{ block('titre_espace') }}{% endblock %}
 
 {% block breadcrumb_espace %}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes soirées", path('tbn_agenda_list')) %}
+    {% set item = menu.addItem("Mes événements", path('tbn_agenda_list')) %}
 {% endblock %}
 
-{% block body_espace %}
-
+{% block body_espace -%}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -35,13 +30,11 @@
         <tr>
             <td colspan="3">
                 <div class="alert alert-info">
-                    <i class="fa fa-info-circle"></i> Aucun événement créé, publiez dès maintenant vos soirées!
+                    <i class="fa fa-info-circle"></i> Aucun événement créé, publiez dès maintenant le vôtre !
                 </div>
             </td>
         </tr>            
         {% endfor %}  
     </tbody>
 </table>
-
-
-{% endblock %}
+{%- endblock %}

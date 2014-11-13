@@ -13,25 +13,33 @@ and open the template in the editor.
 @import "comment";
 @import "menu_droit";
 
-.block_infos {
-
-    //margin-top: 15px;
-    border-left: 5px solid #EEE;
-    overflow: hidden;
+.details_evenement {
     font-size: 120%;
+    
+    .block_infos {
 
-    .fa-ul {
+        //margin-top: 15px;
+        border-left: 5px solid #EEE;
+        overflow: hidden;
+        
 
-        li {
-            margin-bottom: 10px;
+        .fa-ul {
+
+            li {
+                margin-bottom: 10px;
+            }
+        }
+
+        .tags {
+            .label {
+                margin-right: 5px;
+            }
         }
     }
+}
 
-    .tags {
-        .label {
-            margin-right: 5px;
-        }
-    }
+#loadMap {
+    margin-bottom: 5px;
 }
 
 .preview {

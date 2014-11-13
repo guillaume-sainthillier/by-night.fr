@@ -1,19 +1,36 @@
 <div class="widget_item">
-    <h4>{{ count_participer }}</h4> 
+    <strong class="count">{{ count_participer }}</strong> 
     <span class="color-info">participant{{ count_participer > 1 ? "s" : "" }}</span>
+    <strong class="count"> / {{ count_interets }}</strong> 
+    <span class="color-info">interessé{{ count_interets > 1 ? "s" : "" }}</span>
 </div>
 
 <div class="tendance">
     {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': tendancesParticipations }) %}
 </div>
-
-
-<div class="widget_item">
-    <h4>{{ count_interets }}</h4> 
-    <span class="color-info">interessé{{ count_interets > 1 ? "s" : "" }}</span>
-</div>
 <br />
 <div class="tendance">
     {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': tendancesInterets }) %}
+</div>
+
+<div class="fb_membres">
+{% for fbUser in membres|slice(0, 30) -%}
+    {% set picture = fbUser.getProperty('picture') %}
+    {% if picture is not null %}
+        <a href="https://www.facebook.com/{{ fbUser.getProperty('id') }}" 
+           rel="external"
+           itemprop="attendee" 
+           itemscope
+           itemtype="http://schema.org/Person"
+           title="{{ fbUser.getProperty('name') }}"
+        >     
+            <img itemprop="image" 
+                 width="50"
+                 height="50"
+                 src="{{ fbUser.getProperty('picture').getProperty('url') }}"
+                 alt="{{ fbUser.getProperty('name') }}" />
+        </a>
+    {% endif %}
+{%- endfor %}
 </div>
 

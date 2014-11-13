@@ -39,7 +39,7 @@
             <div class="col-xs-4 preserve">
                 {% if site.facebookIdPage != "" %}
                     <div class="social facebook">
-                        <a title="Retrouvez {{ site.nom }} By Night sur Facebook" href="https://www.facebook.com/{{ site.facebookIdPage }}">
+                        <a title="{{ site.nom }} sur Facebook" href="https://www.facebook.com/{{ site.facebookIdPage }}">
                             <i class="fa fa-facebook fa-3x"></i>
                         </a>
                         <strong class="count">
@@ -51,7 +51,7 @@
             <div class="col-xs-4 preserve">
                 {% if site.twitterIdPage != "" %}
                     <div class="social twitter">
-                        <a title="Retrouvez {{ site.nom }} By Night sur Twitter" href="https://twitter.com/{{ site.twitterIdPage }}">
+                        <a title="{{ site.nom }} By Night sur Twitter" href="https://twitter.com/{{ site.twitterIdPage }}">
                             <i class="fa fa-twitter fa-3x"></i>
                         </a>
                         <strong class="count">
@@ -63,7 +63,7 @@
             <div class="col-xs-4 preserve">
                 {% if site.googleIdPage != ""  %}
                     <div class="social google">
-                        <a title="Retrouvez {{ site.nom }} By Night sur Google+" href="https://plus.google.com/{{ site.googleIdPage }}">
+                        <a title="{{ site.nom }} By Night sur Google+" href="https://plus.google.com/{{ site.googleIdPage }}" rel="publisher">
                             <i class="fa fa-google-plus fa-3x"></i>
                         </a>
                         <strong class="count">

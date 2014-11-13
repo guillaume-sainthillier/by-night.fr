@@ -3,8 +3,9 @@
     <div class="widget_item">
         <div class="row">
             <div class="col-xs-2 min_membre preserve text-center color-warning" title="{{ soiree.dateDebut|localizeddate('full','none') }}">
-                <strong>{{ (soiree.dateDebut|localizeddate('long','none')|split(' ')[1])[:3]|capitalize }}</strong>
-                {{ soiree.dateDebut|date('d') }}
+                <span class="month thin">{{ (soiree.dateDebut|localizeddate('long','none')|split(' ')[1])[:3]|capitalize }}</span>
+                <br />
+                <span class="date">{{ soiree.dateDebut|date('d') }}</span>
             </div>
             <div class="col-xs-10 preserve">
                 <h4 class="item_title">

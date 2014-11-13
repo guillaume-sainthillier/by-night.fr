@@ -36,7 +36,7 @@
         <hr />
 
         <p>
-            <strong>{{ users|length }}</strong> membre{{ users|length > 1 ? "s" : "" }} trouvé{{ users|length > 1 ? "s" : "" }}
+            <strong class="count">{{ users|length }}</strong> membre{{ users|length > 1 ? "s" : "" }} trouvé{{ users|length > 1 ? "s" : "" }}
         </p>
 
         {% for i, user in users %}

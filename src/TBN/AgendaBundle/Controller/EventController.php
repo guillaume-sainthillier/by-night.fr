@@ -4,7 +4,6 @@ namespace TBN\AgendaBundle\Controller;
 
 use TBN\MainBundle\Controller\TBNController as Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -60,9 +59,9 @@ class EventController extends Controller {
 	$themes_manif = $this->getThemes($repo, $site);
 	$types_manif = $this->getTypesManifestation($repo, $site);
 
+        $action = $page > 1 ? $this->generateUrl("tbn_agenda_pagination", ["page" => $page]) : $this->generateUrl("tbn_agenda_index");
 	$form = $this->createForm(new SearchType($types_manif, $communes, $themes_manif), $search, [
-	    "action" => $page > 1 ? $this->generateUrl("tbn_agenda_pagination", ["page" => $page]) :
-		    $this->generateUrl("tbn_agenda_index")
+	    "action" => $action
 	]); //100ms
 
 	if ($request->getMethod() === "POST") {

@@ -39,7 +39,7 @@ class SocialController extends BaseController
         /** @var social Social */
         $social = $this->container->get("tbn.social.".strtolower($service));
 
-        if( $social instanceof Social)
+        if($social instanceof Social)
         {
             $siteManager = $this->container->get("site_manager");
             $currentSite = $siteManager->getCurrentSite();
@@ -47,9 +47,6 @@ class SocialController extends BaseController
             $em = $this->container->get("doctrine.orm.entity_manager");
             $em->persist($currentSite);
             $em->flush();
-
-            $cache = $this->get("winzou_cache");
-            $cache->save( $currentSite->getSubdomain(), $currentSite);
         }
 
         return new JsonResponse(["success" => true]);
@@ -59,9 +56,9 @@ class SocialController extends BaseController
     {
         $user = $this->getUserWithService($service);
         /** @var social Social */
-        $social = $this->container->get(strtolower($service));
+        $social = $this->container->get("tbn.social.".strtolower($service));
 
-        if( $social instanceof Social)
+        if($social instanceof Social)
         {
             $social->disconnectUser($user);
             $this->authenticateBasicUser($user);

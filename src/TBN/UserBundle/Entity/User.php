@@ -60,7 +60,7 @@ class User extends BaseUser
     protected $evenements;
  
     /**
-     * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\UserInfo", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\UserInfo", cascade={"persist", "remove"}, fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
      */
     protected $info;
@@ -102,8 +102,8 @@ class User extends BaseUser
     
       
     public function getProfileDefault()
-    {
-        $info = $this->info;
+    {    
+        $info = $this->getInfo();
 
         if($info !== null)
         {
@@ -118,6 +118,7 @@ class User extends BaseUser
                 return $info->getGoogleProfilePicture();
             }
         }
+        
         
         return "http://placehold.it/250&text=".$this->getUsername();
     }

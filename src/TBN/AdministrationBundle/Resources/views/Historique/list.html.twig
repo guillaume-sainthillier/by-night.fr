@@ -24,11 +24,19 @@
                 <th>Durée</th>
                 <th>Nouvelles Soirées</th>
                 <th>Mise à jour</th>
+                <th>Black Lists</th>
             </tr>
         </thead>
         <tbody>
         {% for historique in historiques %}
-            <tr>
+            {% if not historique.nouvellesSoirees and not historique.updateSoirees %}
+                {% set classe = 'danger' %}
+            {% elseif not historique.nouvellesSoirees %}
+                {% set classe = 'warning' %}
+            {% else %}
+                {% set classe = '' %}
+            {% endif %}
+            <tr class="{{ classe }}">
                 <td>{{ historique.id }}</td>
                 <td>{{ historique.dateDebut|localizeddate('medium', 'medium') }}</td>
                 <td>{{ historique.site ? historique.site.nom : '-' }}</td>
@@ -36,6 +44,7 @@
                 <td>{{ historique.duree }}s</td>
                 <td>{{ historique.nouvellesSoirees }}</td>
                 <td>{{ historique.updateSoirees }}</td>
+                <td>{{ historique.blackLists ? historique.blackLists : '-' }}</td>
             </tr>
         {% endfor %}
         </tbody>

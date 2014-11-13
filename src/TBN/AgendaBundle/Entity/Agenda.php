@@ -141,6 +141,13 @@ class Agenda
     /**
      * @var string
      *
+     * @ORM\Column(name="adresse", type="string", length=255, nullable=true)
+     */
+    protected $adresse;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="type_manifestation", type="string", length=128, nullable=true)
      */
     protected $typeManifestation;
@@ -1579,5 +1586,28 @@ class Agenda
     public function getFacebookOwnerId()
     {
         return $this->facebookOwnerId;
+    }
+
+    /**
+     * Set adresse
+     *
+     * @param string $adresse
+     * @return Agenda
+     */
+    public function setAdresse($adresse)
+    {
+        $this->adresse = $adresse;
+    
+        return $this;
+    }
+
+    /**
+     * Get adresse
+     *
+     * @return string 
+     */
+    public function getAdresse()
+    {
+        return $this->adresse;
     }
 }

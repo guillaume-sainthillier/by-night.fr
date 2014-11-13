@@ -77,6 +77,8 @@ class SearchAgenda {
 
     public function setDu($du) {
         $this->du = $du;
+
+        return $this;
     }
 
     public function setAu($au) {
@@ -97,6 +99,8 @@ class SearchAgenda {
 
     public function setTerm($term) {
         $this->term = $term;
+
+        return $this;
     }
 
 
