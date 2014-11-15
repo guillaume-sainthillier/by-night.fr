@@ -66,6 +66,19 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
     {% block css_agenda %}{% endblock %}
 {% endblock %}
     
-{% block head_js %}    
+{% block head_js %}
+    <script type="application/ld+json">{% spaceless %}
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "url": "{{ url('tbn_agenda_index') }}",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "{{ url('tbn_search_query', {'q': '{search_term_string}'})|url_decode }}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+    {% endspaceless %}
+    </script>
     {% block head_js_agenda %}{% endblock %}
 {% endblock %}

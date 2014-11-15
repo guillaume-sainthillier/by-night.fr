@@ -70,18 +70,6 @@
         {% endblock %}
         <!-- ./CSS -->
         
-        <script type="application/ld+json">{% spaceless %}
-            {
-                "@context": "http://schema.org",
-                "@type": "WebSite",
-                "url": "{{ url('tbn_agenda_index') }}",
-                "potentialAction": {
-                    "@type": "SearchAction",
-                    "target": "{{ url('tbn_search_query', {'q': '{search_term_string}'})|url_decode }}",
-                    "query-input": "required name=search_term_string"
-                }
-            }
-        {% endspaceless %}</script>
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
             <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
