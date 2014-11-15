@@ -43,7 +43,7 @@ class SubDomainListener {
                 
             if (!$site or ($site and !$site->getIsActif())) {
                 throw new NotFoundHttpException(sprintf(
-                        'Le sous domaine "%s" est introuvable sur "%s"', $this->baseHost, $subdomain
+                        'Le sous domaine "%s" est introuvable sur "%s"', $subdomain, $this->baseHost
                 ));
             }
             
