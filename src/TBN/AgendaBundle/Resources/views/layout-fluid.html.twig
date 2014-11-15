@@ -16,11 +16,22 @@
 {% endblock %}
 
 {% block css %}
-    {% stylesheets 'bundles/tbnagenda/css/widgets.css' 'bundles/tbnagenda/css/style.css'
+    {% stylesheets 'bundles/tbnagenda/css/widgets.css' 'bundles/tbnagenda/css/style.css' 'bundles/tbnagenda/css/jquery.mCustomScrollbar.css'
         filter='cssrewrite,?yui_css'        
         output='prod/css/agenda/widgets.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
     {% block css_agenda %}{% endblock %}
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    {% javascripts 'bundles/tbnagenda/js/jquery.mCustomScrollbar.concat.min.js'
+        filter='?yui_js'        
+        output='prod/js/agenda/widgets.js'
+    %}
+        js_scripts.lib.push("{{ asset_url }}");
+    {% endjavascripts %}
+    {% block js_agenda %}{% endblock %}
 {% endblock %}

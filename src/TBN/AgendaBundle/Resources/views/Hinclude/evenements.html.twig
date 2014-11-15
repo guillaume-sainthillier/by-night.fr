@@ -16,3 +16,6 @@
         </div>
     </div>
 {% endfor %}
+{% if soirees|length == maxItems|default(0) %}
+    <div class="more-content"></div>
+{% endif %}

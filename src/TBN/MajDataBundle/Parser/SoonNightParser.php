@@ -33,6 +33,12 @@ class SoonNightParser extends LinksParser{
         }, $date);
     }
 
+    protected function my_numeric2character($t)
+    {
+        $convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
+        return mb_decode_numericentity($t, $convmap, 'UTF-8');
+    }
+
     /**
      * Retourne les infos d'un agenda depuis une url
      * @return string[]
@@ -43,7 +49,8 @@ class SoonNightParser extends LinksParser{
 
         //Date & Nom
         $date_lieu                      = preg_split("/-/",$this->parser->filter(".titre h2")->text());
-        $tab_retour["nom"]              = str_replace("&10084;", "❤", $this->parser->filter(".titre h1")->text()." @ ".$date_lieu[1]);
+        $nom                            = preg_replace("/\&(\d+);/i", "&#$1;", $this->parser->filter(".titre h1")->text())." @ ".$date_lieu[1];
+        $tab_retour["nom"]              = $this->my_numeric2character($nom);
         $tab_retour["lieu_nom"]         = $date_lieu[1];
         $date                           = $this->parseDate($date_lieu[0]);
 

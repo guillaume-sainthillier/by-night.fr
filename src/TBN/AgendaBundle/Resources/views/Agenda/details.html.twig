@@ -75,7 +75,7 @@
                 {% if soiree.rue != "" or soiree.codePostal != "" or soiree.commune != "" or soiree.lieuNom != "" %}
                 <li>
                     <i class="fa fa-li fa-map-marker"></i>
-                    <div itemprop="organizer" itemscope itemtype="http://schema.org/​Organization">
+                    <div itemprop="organizer" itemscope itemtype="http://schema.org/Organization">
                         {% set readableAdresse = "" %}
                         {% if soiree.lieuNom != "" %}
                             {% set readableAdresse = readableAdresse ~ soiree.lieuNom %}
@@ -125,13 +125,15 @@
                     {{ soiree.reservationTelephone }}
                 </li>
                 {% endif %}
-                {% for lien in soiree.reservationInternet|split(' ') %}
-                    {% if lien|trim|length > 0 %}
-                    <li>
-                        <i class="fa fa-li fa-globe"></i> 
-                        <a title="Aller sur le site internet de la réservation" rel="nofollow" href="http://{{ lien|replace({'http://' : ''}) }}">{{ lien[:50] ~ (lien|length > 50 ? "..." : "") }}</a>
-                    </li>
-                    {% endif %}
+                {% for liens in soiree.reservationInternet|split(' ') %}
+                    {% for lien in liens|split(',') %}
+                        {% if lien|trim %}
+                        <li>
+                            <i class="fa fa-li fa-globe"></i> 
+                            <a title="Aller sur le site internet de la réservation" rel="nofollow" href="http://{{ lien|replace({'http://' : ''}) }}">{{ lien[:50] ~ (lien|length > 50 ? "..." : "") }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
                 {% if soiree.reservationEmail != "" %}
                     <li><i class="fa fa-li fa-envelope-o"></i> <a href="mailto:{{ soiree.reservationEmail }}">{{ soiree.reservationEmail }}</a></li>

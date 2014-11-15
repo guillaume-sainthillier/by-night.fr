@@ -10,7 +10,7 @@
         <![endif]-->        
         <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
         <meta name="keywords" content="{% spaceless %}{% block meta_keywords %}{% endblock %}by,night,agenda,soiree,sortir,etudiant,famille,musique,theatre,rock,pop,electro,jazz,rap"{% endspaceless %}>
-        <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir toutes les soirées du moment!{% endblock %}{% endblock %}{% endspaceless %}">
+        <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
         
         <!-- OpenGraph -->
         <meta property="og:site_name" content="{{ block('nom_site') }}">
@@ -77,7 +77,7 @@
                 "url": "{{ url('tbn_agenda_index') }}",
                 "potentialAction": {
                     "@type": "SearchAction",
-                    "target": "{{ url('tbn_search_query', {'term': '{search_term_string}'})|url_decode }}",
+                    "target": "{{ url('tbn_search_query', {'q': '{search_term_string}'})|url_decode }}",
                     "query-input": "required name=search_term_string"
                 }
             }

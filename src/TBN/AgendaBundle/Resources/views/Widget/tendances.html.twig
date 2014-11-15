@@ -23,3 +23,8 @@
         {{ render_hinclude(url('tbn_agenda_soirees_tendances',{'slug': soiree.slug})) }}
     </div>
 {% endblock %}
+{% block footer %}
+    <div class="panel-footer">
+        <a class="btn btn-primary btn-block more-widget" href="{{ path('tbn_agenda_soirees_membres', {'slug': soiree.slug }) }}" rel="nofollow">Plus</a>
+    </div>
+{% endblock %}

@@ -203,22 +203,26 @@ class UpdateCommand extends EventCommand
             $ext = preg_replace("/\?(.+)/", "", pathinfo($url, PATHINFO_EXTENSION));
 
             $filename = sha1(uniqid(mt_rand(), true)).".".$ext;
-            $result = file_get_contents($url);
+            $result = @\file_get_contents($url);
 
             if($result !== false)
             {
                 // Save it to disk
                 $savePath = $agenda->getUploadRootDir()."/".$filename;
-                $fp = fopen($savePath,'x');
+                $fp = @fopen($savePath,'x');
 
                 if($fp !== false)
                 {
+                    $agenda->setPath($filename);
                     fwrite($fp, $result);
                     fclose($fp);
                 }
+            }else
+            {
+                $agenda->setUrl(null);
             }
 
-            $agenda->setPath($filename);
+            
         }catch(\Exception $e)
         {
             $agenda->setPath(null);

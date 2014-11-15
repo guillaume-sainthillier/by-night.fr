@@ -64,10 +64,6 @@ function init_pagination(selecteur)
     $(selecteur || document).on('pjax:success', function() {
         init_soirees($(selector));
     });
-    
-    $(selecteur || document).on('pjax:success', function() {
-        init_soirees($(selector));
-    });
 }
 
 /**

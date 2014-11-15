@@ -28,34 +28,24 @@ class MenuDroitController extends Controller {
     }
 
     //Pas de cache par défaut
-    public function soireesSimilairesAction(Request $request, Agenda $soiree) {
-//        $em = $this->getDoctrine()->getManager();
-//        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-//        $str_date = $repo->getLastDateAutreSoirees($soiree);
-//
-//        $response = $this->cacheVerif($str_date);
-//        if ($response !== null and $response->isNotModified($request)) {
-//            return $response;
-//        }
+    public function soireesSimilairesAction(Agenda $soiree, $page) {
+        if($page <= 0)
+        {
+            $page = 1;
+        }
+
+        $offset = 7;
 
         return $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-                    "soirees" => $this->getSoireesSimilaires($soiree)
+            "soirees" => $this->getSoireesSimilaires($soiree, $page, $offset),
+            "maxItems" => $offset
         ]);
     }
 
     //Pas de cache par défaut
-    public function topSoireesAction(Request $request) {
+    public function topSoireesAction() {
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
-//
-//        $em = $this->getDoctrine()->getManager();
-//        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-//        $str_date = $repo->getLastDateTopSoiree($site);
-//
-//        $response = $this->cacheVerif($str_date);
-//        if ($response !== null and $response->isNotModified($request)) {
-//            return $response;
-//        }
 
         return $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
                     "soirees" => $this->getTopSoirees($site)
@@ -66,6 +56,37 @@ class MenuDroitController extends Controller {
     public function tendancesAction(Agenda $soiree) {
         $this->getFBStatsEvent($soiree);
 
+        $nbItems    = 30;
+        $membres    = $this->getFBMembres($soiree, 1, 30);
+
+        return $this->render("TBNAgendaBundle:Hinclude:tendances.html.twig", [
+            "tendancesParticipations" => $this->getSoireesTendancesParticipations($soiree),
+            "tendancesInterets" => $this->getSoireesTendancesInterets($soiree),
+            "count_participer" => $soiree->getParticipations() + $soiree->getFbParticipations(),
+            "count_interets" => $soiree->getInterets($soiree) + $soiree->getFbInterets(),
+            "membres" => $membres,
+            "maxItems" => $nbItems
+        ]);
+    }
+
+    public function fbMembresAction(Agenda $soiree, $page)
+    {
+        if($page <= 1)
+        {
+            $page = 2;
+        }
+        
+        $nbItems    = 50;
+        $membres    = $this->getFBMembres($soiree, $page, $nbItems);
+
+        return $this->render("TBNAgendaBundle:Hinclude:fb_membres.html.twig", [
+            "membres" => $membres,
+            "maxItems" => $nbItems
+        ]);
+    }
+
+    protected function getFBMembres(Agenda $soiree, $page, $offset)
+    {
         $membres = [];
         if ($soiree->getFacebookEventId()) {
             $key = "fb.stats." . $soiree->getFacebookEventId();
@@ -75,13 +96,7 @@ class MenuDroitController extends Controller {
             }
         }
 
-        return $this->render("TBNAgendaBundle:Hinclude:tendances.html.twig", [
-                    "tendancesParticipations" => $this->getSoireesTendancesParticipations($soiree),
-                    "tendancesInterets" => $this->getSoireesTendancesInterets($soiree),
-                    "count_participer" => $soiree->getParticipations() + $soiree->getFbParticipations(),
-                    "count_interets" => $soiree->getInterets($soiree) + $soiree->getFbInterets(),
-                    "membres" => $membres
-        ]);
+        return array_slice($membres, ($page - 1) * $offset, $offset);
     }
 
     //Pas de cache par défaut ici
@@ -164,10 +179,10 @@ class MenuDroitController extends Controller {
         return $repo->findTopMembres($site);
     }
 
-    protected function getSoireesSimilaires(Agenda $soiree) {
+    protected function getSoireesSimilaires(Agenda $soiree, $page, $offset) {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        return $repo->findAllSimilaires($soiree);
+        return $repo->findAllSimilaires($soiree, $page, $offset);
     }
 
     protected function getSoireesTendancesParticipations(Agenda $soiree) {

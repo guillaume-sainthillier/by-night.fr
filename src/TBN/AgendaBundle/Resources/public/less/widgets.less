@@ -44,8 +44,8 @@
     }
 
     .widget {                
-        margin-bottom: 40px;                
-
+        margin-bottom: 40px;
+        
         .widget_item {
             padding: 10px 0;
             border-bottom: 1px solid white;
@@ -77,8 +77,15 @@
 
         .scrollable {
             max-height: 500px;
-            overflow-y: scroll;
+            overflow-y: auto;
+            position: relative;
+            
+            &.scrollable-large {
+                max-height: 600px;
+            }
         }
+        
+        
 
         .membres {
             max-height: 300px;

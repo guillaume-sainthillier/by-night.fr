@@ -22,7 +22,7 @@
             
             <form action="{{ path('tbn_search_query') }}" method="GET" class="navbar-form navbar-left" role="search">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q') }}">
+                    <input type="text" class="form-control" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}">
                     <div class="input-group-btn">
                         <button class="btn btn-primary btn-normal" type="submit"><i class="glyphicon glyphicon-search"></i></button>
                     </div>

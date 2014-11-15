@@ -254,7 +254,7 @@ class AgendaRepository extends EntityRepository{
 
         if($search->getTerm() !== null and trim($search->getTerm()) !== "")
         {
-            $qb->andWhere("(a.nom LIKE :mot_clefs OR a.descriptif LIKE :mot_clefs)");
+            $qb->andWhere("(a.nom LIKE :mot_clefs OR a.descriptif LIKE :mot_clefs OR a.lieuNom LIKE :mot_clefs)");
             $params[":mot_clefs"] = "%".$search->getTerm()."%";
         }
 
@@ -301,6 +301,7 @@ class AgendaRepository extends EntityRepository{
                 ->select('a')
                 ->from('TBNAgendaBundle:Agenda','a')
                 ->orderBy('a.dateDebut', $orderDesc ? 'DESC' : 'ASC');
+                //->addOrderBy('a.id', 'DESC');
 
         $soirees = $this->makeQuery($qb, $site, $search);
 

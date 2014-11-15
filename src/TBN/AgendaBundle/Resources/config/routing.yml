@@ -39,9 +39,17 @@ tbn_agenda_details:
         slug: (.+)
 
 tbn_agenda_soirees_similaires:
-    pattern: /{slug}.html/autres-soirees
-    defaults: { _controller: TBNAgendaBundle:MenuDroit:soireesSimilaires}
+    pattern: /{slug}.html/autres-soirees/{page}
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:soireesSimilaires, page: 1}
+    requirements:
+        page: (\d+)
 
 tbn_agenda_soirees_tendances:
     pattern: /{slug}.html/tendances
     defaults: { _controller: TBNAgendaBundle:MenuDroit:tendances}
+    
+tbn_agenda_soirees_membres:
+    pattern: /{slug}.html/membres/{page}
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:fbMembres, page: 2}
+    requirements:
+        page: (\d+)

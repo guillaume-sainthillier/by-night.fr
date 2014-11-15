@@ -43,7 +43,6 @@ class EventController extends Controller {
     }
 
     public function listAction(Request $request, $page) {
-	$request->isXmlHttpRequest();
 	if ($page <= 0) {
 	    $page = 1;
 	}

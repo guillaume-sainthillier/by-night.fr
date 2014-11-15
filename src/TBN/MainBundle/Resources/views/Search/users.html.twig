@@ -2,6 +2,7 @@
 
 {% block title_search %}Recherche de membres{% endblock %}
 {% block titre_search %}Recherche de membres à {{ site.nom }}{% endblock %}
+{% block meta_description -%}Recherche de membres à {{ site.nom }}. {% if term %}{{ nbUsers}} membre{{ nbUsers > 1 ? "s" : "" }} trouvé{{ nbUsers > 1 ? "s" : "" }} pour la recherche '{{ term }}'.{% endif %}{% endblock %}
 
 {% block breadcrumb_search %}
     {% set test = menu.addItem('Membres', path('tbn_search_query', {'type': 'membres'})) %}    

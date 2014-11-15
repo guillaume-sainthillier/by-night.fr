@@ -75,7 +75,7 @@ class DynamoParser extends LinksParser{
         
         foreach($node_tarifs as $node)
         {
-            $value = str_replace(["Prévente :", "*"], "", $node->textContent);
+            $value = str_replace(["Prévente :", "*", "Prévente sur"], "", $node->textContent);
 
             if(\preg_match(self::$URL_PATTERN, $value, $liens)) //Lien présent
             {

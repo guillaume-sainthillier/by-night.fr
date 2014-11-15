@@ -2,6 +2,7 @@
 
 {% block title_search %}Recherche d'événements{% endblock %}
 {% block titre_search %}Recherche d'événements à {{ site.nom }}{% endblock %}
+{% block meta_description -%}Recherche d'événements, concerts, spectacles à {{ site.nom }}. {% if term %}{{ nbSoirees}} événement{{ nbSoirees > 1 ? "s" : "" }} trouvé{{ nbSoirees > 1 ? "s" : "" }} pour la recherche '{{ term }}'.{% endif %}{% endblock %}
 
 {% block breadcrumb_search %}
     {% set test = menu.addItem('Événements', path('tbn_search_query', {'type': 'evenements'})) %}    

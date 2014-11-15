@@ -6,7 +6,7 @@
 {% endblock %}
 {% block body_text %}
 {% autoescape false %}
-{{ 'resetting.email.message'|trans({'%username%': user.username, '%confirmationUrl%': confirmationUrl, '%nom_site%' : site.currentSite.nom ~ " By Night"}) }}
+{{ 'resetting.email.message'|trans({'%username%': user.username, '%confirmationUrl%': confirmationUrl, '%nom_site%' : site.nom ~ " By Night"}) }}
 {% endautoescape %}
 {% endblock %}
 {% block body_html %}{% endblock %}

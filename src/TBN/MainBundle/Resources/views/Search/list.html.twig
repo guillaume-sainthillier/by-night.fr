@@ -2,6 +2,7 @@
 
 {% block title_search %}Recherche{% endblock %}
 {% block titre_search %}Recherche{% endblock %}
+{% block meta_description -%}{% if term %}{{ nbItems}} résultat{{ nbItems > 1 ? "s" : "" }} trouvé{{ nbItems > 1 ? "s" : "" }} pour la recherche '{{ term }}'. {% endif %}{{ parent() }}{% endblock %}
 
 {% block breadcrumb_search -%}   
     {% if term %}
