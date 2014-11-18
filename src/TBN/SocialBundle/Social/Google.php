@@ -54,7 +54,7 @@ class Google extends Social {
         if ($site !== null) {
             try
             {
-                $url = $router->generate("tbn_agenda_index",["subdomain" => $site->getSubdomain()], true);
+                $url = $router->generate("tbn_main_index", true);
                 $curl = curl_init();
                 curl_setopt($curl, CURLOPT_URL, "https://clients6.google.com/rpc");
                 curl_setopt($curl, CURLOPT_POST, 1);
