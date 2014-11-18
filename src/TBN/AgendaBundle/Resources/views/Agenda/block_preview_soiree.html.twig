@@ -1,14 +1,14 @@
 <div class="row event" itemscope itemtype="http://schema.org/Event">
     <div class="col-sm-3 image_soiree">
         {% if soiree.webPath %}
-            {% set original = asset(soiree.webPath) %}
-            {% set thumb = original|imagine_filter('thumbs_evenement') %}
+            {% set original = app.request.getUriForPath(soiree.webPath) %}
+            {% set thumb = soiree.webPath|imagine_filter('thumbs_evenement') %}
         {% elseif soiree.url %}
             {% set original = soiree.url %}
             {% set thumb = original %}
         {% else %}
-            {% set original = asset('img/empty_event.png') %}
-            {% set thumb = original|imagine_filter('thumbs_evenement') %}
+            {% set original = app.request.getUriForPath('/img/empty_event.png') %}
+            {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
         {% endif %}
         {% set nomSoiree = soiree.nom %}
         <meta itemprop="image" content="{{ original }}" />
