@@ -2,7 +2,7 @@
 {% set info = user.info %}
 
 {% if info.facebookAccessToken != null %}
-    <a class="social-facebook social" href="https://www.facebook.com/{{ info.facebookNickname }}" title="{{ info.facebookRealname }} sur Facebook">
+    <a class="social-facebook social" href="https://www.facebook.com/{{ info.facebookId }}" title="{{ info.facebookRealname }} sur Facebook">
     </a>
 {% endif %}
 
