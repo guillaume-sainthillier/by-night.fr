@@ -19,6 +19,45 @@ use TBN\AgendaBundle\Entity\Agenda;
  */
 abstract class EventCommand extends ContainerAwareCommand
 {
+    protected function downloadImage(Agenda $agenda)
+    {
+        try
+        {
+            $url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
+            $agenda->setUrl($url);
+            //En cas d'url du type:  http://u.rl/image.png?params
+            $ext = preg_replace("/\?(.+)/", "", pathinfo($url, PATHINFO_EXTENSION));
+
+            $filename = sha1(uniqid(mt_rand(), true)).".".$ext;
+            $result = @\file_get_contents($url);
+
+            if($result !== false)
+            {
+                // Save it to disk
+                $savePath = $agenda->getUploadRootDir()."/".$filename;
+                $fp = @fopen($savePath,'x');
+
+                if($fp !== false)
+                {
+                    $agenda->setPath($filename);
+                    fwrite($fp, $result);
+                    fclose($fp);
+                }else
+                {
+                    $agenda->setUrl(null);
+                }
+            }else
+            {
+                $agenda->setUrl(null);
+            }
+
+
+        }catch(\Exception $e)
+        {
+            $agenda->setPath(null);
+            $this->get("logger")->error($e->getMessage());
+        }
+    }
 
     /**
      * Retourne la recherche d'un doublon en fonction de la pertinance des informations
@@ -40,9 +79,9 @@ abstract class EventCommand extends ContainerAwareCommand
         foreach($agendas as $agenda)
         {
             $date_debut_needle  = $agenda->getDateDebut();
-            if($date_debut_event->format("Y-m-d") === $date_debut_needle->format("Y-m-d"))
+            $nom_needle         = trim($agenda->getNom());
+            if($nom_needle != "" and $nom_event != "" and $date_debut_event->format("Y-m-d") === $date_debut_needle->format("Y-m-d"))
             {
-                $nom_needle                 = $agenda->getNom();
                 if(similar_text($nom_event, $nom_needle) > 70) // Plus de 70% de ressemblance, on l'ejecte
                 {
                     return true;
@@ -68,7 +107,6 @@ abstract class EventCommand extends ContainerAwareCommand
 	    "fritzkalkbrenner.com", "campusfm.fr", "polyamour.info", "parislanuit.fr",
 	    "Please find the agenda", "Fore More Details like our Page & Massage us"
 	];
-
 
 	$terms = array_map(function($term)
 	{
@@ -122,11 +160,11 @@ abstract class EventCommand extends ContainerAwareCommand
 
     protected function writeln(OutputInterface $output, $text)
     {
-        $output->writeln(utf8_decode($text));
+        $output->writeln($text);
     }
 
     protected function write(OutputInterface $output, $text)
     {
-        $output->write(utf8_decode($text));
+        $output->write($text);
     }
 }

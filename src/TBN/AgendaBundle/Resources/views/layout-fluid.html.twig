@@ -8,9 +8,7 @@
 {% block end_container %}                     
     </div>
     <div class="col-md-4" id="widgets" >
-        <div data-spy="affix" data-offset-top="60" data-offset-bottom="200">
-            {% block widgets_agenda %}{% endblock %}
-        </div>
+        {% block widgets_agenda %}{% endblock %}
     </div>    
 </div>
 {% endblock %}
@@ -29,9 +27,15 @@
     {{ parent() }}
     {% javascripts 'bundles/tbnagenda/js/jquery.mCustomScrollbar.concat.min.js'
         filter='?yui_js'        
-        output='prod/js/agenda/widgets.js'
+        output='prod/js/agenda/libs_widgets.js'
     %}
         js_scripts.lib.push("{{ asset_url }}");
+    {% endjavascripts %}
+    {% javascripts 'bundles/tbnagenda/js/widgets.js'
+        filter='?yui_js'        
+        output='prod/js/agenda/widgets.js'
+    %}
+        js_scripts.final.push("{{ asset_url }}");
     {% endjavascripts %}
     {% block js_agenda %}{% endblock %}
 {% endblock %}

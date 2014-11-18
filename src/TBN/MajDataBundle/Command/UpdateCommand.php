@@ -191,44 +191,5 @@ class UpdateCommand extends EventCommand
         $em->persist($historique);
         $em->flush();
         $this->writeln($output, "<info>OK</info>");
-    }
-
-    public function downloadImage(Agenda $agenda)
-    {
-        try
-        {
-            $url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
-            $agenda->setUrl($url);
-            //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = preg_replace("/\?(.+)/", "", pathinfo($url, PATHINFO_EXTENSION));
-
-            $filename = sha1(uniqid(mt_rand(), true)).".".$ext;
-            $result = @\file_get_contents($url);
-
-            if($result !== false)
-            {
-                // Save it to disk
-                $savePath = $agenda->getUploadRootDir()."/".$filename;
-                $fp = @fopen($savePath,'x');
-
-                if($fp !== false)
-                {
-                    $agenda->setPath($filename);
-                    fwrite($fp, $result);
-                    fclose($fp);
-                }
-            }else
-            {
-                $agenda->setUrl(null);
-            }
-
-            
-        }catch(\Exception $e)
-        {
-            $agenda->setPath(null);
-            $this->get("logger")->error($e->getMessage());
-        }
-    }
-
-    
+    }    
 }

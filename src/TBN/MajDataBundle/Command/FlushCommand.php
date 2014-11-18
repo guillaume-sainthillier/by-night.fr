@@ -21,8 +21,8 @@ class FlushCommand extends EventCommand
     {
         $this
             ->setName('events:flush')
-            ->setDescription(\utf8_decode('Supprimer les événements indésirables'))
-            ->addArgument('site',       InputArgument::REQUIRED,    \utf8_decode('Quel site voulez-vous mettre à jour ?'));
+            ->setDescription('Supprimer les événements indésirables')
+            ->addArgument('site',       InputArgument::REQUIRED,    'Quel site voulez-vous mettre à jour ?');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -50,7 +50,8 @@ class FlushCommand extends EventCommand
         {
             $this->write($output, "Recherche d'événements indésirables...");
             $agendas	= $repo->findBy(["site" => $site]);
-            $nbSpam = 0;
+            $nbSpam     = 0;
+            $nbMaj      = 0;
             foreach($agendas as $agenda)
             {
                 if($this->isSpam($agenda))
@@ -58,10 +59,27 @@ class FlushCommand extends EventCommand
                     $em->remove($agenda);
                     $nbSpam++;
                 }
+
+                if($agenda->getPath() !== null)
+                {
+                    $file = $agenda->getAbsolutePath();
+                    if(!is_file($file) or !file_exists($file))
+                    {
+                        $agenda->setPath(null);
+                        $nbMaj++;
+                        
+                        if($agenda->getUrl() !== null)
+                        {
+                            $this->downloadImage($agenda);
+                        }
+                        $em->persist($agenda);
+                    }
+                }
             }
 
             $em->flush();
             $this->writeln($output, "<info>".$nbSpam."</info> événéments supprimés");
+            $this->writeln($output, "<info>".$nbMaj."</info> photos d'événéments mises à jours");
         }
     }
 }

@@ -13,11 +13,5 @@
 {% endblock %}
 
 {% block body_site %} 
-    {% for service in ['facebook','google','twitter'] %}
-        <div class="bloc_config">
-            {% include "TBNSocialBundle:Social:social_site.html.twig" with { 'info': siteInfo, 'service': service } %}
-        </div>    
-    {% endfor %}
-
     {{ form(form) }}
 {% endblock %}

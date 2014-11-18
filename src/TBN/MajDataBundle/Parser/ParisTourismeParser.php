@@ -66,7 +66,8 @@ class ParisTourismeParser extends LinksParser {
         $resa_internet  = $node_resa_internet->count() ? $node_resa_internet->filter("a")->attr("href") : null;
 
         //Description complète
-        $description = trim($this->parser->filter(".ContenuFicheDescriptif .ficheDescription")->eq(1)->html());
+        $nodeDescription    = $this->parser->filter(".ContenuFicheDescriptif .ficheDescription");
+        $description        = $nodeDescription->count() ? trim($nodeDescription->eq(1)->html()) : null;
 
 
         //Lieux
@@ -103,6 +104,12 @@ class ParisTourismeParser extends LinksParser {
 
         $nom    = $this->parser->filter(".ficheDetailGauche .cartoucheTitre, .ficheDetailGauche .cartoucheTitreCommercial")->text();
         $image  = str_replace("140x140", "350x350", $this->parser->filter(".ficheDetailGauche img")->eq(0)->attr("src"));
+
+        if(preg_match("/^\//", $image))
+        {
+            $image = "http://parisinfo.com". $image;
+        }
+
         $themes = $this->parser->filter(".ContenuFicheDescriptif .ficheDescription")->eq(0)->text();
 
         //Vérification présence image en meilleure qualité
