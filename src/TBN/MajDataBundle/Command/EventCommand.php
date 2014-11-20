@@ -70,6 +70,7 @@ abstract class EventCommand extends ContainerAwareCommand
 	$clean_descriptif_event     = strtolower(preg_replace("/[^a-zA-Z0-9]+/u", " ", html_entity_decode($event->getDescriptif())));
 	$nom_event                  = $event->getNom();
 	$date_debut_event	    = $event->getDateDebut();
+	$date_fin_event             = $event->getDateFin();
 
 	if(strlen($clean_descriptif_event) <= 50) //Moins de 70 caractères, on l'ejecte
 	{
@@ -79,7 +80,9 @@ abstract class EventCommand extends ContainerAwareCommand
         foreach($agendas as $agenda)
         {
             $date_debut_needle  = $agenda->getDateDebut();
+            $date_fin_needle    = $agenda->getDateFin();
             $nom_needle         = trim($agenda->getNom());
+            
             if($nom_needle != "" and $nom_event != "" and $date_debut_event->format("Y-m-d") === $date_debut_needle->format("Y-m-d"))
             {
                 if(similar_text($nom_event, $nom_needle) > 70) // Plus de 70% de ressemblance, on l'ejecte
@@ -88,6 +91,13 @@ abstract class EventCommand extends ContainerAwareCommand
                 }
 
                 if(stristr($nom_event, $nom_needle) !== false or stristr($nom_needle, $nom_event) !== false)
+                {
+                    return true;
+                }
+                
+                if($date_fin_needle !== null and 
+                        $date_fin_event->format("Y-m-d") === $date_fin_needle->format("Y-m-d") and 
+                        strtoupper($event->getLieuNom()) === strtoupper($agenda->getLieuNom()))
                 {
                     return true;
                 }

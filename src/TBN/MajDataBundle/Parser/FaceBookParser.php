@@ -306,13 +306,27 @@ class FaceBookParser extends AgendaParser {
 
 	return $tab_retour;
     }
+    
+    protected function getAgendaFromUniqueInfo($nom, $dateDebut, $facebookId)
+    {
+        $agenda = $this->repo->findOneBy([
+            "facebookEventId" => $facebookId
+        ]);
+        
+        if($agenda !== null)
+        {
+            return $agenda;
+        }
+        
+        return parent::getAgendaFromUniqueInfo($nom, $dateDebut);
+    }
 
     public function hydraterAgenda($event) {
 
 	$nom = $event["nom"];
 	$dateDebut = $event["date_debut"];
 
-	$a = $this->getAgendaFromUniqueInfo($nom, $dateDebut);
+	$a = $this->getAgendaFromUniqueInfo($nom, $dateDebut, $event["fb_id"]);
 
 	$a->setNom($nom);
 	$a->setFacebookEventId($event["fb_id"]);

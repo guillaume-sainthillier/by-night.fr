@@ -14,7 +14,6 @@ use TBN\MajDataBundle\Parser\FaceBookParser;
 use TBN\MajDataBundle\Parser\ToulouseTourismeParser;
 use TBN\MajDataBundle\Parser\ParisTourismeParser;
 
-use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Repository\AgendaRepository;
 use TBN\MajDataBundle\Entity\HistoriqueMaj;
 use TBN\MainBundle\Entity\Site;

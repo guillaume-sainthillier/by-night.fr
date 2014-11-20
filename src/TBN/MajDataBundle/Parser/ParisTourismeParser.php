@@ -20,7 +20,7 @@ class ParisTourismeParser extends LinksParser {
         $now2->modify("+1 year");
         $search_params = [
             "search_type" => "agenda",
-            "nbPPage" => 100,
+            "nbPPage" => 10,
             "filter[]" => "attr_begin_dt:".$now->format("Y-m-d")."&filter[]=attr_end_dt:".$now2->format("Y-m-d"),
         ];
 
@@ -60,8 +60,15 @@ class ParisTourismeParser extends LinksParser {
 	{
 	    $tel_fax = explode("-", $node_resa_telephone->text());
 	    // Téléphone :  - Fax :
-	    $resa_telephone = trim(str_replace("Téléphone :", "", $tel_fax[0]));
+            foreach(explode("/", $tel_fax[0]) as $telephone)
+            {
+                $current_telephone  = str_replace(["Téléphone :", "+33", "+ 33"], "", $telephone);
+                $current_telephone  = str_replace(["(0) ", "(0)"], "0", $current_telephone);
+                $resa_telephone     .= " ".trim($current_telephone);
+            }
 	}
+        
+        var_dump($resa_telephone);
 
         $resa_internet  = $node_resa_internet->count() ? $node_resa_internet->filter("a")->attr("href") : null;
 
@@ -83,6 +90,7 @@ class ParisTourismeParser extends LinksParser {
 	});
 
 	$nom_lieu   = $nom_full_lieu->count() ? $nom_full_lieu->text() : null;
+        
 	$lieu	    = null;
 	if($nom_lieu)
 	{
@@ -90,7 +98,7 @@ class ParisTourismeParser extends LinksParser {
 	    $lieux = explode(",", $nom_lieu);
 	    $lieu  = $lieux[0];
 	}
-
+        
         if($adresses->count() >= 2)
         {
             $rue        = $adresses->eq(0)->text();
@@ -102,38 +110,44 @@ class ParisTourismeParser extends LinksParser {
             $ville      = preg_replace("/^(\d+)(.+)/i", "$2", $cp_ville);
         }
 
-        $nom    = $this->parser->filter(".ficheDetailGauche .cartoucheTitre, .ficheDetailGauche .cartoucheTitreCommercial")->text();
-        $image  = str_replace("140x140", "350x350", $this->parser->filter(".ficheDetailGauche img")->eq(0)->attr("src"));
+        $nodeNom    = $this->getValueByPriorities([".ficheDetailGauche h1.cartoucheTitre", ".ficheDetailGauche h1.cartoucheTitreCommercial"]);
+        $nom        = ($nodeNom and $nodeNom->count()) ? $nodeNom->text() : null;
+        
+        $nodeImage  = $this->parser->filter(".ficheDetailGauche a img");
+        $image      = str_replace(["140x140", "|"], ["350x350", "%7C"], $nodeImage->eq($nodeImage->count() -1)->attr("src"));
 
         if(preg_match("/^\//", $image))
         {
-            $image = "http://parisinfo.com". $image;
+            $image = $this->base_url . $image;
         }
 
-        $themes = $this->parser->filter(".ContenuFicheDescriptif .ficheDescription")->eq(0)->text();
-
         //Vérification présence image en meilleure qualité
-        $ch = curl_init($image);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_exec($ch);
-        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if($retcode !== 200)
+        if(! $this->isReachable($image))
         {
             $image = str_replace("350x350", "140x140", $image);
         }
+        
+        if(! $this->isReachable($image))
+        {
+            $image = str_replace("listitem_pro", "block_media_big", $image);
+        }
+        
+        if(! $this->isReachable($image))
+        {
+            $image = null;
+        }
 
+        $themes = $this->parser->filter(".ContenuFicheDescriptif .ficheDescription")->eq(0)->text();
         $themes_categories = explode(":", $themes);
 
-        $theme = null;
-        $categorie = null;
+        $theme      = null;
+        $categorie  = null;
 
         if(count($themes_categories) == 2)
         {
-            $theme = $themes_categories[0];
-            $categories = explode("-", $themes_categories[1]);
-            $categorie = array_pop($categories);
+            $theme          = $themes_categories[0];
+            $categories     = explode("-", $themes_categories[1]);
+            $categorie      = array_pop($categories);
         }
 
         $tab_retour["date_debut"]           = \DateTime::createFromFormat("Y-m-d", $date_debut);
@@ -154,6 +168,35 @@ class ParisTourismeParser extends LinksParser {
 
         return $tab_retour;
     }
+    
+    protected function getValueByPriorities($priorities)
+    {
+        foreach($priorities as $priority)
+        {
+            $node        = $this->parser->filter($priority);
+            if($node->count() > 0) {
+                return $node;
+            }
+        }
+        
+        return null;
+    }
+    
+    protected function isReachable($url)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_exec($ch);
+        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        return $retcode === 200;
+    }
+    
+    protected function cleanUrl($url)
+    {
+        return strtr($url, 'áàâäãåçéèêëíìîïñóòôöõúùûüýÿ', 'aaaaaaceeeeiiiinooooouuuuyy');
+    }
 
     public function getLinks() {
         $this->parseContent("HTML");
@@ -163,17 +206,15 @@ class ParisTourismeParser extends LinksParser {
             $events = $this->parser->filter(".ResultatRechercheColDroite .cartoucheListe");
 
             $urls = array_merge($urls, $events->each(function($item) {
-                return $item->filter(".cartoucheTitre a, .cartoucheTitreCommercial a")->attr("href");
+                return $this->cleanUrl($item->filter(".cartoucheTitre a, .cartoucheTitreCommercial a")->attr("href"));
             }));
 
             $this->url = null;
-            $next = $this->parser->filter(".resultatNavigation a.resultatSuivant");
-            if ($next->count() > 0) {
-                $this->url = $this->base_url . $next->eq(0)->attr("href");
-                $this->parseContent();
-            } else {
-                $this->url = null;
-            }
+//            $next = $this->parser->filter(".resultatNavigation a.resultatSuivant");
+//            if ($next->count() > 0) {
+//                $this->url = $this->base_url . $next->eq(0)->attr("href");
+//                $this->parseContent();
+//            }
         }
 
         return $urls;
@@ -185,7 +226,7 @@ class ParisTourismeParser extends LinksParser {
 
         $dateDebut  = $tab_champs["date_debut"];
         $nom        = $tab_champs["nom"];
-        $a          = $this->getAgendaFromUniqueInfo($nom, $dateDebut);
+        $a          = $this->getAgendaFromUniqueInfo($nom, $dateDebut, $tab_champs["date_fin"], $tab_champs["lieu"]);
 
         $a->setDateFin($tab_champs["date_fin"]);
         $a->setDateDebut($dateDebut);

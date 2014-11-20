@@ -75,15 +75,27 @@ abstract class AgendaParser {
      * @param \DateTime|null $dateDebut
      * @return Agenda
      */
-    protected function getAgendaFromUniqueInfo($nom, $dateDebut)
+    protected function getAgendaFromUniqueInfo($nom, $dateDebut, $dateFin = null, $lieuNom = null)
     {
-        $agenda = null;
+        $agenda = null;        
         if($dateDebut !== null and $dateDebut !== false)
         {
-            $agenda = $this->repo->findOneBy([
-                "nom" => $nom,
-                "dateDebut" => $dateDebut
-            ]); //On cherche par le nom
+            if($lieuNom !== null and $dateFin !== null and $dateFin !== false)
+            {
+                $agenda = $this->repo->findOneBy([
+                    "lieuNom" => $lieuNom,
+                    "dateDebut" => $dateDebut,
+                    "dateFin" => $dateFin
+                ]);
+            }
+            
+            if($agenda === null)
+            {
+                $agenda = $this->repo->findOneBy([
+                    "nom" => $nom,
+                    "dateDebut" => $dateDebut
+                ]); //On cherche par le nom
+            }            
         }
 
         if($agenda === null)
