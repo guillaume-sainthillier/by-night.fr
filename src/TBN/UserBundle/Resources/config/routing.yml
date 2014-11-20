@@ -24,10 +24,8 @@ tbn_agenda_delete:
         id: (\d+)
         
 tbn_agenda_edit:
-    pattern: /corriger/{id}
+    pattern: /corriger/{slug}
     defaults: { _controller: TBNUserBundle:Agenda:edit }
-    requirements:
-        id: (\d+)
 
 tbn_agenda_list:
     pattern: /mes-soirees

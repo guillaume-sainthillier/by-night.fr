@@ -5,7 +5,7 @@ namespace TBN\MajDataBundle\Parser;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use TBN\AgendaBundle\Repository\AgendaRepository;
-use TBN\SocialBundle\Social\Facebook;
+use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Entity\BlackList;
@@ -20,7 +20,7 @@ use TBN\UserBundle\Entity\SiteInfo;
 class FaceBookParser extends AgendaParser {
 
     /**
-     * @var Facebook $api
+     * @var FacebookAdmin $api
      */
     protected $api;
 
@@ -55,11 +55,11 @@ class FaceBookParser extends AgendaParser {
      * @param type $site le site courant
      * @return \TBN\MajDataBundle\Parser\FaceBookParser
      */
-    public function __construct(AgendaRepository $repo, BlackListRepository $repoBlackList, Facebook $api, Site $site, SiteInfo $siteInfo, $geocoder) {
+    public function __construct(AgendaRepository $repo, BlackListRepository $repoBlackList, FacebookAdmin $api, Site $site, SiteInfo $siteInfo, $geocoder) {
 	parent::__construct($repo, null);
         
         $this->repoBlackList    = $repoBlackList;
-	$this->api              = $api;
+	$this->api              = $api->setSiteInfo($siteInfo);
 	$this->site             = $site;
         $this->siteInfo         = $siteInfo;
 	$this->geocoder         = $geocoder;
@@ -97,7 +97,7 @@ class FaceBookParser extends AgendaParser {
 
 	//Récupération des événements depuis les utilisateurs FB
         $this->write($output, 'Recherche d\'événements associés aux utilisateurs...');
-	$user_events    = $this->api->getEventsFromUsers($full_users, $this->siteInfo, $now, $output);
+	$user_events    = $this->api->getEventsFromUsers($full_users, $now, $output);
         $this->writeln($output, '<info>'.count($user_events).'</info> événements trouvés');
         
         //Construction de tous les événements
@@ -129,12 +129,12 @@ class FaceBookParser extends AgendaParser {
 	}, $this->repo->getLieux($this->site));
 
         $this->write($output, "Recherche d'endroits vers [".$this->site->getLatitude()."; ".$this->site->getLongitude()."]...");
-        $fb_places      = $this->api->getPlacesFromGPS($this->siteInfo, $this->site->getLatitude(), $this->site->getLongitude(), $this->site->getDistanceMax()* 10000);
+        $fb_places      = $this->api->getPlacesFromGPS($this->site->getLatitude(), $this->site->getLongitude(), $this->site->getDistanceMax()* 10000);
         $this->writeln($output, " <info>".(count($fb_places))."</info> endroits trouvés");
 
         $this->write($output, "Recherche d'événements associés aux endroits...");
         $full_places    = array_unique(array_merge([$this->site->getNom()], $places, $fb_places));
-        $events         = $this->api->searchEventsFromKeywords($full_places, $this->siteInfo, $now, $output);
+        $events         = $this->api->searchEventsFromKeywords($full_places, $now, $output);
         $this->writeln($output, " <info>".(count($events))."</info> événements trouvés");
         return $events;
     }
@@ -175,7 +175,7 @@ class FaceBookParser extends AgendaParser {
 
     protected function getPageInfos($page) {
 	if ($page->getProperty("id")) {
-	    $venue = $this->api->getPageFromId($this->siteInfo, $page->getProperty("id"));
+	    $venue = $this->api->getPageFromId($page->getProperty("id"));
 
 	    return [
 		"site" => $venue->getProperty("website"),
@@ -307,7 +307,7 @@ class FaceBookParser extends AgendaParser {
 	return $tab_retour;
     }
     
-    protected function getAgendaFromUniqueInfo($nom, $dateDebut, $facebookId)
+    protected function getAgendaFromUniqueInfo($nom, $dateDebut, $dateFin = null, $lieuNom = null, $facebookId = null)
     {
         $agenda = $this->repo->findOneBy([
             "facebookEventId" => $facebookId
@@ -318,7 +318,7 @@ class FaceBookParser extends AgendaParser {
             return $agenda;
         }
         
-        return parent::getAgendaFromUniqueInfo($nom, $dateDebut);
+        return parent::getAgendaFromUniqueInfo($nom, $dateDebut, $dateFin, $lieuNom);
     }
 
     public function hydraterAgenda($event) {
@@ -326,7 +326,7 @@ class FaceBookParser extends AgendaParser {
 	$nom = $event["nom"];
 	$dateDebut = $event["date_debut"];
 
-	$a = $this->getAgendaFromUniqueInfo($nom, $dateDebut, $event["fb_id"]);
+	$a = $this->getAgendaFromUniqueInfo($nom, $dateDebut, null, null, $event["fb_id"]);
 
 	$a->setNom($nom);
 	$a->setFacebookEventId($event["fb_id"]);

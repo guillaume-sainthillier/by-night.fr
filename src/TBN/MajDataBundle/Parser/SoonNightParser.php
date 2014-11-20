@@ -4,7 +4,6 @@ namespace TBN\MajDataBundle\Parser;
 
 use Symfony\Component\DomCrawler\Crawler;
 use TBN\AgendaBundle\Repository\AgendaRepository;
-use TBN\AgendaBundle\Entity\Agenda;
 
 /**
  * Description of BikiniParser
@@ -123,6 +122,7 @@ class SoonNightParser extends LinksParser{
         //Image
         $image                                  = $this->parser->filter(".case_visuel img");
         $tab_retour["image"]                    = $image->count() ? $image->attr("src") : null;
+        $tab_retour["source"]                   = $this->url;
 
         return $tab_retour;
     }
@@ -163,9 +163,8 @@ class SoonNightParser extends LinksParser{
 
         $dateDebut = $tab_champs["date_debut"];
 
-
         $nom = $tab_champs["nom"];
-        $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut);
+        $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut, null, $tab_champs["lieu_nom"]);
 
         $a->setNom($nom);
         $a->setLieuNom($tab_champs["lieu_nom"]);
@@ -182,6 +181,7 @@ class SoonNightParser extends LinksParser{
         $a->setCategorieManifestation($tab_champs["categorie"]);
         $a->setThemeManifestation("Musique,".$tab_champs["musique"]);
         $a->setUrl($tab_champs["image"]);
+        $a->setSource($tab_champs["source"]);
 
         return $a;
     }

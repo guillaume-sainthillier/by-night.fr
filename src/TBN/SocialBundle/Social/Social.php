@@ -18,6 +18,7 @@ use TBN\MainBundle\Site\SiteManager;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Description of Twitter
@@ -62,7 +63,13 @@ abstract class Social {
      */
     protected $session;
 
-    public function __construct($config, SiteManager $siteManager, SecurityContextInterface $securityContext, RouterInterface $router, SessionInterface $session) {
+    /**
+     *
+     * @var RequestStack $requestStack
+     */
+    protected $requestStack;
+
+    public function __construct($config, SiteManager $siteManager, SecurityContextInterface $securityContext, RouterInterface $router, SessionInterface $session, RequestStack $requestStack) {
 
 	if(!isset($config["id"]))
 	{
@@ -80,6 +87,7 @@ abstract class Social {
 	$this->securityContext	= $securityContext;
 	$this->router		= $router;
 	$this->session		= $session;
+	$this->requestStack    = $requestStack;
 
 	$this->constructClient();
     }
@@ -172,11 +180,7 @@ abstract class Social {
 
     protected function getLinkPicture(Agenda $agenda)
     {
-        /**
-         * @var Symfony\Component\HttpFoundation\Request $request
-         */
-        $request = $this->container->get("request");
-        return $request->getSchemeAndHttpHost()."/".$agenda->getWebPath();
+        return $this->requestStack->getMasterRequest()->getUriForPath("/".$agenda->getWebPath());
     }
 
     protected function getLink(Agenda $agenda)

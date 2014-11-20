@@ -5,6 +5,7 @@ namespace TBN\UserBundle\Controller;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Form\AgendaType;
+use TBN\AgendaBundle\Entity\Calendrier;
 
 class AgendaController extends Controller
 {
@@ -27,7 +28,7 @@ class AgendaController extends Controller
         $em->flush();
 
         $this->get('session')->getFlashBag()->add(
-            'info',
+            'success',
             'Votre événement a bien été supprimé'
         );
         return $this->redirect($this->generateUrl('tbn_agenda_list'));
@@ -52,7 +53,7 @@ class AgendaController extends Controller
                 $em->flush();
 
                 $this->get('session')->getFlashBag()->add(
-                    'info',
+                    'success',
                     'Votre événement a bien été modifié'
                 );
                 return $this->redirect($this->generateUrl('tbn_agenda_list'));
@@ -76,20 +77,26 @@ class AgendaController extends Controller
             $form->bind($this->getRequest());
             if ($form->isValid())
             {
+                $user   = $this->getCurrentUser();
                 $siteManager = $this->get('site_manager');
                 $site = $siteManager->getCurrentSite();
                 $em = $this->getDoctrine()->getManager();
 
+                $calendriers = $agenda->getCalendriers();
+                $calendrier = (new Calendrier)->setAgenda($agenda)->setUser($user)->setParticipe(1);
+                $calendriers->add($calendrier);
+                
                 $agenda->setUser($this->getCurrentUser());
-                $agenda->setSite($site);
+                $agenda->setSite($site)->setParticipations(1);
                 $em->persist($agenda);
+                $em->persist($calendrier);
                 $em->flush();
 
                 $this->postSocial($agenda, $form);
                 $em->flush();
 
                 $this->get('session')->getFlashBag()->add(
-                    'info',
+                    'success',
                     'Votre événement a bien été créé'
                 );
 
@@ -119,7 +126,7 @@ class AgendaController extends Controller
         ->add("supprimer","submit",[
             "label" => "Supprimer",
             "attr" => [
-                "class" => "btn btn-danger"
+                "class" => "btn btn-danger btn-lg btn-block"
             ]
         ])
         ->getForm();
@@ -129,7 +136,7 @@ class AgendaController extends Controller
     {
         return $this->createForm($this->getAgendaForm(),$agenda, [
             'action' => $this->generateUrl('tbn_agenda_edit', [
-                "id" => $agenda->getId()
+                "slug" => $agenda->getSlug()
             ]),
             'method' => 'POST'
         ])
@@ -137,12 +144,6 @@ class AgendaController extends Controller
             "label" => "Enregistrer",
             "attr" => [
                 "class" => "btn btn-primary btn-lg btn-block"
-            ]
-        ])
-        ->add("brouillon","submit",[
-            "label" => "Brouillon",
-            "attr" => [
-                "class" => "btn btn-warning btn-lg btn-block"
             ]
         ]);
     }
@@ -154,7 +155,7 @@ class AgendaController extends Controller
 
         $config = $this->container->getParameter('tbn_user.social');
         
-        return new AgendaType($repo->findOneBy([]), $user->getInfo(), $config);
+        return new AgendaType($repo->findOneBy([]), $user, $config);
     }
 
     protected function createCreateForm(Agenda $agenda)
@@ -167,12 +168,6 @@ class AgendaController extends Controller
             "label" => "Enregistrer",
             "attr" => [
                 "class" => "btn btn-primary btn-lg btn-block"
-            ]
-        ])
-        ->add("brouillon","submit",[
-            "label" => "Brouillon",
-            "attr" => [
-                "class" => "btn btn-warning btn-lg btn-block"
             ]
         ]);
     }
@@ -201,7 +196,7 @@ class AgendaController extends Controller
         $user_agenda = $agenda->getUser();
         $current_user = $this->getCurrentUser();
 
-        if($user_agenda !== $current_user)
+        if(!$current_user->hasRole("ROLE_ADMIN") and $user_agenda !== $current_user)
         {
             throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("Vous n'êtes pas autorisé à modifier cet événement");
         }

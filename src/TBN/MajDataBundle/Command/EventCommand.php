@@ -95,7 +95,7 @@ abstract class EventCommand extends ContainerAwareCommand
                     return true;
                 }
                 
-                if($date_fin_needle !== null and 
+                if($date_fin_needle !== null and $date_fin_event !== null and
                         $date_fin_event->format("Y-m-d") === $date_fin_needle->format("Y-m-d") and 
                         strtoupper($event->getLieuNom()) === strtoupper($agenda->getLieuNom()))
                 {

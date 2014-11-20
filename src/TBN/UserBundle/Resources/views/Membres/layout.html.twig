@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block breadcrumb_espace %}
-    {% set item = menu.addItem("Membres", path('tbn_user_list')) %}
+    {% set item = menu.addItem("Membres", path('tbn_search_query', {'type': 'membres'})) %}
     {% block breadcrumb_membre %}{% endblock %}
 {% endblock %}
 

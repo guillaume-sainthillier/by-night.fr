@@ -20,7 +20,7 @@ class ParisTourismeParser extends LinksParser {
         $now2->modify("+1 year");
         $search_params = [
             "search_type" => "agenda",
-            "nbPPage" => 10,
+            "nbPPage" => 100,
             "filter[]" => "attr_begin_dt:".$now->format("Y-m-d")."&filter[]=attr_end_dt:".$now2->format("Y-m-d"),
         ];
 
@@ -64,11 +64,11 @@ class ParisTourismeParser extends LinksParser {
             {
                 $current_telephone  = str_replace(["Téléphone :", "+33", "+ 33"], "", $telephone);
                 $current_telephone  = str_replace(["(0) ", "(0)"], "0", $current_telephone);
-                $resa_telephone     .= " ".trim($current_telephone);
+                $resa_telephone     = trim($resa_telephone." ".$current_telephone);
             }
 	}
         
-        var_dump($resa_telephone);
+        
 
         $resa_internet  = $node_resa_internet->count() ? $node_resa_internet->filter("a")->attr("href") : null;
 
@@ -86,7 +86,7 @@ class ParisTourismeParser extends LinksParser {
 
 	$nom_full_lieu = $lieux->reduce(function($p)
 	{
-	    return !preg_match("/detailAdresse/i", $p->attr("class"));
+	    return !preg_match("/detailAdresse/i", $p->attr("class")) and !preg_match("/reservezAvecParisInfo/i", $p->parents()->eq(0)->attr("class"));
 	});
 
 	$nom_lieu   = $nom_full_lieu->count() ? $nom_full_lieu->text() : null;
@@ -165,7 +165,11 @@ class ParisTourismeParser extends LinksParser {
         $tab_retour["reservation_telephone"]= $resa_telephone;
         $tab_retour["reservation_internet"] = $resa_internet;
         $tab_retour["reservation_mail"]     = $resa_mail;
+        $tab_retour["source"]               = $this->url;
 
+        var_dump($this->url);
+        die();
+        
         return $tab_retour;
     }
     
@@ -210,11 +214,11 @@ class ParisTourismeParser extends LinksParser {
             }));
 
             $this->url = null;
-//            $next = $this->parser->filter(".resultatNavigation a.resultatSuivant");
-//            if ($next->count() > 0) {
-//                $this->url = $this->base_url . $next->eq(0)->attr("href");
-//                $this->parseContent();
-//            }
+            $next = $this->parser->filter(".resultatNavigation a.resultatSuivant");
+            if ($next->count() > 0) {
+                $this->url = $this->base_url . $next->eq(0)->attr("href");
+                $this->parseContent();
+            }
         }
 
         return $urls;
@@ -243,6 +247,7 @@ class ParisTourismeParser extends LinksParser {
         $a->setReservationTelephone($tab_champs["reservation_telephone"]);
         $a->setReservationInternet($tab_champs["reservation_internet"]);
         $a->setReservationEmail($tab_champs["reservation_mail"]);
+        $a->setSource($tab_champs["source"]);
 
         return $a;
     }

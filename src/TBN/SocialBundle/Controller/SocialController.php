@@ -27,9 +27,9 @@ class SocialController extends BaseController
         foreach($socials as $service)
         {
             /** @var social Social */
-            $social = $this->container->get("tbn.social.".strtolower($service));
+            $social = $this->container->get("tbn.social.".strtolower($service === "facebook" ? "facebook_admin" : $service));
             $counts[$service] = $social->getNumberOfCount();
-        }
+         }
 
         return new JsonResponse($counts);
     }
@@ -37,17 +37,14 @@ class SocialController extends BaseController
     public function disconnectSiteAction($service)
     {
         /** @var social Social */
-        $social = $this->container->get("tbn.social.".strtolower($service));
+        $social = $this->container->get("tbn.social.".strtolower($service === "facebook" ? "facebook_events" : $service));
+        $siteManager = $this->container->get("site_manager");
+        $currentSite = $siteManager->getCurrentSite();
+        $social->disconnectSite($currentSite);//On enlève le profil social du site
+        $em = $this->container->get("doctrine.orm.entity_manager");
+        $em->persist($currentSite);
+        $em->flush();
 
-        if($social instanceof Social)
-        {
-            $siteManager = $this->container->get("site_manager");
-            $currentSite = $siteManager->getCurrentSite();
-            $social->disconnectSite($currentSite);//On enlève le profil social du site
-            $em = $this->container->get("doctrine.orm.entity_manager");
-            $em->persist($currentSite);
-            $em->flush();
-        }
 
         return new JsonResponse(["success" => true]);
     }
@@ -56,13 +53,10 @@ class SocialController extends BaseController
     {
         $user = $this->getUserWithService($service);
         /** @var social Social */
-        $social = $this->container->get("tbn.social.".strtolower($service));
-
-        if($social instanceof Social)
-        {
-            $social->disconnectUser($user);
-            $this->authenticateBasicUser($user);
-        }
+        $social = $this->container->get("tbn.social.".strtolower($service === "facebook" ? "facebook_events" : $service));
+        $social->disconnectUser($user);
+        $this->authenticateBasicUser($user);
+       
         return new JsonResponse(["success" => true]);
     }
 

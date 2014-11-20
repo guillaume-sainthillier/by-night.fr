@@ -43,13 +43,7 @@ class UserController extends Controller {
         $repo       = $em->getRepository("TBNAgendaBundle:Agenda");
 
         $response   = new Response;
-        $response->setLastModified($user->getLastLogin());
-        // Vérifie que l'objet Response n'est pas modifié
-        // pour un objet Request donné
-        if ($response->isNotModified($this->getRequest())) {
-            // Retourne immédiatement un objet 304 Response
-            return $response;
-        }
+
 
         return $response->setContent($this->renderView('TBNUserBundle:Membres:details.html.twig', [
                     "user" => $user,

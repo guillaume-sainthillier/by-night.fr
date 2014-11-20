@@ -5,32 +5,39 @@ namespace TBN\UserBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use TBN\UserBundle\Entity\Info;
 use TBN\UserBundle\Entity\SiteInfo;
+use TBN\UserBundle\Entity\User;
 
 class AgendaType extends AbstractType
 {
 
     /**
      *
-     * @var Info
+     * @var SiteInfo
      */
     protected $siteInfo;
 
     /**
      *
-     * @var Info
+     * @var UserInfo
      */
     protected $userInfo;
+
+    /**
+     *
+     * @var User
+     */
+    protected $user;
 
     protected $options;
 
 
-    public function __construct(SiteInfo $siteInfo, Info $userInfo, array $options)
+    public function __construct(SiteInfo $siteInfo, User $user, array $options)
     {
         $this->siteInfo = $siteInfo;
-        $this->userInfo = $userInfo;
-        $this->options = $options;
+        $this->user     = $user;
+        $this->userInfo = $user->getInfo();
+        $this->options  = $options;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -68,6 +75,13 @@ class AgendaType extends AbstractType
                 "attr" => [
                     "placeholder" => "Au..."
                 ]
+            ])
+            ->add('horaires','text', [
+                "label" => "Horaires",
+                "required" => false,
+                "attr" => [
+                    "placeholder" => "A 20h, de 21h à minuit"
+                ]
             ]);
 
 
@@ -82,8 +96,15 @@ class AgendaType extends AbstractType
                 $post_disabled = true;
             }else
             {
+                if($service === "facebook")
+                {
+                    $role = "ROLE_FACEBOOK_EVENTS";
+                }else
+                {
+                    $role = "ROLE_".strtoupper($service);
+                }
                 $post_disabled = false;
-                $post_checked = $this->userInfo->$getter() !== null;
+                $post_checked = $this->user->hasRole($role);
             }
 
             $builder->add('share_' .$service,'checkbox', [
@@ -114,7 +135,7 @@ class AgendaType extends AbstractType
                 ]
             ])
             ->add('themeManifestation','text', [
-                "label" => "Thème",
+                "label" => "Thèmes",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Humour, Tragédie, Jazz, Rock, Rap, ..."
@@ -128,27 +149,36 @@ class AgendaType extends AbstractType
                 ]
             ])
             ->add('adresse', 'text', [
-                "required" => true,
+                "required" => false,
                 "label" => "Adresse",
                 "attr" => [
-                    "placeholder" => "Indiquez l'adresse exacte"
+                    "placeholder" => "Indiquez l'adresse exacte de l'événement"
+                ]
+            ])            
+            ->add('rue','text', [
+                "required" => false,
+                "attr" => [
+                    "readonly" => true
+                ]
+            ])
+            ->add('codePostal','text', [
+                "required" => false,
+                "attr" => [
+                    "readonly" => true
+                ]
+            ])
+            ->add('ville','text', [
+                "required" => true,
+                "attr" => [
+                    "readonly" => true
                 ]
             ])
             ->add('latitude','hidden', [
                 "required" => false,
             ])
-            ->add('rue','hidden', [
-                "required" => false,
-            ])
             ->add('longitude','hidden', [
                 "required" => false,
-            ])
-            ->add('codePostal','hidden', [
-                "required" => false,
-            ])
-            ->add('ville','hidden', [
-                "required" => false,
-            ])
+            ])            
             ->add('reservationInternet','text', [
                 "label" => "Réservation par internet",
                 "required" => false,

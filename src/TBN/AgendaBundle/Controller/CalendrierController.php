@@ -24,11 +24,11 @@ class CalendrierController extends Controller
         if($calendrier === null)
         {
             $calendrier = new Calendrier;
-            $em->persist($calendrier);
             $calendrier->setUser($user)->setAgenda($agenda);
         }
-
         $calendrier->setParticipe($participer)->setInteret($interet);
+        
+        $em->persist($calendrier);
         $em->flush();
 
 	$repo		= $em->getRepository("TBNAgendaBundle:Agenda");

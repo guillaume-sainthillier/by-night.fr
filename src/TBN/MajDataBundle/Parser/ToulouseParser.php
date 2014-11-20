@@ -49,7 +49,7 @@ class ToulouseParser extends AgendaParser{
                 $date_debut = \DateTime::createFromFormat("d/m/Y", $tab[5]);
                 $date_fin = \DateTime::createFromFormat("d/m/Y", $tab[6]);
 
-                $a = $this->getAgendaFromUniqueInfo($nom, $date_debut);
+                $a = $this->getAgendaFromUniqueInfo($nom, $date_debut, $date_fin, $tab[10]);
 
                 $tab_agendas[] = $a->setNom($nom)
                 ->setDescriptif($tab[4])
@@ -73,7 +73,8 @@ class ToulouseParser extends AgendaParser{
                 ->setReservationInternet($tab[24])
                 ->setManifestationGratuite($tab[25])
                 ->setTarif($tab[26])
-                ->setTrancheAge($tab[28]);
+                ->setTrancheAge($tab[28])
+                ->setSource("http://data.toulouse-metropole.fr/web/guest/les-donnees/-/opendata/card/21905-agenda-des-manifestations-culturelles/");
             }
         }
 

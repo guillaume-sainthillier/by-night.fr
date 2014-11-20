@@ -22,7 +22,7 @@
 L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos propres événements et diffusez les automatiquement sur les réseaux sociaux !
 {% endspaceless %}{% endblock %}
     
-{% block body %}{% block body_agenda %}{% endblock %}{% endblock %}
+{% block body %}<div id="fb-root"></div>{% block body_agenda %}{% endblock %}{% endblock %}
 {% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
 
 {% block breadcrumb %}    
@@ -59,6 +59,7 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
 {% block js %}
     ville = "{{ site.nom }}";
     window.get_social_count = "{{ path('tbn_social_counts') }}";
+    window.fb_app_id = "{{ facebook_app_id }}";
     {% block js_agenda %}{% endblock %}
 {% endblock %}
     

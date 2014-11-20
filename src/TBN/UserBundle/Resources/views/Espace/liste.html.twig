@@ -15,16 +15,20 @@
     <thead>
         <tr>
             <th><a class="btn btn-success" href="{{ path('tbn_agenda_new') }}"><i class="fa fa-plus"></i> Nouvel événement</a></th>
-            <th>Titre</th>
-            <th>Date</th>
+            <th>Nom</th>
+            <th>Lieu</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
         </tr>
     </thead>    
     <tbody>
         {% for soiree in soirees %}
         <tr>
-            <td><a class="btn btn-primary" href="{{ path('tbn_agenda_edit', {'id': soiree.id}) }}"><i class="fa fa-pencil"></i> Corriger</a></td>
+            <td><a class="btn btn-primary" href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i> Corriger</a></td>
             <td>{{ soiree.nom }}</td>
-            <td><span title="Modifié le {{ soiree.dateModification|localizeddate('short','medium')|capitalize}}">{{ soiree.dateDebut|localizeddate('full','none')|capitalize}}</span></td>
+            <td>{{ soiree.lieuNom }}</td>
+            <td>{{ soiree.dateDebut|localizeddate('full','none')|capitalize}}</td>
+            <td>{{ soiree.dateFin|localizeddate('full','none')|capitalize}}</td>
         </tr>
         {% else %}
         <tr>

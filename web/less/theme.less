@@ -42,6 +42,25 @@
             }
         }
     }
+
+    // Dropdown menu items
+    .navbar-nav {
+        // Remove background color from open dropdown
+        > .open > a {
+            &,
+            &:hover,
+                &:focus {
+                background-color: darken(@navbar-default-bg, 10%);
+            }
+        }
+    }
+}
+
+.dropdown-menu>li>a {
+    &:hover, &:focus {
+        background-color: @color-primary;
+        color: white;
+    }
 }
 
 .navbar-inverse {
@@ -134,7 +153,7 @@
 .btn-danger {
     .btn-shadow(@btn-danger-bg);
     &:hover, &:focus, &:active, &.active, &.disabled, &[disabled] {
-        .btn-hover(@btn-default-bg);
+        .btn-hover(@btn-danger-bg);
     }
 }
 
@@ -149,7 +168,7 @@
 // Typography =================================================================
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-    
+
     color: @headings-color;
 
     small,
@@ -172,7 +191,7 @@ h1, h2, h3, h4, h5, h6,
             background-color: @navbar-default-bg;
         }        
     }
-    
+
     .icon-bar {
         background-color: white;
     }

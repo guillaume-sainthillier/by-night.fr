@@ -248,7 +248,7 @@ class AgendaRepository extends EntityRepository{
         }else
         {
             $qb->andWhere("a.dateDebut >= :now");
-            $params[":now"] = new \DateTime;
+            $params[":now"] = (new \DateTime)->format("Y-m-d");
         }
 
 

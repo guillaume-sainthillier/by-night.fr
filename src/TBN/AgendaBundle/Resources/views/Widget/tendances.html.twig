@@ -24,7 +24,9 @@
     </div>
 {% endblock %}
 {% block footer %}
+    {% if soiree.facebookEventId %}
     <div class="panel-footer">
         <button type="button" class="btn btn-primary btn-block more-widget" data-href="{{ path('tbn_agenda_soirees_membres', {'slug': soiree.slug }) }}" >Plus</button>
     </div>
+    {% endif %}
 {% endblock %}

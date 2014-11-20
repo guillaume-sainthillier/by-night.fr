@@ -10,6 +10,7 @@ use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
 use TBN\AgendaBundle\Form\SearchType;
 use TBN\AgendaBundle\Search\SearchAgenda;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class EventController extends Controller {
 
@@ -18,6 +19,18 @@ class EventController extends Controller {
      * @Cache(lastmodified="agenda.getDateModification()", etag="'Agenda' ~ agenda.getId() ~ agenda.getDateModification().format('Y-m-d H:i:s')")
      */
     public function detailsAction(Agenda $agenda) {
+        $siteManager = $this->container->get("site_manager");
+	$site = $siteManager->getCurrentSite();
+
+        //Redirection vers le bon site
+        if($agenda->getSite() !== $site)
+        {
+            return new RedirectResponse($this->get("router")->generate("tbn_agenda_details", [
+                "slug" => $agenda->getSlug(),
+                "subdomain"  => $agenda->getSite()->getSubdomain()
+            ]));
+        }
+        
 	$user = $this->get('security.context')->getToken()->getUser();
 
 

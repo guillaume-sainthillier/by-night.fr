@@ -46,11 +46,13 @@
                             <span class="color-info">intérêt{{ count_interets > 1 ? "s" : "" }}</span>
                         </div>
                     </div>
+                    {% if user.description %}
                     <hr />
                     <p class="text-center">
                         <i class="fa fa-quote-left fa-2x fa-border" ></i> 
                         {{ user.description }}
                     </p>
+                    {% endif %}
                     <hr />
                     {% include "TBNUserBundle:Membres:social_info.html.twig" %}
                 </div>

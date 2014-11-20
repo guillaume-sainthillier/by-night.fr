@@ -52,6 +52,8 @@ $(document).ready(function()
         }
     });
     
+    console.log(ville);
+    
     //Google Maps
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode( {'address' : ville}, function(results, status)
@@ -59,6 +61,7 @@ $(document).ready(function()
         if (status === google.maps.GeocoderStatus.OK)
         {
             var $field = $('#tbn_agenda_adresse');
+            console.log(results[0].address_components[1].short_name);
             $field.addresspicker({
                 "regionBias": "fr",
                 "componentsFilter" : "country:FR|administrative_area:" + results[0].address_components[1].short_name,
@@ -79,7 +82,10 @@ $(document).ready(function()
                 },
                 "updateCallback" : function(result, b)
                 {
-                    $("#tbn_agenda_rue").val((b.street_number ? b.street_number + " " : "" )+b.route);
+                    var rue = b.street_number ? b.street_number : '';
+                    rue += b.route ? ' ' + b.route : '';
+
+                    $("#tbn_agenda_rue").val(rue.trim());
                 }
             });
 

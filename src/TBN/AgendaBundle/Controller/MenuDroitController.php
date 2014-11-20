@@ -139,16 +139,15 @@ class MenuDroitController extends Controller {
             $today = new \DateTime;
             $dateModification->modify("+" . $dureeCache . " hours");
             if ($dateModification <= $today or $soiree->getFbParticipations() === null or $soiree->getFbInterets() === null) {
-                $api = $this->get("tbn.social.facebook");
-                $siteManager = $this->get("site_manager");
-                $em = $this->getDoctrine()->getManager();
-                $retour = $api->getEventStats($siteManager->getSiteInfo(), $id);
-
-                $cache = $this->get("winzou_cache");
+                $api    = $this->get("tbn.social.facebook_admin");
+                $retour = $api->getEventStats($id);
+                $cache  = $this->get("winzou_cache");
                 $cache->save("fb.stats." . $id, $retour["membres"]);
 
                 $soiree->setFbInterets($retour["interets"]);
                 $soiree->setFbParticipations($retour["participations"]);
+
+                $em = $this->getDoctrine()->getManager();
                 $em->persist($soiree);
                 $em->flush();
             }

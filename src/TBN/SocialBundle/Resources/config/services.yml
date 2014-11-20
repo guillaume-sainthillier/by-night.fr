@@ -8,10 +8,16 @@ services:
 #SecurityContextInterface $securityContext, RouterInterface $router, SessionInterface $session
     tbn.social.twitter:
         class:        TBN\SocialBundle\Social\Twitter
-        arguments:    [{ id: %twitter_app_id% , secret: %twitter_app_secret%}, @site_manager, @security.context, @router, @session]
+        arguments:    [{ id: %twitter_app_id% , secret: %twitter_app_secret%}, @site_manager, @security.context, @router, @session, @request_stack]
     tbn.social.facebook:
         class:        TBN\SocialBundle\Social\Facebook
-        arguments:    [{ id: %api_facebook_id% , secret: %api_facebook_secret%}, @site_manager, @security.context, @router, @session]
+        arguments:    [{ id: %api_facebook_id% , secret: %api_facebook_secret%}, @site_manager, @security.context, @router, @session, @request_stack]
+    tbn.social.facebook_events:
+        class:        TBN\SocialBundle\Social\FacebookEvents
+        arguments:    [{ id: %api_facebook_id% , secret: %api_facebook_secret%}, @site_manager, @security.context, @router, @session, @request_stack]
+    tbn.social.facebook_admin:
+        class:        TBN\SocialBundle\Social\FacebookAdmin
+        arguments:    [{ id: %api_facebook_id% , secret: %api_facebook_secret%}, @site_manager, @security.context, @router, @session, @request_stack]
     tbn.social.google:
         class:        TBN\SocialBundle\Social\Google
-        arguments:    [{ id: %google_app_id% , secret: %google_app_secret%}, @site_manager, @security.context, @router, @session]
+        arguments:    [{ id: %google_app_id% , secret: %google_app_secret%}, @site_manager, @security.context, @router, @session, @request_stack]

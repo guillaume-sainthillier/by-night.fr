@@ -87,6 +87,16 @@ class FOSUBUserProvider extends BaseClass
         return null;
     }
 
+    protected function getProperty(UserResponseInterface $response)
+    {
+        if(preg_match("/facebook/i", $response->getResourceOwner()->getName()))
+        {
+            $response->getResourceOwner()->setName("facebook");
+        }
+
+        return parent::getProperty($response);
+    }
+
     /**
      * {@inheritdoc}
      */

@@ -120,7 +120,7 @@ class ToulouseTourismeParser extends LinksParser {
 	//31500 Toulouse -> Toulouse
 	$ville = preg_replace("/^(\d+)(.+)/i","$2", $cp_ville);
 
-
+        
 
 	$tab_retour["date_debut"]		= \DateTime::createFromFormat("d/m/Y", $date_debut);
 	$tab_retour["image"]			= $this->parser->filter("#pictures_img .smoothbox")->count() ? $this->parser->filter("#pictures_img .smoothbox")->attr("href") : null;
@@ -135,6 +135,7 @@ class ToulouseTourismeParser extends LinksParser {
 	$tab_retour["reservation_telephone"]	= implode(",", $resa_telephone);
 	$tab_retour["reservation_internet"]	= implode(",", $resa_internet);
 	$tab_retour["tarif"]			= $tarif;
+        $tab_retour["source"]                   = $this->url;
 
 	return $tab_retour;
     }
@@ -170,8 +171,9 @@ class ToulouseTourismeParser extends LinksParser {
 	$tab_champs = $infos_agenda;
 
 	$dateDebut  = $tab_champs["date_debut"];
+        $dateFin    = isset($tab_champs["date_fin"]) ? $tab_champs["date_fin"] : null;
 	$nom	    = $tab_champs["nom"];
-	$a	    = $this->getAgendaFromUniqueInfo($nom, $dateDebut);
+	$a	    = $this->getAgendaFromUniqueInfo($nom, $dateDebut, $dateFin, $tab_champs["lieu"]);
 
 	if(isset($tab_champs["date_fin"]))
 	{
@@ -190,6 +192,7 @@ class ToulouseTourismeParser extends LinksParser {
 	$a->setReservationTelephone($tab_champs["reservation_telephone"]);
 	$a->setReservationInternet($tab_champs["reservation_internet"]);
 	$a->setTarif($tab_champs["tarif"]);
+	$a->setSource($tab_champs["source"]);
 
 	return $a;
     }

@@ -4,9 +4,17 @@
     {{ agenda.nom }}
 {% endblock %}
 
+{% block breadcrumb_espace %}
+    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
+    {% set item = menu.addItem("Mes événements", path('tbn_agenda_list')) %}
+    {% set item = menu.addItem(agenda.nom, path('tbn_agenda_edit', {'slug' : agenda.slug})) %}
+{% endblock %}
+
 {% block body_form %}
     {{ parent() }}
-    <div class="pull-right">
-        {{ form(form_delete) }}
+    <div class="row">
+        <div class="col-md-offset-8 col-md-4">
+            {{ form(form_delete) }}
+        </div>        
     </div>
 {% endblock %}

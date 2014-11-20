@@ -3,17 +3,18 @@
 {% set nomSoiree = soiree.nom %}
 {% set descriptionSoiree =  soiree.descriptif|parse_tags|raw  %}
 {% if soiree.webPath %}
-    {% set original = asset(soiree.webPath) %}
-    {% set thumb = original|imagine_filter('thumbs_evenement') %}
+    {% set original = app.request.getUriForPath('/' ~ soiree.webPath) %}
+    {% set thumb = soiree.webPath|imagine_filter('thumbs_evenement') %}
 {% elseif soiree.url %}
     {% set original = soiree.url %}
     {% set thumb = original %}
 {% else %}
-    {% set original = asset('img/empty_event.png') %}
-    {% set thumb = original|imagine_filter('thumbs_evenement') %}
+    {% set original = app.request.getUriForPath('/img/empty_event.png') %}
+    {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
 {% endif %}
 
 {% block titre_agenda %}
+    {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>{% endif %}
     {{ block('title') }}
 {% endblock %}
 
@@ -22,13 +23,13 @@
 {% endblock %}
 
 {% block breadcrumb_agenda %}
+    {% set test = menu.addItem(soiree.lieuNom, path('tbn_search_query',{'q': soiree.lieuNom })) %}    
     {% set test = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}    
 {% endblock %}
     
 {% block meta_description %}{% spaceless %}
     {{ nomSoiree }}. Plus d'infos sur {{ block('nom_site') }}.
 {% endspaceless %}{% endblock %}
-
 
 {% block og_titre %}{{ nomSoiree }} sur {{ block('nom_site') }}{% endblock %}
 {% block og_type %}article{% endblock %}
@@ -41,8 +42,6 @@
 {% endblock %}
 
 {% block body_agenda %}
-<div id="fb-root"></div>
-
 <div class="details_evenement" itemscope itemtype="http://schema.org/Event">
     <meta itemprop="name" content="{{ nomSoiree }}" />
     <meta itemprop="url" content="{{ path('tbn_agenda_details',{'slug' : soiree.slug} ) }}" />
@@ -159,6 +158,21 @@
                         {% endfor %}
                     </li>
                 {% endif %}
+                {% if soiree.source %}
+                <li>
+                    <i class="fa fa-li fa-info-circle"></i> 
+                    Source : <a href="{{ soiree.source }}" rel="nofollow">{{ soiree.fromData }}</a>
+                </li>
+                {% endif %}
+                {% if soiree.user %}   
+                <li>
+                    <i class="fa fa-li fa-user"></i>
+                    Par 
+                    <a href="{{ path('tbn_user_details', {'username': soiree.user.username} ) }}" title="Accédez au profil de {{ soiree.user.username }}">
+                        {{ soiree.user.username }}
+                    </a>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </div>    
@@ -209,9 +223,6 @@
         
 {% block head_js_agenda %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/hinclude/0.9.5/hinclude.min.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        window.fb_app_id = "{{ facebook_app_id }}";
-    </script>
 {% endblock %}
     
 {% block js_agenda %}

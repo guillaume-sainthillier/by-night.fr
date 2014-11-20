@@ -129,6 +129,10 @@ class DynamoParser extends LinksParser{
         $tab_retour["code_postal"]      = "31000";
         $tab_retour["commune"]          = "TOULOUSE";
 
+        //Source
+        $nodeSource                     = $this->currentEvent->filter(".evo_event_schema a[itemprop='url']");
+        $tab_retour["source"]           = $nodeSource->count() ? $nodeSource->attr("href") : null;
+
         return $tab_retour;
     }
 
@@ -150,7 +154,7 @@ class DynamoParser extends LinksParser{
         $dateDebut  = $tab_champs["date_debut"];
         $nom        = $tab_champs["nom"];
 
-        $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut);
+        $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut, null, $tab_champs["lieu_nom"]);
         $a->setNom($nom);
         $a->setDescriptif($tab_champs["descriptif"]);
         $a->setLieuNom($tab_champs["lieu_nom"]);
@@ -171,6 +175,7 @@ class DynamoParser extends LinksParser{
         $a->setTypeManifestation("Concert,");
         $a->setCategorieManifestation($tab_champs["categorie"]);
         $a->setThemeManifestation($tab_champs["theme"]);
+        $a->setSource($tab_champs["source"]);
 
         return $a;
     }

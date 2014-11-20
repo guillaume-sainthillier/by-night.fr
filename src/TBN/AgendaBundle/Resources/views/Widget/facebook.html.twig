@@ -1,21 +1,9 @@
 {% extends "TBNAgendaBundle:Widget:template.html.twig" %}
 
-{% block titre %}Retrouvez nous sur Facebook{% endblock %}
+{% block titre %}Retrouvez-nous sur Facebook{% endblock %}
 {% block icone %}fa-facebook{% endblock %}
 {% block body %}
     <div id="fb-root"></div>
-        <script>
-        window.fbId = "{{ site.facebookIdPage}}";
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id))
-                return;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/fr_FR/sdk.js#xfbml=1&appId=1418770208359828&version=v2.0";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script>
-
         <div id="fb-container">
             <div class="fb-like-box" 
                  data-href="https://www.facebook.com/{{ site.facebookIdPage}}" 

@@ -19,7 +19,7 @@ use TBN\MajDataBundle\Entity\HistoriqueMaj;
 use TBN\MainBundle\Entity\Site;
 use TBN\UserBundle\Entity\SiteInfo;
 use TBN\MajDataBundle\ParserManager\ParserManager;
-use TBN\SocialBundle\Social\Facebook;
+use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\MajDataBundle\Entity\BlackListRepository;
 
 
@@ -58,8 +58,9 @@ class UpdateCommand extends EventCommand
         $parserManager      = $this->container->get("parser_manager");
         $em                 = $this->container->get("doctrine")->getManager();
         $geocoder           = $this->container->get('ivory_google_map.geocoder');
-        $fbAPI              = $this->container->get("tbn.social.facebook");
+        $fbAPI              = $this->container->get("tbn.social.facebook_admin");
 
+        $historique         = new HistoriqueMaj();
         $repo               = $em->getRepository("TBNAgendaBundle:Agenda");
         $repoSite           = $em->getRepository("TBNMainBundle:Site");
         $repoBL             = $em->getRepository("TBNMajDataBundle:BlackList");
@@ -77,12 +78,12 @@ class UpdateCommand extends EventCommand
         {
             $this->writeln($output, "[".$env."] Mise à jour de <info>".$site->getNom()." By Night</info>...");
             $this->$getter($parserManager, $repo, $repoBL, $site, $parser, $siteInfo, $geocoder, $fbAPI);
-            $this->persistAgendas($output, $em, $site, $parserManager, $parser, $env);
+            $this->persistAgendas($output, $em, $site, $parserManager, $parser, $env, $historique);
         }   
     }
 
     protected function parseParis(  ParserManager $parserManager, AgendaRepository $repo, BlackListRepository $repoBL,
-                                    Site $currentSite, $site, SiteInfo $siteInfo, $geocoder, Facebook $fbAPI)
+                                    Site $currentSite, $site, SiteInfo $siteInfo, $geocoder, FacebookAdmin $fbAPI)
     {
         if(!$site or $site === "soonight")
         {
@@ -101,7 +102,7 @@ class UpdateCommand extends EventCommand
     }
 
     protected function parseToulouse(   ParserManager $parserManager, AgendaRepository $repo, BlackListRepository $repoBL,
-                                        Site $currentSite, $site, SiteInfo $siteInfo, $geocoder, Facebook $fbAPI)
+                                        Site $currentSite, $site, SiteInfo $siteInfo, $geocoder, FacebookAdmin $fbAPI)
     {
         if(!$site or $site === "toulouse")
         {
@@ -137,7 +138,7 @@ class UpdateCommand extends EventCommand
 
     
 
-    protected function persistAgendas(OutputInterface $output, $em, Site $site, ParserManager $parserManager, $parser, $env)
+    protected function persistAgendas(OutputInterface $output, $em, Site $site, ParserManager $parserManager, $parser, $env, HistoriqueMaj $historique)
     {
         $full_agendas       = $parserManager->parse($output);
 
@@ -179,8 +180,7 @@ class UpdateCommand extends EventCommand
         {
             $em->persist($blackList);
         }
-
-	$historique = new HistoriqueMaj();
+        
 	$historique->setFromData($parser ? $parser : 'tous')
 		->setSite($site)
 		->setNouvellesSoirees($nbNewSoirees)

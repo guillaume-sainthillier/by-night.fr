@@ -25,6 +25,9 @@ class BikiniParser extends LinksParser{
         $tab_retour["tarif"]                        = "";
         $tab_retour["theme"]                        = "";
         $tab_retour["image"]                        = $this->parser->filter("#blocImage a[rel=shadowbox]")->attr("href");
+        $tab_retour["source"]                       = $this->url;
+
+
         $this->parser->filter("#blocContenu")->children()->each(function($sibling) use(&$tab_retour)
         {
             if($sibling->attr("id") === "prix")
@@ -74,7 +77,7 @@ class BikiniParser extends LinksParser{
         $dateDebut = \DateTime::createFromFormat("Y-n-d", $date);
         $nom = $tab_champs["nom"];
 
-        $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut);
+        $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut, null, $tab_champs["lieu_nom"]);
 
         $a->setNom($nom);
         $a->setDescriptif(html_entity_decode($tab_champs["descriptif"]));
@@ -104,6 +107,7 @@ class BikiniParser extends LinksParser{
         $a->setCategorieManifestation("Concert");
         $a->setThemeManifestation($tab_champs["theme"]);
         $a->setUrl($tab_champs["image"]);
+        $a->setSource($tab_champs["source"]);
 
         return $a;
     }

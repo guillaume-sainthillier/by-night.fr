@@ -128,22 +128,42 @@ hwi_oauth:
             type:               twitter
             client_id:          %twitter_app_id%
             client_secret:      %twitter_app_secret%
-            
+        facebook_admin:
+            type:                facebook
+            client_id:           %api_facebook_id%
+            client_secret:       %api_facebook_secret%
+            scope:               email, publish_actions, manage_pages
+            authorization_url:   https://www.facebook.com/v2.1/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=username,name,email,picture.type(large)
+            paths:
+                email:          email
+                profilepicture: picture.data.url
+        facebook_events:
+            type:                facebook
+            client_id:           %api_facebook_id%
+            client_secret:       %api_facebook_secret%
+            scope:               email, publish_actions
+            authorization_url:   https://www.facebook.com/v2.1/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=username,name,email,picture.type(large)
+            paths:
+                email:          email
+                profilepicture: picture.data.url
         facebook:
             type:                facebook
-            client_id:           "%api_facebook_id%"
-            client_secret:       "%api_facebook_secret%"
-            scope:               "email, create_event, publish_actions, manage_pages"
-            infos_url:           "https://graph.facebook.com/me?fields=username,name,email,picture.type(large)"
+            client_id:           %api_facebook_id%
+            client_secret:       %api_facebook_secret%
+            scope:               email
+            authorization_url:   https://www.facebook.com/v2.1/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=username,name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
         google:
             type:                google
-            client_id:           "%google_app_id%"
-            client_secret:       "%google_app_secret%"
-            scope:               "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.stream.read https://www.googleapis.com/auth/plus.stream.write"
-    # here you will add one (or more) configurations for resource owners
+            client_id:           %google_app_id%
+            client_secret:       %google_app_secret%
+            scope:               https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.stream.read https://www.googleapis.com/auth/plus.stream.write
+
 
 be_simple_i18n_routing: ~
 
@@ -183,7 +203,7 @@ liip_imagine:
 tbn_user:
     socials:
         facebook:
-            enabled: false
+            enabled: true
         twitter: 
             enabled: false
         google: 

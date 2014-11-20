@@ -93,6 +93,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="ville", type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="Vous devez indiquer la ville de votre événement en saisissant l'adresse")
      */
     protected $ville;
 
@@ -135,6 +136,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="lieu_nom", type="string", length=255, nullable=true)
+     * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
      */
     protected $lieuNom;
 
@@ -301,7 +303,7 @@ class Agenda
     protected $googleSystemPostId;
 
     /**
-    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda")
+    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"remove"})
     */
     protected $calendriers;
 
@@ -352,6 +354,13 @@ class Agenda
      * @ORM\Column(name="interets", type="string", length=256, nullable=true)
      */
     protected $interets;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="source", type="string", length=256, nullable=true)
+     */
+    protected $source;
 
 
 
@@ -468,6 +477,20 @@ class Agenda
     {
         $this->dateModification = new \DateTime;
     }
+
+    /**
+     * @Assert\True(message = "La date de fin de l'événement doit être supérieure à la date de début")
+     */
+    public function isDatesValid()
+    {
+        if($this->dateFin === null)
+        {
+            return true;
+        }
+        
+        return $this->dateFin >= $this->dateDebut;
+    }
+
 
     public function __construct()
     {
@@ -1609,5 +1632,28 @@ class Agenda
     public function getAdresse()
     {
         return $this->adresse;
+    }
+
+    /**
+     * Set source
+     *
+     * @param string $source
+     * @return Agenda
+     */
+    public function setSource($source)
+    {
+        $this->source = $source;
+    
+        return $this;
+    }
+
+    /**
+     * Get source
+     *
+     * @return string 
+     */
+    public function getSource()
+    {
+        return $this->source;
     }
 }
