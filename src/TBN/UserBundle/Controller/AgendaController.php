@@ -112,7 +112,7 @@ class AgendaController extends Controller
 
     protected function getServiceByName($service)
     {
-        return $this->get("tbn.social.". strtolower($service));
+        return $this->get("tbn.social.". strtolower($service === "facebook" ? "facebook_admin" : $service));
     }
 
     protected function createDeleteForm(Agenda $agenda)

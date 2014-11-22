@@ -38,6 +38,40 @@ class FacebookAdmin extends FacebookEvents {
 
         return $this;
     }
+    
+    protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
+	if ($agenda->getFbPostSystemId() == null and $this->siteInfo !== null and $this->siteInfo->getFacebookAccessToken() !== null)
+        {
+            $site       = $this->siteManager->getCurrentSite();
+            $dateDebut  = $this->getReadableDate($agenda->getDateDebut());
+            $dateFin    = $this->getReadableDate($agenda->getDateFin());
+            $date       = $this->getDuree($dateDebut, $dateFin);
+            $message    = $user->getUsername() . " présente\n". $agenda->getNom()." @ ".$agenda->getLieuNom();
+
+            //Authentification
+	    $session = new FacebookSession($this->siteInfo->getFacebookAccessToken());
+            $session = new FacebookSession($user->getInfo()->getFacebookAccessToken());
+//	    $request = new FacebookRequest($session, 'POST', '/' . $site->getFacebookIdPage() . '/feed', [
+	    $request = new FacebookRequest($session, 'POST', '/me/feed', [
+		'message' => $message,
+		'name' => $agenda->getNom(),
+                'link' => $this->getLink($agenda),
+		'picture' => $this->getLinkPicture($agenda),
+                'description' => $date.". ".strip_tags($agenda->getDescriptif()),
+                'privacy' => json_encode(['value' => 'SELF']),
+		'actions' => json_encode([
+                    [
+                        "name" => $user->getUsername() . " sur " . $user->getSite()->getNom() . " By Night",
+                        "link" => $this->getMembreLink($user)
+                    ]
+                ])
+	    ]);
+
+	    $post = $request->execute()->getGraphObject();
+
+	    $agenda->setFbPostSystemId($post->getProperty("id"));
+	}
+    }
 
     public function getNumberOfCount() {
 	$site   = $this->siteManager->getCurrentSite();

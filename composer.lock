@@ -875,12 +875,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "9714a92e968f7e12431ccf5fecb1346f0d5adc65"
+                "reference": "3565dfb22df2b0791137d5244d34d528d887f73e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/9714a92e968f7e12431ccf5fecb1346f0d5adc65",
-                "reference": "9714a92e968f7e12431ccf5fecb1346f0d5adc65",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/3565dfb22df2b0791137d5244d34d528d887f73e",
+                "reference": "3565dfb22df2b0791137d5244d34d528d887f73e",
                 "shasum": ""
             },
             "require": {
@@ -934,7 +934,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2014-10-20 09:15:23"
+            "time": "2014-11-19 10:34:13"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -1092,12 +1092,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client.git",
-                "reference": "b19fc65f7db9d2071a9db4be1fd5fad3fe6abf6f"
+                "reference": "f985b38158efe4c55c90b90443311f792c919a59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/b19fc65f7db9d2071a9db4be1fd5fad3fe6abf6f",
-                "reference": "b19fc65f7db9d2071a9db4be1fd5fad3fe6abf6f",
+                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/f985b38158efe4c55c90b90443311f792c919a59",
+                "reference": "f985b38158efe4c55c90b90443311f792c919a59",
                 "shasum": ""
             },
             "require": {
@@ -1126,7 +1126,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2014-11-13 10:51:47"
+            "time": "2014-11-20 10:13:43"
         },
         {
             "name": "hwi/oauth-bundle",
@@ -1135,12 +1135,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/hwi/HWIOAuthBundle.git",
-                "reference": "e97748b3333f03ada757b0fc8ececb1b33120b3d"
+                "reference": "309d802f8de9f39e30851a145a7fc0de69b94076"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hwi/HWIOAuthBundle/zipball/e97748b3333f03ada757b0fc8ececb1b33120b3d",
-                "reference": "e97748b3333f03ada757b0fc8ececb1b33120b3d",
+                "url": "https://api.github.com/repos/hwi/HWIOAuthBundle/zipball/309d802f8de9f39e30851a145a7fc0de69b94076",
+                "reference": "309d802f8de9f39e30851a145a7fc0de69b94076",
                 "shasum": ""
             },
             "require": {
@@ -1241,7 +1241,7 @@
                 "yahoo",
                 "yandex"
             ],
-            "time": "2014-11-15 10:59:42"
+            "time": "2014-11-21 09:54:44"
         },
         {
             "name": "imagine/imagine",
@@ -1531,12 +1531,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/liip/LiipImagineBundle.git",
-                "reference": "eacdae21cc9ce8e07ab64d20d5a92529ed49709d"
+                "reference": "9a7f49505741d84d78929a99c9c4c45e17d0497a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipImagineBundle/zipball/eacdae21cc9ce8e07ab64d20d5a92529ed49709d",
-                "reference": "eacdae21cc9ce8e07ab64d20d5a92529ed49709d",
+                "url": "https://api.github.com/repos/liip/LiipImagineBundle/zipball/9a7f49505741d84d78929a99c9c4c45e17d0497a",
+                "reference": "9a7f49505741d84d78929a99c9c4c45e17d0497a",
                 "shasum": ""
             },
             "require": {
@@ -1596,7 +1596,7 @@
                 "image",
                 "imagine"
             ],
-            "time": "2014-11-12 10:15:02"
+            "time": "2014-11-18 13:03:01"
         },
         {
             "name": "monolog/monolog",
@@ -2197,16 +2197,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.5.6",
+            "version": "v2.5.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "1a1b1e528935f15dd76169f8b1dc3ef97f0d6210"
+                "reference": "dd4254fc39a702af22cd886a6790769541469da1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/1a1b1e528935f15dd76169f8b1dc3ef97f0d6210",
-                "reference": "1a1b1e528935f15dd76169f8b1dc3ef97f0d6210",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/dd4254fc39a702af22cd886a6790769541469da1",
+                "reference": "dd4254fc39a702af22cd886a6790769541469da1",
                 "shasum": ""
             },
             "require": {
@@ -2267,7 +2267,7 @@
                 "ircmaxell/password-compat": "1.0.*",
                 "monolog/monolog": "~1.3",
                 "ocramius/proxy-manager": ">=0.3.1,<0.6-dev",
-                "propel/propel1": "1.6.*"
+                "propel/propel1": "~1.6"
             },
             "type": "library",
             "extra": {
@@ -2306,7 +2306,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2014-10-24 06:55:39"
+            "time": "2014-11-20 16:00:03"
         },
         {
             "name": "twig/extensions",
@@ -2365,12 +2365,12 @@
             "version": "v1.16.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fabpot/Twig.git",
+                "url": "https://github.com/twigphp/Twig.git",
                 "reference": "42f758d9fe2146d1f0470604fc05ee43580873fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/42f758d9fe2146d1f0470604fc05ee43580873fc",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/42f758d9fe2146d1f0470604fc05ee43580873fc",
                 "reference": "42f758d9fe2146d1f0470604fc05ee43580873fc",
                 "shasum": ""
             },
