@@ -68,10 +68,6 @@ class Google extends Social {
                 curl_close($ch);
                 $json = json_decode($result, true);
 
-
-                var_dump($json);
-                die();
-
                 return intval($json[0]['result']['metadata']['globalCounts']['count']);
             } catch (\Exception $ex) {
                 var_dump($ex->getMessage());
