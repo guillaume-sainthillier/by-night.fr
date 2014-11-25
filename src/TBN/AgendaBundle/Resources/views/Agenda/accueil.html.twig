@@ -31,7 +31,7 @@
         'bundles/tbnagenda/css/liste.css'
 
         filter='cssrewrite,?yui_css'
-        output='prod/css/agenda/list.css'
+        output='prod/css/evenements/style.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
@@ -53,7 +53,7 @@
         '@TBNAgendaBundle/Resources/public/js/socials.js'
 
         filter='?yui_js'
-        output='prod/js/agenda/require_list.js'
+        output='prod/js/evenements/plugins.js'
     %}            
         js_scripts.plugin.push("{{ asset_url }}");
     {% endjavascripts %}
@@ -64,7 +64,7 @@
         '@TBNAgendaBundle/Resources/public/js/agenda.js'
 
         filter='?yui_js'
-        output='prod/js/agenda/list.js'
+        output='prod/js/evenements/scripts.js'
     %}
         js_scripts.final.push("{{ asset_url }}");
     {% endjavascripts %}

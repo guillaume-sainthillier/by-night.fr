@@ -22,7 +22,7 @@
         'bundles/tbnsocial/css/social_login.css'
 
         filter='cssrewrite,?yui_css'
-        output='prod/css/administration/info.css'
+        output='prod/css/administration/info/style.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}       
@@ -33,7 +33,7 @@
         'bundles/tbnsocial/js/social_login.js'
 
         filter='?yui_js'
-        output='prod/js/administration/info.js'
+        output='prod/js/administration/info/scripts.js'
     %}
         js_scripts.final.push("{{ asset_url }}");
     {% endjavascripts %}            

@@ -1,18 +1,22 @@
-tbn_user_post_search:
-    pattern: /requete
-    defaults: { _controller: TBNUserBundle:User:searchRedirect }
-    requirements:
-        method: POST
+#tbn_user_post_search:
+#    pattern: /requete
+#    defaults: { _controller: TBNUserBundle:User:searchRedirect }
+#    requirements:
+#        method: POST
+#
+#tbn_user_search:
+#    pattern: /recherche/{term}
+#    defaults: { _controller: TBNUserBundle:User:search, term: null }
+#    requirements:
+#        method: GET
 
 tbn_user_search:
     pattern: /recherche/{term}
-    defaults: { _controller: TBNUserBundle:User:search, term: null }
-    requirements:
-        method: GET
+    defaults: { _controller: TBNUserBundle:User:urlRedirect, term: null }
 
 tbn_user_list:
     pattern: /
-    defaults: { _controller: TBNUserBundle:User:list }
+    defaults: { _controller: TBNUserBundle:User:urlRedirect, term: null }
 
 tbn_user_stats:
     pattern: /{username}.html/stats/{type}

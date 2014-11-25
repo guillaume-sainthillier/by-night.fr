@@ -149,7 +149,7 @@
         'bundles/tbnuser/css/membre.css'
 
         filter='cssrewrite,?yui_css'
-        output='prod/css/users/membres.css'
+        output='prod/css/membre/style.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
@@ -164,7 +164,7 @@
         '@TBNUserBundle/Resources/public/js/details_user.js'
 
         filter='?yui_js'
-        output='prod/js/users/details.js'
+        output='prod/js/membre/scripts.js'
     %}
         js_scripts.final.push("{{ asset_url }}");
     {% endjavascripts %}

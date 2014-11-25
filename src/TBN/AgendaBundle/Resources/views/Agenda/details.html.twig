@@ -217,7 +217,7 @@
         'bundles/tbnagenda/css/details.css'
 
         filter='cssrewrite,?yui_css'
-        output='prod/css/agenda/details.css'
+        output='prod/css/evenement/style.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
@@ -234,7 +234,7 @@
         '@TBNCommentBundle/Resources/public/js/comments.js'
 
         filter='?yui_js'
-        output='prod/js/agenda/details.js'
+        output='prod/js/evenement/scripts.js'
     %}
         js_scripts.final.push("{{ asset_url }}");
     {% endjavascripts %}

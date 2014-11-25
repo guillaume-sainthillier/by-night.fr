@@ -10,8 +10,6 @@ use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
 use Facebook\GraphPage;
 use Facebook\GraphObject;
-use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
-use TBN\UserBundle\Entity\User;
 
 /**
  * Description of Facebook

@@ -17,7 +17,7 @@
         'bundles/tbnsocial/css/social_login.css'
 
         filter='cssrewrite,?yui_css'
-        output='prod/css/espace_perso.css'
+        output='prod/css/espace-perso/style.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}       
@@ -28,7 +28,7 @@
         'bundles/tbnsocial/js/social_login.js'
 
         filter='?yui_js'
-        output='prod/js/main_espace_perso.js'
+        output='prod/js/espace-perso/scripts.js'
     %}
         js_scripts.final.push("{{ asset_url }}");
     {% endjavascripts %}            

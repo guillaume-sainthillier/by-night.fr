@@ -62,7 +62,7 @@
             'css/respond.css'
 
             filter='cssrewrite,?yui_css'
-            output='prod/css/base.css'
+            output='prod/css/style.css'
         %}
             <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
         {% endstylesheets %}       
@@ -166,7 +166,7 @@
                     'js/modernizr.js'
 
                     filter='?yui_js'
-                    output='prod/js/modernizr.js'
+                    output='prod/js/base.js'
                 %}
                     js_scripts.base.push("{{ asset_url }}");
                 {% endjavascripts %}
@@ -180,7 +180,7 @@
                     'js/jquery.scrollTo.min.js'                    
 
                     filter='?yui_js'
-                    output='prod/js/overrides_bootstrap.js'
+                    output='prod/js/plugins.js'
                 %}
                     js_scripts.plugin.push("{{ asset_url }}");
                 {% endjavascripts %}
@@ -190,7 +190,7 @@
                     'js/scripts.js'
 
                     filter='?yui_js'
-                    output='prod/js/main_scripts.js'
+                    output='prod/js/scripts.js'
                 %}            
                     js_scripts.final.push("{{ asset_url }}");
                 {% endjavascripts %}
@@ -204,7 +204,7 @@
             'js/load.js'
 
             filter='?yui_js'
-            output='prod/js/load.js'
+            output='prod/js/async_loader.js'
         %}
             <script src="{{ asset_url }}" async></script>
         {% endjavascripts %}

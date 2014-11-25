@@ -10,32 +10,18 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller {
+    
+    public function urlRedirectAction($term) {
+        $params = [
+            "type" => "membres"
+        ];
 
-    public function searchAction($term)
-    {
-        $users = [];
-
-        if($term !== null and $term !== "")
+        if($term)
         {
-            $siteManager = $this->get("site_manager");
-            $site = $siteManager->getCurrentSite();
-
-            $em = $this->getDoctrine()->getManager();
-            $repo = $em->getRepository("TBNUserBundle:User");
-
-            $users = $repo->search($site, $term);
+            $params["q"] = $term;
         }
 
-        return $this->render("TBNUserBundle:Membres:recherche.html.twig", [
-            "users" => $users,
-            "term" => $term
-        ]);
-    }
-
-    public function searchRedirectAction(Request $request)
-    {
-        $term = $request->request->get('term', null);
-        return new RedirectResponse($this->get("router")->generate("tbn_user_search", ["term" => $term]));
+        return new RedirectResponse($this->get("router")->generate("tbn_search_query", $params));
     }
 
     public function detailsAction(User $user) {
@@ -53,31 +39,6 @@ class UserController extends Controller {
                     "count_participations" => $repo->getCountParticipations($user),
                     "count_interets" => $repo->getCountInterets($user),
         ]));
-    }
-
-    public function listAction() {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNUserBundle:User");
-
-        $siteManager = $this->get("site_manager");
-        $site = $siteManager->getCurrentSite();
-
-        $new_membres = $repo->findBy([
-            "site" => $site
-        ], [
-            "date_creation" => "DESC"
-        ]);
-
-        $last_actifs = $repo->findBy([
-            "site" => $site
-        ], [
-            "lastLogin" => "DESC"
-        ]);
-
-        return $this->render('TBNUserBundle:Membres:list.html.twig', [
-            "new_membres" => $new_membres,
-            "last_actifs" => $last_actifs
-        ]);
     }
 
     public function statsAction(Request $request, User $user, $type) {

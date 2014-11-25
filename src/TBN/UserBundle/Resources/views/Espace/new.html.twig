@@ -93,7 +93,7 @@
         'bundles/tbnsocial/css/social_login.css'
 
         filter='cssrewrite,?yui_css'
-        output='prod/css/espace-perso/evenement.css'
+        output='prod/css/espace-perso/evenements/style.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
@@ -113,7 +113,7 @@
         '@TBNUserBundle/Resources/public/js/jquery-ui.min.js'
 
         filter='?yui_js'
-        output='prod/js/espace-perso/lib.js'
+        output='prod/js/espace-perso/evenements/libs.js'
     %}            
         js_scripts.lib.push("{{ asset_url }}");
     {% endjavascripts %}    
@@ -124,7 +124,7 @@
         '@TBNSocialBundle/Resources/public/js/social_login.js'
 
         filter='?yui_js'
-        output='prod/js/espace-perso/plugins.js'
+        output='prod/js/espace-perso/evenements/plugins.js'
     %}            
         js_scripts.plugin.push("{{ asset_url }}");
     {% endjavascripts %}    
@@ -133,7 +133,7 @@
         '@TBNUserBundle/Resources/public/js/agenda.js'
 
         filter='?yui_js'
-        output='prod/js/espace-perso/agenda.js'
+        output='prod/js/espace-perso/evenements/scripts.js'
     %}            
         js_scripts.final.push("{{ asset_url }}");
     {% endjavascripts %}
