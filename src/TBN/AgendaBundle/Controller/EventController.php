@@ -112,7 +112,7 @@ class EventController extends Controller {
 		}
 	    }
 	    ksort($type_manifestation);
-	    $cache->save($key, $type_manifestation);
+	    $cache->save($key, $type_manifestation, 24*60*60);
 	}
 
 	return $cache->fetch($key);
@@ -137,7 +137,7 @@ class EventController extends Controller {
 	    }
 
 	    ksort($communes);
-	    $cache->save($key, $communes);
+	    $cache->save($key, $communes, 24*60*60);
 	}
 
 	return $cache->fetch($key);
@@ -155,7 +155,7 @@ class EventController extends Controller {
 		$lieux[] = $soiree->getLieuNom();
 	    }
 
-	    $cache->save($key, $lieux);
+	    $cache->save($key, $lieux, 24*60*60);
 	}
 
 	return $cache->fetch($key);
