@@ -52,21 +52,29 @@ class Google extends Social {
         $router = $this->router;
 
         if ($site !== null) {
-            try
-            {
-                $url = $router->generate("tbn_main_index", true);
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_URL, "https://clients6.google.com/rpc");
-                curl_setopt($curl, CURLOPT_POST, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, '[{"method":"pos.plusones.get","id":"p","params":{"nolog":true,"id":"' . $url . '","source":"widget","userId":"@viewer","groupId":"@self"},"jsonrpc":"2.0","key":"p","apiVersion":"v1"}]');
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-type: application/json']);
-                $curl_results = curl_exec ($curl);
-                curl_close ($curl);
-                $json = json_decode($curl_results, true);
+            try {
+                $url = $router->generate("tbn_main_index", [], true);
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, "https://clients6.google.com/rpc?key=AIzaSyCKSbrvQasunBoV16zDH9R33D88CeLr9gQ");
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, '[{"method":"pos.plusones.get","id":"p",
+                "params":{"nolog":true,"id":"' . $url . '","source":"widget","userId":"@viewer","groupId":"@self"},
+                "jsonrpc":"2.0","key":"p","apiVersion":"v1"}]');
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
 
-                return intval( $json[0]['result']['metadata']['globalCounts']['count'] );
+                $result = curl_exec($ch);
+                curl_close($ch);
+                $json = json_decode($result, true);
+
+
+                var_dump($json);
+                die();
+
+                return intval($json[0]['result']['metadata']['globalCounts']['count']);
             } catch (\Exception $ex) {
+                var_dump($ex->getMessage());
             }
         }
 
@@ -76,14 +84,13 @@ class Google extends Social {
     protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 
         return; //TODO: Wait Google api fix
-        if($user->hasRole("ROLE_GOOGLE")  and $info !== null and $info->getGoogleAccessToken() !== null)
-        {
+        if ($user->hasRole("ROLE_GOOGLE") and $info !== null and $info->getGoogleAccessToken() !== null) {
 
             $client = new Google_Client();
-            $client -> setApplicationName($this->container->getParameter('app_name'));
-            $client -> setClientId($this->container->getParameter('google_app_id'));
-            $client -> setClientSecret($this->container->getParameter('google_app_secret'));
-            $client -> setDeveloperKey("AIzaSyAzU6G-etnZzjzxGLPVb0UrfFQeI0dZi78");
+            $client->setApplicationName($this->container->getParameter('app_name'));
+            $client->setClientId($this->container->getParameter('google_app_id'));
+            $client->setClientSecret($this->container->getParameter('google_app_secret'));
+            $client->setDeveloperKey("AIzaSyAzU6G-etnZzjzxGLPVb0UrfFQeI0dZi78");
 
 
             $token = [
@@ -96,7 +103,7 @@ class Google extends Social {
             ];
 
             $client->setAccessToken(json_encode($token));
-            $client -> setScopes([
+            $client->setScopes([
                 'https://www.googleapis.com/auth/userinfo.email',
                 'https://www.googleapis.com/auth/userinfo.profile',
                 'https://www.googleapis.com/auth/plus.me',
@@ -142,6 +149,7 @@ class Google extends Social {
     }
 
     protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
-
+        
     }
+
 }
