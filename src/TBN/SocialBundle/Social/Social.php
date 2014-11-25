@@ -87,7 +87,7 @@ abstract class Social {
 	$this->securityContext	= $securityContext;
 	$this->router		= $router;
 	$this->session		= $session;
-	$this->requestStack    = $requestStack;
+	$this->requestStack     = $requestStack;
 
 	$this->constructClient();
     }

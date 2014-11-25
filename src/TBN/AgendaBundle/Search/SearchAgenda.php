@@ -29,15 +29,15 @@ class SearchAgenda {
     
     /**
      *
-     * @var string
+     * @var array
      */
-    protected $commune;
-    
+    protected $lieux;
+
     /**
      *
-     * @var string
+     * @var array
      */
-    protected $theme;
+    protected $commune;
     
     /**
      *
@@ -63,45 +63,45 @@ class SearchAgenda {
         return $this->type_manifestation;
     }
 
-    public function getCommune() {
-        return $this->commune;
-    }
-
-    public function getTheme() {
-        return $this->theme;
+    public function getLieux() {
+        return $this->lieux;
     }
 
     public function getTerm() {
         return $this->term;
     }
 
-    public function setDu($du) {
+    public function setDu(\DateTime $du = null) {
         $this->du = $du;
-
         return $this;
     }
 
-    public function setAu($au) {
+    public function setAu(\DateTime $au = null) {
         $this->au = $au;
+        return $this;
     }
 
     public function setTypeManifestation($type_manifestation) {
         $this->type_manifestation = $type_manifestation;
+        return $this;
     }
 
-    public function setCommune($commune) {
-        $this->commune = $commune;
-    }
-
-    public function setTheme($theme) {
-        $this->theme = $theme;
+    public function setLieux($lieux) {
+        $this->lieux = $lieux;
+        return $this;
     }
 
     public function setTerm($term) {
         $this->term = $term;
-
         return $this;
     }
 
+    public function getCommune() {
+        return $this->commune;
+    }
 
+    public function setCommune($commune) {
+        $this->commune = $commune;
+        return $this;
+    }
 }

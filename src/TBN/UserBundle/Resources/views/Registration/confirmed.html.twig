@@ -1,0 +1,27 @@
+{% extends "TBNUserBundle::layout.html.twig" %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block title_espace %}Inscription réussie{% endblock %}
+
+{% block titre_espace %}Inscription réussie{% endblock %}
+    
+{% block breadcrumb_espace %}
+    {% set item = menu.addItem("Inscription", path('fos_user_registration_register')) %}
+{% endblock %}
+
+{% block fos_user_content %}
+    <p>{{ 'registration.confirmed'|trans({'%username%': user.username}) }}</p>
+    {% if app.session is not empty %}
+        {% set targetUrl = app.session.get('_security.' ~ app.security.token.providerKey ~ '.target_path') %}
+        {% if targetUrl is not empty %}<p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>{% endif %}
+    {% endif %}
+    <br />
+    <p>
+        <i class="fa fa-spin fa-spinner"></i> Vous allez être redirigé vers la page d'accueil ...
+    </p>
+{% endblock fos_user_content %}
+
+{% block head_js %}
+    <meta http-equiv="refresh" content="3; url={{ path('tbn_agenda_index') }}">
+{% endblock %}

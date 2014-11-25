@@ -30,8 +30,7 @@ class Twitter extends Social
         $this->client = new TwitterOAuth($config);
     }
 
-    public function getNumberOfCount()
-    {
+    public function getNumberOfCount() {
         try {
             $site = $this->siteManager->getCurrentSite();
 
@@ -58,10 +57,10 @@ class Twitter extends Social
         if($user->hasRole("ROLE_TWITTER") and $agenda->getTweetPostId() == null and $info !== null and $info->getTwitterAccessToken() !== null)
         {
             $config = [
-                'consumer_key' => $this->container->getParameter("twitter_app_id"),
-                'consumer_secret' => $this->container->getParameter("twitter_app_secret"),
-                'oauth_token' => $info->getTwitterAccessToken(),
-                'oauth_token_secret' => $info->getTwitterTokenSecret()
+                'consumer_key' => $this->id,
+                'consumer_secret' => $this->secret,
+                'oauth_token'           => $info->getTwitterAccessToken(),
+                'oauth_token_secret'    => $info->getTwitterTokenSecret()
             ];
 
             $client = new TwitterOAuth($config);
@@ -81,24 +80,15 @@ class Twitter extends Social
         }
     }
 
-    protected function getName() {
-        return "Twitter";
-    }
-
     protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 
-        /**
-         * @var Site Description
-         */
-        $site = $this->siteManager->getCurrentSite();
-        $info = $site->siteManager->getSiteInfo();
-
+        $info = $this->siteManager->getSiteInfo();
         if($user->hasRole("ROLE_TWITTER") and $agenda->getTweetPostSystemId() === null and $agenda->getTweetPostId() !== null and $info->getTwitterAccessToken() !== null)
         {
 
             $config = [
-                'consumer_key' => $this->container->getParameter("twitter_app_id"),
-                'consumer_secret' => $this->container->getParameter("twitter_app_secret"),
+                'consumer_key' => $this->id,
+                'consumer_secret' => $this->secret,
                 'oauth_token' => $info->getTwitterAccessToken(),
                 'oauth_token_secret' => $info->getTwitterTokenSecret()
             ];
@@ -125,5 +115,9 @@ class Twitter extends Social
                 $agenda->setTweetPostSystemId($reponse->id_str);
             }*/
         }
+    }
+
+    protected function getName() {
+        return "Twitter";
     }
 }

@@ -5,7 +5,7 @@ $(document).ready(function ()
     {
         if(! gMap.find("iframe").length)
         {
-            $("<iframe>").attr({'class' : 'component', width: 600, height: 450, frameborder: 0, src: $(this).data("map")}).appendTo(gMap);
+            $("<iframe>").attr({'class' : 'component', width: gMap.width(), height: 450, frameborder: 0, src: $(this).data("map")}).css("width","100%").appendTo(gMap);
         }
         
         if(gMap.attr("data-toggled") === "1") //Masquer

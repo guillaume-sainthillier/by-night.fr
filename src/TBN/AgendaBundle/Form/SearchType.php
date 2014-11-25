@@ -2,9 +2,6 @@
 
 namespace TBN\AgendaBundle\Form;
 
-use TBN\MainBundle\Entity\Site;
-
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -13,14 +10,14 @@ class SearchType extends AbstractType
 {
 
     protected $types_manifesation;
-    protected $communes;
-    protected $themes;
+    protected $lieux;
+    protected $commune;
 
-    public function __construct($types_manifesation, $communes, $themes)
+    public function __construct($types_manifesation, $lieux, $commune)
     {
         $this->types_manifesation = $types_manifesation;
-        $this->communes = $communes;
-        $this->themes = $themes;
+        $this->lieux = $lieux;
+        $this->commune = $commune;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -38,24 +35,24 @@ class SearchType extends AbstractType
                 "format" => "d/M/y",
                 "attr" => ["class" => "datepicker", "data-date-format" => "dd/mm/yyyy"]
             ])
-            ->add("type_manifestation","choice",[
-                "choices" => $this->types_manifesation,
+            ->add("type_manifestation", "choice", [
+                "choices"  => $this->types_manifesation,
                 "multiple" => true,
                 "expanded" => false,
                 "required" => false,
-                "attr" => ["title" => "Type de manifestation", "data-style" => "btn-warning", "data-live-search" => true]])
-             ->add("commune","choice",[
-                "choices" => $this->communes,
+                "attr" => ["title" => "Type d'événement", "data-style" => "btn-warning", "data-live-search" => true]])
+             ->add("lieux", "choice", [
+                "choices"  => $this->lieux,
                 "multiple" =>  true,
                 "expanded" => false,
                 "required" => false,
-                "attr" => ["title" => "Commune", "data-style" => "btn-warning", "data-live-search" => true]])
-            ->add("theme","choice",[
-                "choices" => $this->themes,
+                "attr" => ["title" => "Lieux", "data-style" => "btn-warning", "data-live-search" => true]])
+             ->add("commune", "choice", [
+                "choices"  => $this->commune,
                 "multiple" =>  true,
                 "expanded" => false,
                 "required" => false,
-                "attr" => ["title" => "Thème", "data-style" => "btn-warning", "data-live-search" => true]])
+                "attr" => ["title" => "Villes", "data-style" => "btn-warning", "data-live-search" => true]])
             ->add('term', 'text', [
                 "required" => false,
                 "attr" => ["class" => "form-control","placeholder" => "Recherchez un événement"]])

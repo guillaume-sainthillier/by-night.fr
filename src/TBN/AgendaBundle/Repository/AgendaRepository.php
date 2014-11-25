@@ -263,17 +263,16 @@ class AgendaRepository extends EntityRepository{
             $qb->andWhere("a.typeManifestation IN(:type_manifesation)");
             $params[":type_manifesation"] = $search->getTypeManifestation();
         }
-
         if($search->getCommune() !== null and count($search->getCommune()) > 0)
         {
             $qb->andWhere("a.commune IN(:commune)");
             $params[":commune"] = $search->getCommune();
         }
 
-        if($search->getTheme() !== null and count($search->getTheme()) > 0)
+        if($search->getLieux() !== null and count($search->getLieux()) > 0)
         {
-            $qb->andWhere("a.themeManifestation IN(:theme_manifestation)");
-            $params[":theme_manifestation"] = $search->getTheme();
+            $qb->andWhere("a.lieuNom IN(:lieux)");
+            $params[":lieux"] = $search->getLieux();
         }
 
         return $qb
@@ -325,8 +324,10 @@ class AgendaRepository extends EntityRepository{
         ->from('TBNAgendaBundle:Agenda',"a")
         ->where("a.site = :site")
         ->andWhere("a.lieuNom != ''")
+        ->andWhere("a.dateDebut >= :today")
         ->groupBy("a.lieuNom")
-        ->setParameters([":site" => $site->getId()])
+        ->orderBy("a.lieuNom")
+        ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
         ->getQuery()
         ->execute();
     }
@@ -356,7 +357,7 @@ class AgendaRepository extends EntityRepository{
 	->andWhere("a.dateDebut >= :today")
         ->groupBy("a.commune")
         ->orderBy("a.commune", "DESC")
-        ->setParameters([":site" => $site->getId(), "today" => new \DateTime])
+        ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
         ->getQuery()
         ->execute();
     }
@@ -372,7 +373,7 @@ class AgendaRepository extends EntityRepository{
 	->andWhere("a.dateDebut >= :today")
         ->groupBy("a.themeManifestation")
         ->orderBy("a.themeManifestation", "DESC")
-        ->setParameters([":site" => $site->getId(), "today" => new \DateTime])
+        ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
         ->getQuery()
         ->execute();
     }
@@ -388,7 +389,7 @@ class AgendaRepository extends EntityRepository{
         ->andWhere("a.dateDebut >= :today")
         ->groupBy("a.typeManifestation")
         ->orderBy("a.typeManifestation", "DESC")
-        ->setParameters([":site" => $site->getId(), "today" => new \DateTime])
+        ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
         ->getQuery()
         ->execute();
     }

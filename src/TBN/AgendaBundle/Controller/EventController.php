@@ -67,12 +67,12 @@ class EventController extends Controller {
 	$repo = $em->getRepository("TBNAgendaBundle:Agenda"); // 100ms
 	$search = new SearchAgenda();
 
-	$communes = $this->getCommunes($repo, $site);
-	$themes_manif = $this->getThemes($repo, $site);
+	$lieux = $this->getLieux($repo, $site);
 	$types_manif = $this->getTypesManifestation($repo, $site);
+	$communes = $this->getCommunes($repo, $site);
 
         $action = $page > 1 ? $this->generateUrl("tbn_agenda_pagination", ["page" => $page]) : $this->generateUrl("tbn_agenda_index");
-	$form = $this->createForm(new SearchType($types_manif, $communes, $themes_manif), $search, [
+	$form = $this->createForm(new SearchType($types_manif, $lieux, $communes), $search, [
 	    "action" => $action
 	]); //100ms
 
@@ -143,26 +143,19 @@ class EventController extends Controller {
 	return $cache->fetch($key);
     }
 
-    protected function getThemes($repo, Site $site) {
+    protected function getLieux($repo, Site $site) {
 	$cache = $this->get("winzou_cache");
-	$key = 'themes.' . $site->getSubdomain();
+	$key = 'lieux.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {
-	    $soirees_themes = $repo->getThemes($site);
-	    $themes = [];
+	    $soirees_themes = $repo->getLieux($site);
+	    $lieux = [];
 
 	    foreach ($soirees_themes as $soiree) {//
-		$full_themes = preg_split("/,/", $soiree->getThemeManifestation());
-		foreach ($full_themes as $theme) {
-		    $theme = trim($theme);
-		    if (!in_array($theme, $themes) and $theme != "") {
-			$themes[$theme] = $theme;
-		    }
-		}
+		$lieux[] = $soiree->getLieuNom();
 	    }
 
-	    ksort($themes);
-	    $cache->save($key, $themes);
+	    $cache->save($key, $lieux);
 	}
 
 	return $cache->fetch($key);

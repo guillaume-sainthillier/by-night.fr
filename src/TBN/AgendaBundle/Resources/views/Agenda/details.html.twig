@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block breadcrumb_agenda %}
-    {% set test = menu.addItem(soiree.lieuNom, path('tbn_search_query',{'q': soiree.lieuNom })) %}    
+    {% set test = menu.addItem(soiree.lieuNom, path('tbn_search_query',{'q': soiree.lieuNom, 'type': 'evenements'})) %}    
     {% set test = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}    
 {% endblock %}
     
@@ -100,12 +100,14 @@
                             </div>
                         {% endif %}
                         
+                        {% if readableAdresse %}
                         <button 
                             class="btn btn-info btn-sm" 
                             id="loadMap"
                             data-map="https://www.google.com/maps/embed/v1/search?q={{ readableAdresse|raw|url_encode }}&key={{ googleMapKey }}&language=fr&zoom=16"
                             >Afficher sur une carte</button>
-                        <div id="googleMap"></div>                        
+                        <div id="googleMap"></div>
+                        {% endif %}
                     </div>
                 </li>
                 {% endif %}                
