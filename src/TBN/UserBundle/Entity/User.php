@@ -55,8 +55,7 @@ class User extends BaseUser
     /**
     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Agenda", mappedBy="user")
     * @ORM\OrderBy({"dateModification" = "DESC"})
-    */  
-
+    */
     protected $evenements;
  
     /**

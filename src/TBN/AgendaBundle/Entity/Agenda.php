@@ -2,6 +2,7 @@
 
 namespace TBN\AgendaBundle\Entity;
 
+use TBN\AgendaBundle\Entity\Place;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -13,11 +14,15 @@ use \Doctrine\Common\Collections\ArrayCollection;
 /**
  * Agenda
  *
- * @ORM\Table( name="agenda",
- *             indexes={@ORM\Index(
- *                  name="recherche_agenda_idx",
- *                  columns={"slug", "nom", "theme_manifestation", "commune", "type_manifestation", "date_debut"}
- * )})
+ * @ORM\Table(name="agenda", indexes={
+ *   @ORM\Index(name="agenda_slug_idx", columns={"slug"}),
+ *   @ORM\Index(name="agenda_nom_idx", columns={"nom"}),
+ *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
+ *   @ORM\Index(name="agenda_commune_idx", columns={"commune"}),
+ *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
+ *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"})
+ * })
+ * 
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")
  * @ORM\HasLifecycleCallbacks
  */
@@ -361,8 +366,12 @@ class Agenda
      * @ORM\Column(name="source", type="string", length=256, nullable=true)
      */
     protected $source;
-
-
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", inversedBy="evenements", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+     */
+    protected $place;
 
     public function getAbsolutePath()
     {
@@ -495,6 +504,7 @@ class Agenda
     public function __construct()
     {
         $this->dateDebut = new \DateTime;
+        $this->place = new Place;
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
     }
@@ -1655,5 +1665,28 @@ class Agenda
     public function getSource()
     {
         return $this->source;
+    }
+
+    /**
+     * Set place
+     *
+     * @param \TBN\AgendaBundle\Entity\Place $place
+     * @return Agenda
+     */
+    public function setPlace(\TBN\AgendaBundle\Entity\Place $place = null)
+    {
+        $this->place = $place->addEvenement($this);
+
+        return $this;
+    }
+
+    /**
+     * Get place
+     *
+     * @return \TBN\AgendaBundle\Entity\Place 
+     */
+    public function getPlace()
+    {
+        return $this->place;
     }
 }
