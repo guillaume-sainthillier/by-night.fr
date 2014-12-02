@@ -10,6 +10,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Debril\RssAtomBundle\Protocol\FeedOut;
 use Debril\RssAtomBundle\Protocol\FeedIn;
 use \Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
 
 /**
  * Agenda
@@ -25,6 +27,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * 
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")
  * @ORM\HasLifecycleCallbacks
+ * @ExclusionPolicy("all")
  */
 class Agenda
 {
@@ -33,6 +36,7 @@ class Agenda
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Expose
      */
     protected $id;
 
@@ -47,6 +51,7 @@ class Agenda
      *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      * @Assert\NotBlank(message="Vous devez donner un nom à votre événement")
+     * @Expose
      */
     protected $nom;
 
@@ -55,6 +60,7 @@ class Agenda
      *
      * @ORM\Column(name="descriptif", type="text", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une description à votre événement")
+     * @Expose
      */
     protected $descriptif;
 
@@ -70,6 +76,7 @@ class Agenda
      *
      * @ORM\Column(name="date_debut", type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
+     * @Expose
      */
     protected $dateDebut;
 
@@ -77,6 +84,7 @@ class Agenda
      * @var \DateTime
      *
      * @ORM\Column(name="date_fin", type="date", nullable=true)
+     * @Expose
      */
     protected $dateFin;
 
@@ -370,6 +378,7 @@ class Agenda
     /**
      * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", inversedBy="evenements", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
+     * @Expose
      */
     protected $place;
 

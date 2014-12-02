@@ -11,7 +11,7 @@
                 <h4 class="item_title">
                     <a title="Tous les détails de {{ nomSoiree }}" href="{{ path('tbn_agenda_details', {'slug' : soiree.slug}) }}">{{ nomSoiree }}</a>
                 </h4>            
-                <span class="color-primary">{{ soiree.lieuNom }}</span>
+                <span class="color-primary" title="{{ soiree.place.ville ? soiree.place.ville.nom : '' }}">{{ soiree.place.nom }}</span>
             </div>
         </div>
     </div>

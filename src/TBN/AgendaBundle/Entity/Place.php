@@ -2,22 +2,25 @@
 
 namespace TBN\AgendaBundle\Entity;
 
+use TBN\AgendaBundle\Entity\Ville;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Gedmo\Mapping\Annotation as Gedmo;
 use \Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
 
 /**
  * Place
  *
- * @ORM\Table(name="place", indexes={
- *   @ORM\Index(name="place_ville_idx", columns={"ville"}),
+ * @ORM\Table(name="Place", indexes={
  *   @ORM\Index(name="place_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="place_slug_idx", columns={"slug"}),
  * })
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Entity\PlaceRepository")
  * @ORM\HasLifecycleCallbacks
+ * @ExclusionPolicy("all")
  */
 class Place
 {
@@ -27,29 +30,17 @@ class Place
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Expose
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="rue", type="string", length=255)
+     * @ORM\Column(name="rue", type="string", length=255, nullable=true)
+     * @Expose
      */
     private $rue;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="code_postal", type="string", length=10, nullable=true)
-     */
-    private $codePostal;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="ville", type="string", length=255)
-     */
-    private $ville;
 
     /**
      * @var float
@@ -69,6 +60,7 @@ class Place
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255)
+     * @Expose
      */
     private $nom;
 
@@ -100,6 +92,13 @@ class Place
     protected $evenements;
     
     /**
+    * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Ville", cascade={"persist"})
+    * @ORM\JoinColumn(nullable=true)
+    * @Expose
+    */
+    protected $ville;
+
+    /**
     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
     * @ORM\JoinColumn(nullable=false)
     */
@@ -110,29 +109,8 @@ class Place
      */
     public function __construct()
     {
-        $this->evenements = new ArrayCollection();
-    }
-    
-    /**
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
-     */
-    public function majLieu()
-    {
-        $ville  = str_replace(["-", "ST"], [" ", "Saint"], $this->getVille());
-        $this->setVille($this->cleanAddress($ville))
-                ->setRue($this->cleanAddress($this->getRue()))
-                ->setVille($this->cleanAddress($this->getVille()));
-        
-//        if($this->getNom() === null)
-//        {
-//            $this->setNom($this->getVille());
-//        }
-    }
-    
-    private function cleanAddress($address)
-    {
-        return trim(ucwords(preg_replace("/(\s+)/", " ", $address)));
+        $this->evenements   = new ArrayCollection();
+        $this->ville        = new Ville();
     }
 
     /**
@@ -154,7 +132,7 @@ class Place
     public function setRue($rue)
     {
         $this->rue = $rue;
-
+    
         return $this;
     }
 
@@ -169,52 +147,6 @@ class Place
     }
 
     /**
-     * Set codePostal
-     *
-     * @param string $codePostal
-     * @return Place
-     */
-    public function setCodePostal($codePostal)
-    {
-        $this->codePostal = $codePostal;
-
-        return $this;
-    }
-
-    /**
-     * Get codePostal
-     *
-     * @return string 
-     */
-    public function getCodePostal()
-    {
-        return $this->codePostal;
-    }
-
-    /**
-     * Set ville
-     *
-     * @param string $ville
-     * @return Place
-     */
-    public function setVille($ville)
-    {
-        $this->ville = $ville;
-
-        return $this;
-    }
-
-    /**
-     * Get ville
-     *
-     * @return string 
-     */
-    public function getVille()
-    {
-        return $this->ville;
-    }
-
-    /**
      * Set latitude
      *
      * @param float $latitude
@@ -223,7 +155,7 @@ class Place
     public function setLatitude($latitude)
     {
         $this->latitude = $latitude;
-
+    
         return $this;
     }
 
@@ -246,7 +178,7 @@ class Place
     public function setLongitude($longitude)
     {
         $this->longitude = $longitude;
-
+    
         return $this;
     }
 
@@ -269,7 +201,7 @@ class Place
     public function setNom($nom)
     {
         $this->nom = $nom;
-
+    
         return $this;
     }
 
@@ -292,7 +224,7 @@ class Place
     public function setSlug($slug)
     {
         $this->slug = $slug;
-
+    
         return $this;
     }
 
@@ -315,7 +247,7 @@ class Place
     public function setPath($path)
     {
         $this->path = $path;
-
+    
         return $this;
     }
 
@@ -338,7 +270,7 @@ class Place
     public function setUrl($url)
     {
         $this->url = $url;
-
+    
         return $this;
     }
 
@@ -361,7 +293,7 @@ class Place
     public function addEvenement(\TBN\AgendaBundle\Entity\Agenda $evenements)
     {
         $this->evenements[] = $evenements;
-
+    
         return $this;
     }
 
@@ -394,7 +326,11 @@ class Place
     public function setSite(\TBN\MainBundle\Entity\Site $site)
     {
         $this->site = $site;
-
+        if($this->getVille())
+        {
+            $this->getVille()->setSite($site);
+        }
+        
         return $this;
     }
 
@@ -406,5 +342,28 @@ class Place
     public function getSite()
     {
         return $this->site;
+    }
+
+    /**
+     * Set ville
+     *
+     * @param \TBN\AgendaBundle\Entity\Ville $ville
+     * @return Place
+     */
+    public function setVille(\TBN\AgendaBundle\Entity\Ville $ville = null)
+    {
+        $this->ville = $ville;
+    
+        return $this;
+    }
+
+    /**
+     * Get ville
+     *
+     * @return \TBN\AgendaBundle\Entity\Ville 
+     */
+    public function getVille()
+    {
+        return $this->ville;
     }
 }

@@ -34,6 +34,8 @@ class AppKernel extends Kernel
             new Liip\ImagineBundle\LiipImagineBundle(),
             new winzou\CacheBundle\winzouCacheBundle(),
 	    new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),
+            new \JMS\SerializerBundle\JMSSerializerBundle(),
+            new \FOS\ElasticaBundle\FOSElasticaBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

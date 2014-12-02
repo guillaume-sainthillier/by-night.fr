@@ -1,3 +1,9 @@
+# ElasticSearch
+/app/Resources/java/elasticsearch/config/*
+/app/Resources/java/elasticsearch/data/*
+/app/Resources/java/elasticsearch/logs/*
+
+
 # Cache and logs (Symfony2)
 /app/cache/*
 /app/logs/*

@@ -50,6 +50,11 @@ class SearchAgenda {
     {
         $this->du = new \DateTime;
     }
+
+    public function getTerms()
+    {
+        return explode(" ", $this->getTerm());
+    }
     
     public function getDu() {
         return $this->du;

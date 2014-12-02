@@ -48,7 +48,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a title="Accéder à mon compte" href="{{ path('fos_user_profile_show') }}">Mon compte</a></li>                    
-                            <li><a title="Accéder à mon compte" href="{{ path('tbn_user_details', {'username' : app.user.username}) }}">Mon profil</a></li>                    
+                            <li><a title="Accéder à mon profil public" href="{{ path('tbn_user_details', {'username' : app.user.username}) }}">Mon profil</a></li>                    
                             <li><a href="{{ path('fos_user_security_logout') }}">Déconnexion</a></li>                                     
                         </ul>
                     </li>                  

@@ -31,7 +31,9 @@
         "liip/imagine-bundle":"dev-master",
         "winzou/cache-bundle": "dev-master",
         "egeloen/google-map-bundle": "~2.1",
-        "willdurand/geocoder": "*"
+        "willdurand/geocoder": "*",
+        "jms/serializer-bundle" : "0.13.*",
+        "friendsofsymfony/elastica-bundle" : "3.0.*"
     },
     "scripts": {
         "post-install-cmd": [

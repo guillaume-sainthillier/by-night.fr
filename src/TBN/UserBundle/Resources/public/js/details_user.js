@@ -15,7 +15,7 @@ function init_charts()
     
     $.each(window.datas, function(i, etablissement)
     {
-        morris_data.push({"label" : etablissement.lieuNom, "value" : etablissement.nbEtablissements}); 
+        morris_data.push({"label" : etablissement.nom || "", "value" : etablissement.nbEtablissements}); 
     });
 
     Morris.Donut({

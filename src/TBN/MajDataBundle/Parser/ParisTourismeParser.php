@@ -63,7 +63,7 @@ class ParisTourismeParser extends LinksParser {
             foreach(explode("/", $tel_fax[0]) as $telephone)
             {
                 $current_telephone  = str_replace(["Téléphone :", "+33", "+ 33"], "", $telephone);
-                $current_telephone  = str_replace(["(0) ", "(0)"], "0", $current_telephone);
+                $current_telephone  = str_replace(["(0) ", "(0)", " (0)", " (0) "], "0", $current_telephone);
                 $resa_telephone     = trim($resa_telephone." ".$current_telephone);
             }
 	}

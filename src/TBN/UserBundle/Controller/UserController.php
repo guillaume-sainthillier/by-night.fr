@@ -35,7 +35,7 @@ class UserController extends Controller {
                     "user" => $user,
                     "next_events" => $repo->findAllNextEvents($user),
                     "previous_events" => $repo->findAllNextEvents($user, false),
-                    "etablissements" => $repo->findAllEtablissements($user),
+                    "etablissements" => $repo->findAllPlaces($user),
                     "count_participations" => $repo->getCountParticipations($user),
                     "count_interets" => $repo->getCountInterets($user),
         ]));

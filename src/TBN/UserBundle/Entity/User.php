@@ -4,6 +4,8 @@ namespace TBN\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
 
 /**
  * User
@@ -14,6 +16,7 @@ use FOS\UserBundle\Model\User as BaseUser;
  *                  columns={"nom", "date_creation"}
  * )})
  * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\UserRepository")
+ * @ExclusionPolicy("all")
  */
 class User extends BaseUser
 {
@@ -21,6 +24,7 @@ class User extends BaseUser
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+      * @Expose
      */
     protected $id;
 
@@ -28,6 +32,7 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
+     * @Expose
      */
     protected $nom;
     
@@ -35,6 +40,7 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
+     * @Expose
      */
     protected $firstname;
  
@@ -42,6 +48,7 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(name="lastname", type="string", length=255, nullable=true)
+     * @Expose
      */
     protected $lastname;
     
@@ -49,6 +56,7 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=127, nullable=true)
+     * @Expose
      */
     protected $description;
     

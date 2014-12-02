@@ -6,6 +6,8 @@ use TBN\MainBundle\Controller\TBNController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use TBN\MainBundle\Entity\Site;
+use TBN\AgendaBundle\Entity\Place;
+use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
 use TBN\AgendaBundle\Form\SearchType;
@@ -30,7 +32,7 @@ class EventController extends Controller {
                 "subdomain"  => $agenda->getSite()->getSubdomain()
             ]));
         }
-        
+
 	$user = $this->get('security.context')->getToken()->getUser();
 
 
@@ -60,16 +62,25 @@ class EventController extends Controller {
 	    $page = 1;
 	}
 
+        /** var \FOS\ElasticaBundle\Manager\RepositoryManager */
+        $repositoryManager = $this->get('fos_elastica.manager');
+
+        /**
+         * @var FOS\ElasticaBundle\Repository .
+         */
+        $repository = $repositoryManager->getRepository('TBNAgendaBundle:Agenda');
+        
 	$nbSoireeParPage = 15;
 	$siteManager = $this->container->get("site_manager");
 	$site = $siteManager->getCurrentSite();
 	$em = $this->getDoctrine()->getManager();
 	$repo = $em->getRepository("TBNAgendaBundle:Agenda"); // 100ms
+        
 	$search = new SearchAgenda();
 
-	$lieux = $this->getLieux($repo, $site);
-	$types_manif = $this->getTypesManifestation($repo, $site);
-	$communes = $this->getCommunes($repo, $site);
+	$lieux = $this->getPlaces($repo, $site);
+	$types_manif = $this->getTypesEvenements($repo, $site);
+	$communes = $this->getVilles($repo, $site);
 
         $action = $page > 1 ? $this->generateUrl("tbn_agenda_pagination", ["page" => $page]) : $this->generateUrl("tbn_agenda_index");
 	$form = $this->createForm(new SearchType($types_manif, $lieux, $communes), $search, [
@@ -80,8 +91,10 @@ class EventController extends Controller {
 	    $form->bind($request); //200ms
 	}
 
-	$soirees = $repo->findWithSearch($site, $search, $page, $nbSoireeParPage); //100ms
+        
+	$soirees = $repository->findWithSearch($site, $search, $page, $nbSoireeParPage); //100ms
 	$full_soirees = $repo->findCountWithSearch($site, $search); // 10ms
+
 
 	$pageTotal = ceil($full_soirees / $nbSoireeParPage);
 
@@ -94,12 +107,12 @@ class EventController extends Controller {
 	]); //800ms
     }
 
-    protected function getTypesManifestation($repo, Site $site) {
+    protected function getTypesEvenements($repo, Site $site) {
 	$cache = $this->get("winzou_cache");
-	$key = 'types_manifesations.' . $site->getSubdomain();
+	$key = 'types_evenements.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {
-	    $soirees_type_manifestation = $repo->getTypesManifestation($site);
+	    $soirees_type_manifestation = $repo->getTypesEvenements($site);
 	    $type_manifestation = [];
 
 	    foreach ($soirees_type_manifestation as $soiree) {//
@@ -118,42 +131,35 @@ class EventController extends Controller {
 	return $cache->fetch($key);
     }
 
-    protected function getCommunes($repo, Site $site) {
+    protected function getVilles($repo, Site $site) {
 	$cache = $this->get("winzou_cache");
-	$key = 'communes.' . $site->getSubdomain();
+	$key = 'villes.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {
-	    $soirees_communes = $repo->getCommunes($site);
-	    $communes = [];
+	    $villes = $repo->getAgendaVilles($site);
 
-	    foreach ($soirees_communes as $soiree) {//
-		$full_communes = preg_split("/,/", $soiree->getCommune());
-		foreach ($full_communes as $commune) {
-		    $commune = trim($commune);
-		    if (!in_array($commune, $communes) and $commune != "") {
-			$communes[$commune] = $commune;
-		    }
-		}
-	    }
+            $communes   = array_map(function(Ville $ville)
+            {
+                return $ville->getNom();
+            }, $villes);
 
-	    ksort($communes);
 	    $cache->save($key, $communes, 24*60*60);
 	}
 
 	return $cache->fetch($key);
     }
 
-    protected function getLieux($repo, Site $site) {
+    protected function getPlaces($repo, Site $site) {
 	$cache = $this->get("winzou_cache");
-	$key = 'lieux.' . $site->getSubdomain();
+	$key = 'places.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {
-	    $soirees_themes = $repo->getLieux($site);
-	    $lieux = [];
+	    $places = $repo->getAgendaPlaces($site);
 
-	    foreach ($soirees_themes as $soiree) {//
-		$lieux[] = $soiree->getLieuNom();
-	    }
+	    $lieux   = array_map(function(Place $place)
+            {
+                return $place->getNom();
+            }, $places);
 
 	    $cache->save($key, $lieux, 24*60*60);
 	}

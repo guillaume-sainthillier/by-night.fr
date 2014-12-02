@@ -52,8 +52,15 @@ class MainExtension extends \Twig_Extension{
         return [
             'resume'            => new \Twig_Filter_Method($this, 'resume'),
             'partial_extends'   => new \Twig_Filter_Method($this, 'partialExtendsFilter'),
-            'url_decode'        => new \Twig_Filter_Method($this, 'urlDecode')
+            'url_decode'        => new \Twig_Filter_Method($this, 'urlDecode'),
+            'dump_and_die'      => new \Twig_Filter_Method($this, 'dump')
         ];
+    }
+
+    public function dump($value)
+    {
+        var_dump($value);
+        die();
     }
 
     public function urlDecode($value)

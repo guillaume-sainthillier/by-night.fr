@@ -13,17 +13,22 @@
     {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
 {% endif %}
 
+{% set place = soiree.place %}
+{% set villePlace = place.ville %}
+
+
 {% block titre_agenda %}
     {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>{% endif %}
     {{ block('title') }}
 {% endblock %}
 
-{% block title_agenda %}
-    {{ nomSoiree }}
-{% endblock %}
+{% block title_agenda %}{{ nomSoiree }}{% endblock %}
 
 {% block breadcrumb_agenda %}
-    {% set test = menu.addItem(soiree.lieuNom, path('tbn_search_query',{'q': soiree.lieuNom, 'type': 'evenements'})) %}    
+    {% if villePlace %}
+        {% set test = menu.addItem(villePlace.nom, path('tbn_search_query',{'q': villePlace.nom, 'type': 'evenements'})) %}
+    {% endif %}
+    {% set test = menu.addItem(place.nom, path('tbn_search_query',{'q': place.nom, 'type': 'evenements'})) %}    
     {% set test = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}    
 {% endblock %}
     
@@ -67,33 +72,34 @@
                         au <time itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\TH:i:sO') }}">{{ soiree.dateFin|localizeddate('full', 'none') }}</time>
                     {% endif %}
 
-                    {% if soiree.horaires != "" %}
+                    {% if soiree.horaires %}
                         - {{ soiree.horaires }}
                     {% endif %}
                 </li>
-                {% if soiree.rue != "" or soiree.codePostal != "" or soiree.commune != "" or soiree.lieuNom != "" %}
+                
+                {% if place.rue or place.nom or ville %}
                 <li>
                     <i class="fa fa-li fa-map-marker"></i>
                     <div itemprop="organizer" itemscope itemtype="http://schema.org/Organization">
                         {% set readableAdresse = "" %}
-                        {% if soiree.lieuNom != "" %}
-                            {% set readableAdresse = readableAdresse ~ soiree.lieuNom %}
-                            <div itemprop="name">{{ soiree.lieuNom }}</div>
+                        {% if place.nom %}
+                            {% set readableAdresse = place.nom %}
+                            <div itemprop="name">{{ place.nom }}</div>
                         {% endif %}
 
-                        {% if soiree.rue != "" or soiree.codePostal != "" or soiree.ville != "" %}
+                        {% if place.rue or ville %}
                             <div itemprop="address" itemscope itemtype="http://schema.org/Address">
-                                {% if soiree.rue != "" %}
-                                    <div itemprop="streetAddress">{{ soiree.rue }}</div>
+                                {% if place.rue %}
+                                    <div itemprop="streetAddress">{{ place.rue }}</div>
                                 {% endif %}
-                                {% if soiree.codePostal != "" or soiree.ville != "" %}
+                                {% if villePlace.codePostal or villePlace.nom %}
                                     <div>
-                                        {% if soiree.codePostal != "" %}
-                                            <span itemprop="postalCode">{{ soiree.codePostal }} </span>
+                                        {% if villePlace.codePostal %}
+                                            <span itemprop="postalCode">{{ villePlace.codePostal }} </span>
                                         {% endif %}
-                                        {% if soiree.ville != "" %}
-                                            {% set readableAdresse = readableAdresse ~ " " ~ soiree.ville %}
-                                            <span itemprop="addressLocality">{{ soiree.ville }}</span>
+                                        {% if villePlace.nom %}
+                                            {% set readableAdresse = readableAdresse ~ " " ~ villePlace.nom %}
+                                            <span itemprop="addressLocality">{{ villePlace.nom }}</span>
                                         {% endif %}
                                     </div>                                    
                                 {% endif %}                                
@@ -120,7 +126,7 @@
                     </div>
                 </li>
                 {% endif %}
-                {% if soiree.reservationTelephone != "" %}
+                {% if soiree.reservationTelephone %}
                 <li>
                     <i class="fa fa-li fa-phone"></i> 
                     {{ soiree.reservationTelephone }}
@@ -136,7 +142,7 @@
                         {% endif %}
                     {% endfor %}
                 {% endfor %}
-                {% if soiree.reservationEmail != "" %}
+                {% if soiree.reservationEmail %}
                     <li><i class="fa fa-li fa-envelope-o"></i> <a href="mailto:{{ soiree.reservationEmail }}">{{ soiree.reservationEmail }}</a></li>
                 {% endif %}
                 {% if soiree.facebookEventId %}
@@ -179,7 +185,7 @@
         </div>
     </div>    
 
-    {% if soiree.modificationDerniereMinute != "" %}
+    {% if soiree.modificationDerniereMinute %}
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i>
             <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>

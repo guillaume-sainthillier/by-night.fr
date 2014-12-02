@@ -8,7 +8,7 @@ use TBN\UserBundle\Entity\User;
 use TBN\AgendaBundle\Search\SearchAgenda;
 use Doctrine\ORM\QueryBuilder;
 
-class AgendaRepository extends EntityRepository{
+class AgendaRepository extends EntityRepository {
 
     public function getLastDateStatsUser(User $user)
     {
@@ -41,16 +41,17 @@ class AgendaRepository extends EntityRepository{
         ->getScalarResult();
     }
 
-    public function findAllEtablissements(User $user, $limit = 5)
+    public function findAllPlaces(User $user, $limit = 5)
     {
         return $this->_em
         ->createQueryBuilder()
-        ->select('COUNT(u) as nbEtablissements, a.lieuNom')
+        ->select('COUNT(u) as nbEtablissements, p.nom')
         ->from('TBNAgendaBundle:Calendrier',"c")
         ->leftJoin("TBNUserBundle:User", "u", "WITH", "u = c.user")
         ->leftJoin("TBNAgendaBundle:Agenda", "a", "WITH", "a = c.agenda")
+        ->leftJoin("TBNAgendaBundle:Place", "p", "WITH", "p = a.place")
         ->where("c.user = :user")
-        ->groupBy("a.lieuNom")
+        ->groupBy("p.nom")
         ->orderBy("nbEtablissements", "DESC")
         ->setParameters([":user" => $user->getId()])
         ->setFirstResult(0)
@@ -226,7 +227,7 @@ class AgendaRepository extends EntityRepository{
     }
 
     protected function makeQuery(QueryBuilder $qb, Site $site, SearchAgenda $search)
-    {
+    {       
         $params = [":site" => $site->getId()];
         $qb->where("a.site = :site");
 
@@ -252,7 +253,7 @@ class AgendaRepository extends EntityRepository{
         }
 
 
-        if($search->getTerm() !== null and trim($search->getTerm()) !== "")
+        if(count($search->getTerms()) > 0)
         {
             $qb->andWhere("(a.nom LIKE :mot_clefs OR a.descriptif LIKE :mot_clefs OR a.lieuNom LIKE :mot_clefs)");
             $params[":mot_clefs"] = "%".$search->getTerm()."%";
@@ -300,7 +301,6 @@ class AgendaRepository extends EntityRepository{
                 ->select('a')
                 ->from('TBNAgendaBundle:Agenda','a')
                 ->orderBy('a.dateDebut', $orderDesc ? 'DESC' : 'ASC');
-                //->addOrderBy('a.id', 'DESC');
 
         $soirees = $this->makeQuery($qb, $site, $search);
 
@@ -316,20 +316,28 @@ class AgendaRepository extends EntityRepository{
                 ->execute();
     }
 
-    public function getLieux(Site $site)
+    //Appelé par AgendaParser
+    public function findOneByPlace($lieuNom, \DateTime $dateDebut, \DateTime $dateFin)
     {
-        return $this->_em
+        $query = $this->_em
         ->createQueryBuilder()
         ->select('a')
         ->from('TBNAgendaBundle:Agenda',"a")
-        ->where("a.site = :site")
-        ->andWhere("a.lieuNom != ''")
-        ->andWhere("a.dateDebut >= :today")
-        ->groupBy("a.lieuNom")
-        ->orderBy("a.lieuNom")
-        ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
+        ->leftJoin("TBNAgendaBundle:Place", "p", "WITH", "p = a.place")
+        ->where("p.nom = :nom")
+        ->andWhere("a.dateDebut = :date_debut")
+        ->andWhere("a.dateFin = :date_fin")
+        ->setParameters([":nom" => $lieuNom, "date_debut" => $dateDebut->format("Y-m-d"), "date_fin" => $dateDebut->format("Y-m-d")])
         ->getQuery()
-        ->execute();
+        ->setMaxResults(1);
+
+        try {
+            $agenda = $query->getSingleResult();
+        } catch (\Doctrine\Orm\NoResultException $e) {
+            $agenda = null;
+        }
+
+        return $agenda;
     }
 
     public function getFBOwners(Site $site)
@@ -346,39 +354,42 @@ class AgendaRepository extends EntityRepository{
         ->execute();
     }
 
-    public function getCommunes(Site $site)
+    public function getAgendaPlaces(Site $site)
     {
         return $this->_em
         ->createQueryBuilder()
-        ->select('a')
+        ->select('p')
         ->from('TBNAgendaBundle:Agenda',"a")
+        ->leftJoin("TBNAgendaBundle:Place", "p", "WITH", "p = a.place")
         ->where("a.site = :site")
-        ->andWhere("a.commune != ''")
-	->andWhere("a.dateDebut >= :today")
-        ->groupBy("a.commune")
-        ->orderBy("a.commune", "DESC")
+        ->andWhere("p.nom != ''")
+        ->andWhere("a.dateDebut >= :today")
+        ->groupBy("p.nom")
+        ->orderBy("p.nom")
         ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
         ->getQuery()
         ->execute();
     }
 
-    public function getThemes(Site $site)
+    public function getAgendaVilles(Site $site)
     {
         return $this->_em
         ->createQueryBuilder()
-        ->select('a')
+        ->select('v')
         ->from('TBNAgendaBundle:Agenda',"a")
+        ->leftJoin("TBNAgendaBundle:Place", "p", "WITH", "p = a.place")
+        ->leftJoin("TBNAgendaBundle:Ville", "v", "WITH", "v = p.ville")
         ->where("a.site = :site")
-        ->andWhere("a.themeManifestation != ''")
+        ->andWhere("v.nom != ''")
 	->andWhere("a.dateDebut >= :today")
-        ->groupBy("a.themeManifestation")
-        ->orderBy("a.themeManifestation", "DESC")
+        ->groupBy("v.nom")
+        ->orderBy("v.nom")
         ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
         ->getQuery()
         ->execute();
     }
 
-    public function getTypesManifestation(Site $site)
+    public function getTypesEvenements(Site $site)
     {
         return $this->_em
         ->createQueryBuilder()

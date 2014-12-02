@@ -51,20 +51,21 @@
                 {{ soiree.descriptif|striptags|replace({'&#13;' : ' '})|truncate(300, true, '...')|raw }}
             </div>
         </div>
-        {% if soiree.lieuNom %}  
+        {% set place = soiree.place %}
+        {% if place.nom %}
             <div class="trait" itemprop="organizer" itemscope itemtype="http://schema.org/​Organization">
                 <i class="fa fa-home pull-left icon"></i>
-                <span title="{{ soiree.commune ? soiree.commune : soiree.ville }}" itemprop="name">{{ soiree.lieuNom }}</span>
+                <span title="{{ place.ville ? place.ville.nom : '' }}" itemprop="name">{{ place.nom }}</span>
             </div>
         {% endif %}
-        {% if soiree.tarif != "" %}   
+        {% if soiree.tarif %}   
             <div class="trait" itemprop="offers" itemscope itemtype="http://schema.org/Offer">                        
                 <i class="fa fa-ticket pull-left icon"></i> 
                 <span itemprop="price">{{ soiree.tarif }}</span>
                 <meta itemprop="priceCurrency" content="EUR" />
             </div>
         {% endif %}
-        {% if soiree.user != null %}   
+        {% if soiree.user %}   
             <div class="trait border_bottom">
                 <i class="fa fa-user pull-left icon"></i>
                 Par 

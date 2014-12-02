@@ -7,8 +7,10 @@ imports:
 
 framework:
     esi: { enabled: true }
-    translator:      { fallback: %locale% }
-    secret:          %secret%
+    translator:
+        fallback:   %locale%
+        logging:    false
+    secret:         %secret%
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
@@ -138,6 +140,8 @@ hwi_oauth:
             paths:
                 email:          email
                 profilepicture: picture.data.url
+            options:
+                display: popup #dialog is optimized for popup window
         facebook_events:
             type:                facebook
             client_id:           %api_facebook_id%
@@ -148,6 +152,8 @@ hwi_oauth:
             paths:
                 email:          email
                 profilepicture: picture.data.url
+            options:
+                display: popup #dialog is optimized for popup window
         facebook:
             type:                facebook
             client_id:           %api_facebook_id%
@@ -158,12 +164,18 @@ hwi_oauth:
             paths:
                 email:          email
                 profilepicture: picture.data.url
+            options:
+                display: popup #dialog is optimized for popup window
         google:
             type:                google
             client_id:           %google_app_id%
             client_secret:       %google_app_secret%
             scope:               https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.stream.read https://www.googleapis.com/auth/plus.stream.write
-
+            options:
+                access_type:         offline
+                approval_prompt:     auto
+                display:             popup
+                login_hint:          email address
 
 be_simple_i18n_routing: ~
 
@@ -209,6 +221,62 @@ tbn_user:
         google: 
             enabled: false
 
+
+fos_elastica:
+    clients:
+        default: { host: localhost, port: 9200 }
+    serializer:
+        callback_class: FOS\ElasticaBundle\Serializer\Callback
+        serializer: serializer
+    indexes:
+        tbn:
+            client: default
+            settings:
+                index:
+                    analysis:
+                        analyzer:
+                            custom_french_analyzer:
+                                type: custom
+                                tokenizer: letter
+                                filter: ["asciifolding", "lowercase", "french_stem", "stop_fr"]
+                        filter:
+                            stop_fr:
+                                type: "stop"
+                                stopwords: ["l", "m", "t", "qu", "n", "s", "j", "d"]
+            types:
+                Event:
+                    mappings:
+                        nom: { boost: 5, analyzer: custom_french_analyzer }
+                        descriptif: { analyzer: custom_french_analyzer }
+                        dateDebut: { boost: 2 }
+                        dateFin: { boost: 2 }
+                        place:
+                            type: "object"
+                            properties:
+                                nom: { boost: 3, analyzer: custom_french_analyzer }
+                                rue: { analyzer: custom_french_analyzer }
+                                ville:
+                                    type: "object"
+                                    properties:
+                                        nom: { boost: 2, analyzer: custom_french_analyzer }
+                                        codePostal: ~
+                        
+                    persistence:
+                        driver: orm # orm, mongodb, propel are available
+                        model:  TBN\AgendaBundle\Entity\Agenda
+                        repository: TBN\AgendaBundle\SearchRepository\AgendaRepository
+                        provider: ~
+                        listener: ~ # by default, listens to "insert", "update" and "delete"
+                        finder: ~
+                User:
+                    mappings: ~
+                    persistence:
+                        driver: orm
+                        model:  TBN\UserBundle\Entity\User
+                        provider: ~
+                        listener: ~ # by default, listens to "insert", "update" and "delete"
+                        finder: ~
+
 services:
     twig.extension.intl:
         class: Twig_Extensions_Extension_Intl
@@ -218,3 +286,4 @@ services:
        class: Twig_Extensions_Extension_Text
        tags:
            - { name: twig.extension }
+           
