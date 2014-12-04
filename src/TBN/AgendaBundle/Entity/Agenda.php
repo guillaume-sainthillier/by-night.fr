@@ -128,6 +128,7 @@ class Agenda
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", nullable=true)
+     * @Expose
      */
     protected $latitude;
 
@@ -142,6 +143,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="commune", type="string", length=255, nullable=true)
+     * @Expose
      */
     protected $commune;
 
@@ -157,6 +159,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="adresse", type="string", length=255, nullable=true)
+     * @Expose
      */
     protected $adresse;
 
@@ -164,6 +167,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="type_manifestation", type="string", length=128, nullable=true)
+     * @Expose
      */
     protected $typeManifestation;
 
@@ -171,6 +175,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="categorie_manifestation", type="string", length=128, nullable=true)
+     * @Expose
      */
     protected $categorieManifestation;
 
@@ -178,6 +183,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="theme_manifestation", type="string", length=128, nullable=true)
+     * @Expose
      */
     protected $themeManifestation;
 
@@ -323,6 +329,7 @@ class Agenda
     /**
     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
     * @ORM\JoinColumn(nullable=false)
+    * @Expose
     */
     protected $site;
 

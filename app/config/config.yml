@@ -225,9 +225,7 @@ tbn_user:
 fos_elastica:
     clients:
         default: { host: localhost, port: 9200 }
-    serializer:
-        callback_class: FOS\ElasticaBundle\Serializer\Callback
-        serializer: serializer
+    serializer: ~
     indexes:
         tbn:
             client: default
@@ -244,12 +242,14 @@ fos_elastica:
                                 type: "stop"
                                 stopwords: ["l", "m", "t", "qu", "n", "s", "j", "d"]
             types:
-                Event:
+                event:
                     mappings:
                         nom: { boost: 5, analyzer: custom_french_analyzer }
                         descriptif: { analyzer: custom_french_analyzer }
-                        dateDebut: { boost: 2 }
-                        dateFin: { boost: 2 }
+                        dateDebut: { type: date, format: Y-m-d }
+                        dateFin: { type: date, format: Y-m-d }
+                        commune: ~
+                        typeManifestation: ~
                         place:
                             type: "object"
                             properties:
@@ -260,7 +260,10 @@ fos_elastica:
                                     properties:
                                         nom: { boost: 2, analyzer: custom_french_analyzer }
                                         codePostal: ~
-                        
+                        site:
+                            type: "object"
+                            properties:
+                                id: ~                        
                     persistence:
                         driver: orm # orm, mongodb, propel are available
                         model:  TBN\AgendaBundle\Entity\Agenda
@@ -268,7 +271,7 @@ fos_elastica:
                         provider: ~
                         listener: ~ # by default, listens to "insert", "update" and "delete"
                         finder: ~
-                User:
+                user:
                     mappings: ~
                     persistence:
                         driver: orm

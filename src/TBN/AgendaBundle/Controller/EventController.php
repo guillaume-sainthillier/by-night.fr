@@ -24,6 +24,11 @@ class EventController extends Controller {
         $siteManager = $this->container->get("site_manager");
 	$site = $siteManager->getCurrentSite();
 
+        $serializer = $this->container->get('jms_serializer');
+        $str = $serializer->serialize($agenda, 'json');
+        echo($str);
+        die();
+
         //Redirection vers le bon site
         if($agenda->getSite() !== $site)
         {
@@ -138,10 +143,10 @@ class EventController extends Controller {
 	if (!$cache->contains($key)) {
 	    $villes = $repo->getAgendaVilles($site);
 
-            $communes   = array_map(function(Ville $ville)
+            foreach($villes as $ville)
             {
-                return $ville->getNom();
-            }, $villes);
+                $communes[$ville->getNom()] = $ville->getNom();
+            }
 
 	    $cache->save($key, $communes, 24*60*60);
 	}

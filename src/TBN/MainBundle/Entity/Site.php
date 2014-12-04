@@ -3,6 +3,8 @@
 namespace TBN\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
 
 /**
  * Site
@@ -13,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  *                  columns={"subdomain"}
  * )})
  * @ORM\Entity(repositoryClass="TBN\MainBundle\Entity\SiteRepository")
+ * @ExclusionPolicy("all")
  */
 class Site
 {
@@ -22,6 +25,7 @@ class Site
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Expose
      */
     protected $id;
 
