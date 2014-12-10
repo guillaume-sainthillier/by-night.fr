@@ -3,22 +3,19 @@
     <div class="form-group">
         <label class="col-sm-3 control-label">{{ service|capitalize }}</label>
         <div class="col-sm-9">
-            <div class="col-sm-4">
-                <div class="onoffswitch">
-                    <input type="checkbox" name="onoffswitch" class="{{ isGranted ? "checked" : ""  }} onoffswitch-checkbox" id="onoff-{{ service }}" {{ isGranted ? "checked": "" }} disabled>
-                    <label class="onoffswitch-label" for="onoff-{{ service }}" 
-                           data-href-disconnect="{% spaceless %}{% block url_disconnect %}{{ path('tbn_disconnect_service_confirm', { 'service': service}) }}{% endblock %}{% endspaceless %}" 
-                           data-href-connect="{% spaceless %}{% block url_connect %}{{ hwi_oauth_login_url(service) }}{% endblock %}{% endspaceless %}">
-                        <div class="onoffswitch-inner"></div>
-                        <div class="onoffswitch-switch"></div>
-                    </label>
-                </div>
-            </div>           
-            <div class="col-sm-8">
-                <div class="when_on {{ isGranted ? "" : "hidden"  }}">
-                    Connecté sous <span class="username">{{ attribute(info,service ~ "RealName") }}</span>                        
-                </div>
-            </div>            
+            <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="{{ isGranted ? "checked" : ""  }} onoffswitch-checkbox" id="onoff-{{ service }}" {{ isGranted ? "checked": "" }} disabled>
+                <label class="onoffswitch-label" for="onoff-{{ service }}" 
+                       data-href-disconnect="{% spaceless %}{% block url_disconnect %}{{ path('tbn_disconnect_service_confirm', { 'service': service}) }}{% endblock %}{% endspaceless %}" 
+                       data-href-connect="{% spaceless %}{% block url_connect %}{{ hwi_oauth_login_url(service) }}{% endblock %}{% endspaceless %}">
+                    <div class="onoffswitch-inner"></div>
+                    <div class="onoffswitch-switch"></div>
+                </label>
+            </div>
+            <span class="when_on {{ isGranted ? "" : "hidden"  }} help-block text-primary">
+                Connecté sous <span class="username">{{ attribute(info,service ~ "RealName") }}</span>                        
+            </span>
         </div>
     </div>
+    
 </div>

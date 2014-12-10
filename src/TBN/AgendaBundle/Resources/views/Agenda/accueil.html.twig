@@ -10,9 +10,17 @@
 {% block titre_agenda %}
     Agenda des <strong>événements {{ site.adjectifPluriel }}</strong>
 {% endblock %}
-    
+
+{% block helper -%}
+    <div class="">
+        <div class="">
+            {% include "TBNAgendaBundle:Agenda:block_criteres.html.twig" %}    
+        </div>
+    </div>    
+{%- endblock %}
+
 {% block body_agenda -%}
-    {% include "TBNAgendaBundle:Agenda:block_criteres.html.twig" %}    
+    
 
     <div id="pjax-search-container">
         {% block soirees -%}{%- endblock %}                

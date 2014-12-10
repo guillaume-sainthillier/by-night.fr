@@ -126,7 +126,7 @@ function init_unveil(selecteur)
  */
 function init_shorcut_date()
 {
-    $(".date").unbind("click").click(function()
+    $(".shorcut_date").unbind("click").click(function()
     {
         $("#tbn_search_agenda_du").val($(this).data("date-debut") || "");
         $("#tbn_search_agenda_au").val($(this).data("date-fin") || "");

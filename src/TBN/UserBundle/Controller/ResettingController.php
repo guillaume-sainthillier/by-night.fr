@@ -40,30 +40,34 @@ class ResettingController extends BaseController
         $username = $request->request->get('username');
 
         /** @var $user UserInterface */
-        $user = $this->container->get('fos_user.user_manager')->findUserByUsernameOrEmail($username);
+        $user = $this->get('fos_user.user_manager')->findUserByUsernameOrEmail($username);
 
         if (null === $user) {
-            return $this->container->get('templating')->renderResponse('FOSUserBundle:Resetting:request.html.'.$this->getEngine(), ['invalid_username' => $username]);
+            return $this->render('FOSUserBundle:Resetting:request.html.twig', array(
+                'invalid_username' => $username
+            ));
         }
 
         if ($user->isPasswordRequestNonExpired($this->container->getParameter('fos_user.resetting.token_ttl'))) {
-            return $this->container->get('templating')->renderResponse('FOSUserBundle:Resetting:passwordAlreadyRequested.html.'.$this->getEngine());
+            return $this->render('FOSUserBundle:Resetting:passwordAlreadyRequested.html.twig');
         }
 
         if (null === $user->getConfirmationToken()) {
             /** @var $tokenGenerator \FOS\UserBundle\Util\TokenGeneratorInterface */
-            $tokenGenerator = $this->container->get('fos_user.util.token_generator');
+            $tokenGenerator = $this->get('fos_user.util.token_generator');
             $user->setConfirmationToken($tokenGenerator->generateToken());
         }
+        
         $siteManager = $this->container->get("site_manager");
         $nomSite = $siteManager->getCurrentSite()->getNom()." By Night";
 
         $this->container->get('fos_user.mailer')->sendResettingEmailMessage($user, $nomSite);
+        $this->get('fos_user.mailer')->sendResettingEmailMessage($user);
         $user->setPasswordRequestedAt(new \DateTime());
-        $this->container->get('fos_user.user_manager')->updateUser($user);
+        $this->get('fos_user.user_manager')->updateUser($user);
 
-        return new RedirectResponse($this->container->get('router')->generate('fos_user_resetting_check_email',
-            ['email' => $this->getObfuscatedEmail($user)]
+        return new RedirectResponse($this->generateUrl('fos_user_resetting_check_email',
+            array('email' => $this->getObfuscatedEmail($user))
         ));
     }
 }

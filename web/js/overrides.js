@@ -3,9 +3,8 @@ $.fn.extend($.fn.modal.Constructor.prototype,{
     loading: function()
     {
         this.setTitle((typeof ville !== "undefined" ? ville : "") + " By Night");
-        this.setBody('<h3 class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></h3>');
+        this.setBody('<h3 class="text-center"><i class="fa fa-spinner text-primary fa-spin fa-3x"></i></h3>');
         this.hideButtons();
-        
     },
     hideButtons: function(selecteur)
     {
@@ -42,13 +41,12 @@ $.fn.extend($.fn.modal.Constructor.prototype,{
         var flash_msg = $('<div class="alert alert-danger alert_little"><i class="fa fa-warning"></i> </div>').append(msg).hide();
         element.find(".modal-body").prepend(flash_msg);
         flash_msg.slideDown("normal");
-        
     }
 });
 
 $.ajaxSetup({
     error : function(error, textStatus, errorThrown) {
-        if(textStatus == 404 || textStatus == 500)
+        if(textStatus === 404 || textStatus === 500)
         {
             try {
             var message = error.statusText;

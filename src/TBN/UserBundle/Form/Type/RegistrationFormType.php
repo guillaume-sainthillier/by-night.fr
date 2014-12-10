@@ -22,20 +22,10 @@ class RegistrationFormType extends BaseType
             ->add('username', null, ['disabled' => true, 'label' => 'form.username', 'translation_domain' => 'FOSUserBundle'])
             ->add('firstName', null, ['required' => false])
         ;
-
-
     }
 
     public function getName()
     {
         return 'tbn_user_registration';
     }
-
-	// public function getDefaultOptions()
-    // {
-        // return array(
-            // 'data_class' => 'DEMO\DemoBundle\Entity\Product\Product',
-            // 'id'         => null
-        // );
-    // }
 }

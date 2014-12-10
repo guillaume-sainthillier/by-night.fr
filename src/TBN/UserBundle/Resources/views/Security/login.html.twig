@@ -55,23 +55,20 @@
             <label for="password">{{ 'security.login.password'|trans }}</label>
             <input class="form-control" type="password" id="password" name="_password" required="required" />
         </div>
-
-        <div class="form-group">
+        <div class="checkbox">
             <label>
-                {{ 'security.login.remember_me'|trans }}
                 <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
-            </label>
+                {{ 'security.login.remember_me'|trans }}
+            </label> 
+            <a class="pull-right" href="{{ path('fos_user_resetting_request') }}" title="Récupérez votre mot de passe oublié">Mot de passe perdu?</a>
         </div>
-
         {% if not partial %}
-            {% include "TBNUserBundle:Security:block_buttons.html.twig" %} &nbsp;
+            {% include "TBNUserBundle:Security:block_buttons.html.twig" %}
         {% endif %}
-        <a href="{{ path('fos_user_resetting_request') }}" title="Récupérez votre mot de passe oublié">Mot de passe perdu?</a>
-
         <br />
         <br />
         <p>
-            Pas encore inscrit? 
+            Pas encore inscrit ? 
             <a class="register" href="{{ path('fos_user_registration_register') }}" title="Rejoignez {{ site.nom }} By Night en vous inscrivant">
                 Rejoignez-nous dès maintenant !
             </a>

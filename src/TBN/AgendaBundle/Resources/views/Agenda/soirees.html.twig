@@ -7,7 +7,7 @@
             Aucun événement trouvé
         </div>
     {% else %}
-        <div>
+        <div class="list-group">
             {% for i,soiree in soirees %}
                 {% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" %}
                 <hr />

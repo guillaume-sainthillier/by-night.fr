@@ -2,12 +2,12 @@
 
 {% block start_container %}
 <div class="container-fluid" id="container-fluid">
-    <div id="content" class="col-md-8 panel-right bg-white">
+    <div id="content" class="col-md-7 col-md-offset-1 panel-right">
 {% endblock %}
 
 {% block end_container %}                     
     </div>
-    <div class="col-md-4" id="widgets" >
+    <div class="col-md-3 col-md-offset-1" id="widgets" >
         {% block widgets_agenda %}{% endblock %}
     </div>    
 </div>

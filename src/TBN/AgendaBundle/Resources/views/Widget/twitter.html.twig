@@ -1,6 +1,17 @@
-<div class="widget panel-twitter" >   
-    <a class="twitter-timeline" href="{{ site.twitterURLWidget }}" data-widget-id="{{ site.twitterIdWidget }}">
-        Restez informé <i class="pull-right fa fa-spinner fa-spin fa-2x"></i>
-    </a>
-    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-</div>
+
+       
+{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+
+{% block titre %}Restez informé avec @{{ siteInfo.twitterNickname}}{% endblock %}
+{% block icone %}fa-twitter{% endblock %}
+{% block widget_class %}panel-twitter{% endblock %}
+{% block widget_body_class %}no-padding-right{% endblock %}
+{% block body %}
+<a class="twitter-timeline" 
+    href="{{ site.twitterURLWidget }}" 
+    data-widget-id="{{ site.twitterIdWidget }}"
+    data-chrome="transparent noheader">
+    Restez informé <i class="pull-right fa fa-spinner fa-spin fa-2x"></i>
+</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+{% endblock %}

@@ -63,11 +63,11 @@ class AgendaRepository extends Repository {
      * @return array<Article>
      */
     public function findWithSearch(Site $site, SearchAgenda $search) {
-        $search->setDu(null);
+        //$search->setDu(null);
         //$search->setDu(new \DateTime("2010-01-01"));
         //$search->setAu(new \DateTime("2020-01-01"));
         //$search->setTerm("Toulouse");
-        $search->setTypeManifestation(["Musique"]);
+        //$search->setTypeManifestation(["Musique"]);
         $filters = new Bool();
         $query = null;
 

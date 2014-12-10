@@ -24,39 +24,48 @@ class SearchType extends AbstractType
     {
         $builder
             ->add("du", "date", [
-                "required" => false,
+                "required" => true,
+                "label" => "Du",
+                'label_attr' => array('class' => 'col-sm-4 control-label'),
                 "widget" => "single_text",
                 "format" => "d/M/y",
                 "attr" => ["class" => "datepicker", "data-date-format" => "dd/mm/yyyy"]
             ])
             ->add("au", "date", [
                 "required" => false,
+                "label"     => "Au",
+                'label_attr' => array('class' => 'col-sm-4 control-label'),
                 "widget" => "single_text",
                 "format" => "d/M/y",
                 "attr" => ["class" => "datepicker", "data-date-format" => "dd/mm/yyyy"]
             ])
             ->add("type_manifestation", "choice", [
                 "choices"  => $this->types_manifesation,
+                "label"    => "Types d'événement",
+                'label_attr' => array('class' => 'col-sm-5 control-label'),
                 "multiple" => true,
                 "expanded" => false,
                 "required" => false,
-                "attr" => ["title" => "Type d'événement", "data-style" => "btn-warning", "data-live-search" => true]])
+                "attr" => ["title" => "Tous", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
              ->add("lieux", "choice", [
                 "choices"  => $this->lieux,
+                "label"    => "Lieux",
                 "multiple" =>  true,
                 "expanded" => false,
                 "required" => false,
-                "attr" => ["title" => "Lieux", "data-style" => "btn-warning", "data-live-search" => true]])
+                "attr" => ["title" => "Tous", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
              ->add("commune", "choice", [
                 "choices"  => $this->commune,
+                "label"    => "Villes",
                 "multiple" =>  true,
                 "expanded" => false,
                 "required" => false,
-                "attr" => ["title" => "Villes", "data-style" => "btn-warning", "data-live-search" => true]])
+                "attr" => ["title" => "Toutes", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
             ->add('term', 'text', [
                 "required" => false,
-                "attr" => ["class" => "form-control","placeholder" => "Recherchez un événement"]])
-            ->add('chercher', 'submit', ["label" => "Go!", "attr" => ["class" => "btn btn-info btn-normal"]])
+                "label"    => "Recherche par mot-clés",
+                "attr" => ["class" => "form-control","placeholder" => "Que cherchez-vous ?"]])
+            ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-lg btn-info btn-block"]])
         ;
     }
 

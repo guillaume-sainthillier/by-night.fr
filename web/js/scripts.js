@@ -8,7 +8,6 @@ $(document).ready(function()
     init_hide_menu_on_scroll();
     init_autofocus();
     init_social_counts();
-    init_heights();
     init_more();
 });
 
@@ -29,10 +28,6 @@ function init_more(container)
     });
 }
 
-function init_heights()
-{
-    $("#content").css("min-height", $("#widgets").height() + 50);
-}
 
 function init_social_counts()
 {
@@ -76,6 +71,7 @@ function init_js_components(selecteur)
     init_tooltips(selecteur);
     init_participer(selecteur);
     init_autofocus(selecteur);
+    $.material.init();
 }
 
 function init_participer(selecteur)

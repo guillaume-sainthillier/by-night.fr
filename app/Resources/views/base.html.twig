@@ -48,9 +48,11 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
         
         <!-- CSS -->
-        <link href='//fonts.googleapis.com/css?family=Roboto:300,400,700' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" type="text/css" media="screen" >
+        <link href='//fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css" media="screen" >
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" type="text/css" media="screen" >
+        <link rel="stylesheet" href="//rawgit.com/FezVrasta/bootstrap-material-design/master/dist/css/ripples.min.css" type="text/css" media="screen" >
+        <link rel="stylesheet" href="//fezvrasta.github.io/bootstrap-material-design/dist/css/material.min.css" type="text/css" media="screen" >
         
         {% stylesheets 
             'css/theme.css'
@@ -85,17 +87,13 @@
             {%- endblock %}
             <!-- ./Menu -->            
             
-            <!-- Main -->
-            {% block start_container -%}
-                <div class="container bg-white" id="container">
-            {%- endblock %}
-                <div id="bread">
+            <div id="bread" class="bg-white">
+                <div class="container">
                     {% block breadcrumb -%}{%- endblock %}
                 </div>
+            </div>
 
-                <div class="page-header" id="banner">
-                    <h1 class="titrebloc">{% spaceless %}{% block titre %}{% endblock %}{% endspaceless %}</h1>
-                </div>
+            <div class="container">
                 {% for key, messages in app.session.flashbag.all() %}
                     {% for message in messages %}
                         <div class="alert alert-{{ key == "error" ? "danger" : key }}">
@@ -104,6 +102,18 @@
                         </div>
                     {% endfor %}
                 {% endfor %}
+                
+                <h1 class="titrebloc">{% spaceless %}{% block titre %}{% endblock %}{% endspaceless %}</h1>
+                <div class="divider">
+                    <span class="text-primary divider-icon"></span>
+                </div>                    
+            </div>
+            
+            <!-- Main -->
+            {% block start_container -%}
+            <div class="container" id="container">
+            {%- endblock %}
+                {% block helper %}{% endblock %}
                 {% block body -%}{%- endblock %}
                 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
                 <!-- Bannière Footer Responsive -->
@@ -141,14 +151,15 @@
                         </p>
                 </div>                   
             </div>
-        </footer>  
-        <a id="toTop" href="#">
-            <span id="toTopHover"></span>
-            <img width="60" height="60" alt="En Haut" src="{{ asset('img/to-top@2x.png') }}" >
+        </footer>
+        <a href="#" id="toTop" class="btn btn-primary btn-fab btn-raised">
+            <span id="toTopHover">
+                <i class="fa fa-chevron-up"></i>
+            </span>
         </a>
            
-        <!-- JS -->        
-        <script>
+        <!-- JS -->
+        <script type="text/javascript">           
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -158,57 +169,35 @@
             ga('require', 'displayfeatures');
             ga('send', 'pageview');
             
-            {% spaceless %}
+            
                 var js_scripts = {};            
-                js_scripts.base = ["//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"];
-
-                {% javascripts 
-                    'js/modernizr.js'
-
-                    filter='?yui_js'
-                    output='prod/js/base.js'
-                %}
-                    js_scripts.base.push("{{ asset_url }}");
-                {% endjavascripts %}
-
-                js_scripts.lib = ["//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.0/js/bootstrap.min.js",
-                "//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js"];
+                js_scripts.base = [];
+                js_scripts.lib = [];
                 js_scripts.plugin = [];
-
-                {% javascripts 
-                    'js/overrides.js'
-                    'js/jquery.scrollTo.min.js'                    
-
-                    filter='?yui_js'
-                    output='prod/js/plugins.js'
-                %}
-                    js_scripts.plugin.push("{{ asset_url }}");
-                {% endjavascripts %}
-
                 js_scripts.final = [];
-                {% javascripts 
-                    'js/scripts.js'
-
-                    filter='?yui_js'
-                    output='prod/js/scripts.js'
-                %}            
-                    js_scripts.final.push("{{ asset_url }}");
-                {% endjavascripts %}
-            {% endspaceless %}
-          
-            {% block js -%}{%- endblock %}
-
+                
+                {% block js -%}{%- endblock %}
         </script>
+        
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.1/js/ripples.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.1/js/material.min.js"></script>
         
         {% javascripts 
             'js/load.js'
+            'js/modernizr.js'
+            'js/overrides.js'
+            'js/jquery.scrollTo.min.js'
+            'js/scripts.js'
 
             filter='?yui_js'
-            output='prod/js/async_loader.js'
+            output='prod/js/base.js'
         %}
-            <script src="{{ asset_url }}" async></script>
+            <script type="text/javascript" src="{{ asset_url }}"></script>
         {% endjavascripts %}
-        
+        <!-- ./JS -->
     </body>
 </html>
 {% endspaceless %}

@@ -1,41 +1,47 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-<br />
-<br />
 <div class="row">
     <div class="col-lg-5 col-lg-offset-1 col-md-6">
-        <h2 class="separator_left">Profil</h2>
-        <hr />
-        <div class="form-horizontal bloc_config">
-            <div class="form-group">
-                <label class="col-md-4 control-label">{{ 'profile.show.username'|trans }}</label>
-                <div class="col-md-8">
-                    <p class="form-control-static">{{ user.username }}</p>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h2>Profil</h2>
+                <br />
+                <div class="form-horizontal bloc_config">
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{{ 'profile.show.username'|trans }}</label>
+                        <div class="col-md-8">
+                            <p class="form-control-static">{{ user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">{{ 'profile.show.email'|trans }}</label>
+                        <div class="col-md-8">
+                            <p class="form-control-static">{{ user.email }}</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label">Description</label>
+                        <div class="col-md-8">
+                            <p class="form-control-static">{{ user.description }}</p>
+                        </div>
+                    </div>
                 </div>
+                <br />
+                <a class="btn btn-info btn-block" href="{{ path('fos_user_profile_edit') }}">Modifier mes informations</a>
             </div>
-            <div class="form-group">
-                <label class="col-md-4 control-label">{{ 'profile.show.email'|trans }}</label>
-                <div class="col-md-8">
-                    <p class="form-control-static">{{ user.email }}</p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-md-4 control-label">Description</label>
-                <div class="col-md-8">
-                    <p class="form-control-static">{{ user.description }}</p>
-                </div>
-            </div>
-            <br />
-            <a class="btn btn-info btn-block" href="{{ path('fos_user_profile_edit') }}">Modifier mes informations</a>
         </div>
     </div>
     <div class="col-md-6 col-lg-5">
-        <h2 class="separator_left">Réseaux sociaux</h2>
-        <hr />
-        {% for service in ['facebook','google','twitter'] %}
-            <div class="bloc_config">
-                {% include "TBNSocialBundle:Social:social.html.twig" with { 'info': app.user.info, 'service': service } %}
-            </div>    
-        {% endfor %}
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h2>Réseaux sociaux</h2>
+                <br />
+                {% for service in ['facebook','google','twitter'] %}
+                    <div class="bloc_config">
+                        {% include "TBNSocialBundle:Social:social.html.twig" with { 'info': app.user.info, 'service': service } %}
+                    </div>    
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>

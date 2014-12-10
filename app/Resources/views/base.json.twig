@@ -4,14 +4,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="dialog_titre">{% block titre %}By Night{% endblock %}</h4>
+                    <h3 class="modal-title" id="dialog_titre">{% block titre %}By Night{% endblock %}</h3>
                 </div>                
                 <div class="modal-body">
                     {% block body %}{% endblock %}
                 </div>
                 <div class="modal-footer">
                     {% block footer %}{% endblock %}                    
-                    <button type="button" class="btn btn-warning btn_retour" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-default btn-flat btn_retour" data-dismiss="modal">Fermer</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

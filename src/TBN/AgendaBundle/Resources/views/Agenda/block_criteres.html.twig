@@ -1,71 +1,71 @@
 {% spaceless %}
 {{ form_start(form, {'attr': {'data-pjax': ''}}) }}
-<div class="block_criteres">
-    <div class="row">
-        <div class="col-sm-6 col-xs-8 preserve">
-            <div class="input-prepend input-group">                        
-                <span class="input-group-addon">
-                    <i class="fa fa-search"></i>
-                </span>
-                {{ form_widget(form.term) }}
-                <span class="input-group-btn">
-                    {{ form_widget(form.chercher) }}
-                </span>                        
-            </div>
-        </div>
-        <div class="col-sm-6 col-xs-4 preserve">
-             <button type="button" class="tbn_tooltip btn_criteres btn btn-primary" data-toggle="tooltip" data-placement="right" title="Affinez votre recherche">
-                <i class="fa size-135 fa-cogs"></i> 
-                Critères
-            </button>
-        </div>
-    </div>   
-    <div class="hidden cache criteres">
-            <div class="panel panel-primary">        
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            A partir du 
-                            {{ form_widget(form.du) }}
-                        </div>
-                        <div class="col-xs-3">            
-                            Jusqu'au
-                            {{ form_widget(form.au) }}
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="btn-group btn_shorcuts" data-toggle="buttons">
-                                <label class="btn btn-primary date" data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}">
-                                    <input type="radio" > Ce WE
-                                </label>
-                                <label class="btn btn-primary date" data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}">
-                                    <input type="radio" > Cette semaine
-                                </label>
-                                <label class="btn btn-primary date" data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}">
-                                    <input type="radio" > Ce mois
-                                </label>
-                            </div>                            
-                        </div>          
-                    </div>
-                    <br />
-                    <div class="row">
-                        <div class="col-xs-3">
-                            {{ form_widget(form.type_manifestation) }}
-                        </div>
-                        <div class="col-xs-3">
-                            {{ form_widget(form.lieux) }}
-                        </div>
-                        <div class="col-xs-3">
-                            {{ form_widget(form.commune) }}
-                        </div>
-                    </div>
-                    <br />
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <input type="submit" class="btn btn-info btn-block" value="Rechercher" />
-                        </div>
+
+<div class="block_criteres panel panel-primary">      
+    <div class="panel-body">
+        <h2 class="modal-title">Trouvez une idée sortie</h2>
+        <br />
+        <div class="row">
+            <div class="col-xs-3 form-horizontal">
+                <div class="form-group">
+                    {{ form_label(form.du) }}
+                    <div class="col-sm-8">
+                        {{ form_widget(form.du) }}
                     </div>
                 </div>
             </div>
+            <div class="col-xs-3 form-horizontal">
+                <div class="form-group">
+                    {{ form_label(form.au) }}
+                    <div class="col-sm-8">
+                        {{ form_widget(form.au) }}
+                    </div>
+                </div>
+            </div>            
+            <div class="col-xs-6">
+                <div class="btn_shorcuts" data-toggle="buttons">
+                    <label class="btn btn-primary btn-flat shorcut_date" data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}">
+                        <input type="radio" > Ce WE
+                    </label>
+                    <label class="btn btn-primary btn-flat shorcut_date" data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}">
+                        <input type="radio" > Cette semaine
+                    </label>
+                    <label class="btn btn-primary btn-flat shorcut_date" data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}">
+                        <input type="radio" > Ce mois
+                    </label>
+                </div>                            
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 form-horizontal">
+                <div class="form-group no_margin_bottom">
+                    {{ form_label(form.type_manifestation) }}
+                    <div class="col-sm-7">
+                        {{ form_widget(form.type_manifestation) }}
+                    </div>
+                </div>
+                <button type="button" class="btn_criteres btn btn-primary btn-flat">
+                    <i class="fa size-135 fa-chevron-right"></i> 
+                    Recherche avancée
+                </button>
+            </div>
+            <div class="col-xs-4 col-xs-offset-1">
+                {{ form_widget(form.chercher) }}
+            </div>               
+        </div>   
+        <div class="hidden cache criteres">
+            <div class="row">
+                <div class="col-xs-3">
+                    {{ form_row(form.lieux) }}
+                </div>
+                <div class="col-xs-3">
+                    {{ form_row(form.commune) }}
+                </div>
+                <div class="col-xs-6">
+                    {{ form_row(form.term) }}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {{ form_end(form) }}

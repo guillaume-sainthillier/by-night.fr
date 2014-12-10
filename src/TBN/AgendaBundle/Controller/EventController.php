@@ -24,10 +24,10 @@ class EventController extends Controller {
         $siteManager = $this->container->get("site_manager");
 	$site = $siteManager->getCurrentSite();
 
-        $serializer = $this->container->get('jms_serializer');
-        $str = $serializer->serialize($agenda, 'json');
-        echo($str);
-        die();
+//        $serializer = $this->container->get('jms_serializer');
+//        $str = $serializer->serialize($agenda, 'json');
+//        echo($str);
+//        die();
 
         //Redirection vers le bon site
         if($agenda->getSite() !== $site)
@@ -63,6 +63,7 @@ class EventController extends Controller {
     }
 
     public function listAction(Request $request, $page) {
+        //$this->addFlash("warning", "Bonjour");
 	if ($page <= 0) {
 	    $page = 1;
 	}
