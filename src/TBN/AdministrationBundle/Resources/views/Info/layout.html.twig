@@ -29,12 +29,8 @@
 {% endblock %}
 
 {% block js_administration %}
-    {% javascripts 
-        'bundles/tbnsocial/js/social_login.js'
-
-        filter='?yui_js'
-        output='prod/js/administration/info/scripts.js'
-    %}
-        js_scripts.final.push("{{ asset_url }}");
-    {% endjavascripts %}            
+    require(['social/SocialLogin'], function(SocialLogin)
+    {
+        SocialLogin.init();
+    });
 {% endblock %}  

@@ -132,7 +132,7 @@ class ReplyController extends Controller
             ->add("poster","submit", [
                 "label" => "Répondre",
                 "attr" => [
-                    "class" => "btn btn-primary btn-submit",
+                    "class" => "btn btn-primary btn-submit btn-raised",
                     "data-loading-text" => "En cours..."
                 ]
         ]);

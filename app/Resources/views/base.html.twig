@@ -43,20 +43,18 @@
         {% block google %}{% endblock %}
         <!-- ./Google -->
         
-        
         <link rel="shortcut icon" type="image/png"  href="{{ asset('favicon.png') }}" >
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
         
         <!-- CSS -->
         <link href='//fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" type="text/css" media="screen" >
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" type="text/css" media="screen" >
-        <link rel="stylesheet" href="//rawgit.com/FezVrasta/bootstrap-material-design/master/dist/css/ripples.min.css" type="text/css" media="screen" >
-        <link rel="stylesheet" href="//fezvrasta.github.io/bootstrap-material-design/dist/css/material.min.css" type="text/css" media="screen" >
+        <link href='//fonts.googleapis.com/css?family=Roboto:300,400,700' rel='stylesheet' type='text/css'>
         
         {% stylesheets 
-            'css/theme.css'
-            'css/fil-ariane.css'
+            'bower/bootstrap/dist/css/bootstrap.min.css'
+            'bower/fontawesome/css/font-awesome.min.css'
+            'bower/bootstrap-material-design/dist/css/ripples.min.css'
+            'css/themes/blue.css'
             'css/social-icons.css'            
             'css/commons.css'
             'css/footer.css'
@@ -93,20 +91,25 @@
                 </div>
             </div>
 
-            <div class="container">
-                {% for key, messages in app.session.flashbag.all() %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ key == "error" ? "danger" : key }}">
-                            <i class="fa fa-{{ key == 'info' ? 'info-circle' : (key == 'error' ? 'warning' : key == 'success' ? 'check' : key) }}"></i> 
-                            {{ message|trans|raw }}
-                        </div>
-                    {% endfor %}
-                {% endfor %}
-                
-                <h1 class="titrebloc">{% spaceless %}{% block titre %}{% endblock %}{% endspaceless %}</h1>
-                <div class="divider">
-                    <span class="text-primary divider-icon"></span>
-                </div>                    
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        {% for key, messages in app.session.flashbag.all() %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ key == "error" ? "danger" : key }}">
+                                    <i class="fa fa-{{ key == 'info' ? 'info-circle' : (key == 'error' ? 'warning' : key == 'success' ? 'check' : key) }}"></i> 
+                                    {{ message|trans|raw }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+
+                        <h1 class="titrebloc">{% spaceless %}{% block titre %}{% endblock %}{% endspaceless %}</h1>
+                        <div class="divider">
+                            <span class="text-primary divider-icon"></span>
+                        </div>        
+                    </div>
+                </div>
+                            
             </div>
             
             <!-- Main -->
@@ -146,7 +149,7 @@
                             | © {{ "now"|date('Y') }} - Tous droits réservés
                         </p>
                         <p class="pull-right">
-                            Fait avec <span class="love">♥</span> à Toulouse - 
+                            Fait avec <span class="number text-danger">♥</span> à Toulouse - 
                            <a href="http://sainthillier.fr">GS</a>
                         </p>
                 </div>                   
@@ -168,35 +171,26 @@
             ga('create', 'UA-45716709-2', 'by-night.fr');
             ga('require', 'displayfeatures');
             ga('send', 'pageview');
-            
-            
-                var js_scripts = {};            
-                js_scripts.base = [];
-                js_scripts.lib = [];
-                js_scripts.plugin = [];
-                js_scripts.final = [];
-                
-                {% block js -%}{%- endblock %}
         </script>
-        
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.1/js/ripples.min.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.2.1/js/material.min.js"></script>
-        
-        {% javascripts 
-            'js/load.js'
-            'js/modernizr.js'
-            'js/overrides.js'
-            'js/jquery.scrollTo.min.js'
-            'js/scripts.js'
-
-            filter='?yui_js'
-            output='prod/js/base.js'
-        %}
-            <script type="text/javascript" src="{{ asset_url }}"></script>
-        {% endjavascripts %}
+        {{ require_js_initialize({ 'main' : null}) }}
+        <script>
+            var js_scripts = {};            
+            js_scripts.base = [];
+            js_scripts.lib = [];
+            js_scripts.plugin = [];
+            js_scripts.final = [];
+            
+            {% javascripts 'js/App.js'
+                filter='?requirejs' 
+                output='prod/js/app.js' %}
+                require(['{{ asset_url }}'], function(App)
+                {
+                    console.log(App);
+                    //App.init();
+                });
+            {% endjavascripts %}           
+            {% block js -%}{%- endblock %}
+        </script>
         <!-- ./JS -->
     </body>
 </html>

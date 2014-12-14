@@ -1,0 +1,126 @@
+@import "fonts.less";
+@import "../../bower/bootstrap-material-design/less/_variables.less";
+@import "../../bower/bootstrap-material-design/less/_mixins.less";
+@import "../../bower/bootstrap-material-design/less/_icons-material-design.less";
+@import "../../bower/bootstrap-material-design/less/_shadows.less";
+
+body {
+    background-color: #EEEEEE;
+    &.inverse {
+        background: #333333;
+        &, .form-control {
+            color: @darkbg-text;
+        }
+    }
+}
+
+body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4 {
+    font-family: "RobotoDraft", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 300;
+}
+
+h5, h6{
+    font-weight: 400;
+}
+
+a, a:hover, a:focus {
+    color: @primary;
+}
+
+// Well and Jumbotrons
+@import "../../bower/bootstrap-material-design/less/_welljumbo.less";
+
+// Buttons
+@import "../../bower/bootstrap-material-design/less/_buttons.less";
+
+// Checkboxes
+@import "../../bower/bootstrap-material-design/less/_checkboxes.less";
+
+// Toggle buttons
+@import "../../bower/bootstrap-material-design/less/_togglebutton.less";
+
+// Radios
+@import "../../bower/bootstrap-material-design/less/_radios.less";
+
+// Text inputs
+@import "../../bower/bootstrap-material-design/less/_inputs.less";
+
+legend {
+    border-bottom: 0;
+}
+
+// Lists
+@import "../../bower/bootstrap-material-design/less/_lists.less";
+
+// Navbar
+@import "../../bower/bootstrap-material-design/less/_navbar.less";
+
+.dropdown-menu {
+    border: 0;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    .divider {
+        background-color: rgba(229, 229, 229, 0.12);
+    }
+    li {
+        overflow: hidden;
+        position: relative;
+        a:hover {
+            background-color: transparent;
+            color: @primary;
+        }
+    }
+    .variations(~" li a:hover", color, @primary);
+}
+
+// Alerts
+@import "../../bower/bootstrap-material-design/less/_alerts.less";
+
+// Progress bar
+//@import "../../bower/bootstrap-material-design/less/_progress.less";
+
+// Typography
+.text-warning {
+    color: @btn-warning;
+}
+.text-primary {
+    color: @btn-primary;
+}
+.text-danger {
+    color: @btn-danger;
+}
+.text-success {
+    color: @btn-success;
+}
+.text-info {
+    color: @btn-info;
+}
+
+@import "../../bower/bootstrap-material-design/less/_tabs.less";
+
+@import "../../bower/bootstrap-material-design/less/_popups.less";
+
+// @import "../../bower/bootstrap-material-design/less/_icons.less";
+
+//@import "../../bower/bootstrap-material-design/less/_cards.less";
+
+@import "../../bower/bootstrap-material-design/less/_dialogs.less";
+
+@import "../../bower/bootstrap-material-design/less/_labels.less";
+
+@import "../../bower/bootstrap-material-design/less/_panels.less";
+
+// Prevent highlight on mobile
+* {
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    -webkit-tap-highlight-color: transparent;
+    &:focus {
+        outline: 0;
+    }
+}
+
+
+// External plugins
+@import "../../bower/bootstrap-material-design/less/_plugin-snackbarjs.less";
+//@import "../../bower/bootstrap-material-design/less/_plugin-nouislider.less";
+//@import "../../bower/bootstrap-material-design/less/_plugin-selectize.less";
+@import "../../bower/bootstrap-material-design/less/_plugin-dropdownjs.less";

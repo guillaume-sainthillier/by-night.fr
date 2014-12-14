@@ -14,7 +14,7 @@
     </div>
     <div class="col-xs-9 col-sm-10">
         <div class="infos">
-            <a href="#" title="">{{ comment.user.username }}</a> 
+            <a href="#">{{ comment.user.username }}</a> 
             <span title="{{ comment.dateCreation|localizeddate('medium','medium')|capitalize}}">
                 <i class="fa fa-clock-o"></i> {{ comment.dateCreation|diff_date }}
             </span>            
@@ -26,7 +26,7 @@
             <div class="reponses">
                 <div class="infos">
                     <span class="label label-primary nb_reponses">{{ nb_reponses }}</span> 
-                    <button type="button" class="btn btn-default btn-xs btn-list" data-url="{{ path('tbn_comment_reponse_list', {'id' : comment.id }) }}">
+                    <button type="button" class="btn btn-default btn-xs btn-list btn-raised" data-url="{{ path('tbn_comment_reponse_list', {'id' : comment.id }) }}">
                         <i class="fa fa-angle-up icon_list"></i>
                     </button> | 
                     <a href="#repondre" class="repondre" data-url="{{ path('tbn_comment_reponse_new', {'id' : comment.id }) }}">Répondre</a>

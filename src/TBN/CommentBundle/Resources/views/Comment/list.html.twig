@@ -15,7 +15,7 @@
 {% if nb_comments > ((page)*offset) %}
     {% block load_more %}
         <div class="load_more" data-url="{{ path('tbn_comment_list',{'id': soiree.id ,'page': (page+1) }) }}">
-            <button type="button" class="btn btn-primary btn-lg btn-block">
+            <button type="button" class="btn btn-primary btn-lg btn-block btn-raised">
                 Plus de commentaires
             </button>
         </div>

@@ -71,14 +71,3 @@
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
 {% endblock %}
-
-{% block js_membre %}
-    {% javascripts 
-        '@TBNUserBundle/Resources/public/js/list_user.js'
-
-        filter='?yui_js'
-        output='prod/js/membres/scripts.js'
-    %}
-        js_scripts.final.push("{{ asset_url }}");
-    {% endjavascripts %}
-{% endblock %}

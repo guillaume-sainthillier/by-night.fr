@@ -17,11 +17,11 @@
         </a>
     </div>
     <div class="col-sm-9 description_evenement" >
-        <div>
-            <a class="nom_soiree" title="Tous les détails de {{ nomSoiree }} " href="{{ path('tbn_agenda_details', {'slug': soiree.slug})}}" itemprop="url" >
-                <strong ><span itemprop="name">{{ nomSoiree }}</span></strong>
+        <h4 class="modal-title nom_soiree">
+            <a title="Tous les détails de {{ nomSoiree }} " href="{{ path('tbn_agenda_details', {'slug': soiree.slug})}}" itemprop="url" >
+                <span itemprop="name">{{ nomSoiree }}</span>
             </a>
-        </div>
+        </h4>
         {% if soiree.modificationDerniereMinute %}
         <div class="alert alert-info">
             <i class="fa fa-warning"></i>
@@ -33,12 +33,12 @@
             {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
             {% set dateFin = soiree.dateFin|date('d/m/Y') %}
             <i class="fa fa-clock-o pull-left icon"></i>
-            <span class="evenement_moment2">
+            <span>
                 {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}                        
-                    Le <time class="date color-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
+                    Le <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
                 {% else %}
-                    Du <time class="date color-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
-                    au <time class="date color-primary" itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\TH:i:sO') }}">{{ dateFin }}</time>
+                    Du <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
+                    au <time class="number text-primary" itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\TH:i:sO') }}">{{ dateFin }}</time>
                 {% endif %}
                 {% if soiree.horaires != "" %}
                     - {{ soiree.horaires }}

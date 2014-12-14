@@ -108,7 +108,7 @@ class CommentController extends Controller
             ->add("poster","submit", [
                 "label" => "Poster",
                 "attr" => [
-                    "class" => "btn btn-primary btn-submit",
+                    "class" => "btn btn-primary btn-submit btn-raised",
                     "data-loading-text" => "En cours..."
                 ]
         ]);

@@ -65,7 +65,8 @@ class AgendaType extends AbstractType
                 'widget' => 'single_text',
                 "required" => true,
                 "attr" => [
-                    "placeholder" => "Le / Du..."
+                    "placeholder" => "Le / Du...",
+                    "class" => "datepicker"
                 ]
             ])
             ->add('dateFin','genemu_jquerydate', [
@@ -73,7 +74,8 @@ class AgendaType extends AbstractType
                 'widget' => 'single_text',
                 "required" => false,
                 "attr" => [
-                    "placeholder" => "Au..."
+                    "placeholder" => "Au...",
+                    "class" => "datepicker"
                 ]
             ])
             ->add('horaires','text', [

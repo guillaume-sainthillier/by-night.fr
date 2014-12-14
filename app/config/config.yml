@@ -2,8 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: "@TBNMainBundle/Resources/config/services.yml" }
-
-
+    - { resource: "requirejs.yml" }
 
 framework:
     esi: { enabled: true }

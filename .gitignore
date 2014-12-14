@@ -1,3 +1,6 @@
+# Bower
+/web/bower/*
+
 # ElasticSearch
 /app/Resources/java/elasticsearch/config/*
 /app/Resources/java/elasticsearch/data/*

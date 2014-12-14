@@ -3,37 +3,28 @@
     Author     : Guillaume S. <guillaume@sainthillier.fr>
 */
 
-@import "variables";
-@import "bs/mixins";
+@import "variables.less";
 
 html body {
 
-    .no-padding-right {
-        padding-right: 0;
+    .modal-title {
+        a {
+            font-weight: 400;
+        }
+    }
+    .no-padding {
+        padding: 0;
+    }
+    .padding-left-10 {
+        padding-left: 10px;
     }
     
     .no_margin_bottom {
         margin-bottom: 0;
     }
-    
-    .color-primary {
-        color: @color-primary;
-    }
-    .color-success {
-        color: @color-success;
-    }
-    .color-info {
-        color: @color-info;
-    }
-    .color-warning {
-        color: @color-warning;
-    }
-    .color-danger {
-        color: @color-danger;
-    }
 
     .bg-white {
-        background-color: white;
+        background-color: white!important;
     }
     
     .required:after {
@@ -68,6 +59,24 @@ html body {
         
         img {
             margin-right: 10px;
+        }
+    }
+    
+    .number {
+        font-weight: 300;
+        font-size: 1.2em;
+        font-family: Roboto;
+        
+        &.number-big {
+            font-size: 1.5em;
+        }
+        
+        &.number-xbig {
+            font-size: 1.8em;
+        }
+        
+        &.number-xxbig {
+            font-size: 2.5em;
         }
     }
     

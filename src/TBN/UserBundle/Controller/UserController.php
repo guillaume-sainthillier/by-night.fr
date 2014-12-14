@@ -143,11 +143,7 @@ class UserController extends Controller {
                 }
             }
 
-            $cle = "";
-            if($i % 8 === 2)
-            {
-                $cle = ucfirst($this->getDayName($date->format("N")))." ".$date->format("d");
-            }
+            $cle = ucfirst($this->getDayName($date->format("N")))." ".$date->format("d");            
 
             $final_datas["full_categories"][] = ucfirst($this->getDayName($date->format("N")))." ".$date->format("d")." ".$this->getMonthName($date->format("m")) . " " . $date->format("Y");
             $final_datas["categories"][] = $cle;

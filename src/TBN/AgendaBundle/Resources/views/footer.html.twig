@@ -2,7 +2,7 @@
     <div class="col-md-7">
         <div class="row">                
             <div class="col-xs-6 footer_border">
-                <h4>{{ site.nom }} By Night</h4>
+                <h3 class="modal-title color-second">{{ site.nom }} By Night</h3>
                 <ul class="fa-ul">
                     <li>
                         <i class="fa fa-li fa-angle-right"></i>
@@ -19,7 +19,7 @@
                 </ul>    
             </div>
             <div class="col-xs-6">
-                <h4>Recherche par ville</h4>
+                <h3 class="modal-title color-second">Recherche par ville</h3>
                 <ul class="fa-ul">
                     {% for site in sites %}
                         <li>
@@ -34,42 +34,42 @@
             </div>
         </div>
     </div>
-    <div class="col-md-5">
-        <div class="row text-center">
+    <div class="col-md-5 text-center">
+        <div class="row">
             <div class="col-xs-4 preserve">
-                {% if site.facebookIdPage != "" %}
-                    <div class="social facebook">
-                        <a title="{{ site.nom }} sur Facebook" href="https://www.facebook.com/{{ site.facebookIdPage }}">
-                            <i class="fa fa-facebook fa-3x"></i>
-                        </a>
-                        <strong class="count">
-                            <i class="fa fa-spin fa-spinner"></i>
-                        </strong>
-                    </div>
-                {% endif %}                                
+            {% if site.facebookIdPage != "" %}
+                <div class="social facebook">
+                    <a title="{{ site.nom }} sur Facebook" href="https://www.facebook.com/{{ site.facebookIdPage }}">
+                        <i class="fa fa-facebook fa-3x"></i>
+                    </a>
+                    <span class="number number-xbig">
+                        <i class="fa fa-spin fa-spinner"></i>
+                    </span>
+                </div>
+            {% endif %}
             </div>
             <div class="col-xs-4 preserve">
-                {% if site.twitterIdPage != "" %}
+                {% if site.twitterIdPage != ""  %}
                     <div class="social twitter">
                         <a title="{{ site.nom }} By Night sur Twitter" href="https://twitter.com/{{ site.twitterIdPage }}">
                             <i class="fa fa-twitter fa-3x"></i>
                         </a>
-                        <strong class="count">
+                        <span class="number number-xbig">
                             <i class="fa fa-spin fa-spinner"></i>
-                        </strong>
+                        </span>
                     </div>
                 {% endif %}
             </div>
             <div class="col-xs-4 preserve">
                 {% if site.googleIdPage != ""  %}
-                    <div class="social google">
-                        <a title="{{ site.nom }} By Night sur Google+" href="https://plus.google.com/{{ site.googleIdPage }}" rel="publisher">
-                            <i class="fa fa-google-plus fa-3x"></i>
-                        </a>
-                        <strong class="count">
-                            <i class="fa fa-spin fa-spinner"></i>
-                        </strong>
-                    </div>
+                <div class="social google">
+                    <a title="{{ site.nom }} By Night sur Google+" href="https://plus.google.com/{{ site.googleIdPage }}" rel="publisher">
+                        <i class="fa fa-google-plus fa-3x"></i>
+                    </a>
+                    <span class="number number-xbig">
+                        <i class="fa fa-spin fa-spinner"></i>
+                    </span>
+                </div>
                 {% endif %}
             </div>
         </div>

@@ -143,7 +143,7 @@ class AgendaController extends Controller
         ->add("ajouter","submit",[
             "label" => "Enregistrer",
             "attr" => [
-                "class" => "btn btn-primary btn-lg btn-block"
+                "class" => "btn btn-primary btn-raised btn-lg btn-block"
             ]
         ]);
     }
@@ -167,7 +167,7 @@ class AgendaController extends Controller
         ->add("ajouter","submit",[
             "label" => "Enregistrer",
             "attr" => [
-                "class" => "btn btn-primary btn-lg btn-block"
+                "class" => "btn btn-primary btn-raised btn-lg btn-block"
             ]
         ]);
     }

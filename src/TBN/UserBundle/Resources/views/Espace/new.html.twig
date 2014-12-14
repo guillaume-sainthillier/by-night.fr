@@ -100,41 +100,20 @@
 {% endblock %}
 
 {% block head_js %}
-    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script src="//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=fr&libraries=places"></script>
     <script>
         var ville = "{{ site.nom }}";
     </script>
 {% endblock %}
 
-{% block js_espace %}
-    js_scripts.lib.push("//cdnjs.cloudflare.com/ajax/libs/summernote/0.5.2/summernote.js");
+{% block js_espace %}    
+    require(['user/Events'], function(Events)
+    {
+        Events.init();
+    });
     
-    {% javascripts 
-        '@TBNUserBundle/Resources/public/js/jquery-ui.min.js'
-
-        filter='?yui_js'
-        output='prod/js/espace-perso/evenements/libs.js'
-    %}            
-        js_scripts.lib.push("{{ asset_url }}");
-    {% endjavascripts %}    
-   
-    {% javascripts 
-        '@TBNUserBundle/Resources/public/js/lang/summernote-fr-FR.js'
-        '@TBNUserBundle/Resources/public/js/jquery.ui.addresspicker.js'
-        '@TBNSocialBundle/Resources/public/js/social_login.js'
-
-        filter='?yui_js'
-        output='prod/js/espace-perso/evenements/plugins.js'
-    %}            
-        js_scripts.plugin.push("{{ asset_url }}");
-    {% endjavascripts %}    
-    
-    {% javascripts         
-        '@TBNUserBundle/Resources/public/js/agenda.js'
-
-        filter='?yui_js'
-        output='prod/js/espace-perso/evenements/scripts.js'
-    %}            
-        js_scripts.final.push("{{ asset_url }}");
-    {% endjavascripts %}
+    require(['social/SocialLogin'], function(SocialLogin)
+    {
+        SocialLogin.init();
+    });
 {% endblock %}

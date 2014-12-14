@@ -1,0 +1,136 @@
+// Typo =======================================================================
+.color-primary {
+    color: @color-primary;
+}
+.color-success {
+    color: @color-success;
+}
+.color-info {
+    color: @color-info;
+}
+.color-warning {
+    color: @color-warning;
+}
+.color-danger {
+    color: @color-danger;
+}
+.color-second {
+    color: @secondary;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Roboto Condensed";   
+}
+
+// BootStrap-Select ===========================================================
+.bootstrap-select {
+    margin: 0;
+
+    &.open>.dropdown-toggle.btn, .open>.dropdown-toggle.btn-default {
+        color: black;
+    }
+
+    .btn {
+        padding-left: 5px;
+    }
+}
+
+// Navbar =====================================================================
+.navbar {
+    .navbar-form {
+        .form-control-wrapper {
+            //position: initial;
+        }
+    }
+}
+
+// BreadCrumb =================================================================
+#bread {            
+    padding-top: 5px;
+
+    &, #fil-ariane {
+        background-color: white;
+    }
+
+    #fil-ariane {
+        padding-left: 0;
+        margin:0;
+        a{
+            color: @primary;
+            &:hover, &:focus {
+                color: #222;
+            }
+        }
+        li {
+            padding: 5px;
+        }
+    }
+
+    .breadcrumb>li+li:before {
+        content: '>';
+        color: #222;
+    }
+}
+
+// Footer =====================================================================
+#footer {
+    border-top: solid 5px @primary;
+
+    .social:hover a{
+        color: @warning;
+    }
+
+    a{
+        color: @info;
+        &:hover, &:focus {
+            color: @warning;
+        }
+    }
+}
+
+// Header =====================================================================
+.divider {
+    span:after {
+        color: @info;
+    }
+}
+
+// Alerts =====================================================================
+.alert a {
+    &:hover, &:focus {
+        text-decoration: underline;
+    }    
+}
+
+// Pagination =================================================================
+.pagination {
+
+    > li {
+        > a,
+        > span {
+            color: @primary;
+        }
+    }
+
+    > .active > a,
+    > .active > span {
+        &,
+        &:hover,
+            &:focus {
+            background-color: @info;
+            border-color: @info;
+        }
+    }
+}
+
+// Typeahead ==================================================================
+.twitter-typeahead {
+    width: 100%;
+}
+
+.tt-suggestion.tt-cursor {
+    color: #fff;
+    background-color: @info;
+    cursor: pointer;
+}

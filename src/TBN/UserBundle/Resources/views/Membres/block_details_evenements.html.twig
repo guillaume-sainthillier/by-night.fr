@@ -20,10 +20,10 @@
         {% set dateFin = soiree.dateFin|date('d/m/Y') %}
 
         {% if event.dateFin == null or (event.dateFin != null and event.dateDebut == event.dateFin) %}                        
-            Le <span class="date color-primary">{{ dateDebut }}</span>
+            Le <span class="date text-primary">{{ dateDebut }}</span>
         {% else %}
-            Du <span class="date color-primary">{{ dateDebut }}</span>
-            au <span class="date color-primary">{{ dateFin }}</span>
+            Du <span class="date text-primary">{{ dateDebut }}</span>
+            au <span class="date text-primary">{{ dateFin }}</span>
         {% endif %}
     </div>
     <div class="picture">            

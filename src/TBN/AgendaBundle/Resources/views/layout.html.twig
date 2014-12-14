@@ -60,7 +60,8 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
     ville = "{{ site.nom }}";
     window.get_social_count = "{{ path('tbn_social_counts') }}";
     window.fb_app_id = "{{ facebook_app_id }}";
-    {% block js_agenda %}{% endblock %}
+    
+    {% block js_template %}{% block js_agenda %}{% endblock %}{% endblock %}
 {% endblock %}
     
 {% block css %}    

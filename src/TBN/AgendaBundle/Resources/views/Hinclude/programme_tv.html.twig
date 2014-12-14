@@ -5,11 +5,11 @@
                 <img height="30" width="70" src="{{ programme.logo }}" title="{{ programme.chaine }}" />
             </div>
             <div class="col-xs-9 preserve">
-                <div>
+                <h4 class="modal-title">
                     <a href="{{ programme.lien }}" rel="external">{{ programme.nom }}</a>
-                </div>            
-                <div>{{ programme.heure }}</div>
-                <div class="color-primary">{{ programme.type }}</div>
+                </h4>            
+                <span class="number text-primary">{{ programme.heure }}</span>
+                <div>{{ programme.type }}</div>
             </div>
         </div>
     </div>

@@ -2,16 +2,15 @@
     {% set nomSoiree = soiree.nom %}
     <div class="widget_item">
         <div class="row">
-            <div class="col-xs-2 min_membre preserve text-center color-warning" title="{{ soiree.dateDebut|localizeddate('full','none') }}">
+            <div class="col-xs-2 min_membre preserve text-center color-second" title="{{ soiree.dateDebut|localizeddate('full','none') }}">
+                <span class="number thin">{{ soiree.dateDebut|date('d') }}</span>
                 <span class="month thin">{{ (soiree.dateDebut|localizeddate('long','none')|split(' ')[1])[:3]|capitalize }}</span>
-                <br />
-                <span class="date">{{ soiree.dateDebut|date('d') }}</span>
             </div>
             <div class="col-xs-10 preserve">
-                <h4 class="item_title">
+                <h4 class="modal-title">
                     <a title="Tous les détails de {{ nomSoiree }}" href="{{ path('tbn_agenda_details', {'slug' : soiree.slug}) }}">{{ nomSoiree }}</a>
                 </h4>            
-                <span class="color-primary" title="{{ soiree.place.ville ? soiree.place.ville.nom : '' }}">{{ soiree.place.nom }}</span>
+                <span class="text-primary" title="{{ soiree.place.ville ? soiree.place.ville.nom : '' }}">{{ soiree.place.nom }}</span>
             </div>
         </div>
     </div>

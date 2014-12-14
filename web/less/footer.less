@@ -4,9 +4,9 @@
 */
 
 @import "variables";
-@import "bs/mixins";
 
 @tailleFooter: 100px;
+
 #wrap {
     margin: 0 auto;
     min-height: 100%;
@@ -27,28 +27,9 @@
 #footer {
     min-height: 2*@tailleFooter + 30px;
     padding: 15px 0;
-    border-top: solid 5px @navbar-default-bg;
     background-color: rgb(34, 34, 34);
-    color: @bgColor;
-
-    h4 {
-        color: @color-warning;
-    }
-
-    hr:before {
-        margin-top: 0;
-    }
-
-    .social:hover a{
-        color: @color-warning;
-    }
-
-    a{
-        color: @color-primary;
-        &:hover {
-            color: @color-warning;
-        }
-    }
+    color: @bgColor;    
+    
     .sous-header {        
 
         .footer_border {
@@ -58,24 +39,24 @@
 
         .social {
             height: @tailleFooter + 10px;
-            padding: 10px;
             border: 1px solid transparent;
-
+            
             &:hover {
                 border: 1px dashed rgba(175, 162, 162, 0.78);
                 background-color: rgba(202, 189, 189, 0.09);
                 .opacity(0.7);
             }
-
+            
             a {
-                display: block;
+                margin-right: 5px;
             }
 
-            
+            a, span {
+                line-height: @tailleFooter + 20px;
+            }            
         }
 
         .love {
-            color: @color-danger;
             font-size: 20px;
         }
     }

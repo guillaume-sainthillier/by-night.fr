@@ -23,19 +23,11 @@
     {% block css_agenda %}{% endblock %}
 {% endblock %}
 
-{% block js %}
-    {{ parent() }}
-    {% javascripts 'bundles/tbnagenda/js/jquery.mCustomScrollbar.concat.min.js'
-        filter='?yui_js'        
-        output='prod/js/widgets/libs.js'
-    %}
-        js_scripts.lib.push("{{ asset_url }}");
-    {% endjavascripts %}
-    {% javascripts 'bundles/tbnagenda/js/widgets.js'
-        filter='?yui_js'        
-        output='prod/js/widgets/scripts.js'
-    %}
-        js_scripts.final.push("{{ asset_url }}");
-    {% endjavascripts %}
+{% block js_template %}
+    require(["agenda/widgets"], function(Widgets)
+    {
+        Widgets.init();
+    });
+    
     {% block js_agenda %}{% endblock %}
 {% endblock %}

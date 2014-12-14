@@ -7,17 +7,17 @@
     <div class="text-center">
         {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
             <div class="btn-group buttons hidden" data-toggle="buttons">
-                <label class="btn btn-primary participer {{ participer ? "active" : ""}}" data-href="{{ path('tbn_user_participer', {'id' : soiree.id }) }}">
+                <label class="btn btn-info participer {{ participer ? "active" : ""}}" data-href="{{ path('tbn_user_participer', {'id' : soiree.id }) }}">
                     <i class="fa fa-check-circle-o check" ></i>
                     <input type="radio" name="interet" /> J'y serai
                 </label>
-                <label class="btn btn-primary interesser {{ interet ? "active" : ""}}" data-href="{{ path('tbn_user_interesser', {'id' : soiree.id }) }}">
+                <label class="btn btn-info interesser {{ interet ? "active" : ""}}" data-href="{{ path('tbn_user_interesser', {'id' : soiree.id }) }}">
                     <i class="fa fa-check-circle-o check" ></i>
                     <input type="radio" name="interet" /> Ça m'interesse
                 </label>
             </div>
         {% else %}
-            <a class="btn btn-warning btn-block connexion" href="{{ path('fos_user_security_login') }}">Connectez-vous</a>
+            <a class="btn btn-warning btn-flat btn-block connexion" href="{{ path('fos_user_security_login') }}">Connectez-vous</a>
         {% endif %}
         <br/>
         {{ render_hinclude(url('tbn_agenda_soirees_tendances',{'slug': soiree.slug})) }}

@@ -1,0 +1,91 @@
+hearsay_require_js:
+    require_js_src: "//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.15/require.min.js"
+    base_dir: %kernel.root_dir%/../web
+    options:
+        waitSeconds: 0
+    shim:
+        bootstrap:
+            deps: ['ripples', 'jquery']                  
+        modals:
+            deps: ['bootstrap', 'jquery']
+        material:
+            deps: ['jquery']
+            exports: "$.material"
+        scrollTo: 
+            deps : ['jquery']
+            exports: "$.scrollTo"        
+        scrollable: 
+            deps : ['jquery']
+            exports: "$.mCustomScrollbar"        
+        ripples: 
+            deps : ['jquery']
+            exports: "$.ripples"
+        unveil:
+            deps: ['jquery']
+            exports: "$.unveil"
+        fancybox:
+            deps: ['jquery']
+            exports: "$.fancybox"
+        select:
+            deps: ['jquery']
+            exports: "$.selectpicker"
+        select-i18n:
+            deps: ['select', 'jquery']
+        datepicker:
+            deps: ['jquery']
+            exports: "$.datepicker"
+        datepicker-i18n:
+            deps: ['datepicker', 'jquery']
+        jquery-ui:
+            deps: ['jquery']
+        pjax:
+            deps: ['jquery']
+            exports: "$.pjax"
+        morris:
+            deps: ['jquery', 'raphael']
+            exports: "Morris"
+        highcharts:
+            deps: ['jquery']
+            exports: "$.highcharts"
+        summernote:
+            deps: ['jquery', 'bootstrap']
+            exports: "$.summernote"
+        summernote-i18n:
+            deps: ['summernote', 'bootstrap', 'jquery']
+        typeahead:
+            deps: ['jquery']
+            exports: "$.typeahead"
+        addresspicker:
+            deps: ['typeahead', 'jquery']
+            exports: "AddressPicker"
+    paths: 
+        app:            %kernel.root_dir%/../web/js
+        agenda:         %kernel.root_dir%/../web/bundles/tbnagenda/js/
+        comment:        %kernel.root_dir%/../web/bundles/tbncomment/js/
+        social:         %kernel.root_dir%/../web/bundles/tbnsocial/js/
+        user:           %kernel.root_dir%/../web/bundles/tbnuser/js/
+        jquery:         %kernel.root_dir%/../web/bower/jquery/dist/jquery.min
+        bootstrap:      %kernel.root_dir%/../web/bower/bootstrap/dist/js/bootstrap.min
+        material:       %kernel.root_dir%/../web/bower/bootstrap-material-design/dist/js/material.min
+        ripples:        %kernel.root_dir%/../web/bower/bootstrap-material-design/dist/js/ripples.min
+        scrollTo:       %kernel.root_dir%/../web/bower/jquery.scrollTo/jquery.scrollTo.min
+        scrollable:     %kernel.root_dir%/../web/bower/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min
+        pjax:           %kernel.root_dir%/../web/bower/jquery-pjax/jquery.pjax
+        unveil:         %kernel.root_dir%/../web/bower/jquery-unveil/jquery.unveil.min
+        fancybox:       %kernel.root_dir%/../web/bower/fancybox/source/jquery.fancybox
+        jquery-ui:      %kernel.root_dir%/../web/bower/jquery-ui/ui/
+        datepicker:     %kernel.root_dir%/../web/bower/bootstrap-datepicker/js/bootstrap-datepicker
+        datepicker-i18n: %kernel.root_dir%/../web/bower/bootstrap-datepicker/js/locales/bootstrap-datepicker.fr
+        select:         %kernel.root_dir%/../web/bower/bootstrap-select/dist/js/bootstrap-select.min
+        select-i18n:    %kernel.root_dir%/../web/bower/bootstrap-select/js/i18n/defaults-fr_FR
+        highcharts:     %kernel.root_dir%/../web/bower/highcharts/highcharts
+        raphael:        %kernel.root_dir%/../web/bower/raphael/raphael-min
+        morris:         %kernel.root_dir%/../web/bower/morris.js/morris.min
+        summernote:     %kernel.root_dir%/../web/bower/summernote/dist/summernote.min
+        summernote-i18n: %kernel.root_dir%/../web/bower/summernote/lang/summernote-fr-FR
+        typeahead:      %kernel.root_dir%/../web/bower/typeahead.js/dist/typeahead.bundle.min
+        addresspicker:  %kernel.root_dir%/../web/bower/typeahead-addresspicker/dist/typeahead-addresspicker.min
+        modals:         %kernel.root_dir%/../web/js/overrides
+    optimizer:
+        path: %kernel.root_dir%/../node_modules/requirejs/bin/r.js
+        hide_unoptimized_assets: true

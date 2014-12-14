@@ -3,7 +3,12 @@
 
 namespace TBN\SocialBundle\Social;
 
-use TwitterOAuth\TwitterOAuth;
+use TwitterOAuth\Auth\SingleUserAuth;
+/**
+ * Serializer Namespace
+ */
+use TwitterOAuth\Serializer\ArraySerializer;
+
 
 /**
  * Description of Twitter
@@ -14,7 +19,7 @@ class Twitter extends Social
 {
     /**
      *
-     * @var TwitterOAuth $client
+     * @var SingleUserAuth $client
      */
     protected $client;
 
@@ -27,7 +32,7 @@ class Twitter extends Social
             'oauth_token_secret' => ''
         ];
 
-        $this->client = new TwitterOAuth($config);
+        $this->client = new SingleUserAuth($config, new ArraySerializer());
     }
 
     public function getNumberOfCount() {
@@ -63,7 +68,7 @@ class Twitter extends Social
                 'oauth_token_secret'    => $info->getTwitterTokenSecret()
             ];
 
-            $client = new TwitterOAuth($config);
+            $client = new SingleUserAuth($config, new ArraySerializer());
 
             $ads = " ".$this->getLink($agenda)." #".$this->siteManager->getCurrentSite()->getNom()."ByNight";
 
@@ -93,7 +98,7 @@ class Twitter extends Social
                 'oauth_token_secret' => $info->getTwitterTokenSecret()
             ];
 
-            $client = new TwitterOAuth($config);
+            $client = new SingleUserAuth($config, new ArraySerializer());
 
             $ads = sprintf(" %s #%sByNight",$this->getLink($agenda),$this->siteManager->getCurrentSite()->getNom());
             $titre = sprintf("%s présente %s",$user->getUsername(),$agenda->getNom());

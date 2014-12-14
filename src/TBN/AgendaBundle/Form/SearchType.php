@@ -65,7 +65,7 @@ class SearchType extends AbstractType
                 "required" => false,
                 "label"    => "Recherche par mot-clés",
                 "attr" => ["class" => "form-control","placeholder" => "Que cherchez-vous ?"]])
-            ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-lg btn-info btn-block"]])
+            ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-lg btn-primary btn-block"]])
         ;
     }
 
