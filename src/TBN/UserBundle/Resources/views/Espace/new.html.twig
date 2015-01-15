@@ -1,19 +1,19 @@
 {% extends "TBNUserBundle::layout.html.twig" %}
 
 {% block titre_espace %}
+    Créer un nouvel événement
+{% endblock %}
+
+{% block title_espace %}
     Nouvel événement
 {% endblock %}
-    
-{% block title_espace %}
-    {{ block('titre_espace') }}
-{% endblock %}
-    
+
 {% block breadcrumb_espace %}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
     {% set item = menu.addItem("Mes événements", path('tbn_agenda_list')) %}
     {% set item = menu.addItem("Nouveau", path('tbn_agenda_new')) %}
 {% endblock %}
-    
+
 {% block body_espace %}
     <div class="mon_evenement">
         {% block body_form %}
@@ -21,48 +21,20 @@
             {{ form_errors(form) }}            
             <div class="row">
                 <div class="col-md-6">
-                    <h2><span class="label label-primary"><i class="fa fa-globe color-warning color-warning"></i> Votre événement</span></h2>
-                    {{ form_row(form.nom) }}
-                    {{ form_row(form.descriptif) }}
-                    {{ form_row(form.file) }}
+                    {% include "TBNUserBundle:Espace:event_part_1.html.twig" %}
+                    {% include "TBNUserBundle:Espace:event_part_4.html.twig" %}
                 </div>      
                 <div class="col-md-6">
-                    <h2><span class="label label-primary"><i class="fa fa-calendar color-warning color-warning"></i> Informations</span></h2>
-
-                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.dateDebut}) %}
-                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.dateFin}) %}
-                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.horaires}) %}
-
-                    <hr />
-                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.categorieManifestation}) %}
-                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.themeManifestation}) %}         
-                    <hr />
-                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.tarif}) %}      
+                   {% include "TBNUserBundle:Espace:event_part_2.html.twig" %}     
+                   {% include "TBNUserBundle:Espace:event_part_3.html.twig" %}         
                 </div> 
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <h2><span class="label label-primary"><i class="fa fa-map-marker color-warning"></i> Lieux</span></h2>
-                    {{ form_row(form.lieuNom) }}
-                    {{ form_row(form.adresse) }}
-                    <div class="row">
-                        <div class="col-md-offset-2 col-md-10">
-                            {{ form_row(form.rue) }}
-                            {{ form_row(form.codePostal) }}
-                            {{ form_row(form.ville) }}
-                        </div>
-                    </div>
-                    <div id="map"></div>
+                              
                 </div>
                 <div class="col-md-6">
-                    <h2><span class="label label-primary"><i class="fa fa-bullhorn color-warning"></i> Communiquez</span></h2>
-                    {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_facebook, 'service': 'facebook_events' }) %}
-                    {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_twitter, 'service': 'twitter' }) %}          
-                    {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_google, 'service': 'google' }) %}
                     
-                    <hr />
-                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
-                    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
                 </div>
             </div>
             <hr />
@@ -79,41 +51,39 @@
         <br />
         <br />
         <br />
-        <a href="{{ path('tbn_agenda_list') }}" title="Retourner à mes soirées">Retour</a>
+        <a class="btn btn-default btn-raised bg-white" href="{{ path('tbn_agenda_list') }}" title="Retourner à mes soirées">Retour</a>
     </div>
 {% endblock %}
 
 {% block css_agenda %}
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/redmond/jquery-ui.min.css" type="text/css" media="screen" >
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/summernote/0.5.2/summernote.css" type="text/css" media="screen" >
-    
     {% stylesheets 
-        'bundles/tbnuser/css/jquery-ui.min.css'
+        'bower/bootstrap-datepicker/css/datepicker3.css'
+        'bower/summernote/dist/summernote.css'
         'bundles/tbnuser/css/espace_perso.css'
         'bundles/tbnsocial/css/social_login.css'
 
-        filter='cssrewrite,?yui_css'
-        output='prod/css/espace-perso/evenements/style.css'
+        output='prod/css/espace-perso/evenements/manager.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
 {% endblock %}
 
-{% block head_js %}
+{% block head_js_espace %}
     <script src="//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=fr&libraries=places"></script>
-    <script>
-        var ville = "{{ site.nom }}";
-    </script>
 {% endblock %}
 
-{% block js_espace %}    
-    require(['user/Events'], function(Events)
-    {
-        Events.init();
-    });
-    
-    require(['social/SocialLogin'], function(SocialLogin)
-    {
-        SocialLogin.init();
-    });
+{% block js_espace %}
+    {% javascripts 
+        'bower/bootstrap-datepicker/js/bootstrap-datepicker.js'
+        'bower/bootstrap-datepicker/js/locales/bootstrap-datepicker.fr.js'
+        'bower/summernote/dist/summernote.js'
+        'bower/summernote/lang/summernote-fr-FR.js'
+        'bower/typeahead.js/dist/typeahead.bundle.min.js'
+        'bower/typeahead-addresspicker/dist/typeahead-addresspicker.min.js'
+        '@TBNSocialBundle/Resources/public/js/SocialLogin.js'
+        '@TBNUserBundle/Resources/public/js/EventHandler.js'
+        output='prod/js/espace-perso/evenements/manager.js'
+    %}
+    <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
 {% endblock %}

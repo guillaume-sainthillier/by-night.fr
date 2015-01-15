@@ -1,0 +1,13 @@
+{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+
+{% block titre %}Informations{% endblock %}
+{% block icone %}fa-calendar{% endblock %}
+{% block body %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.dateDebut}) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.dateFin}) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.horaires}) %}
+
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.categorieManifestation}) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.themeManifestation}) %}         
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.tarif}) %}
+{% endblock %}

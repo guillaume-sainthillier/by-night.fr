@@ -58,21 +58,24 @@ class AgendaType extends AbstractType
             ])
             ->add('file','file', [
                 "label" => "Affiche / Flyer",
-                "required" => false
+                "required" => false,
+                'image_path' => 'webPath'
             ])
-            ->add('dateDebut','genemu_jquerydate', [
+            ->add('dateDebut','date', [
                 "label" => "A partir du ",
                 'widget' => 'single_text',
                 "required" => true,
+                "format" => "dd/MM/yyyy",
                 "attr" => [
                     "placeholder" => "Le / Du...",
                     "class" => "datepicker"
                 ]
             ])
-            ->add('dateFin','genemu_jquerydate', [
+            ->add('dateFin','date', [
                 "label" => "Jusqu'au",
                 'widget' => 'single_text',
                 "required" => false,
+                "format" => "dd/MM/yyyy",
                 "attr" => [
                     "placeholder" => "Au...",
                     "class" => "datepicker"
@@ -86,14 +89,21 @@ class AgendaType extends AbstractType
                 ]
             ]);
 
-
         foreach($this->options as $service => $config)
         {
-            $getter = "get".ucfirst($service)."AccessToken";
+            $nomService = $config["nom"];
+            $accessService = ucfirst($service);
+            if($nomService === '')
+            {
+                $nomService = $accessService;
+            }
+
+            $getter = "get".$accessService."AccessToken";
             $is_api_ready = ($config["enabled"] and $this->siteInfo and $this->siteInfo->$getter());
             
             if(! $is_api_ready)
             {
+                $message = "L'accès à ".$nomService." est momentanément désactivé";
                 $post_checked = false;
                 $post_disabled = true;
             }else
@@ -107,17 +117,28 @@ class AgendaType extends AbstractType
                 }
                 $post_disabled = false;
                 $post_checked = $this->user->hasRole($role);
+
+                if($post_checked)
+                {
+                    $info = $this->user->getInfo();
+                    $getter = "get".$accessService."Nickname";
+                    $message = "Connecté sous ".($service === 'twitter' ? '@': '').$info->$getter();
+                }else
+                {
+                    $message = "Connectez vous à ".$nomService;
+                }
             }
 
             $builder->add('share_' .$service,'checkbox', [
-                "label" => "Poster mon événement sur " .ucfirst($service),
+                "label" => "Poster mon événement sur " .$nomService,
                 "required" => false,
                 "mapped" => false,
                 "disabled" => $post_disabled,
                 "data" => $post_checked,
                 "attr" => array(
                     "class" => "social_post onoffswitch-checkbox ".($post_checked ? "checked" : ""),
-                    "data-connected" => (!$post_disabled and $post_checked) ? "1" : "0"
+                    "data-connected" => (!$post_disabled and $post_checked) ? "1" : "0",
+                    "data-message" => $message
                 )
             ]);
         }
@@ -143,45 +164,17 @@ class AgendaType extends AbstractType
                     "placeholder" => "Humour, Tragédie, Jazz, Rock, Rap, ..."
                 ]
             ])
-            ->add('lieuNom', 'text', [
-                "required" => true,
-                "label" => "Où ça ?",
-                "attr" => [
-                    "placeholder" => "Indiquez le nom du lieu"
-                ]
-            ])
             ->add('adresse', 'text', [
                 "required" => false,
                 "label" => "Adresse",
                 "attr" => [
-                    "placeholder" => "Indiquez l'adresse exacte de l'événement"
-                ]
-            ])            
-            ->add('rue','text', [
-                "required" => false,
-                "attr" => [
-                    "readonly" => true
+                    "placeholder" => "Tapez votre adresse ici pour remplir les champs ci-dessous"
                 ]
             ])
-            ->add('codePostal','text', [
-                "required" => false,
-                "attr" => [
-                    "readonly" => true
-                ]
+            ->add('place', new PlaceType, [
+                "label" => false,
             ])
-            ->add('ville','text', [
-                "required" => true,
-                "attr" => [
-                    "readonly" => true
-                ]
-            ])
-            ->add('latitude','hidden', [
-                "required" => false,
-            ])
-            ->add('longitude','hidden', [
-                "required" => false,
-            ])            
-            ->add('reservationInternet','text', [
+            ->add('reservationInternet','url', [
                 "label" => "Réservation par internet",
                 "required" => false,
                 "attr" => [
@@ -193,6 +186,13 @@ class AgendaType extends AbstractType
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Le numéro à appeler pour acheter un billet"
+                ]
+            ])
+            ->add('reservationEmail','email', [
+                "label" => "Réservation par mail",
+                "required" => false,
+                "attr" => [
+                    "placeholder" => "Le mail pour vous contacter"
                 ]
             ])
         ;

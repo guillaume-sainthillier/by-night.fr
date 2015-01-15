@@ -77,7 +77,7 @@
             <br />
             <br />
             <div class="text-center">
-                <a class="btn btn-primary btn-block btn-lg" href="{{ path('tbn_agenda_new') }}">Créez votre événement dès maintenant</a>
+                <a class="btn btn-primary btn-raised btn-block btn-lg" href="{{ path('tbn_agenda_new') }}">Créez votre événement dès maintenant</a>
             </div>
             <br />
         </div>
@@ -89,8 +89,7 @@
     {% stylesheets 
         'bundles/tbnagenda/css/plus.css'
 
-        filter='cssrewrite,?yui_css'
-        output='prod/css/en-savoir-plus/style.css'
+        output='prod/css/en-savoir-plus.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}

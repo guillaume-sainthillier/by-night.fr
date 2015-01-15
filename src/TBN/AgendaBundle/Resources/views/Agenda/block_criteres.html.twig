@@ -1,6 +1,6 @@
 {% spaceless %}
 {{ form_start(form, {'attr': {'data-pjax': ''}}) }}
-
+{{ form_errors(form) }}
 <div class="block_criteres panel panel-primary">      
     <div class="panel-body">
         <h2 class="modal-title">Trouvez une idée sortie</h2>
@@ -11,6 +11,7 @@
                     {{ form_label(form.du) }}
                     <div class="col-sm-8">
                         {{ form_widget(form.du) }}
+                        {{ form_errors(form.du) }}
                     </div>
                 </div>
             </div>

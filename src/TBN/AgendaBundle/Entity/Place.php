@@ -60,6 +60,7 @@ class Place
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255)
+     * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
      * @Expose
      */
     private $nom;
@@ -95,6 +96,7 @@ class Place
     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Ville", cascade={"persist"})
     * @ORM\JoinColumn(nullable=true)
     * @Expose
+    * @Assert\Valid()
     */
     protected $ville;
 

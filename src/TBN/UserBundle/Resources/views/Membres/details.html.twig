@@ -4,7 +4,7 @@
 {% block title_membre %}{{ username }}{% endblock %}
 {% block titre_membre %}{{ username }}{% endblock %}
 
-{% block head_js %}
+{% block head_js_espace %}
     <script type="text/javascript">
         window.datas = {{ etablissements|json_encode()|raw }};
     </script>
@@ -25,148 +25,149 @@
 
 
 {% block body_membre %}
-    <div class="row">
-        <div class="col-md-3">
-            <div class="panel panel-default fiche_profil text-center">
-                <div class="panel-heading bg-white">
-                    <h2 class="modal-title">Profil</h2>
-                </div>      
-                <div class="panel-body">                    
-                    <img class="img img-responsive component" src="{{ user.profileDefault }}" />
-                    <br />
-                    <div class="row">
-                        <div class="col-xs-6 preserve">
-                            <strong class="number number-big">{{ count_participations }}</strong> 
-                            <span class="text-primary">participation{{ count_participations > 1 ? "s" : "" }}</span>
-                        </div>
-                        <div class="col-xs-6 preserve">
-                            <strong class="number number-big">{{ count_interets }}</strong> 
-                            <span class="text-primary">intérêt{{ count_interets > 1 ? "s" : "" }}</span>
-                        </div>
+<div class="row">
+    <div class="col-md-3">
+        <div class="panel panel-default fiche_profil text-center">
+            <div class="panel-heading bg-white">
+                <h2 class="modal-title">Profil</h2>
+            </div>      
+            <div class="panel-body">                    
+                <img class="img img-responsive component" src="{{ user.profileDefault }}" />
+                <br />
+                <div class="row">
+                    <div class="col-xs-6 preserve">
+                        <strong class="number number-big">{{ count_participations }}</strong> 
+                        <span class="text-primary">participation{{ count_participations > 1 ? "s" : "" }}</span>
                     </div>
-                    {% if user.description %}
-                    <hr />
-                    <p class="">
-                        <i class="fa fa-quote-left fa-2x fa-border" ></i> 
-                        {{ user.description }}
-                    </p>
-                    {% endif %}
-                    <hr />
-                    {% include "TBNUserBundle:Membres:social_info.html.twig" %}
+                    <div class="col-xs-6 preserve">
+                        <strong class="number number-big">{{ count_interets }}</strong> 
+                        <span class="text-primary">intérêt{{ count_interets > 1 ? "s" : "" }}</span>
+                    </div>
+                </div>
+                {% if user.description %}
+                <hr />
+                <p class="">
+                    <i class="fa fa-quote-left fa-2x fa-border" ></i> 
+                    {{ user.description }}
+                </p>
+                {% endif %}
+                <hr />
+                {% include "TBNUserBundle:Membres:social_info.html.twig" %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-heading bg-white">
+                <ul class="nav nav-tabs">
+                    <li><a href="#passes">Passés</a></li>
+                    <li class="active"><a href="#a-venir">A venir</a></li>
+                </ul>
+                <h2 class="modal-title">Événements</h2>
+            </div>           
+            <div class="panel-body">                            
+                <div class="tab-content">
+                    <div class="tab-pane active" id="a-venir">
+                        {% for i, soiree in next_events %}
+                            {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'event' : soiree}) %}
+                            {% if (i+1) < next_events|length %}
+                                <hr />
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fa fa-info-circle"></i>
+                                Aucun événément à venir pour {{ user.username }} !
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane" id="passes">
+                        {% for i, soiree in previous_events %}
+                            {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'event' : soiree}) %}
+                            {% if (i+1) < previous_events|length %}
+                                <hr />
+                            {% endif %}
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fa fa-info-circle"></i>
+                                Aucun événément passé pour {{ user.username }} !
+                            </div>
+                        {% endfor %}                        
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-9">
-            <div class="panel panel-default">
-                <div class="panel-heading bg-white">
-                    <ul class="nav nav-tabs">
-                        <li><a href="#passes">Passés</a></li>
-                        <li class="active"><a href="#a-venir">A venir</a></li>
-                    </ul>
-                    <h2 class="modal-title">Événements</h2>
-                </div>           
-                <div class="panel-body">                            
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="a-venir">
-                            {% for i, soiree in next_events %}
-                                {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'event' : soiree}) %}
-                                {% if (i+1) < next_events|length %}
-                                    <hr />
-                                {% endif %}
-                            {% else %}
-                                <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i>
-                                    Aucun événément à venir pour {{ user.username }} !
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="tab-pane" id="passes">
-                            {% for i, soiree in previous_events %}
-                                {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'event' : soiree}) %}
-                                {% if (i+1) < previous_events|length %}
-                                    <hr />
-                                {% endif %}
-                            {% else %}
-                                <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i>
-                                    Aucun événément passé pour {{ user.username }} !
-                                </div>
-                            {% endfor %}                        
-                        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading bg-white">
+                        <h3 class="modal-title">Lieux fréquentés</h3>
+                    </div>
+                    <div class="panel-body">                            
+                        <div id="hero-donut" class="chart"></div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading bg-white">
-                            <h3 class="modal-title">Lieux fréquentés</h3>
-                        </div>
-                        <div class="panel-body">                            
-                            <div id="hero-donut" class="chart"></div>
-                        </div>
+            <div class="col-sm-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading bg-white">
+                        <ul class="nav nav-tabs" id="chartsActivite">
+                            <li id="chartSemaine"><a href="#semaine">Semaine</a></li>
+                            <li id="chartMois"><a href="#mois">Mois</a></li>
+                            <li id="chartAnnee" class="active"><a href="#annee">Année</a></li>
+                        </ul>
+                        <h3 class="modal-title">Activité</h3>
                     </div>
-                </div>
-                <div class="col-sm-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading bg-white">
-                            <ul class="nav nav-tabs" id="chartsActivite">
-                                <li id="chartSemaine"><a href="#semaine">Semaine</a></li>
-                                <li id="chartMois"><a href="#mois">Mois</a></li>
-                                <li id="chartAnnee" class="active"><a href="#annee">Année</a></li>
-                            </ul>
-                            <h3 class="modal-title">Activité</h3>
-                        </div>
-                        <div class="panel-body">                            
-                            <div class="tab-content">
-                                <div class="tab-pane" id="semaine">
-                                    <div id="chart-semaine" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'semaine', 'username' : user.username }) }}">
-                                        <div class="text-center">
-                                            <i class="fa fa-spin fa-spinner fa-5x color-second"></i>
-                                        </div>                                        
+                    <div class="panel-body">                            
+                        <div class="tab-content">
+                            <div class="tab-pane" id="semaine">
+                                <div id="chart-semaine" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'semaine', 'username' : user.username }) }}">
+                                    <div class="text-center">
+                                        <i class="fa fa-spin fa-spinner fa-5x color-second"></i>
+                                    </div>                                        
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="mois">
+                                <div id="chart-mois" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'mois', 'username' : user.username }) }}">
+                                    <div class="text-center">
+                                        <i class="fa fa-spin fa-spinner fa-5x color-success"></i>
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="mois">
-                                    <div id="chart-mois" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'mois', 'username' : user.username }) }}">
-                                        <div class="text-center">
-                                            <i class="fa fa-spin fa-spinner fa-5x color-success"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane active" id="annee">
-                                    <div id="chart-annee" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'annee', 'username' : user.username }) }}">
-                                        <div class="text-center">
-                                            <i class="fa fa-spin fa-spinner fa-5x color-info"></i>
-                                        </div>
+                            </div>
+                            <div class="tab-pane active" id="annee">
+                                <div id="chart-annee" class="chart" data-url="{{ path("tbn_user_stats", {'type': 'annee', 'username' : user.username }) }}">
+                                    <div class="text-center">
+                                        <i class="fa fa-spin fa-spinner fa-5x color-info"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>                
-            </div>
+                </div>
+            </div>                
         </div>
     </div>
+</div>
 {% endblock %}
     
 {% block css_membre %}
-    
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.0/morris.css" type="text/css" media="screen" >
-    
     {% stylesheets 
         'bower/morris.js/morris.css'
         'bundles/tbnuser/css/membre.css'
 
-        filter='cssrewrite,?yui_css'
-        output='prod/css/membre/style.css'
+        output='prod/css/membres/details.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
 {% endblock %}
 
 {% block js_membre %}
-    require(['user/DetailsUser'], function(DetailsUser)
-    {
-        DetailsUser.init();
-    });
+    {% javascripts 
+        'bower/raphael/raphael-min.js'
+        'bower/morris.js/morris.min.js'
+        '@TBNUserBundle/Resources/public/js/UserDetails.js'
+
+        output='prod/js/membres/details.js'
+    %}
+        <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
 {% endblock %}

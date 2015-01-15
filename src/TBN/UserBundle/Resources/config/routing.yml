@@ -26,6 +26,14 @@ tbn_agenda_delete:
 tbn_agenda_edit:
     pattern: /corriger/{slug}
     defaults: { _controller: TBNUserBundle:Agenda:edit }
+    
+tbn_agenda_brouillon:
+    pattern: /brouillon/{slug}
+    defaults: { _controller: TBNUserBundle:Agenda:brouillon }
+    
+tbn_agenda_annuler:
+    pattern: /annuler/{slug}
+    defaults: { _controller: TBNUserBundle:Agenda:annuler }
 
 tbn_agenda_list:
     pattern: /mes-soirees

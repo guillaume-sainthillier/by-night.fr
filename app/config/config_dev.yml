@@ -40,9 +40,5 @@ parameters:
     domain: "local"
     force_refresh:     false
     
-hearsay_require_js:
-    optimizer:
-        hide_unoptimized_assets: false
-    
 #swiftmailer:
 #    delivery_address: me@example.com

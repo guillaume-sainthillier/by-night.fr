@@ -397,10 +397,10 @@ class AgendaRepository extends EntityRepository {
         ->from('TBNAgendaBundle:Agenda',"a")
         ->where("a.site = :site")
         ->andWhere("a.typeManifestation != ''")
-        ->andWhere("a.dateDebut >= :today")
+        //->andWhere("a.dateDebut >= :today")
         ->groupBy("a.typeManifestation")
         ->orderBy("a.typeManifestation", "DESC")
-        ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
+        ->setParameters([":site" => $site->getId()])
         ->getQuery()
         ->execute();
     }

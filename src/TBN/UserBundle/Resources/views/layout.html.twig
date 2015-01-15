@@ -21,12 +21,14 @@
     {% block body_espace %}
         <br />
         <div class="row">
-            <div class="col-sm-8 col-sm-offset-2">
+            <div class="col-sm-8 col-lg-6 col-lg-offset-3 col-sm-offset-2">
                 {% block fos_user_content %}{% endblock %}
             </div>
         </div>
     {% endblock %}
 {% endblock %}
+
+{% block head_js_agenda %}{% block head_js_espace %}{% endblock %}{% endblock %}
 
 {% block js_agenda %}
     {% block js_espace %}{% endblock %}

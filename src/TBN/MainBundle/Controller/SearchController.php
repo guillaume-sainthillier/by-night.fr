@@ -18,9 +18,13 @@ class SearchController extends Controller
             return [[], 0];
         }
 
+        /** var \FOS\ElasticaBundle\Manager\RepositoryManager */
+        $repositoryManager = $this->get('fos_elastica.manager');
+
 	$repo           = $em->getRepository("TBNAgendaBundle:Agenda"); // 100ms
-        $search         = (new SearchAgenda())->setTerm($q)->setDu(null);
-        $soirees        = $repo->findWithSearch($site, $search, $offset, $limit, false); //100ms
+        $repoSearch     = $repositoryManager->getRepository("TBNAgendaBundle:Agenda");
+        $search         = (new SearchAgenda())->setTerm($q);
+        $soirees        = $repoSearch->findWithSearch($site, $search, $offset, $limit, false); //100ms
         $nbSoirees      = $repo->findCountWithSearch($site, $search); //10ms
 
         return [$soirees, $nbSoirees];

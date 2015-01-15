@@ -1,0 +1,11 @@
+{% macro dates(du, au) %}
+    {% set dateDebut = du|date('d/m/Y') %}
+    {% set dateFin = au|date('d/m/Y') %}
+
+    {% if au == null or (au != null and dateDebut == dateFin) %}
+        Le <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|localizeddate('full', 'none') }}</time>
+    {% else %}
+        Du <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|localizeddate('full', 'none') }}</time>
+        au <time itemprop="endDate" datetime="{{ au|date('Y-m-d\TH:i:sO') }}">{{ au|localizeddate('full', 'none') }}</time>
+    {% endif %}
+{% endmacro %}

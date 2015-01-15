@@ -28,15 +28,15 @@ class SearchType extends AbstractType
                 "label" => "Du",
                 'label_attr' => array('class' => 'col-sm-4 control-label'),
                 "widget" => "single_text",
-                "format" => "d/M/y",
-                "attr" => ["class" => "datepicker", "data-date-format" => "dd/mm/yyyy"]
+                "format" => "dd/MM/yyyy",
+                "attr" => ["class" => "datepicker floating-labe", "data-date-format" => "dd/mm/yyyy"]
             ])
             ->add("au", "date", [
                 "required" => false,
                 "label"     => "Au",
                 'label_attr' => array('class' => 'col-sm-4 control-label'),
                 "widget" => "single_text",
-                "format" => "d/M/y",
+                "format" => "dd/MM/yyyy",
                 "attr" => ["class" => "datepicker", "data-date-format" => "dd/mm/yyyy"]
             ])
             ->add("type_manifestation", "choice", [

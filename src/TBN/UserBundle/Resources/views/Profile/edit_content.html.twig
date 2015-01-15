@@ -1,7 +1,7 @@
 <form action="{{ path('fos_user_profile_edit') }}" {{ form_enctype(form) }} method="POST" class="fos_user_profile_edit">
     {{ form_widget(form) }}
     <div>
-        <button class="btn btn-primary" type="submit">Modifier</button>
-        <a class="pull-right" title="Retourner à mes infos" href="{{ path('fos_user_profile_show') }}">Retour</a>
+        <button class="btn btn-primary btn-raised" type="submit">Modifier</button>
+        <a class="btn btn-default pull-right" title="Retourner à mes infos" href="{{ path('fos_user_profile_show') }}">Retour</a>
     </div>
 </form>

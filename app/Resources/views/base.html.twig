@@ -60,8 +60,6 @@
             'css/footer.css'
             'css/style.css'
             'css/respond.css'
-
-            filter='cssrewrite,?yui_css'
             output='prod/css/style.css'
         %}
             <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
@@ -94,6 +92,11 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
+                        <h1 class="titrebloc">{% spaceless %}{% block titre %}{% endblock %}{% endspaceless %}</h1>
+                        <div class="divider">
+                            <span class="text-primary divider-icon"></span>
+                        </div>
+                        
                         {% for key, messages in app.session.flashbag.all() %}
                             {% for message in messages %}
                                 <div class="alert alert-{{ key == "error" ? "danger" : key }}">
@@ -102,11 +105,6 @@
                                 </div>
                             {% endfor %}
                         {% endfor %}
-
-                        <h1 class="titrebloc">{% spaceless %}{% block titre %}{% endblock %}{% endspaceless %}</h1>
-                        <div class="divider">
-                            <span class="text-primary divider-icon"></span>
-                        </div>        
                     </div>
                 </div>
                             
@@ -172,25 +170,20 @@
             ga('require', 'displayfeatures');
             ga('send', 'pageview');
         </script>
-        {{ require_js_initialize({ 'main' : null}) }}
-        <script>
-            var js_scripts = {};            
-            js_scripts.base = [];
-            js_scripts.lib = [];
-            js_scripts.plugin = [];
-            js_scripts.final = [];
-            
-            {% javascripts 'js/App.js'
-                filter='?requirejs' 
-                output='prod/js/app.js' %}
-                require(['{{ asset_url }}'], function(App)
-                {
-                    console.log(App);
-                    //App.init();
-                });
-            {% endjavascripts %}           
-            {% block js -%}{%- endblock %}
-        </script>
+        {% javascripts 
+            'bower/jquery/dist/jquery.min.js'
+            'bower/bootstrap/dist/js/bootstrap.min.js'
+            'bower/bootstrap-material-design/dist/js/material.min.js'
+            'bower/bootstrap-material-design/dist/js/ripples.min.js'
+            'bower/jquery.scrollTo/jquery.scrollTo.min.js'
+            'js/overrides.js'
+            'js/socials.js'
+            'js/App.js'
+
+            output='prod/js/app.js' %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}        
+        {% block js -%}{%- endblock %}        
         <!-- ./JS -->
     </body>
 </html>

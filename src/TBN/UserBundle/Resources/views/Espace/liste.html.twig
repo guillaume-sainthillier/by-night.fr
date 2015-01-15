@@ -1,9 +1,9 @@
 {% extends "TBNUserBundle::layout.html.twig" %}
 
 
-{% block titre_espace %}Mes événements{% endblock %}
+{% block titre_espace %}Mes événements depuis le {{ app.user.dateCreation|localizeddate('short', 'none') }}{% endblock %}
 
-{% block title_espace %}{{ block('titre_espace') }}{% endblock %}
+{% block title_espace %}Mes événements{% endblock %}
 
 {% block breadcrumb_espace %}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
@@ -11,34 +11,72 @@
 {% endblock %}
 
 {% block body_espace -%}
-<table class="table table-striped">
+<div class="text-center">
+    <a class="btn btn-success btn-raised" href="{{ path('tbn_agenda_new') }}"><i class="fa fa-plus"></i> Nouvel événement</a>
+</div>
+<hr />
+
+
+{% if soirees|length > 0 %}
+    
+{% import ":Form:macros.html.twig" as macros %}
+<table class="table table-striped bg-white component">
     <thead>
         <tr>
-            <th><a class="btn btn-success" href="{{ path('tbn_agenda_new') }}"><i class="fa fa-plus"></i> Nouvel événement</a></th>
             <th>Nom</th>
             <th>Lieu</th>
-            <th>Date de début</th>
-            <th>Date de fin</th>
+            <th>Ville</th>
+            <th>Date</th>
+            <th>Actions</th>
+            <th>Visible</th>
+            <th>Annulé</th>
         </tr>
     </thead>    
     <tbody>
         {% for soiree in soirees %}
         <tr>
-            <td><a class="btn btn-primary" href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i> Corriger</a></td>
-            <td>{{ soiree.nom }}</td>
-            <td>{{ soiree.lieuNom }}</td>
-            <td>{{ soiree.dateDebut|localizeddate('full','none')|capitalize}}</td>
-            <td>{{ soiree.dateFin|localizeddate('full','none')|capitalize}}</td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="5">
-                <div class="alert alert-info">
-                    <i class="fa fa-info-circle"></i> Aucun événement créé, publiez dès maintenant le vôtre !
+            <td><a href="{{ path('tbn_agenda_details', {'slug': soiree.slug }) }}" title="Accéder à l'événement">{{ soiree.nom }}</a></td>
+            <td>{{ soiree.place.nom }}</td>
+            <td>{{ soiree.place.ville.nom }}</td>
+            <td>
+                {{ macros.dates(soiree.dateDebut, soiree.dateFin) }}
+            </td>
+            <td>
+                <a class="btn btn-primary" href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}" title="Corriger l'événement">
+                    <i class="fa fa-pencil"></i>
+                </a>
+            </td>
+            <td>
+                <div class="togglebutton">
+                    <label>
+                        <input type="checkbox" class="brouillon" data-href="{{ path('tbn_agenda_brouillon', {'slug': soiree.slug}) }}" {{ not soiree.isBrouillon ? 'checked' : '' }} />
+                    </label>                    
                 </div>
             </td>
-        </tr>            
-        {% endfor %}  
+            <td>
+                <div class="togglebutton">
+                    <label>
+                        <input type="checkbox" class="annuler" data-href="{{ path('tbn_agenda_annuler', {'slug': soiree.slug}) }}" {{ soiree.modificationDerniereMinute ? 'checked' : '' }} />
+                    </label>                    
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
+{% else %}
+    <div class="alert alert-info">
+        <i class="fa fa-info-circle"></i> Aucun événement créé, publiez dès maintenant le vôtre !
+    </div>
+{% endif %}
 {%- endblock %}
+
+
+{% block js_espace %}
+    {% javascripts 
+        '@TBNUserBundle/Resources/public/js/ListEvents.js'
+        output='prod/js/espace-perso/evenements/liste.js'
+    %}
+    <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
+{% endblock %}

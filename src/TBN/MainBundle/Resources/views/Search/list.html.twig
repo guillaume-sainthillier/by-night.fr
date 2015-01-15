@@ -1,7 +1,7 @@
 {% extends "TBNMainBundle:Search:layout.html.twig" %}
 
 {% block title_search %}Recherche{% endblock %}
-{% block titre_search %}Recherche{% endblock %}
+{% block titre_search %}Recherche d'événements, lieux et membres{% endblock %}
 {% block meta_description -%}{% if term %}{{ nbItems}} résultat{{ nbItems > 1 ? "s" : "" }} trouvé{{ nbItems > 1 ? "s" : "" }} pour la recherche '{{ term }}'. {% endif %}{{ parent() }}{% endblock %}
 
 {% block breadcrumb_search -%}   
@@ -13,7 +13,7 @@
 {% block body_search_results -%}
     {% if term %}
         <h2>
-            <strong class="count date">{{ nbItems }}</strong> 
+            <span class="number">{{ nbItems }}</span> 
             résultat{{ nbItems > 1 ? "s" : "" }} trouvé{{ nbItems > 1 ? "s" : "" }}
             pour la recherche <strong>{{ term }}</strong>
         </h2>

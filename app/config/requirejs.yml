@@ -2,18 +2,13 @@ hearsay_require_js:
     require_js_src: "//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.15/require.min.js"
     base_dir: %kernel.root_dir%/../web
     options:
-        waitSeconds: 0
+        waitSeconds: 5
     shim:
         bootstrap:
-            deps: ['ripples', 'jquery']                  
-        modals:
-            deps: ['bootstrap', 'jquery']
+            deps: ['ripples', 'jquery']
         material:
             deps: ['jquery']
-            exports: "$.material"
-        scrollTo: 
-            deps : ['jquery']
-            exports: "$.scrollTo"        
+            exports: "$.material"   
         scrollable: 
             deps : ['jquery']
             exports: "$.mCustomScrollbar"        
@@ -89,3 +84,16 @@ hearsay_require_js:
     optimizer:
         path: %kernel.root_dir%/../node_modules/requirejs/bin/r.js
         hide_unoptimized_assets: true
+        modules: 
+            app/App:
+                include: ['jquery', 'bootstrap', 'material', 'ripples', 'modals', 'scrollTo']
+                exclude: ~
+            agenda/agenda:
+                include: ~
+                exclude: ['jquery', 'bootstrap', 'material', 'ripples', 'modals', 'scrollTo']
+            agenda/agend4a:
+                include: ~
+                exclude: ['jquery', 'bootstrap', 'material', 'ripples', 'modals', 'scrollTo']
+            agenda/mainAgenda:
+                include: ~
+                exclude: ['jquery', 'bootstrap', 'material', 'ripples', 'modals', 'scrollTo']

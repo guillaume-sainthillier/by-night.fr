@@ -18,3 +18,8 @@ services:
         arguments : [ @request_stack, @site_manager, @winzou_cache, @doctrine ]
         tags:
             - { name: twig.extension }
+
+    tbn.image_type_extension:
+        class: TBN\MainBundle\Form\Extension\ImageTypeExtension
+        tags:
+            - { name: form.type_extension, alias: file }

@@ -36,15 +36,23 @@ h1, h2, h3, h4, h5, h6,
     }
 }
 
-// Navbar =====================================================================
-.navbar {
-    .navbar-form {
-        .form-control-wrapper {
-            //position: initial;
-        }
+//Toggle
+.togglebutton label {
+    font-weight: 700;
+
+    .toggle {
+        float: right;
     }
 }
 
+
+// Navbar =====================================================================
+.navbar .navbar-nav>li>a {
+    &:hover, &:focus {
+        color: white;
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+}
 // BreadCrumb =================================================================
 #bread {            
     padding-top: 5px;
@@ -64,6 +72,7 @@ h1, h2, h3, h4, h5, h6,
         }
         li {
             padding: 5px;
+            display: inline;
         }
     }
 
@@ -133,4 +142,53 @@ h1, h2, h3, h4, h5, h6,
     color: #fff;
     background-color: @info;
     cursor: pointer;
+}
+
+// Toggle =====================================================================
+/*.togglebutton {
+    label {
+        // Switch bg on
+        input[type=checkbox]:first-child {
+            &:checked, &.checked {
+                & + .toggle {
+                    background-color: rgba(0, 149, 135, 0.5);
+                    // Handle on
+                    &:after {
+                        background-color: #009587;
+                        left: 15px;
+                    }
+                }
+
+                & ~ .toggle:active:after {
+                    box-shadow: 0 1px 3px 1px rgba(0,0,0,0.4), 0 0 0 15px rgba(0, 149, 135, 0.1);
+                }
+            }
+        }
+    }
+}*/
+
+// DatePicker =================================================================
+
+html body .datepicker table tr td {
+    &.active,
+    &.active:hover,
+        &.active.disabled,
+        &.active.disabled:hover {
+        background-color: @primary!important;
+    }
+}
+
+// Tables =====================================================================
+.table {
+    tbody tr td {
+        vertical-align: middle;
+        
+        .btn {
+            margin-top: 0;
+            margin-bottom: 0;
+            &.btn-xs {
+                padding: 5px 10px;
+            }
+        }
+    }
 }

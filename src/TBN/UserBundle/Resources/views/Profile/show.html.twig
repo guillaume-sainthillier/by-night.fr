@@ -16,16 +16,17 @@
     {% stylesheets 
         'bundles/tbnsocial/css/social_login.css'
 
-        filter='cssrewrite,?yui_css'
-        output='prod/css/espace-perso/style.css'
+        output='prod/css/espace-perso/login.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}       
 {% endblock %}
 
 {% block js_espace %}
-    require(['social/SocialLogin'], function(SocialLogin)
-    {
-        SocialLogin.init();
-    });         
-{% endblock %}    
+    {% javascripts 
+        '@TBNSocialBundle/Resources/public/js/SocialLogin.js'
+        output='prod/js/espace-perso/login.js'
+    %}
+        <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
+{% endblock %}  

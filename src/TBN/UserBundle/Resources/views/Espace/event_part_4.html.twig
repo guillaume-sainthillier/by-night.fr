@@ -1,0 +1,18 @@
+{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+
+{% block titre %}Communiquez{% endblock %}
+{% block icone %}fa-bullhorn{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_facebook, 'service': 'facebook_events' }) %}
+            {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_twitter, 'service': 'twitter' }) %}          
+            {% include "TBNUserBundle:Espace:on_off.html.twig" with({'elem' : form.share_google, 'service': 'google' }) %}
+        </div>
+    </div>
+    <br />
+    <br />
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
+{% endblock %}

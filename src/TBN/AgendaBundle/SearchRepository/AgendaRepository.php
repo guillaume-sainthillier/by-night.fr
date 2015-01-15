@@ -6,73 +6,25 @@ use FOS\ElasticaBundle\Repository;
 use TBN\AgendaBundle\Search\SearchAgenda;
 use TBN\MainBundle\Entity\Site;
 use Elastica\Filter\Term;
-use Elastica\Filter\Terms;
 use Elastica\Filter\Bool;
+use Elastica\Query\Bool as QueryBool;
 use Elastica\Query\QueryString;
 use Elastica\Filter\NumericRange;
+use Elastica\Query\Match;
+use Elastica\Util;
 
 class AgendaRepository extends Repository {
 
-    protected function makeQuery(QueryBuilder $qb, Site $site, SearchAgenda $search) {
-        $params = [":site" => $site->getId()];
-        $qb->where("a.site = :site");
-
-        if ($search->getDu() !== null) {
-            $params[":du"] = $search->getDu()->format("Y-m-d");
-            if ($search->getAu() === null) {
-                $qb->andWhere(":du BETWEEN a.date_debut AND a.date_fin");
-            } else {
-                $qb->andWhere('((a.date_debut BETWEEN :du AND :au) '
-                        . 'OR (a.date_fin BETWEEN :du AND :au) '
-                        . 'OR (:du BETWEEN a.date_debut AND a.date_fin)'
-                        . 'OR (:au BETWEEN a.date_debut AND a.date_fin))');
-
-                $params[":au"] = $search->getAu()->format("Y-m-d");
-            }
-        } else {
-            $qb->andWhere("a.date_debut >= :now");
-            $params[":now"] = (new \DateTime)->format("Y-m-d");
-        }
-
-
-        if (count($search->getTerms()) > 0) {
-            $qb->andWhere("(a.nom LIKE :mot_clefs OR a.descriptif LIKE :mot_clefs OR a.lieuNom LIKE :mot_clefs)");
-            $params[":mot_clefs"] = "%" . $search->getTerm() . "%";
-        }
-
-        if ($search->getTypeManifestation() !== null and count($search->getTypeManifestation()) > 0) {
-            $qb->andWhere("a.typeManifestation IN(:type_manifesation)");
-            $params[":type_manifesation"] = $search->getTypeManifestation();
-        }
-        if ($search->getCommune() !== null and count($search->getCommune()) > 0) {
-            $qb->andWhere("a.commune IN(:commune)");
-            $params[":commune"] = $search->getCommune();
-        }
-
-        if ($search->getLieux() !== null and count($search->getLieux()) > 0) {
-            $qb->andWhere("a.lieuNom IN(:lieux)");
-            $params[":lieux"] = $search->getLieux();
-        }
-
-        return $qb
-                        ->setParameters($params);
-    }
-
     /**
      * @param $searchText
-     * @return array<Article>
+     * @return array<Agenda>
      */
     public function findWithSearch(Site $site, SearchAgenda $search) {
-        //$search->setDu(null);
-        //$search->setDu(new \DateTime("2010-01-01"));
-        //$search->setAu(new \DateTime("2020-01-01"));
-        //$search->setTerm("Toulouse");
-        //$search->setTypeManifestation(["Musique"]);
         $filters = new Bool();
-        $query = null;
-
+        $queries = new QueryBool();
+        $analyzer = 'custom_french_analyzer';
         $filters->addMust(
-                new Term(['site.id' => $site->getId()])
+            new Term(['site.id' => $site->getId()])
         );
 
         if ($search->getDu()) {
@@ -93,36 +45,36 @@ class AgendaRepository extends Repository {
                  */
                 $cas = new Bool;
 
-                //Cas1 : [debForm; finForm] € [deb; fin] -> (deb > debForm AND fin < finForm)
+                //Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
                 $cas1 = new Bool;
                 $cas1->addMust(new NumericRange('date_debut', [
+                    'lte' => $search->getDu()->format("Y-m-d")
+                        ])
+                )->addMust(new NumericRange('date_fin', [
+                    'gte' => $search->getAu()->format("Y-m-d"),
+                ]));
+
+                //Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
+                $cas2 = new Bool;
+                $cas2->addMust(new NumericRange('date_debut', [
                     'gte' => $search->getDu()->format("Y-m-d")
                         ])
                 )->addMust(new NumericRange('date_fin', [
                     'lte' => $search->getAu()->format("Y-m-d"),
                 ]));
 
-                //Cas2 : [deb; fin] € [debForm; finForm] -> (deb < debForm AND fin < finForm)
-                $cas2 = new Bool;
-                $cas2->addMust(new NumericRange('date_debut', [
-                    'lte' => $search->getDu()->format("Y-m-d")
-                        ])
-                )->addMust(new NumericRange('date_fin', [
-                    'lte' => $search->getAu()->format("Y-m-d"),
-                ]));
-
-                //Cas3 : deb € [debForm; finForm] -> (deb < debForm AND deb > finForm)
+                //Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
                 $cas3 = new Bool;
                 $cas3->addMust(new NumericRange('date_debut', [
-                    'lte' => $search->getDu()->format("Y-m-d"),
-                    'gte' => $search->getAu()->format("Y-m-d")
+                    'gte' => $search->getDu()->format("Y-m-d"),
+                    'lte' => $search->getAu()->format("Y-m-d")
                 ]));
 
-                //Cas4 : fin € [debForm; finForm] -> (fin < debForm AND fin > finForm)
+                //Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
                 $cas4 = new Bool;
                 $cas4->addMust(new NumericRange('date_fin', [
-                    'lte' => $search->getDu()->format("Y-m-d"),
-                    'gte' => $search->getAu()->format("Y-m-d")
+                    'gte' => $search->getDu()->format("Y-m-d"),
+                    'lte' => $search->getAu()->format("Y-m-d")
                 ]));
 
                 $cas->addShould($cas1)
@@ -135,27 +87,34 @@ class AgendaRepository extends Repository {
         }
 
         if ($search->getTerm()) {
-            $query = new QueryString($search->getTerm());
+            $queries->addMust(
+                (new QueryString(Util::replaceBooleanWordsAndEscapeTerm($search->getTerm())))
+                //->setAnalyzer('custom_french_analyzer')
+            );
         }
 
         if($search->getCommune())
         {
-            var_dump("OK", $search->getCommune());
-            //$filters->addMust(new Terms('commune', $search->getCommune()));
+            $matchCommunes = new Match();
+            $matchCommunes->setField('commune', Util::replaceBooleanWordsAndEscapeTerm(implode(" ", $search->getCommune())));
+            $queries->addMust(
+                $matchCommunes
+                ->setFieldAnalyzer('commune', $analyzer)
+            );
         }
 
         if($search->getTypeManifestation())
         {
-            var_dump("VOK", $search->getTypeManifestation());
-            //$filters->addMust(new Terms('type_manifestation', $search->getTypeManifestation()));
-            //$filters->addMust(new Term(['typeManifestation' => 'Musique']));
-            $filters->addMust(
-                new Term(['type_manifestation' => 'Musique'])
-        );
+            $matchTypeManifestation = new Match();
+            $matchTypeManifestation->setField('type_manifestation', Util::replaceBooleanWordsAndEscapeTerm(implode(" ", $search->getTypeManifestation())));
+            $queries->addMust(
+                $matchTypeManifestation
+                ->setFieldAnalyzer('type_manifestation', $analyzer)
+            );
         }
 
         // return $this->findHybrid($query); if you also want the ES ResultSet
-        return $this->find(new \Elastica\Query\Filtered($query, $filters));
+        return $this->find(new \Elastica\Query\Filtered(count($queries->getParams()) ? $queries : null, $filters));
     }
 
 }

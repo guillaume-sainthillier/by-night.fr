@@ -2,6 +2,8 @@
 
 namespace TBN\AgendaBundle\Search;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * Description of SearchAgenda
  *
@@ -10,14 +12,16 @@ namespace TBN\AgendaBundle\Search;
 class SearchAgenda {
     
     /**
-     *
-     * @var \DateTime
-     */
+    *
+    * @var \DateTime
+    * @Assert\Date()
+    */
     protected $du;
     
     /**
      *
      * @var \DateTime
+     * @Assert\Date()
      */
     protected $au;
     

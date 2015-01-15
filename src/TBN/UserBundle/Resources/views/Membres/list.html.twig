@@ -9,13 +9,9 @@
     Membres
 {% endblock %}
 
-{% block meta_keywords_membre %}
-    derniers, membres, 
-{% endblock %}
+{% block meta_keywords_membre %}derniers, membres, {% endblock %}
 
-{% block meta_description_espace %}
-    Tous les membres de {{ site.nom }} By Night !
-{% endblock %}
+{% block meta_description_espace %}Trouvez les membres de {{ site.nom }} By Night.{% endblock %}
 
 
 {% block body_membre %}
@@ -61,11 +57,9 @@
 {% endblock %}
 
 {% block css_membre %}
-    
     {% stylesheets 
         'bundles/tbnuser/css/liste.css'
 
-        filter='cssrewrite,?yui_css'
         output='prod/css/membres/style.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >

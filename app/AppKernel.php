@@ -36,7 +36,7 @@ class AppKernel extends Kernel
 	    new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \FOS\ElasticaBundle\FOSElasticaBundle(),
-            new Hearsay\RequireJSBundle\HearsayRequireJSBundle()
+            //new Hearsay\RequireJSBundle\HearsayRequireJSBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

@@ -1,0 +1,9 @@
+{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+
+{% block titre %}Votre événement{% endblock %}
+{% block icone %}fa-globe{% endblock %}
+{% block body %}
+    {{ form_row(form.nom) }}
+    {{ form_row(form.descriptif) }}
+    {{ form_row(form.file) }}
+{% endblock %}

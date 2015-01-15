@@ -10,8 +10,10 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Debril\RssAtomBundle\Protocol\FeedOut;
 use Debril\RssAtomBundle\Protocol\FeedIn;
 use \Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\ExclusionPolicy;use TBN\AgendaBundle\Entity\Agenda;
+
 use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Agenda
@@ -50,7 +52,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="Vous devez donner un nom à votre événement")
+     * @Assert\NotBlank(message="N'oubliez pas de nommer votre événement !")
      * @Expose
      */
     protected $nom;
@@ -59,7 +61,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="descriptif", type="text", nullable=true)
-     * @Assert\NotBlank(message="Vous devez donner une description à votre événement")
+     * @Assert\NotBlank(message="N'oubliez pas de décrire votre événement !")
      * @Expose
      */
     protected $descriptif;
@@ -77,6 +79,7 @@ class Agenda
      * @ORM\Column(name="date_debut", type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
      * @Expose
+     * @Type("DateTime<'Y-m-d'>")
      */
     protected $dateDebut;
 
@@ -85,6 +88,7 @@ class Agenda
      *
      * @ORM\Column(name="date_fin", type="date", nullable=true)
      * @Expose
+     * @Type("DateTime<'Y-m-d'>")
      */
     protected $dateFin;
 
@@ -106,7 +110,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="ville", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="Vous devez indiquer la ville de votre événement en saisissant l'adresse")
+     * 
      */
     protected $ville;
 
@@ -151,7 +155,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="lieu_nom", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
+     * 
      */
     protected $lieuNom;
 
@@ -205,6 +209,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="reservation_email", type="string", length=128, nullable=true)
+     * @Assert\Email()
      */
     protected $reservationEmail;
 
@@ -212,6 +217,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="reservation_internet", type="string", length=128, nullable=true)
+     * @Assert\Url()
      */
     protected $reservationInternet;
 
@@ -386,6 +392,7 @@ class Agenda
      * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", inversedBy="evenements", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      * @Expose
+     * @Assert\Valid()
      */
     protected $place;
 

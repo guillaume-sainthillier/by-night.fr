@@ -14,14 +14,22 @@
 {% endblock %}
     
 {% block body_administration %}
-    {% block body_info %}{% endblock %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading bg-white">
+                    <h2 class="modal-title">Réseau sociaux</h2>
+                </div>
+                <div class="panel-body">
+                    {% block body_info %}{% endblock %}
+                </div>                
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block css_administration %}
-    {% stylesheets 
-        'bundles/tbnsocial/css/social_login.css'
-
-        filter='cssrewrite,?yui_css'
+    {% stylesheets 'bundles/tbnsocial/css/social_login.css'
         output='prod/css/administration/info/style.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
@@ -29,8 +37,10 @@
 {% endblock %}
 
 {% block js_administration %}
-    require(['social/SocialLogin'], function(SocialLogin)
-    {
-        SocialLogin.init();
-    });
+    {% javascripts 
+        '@TBNSocialBundle/Resources/public/js/SocialLogin.js'
+        output='prod/js/administration/info/login.js'
+    %}
+        <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
 {% endblock %}  

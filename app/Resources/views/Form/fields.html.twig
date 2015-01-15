@@ -1,3 +1,14 @@
+{% extends "form_div_layout.html.twig" %}
+
+{% block file_widget %}{% spaceless %}
+    <input type="text" readonly class="form-control floating-label" placeholder="Télécharger..." />
+    {{ block('form_widget') }}
+    {% if image_url is not null %}
+        <br />
+        <img class="img-responsive" src="{{ image_url|imagine_filter('thumbs_evenement') }}" />
+    {% endif %}
+{% endspaceless %}{% endblock %}
+
 {% block form_row %}
     {% spaceless %}
         <div class="form-group">
@@ -27,8 +38,11 @@
 
 {% block form_widget_simple %}
 {% spaceless %}
-    {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim}) %}
     {% set type = type|default('text') %}
+    {% if type != 'file' and type != 'hidden' %}
+        {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim}) %}
+    {% endif %}
+    
     <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
 {% endspaceless %}
 {% endblock form_widget_simple %}

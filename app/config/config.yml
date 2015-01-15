@@ -2,7 +2,6 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: "@TBNMainBundle/Resources/config/services.yml" }
-    - { resource: "requirejs.yml" }
 
 framework:
     esi: { enabled: true }
@@ -53,7 +52,8 @@ assetic:
 
     java: 'java'
     filters:
-        cssrewrite: ~
+        cssrewrite:
+            apply_to: "\.css$"
         yui_css:
             jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar
         yui_js:
@@ -215,10 +215,13 @@ tbn_user:
     socials:
         facebook:
             enabled: true
+            nom: Facebook
         twitter: 
-            enabled: false
+            enabled: true
+            nom: Twitter
         google: 
             enabled: false
+            nom: Google+
 
 
 fos_elastica:

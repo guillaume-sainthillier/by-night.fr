@@ -18,7 +18,7 @@
         "jquery": "2.1.*",
         "bootstrap": "latest",
         "font-awesome": "latest",
-        "bootstrap-material-design" : "latest",
+        "bootstrap-material-design" : "master",
         "bootstrap-select": "latest",
         "fancybox": "latest",
         "hinclude": "0.9.*",

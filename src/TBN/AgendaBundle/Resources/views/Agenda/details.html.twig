@@ -1,6 +1,9 @@
 {% extends "TBNAgendaBundle::layout-fluid.html.twig" %}
 
 {% set nomSoiree = soiree.nom %}
+{% if soiree.modificationDerniereMinute %}
+    {% set nomSoiree = '[' ~ soiree.modificationDerniereMinute ~ '] ' ~ soiree.nom %}
+{% endif %}
 {% set descriptionSoiree =  soiree.descriptif|parse_tags|raw  %}
 {% if soiree.webPath %}
     {% set original = app.request.getUriForPath('/' ~ soiree.webPath) %}
@@ -15,7 +18,6 @@
 
 {% set place = soiree.place %}
 {% set villePlace = place.ville %}
-
 
 {% block titre_agenda %}
     {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>{% endif %}
@@ -52,6 +54,17 @@
     <meta itemprop="url" content="{{ path('tbn_agenda_details',{'slug' : soiree.slug} ) }}" />
     <meta itemprop="image" content="{{ original }}" />
 
+    {% if soiree.modificationDerniereMinute %}
+        <div class="alert alert-warning">
+            <i class="fa fa-warning"></i>
+            Cet événement a été signalé 
+            {% if soiree.user %}
+                par <a href="{{ path('tbn_user_details', {'username': soiree.user.username} ) }}">{{ soiree.user.username }}</a>
+            {% endif %}
+            comme étant 
+            <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
+        </div>
+    {% endif %}
     <div class="row margin_bottom_30" >
         <div class="col-sm-4">
             <a href="{{ original }}" title="{{ nomSoiree }}" >
@@ -127,10 +140,12 @@
                 </li>
                 {% endif %}
                 {% for telephone in soiree.reservationTelephone|split(',') %}
+                    {% if telephone|length %}
                 <li>
                     <i class="fa fa-li fa-phone"></i> 
                     {{ telephone|trim }}
                 </li>
+                    {% endif %}
                 {% endfor %}
                 {% for liens in soiree.reservationInternet|split(' ') %}
                     {% for lien in liens|split(',') %}
@@ -154,15 +169,19 @@
                 {% endif %}
                 {% set tags = soiree.themeManifestation|split(",") %}
                 {% set tags = tags|merge(soiree.typeManifestation|split(",")) %}
-                {% if tags|length > 0 %}
-                    {% set tags_displayed = [] %}
+                {% set distinctTags = [] %}
+                {% for tag in tags %}
+                    {% set cleanTag = tag|trim %}
+                    {% if cleanTag|length and cleanTag not in distinctTags %}
+                        {% set distinctTags = distinctTags|merge([cleanTag]) %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if distinctTags|length %}
                     <li class="tags">
                         <i class="fa fa-li fa-tags"></i>
-                        {% for tag in tags %}
-                            {% if not tags_displayed[tag|trim] is defined %}
-                                {% set tags_displayed = tags_displayed|merge({ (''~tag|trim): 'fix' }) %}
-                                <span class="label label-primary">{{ tag|trim }}</span>
-                            {% endif %}                                    
+                        {% for tag in distinctTags %}
+                        <span class="label label-primary">{{ tag|trim }}</span>                               
                         {% endfor %}
                     </li>
                 {% endif %}
@@ -183,14 +202,7 @@
                 {% endif %}
             </ul>
         </div>
-    </div>    
-
-    {% if soiree.modificationDerniereMinute %}
-        <div class="alert alert-warning">
-            <i class="fa fa-warning"></i>
-            <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
-        </div>
-    {% endif %}
+    </div>
 
     <div itemprop="description" >
         {{ descriptionSoiree|raw }}
@@ -221,9 +233,7 @@
 {% block css_agenda %}
     {% stylesheets 
         'bundles/tbnagenda/css/details.css'
-
-        filter='cssrewrite,?yui_css'
-        output='prod/css/evenement/style.css'
+        output='prod/css/evenement/details.css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
     {% endstylesheets %}
@@ -235,9 +245,11 @@
 {% endblock %}
     
 {% block js_agenda %}
-    require(["agenda/details", "comment/CommentApp"]);
-    require(["agenda/socials"], function(SocialSDK)
-    {
-        SocialSDK.facebook().twitter().google();
-    });
+    {% javascripts 
+        '@TBNCommentBundle/Resources/public/js/CommentApp.js'
+        '@TBNAgendaBundle/Resources/public/js/details.js'
+        output='prod/js/evenements/details.js'
+    %}
+        <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
 {% endblock %}

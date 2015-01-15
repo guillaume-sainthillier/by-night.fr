@@ -1,3 +1,15 @@
+<div class="togglebutton form-group bloc_config">
+    <label class="full_width">
+        {{ elem.vars.label }}
+        {% set attr = elem.vars.attr|default([])|merge({'data-href-connect': hwi_oauth_login_url(service)}) %}
+        {{ form_widget(elem, {'attr': attr}) }}
+    </label>
+    <span class="when_on help-block text-primary">
+        {{ elem.vars.attr['data-message']|default('') }}
+    </span>
+</div>
+
+{#
 {{ form_errors(elem) }}
 <div class="form-horizontal bloc_config">
     <div class="form-group">
@@ -13,3 +25,4 @@
         </div>
     </div>
 </div>
+#}

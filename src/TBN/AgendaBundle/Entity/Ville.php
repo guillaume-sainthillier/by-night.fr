@@ -35,6 +35,7 @@ class Ville
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255)
+     * @Assert\NotBlank(message="Vous devez indiquer la ville de votre événement en saisissant l'adresse")
      * @Expose
      */
     private $nom;

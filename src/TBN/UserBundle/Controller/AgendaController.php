@@ -6,9 +6,41 @@ use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Form\AgendaType;
 use TBN\AgendaBundle\Entity\Calendrier;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AgendaController extends Controller
 {
+
+    public function annulerAction(Request $request, Agenda $agenda)
+    {
+        $this->checkIfOwner($agenda);
+
+        $annuler = $request->get('annuler', 'true');
+        $modificationDerniereMinute = ($annuler === 'true' ? 'ANNULÉ' : null);
+
+        $em = $this->getDoctrine()->getManager();
+        $agenda->setModificationDerniereMinute($modificationDerniereMinute);
+        $em->persist($agenda);
+        $em->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    public function brouillonAction(Request $request, Agenda $agenda)
+    {
+        $this->checkIfOwner($agenda);
+        
+        $brouillon = $request->get('brouillon', 'true');
+        $isBrouillon = ($brouillon === 'true');
+        
+        $em = $this->getDoctrine()->getManager();
+        $agenda->setIsBrouillon($isBrouillon);
+        $em->persist($agenda);
+        $em->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
 
     public function listAction()
     {
@@ -88,6 +120,9 @@ class AgendaController extends Controller
                 
                 $agenda->setUser($this->getCurrentUser());
                 $agenda->setSite($site)->setParticipations(1);
+                $agenda->getPlace()->setSite($site)->getVille()->setSite($site);
+               
+                //$em->persist($agenda->getVille());
                 $em->persist($agenda);
                 $em->persist($calendrier);
                 $em->flush();
@@ -188,7 +223,7 @@ class AgendaController extends Controller
 
     protected function getCurrentUser()
     {
-        return $user = $this->get('security.context')->getToken()->getUser();
+        return $this->getUser();
     }
 
     protected function checkIfOwner(Agenda $agenda)
