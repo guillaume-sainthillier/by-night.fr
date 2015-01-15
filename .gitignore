@@ -1,5 +1,10 @@
-# Bower
+# Node
+/node_modules/
+
+
+# Bower & NPM
 /web/bower/*
+/npm-debug.log
 
 # ElasticSearch
 /app/Resources/java/elasticsearch/config/*
