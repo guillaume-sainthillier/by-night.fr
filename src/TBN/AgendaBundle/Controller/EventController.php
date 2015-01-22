@@ -143,13 +143,13 @@ class EventController extends Controller {
 
 	if (!$cache->contains($key)) {
 	    $villes = $repo->getAgendaVilles($site);
-
-            foreach($villes as $ville)
+            
+            $tab_villes   = array_map(function(Ville $ville)
             {
-                $communes[$ville->getNom()] = $ville->getNom();
-            }
+                return $ville->getNom();
+            }, $villes);
 
-	    $cache->save($key, $communes, 24*60*60);
+	    $cache->save($key, $tab_villes, 24*60*60);
 	}
 
 	return $cache->fetch($key);

@@ -99,7 +99,7 @@ class AgendaRepository extends Repository {
             $matchCommunes->setField('commune', Util::replaceBooleanWordsAndEscapeTerm(implode(" ", $search->getCommune())));
             $queries->addMust(
                 $matchCommunes
-                ->setFieldAnalyzer('commune', $analyzer)
+                //->setFieldAnalyzer('commune', $analyzer)
             );
         }
 
@@ -109,7 +109,7 @@ class AgendaRepository extends Repository {
             $matchTypeManifestation->setField('type_manifestation', Util::replaceBooleanWordsAndEscapeTerm(implode(" ", $search->getTypeManifestation())));
             $queries->addMust(
                 $matchTypeManifestation
-                ->setFieldAnalyzer('type_manifestation', $analyzer)
+                //->setFieldAnalyzer('type_manifestation', $analyzer)
             );
         }
 

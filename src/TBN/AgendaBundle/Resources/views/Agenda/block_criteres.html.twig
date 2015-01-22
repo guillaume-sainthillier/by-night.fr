@@ -1,30 +1,30 @@
 {% spaceless %}
 {{ form_start(form, {'attr': {'data-pjax': ''}}) }}
 {{ form_errors(form) }}
-<div class="block_criteres panel panel-primary">      
+<div class="form-horizontal block_criteres panel panel-primary">      
     <div class="panel-body">
         <h2 class="modal-title">Trouvez une idée sortie</h2>
         <br />
         <div class="row">
-            <div class="col-xs-3 form-horizontal">
+            <div class="col-xs-3">
                 <div class="form-group">
                     {{ form_label(form.du) }}
-                    <div class="col-sm-8">
+                    <div class="col-sm-7">
                         {{ form_widget(form.du) }}
                         {{ form_errors(form.du) }}
                     </div>
                 </div>
             </div>
-            <div class="col-xs-3 form-horizontal">
+            <div class="col-xs-3">
                 <div class="form-group">
                     {{ form_label(form.au) }}
-                    <div class="col-sm-8">
+                    <div class="col-sm-7">
                         {{ form_widget(form.au) }}
                     </div>
                 </div>
             </div>            
             <div class="col-xs-6">
-                <div class="btn_shorcuts" data-toggle="buttons">
+                <div class="btn_shorcuts btn-group btn-group-justified no_margin" data-toggle="buttons">
                     <label class="btn btn-primary btn-flat shorcut_date" data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}">
                         <input type="radio" > Ce WE
                     </label>
@@ -38,10 +38,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-6 form-horizontal">
+            <div class="col-xs-6">
                 <div class="form-group no_margin_bottom">
                     {{ form_label(form.type_manifestation) }}
-                    <div class="col-sm-7">
+                    <div class="col-sm-6">
                         {{ form_widget(form.type_manifestation) }}
                     </div>
                 </div>
@@ -56,14 +56,29 @@
         </div>   
         <div class="hidden cache criteres">
             <div class="row">
-                <div class="col-xs-3">
-                    {{ form_row(form.lieux) }}
-                </div>
-                <div class="col-xs-3">
-                    {{ form_row(form.commune) }}
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        {{ form_label(form.lieux) }}
+                        <div class="col-sm-6">
+                            {{ form_widget(form.lieux) }}
+                        </div>
+                    </div>
                 </div>
                 <div class="col-xs-6">
-                    {{ form_row(form.term) }}
+                    <div class="form-group">
+                        {{ form_label(form.commune) }}
+                        <div class="col-sm-6">
+                            {{ form_widget(form.commune) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    {{ form_label(form.term) }}
+                    <div class="col-sm-9">
+                        {{ form_widget(form.term) }}
+                    </div>
                 </div>
             </div>
         </div>
