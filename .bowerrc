@@ -1,3 +1,4 @@
 {
-  "directory" : "web/bower/"
+  "directory" : "web/bower/",
+  "protocol": "https"
 }

@@ -8,32 +8,31 @@
     "packages": [
         {
             "name": "debril/rss-atom-bundle",
-            "version": "1.4.0",
+            "version": "1.5.0",
             "target-dir": "Debril/RssAtomBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alexdebril/rss-atom-bundle.git",
-                "reference": "40f521af9035f271c5e807cb59d39e33125c1553"
+                "reference": "d0150ed777ac9175d94c8c8185e4aac0ded8e77e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alexdebril/rss-atom-bundle/zipball/40f521af9035f271c5e807cb59d39e33125c1553",
-                "reference": "40f521af9035f271c5e807cb59d39e33125c1553",
+                "url": "https://api.github.com/repos/alexdebril/rss-atom-bundle/zipball/d0150ed777ac9175d94c8c8185e4aac0ded8e77e",
+                "reference": "d0150ed777ac9175d94c8c8185e4aac0ded8e77e",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
-                "symfony/config": "~2.2",
-                "symfony/options-resolver": "~2.2"
+                "symfony/config": "~2.6"
             },
             "require-dev": {
                 "doctrine/common": "~2.3",
                 "phpunit/phpunit": "~3.7",
-                "symfony/browser-kit": "~2.3",
-                "symfony/finder": "~2.3",
-                "symfony/form": "~2.3",
-                "symfony/framework-bundle": "~2.3",
-                "symfony/validator": "~2.3"
+                "symfony/browser-kit": "~2.6",
+                "symfony/finder": "~2.6",
+                "symfony/form": "~2.6",
+                "symfony/framework-bundle": "~2.6",
+                "symfony/validator": "~2.6"
             },
             "type": "symfony-bundle",
             "autoload": {
@@ -50,7 +49,7 @@
                 "atom",
                 "rss"
             ],
-            "time": "2014-09-06 14:21:47"
+            "time": "2015-01-17 21:09:55"
         },
         {
             "name": "doctrine/annotations",
@@ -1070,12 +1069,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "4ceecb62f8bfbee56a5ec83f5ab6124710cf89d1"
+                "reference": "f54031a652846cd8e7b12119fe713eae90e24cf9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/4ceecb62f8bfbee56a5ec83f5ab6124710cf89d1",
-                "reference": "4ceecb62f8bfbee56a5ec83f5ab6124710cf89d1",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/f54031a652846cd8e7b12119fe713eae90e24cf9",
+                "reference": "f54031a652846cd8e7b12119fe713eae90e24cf9",
                 "shasum": ""
             },
             "require": {
@@ -1129,7 +1128,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2014-12-29 10:27:58"
+            "time": "2015-01-20 09:35:03"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -1287,12 +1286,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client.git",
-                "reference": "bf58f98b5ee2ae14139792d921fb84de01c97a85"
+                "reference": "21dff96e9c3201c6eff1f60660c977035046bfad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/bf58f98b5ee2ae14139792d921fb84de01c97a85",
-                "reference": "bf58f98b5ee2ae14139792d921fb84de01c97a85",
+                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/21dff96e9c3201c6eff1f60660c977035046bfad",
+                "reference": "21dff96e9c3201c6eff1f60660c977035046bfad",
                 "shasum": ""
             },
             "require": {
@@ -1321,7 +1320,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2015-01-15 11:11:44"
+            "time": "2015-01-16 11:12:45"
         },
         {
             "name": "hearsay/require-js-bundle",
@@ -2010,12 +2009,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/liip/LiipImagineBundle.git",
-                "reference": "9e13d71524ee1fcd26800a0f00765853309d8f33"
+                "reference": "e4288a2a282bf0de4819a27a478fa32258de2b76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liip/LiipImagineBundle/zipball/9e13d71524ee1fcd26800a0f00765853309d8f33",
-                "reference": "9e13d71524ee1fcd26800a0f00765853309d8f33",
+                "url": "https://api.github.com/repos/liip/LiipImagineBundle/zipball/e4288a2a282bf0de4819a27a478fa32258de2b76",
+                "reference": "e4288a2a282bf0de4819a27a478fa32258de2b76",
                 "shasum": ""
             },
             "require": {
@@ -2075,7 +2074,7 @@
                 "image",
                 "imagine"
             ],
-            "time": "2015-01-15 19:54:38"
+            "time": "2015-01-16 20:55:01"
         },
         {
             "name": "monolog/monolog",
