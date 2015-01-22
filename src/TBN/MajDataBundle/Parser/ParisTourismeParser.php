@@ -166,9 +166,6 @@ class ParisTourismeParser extends LinksParser {
         $tab_retour["reservation_internet"] = $resa_internet;
         $tab_retour["reservation_mail"]     = $resa_mail;
         $tab_retour["source"]               = $this->url;
-
-        var_dump($this->url);
-        die();
         
         return $tab_retour;
     }

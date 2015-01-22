@@ -63,54 +63,53 @@ class EventController extends Controller {
     }
 
     public function listAction(Request $request, $page) {
-        //$this->addFlash("warning", "Bonjour");
+        //Pagination
+        $nbSoireeParPage = 15;
 	if ($page <= 0) {
 	    $page = 1;
 	}
 
-        /** var \FOS\ElasticaBundle\Manager\RepositoryManager */
-        $repositoryManager = $this->get('fos_elastica.manager');
-
-        /**
-         * @var FOS\ElasticaBundle\Repository .
-         */
-        $repository = $repositoryManager->getRepository('TBNAgendaBundle:Agenda');
-        
-	$nbSoireeParPage = 15;
+        //Gestion du site
 	$siteManager = $this->container->get("site_manager");
 	$site = $siteManager->getCurrentSite();
-	$em = $this->getDoctrine()->getManager();
-	$repo = $em->getRepository("TBNAgendaBundle:Agenda"); // 100ms
-        
-	$search = new SearchAgenda();
 
+        //BD
+	$em = $this->getDoctrine()->getManager();
+	$repo = $em->getRepository("TBNAgendaBundle:Agenda");
+
+        //Formulaire de recherche
+	$search = new SearchAgenda();
 	$lieux = $this->getPlaces($repo, $site);
 	$types_manif = $this->getTypesEvenements($repo, $site);
 	$communes = $this->getVilles($repo, $site);
-
         $action = $page > 1 ? $this->generateUrl("tbn_agenda_pagination", ["page" => $page]) : $this->generateUrl("tbn_agenda_index");
 	$form = $this->createForm(new SearchType($types_manif, $lieux, $communes), $search, [
 	    "action" => $action
-	]); //100ms
+	]);
 
-	if ($request->getMethod() === "POST") {
-	    $form->bind($request); //200ms
+	if ($request->getMethod() === 'POST') {
+	    $form->bind($request);
 	}
 
-        
+        //Recherche ElasticSearch
+        $repositoryManager = $this->get('fos_elastica.manager');
+        $repository = $repositoryManager->getRepository('TBNAgendaBundle:Agenda');
 	$soirees = $repository->findWithSearch($site, $search, $page, $nbSoireeParPage); //100ms
 	$full_soirees = $repo->findCountWithSearch($site, $search); // 10ms
 
-
+        //Traitement final
 	$pageTotal = ceil($full_soirees / $nbSoireeParPage);
 
+        var_dump("Yo", $soirees);
+        die();
+        
 	return $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
 		    "soirees" => $soirees,
 		    "page" => $page,
 		    "pageTotal" => $pageTotal,
 		    "search" => $search,
-		    "form" => $form->createView() //20ms
-	]); //800ms
+		    "form" => $form->createView() 
+	]); 
     }
 
     protected function getTypesEvenements($repo, Site $site) {
