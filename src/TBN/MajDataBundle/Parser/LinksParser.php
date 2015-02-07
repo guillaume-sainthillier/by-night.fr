@@ -40,8 +40,7 @@ abstract class LinksParser extends AgendaParser {
                 $infos_agenda = $this->getInfosAgenda(); //Récupère les infos de l'agenda depuis le lien
                 return $this->hydraterAgenda($infos_agenda); //Créé ou récupère l'agenda associé aux infos
             }catch(\Exception $e)
-            {
-                var_dump($link, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
+            {                
                 return null;
             }
         }, $links), function($agenda)

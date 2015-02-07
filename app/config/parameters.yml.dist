@@ -15,12 +15,12 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     mailer_port:            ~
-    app_name:               ~
-    api_facebook_id:        ~
-    api_facebook_secret:    ~
-    google_app_id:          ~
-    google_app_secret:      ~
-    google_map_key:         ~
-    twitter_app_id:         ~
-    twitter_app_secret:     ~
+    app_name:               %secret%
+    api_facebook_id:        %secret%
+    api_facebook_secret:    %secret%
+    google_app_id:          %secret%
+    google_app_secret:      %secret%
+    google_map_key:         %secret%
+    twitter_app_id:         %secret%
+    twitter_app_secret:     %secret%
     base_host:              ~

@@ -28,7 +28,7 @@
         "whiteoctober/breadcrumbs-bundle": "dev-master",
         "genemu/form-bundle": "2.2.*",
         "liip/imagine-bundle":"dev-master",
-        "winzou/cache-bundle": "dev-master",
+        "doctrine/doctrine-cache-bundle": "1.0.*@dev",
         "egeloen/google-map-bundle": "~2.1",
         "willdurand/geocoder": "*",
         "jms/serializer-bundle" : "0.13.*",

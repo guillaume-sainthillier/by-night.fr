@@ -112,7 +112,6 @@ class MigrationCommand extends EventCommand {
             
             if (($nomPlace == $currentNomPlace) ||
                 ($ruePlace != "" && $villePlace != "" && $ruePlace == $currentRuePlace && $villePlace == $currentVillePlace))
-                //($latitudePlace !== "" && $longitudePlace !== "" && $latitudePlace == $currentPlace->getLatitude() && $longitudePlace == $currentPlace->getLongitude()))
             {
                 return true;
             }
@@ -130,7 +129,7 @@ class MigrationCommand extends EventCommand {
             }
         }
 
-        if ($nomVille == null || trim($nomVille) === "" || (strlen($codePostal) > 0 && strlen($codePostal) < 5)) {
+        if ($nomVille === null || trim($nomVille) === "" || (strlen($codePostal) > 0 && strlen($codePostal) < 5)) {
             return null;
         }
 

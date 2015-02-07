@@ -115,7 +115,7 @@ class DynamoParser extends LinksParser{
                                             ->filter(".evcal_desc3 .evcal_event_types em")
                                             ->reduce(function(Crawler $node, $i) {
                                                 return $i > 0;
-                                            })->each(function($node)
+                                            })->each(function(Crawler $node)
                                             {
                                                 return $node->text();
                                             }));

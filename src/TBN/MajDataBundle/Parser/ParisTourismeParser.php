@@ -85,7 +85,7 @@ class ParisTourismeParser extends LinksParser {
         $cp         = null;
         $ville      = null;
 
-	$nom_full_lieu = $lieux->reduce(function($p)
+	$nom_full_lieu = $lieux->reduce(function(Crawler $p)
 	{
 	    return !preg_match("/detailAdresse/i", $p->attr("class")) && !preg_match("/reservezAvecParisInfo/i", $p->parents()->eq(0)->attr("class"));
 	});

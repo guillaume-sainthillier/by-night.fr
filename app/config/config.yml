@@ -24,11 +24,15 @@ framework:
     trusted_proxies: ~
     session:         ~
     fragments:       { path: /_fragment }
-    http_method_override: true    
-
-winzou_cache:
-    options:
-        default_driver: xcache # default is "lifetimefile"
+    http_method_override: true
+    
+doctrine_cache:
+    providers:
+        xcache:
+            type: xcache
+            namespace: xcache_cache_ns
+            aliases:
+                - winzou_cache
         
 # Twig Configuration
 twig:

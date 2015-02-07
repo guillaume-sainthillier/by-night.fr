@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9f0ab217b978c6a11918fb1e8638dd45",
+    "hash": "a26e7d3f5157a17655e0072e8f23fc99",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -527,17 +527,16 @@
         },
         {
             "name": "doctrine/doctrine-cache-bundle",
-            "version": "v1.0.1",
-            "target-dir": "Doctrine/Bundle/DoctrineCacheBundle",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineCacheBundle.git",
-                "reference": "e4b6f810aa047f9cbfe41c3d6a3d7e83d7477a9d"
+                "reference": "78928cc5fb0f1cde57a973002fa0c5c9ced77bac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineCacheBundle/zipball/e4b6f810aa047f9cbfe41c3d6a3d7e83d7477a9d",
-                "reference": "e4b6f810aa047f9cbfe41c3d6a3d7e83d7477a9d",
+                "url": "https://api.github.com/repos/doctrine/DoctrineCacheBundle/zipball/78928cc5fb0f1cde57a973002fa0c5c9ced77bac",
+                "reference": "78928cc5fb0f1cde57a973002fa0c5c9ced77bac",
                 "shasum": ""
             },
             "require": {
@@ -545,18 +544,18 @@
                 "doctrine/inflector": "~1.0",
                 "php": ">=5.3.2",
                 "symfony/doctrine-bridge": "~2.2",
-                "symfony/framework-bundle": "~2.2",
                 "symfony/security": "~2.2"
             },
             "require-dev": {
                 "instaclick/coding-standard": "~1.1",
                 "instaclick/object-calisthenics-sniffs": "dev-master",
                 "instaclick/symfony2-coding-standard": "dev-remaster",
-                "phpunit/phpunit": "~3.7",
+                "phpunit/phpunit": "~4",
                 "satooshi/php-coveralls": "~0.6.1",
-                "squizlabs/php_codesniffer": "dev-master",
+                "squizlabs/php_codesniffer": "~1.5",
                 "symfony/console": "~2.2",
                 "symfony/finder": "~2.2",
+                "symfony/framework-bundle": "~2.2",
                 "symfony/validator": "~2.2",
                 "symfony/yaml": "~2.2"
             },
@@ -567,8 +566,8 @@
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Doctrine\\Bundle\\DoctrineCacheBundle": ""
+                "psr-4": {
+                    "Doctrine\\Bundle\\DoctrineCacheBundle\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -607,7 +606,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2014-11-28 09:43:36"
+            "time": "2015-02-02 04:53:40"
         },
         {
             "name": "doctrine/inflector",
@@ -3209,54 +3208,6 @@
                 "geoip"
             ],
             "time": "2015-01-07 13:23:35"
-        },
-        {
-            "name": "winzou/cache-bundle",
-            "version": "dev-master",
-            "target-dir": "winzou/CacheBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/winzou/CacheBundle.git",
-                "reference": "c72a86be7ee38fef209d4bc81a7e34efdc70f95a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/winzou/CacheBundle/zipball/c72a86be7ee38fef209d4bc81a7e34efdc70f95a",
-                "reference": "c72a86be7ee38fef209d4bc81a7e34efdc70f95a",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/common": ">=2.2",
-                "php": ">=5.3.0",
-                "symfony/symfony": ">=2.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "winzou\\CacheBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "winzou",
-                    "homepage": "http://www.tutoriel-symfony2.fr/"
-                }
-            ],
-            "description": "This bundle provides a simple cache management to Symfony2. Now you can use a cache system without reinventing it. It supports Apc, XCache, File, ZendData and Array..",
-            "homepage": "https://github.com/winzou/CacheBundle",
-            "keywords": [
-                "Symfony2",
-                "apc",
-                "cache",
-                "filecache",
-                "memcache"
-            ],
-            "abandoned": "doctrine/doctrine-cache-bundle",
-            "time": "2015-01-28 04:31:46"
         }
     ],
     "packages-dev": [],
@@ -3270,7 +3221,7 @@
         "ricardoper/twitteroauth": 20,
         "whiteoctober/breadcrumbs-bundle": 20,
         "liip/imagine-bundle": 20,
-        "winzou/cache-bundle": 20,
+        "doctrine/doctrine-cache-bundle": 20,
         "hearsay/require-js-bundle": 20
     },
     "prefer-stable": false,
