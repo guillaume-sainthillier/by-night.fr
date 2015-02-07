@@ -3,7 +3,6 @@
 namespace TBN\AgendaBundle\Controller;
 
 use TBN\MainBundle\Controller\TBNController as Controller;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class FeedController extends Controller
@@ -15,7 +14,6 @@ class FeedController extends Controller
      */
     public function feedAction($format)
     {
-        //$format = $request->getRequestFormat();
         $agendas = $this->getDoctrine()->getRepository('TBNAgendaBundle:Agenda')->findAll();
 
         $feed = $this->get('eko_feed.feed.manager')->get('agenda');

@@ -10,7 +10,7 @@ use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
-use TBN\AgendaBundle\Form\SearchType;
+use TBN\AgendaBundle\Form\Type\SearchType;
 use TBN\AgendaBundle\Search\SearchAgenda;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 

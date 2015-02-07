@@ -16,7 +16,7 @@ class ProgrammeTVParser {
     
     public function getProgrammesTV()
     {
-        return $this->parser->filter(".block.programme .channel")->each(function($channel)
+        return $this->parser->filter(".block.programme .channel")->each(function(Crawler $channel)
         {
             $programme  = $channel->filter(".programme")->eq(0);
             $episode    = $programme->filter(".prog_episode");

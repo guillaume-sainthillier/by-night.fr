@@ -29,7 +29,7 @@ abstract class EventCommand extends ContainerAwareCommand
             $ext = preg_replace("/\?(.+)/", "", pathinfo($url, PATHINFO_EXTENSION));
 
             $filename = sha1(uniqid(mt_rand(), true)).".".$ext;
-            $result = @\file_get_contents($url);
+            $result = $this->getData($url);
 
             if($result !== false)
             {
@@ -146,16 +146,16 @@ abstract class EventCommand extends ContainerAwareCommand
 	{
 	    $agenda->setTarif(null);
 	}
-	$descriptif = $this->strip_tags($this->strip_style($agenda->getDescriptif()));
+	$descriptif = $this->stripTags($this->stipStyles($agenda->getDescriptif()));
 	return $agenda->setDescriptif($descriptif);
     }
 
-    protected function strip_tags($text)
+    protected function stripTags($text)
     {
         return trim(htmlspecialchars_decode($text));
     }
 
-    protected function strip_style($tag)
+    protected function stipStyles($tag)
     {
         return preg_replace("/<([a-z][a-z0-9]*)[^>]*?(\/?)>/i",'<$1$2>', $tag);
     }
@@ -163,7 +163,7 @@ abstract class EventCommand extends ContainerAwareCommand
     /*
      * Retourne les données d'une URL
     */
-    protected function get_data($url)
+    protected function getData($url)
     {
         return \file_get_contents($url);
     }

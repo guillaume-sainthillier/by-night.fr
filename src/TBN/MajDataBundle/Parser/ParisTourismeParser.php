@@ -3,6 +3,7 @@
 namespace TBN\MajDataBundle\Parser;
 
 use TBN\AgendaBundle\Repository\AgendaRepository;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Description of BikiniParser
@@ -46,11 +47,11 @@ class ParisTourismeParser extends LinksParser {
         $resa_mail          = $node_resa_mail->count() ? str_replace("mailto:", "",$node_resa_mail->attr("href")) : null;
 
         $nodes_contact      = $this->parser->filter(".ongletsBlocContenuFicheColGauche p");
-        $node_resa_internet = $nodes_contact->reduce(function($p)
+        $node_resa_internet = $nodes_contact->reduce(function(Crawler $p)
         {
             return preg_match("/Site Internet/i", $p->text()) === 1;
         });
-        $node_resa_telephone = $nodes_contact->reduce(function($p)
+        $node_resa_telephone = $nodes_contact->reduce(function(Crawler $p)
         {
             return preg_match("/Téléphone/iu", $p->text()) === 1;
         });
@@ -206,7 +207,7 @@ class ParisTourismeParser extends LinksParser {
         while ($this->url !== null) {
             $events = $this->parser->filter(".ResultatRechercheColDroite .cartoucheListe");
 
-            $urls = array_merge($urls, $events->each(function($item) {
+            $urls = array_merge($urls, $events->each(function(Crawler $item) {
                 return $this->cleanUrl($item->filter(".cartoucheTitre a, .cartoucheTitreCommercial a")->attr("href"));
             }));
 

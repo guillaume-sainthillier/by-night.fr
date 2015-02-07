@@ -7,10 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Debril\RssAtomBundle\Protocol\FeedOut;
-use Debril\RssAtomBundle\Protocol\FeedIn;
 use \Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\Annotation\ExclusionPolicy;use TBN\AgendaBundle\Entity\Agenda;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use TBN\AgendaBundle\Entity\Agenda;
 
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;

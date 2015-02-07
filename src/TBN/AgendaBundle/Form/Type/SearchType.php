@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Form;
+namespace TBN\AgendaBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

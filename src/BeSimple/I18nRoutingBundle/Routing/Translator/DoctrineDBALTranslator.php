@@ -4,8 +4,6 @@ namespace BeSimple\I18nRoutingBundle\Routing\Translator;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Schema\Schema;
-
 /**
  * Translate route attributes using Doctrine DBAL to access a routing_translations table.
  *

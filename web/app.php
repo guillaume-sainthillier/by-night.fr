@@ -9,8 +9,6 @@ $XCacheLoader = new XcacheClassLoader(sha1(__FILE__), $loader);
 $loader->unregister();
 $XCacheLoader->register(true);
 
-
-//require_once __DIR__.'/../app/AppKernel.php';
 require_once __DIR__.'/../app/AppCache.php';
 
 $appKernel = new AppKernel('prod', false);

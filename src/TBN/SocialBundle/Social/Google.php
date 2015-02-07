@@ -3,9 +3,6 @@
 namespace TBN\SocialBundle\Social;
 
 use \Google_Client;
-use \Google_Service_Plus;
-use \Google_Moment;
-use \Google_ItemScope;
 
 /**
  * Description of Twitter
@@ -37,7 +34,6 @@ class Google extends Social {
             'https://www.googleapis.com/auth/plus.stream.read',
             'https://www.googleapis.com/auth/plus.stream.write'
         ]);
-        //$this->client->authenticate("AIzaSyBETAmun16QLnNnOtEPL4-_n-O3ApO9BEI");
     }
 
     public function getNumberOfCount() {
@@ -64,7 +60,6 @@ class Google extends Social {
 
                 return intval($json[0]['result']['metadata']['globalCounts']['count']);
             } catch (\Exception $ex) {
-                var_dump($ex->getMessage());
             }
         }
 
@@ -74,61 +69,6 @@ class Google extends Social {
     protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 
         return; //Wait Google api fix
-        
-        if ($user->hasRole("ROLE_GOOGLE") && $info !== null && $info->getGoogleAccessToken() !== null) {
-
-            $client = new Google_Client();
-            $client->setApplicationName($this->container->getParameter('app_name'));
-            $client->setClientId($this->container->getParameter('google_app_id'));
-            $client->setClientSecret($this->container->getParameter('google_app_secret'));
-            $client->setDeveloperKey("AIzaSyAzU6G-etnZzjzxGLPVb0UrfFQeI0dZi78");
-
-
-            $token = [
-                "access_token" => $user->getGoogleAccessToken(),
-                "refresh_token" => $user->getGoogleAccessToken(),
-                "token_type" => "Bearer",
-                "expires_in" => 3600,
-                "id_token" => $user->getGoogleAccessToken(),
-                "created" => time()
-            ];
-
-            $client->setAccessToken(json_encode($token));
-            $client->setScopes([
-                'https://www.googleapis.com/auth/userinfo.email',
-                'https://www.googleapis.com/auth/userinfo.profile',
-                'https://www.googleapis.com/auth/plus.me',
-                'https://www.googleapis.com/auth/plus.login',
-                'https://www.googleapis.com/auth/plus.stream.read',
-                'https://www.googleapis.com/auth/plus.stream.write'
-            ]);
-
-            $requestVisibleActions = [
-                'http://schemas.google.com/AddActivity',
-                'http://schemas.google.com/ReviewActivity'];
-
-            $client->setRequestVisibleActions($requestVisibleActions);
-            //$client->authenticate();
-
-            $gplus = new Google_Service_Plus($client);
-
-            //var_dump($client->getAccessToken());
-            //$me = $gplus->people->get('me');
-
-            $moments = $gplus->moments->listMoments('me', 'vault');
-
-            $moment_body = new \Google_Service_Plus_Moment();
-            $moment_body->setType("http://schemas.google.com/AddActivity");
-            $item_scope = new \Google_Service_Plus_ItemScope();
-            $item_scope->setId("target-id-1");
-            $item_scope->setType("http://schemas.google.com/AddActivity");
-            $item_scope->setName("The Google+ Platform");
-            $item_scope->setDescription("A page that describes just how awesome Google+ is!");
-            $item_scope->setImage("https://developers.google.com/+/plugins/snippet/examples/thing.png");
-            $moment_body->setTarget($item_scope);
-            $momentResult = $gplus->moments->insert("me", 'vault', $moment_body);
-
-        }
     }
 
     protected function getName() {

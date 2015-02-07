@@ -3,6 +3,7 @@
 namespace TBN\MajDataBundle\Parser;
 
 use TBN\AgendaBundle\Repository\AgendaRepository;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Description of BikiniParser
@@ -112,7 +113,7 @@ class DynamoParser extends LinksParser{
         //Catégorie & Thèmes
         $themes                         = implode(",", $this->currentEvent
                                             ->filter(".evcal_desc3 .evcal_event_types em")
-                                            ->reduce(function($node, $i) {
+                                            ->reduce(function(Crawler $node, $i) {
                                                 return $i > 0;
                                             })->each(function($node)
                                             {

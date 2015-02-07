@@ -3,6 +3,7 @@
 namespace TBN\MajDataBundle\Parser;
 
 use TBN\AgendaBundle\Repository\AgendaRepository;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Description of BikiniParser
@@ -75,7 +76,7 @@ class ToulouseTourismeParser extends LinksParser {
 	}
 
 	//Réservations Internet & Téléphone
-	$infos_resa = $this->parser->filter("ul.children")->eq(0)->filter("li")->each(function($info)
+	$infos_resa = $this->parser->filter("ul.children")->eq(0)->filter("li")->each(function(Crawler $info)
 	{
 	    return $info->text();
 	});
@@ -149,7 +150,7 @@ class ToulouseTourismeParser extends LinksParser {
 	while($this->url !== null)
 	{
 	    $events = $this->parser->filter(".list_results .link_parent");
-	    $urls = array_merge($urls, $events->each(function($item) use($base_url) {
+	    $urls = array_merge($urls, $events->each(function(Crawler $item) use($base_url) {
 		return $base_url . $item->filter("a.link_block")->attr("href");
 	    }));
 

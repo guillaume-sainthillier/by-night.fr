@@ -5,7 +5,7 @@ namespace TBN\AdministrationBundle\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use TBN\MainBundle\Entity\Site;
-use TBN\MainBundle\Form\SiteType;
+use TBN\MainBundle\Form\Type\SiteType;
 class SiteController extends Controller
 {
     public function listAction()

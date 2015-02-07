@@ -2,14 +2,8 @@
 
 namespace TBN\SocialBundle\Social;
 
-use Symfony\Component\Console\Output\OutputInterface;
-
-use TBN\UserBundle\Entity\SiteInfo;
-
 use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
-use Facebook\GraphPage;
-use Facebook\GraphObject;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use TBN\UserBundle\Entity\User;
 
@@ -22,7 +16,7 @@ class FacebookEvents extends Facebook {
     
     protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 	$info = $user->getInfo();
-	if ($agenda->getFbPostId() == null && $info !== null && $info->getFacebookAccessToken() !== null) {
+	if ($agenda->getFbPostId() === null && $info !== null && $info->getFacebookAccessToken() !== null) {
 	    
             $dateDebut  = $this->getReadableDate($agenda->getDateDebut());
             $dateFin    = $this->getReadableDate($agenda->getDateFin());

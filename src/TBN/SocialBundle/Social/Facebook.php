@@ -2,14 +2,9 @@
 
 namespace TBN\SocialBundle\Social;
 
-use Symfony\Component\Console\Output\OutputInterface;
-
-use TBN\UserBundle\Entity\SiteInfo;
 use TBN\SocialBundle\Exception\SocialException;
 
 use Facebook\FacebookSession;
-use Facebook\FacebookRequest;
-use Facebook\GraphPage;
 use Facebook\GraphObject;
 
 /**

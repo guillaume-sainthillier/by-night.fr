@@ -5,7 +5,6 @@ use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use TBN\MainBundle\Entity\Site;
 use TBN\UserBundle\Entity\Info;
 use TBN\SocialBundle\Social\Social;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
@@ -22,8 +21,6 @@ class FOSUBUserProvider extends BaseClass
 
     public function connectSite(UserResponseInterface $response)
     {
-        //$username = $response->getUsername(); //ID de l'user sur le réseau social
-
         //on connect - get the access token and the user ID
         $service = $response->getResourceOwner()->getName();//google, facebook,...
 
@@ -36,7 +33,6 @@ class FOSUBUserProvider extends BaseClass
      */
     public function connect(UserInterface $user, UserResponseInterface $response)
     {
-        //$property = $this->getProperty($response); //champs pour récupérer l'user, ici username
         $username = $response->getUsername(); //ID de l'user sur le réseau social
 
         //on connect - get the access token and the user ID
@@ -77,7 +73,6 @@ class FOSUBUserProvider extends BaseClass
         $em         = $doctrine->getManager();
         $repo       = $em->getRepository('TBNUserBundle:Info');
 
-        //TODO: faire une seule requête
         $info       = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
         if($info !== null)
         {

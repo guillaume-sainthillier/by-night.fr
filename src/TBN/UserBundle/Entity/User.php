@@ -114,20 +114,20 @@ class User extends BaseUser
 
         if($info !== null)
         {
-            if($info->getFacebookProfilePicture() != null)
+            if($info->getFacebookProfilePicture() !== null)
             {
                 return $info->getFacebookProfilePicture();
-            }elseif($info->getTwitterProfilePicture() != null)
+            }elseif($info->getTwitterProfilePicture() !== null)
             {
                 return $info->getTwitterProfilePicture();
-            }elseif($info->getGoogleProfilePicture() != null)
+            }elseif($info->getGoogleProfilePicture() !== null)
             {
                 return $info->getGoogleProfilePicture();
             }
         }
         
         
-        return "http://placehold.it/250&text=".$this->getUsername();
+        return "http://placehold.it/250&text=".substr($this->getUsername(), 0, 1    );
     }
     
     public function getUsername() {

@@ -6,7 +6,6 @@ use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Ville;
 use TBN\MainBundle\Entity\Site;
-use TBN\AgendaBundle\Entity\PlaceRepository;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -124,12 +123,14 @@ class MigrationCommand extends EventCommand {
 
     protected function findVilleBy(& $villes, $nomVille, $codePostal) {
         foreach ($villes as $ville) {
-            if (($codePostal !== "" && $nomVille !== "" && $codePostal === $ville->getCodePostal() && $nomVille === $ville->getNom()) || ( $codePostal === "" && $nomVille === $ville->getNom()) || ( $nomVille === "" && $codePostal === $ville->getCodePostal())) {
+            if (($codePostal !== "" && $nomVille !== "" && $codePostal === $ville->getCodePostal() && $nomVille === $ville->getNom()) || 
+                    ( $codePostal === "" && $nomVille === $ville->getNom()) ||
+                    ( $nomVille === "" && $codePostal === $ville->getCodePostal())) {
                 return $ville;
             }
         }
 
-        if ($nomVille == null || trim($nomVille) == "" || (strlen($codePostal) > 0 && strlen($codePostal) < 5)) {
+        if ($nomVille == null || trim($nomVille) === "" || (strlen($codePostal) > 0 && strlen($codePostal) < 5)) {
             return null;
         }
 
@@ -153,15 +154,6 @@ class MigrationCommand extends EventCommand {
             if ($this->isSamePlace($agenda->getSite(), $place, $nom, $rue, $nomVille, $agenda->getLatitude(), $agenda->getLongitude())) {
                 return $place;
             }
-
-//            if($place->getSite() === $agenda->getSite())
-//            {
-//                if(($nom != "" && $nom == $place->getNom()) or
-//                    ($nom === "" && $rue != "" && $nomVille != "" && $rue == $place->getRue() && $nomVille == $place->getVille()->getNom()))
-//                {
-//                    return $place;
-//                }
-//            }
         }
 
         $ville = $this->findVilleBy($villes, $nomVille, $codePostal);

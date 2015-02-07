@@ -2,6 +2,8 @@
 
 namespace TBN\MajDataBundle\Parser;
 
+use Symfony\Component\DomCrawler\Crawler;
+
 /**
  *
  * @author Guillaume SAINTHILLIER
@@ -16,7 +18,7 @@ class BikiniParser extends LinksParser{
     {
         $tab_retour = [];
 
-        $tab_retour["reservation_internet"]         = implode(" ",$this->parser->filter("#reservation a.boutonReserverSpectacle")->each(function($item) { return $item->attr("href"); }));
+        $tab_retour["reservation_internet"]         = implode(" ",$this->parser->filter("#reservation a.boutonReserverSpectacle")->each(function(Crawler $item) { return $item->attr("href"); }));
         $tab_retour["date_affichage"]               = $this->parser->filter("#date")->text();
         $tab_retour["nom"]                          = $this->parser->filter("#blocContenu h2")->text();
         $tab_retour["lieu_nom"]                     = $this->parser->filter("#salle h3")->text();
@@ -28,7 +30,7 @@ class BikiniParser extends LinksParser{
         $tab_retour["source"]                       = $this->url;
 
 
-        $this->parser->filter("#blocContenu")->children()->each(function($sibling) use(&$tab_retour)
+        $this->parser->filter("#blocContenu")->children()->each(function(Crawler $sibling) use(&$tab_retour)
         {
             if($sibling->attr("id") === "prix")
             {
@@ -37,7 +39,7 @@ class BikiniParser extends LinksParser{
             }
             return false;
         });
-        $this->parser->filter("#blocContenu")->children()->each(function($sibling) use(&$tab_retour)
+        $this->parser->filter("#blocContenu")->children()->each(function(Crawler $sibling) use(&$tab_retour)
         {
             if($sibling->attr("id") === "type")
             {
@@ -58,7 +60,7 @@ class BikiniParser extends LinksParser{
     public function getLinks()
     {
         $this->parseContent("XML");
-        return $this->parser->filter("item")->each(function($item)
+        return $this->parser->filter("item")->each(function(Crawler $item)
         {
             return trim(preg_replace("/(.*)<link>(.*)<description>(.*)/im","$2",preg_replace("/\n/","",$item->html())));
         });

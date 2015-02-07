@@ -4,7 +4,7 @@ namespace TBN\UserBundle\Controller;
 
 use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\UserBundle\Form\AgendaType;
+use TBN\UserBundle\Form\Type\AgendaType;
 use TBN\AgendaBundle\Entity\Calendrier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -123,7 +123,6 @@ class AgendaController extends Controller
                 $agenda->setSite($site)->setParticipations(1);
                 $agenda->getPlace()->setSite($site)->getVille()->setSite($site);
                
-                //$em->persist($agenda->getVille());
                 $em->persist($agenda);
                 $em->persist($calendrier);
                 $em->flush();
@@ -232,7 +231,7 @@ class AgendaController extends Controller
         $user_agenda = $agenda->getUser();
         $current_user = $this->getCurrentUser();
 
-        if(!$current_user->hasRole("ROLE_ADMIN") and $user_agenda !== $current_user)
+        if(!$current_user->hasRole("ROLE_ADMIN") && $user_agenda !== $current_user)
         {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à modifier cet événement");
         }

@@ -49,7 +49,6 @@ class Twitter extends Social
             }
         }catch(\Exception $e)
         {
-            //TODO: logger
         }
 
         return 0;
@@ -58,7 +57,7 @@ class Twitter extends Social
     protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 
         $info = $user->getInfo();
-        if($user->hasRole("ROLE_TWITTER") && $agenda->getTweetPostId() == null && $info !== null && $info->getTwitterAccessToken() !== null)
+        if($user->hasRole("ROLE_TWITTER") && $agenda->getTweetPostId() === null && $info !== null && $info->getTwitterAccessToken() !== null)
         {
             $config = [
                 'consumer_key' => $this->id,
@@ -111,13 +110,6 @@ class Twitter extends Social
             {
                 $agenda->setTweetPostSystemId($reponse->id_str);
             }
-            /*
-            $reponse = $client->post('statuses/retweet/'.$agenda->getTweetPostId());
-
-            if(isset($reponse->id_str))
-            {
-                $agenda->setTweetPostSystemId($reponse->id_str);
-            }*/
         }
     }
 

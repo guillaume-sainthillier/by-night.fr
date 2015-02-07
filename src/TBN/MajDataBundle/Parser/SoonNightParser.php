@@ -32,7 +32,7 @@ class SoonNightParser extends LinksParser{
         }, $date);
     }
 
-    protected function my_numeric2character($t)
+    protected function decodeNumCharacter($t)
     {
         $convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
         return mb_decode_numericentity($t, $convmap, 'UTF-8');
@@ -49,7 +49,7 @@ class SoonNightParser extends LinksParser{
         //Date & Nom
         $date_lieu                      = preg_split("/-/",$this->parser->filter(".titre h2")->text());
         $nom                            = preg_replace("/\&(\d+);/i", "&#$1;", $this->parser->filter(".titre h1")->text())." @ ".$date_lieu[1];
-        $tab_retour["nom"]              = $this->my_numeric2character($nom);
+        $tab_retour["nom"]              = $this->decodeNumCharacter($nom);
         $tab_retour["lieu_nom"]         = $date_lieu[1];
         $date                           = $this->parseDate($date_lieu[0]);
 
@@ -151,7 +151,7 @@ class SoonNightParser extends LinksParser{
     {
         $this->parseContent("HTML");
         $base_url = $this->base_url;
-        return $this->parser->filter("div.affichage_liste_1 a.titre")->each(function($item) use($base_url)
+        return $this->parser->filter("div.affichage_liste_1 a.titre")->each(function(Crawler $item) use($base_url)
         {
             return $base_url.$item->attr("href");
         });

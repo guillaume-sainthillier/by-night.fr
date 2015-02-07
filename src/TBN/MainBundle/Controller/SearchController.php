@@ -39,7 +39,7 @@ class SearchController extends Controller
 
         $repo           = $em->getRepository("TBNUserBundle:User");
         $users          = $repo->search($site, $q);
-        $nbUsers        = count($users); // TODO : Changer ça!!
+        $nbUsers        = count($users); // Changer ça!!
 
         return [$users, $nbUsers];
     }

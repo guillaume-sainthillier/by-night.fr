@@ -115,6 +115,5 @@ class SocialController extends BaseController
         $userManager = $this->container->get('fos_user.user_manager');
         $userManager->updateUser($user);
         $userManager->refreshUser($user);
-        //$this->container->get('security.context')->getToken()->setAuthenticated(false);
     }
 }

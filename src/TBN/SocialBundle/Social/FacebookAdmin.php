@@ -38,7 +38,7 @@ class FacebookAdmin extends FacebookEvents {
     }
     
     protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
-	if ($agenda->getFbPostSystemId() == null && $this->siteInfo !== null && $this->siteInfo->getFacebookAccessToken() !== null)
+	if ($agenda->getFbPostSystemId() === null && $this->siteInfo !== null && $this->siteInfo->getFacebookAccessToken() !== null)
         {
             $site       = $this->siteManager->getCurrentSite();
             $dateDebut  = $this->getReadableDate($agenda->getDateDebut());
@@ -48,15 +48,12 @@ class FacebookAdmin extends FacebookEvents {
 
             //Authentification
 	    $session = new FacebookSession($this->siteInfo->getFacebookAccessToken());
-//            $session = new FacebookSession($user->getInfo()->getFacebookAccessToken());
 	    $request = new FacebookRequest($session, 'POST', '/' . $site->getFacebookIdPage() . '/feed', [
-//	    $request = new FacebookRequest($session, 'POST', '/me/feed', [
 		'message' => $message,
 		'name' => $agenda->getNom(),
                 'link' => $this->getLink($agenda),
 		'picture' => $this->getLinkPicture($agenda),
                 'description' => $date.". ".strip_tags($agenda->getDescriptif()),
-//                'privacy' => json_encode(['value' => 'SELF']),
 		'actions' => json_encode([
                     [
                         "name" => $user->getUsername() . " sur " . $user->getSite()->getNom() . " By Night",
@@ -79,8 +76,6 @@ class FacebookAdmin extends FacebookEvents {
 		$page = $this->getPageFromId($site->getFacebookIdPage());                
 		return $page->getProperty("likes");
 	    } catch (\Exception $ex) {
-		// TODO : Logger
-                //var_dump($ex->getMessage());
 	    }
 	}
 

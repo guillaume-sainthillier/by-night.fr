@@ -75,7 +75,7 @@ class MainExtension extends \Twig_Extension{
             $shorted_text
         );
 
-        $final_text = $this->trim_br($linked_text);
+        $final_text = $this->trimBr($linked_text);
 
         return trim($final_text);
     }
@@ -98,7 +98,7 @@ class MainExtension extends \Twig_Extension{
 	return preg_replace("/\.html(\.twig)?/i", $suffix.".html.twig", $template);
     }
 
-    protected function trim_br($string){
+    protected function trimBr($string){
         $string = preg_replace('/^\s*(?:<br\s*\/?>\s*)*/i', '', $string);
         $string = preg_replace('/\s*(?:<br\s*\/?>\s*)*$/i', '', $string);
         return	$string;

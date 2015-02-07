@@ -1324,12 +1324,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client.git",
-                "reference": "bf616abec5c34d1ba04962141893ca0576826a1a"
+                "reference": "1a2a14ad9a89f517d40419bf9121d2189e5fd8cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/bf616abec5c34d1ba04962141893ca0576826a1a",
-                "reference": "bf616abec5c34d1ba04962141893ca0576826a1a",
+                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/1a2a14ad9a89f517d40419bf9121d2189e5fd8cf",
+                "reference": "1a2a14ad9a89f517d40419bf9121d2189e5fd8cf",
                 "shasum": ""
             },
             "require": {
@@ -1358,7 +1358,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2015-02-06 11:33:47"
+            "time": "2015-02-07 11:34:49"
         },
         {
             "name": "hearsay/require-js-bundle",
