@@ -99,7 +99,7 @@ class AgendaType extends AbstractType
             }
 
             $getter = "get".$accessService."AccessToken";
-            $is_api_ready = ($config["enabled"] and $this->siteInfo and $this->siteInfo->$getter());
+            $is_api_ready = ($config["enabled"] && $this->siteInfo && $this->siteInfo->$getter());
             
             if(! $is_api_ready)
             {
@@ -137,7 +137,7 @@ class AgendaType extends AbstractType
                 "data" => $post_checked,
                 "attr" => array(
                     "class" => "social_post onoffswitch-checkbox ".($post_checked ? "checked" : ""),
-                    "data-connected" => (!$post_disabled and $post_checked) ? "1" : "0",
+                    "data-connected" => (!$post_disabled && $post_checked) ? "1" : "0",
                     "data-message" => $message
                 )
             ]);

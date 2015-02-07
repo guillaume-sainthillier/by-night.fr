@@ -63,7 +63,7 @@ class FlushCommand extends EventCommand
                 if($agenda->getPath() !== null)
                 {
                     $file = $agenda->getAbsolutePath();
-                    if(!is_file($file) or !file_exists($file))
+                    if(!is_file($file) || !file_exists($file))
                     {
                         $agenda->setPath(null);
                         $nbMaj++;

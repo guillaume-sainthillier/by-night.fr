@@ -53,5 +53,4 @@ class ImageTypeExtension extends AbstractTypeExtension
         // set an "image_url" variable that will be available when rendering this field
         $view->vars['image_url'] = $imageUrl;
     }
-
 }

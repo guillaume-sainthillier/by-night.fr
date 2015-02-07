@@ -1,21 +1,23 @@
+<div class="col-sm-6 col-md-12">
+    
 {% if site.twitterIdWidget and site.twitterURLWidget  %}
 <!-- Twitter -->
 {% include "TBNAgendaBundle:Widget:twitter.html.twig" %}
 <!-- ./Twitter -->
 {% endif %}
 
-
 {% if site.facebookIdPage %}
 <!-- Facebook -->
-{% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
+    {% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
 <!-- ./Facebook -->
 {% endif %}
 
-
 <!-- Top Evénements -->
-{% include "TBNAgendaBundle:Widget:top_evenements.html.twig" %}
+    {% include "TBNAgendaBundle:Widget:top_evenements.html.twig" %}
 <!-- ./Top Evénements -->
+</div>
 
+<div class="col-sm-6 col-md-12">
 
 <!-- Top Membres -->
 {% include "TBNAgendaBundle:Widget:top_membres.html.twig" %}
@@ -27,3 +29,4 @@
 <!-- ./Programme TV -->
 
 {% include "TBNAgendaBundle:Widget:ads.html.twig" %}
+</div>

@@ -38,4 +38,3 @@ tbn_agenda_annuler:
 tbn_agenda_list:
     pattern: /mes-soirees
     defaults: { _controller: TBNUserBundle:Agenda:list }
-    

@@ -8,6 +8,7 @@ use TBN\UserBundle\Form\AgendaType;
 use TBN\AgendaBundle\Entity\Calendrier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AgendaController extends Controller
 {
@@ -233,7 +234,7 @@ class AgendaController extends Controller
 
         if(!$current_user->hasRole("ROLE_ADMIN") and $user_agenda !== $current_user)
         {
-            throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("Vous n'êtes pas autorisé à modifier cet événement");
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à modifier cet événement");
         }
     }
 }

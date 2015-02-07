@@ -151,7 +151,7 @@ class FaceBookParser extends AgendaParser {
 
 	foreach ($events as $event) {
             $fbId = $event->getProperty("id");
-            if(!isset($blackListIds[$fbId]) and !isset($filtered_events[$fbId]))
+            if(!isset($blackListIds[$fbId]) && !isset($filtered_events[$fbId]))
             {
                 $filtered_events[$fbId] = $event;
             }
@@ -199,7 +199,7 @@ class FaceBookParser extends AgendaParser {
 	$location       = $event->getProperty("location");
 	$start_time     = $this->getDateFromEvent($event, "start_time");
 
-	if (!$name or !$description or !$location or !$start_time) {
+	if (!$name || !$description || !$location || !$start_time) {
             return $blackList->setReason("Informations de base non fournies");
 	}
 
@@ -216,7 +216,7 @@ class FaceBookParser extends AgendaParser {
 	if (!$event->getProperty("is_date_only")) {
 	    $dateDebut = $tab_retour["date_debut"];
 	    $dateFin = $tab_retour["date_fin"];
-	    if ($dateFin and $this->isSameDay($dateDebut, $dateFin)) {
+	    if ($dateFin && $this->isSameDay($dateDebut, $dateFin)) {
 		$horaires = sprintf("De %s à %s", $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
 	    } else {
 		$horaires = sprintf("A %s", $dateDebut->format("H\hi"));
@@ -248,7 +248,7 @@ class FaceBookParser extends AgendaParser {
 	    $longitude = $venue->getProperty("longitude");
 	}
 
-	if (!$latitude and !$longitude and $location) { //Si rien de précis n'est renseigné, on tente le geocoding
+	if (!$latitude && !$longitude && $location) { //Si rien de précis n'est renseigné, on tente le geocoding
 	    $geocoder = $this->geocoder;
 	    $response = $geocoder->geocode($location);
 	    $status = $response->getStatus();
@@ -289,11 +289,11 @@ class FaceBookParser extends AgendaParser {
 	$tab_retour["latitude"] = $latitude;
 	$tab_retour["longitude"] = $longitude;
 
-	if ($latitude === null or ($latitude !== null and abs($this->site->getLatitude() - $latitude) > $distanceMax)) {
+	if ($latitude === null || ($latitude !== null && abs($this->site->getLatitude() - $latitude) > $distanceMax)) {
 	    return $blackList->setReason("Coordonnées non conformes");
 	}
 
-	if ($longitude === null or ($longitude !== null and abs($this->site->getLongitude() - $longitude) > $distanceMax)) {
+	if ($longitude === null || ($longitude !== null && abs($this->site->getLongitude() - $longitude) > $distanceMax)) {
 	    return $blackList->setReason("Coordonnées non conformes");
 	}
 

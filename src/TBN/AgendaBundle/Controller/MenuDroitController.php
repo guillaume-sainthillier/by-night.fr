@@ -108,7 +108,7 @@ class MenuDroitController extends Controller {
         $str_date = $repo->getLastDateUser($site);
 
         $response = $this->cacheVerif($str_date);
-        if ($response !== null and $response->isNotModified($request)) {
+        if ($response !== null && $response->isNotModified($request)) {
             return $response;
         }
 
@@ -138,7 +138,7 @@ class MenuDroitController extends Controller {
             $dateModification = $soiree->getDateModification();
             $today = new \DateTime;
             $dateModification->modify("+" . $dureeCache . " hours");
-            if ($dateModification <= $today or $soiree->getFbParticipations() === null or $soiree->getFbInterets() === null) {
+            if ($dateModification <= $today || $soiree->getFbParticipations() === null || $soiree->getFbInterets() === null) {
                 $api    = $this->get("tbn.social.facebook_admin");
                 $retour = $api->getEventStats($id);
                 $cache  = $this->get("winzou_cache");

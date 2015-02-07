@@ -78,9 +78,9 @@ abstract class AgendaParser {
     protected function getAgendaFromUniqueInfo($nom, \DateTime $dateDebut, \DateTime $dateFin = null, $nomLieu = null)
     {
         $agenda = null;        
-        if($dateDebut !== null and $dateDebut !== false)
+        if($dateDebut !== null && $dateDebut !== false)
         {
-            if($nomLieu !== null and $dateFin !== null and $dateFin !== false)
+            if($nomLieu !== null && $dateFin !== null && $dateFin !== false)
             {
                 $agenda = $this->repo->findOneByPlace($nomLieu, $dateDebut, $dateFin);
             }

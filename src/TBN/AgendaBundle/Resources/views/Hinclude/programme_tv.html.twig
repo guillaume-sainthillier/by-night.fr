@@ -1,10 +1,10 @@
 {% for programme in programmes %}
     <div class="widget_item">
         <div class="row">
-            <div class="col-xs-3 min_membre preserve">
+            <div class="col-xs-3 col-md-2 min_membre preserve">
                 <img height="30" width="70" class="img img-responsive" src="{{ programme.logo }}" title="{{ programme.chaine }}" />
             </div>
-            <div class="col-xs-9 preserve">
+            <div class="col-xs-9 col-md-10 preserve">
                 <h4 class="modal-title">
                     <a href="{{ programme.lien }}" rel="external">{{ programme.nom }}</a>
                 </h4>            

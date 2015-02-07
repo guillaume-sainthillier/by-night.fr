@@ -2,13 +2,19 @@
 
 {% block start_container %}
 <div class="container-fluid" id="container-fluid">
-    <div id="content" class="col-md-7 col-md-offset-1 panel-right">
+    <div id="content" class="col-md-8 panel-right">
+        <div class="col-md-11 col-md-offset-1">
 {% endblock %}
 
 {% block end_container %}                     
+        </div>
     </div>
-    <div class="col-md-3 col-md-offset-1" id="widgets" >
-        {% block widgets_agenda %}{% endblock %}
+    <div class="col-md-4 col-sm-offset-0 col-sm-12 col-xs-8 col-xs-offset-2" id="widgets" >
+        <div class="col-md-11 col-md-offset-1">
+            <div class="row">
+                {% block widgets_agenda %}{% endblock %}
+            </div>            
+        </div>    
     </div>    
 </div>
 {% endblock %}

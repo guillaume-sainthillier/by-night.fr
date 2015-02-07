@@ -41,7 +41,7 @@ class SubDomainListener {
                     ->getRepository('TBNMainBundle:Site')
                     ->findOneBy(['subdomain' => $subdomain]);
                 
-            if (!$site or ($site and !$site->getIsActif())) {
+            if (!$site || ($site && !$site->getIsActif())) {
                 throw new NotFoundHttpException(sprintf(
                         'Le sous domaine "%s" est introuvable sur "%s"', $subdomain, $this->baseHost
                 ));

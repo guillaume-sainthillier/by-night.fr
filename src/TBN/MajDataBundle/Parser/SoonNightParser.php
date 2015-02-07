@@ -96,7 +96,7 @@ class SoonNightParser extends LinksParser{
         {
             foreach($node->childNodes as $children)
             {                
-                if($children->nodeType === XML_TEXT_NODE or ! in_array($children->nodeName, ['span', 'div']))
+                if($children->nodeType === XML_TEXT_NODE || ! in_array($children->nodeName, ['span', 'div']))
                 {
                     $descriptif .= ($children->nodeName === "br" ? "<br>" : $children->textContent." ");
                 }

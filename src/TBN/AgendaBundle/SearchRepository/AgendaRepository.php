@@ -116,6 +116,6 @@ class AgendaRepository extends Repository {
                 ->setSize($limit);
 
         // return $this->findHybrid($query); if you also want the ES ResultSet
-        return $this->findHybrid($finalQuery);
+        return $this->find($finalQuery);
     }
 }

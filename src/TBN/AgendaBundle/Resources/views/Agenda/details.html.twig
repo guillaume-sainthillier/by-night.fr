@@ -93,7 +93,7 @@
                 {% if place.rue or place.nom or ville %}
                 <li>
                     <i class="fa fa-li fa-map-marker"></i>
-                    <div itemprop="organizer" itemscope itemtype="http://schema.org/Organization">
+                    <div itemprop="organizer" itemtype="http://schema.org/Organization">
                         {% set readableAdresse = "" %}
                         {% if place.nom %}
                             {% set readableAdresse = place.nom %}

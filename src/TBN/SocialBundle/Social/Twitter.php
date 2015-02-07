@@ -58,7 +58,7 @@ class Twitter extends Social
     protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 
         $info = $user->getInfo();
-        if($user->hasRole("ROLE_TWITTER") and $agenda->getTweetPostId() == null and $info !== null and $info->getTwitterAccessToken() !== null)
+        if($user->hasRole("ROLE_TWITTER") && $agenda->getTweetPostId() == null && $info !== null && $info->getTwitterAccessToken() !== null)
         {
             $config = [
                 'consumer_key' => $this->id,
@@ -87,7 +87,7 @@ class Twitter extends Social
     protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 
         $info = $this->siteManager->getSiteInfo();
-        if($user->hasRole("ROLE_TWITTER") and $agenda->getTweetPostSystemId() === null and $agenda->getTweetPostId() !== null and $info->getTwitterAccessToken() !== null)
+        if($user->hasRole("ROLE_TWITTER") && $agenda->getTweetPostSystemId() === null && $agenda->getTweetPostId() !== null && $info->getTwitterAccessToken() !== null)
         {
 
             $config = [

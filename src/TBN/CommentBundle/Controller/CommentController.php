@@ -33,12 +33,12 @@ class CommentController extends Controller
         return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
     }
 
-    public function getNbComments(Agenda $soiree)
+    protected function getNbComments(Agenda $soiree)
     {
         return $this->getCommentRepo()->findNBCommentaires($soiree);
     }
 
-    public function getNbReponses(Comment $comment)
+    protected function getNbReponses(Comment $comment)
     {
         return $this->getCommentRepo()->findNBReponses($comment);
     }
@@ -50,6 +50,7 @@ class CommentController extends Controller
             "nb_reponses" => $this->getNbReponses($comment)
         ]);
     }
+    
     public function newAction(Request $request, Agenda $soiree)
     {
         $comment = new Comment();

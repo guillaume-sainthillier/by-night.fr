@@ -89,8 +89,8 @@ class MigrationCommand extends EventCommand {
         $nomVille = $this->sanitizeForSearch($nomVille);
         $codePostalVille = $this->sanitizeForSearch($codePostalVille);
 
-        return (($codePostalVille !== "" and $nomVille !== "" and $codePostalVille === $currentCodePostalVille and $nomVille === $currentNomVille) or
-            ($codePostalVille === "" and $nomVille === $currentNomVille) or ( $nomVille === "" and $codePostalVille === $currentCodePostalVille));
+        return (($codePostalVille !== "" && $nomVille !== "" && $codePostalVille === $currentCodePostalVille && $nomVille === $currentNomVille) ||
+            ($codePostalVille === "" && $nomVille === $currentNomVille) || ( $nomVille === "" && $codePostalVille === $currentCodePostalVille));
     }
 
     private function replaceAccents($string) {
@@ -111,9 +111,9 @@ class MigrationCommand extends EventCommand {
             $currentVillePlace = $this->sanitizeForSearch($currentPlace->getVille() ? $currentPlace->getVille()->getNom() : null);
 
             
-            if (($nomPlace == $currentNomPlace) or 
-                ($ruePlace != "" and $villePlace != "" and $ruePlace == $currentRuePlace and $villePlace == $currentVillePlace))
-                //($latitudePlace !== "" and $longitudePlace !== "" and $latitudePlace == $currentPlace->getLatitude() and $longitudePlace == $currentPlace->getLongitude()))
+            if (($nomPlace == $currentNomPlace) ||
+                ($ruePlace != "" && $villePlace != "" && $ruePlace == $currentRuePlace && $villePlace == $currentVillePlace))
+                //($latitudePlace !== "" && $longitudePlace !== "" && $latitudePlace == $currentPlace->getLatitude() && $longitudePlace == $currentPlace->getLongitude()))
             {
                 return true;
             }
@@ -124,12 +124,12 @@ class MigrationCommand extends EventCommand {
 
     protected function findVilleBy(& $villes, $nomVille, $codePostal) {
         foreach ($villes as $ville) {
-            if (($codePostal !== "" and $nomVille !== "" and $codePostal === $ville->getCodePostal() and $nomVille === $ville->getNom()) or ( $codePostal === "" and $nomVille === $ville->getNom()) or ( $nomVille === "" and $codePostal === $ville->getCodePostal())) {
+            if (($codePostal !== "" && $nomVille !== "" && $codePostal === $ville->getCodePostal() && $nomVille === $ville->getNom()) || ( $codePostal === "" && $nomVille === $ville->getNom()) || ( $nomVille === "" && $codePostal === $ville->getCodePostal())) {
                 return $ville;
             }
         }
 
-        if ($nomVille == null or trim($nomVille) == "" or (strlen($codePostal) > 0 and strlen($codePostal) < 5)) {
+        if ($nomVille == null || trim($nomVille) == "" || (strlen($codePostal) > 0 && strlen($codePostal) < 5)) {
             return null;
         }
 
@@ -146,7 +146,7 @@ class MigrationCommand extends EventCommand {
         $nomVille = $this->cleanVille($agenda->getVille());
         $codePostal = $this->cleanCodePostal($agenda->getCodePostal());
 
-        if ($nom === "" or $nom === null) {
+        if ($nom === "" || $nom === null) {
             $nom = $rue;
         }
         foreach ($places as $place) {
@@ -156,8 +156,8 @@ class MigrationCommand extends EventCommand {
 
 //            if($place->getSite() === $agenda->getSite())
 //            {
-//                if(($nom != "" and $nom == $place->getNom()) or
-//                    ($nom === "" and $rue != "" and $nomVille != "" and $rue == $place->getRue() and $nomVille == $place->getVille()->getNom()))
+//                if(($nom != "" && $nom == $place->getNom()) or
+//                    ($nom === "" && $rue != "" && $nomVille != "" && $rue == $place->getRue() && $nomVille == $place->getVille()->getNom()))
 //                {
 //                    return $place;
 //                }

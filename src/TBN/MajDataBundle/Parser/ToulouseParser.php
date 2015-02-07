@@ -42,7 +42,7 @@ class ToulouseParser extends AgendaParser{
             },$cursor);
 
 
-            if($tab[1] !== "" or $tab[2] !== "")
+            if($tab[1] !== "" || $tab[2] !== "")
             {
                 $nom = $tab[1] !== "" ? $tab[1] : $tab[2];
 
@@ -95,12 +95,12 @@ class ToulouseParser extends AgendaParser{
         $output_file_zip = $output_dir.$output_file.".zip";
 
         $fic = false;
-        if(($fic = fopen($output_file_zip, "w")) and fwrite($fic, $data))
+        if(($fic = fopen($output_file_zip, "w")) && fwrite($fic, $data))
         {
             fclose($fic);
 
             $zip = new \ZipArchive();
-            if($zip->open($output_file_zip) and $zip->extractTo($output_dir_zip))
+            if($zip->open($output_file_zip) && $zip->extractTo($output_dir_zip))
             {
                 foreach(scandir($output_dir_zip) as $fichier)
                 {
@@ -129,7 +129,7 @@ class ToulouseParser extends AgendaParser{
      */
     protected function isGoodDataFolder($fic, $dir)
     {
-        return \preg_match("/Agenda So Toulouse/i",$fic) and \is_dir($dir.$fic);
+        return \preg_match("/Agenda So Toulouse/i",$fic) && \is_dir($dir.$fic);
     }
 
     /**

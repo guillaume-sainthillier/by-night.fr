@@ -3,7 +3,7 @@
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * && open the template in the editor.
  */
 
 namespace TBN\MajDataBundle\Command;
@@ -83,19 +83,19 @@ abstract class EventCommand extends ContainerAwareCommand
             $date_fin_needle    = $agenda->getDateFin();
             $nom_needle         = trim($agenda->getNom());
             
-            if($nom_needle != "" and $nom_event != "" and $date_debut_event->format("Y-m-d") === $date_debut_needle->format("Y-m-d"))
+            if($nom_needle != "" && $nom_event != "" && $date_debut_event->format("Y-m-d") === $date_debut_needle->format("Y-m-d"))
             {
                 if(similar_text($nom_event, $nom_needle) > 70) // Plus de 70% de ressemblance, on l'ejecte
                 {
                     return true;
                 }
 
-                if(stristr($nom_event, $nom_needle) !== false or stristr($nom_needle, $nom_event) !== false)
+                if(stristr($nom_event, $nom_needle) !== false || stristr($nom_needle, $nom_event) !== false)
                 {
                     return true;
                 }
                 
-//                if($date_fin_needle !== null and $date_fin_event !== null and
+//                if($date_fin_needle !== null && $date_fin_event !== null and
 //                        $date_fin_event->format("Y-m-d") === $date_fin_needle->format("Y-m-d") and
 //                        strtoupper($event->getLieuNom()) === strtoupper($agenda->getLieuNom()))
 //                {
@@ -111,7 +111,7 @@ abstract class EventCommand extends ContainerAwareCommand
     {
 	//Vérification des events spams
         $black_list = [
-	    "Buy and sell tickets at","Please join","Invite Friends","Buy Tickets",
+	    "Buy && sell tickets at","Please join","Invite Friends","Buy Tickets",
 	    "Find Local Concerts", "reverbnation.com", "pastaparty.com", "evrd.us",
 	    "farishams.com", "tinyurl.com", "bandcamp.com", "ty-segall.com",
 	    "fritzkalkbrenner.com", "campusfm.fr", "polyamour.info", "parislanuit.fr",

@@ -72,11 +72,18 @@ var App = {
      */
     initSelectpicker: function (selecteur)
     {
-        var targets = $('select', selecteur || document);
+        var targets = $('select[multiple]', selecteur || document);
 
         if (targets.length)
         {
             targets.selectpicker();
+        }
+        
+        var targets = $('select:not([multiple])', selecteur || document);
+
+        if (targets.length)
+        {
+            targets.dropdown();
         }
     },
     //Deps: []

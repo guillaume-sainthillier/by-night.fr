@@ -22,7 +22,7 @@ class FacebookEvents extends Facebook {
     
     protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 	$info = $user->getInfo();
-	if ($agenda->getFbPostId() == null and $info !== null and $info->getFacebookAccessToken() !== null) {
+	if ($agenda->getFbPostId() == null && $info !== null && $info->getFacebookAccessToken() !== null) {
 	    
             $dateDebut  = $this->getReadableDate($agenda->getDateDebut());
             $dateFin    = $this->getReadableDate($agenda->getDateFin());

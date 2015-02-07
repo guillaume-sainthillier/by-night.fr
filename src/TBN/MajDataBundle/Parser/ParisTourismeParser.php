@@ -86,7 +86,7 @@ class ParisTourismeParser extends LinksParser {
 
 	$nom_full_lieu = $lieux->reduce(function($p)
 	{
-	    return !preg_match("/detailAdresse/i", $p->attr("class")) and !preg_match("/reservezAvecParisInfo/i", $p->parents()->eq(0)->attr("class"));
+	    return !preg_match("/detailAdresse/i", $p->attr("class")) && !preg_match("/reservezAvecParisInfo/i", $p->parents()->eq(0)->attr("class"));
 	});
 
 	$nom_lieu   = $nom_full_lieu->count() ? $nom_full_lieu->text() : null;
@@ -111,7 +111,7 @@ class ParisTourismeParser extends LinksParser {
         }
 
         $nodeNom    = $this->getValueByPriorities([".ficheDetailGauche h1.cartoucheTitre", ".ficheDetailGauche h1.cartoucheTitreCommercial"]);
-        $nom        = ($nodeNom and $nodeNom->count()) ? $nodeNom->text() : null;
+        $nom        = ($nodeNom && $nodeNom->count()) ? $nodeNom->text() : null;
         
         $nodeImage  = $this->parser->filter(".ficheDetailGauche a img");
         $image      = str_replace(["140x140", "|"], ["350x350", "%7C"], $nodeImage->eq($nodeImage->count() -1)->attr("src"));

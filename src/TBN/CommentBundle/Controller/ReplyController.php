@@ -3,7 +3,6 @@
 namespace TBN\CommentBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use TBN\CommentBundle\Controller\CommentController as BaseController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -35,12 +34,12 @@ class ReplyController extends Controller
         return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
     }
 
-    public function getNbComments(Agenda $soiree)
+    protected function getNbComments(Agenda $soiree)
     {
         return $this->getCommentRepo()->findNBCommentaires($soiree);
     }
 
-    public function getNbReponses(Comment $comment)
+    protected function getNbReponses(Comment $comment)
     {
         return $this->getCommentRepo()->findNBReponses($comment);
     }

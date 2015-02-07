@@ -65,9 +65,9 @@ class SearchType extends AbstractType
                 "attr" => ["title" => "Toutes", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
             ->add('term', 'text', [
                 "required" => false,
-                "label"    => "Recherche par mot-clés",
+                "label"    => "Mot-clés",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
-                "attr" => ["class" => "form-control","placeholder" => "Que cherchez-vous ?"]])
+                "attr" => ["class" => "form-control","placeholder" => "Quel événement cherchez-vous ?"]])
             ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-lg btn-primary btn-block"]])
         ;
     }

@@ -85,17 +85,17 @@ class UpdateCommand extends EventCommand
     protected function parseParis(  ParserManager $parserManager, AgendaRepository $repo, BlackListRepository $repoBL,
                                     Site $currentSite, $site, SiteInfo $siteInfo, $geocoder, FacebookAdmin $fbAPI)
     {
-        if(!$site or $site === "soonight")
+        if(!$site || $site === "soonight")
         {
             $parserManager->addAgendaParser(new SoonNightParser($repo, $this->container->getParameter("url_soonnight_paris")));
         }
 
-        if(!$site or $site === "tourisme")
+        if(!$site || $site === "tourisme")
         {
             $parserManager->addAgendaParser(new ParisTourismeParser($repo));
         }
 
-	if(!$site or $site === "facebook")
+	if(!$site || $site === "facebook")
         {
             $parserManager->addAgendaParser(new FaceBookParser($repo, $repoBL, $fbAPI, $currentSite, $siteInfo, $geocoder));
         }
@@ -104,33 +104,33 @@ class UpdateCommand extends EventCommand
     protected function parseToulouse(   ParserManager $parserManager, AgendaRepository $repo, BlackListRepository $repoBL,
                                         Site $currentSite, $site, SiteInfo $siteInfo, $geocoder, FacebookAdmin $fbAPI)
     {
-        if(!$site or $site === "toulouse")
+        if(!$site || $site === "toulouse")
         {
             $url = "http://data.grandtoulouse.fr/web/guest/les-donnees/-/opendata/card/21905-agenda-des-manifestations-culturelles/resource/document?p_p_state=exclusive&_5_WAR_opendataportlet_jspPage=%2Fsearch%2Fview_card_license.jsp";
             $parserManager->addAgendaParser(new ToulouseParser($repo, $url));
         }
 
-        if(!$site or $site === "bikini")
+        if(!$site || $site === "bikini")
         {
             $parserManager->addAgendaParser(new BikiniParser($repo, $this->container->getParameter("url_bikini")));
         }
 
-        if(!$site or $site === "dynamo")
+        if(!$site || $site === "dynamo")
         {
             $parserManager->addAgendaParser(new DynamoParser($repo, $this->container->getParameter("url_dynamo")));
         }
 
-        if(!$site or $site === "tourisme")
+        if(!$site || $site === "tourisme")
         {
             $parserManager->addAgendaParser(new ToulouseTourismeParser($repo));
         }
 
-        if(!$site or $site === "soonight")
+        if(!$site || $site === "soonight")
         {
             $parserManager->addAgendaParser(new SoonNightParser($repo, $this->container->getParameter("url_soonnight_tlse")));
         }
 
-        if(!$site or $site === "facebook")
+        if(!$site || $site === "facebook")
         {
             $parserManager->addAgendaParser(new FaceBookParser($repo, $repoBL, $fbAPI, $currentSite, $siteInfo, $geocoder));
         }
@@ -152,7 +152,7 @@ class UpdateCommand extends EventCommand
         $this->write($output, "Persistance...");
         foreach($agendas as $agenda)
         {
-            if($agenda->getNom() !== null and trim($agenda->getNom()) !== "")
+            if($agenda->getNom() !== null && trim($agenda->getNom()) !== "")
             {
                 if($agenda->getId() === null)
                 {
@@ -162,7 +162,7 @@ class UpdateCommand extends EventCommand
                     $nbUpdateSoirees++;
                 }
 
-                if($env === "prod" and $agenda->getPath() === null and $agenda->getUrl() !== null) // On récupère l'image distante
+                if($env === "prod" && $agenda->getPath() === null && $agenda->getUrl() !== null) // On récupère l'image distante
                 {
                     $this->downloadImage($agenda);
                 }

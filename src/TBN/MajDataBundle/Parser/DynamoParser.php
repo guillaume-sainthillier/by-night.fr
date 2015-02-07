@@ -48,7 +48,7 @@ class DynamoParser extends LinksParser{
         $image                          = null;
         $matchs_url                     = [];
 
-        if($raw_style and \preg_match(self::$URL_PATTERN, $raw_style, $matchs_url))
+        if($raw_style && \preg_match(self::$URL_PATTERN, $raw_style, $matchs_url))
         {
             $image                      = str_replace(")", "", $matchs_url[0]);
         }
@@ -61,7 +61,7 @@ class DynamoParser extends LinksParser{
         $facebook                       = null;
         $matchs_id                      = [];
 
-        if($raw_facebook and \preg_match("#events/(\d+)#i", $raw_facebook, $matchs_id))
+        if($raw_facebook && \preg_match("#events/(\d+)#i", $raw_facebook, $matchs_id))
         {
             $facebook                   = $matchs_id[1];            
         }

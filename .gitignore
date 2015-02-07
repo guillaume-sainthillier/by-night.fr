@@ -1,3 +1,7 @@
+# Sécurité
+/web/config.php
+.htaccess
+
 # Node
 /node_modules/
 

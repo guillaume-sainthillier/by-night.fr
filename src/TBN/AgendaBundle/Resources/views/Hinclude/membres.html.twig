@@ -1,10 +1,10 @@
 {% for user in membres %}
 <div class="widget_item">
     <div class="row">
-        <div class="col-xs-3 preserve min_membre">
-            <img class="img-responsive" src="{{ user.profileDefault }}" />
+        <div class="col-xs-3 col-md-2 preserve min_membre">
+            <img class="img-responsive img-circle" src="{{ user.profileDefault }}" />
         </div>
-        <div class="col-xs-9 preserve text-left">
+        <div class="col-xs-9 col-md-10 preserve text-left">
             <h4 class="modal-title">
                 <a href="{{ path('tbn_user_details', {'username': user.username} ) }}" title="Accédez au profil de {{ user.username }}">
                     {{ user.username }}

@@ -25,12 +25,6 @@ class Google extends Social {
         $api_id = $this->id;
         $api_secret = $this->secret;
 
-        /*
-          $client -> setApplicationName($this->container->getParameter('app_name'));
-          $client -> setClientId($this->container->getParameter('google_app_id'));
-          $client -> setClientSecret($this->container->getParameter('google_app_secret'));
-          $client -> setDeveloperKey("AIzaSyAzU6G-etnZzjzxGLPVb0UrfFQeI0dZi78"); */
-
         $this->client = $client = new Google_Client();
         $this->client->setClientId($api_id);
         $this->client->setClientSecret($api_secret);
@@ -79,8 +73,9 @@ class Google extends Social {
 
     protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
 
-        return; //TODO: Wait Google api fix
-        if ($user->hasRole("ROLE_GOOGLE") and $info !== null and $info->getGoogleAccessToken() !== null) {
+        return; //Wait Google api fix
+        
+        if ($user->hasRole("ROLE_GOOGLE") && $info !== null && $info->getGoogleAccessToken() !== null) {
 
             $client = new Google_Client();
             $client->setApplicationName($this->container->getParameter('app_name'));
@@ -122,9 +117,6 @@ class Google extends Social {
 
             $moments = $gplus->moments->listMoments('me', 'vault');
 
-            print_r($moments);
-
-
             $moment_body = new \Google_Service_Plus_Moment();
             $moment_body->setType("http://schemas.google.com/AddActivity");
             $item_scope = new \Google_Service_Plus_ItemScope();
@@ -136,7 +128,6 @@ class Google extends Social {
             $moment_body->setTarget($item_scope);
             $momentResult = $gplus->moments->insert("me", 'vault', $moment_body);
 
-            var_dump($momentResult);
         }
     }
 

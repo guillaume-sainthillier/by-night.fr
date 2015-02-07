@@ -62,7 +62,7 @@ class Router implements RouterInterface
         try {
             return $this->router->generate($name, $parameters, $absolute);
         } catch (MissingMandatoryParametersException $e) {
-            if(! $this->subdomain and $this->siteManager->getCurrentSite())
+            if(! $this->subdomain && $this->siteManager->getCurrentSite())
             {
                 $this->subdomain = $this->siteManager->getCurrentSite()->getSubdomain();
             }

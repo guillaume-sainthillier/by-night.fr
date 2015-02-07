@@ -38,7 +38,7 @@ class FacebookAdmin extends FacebookEvents {
     }
     
     protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
-	if ($agenda->getFbPostSystemId() == null and $this->siteInfo !== null and $this->siteInfo->getFacebookAccessToken() !== null)
+	if ($agenda->getFbPostSystemId() == null && $this->siteInfo !== null && $this->siteInfo->getFacebookAccessToken() !== null)
         {
             $site       = $this->siteManager->getCurrentSite();
             $dateDebut  = $this->getReadableDate($agenda->getDateDebut());
@@ -74,7 +74,7 @@ class FacebookAdmin extends FacebookEvents {
     public function getNumberOfCount() {
 	$site   = $this->siteManager->getCurrentSite();
 
-	if ($site !== null and $this->siteInfo !== null) {
+	if ($site !== null && $this->siteInfo !== null) {
 	    try {
 		$page = $this->getPageFromId($site->getFacebookIdPage());                
 		return $page->getProperty("likes");

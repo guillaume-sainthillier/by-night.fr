@@ -30,4 +30,3 @@ tbn_user_details:
     defaults: { _controller: TBNUserBundle:User:details }
     requirements:
         username: ([^/]+)
-

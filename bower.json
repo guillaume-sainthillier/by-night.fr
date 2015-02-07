@@ -19,6 +19,7 @@
         "bootstrap": "latest",
         "font-awesome": "latest",
         "bootstrap-material-design" : "master",
+        "dropdown.js": "master",
         "bootstrap-select": "latest",
         "fancybox": "latest",
         "hinclude": "0.9.*",
@@ -33,6 +34,6 @@
         "morris.js": "0.5.*",
         "bootstrap-datepicker": "latest",
         "typeahead-addresspicker": "latest",
-        "typeahead.js": "latest"
+        "typeahead.js": "latest"        
     }
 }

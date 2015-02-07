@@ -97,10 +97,11 @@ function init_unveil(selecteur)
  */
 function init_shorcut_date()
 {
-    $(".shorcut_date").unbind("click").click(function ()
+    $("select.shorcuts_date").unbind("change").change(function ()
     {
-        $("#tbn_search_agenda_du").val($(this).data("date-debut") || "");
-        $("#tbn_search_agenda_au").val($(this).data("date-fin") || "");
+        var selected = $(this).find("option:selected");
+        $("#tbn_search_agenda_du").val(selected.data("date-debut") || "");
+        $("#tbn_search_agenda_au").val(selected.data("date-fin") || "");
     });
 }
 

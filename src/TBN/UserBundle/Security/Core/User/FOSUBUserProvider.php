@@ -163,7 +163,7 @@ class FOSUBUserProvider extends BaseClass
             $user->setEmail($response->getEmail() === null ? $response->getNickname()."@".$service.".fr" : $response->getEmail());
         }
 
-        if($user->getFirstname() === null and $user->getLastname() === null)
+        if($user->getFirstname() === null && $user->getLastname() === null)
         {
             $nom_prenoms = preg_split("/ /",$response->getRealname());
             $user->setFirstname($nom_prenoms[0]);
@@ -173,7 +173,7 @@ class FOSUBUserProvider extends BaseClass
             }
         }
 
-        if($user->getUsername() === null or $user->getUsername() === "")
+        if($user->getUsername() === null || $user->getUsername() === "")
         {
             $user->setUsername($response->getNickname());
         }

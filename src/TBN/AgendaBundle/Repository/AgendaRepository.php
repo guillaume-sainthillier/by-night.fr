@@ -259,18 +259,18 @@ class AgendaRepository extends EntityRepository {
             $params[":mot_clefs"] = "%".$search->getTerm()."%";
         }
 
-        if($search->getTypeManifestation() !== null and count($search->getTypeManifestation()) > 0)
+        if($search->getTypeManifestation() !== null && count($search->getTypeManifestation()) > 0)
         {
             $qb->andWhere("a.typeManifestation IN(:type_manifesation)");
             $params[":type_manifesation"] = $search->getTypeManifestation();
         }
-        if($search->getCommune() !== null and count($search->getCommune()) > 0)
+        if($search->getCommune() !== null && count($search->getCommune()) > 0)
         {
             $qb->andWhere("a.commune IN(:commune)");
             $params[":commune"] = $search->getCommune();
         }
 
-        if($search->getLieux() !== null and count($search->getLieux()) > 0)
+        if($search->getLieux() !== null && count($search->getLieux()) > 0)
         {
             $qb->andWhere("a.lieuNom IN(:lieux)");
             $params[":lieux"] = $search->getLieux();
@@ -304,7 +304,7 @@ class AgendaRepository extends EntityRepository {
 
         $soirees = $this->makeQuery($qb, $site, $search);
 
-        if($page !== false and $limit !== false)
+        if($page !== false && $limit !== false)
         {
             $soirees = $soirees
                 ->setFirstResult(($page-1) * $limit)

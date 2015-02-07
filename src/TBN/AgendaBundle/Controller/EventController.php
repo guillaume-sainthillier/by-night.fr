@@ -24,11 +24,6 @@ class EventController extends Controller {
         $siteManager = $this->container->get("site_manager");
 	$site = $siteManager->getCurrentSite();
 
-//        $serializer = $this->container->get('jms_serializer');
-//        $str = $serializer->serialize($agenda, 'json');
-//        echo($str);
-//        die();
-
         //Redirection vers le bon site
         if($agenda->getSite() !== $site)
         {
@@ -100,8 +95,6 @@ class EventController extends Controller {
         //Traitement final
 	$pageTotal = ceil($full_soirees / $nbSoireeParPage);
 
-        var_dump("Yo", $soirees);
-        die();
         
 	return $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
 		    "soirees" => $soirees,
@@ -124,7 +117,7 @@ class EventController extends Controller {
 		$types_manifestation = preg_split("/,/", $soiree->getTypeManifestation());
 		foreach ($types_manifestation as $type) {
 		    $type = trim($type);
-		    if (!in_array($type, $type_manifestation) and $type != "") {
+		    if (!in_array($type, $type_manifestation) && $type != "") {
 			$type_manifestation[$type] = $type;
 		    }
 		}

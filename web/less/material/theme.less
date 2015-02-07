@@ -36,6 +36,15 @@ h1, h2, h3, h4, h5, h6,
     }
 }
 
+//Dropdown.js =================================================================
+.dropdownjs:after {
+    top: 7px;
+    font-size: 15px;
+    content: "\f0d7";
+    font-family: FontAwesome;
+}
+
+
 //Toggle
 .togglebutton label {
     font-weight: 700;
@@ -45,6 +54,9 @@ h1, h2, h3, h4, h5, h6,
     }
 }
 
+.panel-default>.panel-heading {
+    border-bottom: 1px solid #ddd;
+}
 
 // Navbar =====================================================================
 .navbar .navbar-nav>li>a {
@@ -66,7 +78,7 @@ h1, h2, h3, h4, h5, h6,
         margin:0;
         margin-top: 5px;
         line-height: 1.75em;
-        
+
         a{
             color: @primary;
             &:hover, &:focus {
@@ -117,7 +129,6 @@ h1, h2, h3, h4, h5, h6,
 
 // Pagination =================================================================
 .pagination {
-
     > li {
         > a,
         > span {
@@ -148,27 +159,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 // Toggle =====================================================================
-/*.togglebutton {
-    label {
-        // Switch bg on
-        input[type=checkbox]:first-child {
-            &:checked, &.checked {
-                & + .toggle {
-                    background-color: rgba(0, 149, 135, 0.5);
-                    // Handle on
-                    &:after {
-                        background-color: #009587;
-                        left: 15px;
-                    }
-                }
 
-                & ~ .toggle:active:after {
-                    box-shadow: 0 1px 3px 1px rgba(0,0,0,0.4), 0 0 0 15px rgba(0, 149, 135, 0.1);
-                }
-            }
-        }
-    }
-}*/
 
 // DatePicker =================================================================
 
@@ -185,7 +176,7 @@ html body .datepicker table tr td {
 .table {
     tbody tr td {
         vertical-align: middle;
-        
+
         .btn {
             margin-top: 0;
             margin-bottom: 0;
