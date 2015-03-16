@@ -118,12 +118,9 @@ abstract class EventCommand extends ContainerAwareCommand
 	    "Please find the agenda", "Fore More Details like our Page & Massage us"
 	];
 
-	$terms = array_map(function($term)
-	{
-	    return preg_quote($term);
-	}, $black_list);
+	$terms = array_map('preg_quote', $black_list);
 
-        return preg_match("/".implode("|", $terms)."/i", $agenda->getDescriptif());
+        return preg_match("/".implode("|", $terms)."/iu", $agenda->getDescriptif());
     }
 
     protected function cleanEvents($agendas)
@@ -165,7 +162,7 @@ abstract class EventCommand extends ContainerAwareCommand
     */
     protected function getData($url)
     {
-        return \file_get_contents($url);
+        return file_get_contents($url);
     }
 
     protected function writeln(OutputInterface $output, $text)

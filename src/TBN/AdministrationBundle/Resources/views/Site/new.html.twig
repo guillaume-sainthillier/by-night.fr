@@ -15,3 +15,12 @@
 {% block body_site %} 
     {{ form(form) }}
 {% endblock %}
+
+{% block js_site %}
+    {% javascripts 
+        'js/collections.js'
+        output='prod/js/admin/site.js'
+    %}
+        <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
+{% endblock %}

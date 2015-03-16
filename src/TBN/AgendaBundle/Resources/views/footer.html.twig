@@ -37,39 +37,27 @@
     <div class="col-md-5 text-center">
         <div class="row">
             <div class="col-xs-4 preserve">
-            {% if site.facebookIdPage != "" %}
-                <div class="social facebook">
-                    <a title="{{ site.nom }} sur Facebook" href="https://www.facebook.com/{{ site.facebookIdPage }}">
-                        <i class="fa fa-facebook fa-3x"></i>
-                    </a>
-                    <span class="number number-xbig">
-                        <i class="fa fa-spin fa-spinner"></i>
-                    </span>
-                </div>
+            {% if site.facebookIdPage %}
+                <a class="social" title="By Night sur Facebook" href="https://www.facebook.com/{{ site.facebookIdPage }}">
+                    <i class="fa fa-facebook fa-3x"></i>
+                    <span class="number number-xbig">{{ count_facebook|default(null) }}</span>
+                </a>
             {% endif %}
             </div>
             <div class="col-xs-4 preserve">
-                {% if site.twitterIdPage != ""  %}
-                    <div class="social twitter">
-                        <a title="{{ site.nom }} By Night sur Twitter" href="https://twitter.com/{{ site.twitterIdPage }}">
-                            <i class="fa fa-twitter fa-3x"></i>
-                        </a>
-                        <span class="number number-xbig">
-                            <i class="fa fa-spin fa-spinner"></i>
-                        </span>
-                    </div>
+                {% if site.twitterIdPage %}
+                    <a class="social" title="By Night sur Twitter" href="https://twitter.com/{{ site.twitterIdPage }}">
+                        <i class="fa fa-twitter fa-3x"></i>
+                        <span class="number number-xbig">{{ count_twitter|default(null) }}</span>
+                    </a>                    
                 {% endif %}
             </div>
             <div class="col-xs-4 preserve">
-                {% if site.googleIdPage != ""  %}
-                <div class="social google">
-                    <a title="{{ site.nom }} By Night sur Google+" href="https://plus.google.com/{{ site.googleIdPage }}" rel="publisher">
+                {% if site.googleIdPage %}
+                    <a class="social" title="By Night sur Google+" href="https://plus.google.com/{{ site.googleIdPage }}" rel="publisher">
                         <i class="fa fa-google-plus fa-3x"></i>
+                        <span class="number number-xbig">{{ count_google|default(null) }}</span>
                     </a>
-                    <span class="number number-xbig">
-                        <i class="fa fa-spin fa-spinner"></i>
-                    </span>
-                </div>
                 {% endif %}
             </div>
         </div>

@@ -7,6 +7,7 @@ tbn_agenda_pagination:
     defaults: { _controller: TBNAgendaBundle:Event:list}
     requirements:
         page: \d+
+        _method: GET
         
 tbn_agenda_mention_legales:
     pattern: /mentions-legales.html

@@ -3,6 +3,7 @@
 namespace TBN\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 
@@ -60,9 +61,14 @@ class Site
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=255)
+     * @ORM\Column(name="description", type="text")
      */
     protected $description;
+
+     /**
+     * @ORM\OneToMany(targetEntity="TBN\MainBundle\Entity\Image", mappedBy="site", cascade={"persist", "remove"})
+     */
+    protected $images;
 
     /**
      * @var string
@@ -129,8 +135,10 @@ class Site
 
     public function __construct()
     {
-        $this->isActif = false;
+        $this->isActif	= false;
+	$this->images	= new ArrayCollection;
     }
+
 
     /**
      * Get id
@@ -462,5 +470,38 @@ class Site
     public function getLongitude()
     {
         return $this->longitude;
+    }
+
+    /**
+     * Add images
+     *
+     * @param \TBN\MainBundle\Entity\Image $images
+     * @return Site
+     */
+    public function addImage(\TBN\MainBundle\Entity\Image $images)
+    {
+        $this->images[] = $images->setSite($this);
+    
+        return $this;
+    }
+
+    /**
+     * Remove images
+     *
+     * @param \TBN\MainBundle\Entity\Image $images
+     */
+    public function removeImage(\TBN\MainBundle\Entity\Image $images)
+    {
+        $this->images->removeElement($images);
+    }
+
+    /**
+     * Get images
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getImages()
+    {
+        return $this->images;
     }
 }

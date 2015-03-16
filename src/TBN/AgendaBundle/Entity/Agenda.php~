@@ -2,13 +2,17 @@
 
 namespace TBN\AgendaBundle\Entity;
 
+use TBN\AgendaBundle\Entity\Place;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Debril\RssAtomBundle\Protocol\FeedOut;
-use Debril\RssAtomBundle\Protocol\FeedIn;
 use \Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use TBN\AgendaBundle\Entity\Agenda;
+
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Agenda
@@ -24,6 +28,7 @@ use \Doctrine\Common\Collections\ArrayCollection;
  * 
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")
  * @ORM\HasLifecycleCallbacks
+ * @ExclusionPolicy("all")
  */
 class Agenda
 {
@@ -32,6 +37,7 @@ class Agenda
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Expose
      */
     protected $id;
 
@@ -45,7 +51,8 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="Vous devez donner un nom à votre événement")
+     * @Assert\NotBlank(message="N'oubliez pas de nommer votre événement !")
+     * @Expose
      */
     protected $nom;
 
@@ -53,7 +60,8 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="descriptif", type="text", nullable=true)
-     * @Assert\NotBlank(message="Vous devez donner une description à votre événement")
+     * @Assert\NotBlank(message="N'oubliez pas de décrire votre événement !")
+     * @Expose
      */
     protected $descriptif;
 
@@ -69,6 +77,8 @@ class Agenda
      *
      * @ORM\Column(name="date_debut", type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
+     * @Expose
+     * @Type("DateTime<'Y-m-d'>")
      */
     protected $dateDebut;
 
@@ -76,6 +86,8 @@ class Agenda
      * @var \DateTime
      *
      * @ORM\Column(name="date_fin", type="date", nullable=true)
+     * @Expose
+     * @Type("DateTime<'Y-m-d'>")
      */
     protected $dateFin;
 
@@ -97,7 +109,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="ville", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="Vous devez indiquer la ville de votre événement en saisissant l'adresse")
+     * 
      */
     protected $ville;
 
@@ -119,6 +131,7 @@ class Agenda
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", nullable=true)
+     * @Expose
      */
     protected $latitude;
 
@@ -133,6 +146,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="commune", type="string", length=255, nullable=true)
+     * @Expose
      */
     protected $commune;
 
@@ -140,7 +154,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="lieu_nom", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
+     * 
      */
     protected $lieuNom;
 
@@ -148,6 +162,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="adresse", type="string", length=255, nullable=true)
+     * @Expose
      */
     protected $adresse;
 
@@ -155,6 +170,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="type_manifestation", type="string", length=128, nullable=true)
+     * @Expose
      */
     protected $typeManifestation;
 
@@ -162,6 +178,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="categorie_manifestation", type="string", length=128, nullable=true)
+     * @Expose
      */
     protected $categorieManifestation;
 
@@ -169,6 +186,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="theme_manifestation", type="string", length=128, nullable=true)
+     * @Expose
      */
     protected $themeManifestation;
 
@@ -190,6 +208,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="reservation_email", type="string", length=128, nullable=true)
+     * @Assert\Email()
      */
     protected $reservationEmail;
 
@@ -197,6 +216,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="reservation_internet", type="string", length=128, nullable=true)
+     * @Assert\Url()
      */
     protected $reservationInternet;
 
@@ -258,6 +278,14 @@ class Agenda
     protected $isBrouillon;
 
     /**
+     *
+     * @var boolean $isMigrated
+     *
+     * @ORM\Column(name="isMigrated", type="boolean", nullable=true)
+     */
+    protected $isMigrated;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="tweet_post_id", type="string", length=256, nullable=true)
@@ -314,6 +342,7 @@ class Agenda
     /**
     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
     * @ORM\JoinColumn(nullable=false)
+    * @Expose
     */
     protected $site;
 
@@ -367,8 +396,10 @@ class Agenda
     protected $source;
     
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", inversedBy="evenements")
+     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", inversedBy="evenements", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
+     * @Expose
+     * @Assert\Valid()
      */
     protected $place;
 
@@ -503,6 +534,7 @@ class Agenda
     public function __construct()
     {
         $this->dateDebut = new \DateTime;
+        $this->place = new Place;
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
     }
@@ -1663,5 +1695,56 @@ class Agenda
     public function getSource()
     {
         return $this->source;
+    }
+
+    /**
+     * Set place
+     *
+     * @param \TBN\AgendaBundle\Entity\Place $place
+     * @return Agenda
+     */
+    public function setPlace(\TBN\AgendaBundle\Entity\Place $place = null)
+    {
+        if($place !== null)
+        {
+            $place->addEvenement($this);
+        }
+        
+        $this->place = $place;
+
+        return $this;
+    }
+
+    /**
+     * Get place
+     *
+     * @return \TBN\AgendaBundle\Entity\Place 
+     */
+    public function getPlace()
+    {
+        return $this->place;
+    }
+
+    /**
+     * Set isMigrated
+     *
+     * @param boolean $isMigrated
+     * @return Agenda
+     */
+    public function setIsMigrated($isMigrated)
+    {
+        $this->isMigrated = $isMigrated;
+    
+        return $this;
+    }
+
+    /**
+     * Get isMigrated
+     *
+     * @return boolean 
+     */
+    public function getIsMigrated()
+    {
+        return $this->isMigrated;
     }
 }

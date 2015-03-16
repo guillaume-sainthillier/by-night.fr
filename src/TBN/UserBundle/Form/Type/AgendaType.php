@@ -59,7 +59,8 @@ class AgendaType extends AbstractType
             ->add('file','file', [
                 "label" => "Affiche / Flyer",
                 "required" => false,
-                'image_path' => 'webPath'
+                'image_path' => 'webPath',
+		'image_filter' => 'thumb_evenement'
             ])
             ->add('dateDebut','date', [
                 "label" => "A partir du ",
@@ -67,8 +68,7 @@ class AgendaType extends AbstractType
                 "required" => true,
                 "format" => "dd/MM/yyyy",
                 "attr" => [
-                    "placeholder" => "Le / Du...",
-                    "class" => "datepicker"
+                    "placeholder" => "Le / Du..."
                 ]
             ])
             ->add('dateFin','date', [
@@ -77,8 +77,7 @@ class AgendaType extends AbstractType
                 "required" => false,
                 "format" => "dd/MM/yyyy",
                 "attr" => [
-                    "placeholder" => "Au...",
-                    "class" => "datepicker"
+                    "placeholder" => "Au..."
                 ]
             ])
             ->add('horaires','text', [

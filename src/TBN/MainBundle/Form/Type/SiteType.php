@@ -12,55 +12,62 @@ class SiteType extends AbstractType
     {
         $builder
             ->add('subdomain','text',[
-                "label" => "Sous Domaine"
+                'label' => 'Sous Domaine'
             ])
             ->add('nom','text',[
-                "label" => "Nom de la ville"
+                'label' => 'Nom de la ville'
             ])
             ->add('adjectifSingulier','text',[
-                "label" => "Adjectif singulier"
+                'label' => 'Adjectif singulier'
             ])
             ->add('adjectifPluriel','text',[
-                "label" => "Adjectif pluriel"
+                'label' => 'Adjectif pluriel'
             ])
             ->add('description','textarea',[
-                "label" => "Description"
+                'label' => 'Description',
+		'attr' => [
+		    'rows' => 6
+		]
             ])
+	    ->add('images', 'collection', [
+		'type' => new ImageType,
+		'required' => false
+	    ])
             ->add('facebookIdPage','text',[
-                "label" => "N° Page FaceBook",
-                "required"  => false
+                'label' => 'N° Page FaceBook',
+                'required'  => false
             ])
             ->add('googleIdPage','text',[
-                "label" => "N° Page Google+",
-                "required"  => false
+                'label' => 'N° Page Google+',
+                'required'  => false
             ])
             ->add('twitterIdPage','text',[
-                "label" => "N° Page Twitter",
-                "required"  => false
+                'label' => 'N° Page Twitter',
+                'required'  => false
             ])
             ->add('twitterURLWidget','text',[
-                "label" => "URL du Widget Twitter",
-                "required"  => false
+                'label' => 'URL du Widget Twitter',
+                'required'  => false
             ])
             ->add('twitterIdWidget','text',[
-                "label" => "ID du Widget Twitter",
-                "required"  => false
+                'label' => 'ID du Widget Twitter',
+                'required'  => false
             ])
             ->add('distanceMax','number',[
-                "label" => "Distance Max",
-                "required"  => false
+                'label' => 'Distance Max',
+                'required'  => false
             ])
             ->add('latitude','number',[
-                "label" => "Latitude",
-                "required"  => false
+                'label' => 'Latitude',
+                'required'  => false
             ])
             ->add('longitude','number',[
-                "label" => "Longitude",
-                "required"  => false
+                'label' => 'Longitude',
+                'required'  => false
             ])
             ->add('isActif','checkbox',[
-                "label" => "Actif",
-                "required" => false
+                'label' => 'Actif',
+                'required' => false
             ])
         ;
     }

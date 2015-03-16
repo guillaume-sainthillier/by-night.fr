@@ -278,6 +278,14 @@ class Agenda
     protected $isBrouillon;
 
     /**
+     *
+     * @var boolean $isMigrated
+     *
+     * @ORM\Column(name="isMigrated", type="boolean", nullable=true)
+     */
+    protected $isMigrated;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="tweet_post_id", type="string", length=256, nullable=true)
@@ -379,6 +387,11 @@ class Agenda
      * @ORM\Column(name="interets", type="string", length=256, nullable=true)
      */
     protected $interets;
+
+    /**
+     * @var boolean
+     */
+    protected $isTrustedLocation;
 
     /**
      * @var integer
@@ -488,7 +501,6 @@ class Agenda
         }
         $this->file = null;
     }
-
 
     /**
      * @ORM\PostRemove()
@@ -1697,7 +1709,12 @@ class Agenda
      */
     public function setPlace(\TBN\AgendaBundle\Entity\Place $place = null)
     {
-        $this->place = $place->addEvenement($this);
+//        if($place !== null)
+//        {
+//            $place->addEvenement($this);
+//        }
+        
+        $this->place = $place;
 
         return $this;
     }
@@ -1711,4 +1728,38 @@ class Agenda
     {
         return $this->place;
     }
+
+    /**
+     * Set isMigrated
+     *
+     * @param boolean $isMigrated
+     * @return Agenda
+     */
+    public function setIsMigrated($isMigrated)
+    {
+        $this->isMigrated = $isMigrated;
+    
+        return $this;
+    }
+
+    /**
+     * Get isMigrated
+     *
+     * @return boolean 
+     */
+    public function getIsMigrated()
+    {
+        return $this->isMigrated;
+    }
+
+    public function isTrustedLocation() {
+	return $this->isTrustedLocation;
+    }
+
+    public function setTrustedLocation($isTrustedLocation) {
+	$this->isTrustedLocation = $isTrustedLocation;
+	return $this;
+    }
+
+
 }

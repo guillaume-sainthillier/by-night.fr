@@ -340,7 +340,7 @@ class AgendaRepository extends EntityRepository {
         return $agenda;
     }
 
-    public function getFBOwners(Site $site)
+    public function getEventsWithFBOwner(Site $site)
     {
         return $this->_em
         ->createQueryBuilder()

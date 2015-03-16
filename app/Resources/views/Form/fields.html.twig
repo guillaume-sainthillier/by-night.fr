@@ -1,58 +1,44 @@
 {% extends "form_div_layout.html.twig" %}
 
-{% block file_widget %}{% spaceless %}
+{# Images #}
+{% block file_widget %}{%- spaceless -%}
+    {% if image_url is not null %}
+        <img src="{{ image_url|imagine_filter(image_filter) }}" class="img-responsive display_inline_block margin_right_15" />
+    {% endif %}
     <input type="text" readonly class="form-control floating-label" placeholder="Télécharger..." />
     {{ block('form_widget') }}
-    {% if image_url is not null %}
-        <br />
-        <img class="img-responsive" src="{{ image_url|imagine_filter('thumbs_evenement') }}" />
-    {% endif %}
-{% endspaceless %}{% endblock %}
+{%- endspaceless -%}{% endblock %}
 
-{% block form_row %}
-    {% spaceless %}
-        <div class="form-group">
-            {{ form_label(form) }}
-            {{ form_errors(form) }}
-            {{ form_widget(form) }}
+{% block form_row %}{% spaceless %}
+    {% if group_class|default(null) %}        
+        <!-- Widget {{ id }} -->
+        <div class="{{- group_class -}}">
+    {% endif %}
+        {{ form_label(form) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+    {% if group_class|default(null) %}        
+        <!-- ./Widget {{ id }} -->
         </div>
-    {% endspaceless %}
-{% endblock form_row %}
-
-{% block form_label %}
-{% spaceless %}
-    {% if label is not sameas(false) %}
-        {% if not compound %}
-            {% set label_attr = label_attr|merge({'for': id}) %}
-        {% endif %}
-        {% if required %}
-            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
-        {% endif %}
-        {% if label is empty %}
-            {% set label = name|humanize %}
-        {% endif %}
-        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain)|raw }}</label>
     {% endif %}
-{% endspaceless %}
-{% endblock form_label %}
+{% endspaceless %}{% endblock form_row %}
+
+{# Textarea #}
+{% block textarea_widget -%}{%- spaceless -%}
+    {% set attr = attr|merge({'class' : (attr.class|default('') ~ ' ' ~ base_class|default('') ~ ' ' ~ widget_class|default(''))|trim }) %}
+    {{- parent() -}}
+{%- endspaceless -%}{%- endblock textarea_widget %}
 
 {% block form_widget_simple %}
 {% spaceless %}
     {% set type = type|default('text') %}
     {% if type != 'file' and type != 'hidden' %}
-        {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim}) %}
+        {% set attr = attr|merge({'class' : (attr.class|default('') ~ ' ' ~ base_class|default('') ~ ' ' ~ widget_class|default(''))|trim }) %}
     {% endif %}
     
-    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+    {{- parent() -}}
 {% endspaceless %}
 {% endblock form_widget_simple %}
-
-{% block textarea_widget %}
-{% spaceless %}
-    {% set attr = attr|merge({ 'class': attr.class|default('') ~ 'form-control'}) %}
-    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
-{% endspaceless %}
-{% endblock textarea_widget %}
     
 {% block button_row %}
 {% spaceless %}
@@ -71,3 +57,9 @@
     {% endfor %}
 {% endspaceless %}
 {% endblock form_errors %}
+
+{# Gestion des collections #}
+{% block collection_widget %}{%- spaceless -%}        
+    {% set attr = attr|merge({'class' : (attr.class|default('') ~ ' ' ~ base_class|default('') ~ ' ' ~ widget_class|default(''))|trim }) %}
+    {{ parent() }}
+{%- endspaceless -%}{% endblock collection_widget %}

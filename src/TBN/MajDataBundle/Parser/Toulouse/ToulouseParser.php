@@ -1,16 +1,17 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser;
+namespace TBN\MajDataBundle\Parser\Toulouse;
 
+use TBN\MajDataBundle\Parser\AgendaParser;
 
 /**
  * Description of ToulouseParser
  *
  * @author guillaume
  */
-class ToulouseParser extends AgendaParser{
+class ToulouseParser extends AgendaParser {
 
-    public function parse(\Symfony\Component\Console\Output\OutputInterface $output)
+    public function getRawAgendas()
     {
         $fichier = $this->downloadCSV();
         if($fichier !== null)
@@ -32,10 +33,9 @@ class ToulouseParser extends AgendaParser{
 
         $fic = fopen($fichier,"r");
         $cursor = fgetcsv($fic,0,';','"','"'); //Ouverture de la première ligne
-        $i = 0;
+        
         while($cursor = fgetcsv($fic,0,';','"','"'))
         {
-            $i++;
             $tab = array_map(function($e)
             {
                 return iconv('CP1252', 'UTF-8', $e);
@@ -49,36 +49,39 @@ class ToulouseParser extends AgendaParser{
                 $date_debut = \DateTime::createFromFormat("d/m/Y", $tab[5]);
                 $date_fin = \DateTime::createFromFormat("d/m/Y", $tab[6]);
 
-                $a = $this->getAgendaFromUniqueInfo($nom, $date_debut, $date_fin, $tab[10]);
-
-                $tab_agendas[] = $a->setNom($nom)
-                ->setDescriptif($tab[4])
-                ->setDateDebut($date_debut)
-                ->setDateFin($date_fin)
-                ->setHoraires($tab[7])
-                ->setModificationDerniereMinute($tab[9])
-                ->setLieuNom($tab[10])
-                ->setRue($tab[12])
-                ->setCodePostal($tab[14])
-                ->setCommune($tab[15])
-                ->setVille($tab[15])
-                ->setTypeManifestation($tab[16])
-                ->setCategorieManifestation($tab[17])
-                ->setThemeManifestation($tab[18])
-                ->setStationMetroTram($tab[19])
-                ->setLatitude($tab[20])
-                ->setLongitude($tab[21])
-                ->setReservationTelephone($tab[22])
-                ->setReservationEmail($tab[23])
-                ->setReservationInternet($tab[24])
-                ->setManifestationGratuite($tab[25])
-                ->setTarif($tab[26])
-                ->setTrancheAge($tab[28])
-                ->setSource("http://data.toulouse-metropole.fr/web/guest/les-donnees/-/opendata/card/21905-agenda-des-manifestations-culturelles/");
+                $tab_agendas[] = [
+                    'nom' => $nom,
+                    'descriptif' => $tab[4],
+                    'date_debut' => $date_debut,
+                    'date_fin' => $date_fin,
+                    'horaires' => $tab[7],
+                    'modification_derniere_minute' => $tab[9],
+                    'place.nom' => $tab[10],
+                    'place.rue' => $tab[12],
+                    'place.latitude' => $tab[20],
+                    'place.longitude' => $tab[21],
+                    'place.ville.code_postal' => $tab[14],
+                    'place.ville.nom' => $tab[15],
+                    'type_manifestation' => $tab[16],
+                    'categorie_manifestation' => $tab[17],
+                    'theme_manifestation' => $tab[18],
+                    'station_metro_tram' => $tab[19],                    
+                    'reservation_telephone' => $tab[22],
+                    'reservation_email' => $tab[23],
+                    'reservation_internet' => $tab[24],
+                    'manifestation_gratuite' => $tab[25],
+                    'tarif' => $tab[26],
+                    'source' => 'http://data.toulouse-metropole.fr/web/guest/les-donnees/-/opendata/card/21905-agenda-des-manifestations-culturelles/'
+                ];
             }
         }
 
         return $tab_agendas;
+    }
+
+    protected function getURL()
+    {
+        return "http://data.grandtoulouse.fr/web/guest/les-donnees/-/opendata/card/21905-agenda-des-manifestations-culturelles/resource/document?p_p_state=exclusive&_5_WAR_opendataportlet_jspPage=%2Fsearch%2Fview_card_license.jsp";
     }
 
     /**

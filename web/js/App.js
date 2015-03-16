@@ -4,7 +4,6 @@ var App = {
         $(function ()
         {
             App.initComponents(selecteur);
-            App.initSocialCounts();
             App.initHideMenuOnScroll();
             App.initScrollTo();
         });
@@ -54,7 +53,7 @@ var App = {
      */
     initDatepicker: function (selecteur)
     {
-        var targets = $('.datepicker', selecteur || document);
+        var targets = $('.widget_datepicker', selecteur || document);
 
         if (targets.length)
         {
@@ -84,20 +83,6 @@ var App = {
         if (targets.length)
         {
             targets.dropdown();
-        }
-    },
-    //Deps: []
-    initSocialCounts: function ()
-    {
-        if ($("#footer .social").length && getSocialCountsURL)
-        {
-            $.get(getSocialCountsURL).done(function (counts)
-            {
-                $.each(counts, function (social, count)
-                {
-                    $(".social." + social).find(".number").text(count);
-                });
-            });
         }
     },
     //Deps: []

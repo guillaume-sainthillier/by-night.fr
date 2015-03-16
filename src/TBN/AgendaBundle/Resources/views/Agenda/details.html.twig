@@ -27,9 +27,6 @@
 {% block title_agenda %}{{ nomSoiree }}{% endblock %}
 
 {% block breadcrumb_agenda %}
-    {% if villePlace %}
-        {% set test = menu.addItem(villePlace.nom, path('tbn_search_query',{'q': villePlace.nom, 'type': 'evenements'})) %}
-    {% endif %}
     {% set test = menu.addItem(place.nom, path('tbn_search_query',{'q': place.nom, 'type': 'evenements'})) %}    
     {% set test = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}    
 {% endblock %}

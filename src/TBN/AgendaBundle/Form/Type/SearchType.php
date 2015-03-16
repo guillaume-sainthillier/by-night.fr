@@ -23,13 +23,14 @@ class SearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+	    ->add('page')
             ->add("du", "date", [
                 "required" => true,
                 "label" => "Du",
                 'label_attr' => array('class' => 'col-sm-5 control-label'),
                 "widget" => "single_text",
                 "format" => "dd/MM/yyyy",
-                "attr" => ["class" => "datepicker floating-labe", "data-date-format" => "dd/mm/yyyy"]
+                "attr" => ["data-date-format" => "dd/mm/yyyy"]
             ])
             ->add("au", "date", [
                 "required" => false,
@@ -37,7 +38,7 @@ class SearchType extends AbstractType
                 'label_attr' => array('class' => 'col-sm-5 control-label'),
                 "widget" => "single_text",
                 "format" => "dd/MM/yyyy",
-                "attr" => ["class" => "datepicker", "data-date-format" => "dd/mm/yyyy"]
+                "attr" => ["data-date-format" => "dd/mm/yyyy"]
             ])
             ->add("type_manifestation", "choice", [
                 "choices"  => $this->types_manifesation,
@@ -58,7 +59,7 @@ class SearchType extends AbstractType
              ->add("commune", "choice", [
                 "choices"  => $this->commune,
                 "label"    => "Villes",
-                 'label_attr' => array('class' => 'col-sm-6 control-label'),
+                'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "multiple" =>  true,
                 "expanded" => false,
                 "required" => false,
@@ -66,7 +67,7 @@ class SearchType extends AbstractType
             ->add('term', 'text', [
                 "required" => false,
                 "label"    => "Mot-clés",
-                'label_attr' => array('class' => 'col-sm-3 control-label'),
+                'label_attr' => array('class' => 'col-sm-4 control-label'),
                 "attr" => ["class" => "form-control","placeholder" => "Quel événement cherchez-vous ?"]])
             ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-lg btn-primary btn-block"]])
         ;
@@ -75,7 +76,8 @@ class SearchType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'TBN\AgendaBundle\Search\SearchAgenda'
+            'data_class' => 'TBN\AgendaBundle\Search\SearchAgenda',
+	    'csrf_protection' => false
         ]);
     }
 

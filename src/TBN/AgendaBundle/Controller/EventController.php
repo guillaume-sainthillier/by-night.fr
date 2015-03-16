@@ -9,6 +9,7 @@ use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Agenda;
+
 use TBN\UserBundle\Entity\User;
 use TBN\AgendaBundle\Form\Type\SearchType;
 use TBN\AgendaBundle\Search\SearchAgenda;
@@ -17,19 +18,18 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class EventController extends Controller {
 
     /**
-     *
      * @Cache(lastmodified="agenda.getDateModification()", etag="'Agenda' ~ agenda.getId() ~ agenda.getDateModification().format('Y-m-d H:i:s')")
      */
     public function detailsAction(Agenda $agenda) {
-        $siteManager = $this->container->get("site_manager");
+        $siteManager = $this->container->get('site_manager');
 	$site = $siteManager->getCurrentSite();
 
         //Redirection vers le bon site
         if($agenda->getSite() !== $site)
         {
-            return new RedirectResponse($this->get("router")->generate("tbn_agenda_details", [
-                "slug" => $agenda->getSlug(),
-                "subdomain"  => $agenda->getSite()->getSubdomain()
+            return new RedirectResponse($this->get('router')->generate('tbn_agenda_details', [
+                'slug' => $agenda->getSlug(),
+                'subdomain'  => $agenda->getSite()->getSubdomain()
             ]));
         }
 
@@ -37,13 +37,13 @@ class EventController extends Controller {
 
 
 	$em = $this->getDoctrine()->getManager();
-	$repo = $em->getRepository("TBNAgendaBundle:Calendrier");
+	$repo = $em->getRepository('TBNAgendaBundle:Calendrier');
 
 	$participer = false;
 	$interet = false;
 
 	if ($user instanceof User) {
-	    $calendrier = $repo->findOneBy(["user" => $user, "agenda" => $agenda]);
+	    $calendrier = $repo->findOneBy(['user' => $user, 'agenda' => $agenda]);
 	    if ($calendrier !== null) {
 		$participer = $calendrier->getParticipe();
 		$interet = $calendrier->getInteret();
@@ -51,40 +51,53 @@ class EventController extends Controller {
 	}
 
 	return $this->render('TBNAgendaBundle:Agenda:details.html.twig', [
-		    "soiree" => $agenda,
-		    "participer" => $participer,
-		    "interet" => $interet
+		    'soiree' => $agenda,
+		    'participer' => $participer,
+		    'interet' => $interet
 	]);
     }
 
     public function listAction(Request $request, $page) {
+	
+	//État de la page
+	$isAjax		    = $request->isXmlHttpRequest();
+	$isPost		    = $request->isMethod('POST');
+	$isUserPostSearch   = $isPost && !$isAjax;
+
         //Pagination
         $nbSoireeParPage = 15;
-	if ($page <= 0) {
-	    $page = 1;
-	}
+	
+        //Gestion du site courant
+	$siteManager	= $this->container->get('site_manager');
+	$site		= $siteManager->getCurrentSite();
 
-        //Gestion du site
-	$siteManager = $this->container->get("site_manager");
-	$site = $siteManager->getCurrentSite();
+        //Récupération du repo des événéments
+	$em	= $this->getDoctrine()->getManager();
+	$repo	= $em->getRepository('TBNAgendaBundle:Agenda');
 
-        //BD
-	$em = $this->getDoctrine()->getManager();
-	$repo = $em->getRepository("TBNAgendaBundle:Agenda");
-
-        //Formulaire de recherche
+        //Recherche des événements
 	$search = new SearchAgenda();
-	$lieux = $this->getPlaces($repo, $site);
-	$types_manif = $this->getTypesEvenements($repo, $site);
-	$communes = $this->getVilles($repo, $site);
-        $action = $page > 1 ? $this->generateUrl("tbn_agenda_pagination", ["page" => $page]) : $this->generateUrl("tbn_agenda_index");
-	$form = $this->createForm(new SearchType($types_manif, $lieux, $communes), $search, [
-	    "action" => $action
+
+	//Récupération des lieux, types événéments et villes
+	$lieux		= $this->getPlaces($repo, $site);
+	$types_manif	= $this->getTypesEvenements($repo, $site);
+	$communes	= $this->getVilles($repo, $site);
+
+	//Création du formulaire
+	$form		= $this->createForm(new SearchType($types_manif, $lieux, $communes), $search, [
+	    'action' => $this->generateUrl('tbn_agenda_index')
 	]);
 
-	if ($request->getMethod() === 'POST') {
-	    $form->bind($request);
+	//Bind du formulaire avec la requête courante
+	$form->handleRequest($request);
+	if($isUserPostSearch)
+	{
+	    $page = 1;
+	}elseif($isPost)
+	{
+	    $page = $search->getPage();
 	}
+	
 
         //Recherche ElasticSearch
         $repositoryManager = $this->get('fos_elastica.manager');
@@ -97,16 +110,16 @@ class EventController extends Controller {
 
         
 	return $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
-		    "soirees" => $soirees,
-		    "page" => $page,
-		    "pageTotal" => $pageTotal,
-		    "search" => $search,
-		    "form" => $form->createView() 
+		    'soirees' => $soirees,
+		    'page' => $page,
+		    'pageTotal' => $pageTotal,
+		    'search' => $search,
+		    'form' => $form->createView()
 	]); 
     }
 
     protected function getTypesEvenements($repo, Site $site) {
-	$cache = $this->get("winzou_cache");
+	$cache = $this->get('winzou_cache');
 	$key = 'types_evenements.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {
@@ -114,10 +127,10 @@ class EventController extends Controller {
 	    $type_manifestation = [];
 
 	    foreach ($soirees_type_manifestation as $soiree) {//
-		$types_manifestation = preg_split("/,/", $soiree->getTypeManifestation());
+		$types_manifestation = preg_split('/,/', $soiree->getTypeManifestation());
 		foreach ($types_manifestation as $type) {
 		    $type = trim($type);
-		    if (!in_array($type, $type_manifestation) && $type != "") {
+		    if (!in_array($type, $type_manifestation) && $type != '') {
 			$type_manifestation[$type] = $type;
 		    }
 		}
@@ -130,7 +143,7 @@ class EventController extends Controller {
     }
 
     protected function getVilles($repo, Site $site) {
-	$cache = $this->get("winzou_cache");
+	$cache = $this->get('winzou_cache');
 	$key = 'villes.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {
@@ -148,7 +161,7 @@ class EventController extends Controller {
     }
 
     protected function getPlaces($repo, Site $site) {
-	$cache = $this->get("winzou_cache");
+	$cache = $this->get('winzou_cache');
 	$key = 'places.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {

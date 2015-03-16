@@ -29,14 +29,6 @@
                    {% include "TBNUserBundle:Espace:event_part_3.html.twig" %}         
                 </div> 
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                              
-                </div>
-                <div class="col-md-6">
-                    
-                </div>
-            </div>
             <hr />
             <div class="row">
                 <div class="col-md-4 text-left">
@@ -57,7 +49,7 @@
 
 {% block css_agenda %}
     {% stylesheets 
-        'bower/bootstrap-datepicker/css/datepicker3.css'
+        'bower/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css'
         'bower/summernote/dist/summernote.css'
         'bundles/tbnuser/css/espace_perso.css'
         'bundles/tbnsocial/css/social_login.css'
@@ -74,8 +66,8 @@
 
 {% block js_espace %}
     {% javascripts 
-        'bower/bootstrap-datepicker/js/bootstrap-datepicker.js'
-        'bower/bootstrap-datepicker/js/locales/bootstrap-datepicker.fr.js'
+        'bower/bootstrap-datepicker/dist/js/bootstrap-datepicker.js'
+        'bower/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js'
         'bower/summernote/dist/summernote.js'
         'bower/summernote/lang/summernote-fr-FR.js'
         'bower/typeahead.js/dist/typeahead.bundle.min.js'

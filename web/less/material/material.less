@@ -5,17 +5,7 @@
 
 body {
     background-color: #EEEEEE;
-    &.inverse {
-        background: #333333;
-        &, .form-control {
-            color: @darkbg-text;
-        }
-    }
-}
-
-body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4 {
-    font-family: "RobotoDraft", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight: 300;
+    font-family: RobotoDraft, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 h5, h6{
@@ -107,6 +97,8 @@ legend {
 @import "../../bower/bootstrap-material-design/less/_labels.less";
 
 @import "../../bower/bootstrap-material-design/less/_panels.less";
+
+@import "../../bower/bootstrap-material-design/less/_dividers.less";
 
 // Prevent highlight on mobile
 * {

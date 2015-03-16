@@ -30,23 +30,10 @@
                     <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">Cette semaine</option>
                     <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">Ce mois</option>
                 </select>
-                <!--
-                <div class="btn_shorcuts btn-group btn-group-justified no_margin" data-toggle="buttons">
-                    <label class="btn btn-primary btn-flat shorcut_date" data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}">
-                        <input type="radio" > Ce WE
-                    </label>
-                    <label class="btn btn-primary btn-flat shorcut_date" data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}">
-                        <input type="radio" > Cette semaine
-                    </label>
-                    <label class="btn btn-primary btn-flat shorcut_date" data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}">
-                        <input type="radio" > Ce mois
-                    </label>
-                </div>
-                -->
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-8">
                 <div class="form-group no_margin_bottom">
                     {{ form_label(form.type_manifestation) }}
                     <div class="col-sm-6">
@@ -54,17 +41,17 @@
                     </div>
                 </div>
                 <button type="button" class="btn_criteres btn btn-primary btn-flat">
-                    <i class="fa size-135 fa-chevron-right"></i> 
+                    <i class="fa size-135 fa-chevron-down"></i> 
                     Recherche avancée
                 </button>
             </div>
-            <div class="col-xs-4 col-xs-offset-1">
+            <div class="col-xs-4">
                 {{ form_widget(form.chercher) }}
             </div>               
         </div>   
         <div class="hidden cache criteres">
             <div class="row">
-                <div class="col-xs-6">
+                <div class="col-xs-8">
                     <div class="form-group">
                         {{ form_label(form.lieux) }}
                         <div class="col-sm-6">
@@ -72,10 +59,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-6">
+                <div class="col-xs-4">
                     <div class="form-group">
                         {{ form_label(form.commune) }}
-                        <div class="col-sm-6">
+                        <div class="col-sm-9">
                             {{ form_widget(form.commune) }}
                         </div>
                     </div>
@@ -84,7 +71,7 @@
             <div class="form-horizontal">
                 <div class="form-group">
                     {{ form_label(form.term) }}
-                    <div class="col-sm-9">
+                    <div class="col-sm-8">
                         {{ form_widget(form.term) }}
                     </div>
                 </div>

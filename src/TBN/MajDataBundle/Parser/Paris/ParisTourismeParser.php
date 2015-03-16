@@ -1,8 +1,8 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser;
+namespace TBN\MajDataBundle\Parser\Paris;
 
-use TBN\AgendaBundle\Repository\AgendaRepository;
+use TBN\MajDataBundle\Parser\LinksParser;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -12,21 +12,20 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 class ParisTourismeParser extends LinksParser {
 
-    protected $base_url;
-
-    public function __construct(AgendaRepository $repo) {
-
+    public function __construct() {
+        parent::__construct();
+        
         $now = new \DateTime;
         $now2 = new \DateTime;
-        $now2->modify("+1 year");
+        $now2->modify("+1 month");
         $search_params = [
             "search_type" => "agenda",
             "nbPPage" => 100,
             "filter[]" => "attr_begin_dt:".$now->format("Y-m-d")."&filter[]=attr_end_dt:".$now2->format("Y-m-d"),
         ];
 
-        parent::__construct($repo, "http://www.parisinfo.com/ou-sortir-a-paris/infos/rechercher-une-sortie?".  urldecode(http_build_query($search_params)));
-        $this->base_url = "http://www.parisinfo.com/";
+        $this->setUrl('http://www.parisinfo.com/ou-sortir-a-paris/infos/rechercher-une-sortie?'.  urldecode(http_build_query($search_params)));
+        $this->setBaseUrl('http://www.parisinfo.com/');
     }
 
     /**
@@ -151,54 +150,27 @@ class ParisTourismeParser extends LinksParser {
             $categorie      = array_pop($categories);
         }
 
-        $tab_retour["date_debut"]           = \DateTime::createFromFormat("Y-m-d", $date_debut);
-        $tab_retour["date_fin"]             = \DateTime::createFromFormat("Y-m-d", $date_fin);
-        $tab_retour["image"]                = $image;
-        $tab_retour["nom"]                  = $nom;
-        $tab_retour["lieu"]                 = $lieu;
-        $tab_retour["theme"]                = $theme;
-        $tab_retour["categorie"]            = $categorie;
-        $tab_retour["rue"]                  = $rue;
-        $tab_retour["code_postal"]          = $cp;
-        $tab_retour["ville"]                = $ville;
-        $tab_retour["commune"]              = $ville;
-        $tab_retour["description"]          = $description;
-        $tab_retour["reservation_telephone"]= $resa_telephone;
-        $tab_retour["reservation_internet"] = $resa_internet;
-        $tab_retour["reservation_mail"]     = $resa_mail;
-        $tab_retour["source"]               = $this->url;
+        $tab_retour["date_debut"]               = \DateTime::createFromFormat("Y-m-d", $date_debut);
+        $tab_retour["date_fin"]                 = \DateTime::createFromFormat("Y-m-d", $date_fin);
+        $tab_retour["url"]                      = $image;
+        $tab_retour["nom"]                      = $nom;
+        $tab_retour["lieu_nom"]                 = $lieu;
+        $tab_retour["theme_manifestation"]      = $theme;
+        $tab_retour["categorie_manifestation"]  = $categorie;
+        $tab_retour["rue"]                      = $rue;
+        $tab_retour["code_postal"]              = $cp;
+        $tab_retour["ville"]                    = $ville;
+        $tab_retour["commune"]                  = $ville;
+        $tab_retour["description"]              = $description;
+        $tab_retour["reservation_telephone"]    = $resa_telephone;
+        $tab_retour["reservation_internet"]     = $resa_internet;
+        $tab_retour["reservation_email"]        = $resa_mail;
+        $tab_retour["source"]                   = $this->url;
         
         return $tab_retour;
     }
     
-    protected function getValueByPriorities($priorities)
-    {
-        foreach($priorities as $priority)
-        {
-            $node        = $this->parser->filter($priority);
-            if($node->count() > 0) {
-                return $node;
-            }
-        }
-        
-        return null;
-    }
     
-    protected function isReachable($url)
-    {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_exec($ch);
-        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        return $retcode === 200;
-    }
-    
-    protected function cleanUrl($url)
-    {
-        return strtr($url, 'áàâäãåçéèêëíìîïñóòôöõúùûüýÿ', 'aaaaaaceeeeiiiinooooouuuuyy');
-    }
 
     public function getLinks() {
         $this->parseContent("HTML");
@@ -222,35 +194,36 @@ class ParisTourismeParser extends LinksParser {
         return $urls;
     }
 
-    public function hydraterAgenda($infos_agenda) {
-
-        $tab_champs = $infos_agenda;
-
-        $dateDebut  = $tab_champs["date_debut"];
-        $nom        = $tab_champs["nom"];
-        $a          = $this->getAgendaFromUniqueInfo($nom, $dateDebut, $tab_champs["date_fin"], $tab_champs["lieu"]);
-
-        $a->setDateFin($tab_champs["date_fin"]);
-        $a->setDateDebut($dateDebut);
-        $a->setUrl($tab_champs["image"]);
-        $a->setNom($nom);
-        $a->setLieuNom($tab_champs["lieu"]);
-        $a->setThemeManifestation($tab_champs["theme"]);
-        $a->setCategorieManifestation($tab_champs["categorie"]);
-        $a->setRue($tab_champs["rue"]);
-        $a->setCodePostal($tab_champs["code_postal"]);
-        $a->setVille($tab_champs["ville"]);
-        $a->setCommune($tab_champs["commune"]);
-        $a->setDescriptif($tab_champs["description"]);
-        $a->setReservationTelephone($tab_champs["reservation_telephone"]);
-        $a->setReservationInternet($tab_champs["reservation_internet"]);
-        $a->setReservationEmail($tab_champs["reservation_mail"]);
-        $a->setSource($tab_champs["source"]);
-
-        return $a;
-    }
-
     public function getNomData() {
         return "ParisTourisme";
+    }
+
+    protected function getValueByPriorities($priorities)
+    {
+        foreach($priorities as $priority)
+        {
+            $node        = $this->parser->filter($priority);
+            if($node->count() > 0) {
+                return $node;
+            }
+        }
+
+        return null;
+    }
+
+    protected function isReachable($url)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_exec($ch);
+        $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        return $retcode === 200;
+    }
+
+    protected function cleanUrl($url)
+    {
+        return strtr($url, 'áàâäãåçéèêëíìîïñóòôöõúùûüýÿ', 'aaaaaaceeeeiiiinooooouuuuyy');
     }
 }

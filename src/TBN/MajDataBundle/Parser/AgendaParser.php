@@ -3,10 +3,11 @@
 namespace TBN\MajDataBundle\Parser;
 
 use Symfony\Component\Console\Output\OutputInterface;
-
-use TBN\AgendaBundle\Repository\AgendaRepository;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MajDataBundle\Entity\BlackList;
+use TBN\MainBundle\Entity\Site;
+use TBN\UserBundle\Entity\SiteInfo;
 
 /*
  * Classe abstraite représentant le parse des données d'un site Internet
@@ -15,10 +16,7 @@ use TBN\MajDataBundle\Entity\BlackList;
  *
  * @author Guillaume SAINTHILLIER
  */
-
-
-
-abstract class AgendaParser {
+abstract class AgendaParser implements ParserInterface {
 
     /**
      * Url du site à parser
@@ -26,37 +24,64 @@ abstract class AgendaParser {
     protected $url;
 
     /**
-     * @var $repo AgendaRepository
+     *
+     * @var OutputInterface
      */
-    protected $repo;
+    protected $output;
+
+    /**
+     * @var Site
+     */
+    protected $site;
 
     /**
      *
-     * @var BlackList[]
+     * @var SiteInfo
      */
-    protected $blackLists;
+    protected $siteInfo;
 
-    public function __construct(AgendaRepository $repo, $url)
+    /**
+     *
+     * @var PropertyAccessorInterface
+     */
+    protected $propertyAccessor;
+
+    public function __construct()
     {
-        $this->repo         = $repo;
-        $this->url          = $url;
-        $this->blackLists   = [];
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $this->output           = null;
+	$this->site             = null;
+        $this->siteInfo         = null;
 
         return $this;
+    }
+
+    public abstract function getRawAgendas();
+
+    public function isTrustedLocation() {
+	return true;
+    }
+
+    public function parse()
+    {
+        //Tableau des informations récoltées
+        $raw = $this->getRawAgendas();
+        
+        return array_map([$this, 'arrayToAgenda'], $raw);
+    }
+
+    protected function arrayToAgenda($infos)
+    {
+        $agenda = new Agenda;
+
+        foreach($infos as $field => $value)
+        {
+            $this->propertyAccessor->setValue($agenda, $field, $value);
+        }
+        
+        return $agenda;
     }
     
-
-    public function setURL($url)
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    public function getURL()
-    {
-        return $this->url;
-    }
 
     protected function parseDate($date)
     {
@@ -69,65 +94,45 @@ abstract class AgendaParser {
         }, $date);
     }
 
-    /**
-     *
-     * @param string $nom
-     * @param \DateTime|null $dateDebut
-     * @return Agenda
-     */
-    protected function getAgendaFromUniqueInfo($nom, \DateTime $dateDebut, \DateTime $dateFin = null, $nomLieu = null)
+    public function write($text)
     {
-        $agenda = null;        
-        if($dateDebut !== null && $dateDebut !== false)
+        if($this->output !== null)
         {
-            if($nomLieu !== null && $dateFin !== null && $dateFin !== false)
-            {
-                $agenda = $this->repo->findOneByPlace($nomLieu, $dateDebut, $dateFin);
-            }
-            
-            if($agenda === null)
-            {
-                $agenda = $this->repo->findOneBy([
-                    "nom" => $nom,
-                    "dateDebut" => $dateDebut
-                ]); //On cherche par le nom
-            }            
+	    $this->output->write(\utf8_decode($text));
+        } else {
+	    echo $text;
         }
-
-        if($agenda === null)
-        {
-            $agenda = new Agenda;
-        }
-
-        return $agenda;
     }
 
-    public function postParse() {
-	return [];
-    }
-
-    public function getBlackLists() {
-        return $this->blackLists;
-    }
-
-    protected function write(OutputInterface $output, $text)
+    public function writeln($text)
     {
-        $output->write(\utf8_decode($text));
+        $this->write($text."\n");
     }
 
-    protected function writeln(OutputInterface $output, $text)
-    {
-        $output->writeln(\utf8_decode($text));
+    public function getOutput() {
+        return $this->output;
     }
 
+    public function setOutput(OutputInterface $output) {
+        $this->output = $output;
+        return $this;
+    }
 
-    /**
-     * @return Agenda[] un tableau d'Agenda parsé
-     */
-    public abstract function parse(OutputInterface $output);
+    public function getSite() {
+	return $this->site;
+    }
 
-    /*
-     * @return string le nom de la classe
-     */
-    public abstract function getNomData();
+    public function getSiteInfo() {
+	return $this->siteInfo;
+    }
+
+    public function setSite(Site $site) {
+	$this->site = $site;
+	return $this;
+    }
+
+    public function setSiteInfo(SiteInfo $siteInfo) {
+	$this->siteInfo = $siteInfo;
+	return $this;
+    }
 }

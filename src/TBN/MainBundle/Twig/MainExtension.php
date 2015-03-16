@@ -38,7 +38,7 @@ class MainExtension extends \Twig_Extension{
 	{
 	    $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
 	    $this->cache->save($key, $repo->findBy([], ["nom" => "ASC"]), 0, 3);
-	}        
+	}
         
         return [
             "site"      => $this->siteManager->getCurrentSite(),

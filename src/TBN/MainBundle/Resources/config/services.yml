@@ -9,16 +9,34 @@ services:
       
     ville_listener:
         class: TBN\MainBundle\Listener\SubDomainListener
-        arguments: [ @site_manager, @doctrine.orm.entity_manager, "%base_host%"]
+        arguments: [@site_manager, @doctrine.orm.entity_manager, "%base_host%"]
         tags:
            - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100 }
            
     tbn.twig.main_extension:
         class: TBN\MainBundle\Twig\MainExtension
-        arguments : [ @request_stack, @site_manager, @winzou_cache, @doctrine ]
+        arguments : [@request_stack, @site_manager, @winzou_cache, @doctrine]
         tags:
             - { name: twig.extension }
 
+#Forms
+    #Collections
+    tbn.collections:
+        class: TBN\MainBundle\Form\Extension\CollectionExtension
+        tags:
+            - { name: form.type_extension, alias: collection }
+    
+    #Surcouche globale des formulaires
+    tbn.forms:
+        class: TBN\MainBundle\Form\Extension\WidgetFormTypeExtension
+        tags:
+            - { name: form.type_extension, alias: form }
+    #Datepicker
+    tbn.forms.datepicker:
+        class: TBN\MainBundle\Form\Extension\DateTypeExtension
+        tags:
+            - { name: form.type_extension, alias: date }
+    #Image
     tbn.image_type_extension:
         class: TBN\MainBundle\Form\Extension\ImageTypeExtension
         tags:

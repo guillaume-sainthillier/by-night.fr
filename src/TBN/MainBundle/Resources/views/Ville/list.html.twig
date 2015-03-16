@@ -1,11 +1,11 @@
 {% extends "TBNMainBundle::layout.html.twig" %}
 
-{% block titre_main %}Bienvenue sur By Night!{% endblock %}
+{% block titre_main %}Bienvenue sur By Night !{% endblock %}
 
 {% block title_main %}Choisissez votre ville{% endblock %}
 
 {% block meta_description_main %}
-Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les événements du moment!
+Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les événements du moment !
 {% endblock %}
 
     
@@ -15,24 +15,93 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
     {% endfor %}
 {% endblock %}
 
+{% set defaultImage = '//placehold.it/900x500&text=?' %}
+{% set images = {
+    'toulouse': [
+        '//s4.splcdn.net/images/hotels/48770/toulouse-grand-hotel-de-lopera-335928_1000_560.jpg'
+    ],
+    'paris': [
+        '//comparoptions.com/wp-content/uploads/2012/11/paris_de_nuit1.jpg',
+        '//www.veryworldtrip.com/wp-content/uploads/2013/03/Tourisme-a%CC%80-Paris-Muse%CC%81e-du-Louvre.png'
+    ]
+}%}
+
 
 {% block body_main %}
-    <br />
-    <br />
-    <br />
-    <p class="text-center">
-        Pour commencer l'expérience, choisissez votre ville parmis :
-    </p>
+    <div class="panel panel-primary">
+        <div class="panel-body">
+            <h2 class="modal-title">Envie de sortir ?</h2>
+            <br />
+            <p>
+                By Night vous propose les agendas des événements, concerts, spectacles et manifestations dans les plus grandes villes de France.
+            </p>
+            <p>
+                Qu'attendez vous ? Choisissez votre ville et découvrez tous les événements !
+            </p>
+        </div>
+    </div>    
     <br />
     <div class="row">
-        {% for site in sites %}
-            <div class="col-md-4 col-md-offset-1 text-center">
-                <a title="Accéder aux événements de {{ site.nom }}" href="{{ site.isActif ? path('tbn_agenda_index', {'subdomain': site.subdomain }) : "#" }}">
-                    <div class="well well-lg">
-                        {{ site.nom }}
-                    </div>
+    {% for i, site in sites %}
+        {% if i is odd %}
+            {% set classLeft = 'col-md-6 col-md-push-6' %}
+            {% set classRight = 'col-md-6 col-md-pull-6' %}
+        {% else %}
+            {% set classLeft = 'col-md-6' %}
+            {% set classRight = 'col-md-6' %}
+        {% endif %}
+
+        <div class="{{ classLeft }}" >
+            <div id="carousel-{{ i }}" data-ride="carousel" class="carousel slide">
+                {% set currentImages = site.images %}
+                
+                <!-- Indicators -->
+                <ol class="carousel-indicators">
+                    {% for j, image in currentImages %}
+                        {% set activeClass = j == 0 ? 'active' : '' %}
+                        <li data-target="#carousel-{{ i }}" data-slide-to="{{ j }}" class="{{ activeClass }}"></li>
+                    {% endfor %}
+                </ol>
+
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner" role="listbox">
+                    {% for j, image in currentImages %}
+                        {% set activeClass = j == 0 ? 'active' : '' %}
+                        <div class="item {{ activeClass }}">
+                            <img src="{{ image.webPath|imagine_filter('thumb_site') }}" >
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Controls -->
+                <a class="left carousel-control" href="#carousel-{{ i }}" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <span class="sr-only">Précédent</span>
+                </a>
+                <a class="right carousel-control" href="#carousel-{{ i }}" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <span class="sr-only">Suivant</span>
                 </a>
             </div>
-        {% endfor %}
+        </div>
+        <div class="{{ classRight }}">
+            <h2 class="modal-title">
+                <a title="Accéder aux événements de {{ site.nom }}" 
+                    href="{{ path('tbn_agenda_index', {'subdomain': site.subdomain }) }}">
+                    {{ site.nom }}
+                 </a>                
+            </h2>
+            {{ site.description|raw }}
+            <a title="Accéder aux événements de {{ site.nom }}" 
+               class="btn btn-primary btn-flat"
+               href="{{ path('tbn_agenda_index', {'subdomain': site.subdomain }) }}">
+                <i class="fa fa-chevron-right"></i> Accéder
+            </a>
+        </div>
+        <div class="clearfix"></div>
+        <br />
+        <br />
+        <br />
+    {% endfor %}
     </div>
 {% endblock %}

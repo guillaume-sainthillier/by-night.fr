@@ -22,7 +22,7 @@ class FlushCommand extends EventCommand
         $this
             ->setName('events:flush')
             ->setDescription('Supprimer les événements indésirables')
-            ->addArgument('site',       InputArgument::REQUIRED,    'Quel site voulez-vous mettre à jour ?');
+            ->addArgument('site', InputArgument::REQUIRED, 'Quel site voulez-vous mettre à jour ?');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

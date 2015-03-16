@@ -48,10 +48,17 @@ class SearchAgenda {
      * @var string
      */
     protected $term;
+
+    /**
+     *
+     * @var integer
+     */
+    protected $page;
     
     
     public function __construct()
     {
+	$this->page = 1;
         $this->du = new \DateTime;
     }
 
@@ -112,5 +119,14 @@ class SearchAgenda {
     public function setCommune($commune) {
         $this->commune = $commune;
         return $this;
+    }
+
+    public function getPage() {
+	return $this->page;
+    }
+
+    public function setPage($page) {
+	$this->page = $page;
+	return $this;
     }
 }

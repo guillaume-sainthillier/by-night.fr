@@ -1,11 +1,60 @@
 parameters:
-    url_dynamo: http://www.ladynamo-toulouse.com/pages/agenda/
     url_soonnight_tlse: http://www.soonnight.com/midi-pyrenees/sortir-midi-pyrenees,4.html
-    url_soonnight_paris: http://www.soonnight.com/paris/sortir-paris,4.html
-    url_bikini: http://www.lebikini.com/programmation/rss
-
-       
+    url_soonnight_paris: http://www.soonnight.com/paris/sortir-paris,4.html       
 
 services:
+    #Parsers
+    tbn.parser.abstract:
+        class: TBN\MajDataBundle\Parser\AgendaParser
+    tbn.parser.abstracts.soonnight:
+        class: TBN\MajDataBundle\Parser\Common\SoonNightParser
+    tbn.parser.abstracts.facebook:
+        class: TBN\MajDataBundle\Parser\Common\FaceBookParser
+        arguments: [@doctrine.orm.entity_manager, @tbn.firewall, @tbn.social.facebook_admin]
+    #Toulouse
+    tbn.parser.toulouse.bikini:
+        class: TBN\MajDataBundle\Parser\Toulouse\BikiniParser
+    tbn.parser.toulouse.toulouse:
+        class: TBN\MajDataBundle\Parser\Toulouse\ToulouseParser
+    tbn.parser.toulouse.tourisme:
+        class: TBN\MajDataBundle\Parser\Toulouse\ToulouseTourismeParser
+    tbn.parser.toulouse.dynamo:
+        class: TBN\MajDataBundle\Parser\Toulouse\DynamoParser
+    tbn.parser.toulouse.soonnight:
+        parent: tbn.parser.abstracts.soonnight
+        calls:
+            - ['setUrl', [%url_soonnight_tlse%]]
+    tbn.parser.toulouse.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #Paris
+    tbn.parser.paris.tourisme:
+        class: TBN\MajDataBundle\Parser\Paris\ParisTourismeParser
+    tbn.parser.paris.soonnight:
+        parent: tbn.parser.abstracts.soonnight
+        calls:
+            - ['setUrl', [%url_soonnight_paris%]]
+    tbn.parser.paris.facebook:
+        parent: tbn.parser.abstracts.facebook
+    
+    #Manager
     parser_manager:
-        class: TBN\MajDataBundle\ParserManager\ParserManager 
+        class: TBN\MajDataBundle\Parser\Manager\ParserManager
+        
+    #Utils
+    tbn.util:
+        class: TBN\MajDataBundle\Utils\Util
+    tbn.event_handler:
+        class: TBN\MajDataBundle\Utils\EventHandler
+        arguments: [@ivory_google_map.geocoder, @tbn.firewall, @tbn.cleaner, @tbn.comparator, @tbn.merger]
+    tbn.comparator:
+        class: TBN\MajDataBundle\Utils\Comparator
+        arguments: [@tbn.util, @winzou_cache]
+    tbn.cleaner:
+        class: TBN\MajDataBundle\Utils\Cleaner
+        arguments: [@tbn.util]
+    tbn.firewall:
+        class: TBN\MajDataBundle\Utils\Firewall
+        arguments: [@winzou_cache, @doctrine, @tbn.comparator]
+    tbn.merger:
+        class: TBN\MajDataBundle\Utils\Merger
+        arguments: [@tbn.comparator]

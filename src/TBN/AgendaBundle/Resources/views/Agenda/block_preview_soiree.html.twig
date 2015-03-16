@@ -13,7 +13,7 @@
         {% set nomSoiree = soiree.nom %}
         <meta itemprop="image" content="{{ original }}" />
         <a class="image-gallery" href="{{ original }}" title="{{ nomSoiree }}" >
-            <img class="img img-responsive img-circle loading component" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ nomSoiree }}" />      
+            <img class="img img-responsive loading component" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ nomSoiree }}" />      
         </a>
     </div>
     <div class="col-sm-9 description_evenement" >
@@ -52,8 +52,8 @@
             </div>
         </div>
         {% set place = soiree.place %}
-        {% if place.nom %}
-            <div class="trait" itemprop="organizer" itemscope itemtype="http://schema.org/​Organization">
+        {% if place and place.nom %}
+            <div class="trait" itemprop="organizer" itemscope itemtype="http://schema.org/Organization">
                 <i class="fa fa-home pull-left icon"></i>
                 <span title="{{ place.ville ? place.ville.nom : '' }}" itemprop="name">{{ place.nom }}</span>
             </div>

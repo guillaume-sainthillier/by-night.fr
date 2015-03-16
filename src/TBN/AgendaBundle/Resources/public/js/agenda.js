@@ -1,5 +1,7 @@
 SocialSDK.facebook().twitter();
 
+var count_loads = 0;
+
 $(function ()
 {
     init_criteres();
@@ -15,38 +17,54 @@ function init_soirees(selector)
     init_pagination_links();
 }
 
-function init_pagination_links(selector)
+function load_infinite_scroll()
 {
-    $(".pagination li", selector || document).click(function (e)
+    $(window).scroll(function()
     {
-        var link = $(this).find("a").attr("href");
-        $("form[name='tbn_search_agenda']").attr("action", link).submit();
+        if($(window).scrollTop() + $(window).height())
+        {
+            
+        }
+    });
+}
+
+function init_pagination(selecteur)
+{
+    $('.paginate', selecteur || document).click(function(e)
+    {
+        count_loads++;
+        var self        = $(this);
+        var container   = self.parent();
+        var page        = self.data('next');
+        var form        = $('form[name="tbn_search_agenda"]');
+        var pageInput   = $('#tbn_search_agenda_page');
+        
+        pageInput.val(page);
+        $.post(form.attr('action'), form.serialize()).done(function(html)
+        {
+            self.replaceWith(html);
+            init_pagination(container);
+            if(count_loads > 2)
+            {
+                
+            }
+        });
+        
         e.preventDefault();
         return false;
     });
 }
 
-//Deps: ['pjax']
-function init_pagination(selecteur)
-{
-    var selector = '#pjax-search-container';
-    $(selecteur || document).on('submit', 'form[data-pjax]', function (event) {
-        $.pjax.submit(event, selector);
-    });
-    $(selecteur || document).on('pjax:success', function () {
-        init_soirees($(selector));
-    });
-}
-
 /**
  * 
- * @returns {undefined}
  */
 function init_criteres()
 {
     var options = {
         "css_hidden": "cache",
         "css_initial_hidden": "hidden",
+        "css_icon_class_open": 'fa-chevron-down',
+        "css_icon_class_close": 'fa-chevron-up',
         "selector_btn_criteres": ".btn_criteres",
         "selector_block_criteres": ".criteres",
         "selector_main_block": ".block_criteres",
@@ -59,12 +77,15 @@ function init_criteres()
         var div_criteres = $(this).closest(options.selector_main_block).find(options.selector_block_criteres);
         if (div_criteres.hasClass(options.css_hidden))
         {
+            $(this).find('.fa').removeClass(options.css_icon_class_open).addClass(options.css_icon_class_close);
             div_criteres.show(options.duration, function ()
             {
                 $(this).removeClass(options.css_hidden);
+                        
             });
         } else
         {
+            $(this).find('.fa').removeClass(options.css_icon_class_close).addClass(options.css_icon_class_open);
             div_criteres.hide(options.duration, function ()
             {
                 $(this).addClass(options.css_hidden);

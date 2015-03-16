@@ -1,7 +1,3 @@
-tbn_social_counts:
-    pattern: /social-counts
-    defaults: { _controller: TBNSocialBundle:Social:counts}
-
 tbn_disconnect_service_confirm:
     pattern: /confirmation/deconnexion/{service}
     defaults: { _controller: TBNSocialBundle:Social:disconnectConfirm}

@@ -47,13 +47,13 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
         
         <!-- CSS -->
-        <link href='//fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700' rel='stylesheet' type='text/css'>
-        <link href='//fonts.googleapis.com/css?family=Roboto:300,400,700' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Roboto:300,400|Roboto+Condensed:300,400|Roboto+Draft:300,400' rel='stylesheet' type='text/css'>
         
         {% stylesheets 
             'bower/bootstrap/dist/css/bootstrap.min.css'
             'bower/fontawesome/css/font-awesome.min.css'
-            'bower/bootstrap-material-design/dist/css/ripples.min.css'
+            'bower/bootstrap-material-design/dist/css/roboto.css'
+            'bower/bootstrap-material-design/dist/css/ripples.css'
             'css/themes/blue.css'
             'css/social-icons.css'            
             'css/commons.css'
@@ -83,11 +83,7 @@
             {%- endblock %}
             <!-- ./Menu -->            
             
-            <div id="bread" class="bg-white">
-                <div class="container">
-                    {% block breadcrumb -%}{%- endblock %}
-                </div>
-            </div>
+            {% block breadcrumb -%}{%- endblock %}
 
             <div class="container-fluid">
                 <div class="row">
@@ -172,9 +168,9 @@
         </script>
         {% javascripts 
             'bower/jquery/dist/jquery.min.js'
-            'bower/bootstrap/dist/js/bootstrap.min.js'
-            'bower/bootstrap-material-design/dist/js/material.min.js'
-            'bower/bootstrap-material-design/dist/js/ripples.min.js'
+            'bower/bootstrap/dist/js/bootstrap.min.js'            
+            'bower/bootstrap-material-design/dist/js/ripples.js'
+            'bower/bootstrap-material-design/dist/js/material.js'
             'bower/jquery.scrollTo/jquery.scrollTo.min.js'
             'js/overrides.js'
             'js/socials.js'

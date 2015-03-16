@@ -195,9 +195,14 @@ liip_imagine:
 
     filter_sets:
         cache: ~
+        thumb_site:
+            quality: 100
+            filters:
+                relative_resize: { heighten: 350 }
         thumbs_evenement:
             quality: 75
             filters:
+#                relative_resize: { widen: 200 }
                 relative_resize: { heighten: 200 }
 #                thumbnail: { size: [200, 200], mode: outbound }
         thumb_evenement:

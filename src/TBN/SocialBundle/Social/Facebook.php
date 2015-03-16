@@ -28,7 +28,7 @@ class Facebook extends Social {
 	FacebookSession::setDefaultApplication($this->id, $this->secret);
     }
 
-    public function getPagePicture(GraphObject $event)
+    public function getPagePictureURL(GraphObject $event)
     {
 	if($event->getProperty("cover"))
         {

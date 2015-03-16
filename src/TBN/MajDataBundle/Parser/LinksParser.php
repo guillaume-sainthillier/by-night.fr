@@ -5,20 +5,26 @@ namespace TBN\MajDataBundle\Parser;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
- * Description of RSSParser
+ * 
  *
  * @author Guillaume S. <guillaume@sainthillier.fr>
  */
 abstract class LinksParser extends AgendaParser {
     
     /*
-     * @var $parser Symfony\Component\DomCrawler\Crawler 
+     * @var Crawler $parser
      */
     protected $parser;
 
-    public function __construct(\TBN\AgendaBundle\Repository\AgendaRepository $repo, $url) {
-        parent::__construct($repo, $url);
-        $this->parser = new Crawler();
+    protected $url;
+    protected $base_url;
+
+    public function __construct() {
+        parent::__construct();
+
+        $this->url          = null;
+        $this->base_url     = null;
+        $this->parser       = new Crawler();
 
         return $this;
     }
@@ -30,9 +36,29 @@ abstract class LinksParser extends AgendaParser {
         return $this;
     }
 
-    public function parse(\Symfony\Component\Console\Output\OutputInterface $output) {
+    public function getRawAgendas() {
         $links = $this->getLinks(); //Récupère les différents liens à parser depuis une page d'accueil / flux RSS
 
+        $agendas = [];
+
+        foreach($links as $link)
+        {
+            $this->setUrl($link);
+            $this->parseContent(); //Positionne le parser sur chaque lien
+
+            $infosAgenda = $this->getInfosAgenda();
+
+            if(! $this->isMultiArray($infosAgenda))
+            {
+                $infosAgenda = [$infosAgenda];
+                
+            }
+            $agendas = array_merge($agendas, $infosAgenda);
+        }
+
+        return $agendas;
+
+        /*
         return array_filter(array_map(function($link) {            
             try {
                 $this->setUrl($link);
@@ -40,13 +66,50 @@ abstract class LinksParser extends AgendaParser {
                 $infos_agenda = $this->getInfosAgenda(); //Récupère les infos de l'agenda depuis le lien
                 return $this->hydraterAgenda($infos_agenda); //Créé ou récupère l'agenda associé aux infos
             }catch(\Exception $e)
-            {                
+            {
                 return null;
             }
         }, $links), function($agenda)
         {
             return $agenda !== null;
-        });
+        });*/
+    }
+
+    protected function getSilentNode(Crawler $node)
+    {
+        if($node->count() === 0)
+        {
+            return null;
+        }
+
+        return $node;
+    }
+
+    private function isMultiArray($array)
+    {
+        return count(array_filter($array, 'is_array')) > 0;
+    }
+
+    public function getBaseUrl() {
+        return $this->base_url;
+    }
+
+    public function setBaseUrl($base_url) {
+        $this->base_url = $base_url;
+        return $this;
+    }
+
+
+    public function setURL($url)
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getURL()
+    {
+        return $this->url;
     }
 
     /**
@@ -60,11 +123,4 @@ abstract class LinksParser extends AgendaParser {
      * @return string[] le tableau des liens disponibles
      */
     public abstract function getLinks();
-
-    /**
-     * 
-     * @param array $infos_agenda
-     * @return Agenda l'agenda créé ou hydraté
-     */
-    public abstract function hydraterAgenda($infos_agenda);
 }

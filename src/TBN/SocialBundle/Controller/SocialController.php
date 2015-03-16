@@ -11,28 +11,9 @@ use TBN\UserBundle\Entity\User;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use TBN\SocialBundle\Social\Social;
 
 class SocialController extends BaseController
 {
-    /**
-     *
-     * @Cache(smaxage="3600")
-     */
-    public function countsAction()
-    {
-        $socials = ["facebook", "google","twitter"];
-
-        $counts = [];
-        foreach($socials as $service)
-        {
-            /** @var social Social */
-            $social = $this->container->get("tbn.social.".strtolower($service === "facebook" ? "facebook_admin" : $service));
-            $counts[$service] = $social->getNumberOfCount();
-         }
-
-        return new JsonResponse($counts);
-    }
 
     public function disconnectSiteAction($service)
     {

@@ -1,6 +1,6 @@
 {% extends "TBNAgendaBundle:Agenda:accueil.html.twig"|partial_extends() %}
 
-{% block soirees %}
+{% block soirees %}{% spaceless %}
     {% if soirees|length == 0 %}
         <div class="alert alert-info">
             <i class="fa fa-info-circle"></i>
@@ -15,11 +15,9 @@
         </div>
         {% include "TBNAgendaBundle:Agenda:block_pagination.html.twig" %}                   
     {% endif %}
-{% endblock %}
+{% endspaceless %}{% endblock %}
 
 {% block title_agenda %}
+    {% if page > 1 %}Page {{page}} - {% endif %}
     Agenda des événements
-    {% if page > 1 %}
-        > page {{page}}
-    {% endif %}
 {% endblock %}

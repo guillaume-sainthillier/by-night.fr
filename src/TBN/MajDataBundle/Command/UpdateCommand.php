@@ -5,26 +5,14 @@ namespace TBN\MajDataBundle\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Exception\RuntimeException;
+use Symfony\Component\Console\Helper\ProgressBar;
 
-use TBN\MajDataBundle\Parser\BikiniParser;
-use TBN\MajDataBundle\Parser\DynamoParser;
-use TBN\MajDataBundle\Parser\ToulouseParser;
-use TBN\MajDataBundle\Parser\SoonNightParser;
-use TBN\MajDataBundle\Parser\FaceBookParser;
-use TBN\MajDataBundle\Parser\ToulouseTourismeParser;
-use TBN\MajDataBundle\Parser\ParisTourismeParser;
-
-use TBN\AgendaBundle\Repository\AgendaRepository;
 use TBN\MajDataBundle\Entity\HistoriqueMaj;
-use TBN\MainBundle\Entity\Site;
-use TBN\UserBundle\Entity\SiteInfo;
-use TBN\MajDataBundle\ParserManager\ParserManager;
-use TBN\SocialBundle\Social\FacebookAdmin;
-use TBN\MajDataBundle\Entity\BlackListRepository;
 
 
 /**
- * Description of UpdateCommand
+ * UpdateCommand gère la commande liée à l'aggregation d'événements
  *
  * @author guillaume
  */
@@ -39,7 +27,7 @@ class UpdateCommand extends EventCommand
             ->setName('events:update')
             ->setDescription('Mettre à jour les événements sur By Night')
             ->addArgument('site',       InputArgument::REQUIRED,    'Quel site voulez-vous mettre à jour ?')
-            ->addArgument('parser',     InputArgument::OPTIONAL,    'Si définie, le parser à lancer, sinon tous les parsers disponibles')
+            ->addArgument('parser',     InputArgument::OPTIONAL,    'Si défini, le nom du parser à lancer, sinon tous les parsers disponibles')
         ;
     }
 
@@ -48,147 +36,141 @@ class UpdateCommand extends EventCommand
         set_time_limit(0);
         ini_set('memory_limit', '-1');
 
+	//Début de construction de l'historique de la MAJ
+	$historique         = new HistoriqueMaj();
+
         //Récupération des arguments / options
         $subdomainSite      = $input->getArgument('site');
-        $parser             = $input->getArgument('parser');
+        $parserName         = $input->getArgument('parser');
         $env                = $input->getOption('env');
 
         //Récupérations des dépendances
         $this->container    = $this->getContainer();
-        $parserManager      = $this->container->get("parser_manager");
-        $em                 = $this->container->get("doctrine")->getManager();
-        $geocoder           = $this->container->get('ivory_google_map.geocoder');
-        $fbAPI              = $this->container->get("tbn.social.facebook_admin");
+        $parserManager      = $this->container->get('parser_manager');
+        $em                 = $this->container->get('doctrine')->getManager();
+        $firewall           = $this->container->get('tbn.firewall');
+        $handler            = $this->container->get('tbn.event_handler');
 
-        $historique         = new HistoriqueMaj();
-        $repo               = $em->getRepository("TBNAgendaBundle:Agenda");
-        $repoSite           = $em->getRepository("TBNMainBundle:Site");
-        $repoBL             = $em->getRepository("TBNMajDataBundle:BlackList");
-        $repoSiteInfo       = $em->getRepository("TBNUserBundle:SiteInfo");
+        //Récupération des repos
+        $repo               = $em->getRepository('TBNAgendaBundle:Agenda');
+        $repoPlace          = $em->getRepository('TBNAgendaBundle:Place');
+        $repoVille          = $em->getRepository('TBNAgendaBundle:Ville');
+        $repoSite           = $em->getRepository('TBNMainBundle:Site');
+        $repoSiteInfo       = $em->getRepository('TBNUserBundle:SiteInfo');
 	
-        //Récupération du site demandé
-        $site               = $repoSite->findOneBy(["subdomain" => $subdomainSite]);
+        //Récupération du site demandé par l'user
+        $site               = $repoSite->findOneBy(['subdomain' => $subdomainSite]);
         $siteInfo           = $repoSiteInfo->findOneBy([]);
-        $getter             = "parse".lcfirst($subdomainSite);
 
-        if($site === null)
+	if($site === null)
         {
-            $this->writeln($output, "<error>[".$env."] Le site ".$subdomainSite." demandé est introuvable</error>");
-        }else
-        {
-            $this->writeln($output, "[".$env."] Mise à jour de <info>".$site->getNom()." By Night</info>...");
-            $this->$getter($parserManager, $repo, $repoBL, $site, $parser, $siteInfo, $geocoder, $fbAPI);
-            $this->persistAgendas($output, $em, $site, $parserManager, $parser, $env, $historique);
-        }   
-    }
-
-    protected function parseParis(  ParserManager $parserManager, AgendaRepository $repo, BlackListRepository $repoBL,
-                                    Site $currentSite, $site, SiteInfo $siteInfo, $geocoder, FacebookAdmin $fbAPI)
-    {
-        if(!$site || $site === "soonight")
-        {
-            $parserManager->addAgendaParser(new SoonNightParser($repo, $this->container->getParameter("url_soonnight_paris")));
+            throw new RuntimeException(sprintf('<error>Le site %s demandé est introuvable en base</error>', $subdomainSite));
         }
 
-        if(!$site || $site === "tourisme")
+        //Définition des parsers disponibles pour chaque site
+        $parsers = [
+            'toulouse' => [
+                'toulouse',
+                'tourisme',
+                'bikini',
+                'dynamo',
+		'soonnight',
+                'facebook',
+            ],
+            'paris' => [
+                'tourisme',
+                'soonnight',
+                'facebook'
+            ]
+        ];
+        
+        $this->writeln($output, sprintf('<info>[%s]</info> Mise à jour de <info>%s By Night</info>...', $env, $site->getNom()));
+
+        //Récupération des parsers
+        foreach($parsers[$subdomainSite] as $serviceName)
         {
-            $parserManager->addAgendaParser(new ParisTourismeParser($repo));
-        }
-
-	if(!$site || $site === "facebook")
-        {
-            $parserManager->addAgendaParser(new FaceBookParser($repo, $repoBL, $fbAPI, $currentSite, $siteInfo, $geocoder));
-        }
-    }
-
-    protected function parseToulouse(   ParserManager $parserManager, AgendaRepository $repo, BlackListRepository $repoBL,
-                                        Site $currentSite, $site, SiteInfo $siteInfo, $geocoder, FacebookAdmin $fbAPI)
-    {
-        if(!$site || $site === "toulouse")
-        {
-            $url = "http://data.grandtoulouse.fr/web/guest/les-donnees/-/opendata/card/21905-agenda-des-manifestations-culturelles/resource/document?p_p_state=exclusive&_5_WAR_opendataportlet_jspPage=%2Fsearch%2Fview_card_license.jsp";
-            $parserManager->addAgendaParser(new ToulouseParser($repo, $url));
-        }
-
-        if(!$site || $site === "bikini")
-        {
-            $parserManager->addAgendaParser(new BikiniParser($repo, $this->container->getParameter("url_bikini")));
-        }
-
-        if(!$site || $site === "dynamo")
-        {
-            $parserManager->addAgendaParser(new DynamoParser($repo, $this->container->getParameter("url_dynamo")));
-        }
-
-        if(!$site || $site === "tourisme")
-        {
-            $parserManager->addAgendaParser(new ToulouseTourismeParser($repo));
-        }
-
-        if(!$site || $site === "soonight")
-        {
-            $parserManager->addAgendaParser(new SoonNightParser($repo, $this->container->getParameter("url_soonnight_tlse")));
-        }
-
-        if(!$site || $site === "facebook")
-        {
-            $parserManager->addAgendaParser(new FaceBookParser($repo, $repoBL, $fbAPI, $currentSite, $siteInfo, $geocoder));
-        }
-    }
-
-    
-
-    protected function persistAgendas(OutputInterface $output, $em, Site $site, ParserManager $parserManager, $parser, $env, HistoriqueMaj $historique)
-    {
-        $full_agendas       = $parserManager->parse($output);
-
-        $this->write($output, "Tri...");
-        $agendas	    = $this->cleanEvents($full_agendas);
-        $this->writeln($output, "<info>".(count($full_agendas) - count($agendas))."</info> doublons detectés");
-        $blackLists         = $parserManager->getBlackLists();
-        $nbNewSoirees	    = 0;
-        $nbUpdateSoirees    = 0;
-
-        $this->write($output, "Persistance...");
-        foreach($agendas as $agenda)
-        {
-            if($agenda->getNom() !== null && trim($agenda->getNom()) !== "")
+            if(!$parserName || $serviceName === $parserName)
             {
-                if($agenda->getId() === null)
+                $parser = $this->container->get('tbn.parser.'.$subdomainSite.'.'.$serviceName);
+		
+		//Dépendances dynamiques liées aux différents parsers
+		$parser->setOutput($output)->setSite($site)->setSiteInfo($siteInfo);
+    
+                $parserManager->add($parser);
+            }
+        }
+        
+        //Récupération des événements
+        $agendas = $parserManager->getAgendas($output);
+
+        //Récupération des places & villes
+        $places = $repoPlace->findBy(['site' => $site]);
+        $villes = $repoVille->findBy(['site' => $site]);
+
+        $start = microtime(true);
+        $nbUpdate = 0;
+        $nbInsert = 0;
+        $nbBlackList = 0;
+        foreach($agendas as $tmpAgenda)
+        {
+            //Gestion de l'événement + sa place et sa ville associée
+            $cleanedEvent = $handler->handle($places, $villes, $site, $tmpAgenda);
+
+            //Récupération des events de la même période en base
+            $existingEvents = $repo->findBy([
+                'dateDebut' => $cleanedEvent->getDateDebut(),
+                'dateFin' => $cleanedEvent->getDateFin(),
+                'site' => $site
+            ]);
+
+            //Gestion de l'événement & persistance si besoin 
+            $agenda = $handler->handleEvent($existingEvents, $cleanedEvent);
+            if($agenda !== null)
+            {
+                //Récupération de l'image distante si besoin
+                if($env !== 'dev2' && $agenda->getPath() === null && $agenda->getUrl() !== null)
                 {
-                    $nbNewSoirees++;
+                    $handler->downloadImage($agenda);
+                }
+
+                //Persistence en base
+                $em->persist($agenda);
+                if(! $firewall->isPersisted($agenda))
+                {
+                    $nbInsert++;
                 }else
                 {
-                    $nbUpdateSoirees++;
+                    $nbUpdate++;
                 }
-
-                if($env === "prod" && $agenda->getPath() === null && $agenda->getUrl() !== null) // On récupère l'image distante
-                {
-                    $this->downloadImage($agenda);
-                }
-
-                if($agenda->getSite() === null)
-                {
-                    $agenda->setSite($site);
-                }
-
-                $em->persist($agenda);
+            }else
+            {
+                $nbBlackList++;
             }
         }
 
-        foreach($blackLists as $blackList)
-        {
-            $em->persist($blackList);
-        }
-        
-	$historique->setFromData($parser ? $parser : 'tous')
-		->setSite($site)
-		->setNouvellesSoirees($nbNewSoirees)
-		->setUpdateSoirees($nbUpdateSoirees)
-                ->setBlackLists(count($blackLists));
+        $end = microtime(true);
+        $this->writeln($output, 'GESTION : <info>'.($end - $start).' ms</info>');
+	$em->flush();
 
+	//Gestion des blackLists + historique de la maj
+	$blackLists = $firewall->getBlackList();
+        $historique
+                ->setFromData($parserName ?: 'tous')
+                ->setBlackLists($nbBlackList + count($blackLists))
+                ->setNouvellesSoirees($nbInsert)
+                ->setUpdateSoirees($nbUpdate)
+                ->setSite($site)
+        ;
+
+	foreach($blackLists as $blackList)
+	{
+	    $em->persist($blackList);
+	}
+	
         $em->persist($historique);
         $em->flush();
-        $this->writeln($output, "<info>OK</info>");
-    }    
+        $this->writeln($output, 'NEW: <info>'.$nbInsert.'</info>');
+        $this->writeln($output, 'UPDATES: <info>'.$nbUpdate.'</info>');
+        $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.count($blackLists).'</info>');         
+    }
 }

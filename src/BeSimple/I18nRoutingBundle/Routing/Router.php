@@ -6,6 +6,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 use TBN\MainBundle\Site\SiteManager;
 use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class Router implements RouterInterface
 {

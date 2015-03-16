@@ -26,11 +26,14 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
 {% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
 
 {% block breadcrumb %}    
-    {% set test = menu.addItem("Villes", path('tbn_main_index')) %}    
-    {% set test = menu.addItem(site.nom, path('tbn_agenda_index')) %}    
-    {% block breadcrumb_agenda %}{% endblock %}
-    
-    {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}          
+    <div id="bread" class="bg-white">
+        <div class="container">
+            {% set test = menu.addItem('Accueil', path('tbn_main_index')) %}    
+            {% set test = menu.addItem(site.nom, path('tbn_agenda_index')) %}    
+            {% block breadcrumb_agenda %}{% endblock %}
+            {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
+        </div>
+    </div>   
 {% endblock %}
 
 {% block twitter %}
@@ -80,7 +83,6 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
     </script>
     <script type="text/javascript">
         var ville = "{{ site.nom }}";
-        var getSocialCountsURL = "{{ path('tbn_social_counts') }}";
         var fbAppId = "{{ facebook_app_id }}";
     </script>
     {% block head_js_agenda %}{% endblock %}

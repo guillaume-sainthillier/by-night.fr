@@ -1,42 +1,24 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser;
+namespace TBN\MajDataBundle\Parser\Common;
 
 use Symfony\Component\DomCrawler\Crawler;
-use TBN\AgendaBundle\Repository\AgendaRepository;
+use TBN\MajDataBundle\Parser\LinksParser;
 
 /**
- * Description of BikiniParser
+ * Description of SoonNightParser
  *
  * @author guillaume
  */
-class SoonNightParser extends LinksParser{
+class SoonNightParser extends LinksParser {
 
-    protected $base_url;
+    public function __construct() {
+        parent::__construct();
 
-    public function __construct(AgendaRepository $repo, $url) {
-        parent::__construct($repo, $url);
-
-        $this->base_url = "http://www.soonnight.com";
+        $this->setBaseUrl('http://www.soonnight.com');
+        
         return $this;
-    }
-
-    protected function parseDate($date)
-    {
-        $tabMois = ["janvier","fevrier","mars","avril","mai","juin","juillet","aout","septembre","octobre","novembre","decembre"];
-
-        return preg_replace_callback("/(.+)(\d{2}) (".implode("|", $tabMois).") (\d{4})(.+)/iu",
-                function($items) use($tabMois)
-        {
-            return $items[4]."-".(array_search(strtolower($items[3]),$tabMois) +1)."-".$items[2];
-        }, $date);
-    }
-
-    protected function decodeNumCharacter($t)
-    {
-        $convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
-        return mb_decode_numericentity($t, $convmap, 'UTF-8');
-    }
+    }    
 
     /**
      * Retourne les infos d'un agenda depuis une url
@@ -54,7 +36,6 @@ class SoonNightParser extends LinksParser{
         $date                           = $this->parseDate($date_lieu[0]);
 
         $tab_retour["date_debut"]       = \DateTime::createFromFormat("Y-n-d",$date);
-        $tab_retour["date_affichage"]   = $tab_retour["date_debut"] !== false ? "Le ".$tab_retour["date_debut"]->format("d/m/Y") : "NP";
         
         //Lieux
         $rue                            = null;
@@ -74,6 +55,7 @@ class SoonNightParser extends LinksParser{
         $tab_retour["rue"]		    = $rue;
         $tab_retour["code_postal"]          = $code_postal;
         $tab_retour["commune"]              = $ville;
+        $tab_retour["ville"]                = $ville;
 
         //Téléphone & Tarifs
         $telephone                          = null;        
@@ -114,17 +96,49 @@ class SoonNightParser extends LinksParser{
 
         //Catégorie & Thème
         $node_categorie                         = $this->getNodeFromHeading($this->parser->filter(".genre"));
-        $tab_retour["categorie"]                = $node_categorie ? trim($node_categorie->text()) : null;
+        $tab_retour["categorie_manifestation"]  = $node_categorie ? trim($node_categorie->text()) : null;
 
         $node_musique                           = $this->getNodeFromHeading($this->parser->filter(".musique"));
-        $tab_retour["musique"]                  = $node_musique ? trim($node_musique->text()) : null;
+        $tab_retour["theme_manifestation"]      = $node_musique ? trim($node_musique->text()) : null;
+        $tab_retour['type_manifestation']       = 'Soirée';
 
         //Image
         $image                                  = $this->parser->filter(".case_visuel img");
-        $tab_retour["image"]                    = $image->count() ? $image->attr("src") : null;
+        $tab_retour["url"]                      = $image->count() ? $image->attr("src") : null;
         $tab_retour["source"]                   = $this->url;
 
         return $tab_retour;
+    }
+
+    public function getLinks()
+    {
+        $this->parseContent("HTML");
+        return $this->parser->filter("div.affichage_liste_1 a.titre")->each(function(Crawler $item)
+        {
+
+            return $this->base_url.$item->attr("href");
+        });
+    }
+
+    public function getNomData() {
+        return "SoonNight";
+    }
+
+    protected function parseDate($date)
+    {
+        $tabMois = ["janvier","fevrier","mars","avril","mai","juin","juillet","aout","septembre","octobre","novembre","decembre"];
+
+        return preg_replace_callback("/(.+)(\d{2}) (".implode("|", $tabMois).") (\d{4})(.+)/iu",
+                function($items) use($tabMois)
+        {
+            return $items[4]."-".(array_search(strtolower($items[3]),$tabMois) +1)."-".$items[2];
+        }, $date);
+    }
+
+    protected function decodeNumCharacter($t)
+    {
+        $convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
+        return mb_decode_numericentity($t, $convmap, 'UTF-8');
     }
 
     protected function getNodeFromHeading(Crawler $heading)
@@ -143,50 +157,7 @@ class SoonNightParser extends LinksParser{
                 }
             }
         }
-        
+
         return $node;
-    }
-
-    public function getLinks()
-    {
-        $this->parseContent("HTML");
-        $base_url = $this->base_url;
-        return $this->parser->filter("div.affichage_liste_1 a.titre")->each(function(Crawler $item) use($base_url)
-        {
-            return $base_url.$item->attr("href");
-        });
-    }
-
-    public function hydraterAgenda($infos_agenda) {
-
-        $tab_champs = $infos_agenda;
-
-        $dateDebut = $tab_champs["date_debut"];
-
-        $nom = $tab_champs["nom"];
-        $a = $this->getAgendaFromUniqueInfo($nom, $dateDebut, null, $tab_champs["lieu_nom"]);
-
-        $a->setNom($nom);
-        $a->setLieuNom($tab_champs["lieu_nom"]);
-        $a->setDateDebut($dateDebut);
-        $a->setVille($tab_champs["commune"]);
-        $a->setRue($tab_champs["rue"]);
-        $a->setCommune($tab_champs["commune"]);
-        $a->setVille($tab_champs["commune"]);
-        $a->setCodePostal($tab_champs["code_postal"]);
-        $a->setTarif($tab_champs["tarif"]);
-        $a->setReservationTelephone($tab_champs["reservation_telephone"]);
-        $a->setDescriptif($tab_champs["descriptif"]);
-        $a->setTypeManifestation("Musique");
-        $a->setCategorieManifestation($tab_champs["categorie"]);
-        $a->setThemeManifestation("Musique,".$tab_champs["musique"]);
-        $a->setUrl($tab_champs["image"]);
-        $a->setSource($tab_champs["source"]);
-
-        return $a;
-    }
-
-    public function getNomData() {
-        return "SoonNight";
     }
 }

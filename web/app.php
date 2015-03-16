@@ -12,6 +12,7 @@ $XCacheLoader->register(true);
 require_once __DIR__.'/../app/AppCache.php';
 
 $appKernel = new AppKernel('prod', false);
+$appKernel->boot();
 $appKernel->loadClassCache();
 $kernel = new AppCache($appKernel);
 

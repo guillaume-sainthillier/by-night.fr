@@ -80,14 +80,6 @@ class SiteController extends Controller
                 $em->persist($site);
                 $em->flush();
 
-		$cache = $this->get("winzou_cache");
-		$key = $site->getSubdomain();
-		if($cache->contains($key))
-		{
-		    $cache->delete($key);
-		}
-		$cache->save($key, $site);
-
                 $this->get('session')->getFlashBag()->add(
                     'info',
                     'Le site <b>'.$site->getNom()."</b> a bien été modifié"
