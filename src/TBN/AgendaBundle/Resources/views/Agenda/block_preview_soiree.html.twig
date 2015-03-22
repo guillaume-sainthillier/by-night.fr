@@ -53,9 +53,26 @@
         </div>
         {% set place = soiree.place %}
         {% if place and place.nom %}
-            <div class="trait" itemprop="organizer" itemscope itemtype="http://schema.org/Organization">
+            <div class="trait" itemprop="location" itemscope itemtype="http://schema.org/Place">
                 <i class="fa fa-home pull-left icon"></i>
-                <span title="{{ place.ville ? place.ville.nom : '' }}" itemprop="name">{{ place.nom }}</span>
+                <span itemprop="name">{{ place.nom }}</span>
+                {% if place.latitude and place.longitude %}
+                    <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+                        <meta itemprop="latitude" content="{{ place.latitude }}" />
+                        <meta itemprop="longitude" content="{{ place.longitude }}" />
+                    </span>
+                {% endif %}
+                
+                {% if place.ville %}
+                    <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                        ,<span itemprop="addressLocality">{{ place.ville.nom }}</span>
+                        {% if place.ville.codePostal %}
+                            <meta itemprop="addressRegion" content="{{ place.ville.codePostal }}" />
+                            <meta itemprop="addressCountry" content="FR" />
+                            <meta itemprop="streetAddress" content="{{ place.rue }}" />
+                        {% endif %}
+                    </span>
+                {% endif %}                
             </div>
         {% endif %}
         {% if soiree.tarif %}   

@@ -1,38 +1,52 @@
 SocialSDK.facebook().twitter();
 
-var count_loads = 0;
+var countLoads = 0;
+var isLoading = false;
 
 $(function ()
 {
     init_criteres();
     init_shorcut_date();
-    init_pagination();
+    load_infinite_scroll();
     init_soirees();
 });
 
 function init_soirees(selector)
 {
+    init_pagination();
     init_unveil(selector);
     init_fancybox(selector);
-    init_pagination_links();
 }
 
 function load_infinite_scroll()
 {
+    var marginScroll    = 100;
+    var countStep       = 2;
+    
     $(window).scroll(function()
     {
-        if($(window).scrollTop() + $(window).height())
+        if(countLoads < countStep || isLoading)
         {
-            
+            return;
+        }
+        
+        if($(window).scrollTop() + $(window).height() > $('#paginate').offset().top - marginScroll)
+        {
+            console.log('OK');
+            isLoading = true;
+            $('#paginate').trigger('click');
         }
     });
 }
 
-function init_pagination(selecteur)
+function init_pagination()
 {
-    $('.paginate', selecteur || document).click(function(e)
+    $('#paginate').click(function(e)
     {
-        count_loads++;
+        isLoading = true;
+        countLoads++;
+        $(this).attr('disabled', true).html($('<i>').addClass('fa fa-spin fa-spinner'));        
+        
         var self        = $(this);
         var container   = self.parent();
         var page        = self.data('next');
@@ -42,12 +56,9 @@ function init_pagination(selecteur)
         pageInput.val(page);
         $.post(form.attr('action'), form.serialize()).done(function(html)
         {
+            isLoading = false;
             self.replaceWith(html);
-            init_pagination(container);
-            if(count_loads > 2)
-            {
-                
-            }
+            init_soirees(container);
         });
         
         e.preventDefault();

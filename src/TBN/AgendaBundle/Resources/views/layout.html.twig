@@ -37,21 +37,21 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
 {% endblock %}
 
 {% block twitter %}
-    {% if site.twitterIdPage != "" %}               
-        <meta name="twitter:card" content="summary" >
-        <meta name="twitter:site" content="@{{ site.twitterIdPage }}" >
+    {% if site.twitterIdPage %}               
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@{{ site.twitterIdPage }}" />
     {% endif %}
 {% endblock %}
 
 {% block google %}
-    {% if site.googleIdPage != ""  %}
-        <link rel="author" href="https://plus.google.com/u/{{ site.googleIdPage }}">
+    {% if site.googleIdPage %}
+        <link rel="author" href="https://plus.google.com/u/{{ site.googleIdPage }}" />
     {% endif %}
 {% endblock %}
 
 {% block facebook %}
-    {% if site.facebookIdPage != ""  %}
-        <meta property="fb:page_id" content="{{ site.facebookIdPage }}">
+    {% if site.facebookIdPage %}
+        <meta property="fb:page_id" content="{{ site.facebookIdPage }}" />
     {% endif %}
 {% endblock %}
 

@@ -16,6 +16,16 @@
     {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
 {% endif %}
 
+{% set tags = soiree.themeManifestation|split(",") %}
+{% set tags = tags|merge(soiree.typeManifestation|split(",")) %}
+{% set distinctTags = [] %}
+{% for tag in tags %}
+    {% set cleanTag = tag|trim %}
+    {% if cleanTag|length and cleanTag not in distinctTags %}
+        {% set distinctTags = distinctTags|merge([cleanTag]) %}
+    {% endif %}
+{% endfor %}
+
 {% set place = soiree.place %}
 {% set villePlace = place.ville %}
 
@@ -35,7 +45,21 @@
     {{ nomSoiree }}. Plus d'infos sur {{ block('nom_site') }}.
 {% endspaceless %}{% endblock %}
 
-{% block og_titre %}{{ nomSoiree }} sur {{ block('nom_site') }}{% endblock %}
+{% block metas %}
+    <link rel="image_src" href="{{ original }}" />
+    <link rel="thumbnail" href="{{ thumb }}" />
+    <meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />
+    
+    <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ site.facebookIdPage }}" />
+    {% if soiree.user %}
+        <meta property="article:author" content="{{ url('tbn_detail_user', {'username': soiree.user.username}) }}" />
+    {% endif %}
+    
+    {% for tag in distinctTags %}
+        <meta property="article:tag" content="{{ tag }}"/>
+    {% endfor %}
+{% endblock %}
+{% block og_titre %}{{ nomSoiree }}{% endblock %}
 {% block og_type %}article{% endblock %}
 {% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug}) }}{% endblock %}
 {% block og_description %}{{ descriptionSoiree|striptags }}{% endblock %}
@@ -90,11 +114,11 @@
                 {% if place.rue or place.nom or ville %}
                 <li>
                     <i class="fa fa-li fa-map-marker"></i>
-                    <div itemprop="organizer" itemtype="http://schema.org/Organization">
+                    <div itemprop="location" itemscope itemtype="http://schema.org/Place">
                         {% set readableAdresse = "" %}
                         {% if place.nom %}
                             {% set readableAdresse = place.nom %}
-                            <div itemprop="name">{{ place.nom }}</div>
+                            <span itemprop="name">{{ place.nom }}</span>
                         {% endif %}
 
                         {% if place.rue or ville %}
@@ -106,14 +130,26 @@
                                     <div>
                                         {% if villePlace.codePostal %}
                                             <span itemprop="postalCode">{{ villePlace.codePostal }} </span>
+                                            <meta itemprop="addressCountry" content="FR" />
                                         {% endif %}
                                         {% if villePlace.nom %}
                                             {% set readableAdresse = readableAdresse ~ " " ~ villePlace.nom %}
                                             <span itemprop="addressLocality">{{ villePlace.nom }}</span>
                                         {% endif %}
                                     </div>                                    
-                                {% endif %}                                
+                                {% endif %}
+                                
+                                {% if readableAdresse %}
+                                    <meta itemprop="hasMap" content="https://www.google.com/maps/?q={{ readableAdresse|raw|url_encode }}&zoom=16" />
+                                {% endif %}
                             </div>
+                        {% endif %}
+                        
+                        {% if place.latitude and place.longitude %}
+                            <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+                                <meta itemprop="latitude" content="{{ place.latitude }}" />
+                                <meta itemprop="longitude" content="{{ place.longitude }}" />
+                            </span>
                         {% endif %}
                         
                         {% if readableAdresse %}
@@ -127,7 +163,7 @@
                     </div>
                 </li>
                 {% endif %}                
-                {% if soiree.tarif%}
+                {% if soiree.tarif %}
                 <li>
                     <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">                        
                         <i class="fa fa-li fa-ticket"></i>
@@ -164,15 +200,6 @@
                     <a href="{{ lien }}" rel="external">{{ lien }}</a>
                 </li>
                 {% endif %}
-                {% set tags = soiree.themeManifestation|split(",") %}
-                {% set tags = tags|merge(soiree.typeManifestation|split(",")) %}
-                {% set distinctTags = [] %}
-                {% for tag in tags %}
-                    {% set cleanTag = tag|trim %}
-                    {% if cleanTag|length and cleanTag not in distinctTags %}
-                        {% set distinctTags = distinctTags|merge([cleanTag]) %}
-                    {% endif %}
-                {% endfor %}
                 
                 {% if distinctTags|length %}
                     <li class="tags">
@@ -204,26 +231,26 @@
     <div itemprop="description" >
         {{ descriptionSoiree|raw }}
     </div>    
-
-    <div class="shares">
-        <h3>Partagez cet événement</h3>
-        <br />
-        <div class="row">
-            <div class="col-xs-4 share">
-                <div class="fb-like" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-            </div>
-            <div class="col-xs-4 share">
-                <div class="g-plusone" data-action="share" ></div>                        
-            </div>
-            <div class="col-xs-4 share">
-                <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>                        
-            </div>
+</div>
+    
+<div class="shares">
+    <h3>Partagez cet événement</h3>
+    <br />
+    <div class="row">
+        <div class="col-xs-4 share">
+            <div class="fb-like" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+        </div>
+        <div class="col-xs-4 share">
+            <div class="g-plusone" data-action="share" ></div>                        
+        </div>
+        <div class="col-xs-4 share">
+            <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>                        
         </div>
     </div>
+</div>
 
-    <div class="comments" data-url="{{ path('tbn_comment_list',{'id': soiree.id }) }}">
-        <i class="fa fa-spinner fa-spin fa-2x"></i>
-    </div>
+<div class="comments" data-url="{{ path('tbn_comment_list',{'id': soiree.id }) }}">
+    <i class="fa fa-spinner fa-spin fa-2x"></i>
 </div>
 {% endblock %}
 

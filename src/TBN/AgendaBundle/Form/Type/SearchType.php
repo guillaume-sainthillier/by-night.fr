@@ -23,7 +23,7 @@ class SearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-	    ->add('page')
+	    ->add('page', 'hidden')
             ->add("du", "date", [
                 "required" => true,
                 "label" => "Du",

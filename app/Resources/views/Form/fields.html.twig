@@ -17,9 +17,9 @@
         {{ form_label(form) }}
         {{ form_errors(form) }}
         {{ form_widget(form) }}
-    {% if group_class|default(null) %}        
-        <!-- ./Widget {{ id }} -->
+    {% if group_class|default(null) %}
         </div>
+        <!-- ./Widget {{ id }} -->
     {% endif %}
 {% endspaceless %}{% endblock form_row %}
 

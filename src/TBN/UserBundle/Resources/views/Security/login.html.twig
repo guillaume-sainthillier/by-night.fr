@@ -24,6 +24,8 @@
 {% endblock %}
 
 {% block fos_user_content %}
+    <br />
+    <br />
     <div class="row text-center">
         <div class="col-xs-4">
             <a class="social-facebook big-social tbn_tooltip" title="Connectez vous avec Facebook" href="{{ hwi_oauth_login_url('facebook') }}" data-toggle="tooltip" data-placement="bottom"></a>
@@ -35,7 +37,8 @@
             <a class="social-googleplus big-social tbn_tooltip" title="Connectez vous avec Google+" href="{{ hwi_oauth_login_url('google') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
     </div>
-    <hr />
+    <br />
+    <br />
     <form action="{{ path('fos_user_security_check') }}" method="post" role="form" >
         {% if error is defined and error %}
             <div class="alert alert-danger">
