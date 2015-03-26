@@ -15,7 +15,7 @@
         "tests"
     ],
     "dependencies": {
-        "jquery": "2.1.*",
+        "jquery": "2.*",
         "bootstrap": "latest",
         "font-awesome": "latest",
         "bootstrap-material-design" : "master",
