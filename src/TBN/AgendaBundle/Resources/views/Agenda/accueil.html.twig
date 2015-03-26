@@ -16,7 +16,14 @@
 {%- endblock %}
 
 {% block body_agenda -%}
-    {% block soirees -%}{%- endblock %}
+    {% if soirees|length == 0 %}
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i>
+            Aucun événement trouvé
+        </div>
+    {% else %}
+        <div class="list-group">{% block soirees -%}{%- endblock %}</div>
+    {% endif %}
 {%- endblock %}
 
 {% block widgets_agenda %}{% include "TBNAgendaBundle:MenuDroit:accueil.html.twig" %}{% endblock %}

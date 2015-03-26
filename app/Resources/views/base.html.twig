@@ -9,7 +9,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <![endif]-->        
         <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
-        <meta name="keywords" content="{% spaceless %}{% block meta_keywords %}{% endblock %}by,night,agenda,soiree,sortir,etudiant,famille,musique,theatre,rock,pop,electro,jazz,rap"{% endspaceless %}>
+        <meta name="keywords" content="{% spaceless %}{% block meta_keywords %}{% endblock %},night,agenda,événement,soirée,sortir,musique,concert,spectacle"{% endspaceless %}>
         <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
         
         <!-- OpenGraph -->
@@ -24,7 +24,7 @@
         <!-- IE10+ -->
         <meta name="application-name" content="{{ block('nom_site') }}">
         <meta name="msapplication-TileColor" content="#000000">
-        <meta name="msapplication-tooltip" content="{{ block('nom_site') }} Officiel">
+        <meta name="msapplication-tooltip" content="Agenda des événements">
         <meta name="msapplication-square70x70logo" content="{{ asset('tiny.png') }}">
         <meta name="msapplication-square150x150logo" content="{{ asset('square.png') }}">
         <meta name="msapplication-wide310x150logo" content="{{ asset('wide.png') }}">
@@ -43,6 +43,9 @@
         {% block google %}{% endblock %}
         <!-- ./Google -->
         
+        {% block metas %}{% endblock %}
+        
+        <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
         <link rel="shortcut icon" type="image/png"  href="{{ asset('favicon.png') }}" >
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
         
