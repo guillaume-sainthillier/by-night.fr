@@ -44,10 +44,11 @@ class SearchController extends Controller
         return [$users, $nbUsers];
     }
     
-    public function searchAction(Request $request, $type)
+    public function searchAction(Request $request)
     {
         $q              = trim($request->get('q', null));
-        $page           = intval($request->get('page', 1));
+        $type           = $request->get('type', null);
+        $page           = intval($request->get('page', 1));        
         $em             = $this->getDoctrine()->getManager();
         $siteManager    = $this->get("site_manager");
         $site           = $siteManager->getCurrentSite();
@@ -58,41 +59,30 @@ class SearchController extends Controller
             $page = 1;
         }
 
-        if($type === 'evenements')
+        $nbSoirees  = 0;
+        $soirees    = [];
+        $nbUsers    = 0;
+        $users      = [];
+        
+        if(!$type || $type === 'evenements') //Recherche d'événements
         {
             list($soirees, $nbSoirees) = $this->searchEvents($em, $site, $q, $page, $maxItems);
-            return $this->render('TBNMainBundle:Search:events.html.twig', [
-                "events"    => $soirees,
-                "nbSoirees" => $nbSoirees,
-                "term"      => $q,
-                "maxItems"  => $maxItems,
-                "page"      => $page
-            ]);
         }
 
-        if($type === 'membres')
+        if(!$type || $type === 'membres') //Recherche de membres
         {
             list($users, $nbUsers) = $this->searchUsers($em, $site, $q, $page, $maxItems);
-            return $this->render('TBNMainBundle:Search:users.html.twig', [
-                "users"     => $users,
-                "nbUsers"   => $nbUsers,
-                "term"      => $q,
-                "maxItems"  => $maxItems,
-                "page"      => $page
-            ]);
         }
 
-        list($users, $nbUsers)      = $this->searchUsers($em, $site, $q, $page, $maxItems);
-        list($soirees, $nbSoirees)  = $this->searchEvents($em, $site, $q, $page, $maxItems);
-        
-        return $this->render("TBNMainBundle:Search:list.html.twig", [
+        return $this->render("TBNMainBundle:Search:search.html.twig", [
             "term"      => $q,
-            "page"      => $page,
             "type"      => $type,
-            "nbItems"   => ($nbSoirees + $nbUsers),
+            "page"      => $page,
             "maxItems"  => $maxItems,
             "events"    => $soirees,
+            "nbEvents"  => $nbSoirees,
             "users"     => $users,
+            "nbUsers"   => $nbUsers
         ]);
     }
 }
