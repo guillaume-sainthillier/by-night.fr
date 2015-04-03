@@ -27,7 +27,7 @@
 {% endfor %}
 
 {% set place = soiree.place %}
-{% set villePlace = place.ville %}
+{% set villePlace = place ? place.ville : null %}
 
 {% block titre_agenda %}
     {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>{% endif %}
@@ -37,7 +37,9 @@
 {% block title_agenda %}{{ nomSoiree }}{% endblock %}
 
 {% block breadcrumb_agenda %}
-    {% set test = menu.addItem(place.nom, path('tbn_search_query',{'q': place.nom, 'type': 'evenements'})) %}    
+    {% if place %}
+        {% set test = menu.addItem(place.nom, path('tbn_search_query',{'q': place.nom, 'type': 'evenements'})) %}
+    {% endif %}
     {% set test = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}    
 {% endblock %}
     
@@ -111,7 +113,7 @@
                     {% endif %}
                 </li>
                 
-                {% if place.rue or place.nom or ville %}
+                {% if place and (place.rue or place.nom or ville) %}
                 <li>
                     <i class="fa fa-li fa-map-marker"></i>
                     <div itemprop="location" itemscope itemtype="http://schema.org/Place">

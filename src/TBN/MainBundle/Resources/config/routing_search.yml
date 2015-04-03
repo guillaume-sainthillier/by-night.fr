@@ -1,6 +1,3 @@
 tbn_search_query:
-    pattern: /{type}
-    defaults: { _controller: TBNMainBundle:Search:search, type: null}
-    requirements:
-        type: evenements|membres
-        method: GET|POST
+    pattern: /
+    defaults: { _controller: TBNMainBundle:Search:search}

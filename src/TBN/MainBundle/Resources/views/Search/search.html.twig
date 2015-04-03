@@ -1,0 +1,66 @@
+{% extends "TBNAgendaBundle::layout.html.twig" %}
+
+{% if not type %}
+    {% set titre = 'Recherche d\'événements, lieux et membres à ' ~ site.nom %}
+    {% set title = 'Recherche' %}
+    {% set description = 'Recherche d\'événements, concerts, spectacles et membres à ' ~ site.nom %}
+    {% set result = {count: (nbEvents + nbUsers), label: 'résultat'} %}
+    {% set nom = 'Tout' %}
+{% elseif type == 'evenements' %}
+    {% set titre = 'Recherche d\'événements à ' ~ site.nom %}
+    {% set title = 'Recherche d\'événements' %}
+    {% set description = 'Recherche d\'événements, concerts, spectacles, sorties à ' ~ site.nom %}
+    {% set result = {count: nbEvents, label: 'événement'} %}
+    {% set nom = 'Événements' %}
+{% elseif type == 'membres' %}
+    {% set titre = 'Recherche de membres à ' ~ site.nom %}
+    {% set title = 'Recherche de membres' %}
+    {% set result = {count: nbUsers, label: 'membre'} %}
+    {% set description = titre %}
+    {% set nom = 'Membres' %}
+{% endif %}
+
+{% block breadcrumb_agenda  %}
+    {% set test = menu.addItem('Recherche', path('tbn_search_query', {'q': term})) %}
+    
+    {% if type %}
+        {% set test = menu.addItem(nom, path('tbn_search_query', {'q': term, 'type': type})) %}
+    {% endif %}
+    
+    {% if term %}
+    {% set test = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'evenements'})) %}
+    {% endif %}
+{% endblock %}
+
+{% set s = result.count > 1 ? 's': null %}
+{% if term %}
+    {% set description = description ~ '. ' ~ result.count ~ ' ' 
+        ~ result.label ~ s ~ ' trouvé' ~ s ~ ' pour la recherche "' ~ term ~ '"'
+    %}
+{% endif %}
+
+{% block title_agenda -%}{{ title }}{%- endblock %}
+{% block titre_agenda -%}{{ titre }}{%- endblock %}
+{% block meta_description -%}{{ description }}{%- endblock %}
+    
+{% block body_agenda %}
+    {% include "TBNMainBundle:Search:search_content.html.twig" %}
+{% endblock %}
+
+{% block js_agenda %}
+    {% javascripts 
+        'bower/dropdown.js/jquery.dropdown.js'
+        output='prod/js/recherche/scripts.js'
+    %}
+        <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block css_agenda %}
+    {% stylesheets 
+        'bower/dropdown.js/jquery.dropdown.css'
+        output='prod/css/recherche/style.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    {% endstylesheets %}
+{% endblock %}
