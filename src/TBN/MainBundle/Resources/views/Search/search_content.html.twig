@@ -12,19 +12,19 @@
     <div class="row">
         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <form method="GET" action="{{ path('tbn_search_query') }}">
-                <div class="col-lg-4 col-lg-offset-2 col-md-8 col-md-offset-2">
+                <div class="col-md-8 col-lg-6">
                     <input name="q" class="form-control" size="16" type="text" 
                            placeholder="{% block form_placeholder %}Que cherchez-vous ?{% endblock %}" 
                            value="{{ term }}" >
                 </div>
-                <div class="col-lg-2">
+                <div class="col-md-2 col-lg-3">
                     <select name="type" class="form-control">
                         {% for value, label in options %}
                             <option value="{{ value }}" {{ value == currentType ? 'selected' : '' }}>{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-lg-2">
+                <div class="col-md-2 col-lg-3">
                     <input class="btn btn-primary btn-raised" type="submit" value="Rechercher" />
                 </div>
             </form>
@@ -33,18 +33,21 @@
                 
     {% if term %}
         <h2>
-            <span class="number">{{ result.count }}</span> {{ result.label }}{{ s }} trouvé{{ s }}
+            {% if result.count == 0 %}Aucun{% else %}
+                <span class="number">{{ result.count }}</span>
+            {% endif %}
+            {{ result.label }}{{ s }} trouvé{{ s }}
             pour la recherche <strong>{{ term }}</strong>
         </h2>
         <br />
-        {% if not type or type == 'evenements' %}
+        {% if events|length > 0 and (not type or type == 'evenements') %}
             {% set s = nbEvents > 1 ? 's': null %}
             <h3><span class="number">{{ nbEvents }}</span> Événement{{ s }}</h3>
             <br>
             {% include "TBNMainBundle:Search:content_events.html.twig" %}
         {% endif %}
     
-        {% if not type or type == 'membres' %}
+        {% if users|length > 0 and (not type or type == 'membres') %}
             {% set s = nbUsers > 1 ? 's': null %}
             <h3><span class="number">{{ nbUsers }}</span> Membre{{ s }}</h3>
             <br>

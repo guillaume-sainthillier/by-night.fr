@@ -24,8 +24,9 @@ class SearchController extends Controller
 	$repo           = $em->getRepository("TBNAgendaBundle:Agenda"); // 100ms
         $repoSearch     = $repositoryManager->getRepository("TBNAgendaBundle:Agenda");
         $search         = (new SearchAgenda())->setTerm($q);
-        $soirees        = $repoSearch->findWithSearch($site, $search, $offset, $limit, false); //100ms
-        $nbSoirees      = $repo->findCountWithSearch($site, $search); //10ms
+        $results        = $repoSearch->findWithSearch($site, $search, $offset, $limit); //100ms
+        $soirees        = $results->getCurrentPage();
+        $nbSoirees      = $results->getNbResults(); //10ms
 
         return [$soirees, $nbSoirees];
     }
@@ -64,6 +65,8 @@ class SearchController extends Controller
         $nbUsers    = 0;
         $users      = [];
         
+        //$finder = $this->container->get('fos_elastica.finder.search.user');
+        
         if(!$type || $type === 'evenements') //Recherche d'événements
         {
             list($soirees, $nbSoirees) = $this->searchEvents($em, $site, $q, $page, $maxItems);
@@ -73,6 +76,9 @@ class SearchController extends Controller
         {
             list($users, $nbUsers) = $this->searchUsers($em, $site, $q, $page, $maxItems);
         }
+        
+        var_dump($soirees->getNbResults());
+        die();
 
         return $this->render("TBNMainBundle:Search:search.html.twig", [
             "term"      => $q,

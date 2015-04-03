@@ -35,6 +35,7 @@ class AppKernel extends Kernel
             new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
 	    new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
+            new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
             new \FOS\ElasticaBundle\FOSElasticaBundle(),
         );
 

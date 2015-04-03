@@ -18,7 +18,7 @@ class AgendaRepository extends Repository {
 
     /**
      * @param $searchText
-     * @return array<Agenda>
+     * @return \Pagerfanta\Pagerfanta
      */
     public function findWithSearch(Site $site, SearchAgenda $search, $page = 1, $limit = 15) {
         $filters = new Bool();
@@ -112,10 +112,10 @@ class AgendaRepository extends Repository {
 
         $finalQuery->setPostFilter($filters)
                 ->addSort(['date_fin' => 'asc', 'date_debut' => 'desc'])
-                ->setFrom($page*$limit)
+                ->setFrom(($page -1)*$limit)
                 ->setSize($limit);
 
         // return $this->findHybrid($query); if you also want the ES ResultSet
-        return $this->find($finalQuery);
+        return $this->findPaginated($finalQuery);
     }
 }
