@@ -50,7 +50,7 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
         
         <!-- CSS -->
-        <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400|Roboto+Condensed:300,400|Roboto+Draft:300,400' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400|Roboto+Condensed:100,300,400|Roboto+Draft:100,300,400' rel='stylesheet' type='text/css'>
         
         {% stylesheets 
             'bower/bootstrap/dist/css/bootstrap.min.css'
@@ -111,7 +111,7 @@
             
             <!-- Main -->
             {% block start_container -%}
-            <div class="container" id="container">
+            <div class="container panel panel-primary" id="container">
             {%- endblock %}
                 {% block helper %}{% endblock %}
                 {% block body -%}{%- endblock %}

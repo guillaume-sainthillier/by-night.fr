@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorMap({"user" = "UserInfo", "site" = "SiteInfo"})
  * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\InfoRepository")
  */
-class Info
+abstract class Info
 {
     /**
     * @var integer 

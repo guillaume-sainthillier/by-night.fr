@@ -20,7 +20,7 @@ function init_soirees(selector)
 
 function load_infinite_scroll()
 {
-    var marginScroll    = 100;
+    var marginScroll    = 250;
     var countStep       = 2;
     
     $(window).scroll(function()
@@ -92,7 +92,6 @@ function init_criteres()
             div_criteres.show(options.duration, function ()
             {
                 $(this).removeClass(options.css_hidden);
-                        
             });
         } else
         {
@@ -105,7 +104,6 @@ function init_criteres()
     })
     .closest(options.selector_main_block)
     .find(options.selector_block_criteres)
-    .hide()
     .removeClass(options.css_initial_hidden)
     .addClass(options.css_hidden);
 }

@@ -1,95 +1,95 @@
-<div class="row event" itemscope itemtype="http://schema.org/Event">
-    <div class="col-sm-3 image_soiree">
-        {% if soiree.webPath %}
-            {% set original = app.request.getUriForPath('/' ~ soiree.webPath) %}
-            {% set thumb = soiree.webPath|imagine_filter('thumbs_evenement') %}
-        {% elseif soiree.url %}
-            {% set original = soiree.url %}
-            {% set thumb = original %}
-        {% else %}
-            {% set original = app.request.getUriForPath('/img/empty_event.png') %}
-            {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
-        {% endif %}
-        {% set nomSoiree = soiree.nom %}
-        <meta itemprop="image" content="{{ original }}" />
-        <a class="image-gallery" href="{{ original }}" title="{{ nomSoiree }}" >
-            <img class="img img-responsive loading component" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ nomSoiree }}" />      
+<div itemscope itemtype="http://schema.org/Event">
+    <h3 class="modal-title nom_soiree">
+        <a title="Tous les détails de {{ soiree.nom }} " href="{{ path('tbn_agenda_details', {'slug': soiree.slug})}}" itemprop="url" >
+            <span itemprop="name">{{ soiree.nom }}</span>
         </a>
-    </div>
-    <div class="col-sm-9 description_evenement" >
-        <h4 class="modal-title nom_soiree">
-            <a title="Tous les détails de {{ nomSoiree }} " href="{{ path('tbn_agenda_details', {'slug': soiree.slug})}}" itemprop="url" >
-                <span itemprop="name">{{ nomSoiree }}</span>
+    </h3>
+    <div class="row event">
+        <div class="col-sm-3 image_soiree">
+            {% if soiree.webPath %}
+                {% set original = app.request.getUriForPath('/' ~ soiree.webPath) %}
+                {% set thumb = soiree.webPath|imagine_filter('thumbs_evenement') %}
+            {% elseif soiree.url %}
+                {% set original = soiree.url %}
+                {% set thumb = original %}
+            {% else %}
+                {% set original = app.request.getUriForPath('/img/empty_event.png') %}
+                {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
+            {% endif %}
+            <meta itemprop="image" content="{{ original }}" />
+            <a class="image-gallery" href="{{ original }}" title="{{ soiree.nom }}" >
+                <img class="img img-responsive loading" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ soiree.nom }}" />      
             </a>
-        </h4>
-        {% if soiree.modificationDerniereMinute %}
-        <div class="alert alert-info">
-            <i class="fa fa-warning"></i>
-            <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
         </div>
-        {% endif %}
-        
-        <div>
-            {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
-            {% set dateFin = soiree.dateFin|date('d/m/Y') %}
-            <i class="fa fa-clock-o pull-left icon"></i>
-            <span>
-                {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}                        
-                    Le <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
-                {% else %}
-                    Du <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
-                    au <time class="number text-primary" itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\TH:i:sO') }}">{{ dateFin }}</time>
-                {% endif %}
-                {% if soiree.horaires != "" %}
-                    - {{ soiree.horaires }}
-                {% endif %}
-            </span>
-        </div>                        
-        <div>
-            <i class="fa fa-quote-left fa-2x pull-left icon"></i>
-            <div itemprop="description" class="description">
-                {{ soiree.descriptif|striptags|replace({'&#13;' : ' '})|truncate(300, true, '...')|raw }}
+        <div class="col-sm-9 description_evenement" >
+            {% if soiree.modificationDerniereMinute %}
+            <div class="alert alert-info">
+                <i class="fa fa-warning"></i>
+                <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
             </div>
+            {% endif %}
+
+            <div>
+                {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
+                {% set dateFin = soiree.dateFin|date('d/m/Y') %}
+                <i class="fa fa-clock-o pull-left icon"></i>
+                <span>
+                    {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}                        
+                        Le <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
+                    {% else %}
+                        Du <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
+                        au <time class="number text-primary" itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\TH:i:sO') }}">{{ dateFin }}</time>
+                    {% endif %}
+                    {% if soiree.horaires != "" %}
+                        - {{ soiree.horaires }}
+                    {% endif %}
+                </span>
+            </div>                        
+            <div>
+                <i class="fa fa-quote-left fa-2x pull-left icon"></i>
+                <div itemprop="description" class="description">
+                    {{ soiree.descriptif|striptags|replace({'&#13;' : ' '})|truncate(300, true, '...')|raw }}
+                </div>
+            </div>
+            {% set place = soiree.place %}
+            {% if place and place.nom %}
+                <div class="trait" itemprop="location" itemscope itemtype="http://schema.org/Place">
+                    <i class="fa fa-home pull-left icon"></i>
+                    <span itemprop="name">{{ place.nom }}</span>
+                    {% if place.latitude and place.longitude %}
+                        <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+                            <meta itemprop="latitude" content="{{ place.latitude }}" />
+                            <meta itemprop="longitude" content="{{ place.longitude }}" />
+                        </span>
+                    {% endif %}
+                    {% if place.ville %}
+                        <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">, 
+                            <span itemprop="addressLocality">{{ place.ville.nom }}</span>
+                            {% if place.ville.codePostal %}
+                                <meta itemprop="addressRegion" content="{{ place.ville.codePostal }}" />
+                                <meta itemprop="addressCountry" content="FR" />
+                                <meta itemprop="streetAddress" content="{{ place.rue }}" />
+                            {% endif %}
+                        </span>
+                    {% endif %}                
+                </div>
+            {% endif %}
+            {% if soiree.tarif %}   
+                <div class="trait" itemprop="offers" itemscope itemtype="http://schema.org/Offer">                        
+                    <i class="fa fa-ticket pull-left icon"></i> 
+                    <span itemprop="price">{{ soiree.tarif }}</span>
+                    <meta itemprop="priceCurrency" content="EUR" />
+                </div>
+            {% endif %}
+            {% if soiree.user %}   
+                <div class="trait border_bottom">
+                    <i class="fa fa-user pull-left icon"></i>
+                    Par 
+                    <a class="display_inline" href="{{ path('tbn_user_details', {'username': soiree.user.username} ) }}" title="Accédez au profil de {{ soiree.user.username }}">
+                        {{ soiree.user.username }}
+                    </a>
+                </div>
+            {% endif %}
         </div>
-        {% set place = soiree.place %}
-        {% if place and place.nom %}
-            <div class="trait" itemprop="location" itemscope itemtype="http://schema.org/Place">
-                <i class="fa fa-home pull-left icon"></i>
-                <span itemprop="name">{{ place.nom }}</span>
-                {% if place.latitude and place.longitude %}
-                    <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                        <meta itemprop="latitude" content="{{ place.latitude }}" />
-                        <meta itemprop="longitude" content="{{ place.longitude }}" />
-                    </span>
-                {% endif %}
-                
-                {% if place.ville %}
-                    <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                        ,<span itemprop="addressLocality">{{ place.ville.nom }}</span>
-                        {% if place.ville.codePostal %}
-                            <meta itemprop="addressRegion" content="{{ place.ville.codePostal }}" />
-                            <meta itemprop="addressCountry" content="FR" />
-                            <meta itemprop="streetAddress" content="{{ place.rue }}" />
-                        {% endif %}
-                    </span>
-                {% endif %}                
-            </div>
-        {% endif %}
-        {% if soiree.tarif %}   
-            <div class="trait" itemprop="offers" itemscope itemtype="http://schema.org/Offer">                        
-                <i class="fa fa-ticket pull-left icon"></i> 
-                <span itemprop="price">{{ soiree.tarif }}</span>
-                <meta itemprop="priceCurrency" content="EUR" />
-            </div>
-        {% endif %}
-        {% if soiree.user %}   
-            <div class="trait border_bottom">
-                <i class="fa fa-user pull-left icon"></i>
-                Par 
-                <a class="display_inline" href="{{ path('tbn_user_details', {'username': soiree.user.username} ) }}" title="Accédez au profil de {{ soiree.user.username }}">
-                    {{ soiree.user.username }}
-                </a>
-            </div>
-        {% endif %}
     </div>
 </div>

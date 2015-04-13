@@ -9,5 +9,5 @@
 {% endblock %}
 
 {% block breadcrumb_site %}
-    {% set test = menu.addItem(edit_site.nom, path('tbn_administration_site_edit', {'id': site.id})) %}
+    {% set item = menu.addItem(edit_site.nom, path('tbn_administration_site_edit', {'id': site.id})) %}
 {% endblock %}

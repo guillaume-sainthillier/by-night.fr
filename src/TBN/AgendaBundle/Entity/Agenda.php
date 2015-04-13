@@ -2,17 +2,19 @@
 
 namespace TBN\AgendaBundle\Entity;
 
-use TBN\AgendaBundle\Entity\Place;
 use Doctrine\ORM\Mapping as ORM;
+use \Doctrine\Common\Collections\ArrayCollection;
+
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Gedmo\Mapping\Annotation as Gedmo;
-use \Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use TBN\AgendaBundle\Entity\Agenda;
 
+use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
+
+use TBN\AgendaBundle\Entity\Place;
+use TBN\AgendaBundle\Entity\Agenda;
 
 /**
  * Agenda
@@ -21,7 +23,6 @@ use JMS\Serializer\Annotation\Type;
  *   @ORM\Index(name="agenda_slug_idx", columns={"slug"}),
  *   @ORM\Index(name="agenda_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
- *   @ORM\Index(name="agenda_commune_idx", columns={"commune"}),
  *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
  *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"})
  * })

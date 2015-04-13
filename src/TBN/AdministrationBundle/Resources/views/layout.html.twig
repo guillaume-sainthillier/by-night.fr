@@ -1,7 +1,7 @@
 {% extends "TBNAgendaBundle::layout.html.twig" %}
 
 {% block breadcrumb_agenda %}    
-    {% set test = menu.addItem("Administration", path('tbn_administration_index')) %}
+    {% set item = menu.addItem("Administration", path('tbn_administration_index')) %}
     {% block breadcrumb_administration %}{% endblock %}
 {% endblock %}
 

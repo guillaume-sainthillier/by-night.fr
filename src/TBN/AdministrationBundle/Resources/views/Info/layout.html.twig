@@ -1,7 +1,7 @@
 {% extends "TBNAdministrationBundle::layout.html.twig" %}
 
 {% block breadcrumb_administration %}    
-    {% set test = menu.addItem("Info", path('tbn_administration_info_index')) %}
+    {% set item = menu.addItem("Info", path('tbn_administration_info_index')) %}
     {% block breadcrumb_info %}{% endblock %}
 {% endblock %}
 

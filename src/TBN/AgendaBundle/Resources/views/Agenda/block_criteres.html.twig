@@ -3,7 +3,7 @@
 {{ form_errors(form) }}
 <div class="form-horizontal block_criteres panel panel-primary">      
     <div class="panel-body">
-        <h2 class="modal-title">Trouvez une idée sortie</h2>
+        <h2 class="modal-title">Trouvez une idée sortie <span class="info">{% if isPost and nbEvents %}{{ nbEvents }} événément{{ nbEvents > 1 ? 's' : '' }}{% endif %}</span></h2>
         <br />
         <div class="row">
             <div class="col-xs-4">
@@ -22,7 +22,7 @@
                         {{ form_widget(form.au) }}
                     </div>
                 </div>
-            </div>            
+            </div>
             <div class="col-xs-4">
                 <select class="form-control shorcuts_date" placeholder="Raccourcis">
                     <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">Aujourd'hui</option>
@@ -32,6 +32,11 @@
                 </select>
             </div>
         </div>
+        {% if isPost and (search.lieux or search.commune or search.term) %}
+            {% set options = {hiddenClass: '', iconClass: 'fa-chevron-up'} %}
+        {% else %}
+            {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}            
+        {% endif %}
         <div class="row">
             <div class="col-xs-8">
                 <div class="form-group no_margin_bottom">
@@ -41,15 +46,15 @@
                     </div>
                 </div>
                 <button type="button" class="btn_criteres btn btn-primary btn-flat">
-                    <i class="fa size-135 fa-chevron-down"></i> 
+                    <i class="fa size-135 {{ options.iconClass }}"></i> 
                     Recherche avancée
                 </button>
             </div>
             <div class="col-xs-4">
                 {{ form_widget(form.chercher) }}
             </div>               
-        </div>   
-        <div class="hidden cache criteres">
+        </div>        
+        <div class="{{ options.hiddenClass }} criteres">
             <div class="row">
                 <div class="col-xs-8">
                     <div class="form-group">

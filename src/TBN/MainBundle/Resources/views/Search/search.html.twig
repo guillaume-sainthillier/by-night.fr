@@ -1,4 +1,4 @@
-{% extends "TBNAgendaBundle::layout.html.twig" %}
+{% extends "TBNMainBundle:Search:layout.html.twig"|partial_extends %}
 
 {% if not type %}
     {% set titre = 'Recherche d\'événements, lieux et membres à ' ~ site.nom %}
@@ -21,14 +21,18 @@
 {% endif %}
 
 {% block breadcrumb_agenda  %}
-    {% set test = menu.addItem('Recherche', path('tbn_search_query', {'q': term})) %}
+    {% set item = menu.addItem('Recherche', path('tbn_search_query')) %}
     
     {% if type %}
-        {% set test = menu.addItem(nom, path('tbn_search_query', {'q': term, 'type': type})) %}
+        {% set item = menu.addItem(nom, path('tbn_search_query', {'type': type})) %}
     {% endif %}
     
     {% if term %}
-    {% set test = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'evenements'})) %}
+    {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': type})) %}
+    {% endif %}
+    
+    {% if page > 1 %}
+        {% set item = menu.addItem('Page ' ~ page, path('tbn_search_query', {'page': page, 'q': term, 'type': type})) %}
     {% endif %}
 {% endblock %}
 

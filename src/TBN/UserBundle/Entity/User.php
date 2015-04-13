@@ -10,11 +10,7 @@ use JMS\Serializer\Annotation\Expose;
 /**
  * User
  * 
- * @ORM\Table( name="tbn_user",
- *             indexes={@ORM\Index(
- *                  name="recherche_user_idx",
- *                  columns={"nom", "date_creation"}
- * )})
+ * @ORM\Table(name="tbn_user", indexes={@ORM\Index(name="user_nom_idx", columns={"nom"})})
  * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\UserRepository")
  * @ExclusionPolicy("all")
  */
@@ -24,7 +20,7 @@ class User extends BaseUser
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-      * @Expose
+     * @Expose
      */
     protected $id;
 
@@ -80,6 +76,7 @@ class User extends BaseUser
     /**
     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
     * @ORM\JoinColumn(nullable=false)
+    * @Expose
     */
     protected $site;
     

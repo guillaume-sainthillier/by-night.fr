@@ -58,7 +58,6 @@ class EventController extends Controller {
     }
 
     public function listAction(Request $request, $page) {
-	
 	//État de la page
 	$isAjax		    = $request->isXmlHttpRequest();
 	$isPost		    = $request->isMethod('POST');
@@ -98,22 +97,21 @@ class EventController extends Controller {
 	    $page = $search->getPage();
 	}
 	
-
         //Recherche ElasticSearch
         $repositoryManager = $this->get('fos_elastica.manager');
         $repository = $repositoryManager->getRepository('TBNAgendaBundle:Agenda');
-	$soirees = $repository->findWithSearch($site, $search, $page, $nbSoireeParPage); //100ms
-	$full_soirees = $repo->findCountWithSearch($site, $search); // 10ms
-
-        //Traitement final
-	$pageTotal = ceil($full_soirees / $nbSoireeParPage);
-
+	$results = $repository->findWithSearch($site, $search); //100ms
+	$results->setCurrentPage($page)->setMaxPerPage($nbSoireeParPage);
+	$soirees = $results->getCurrentPageResults();
+	$nbSoireesTotales = $results->getNbResults();
         
 	return $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
 		    'soirees' => $soirees,
+		    'nbEvents' => $nbSoireesTotales,
+		    'maxPerEvent' => $nbSoireeParPage,
 		    'page' => $page,
-		    'pageTotal' => $pageTotal,
 		    'search' => $search,
+		    'isPost' => $isPost,
 		    'form' => $form->createView()
 	]); 
     }
@@ -148,11 +146,11 @@ class EventController extends Controller {
 
 	if (!$cache->contains($key)) {
 	    $villes = $repo->getAgendaVilles($site);
-            
-            $tab_villes   = array_map(function(Ville $ville)
-            {
-                return $ville->getNom();
-            }, $villes);
+	    $tab_villes = [];
+	    foreach($villes as $ville)
+	    {
+		$tab_villes[$ville->getId()] = $ville->getNom();
+	    }
 
 	    $cache->save($key, $tab_villes, 24*60*60);
 	}
@@ -166,11 +164,11 @@ class EventController extends Controller {
 
 	if (!$cache->contains($key)) {
 	    $places = $repo->getAgendaPlaces($site);
-
-	    $lieux   = array_map(function(Place $place)
-            {
-                return $place->getNom();
-            }, $places);
+	    $lieux  = array();
+	    foreach($places as $place)
+	    {
+		$lieux[$place->getId()] = $place->getNom();
+	    }
 
 	    $cache->save($key, $lieux, 24*60*60);
 	}

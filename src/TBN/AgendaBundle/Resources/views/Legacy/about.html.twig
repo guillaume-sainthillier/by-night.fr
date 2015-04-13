@@ -1,7 +1,7 @@
 {% extends "TBNAgendaBundle::layout.html.twig" %}
 
 {% block breadcrumb_agenda %}        
-    {% set test = menu.addItem("A propos", url('tbn_agenda_about')) %}    
+    {% set item = menu.addItem("A propos", url('tbn_agenda_about')) %}    
 {% endblock %}
 
 {% block title_agenda %}
