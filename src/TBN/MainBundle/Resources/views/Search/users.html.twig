@@ -5,9 +5,9 @@
 {% block meta_description -%}Recherche de membres à {{ site.nom }}. {% if term %}{{ nbUsers}} membre{{ nbUsers > 1 ? "s" : "" }} trouvé{{ nbUsers > 1 ? "s" : "" }} pour la recherche '{{ term }}'.{% endif %}{% endblock %}
 
 {% block breadcrumb_search %}
-    {% set test = menu.addItem('Membres', path('tbn_search_query', {'type': 'membres'})) %}    
+    {% set item = menu.addItem('Membres', path('tbn_search_query', {'type': 'membres'})) %}    
     {% if term %}
-    {% set test = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'membres'})) %}
+    {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'membres'})) %}
     {% endif %}
 {% endblock %}
 

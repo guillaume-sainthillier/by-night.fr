@@ -41,16 +41,20 @@
         </h2>
         <br />
         {% if events|length > 0 and (not type or type == 'evenements') %}
-            {% set s = nbEvents > 1 ? 's': null %}
-            <h3><span class="number">{{ nbEvents }}</span> Événement{{ s }}</h3>
-            <br>
+            {% if type != 'evenements' %}
+                {% set s = nbEvents > 1 ? 's': null %}
+                <h3><span class="number">{{ nbEvents }}</span> Événement{{ s }}</h3>
+                <br>
+            {% endif %}
             {% include "TBNMainBundle:Search:content_events.html.twig" %}
         {% endif %}
     
         {% if users|length > 0 and (not type or type == 'membres') %}
-            {% set s = nbUsers > 1 ? 's': null %}
-            <h3><span class="number">{{ nbUsers }}</span> Membre{{ s }}</h3>
-            <br>
+            {% if type != 'membres' %}
+                {% set s = nbUsers > 1 ? 's': null %}
+                <h3><span class="number">{{ nbUsers }}</span> Membre{{ s }}</h3>
+                <br>
+            {% endif %}
             {% include "TBNMainBundle:Search:content_users.html.twig" %}
         {% endif %}
     {% endif %}

@@ -5,9 +5,9 @@
 {% block meta_description -%}Recherche d'événements, concerts, spectacles à {{ site.nom }}. {% if term %}{{ nbSoirees}} événement{{ nbSoirees > 1 ? "s" : "" }} trouvé{{ nbSoirees > 1 ? "s" : "" }} pour la recherche '{{ term }}'.{% endif %}{% endblock %}
 
 {% block breadcrumb_search %}
-    {% set test = menu.addItem('Événements', path('tbn_search_query', {'type': 'evenements'})) %}    
+    {% set item = menu.addItem('Événements', path('tbn_search_query', {'type': 'evenements'})) %}    
     {% if term %}
-    {% set test = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'evenements'})) %}
+    {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'evenements'})) %}
     {% endif %}
 {% endblock %}
 

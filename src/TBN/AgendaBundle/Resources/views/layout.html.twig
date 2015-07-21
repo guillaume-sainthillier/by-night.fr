@@ -28,8 +28,8 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
 {% block breadcrumb %}    
     <div id="bread" class="bg-white">
         <div class="container">
-            {% set test = menu.addItem('Accueil', path('tbn_main_index')) %}    
-            {% set test = menu.addItem(site.nom, path('tbn_agenda_index')) %}    
+            {% set item = menu.addItem('Accueil', path('tbn_main_index')) %}    
+            {% set item = menu.addItem(site.nom, path('tbn_agenda_index')) %}    
             {% block breadcrumb_agenda %}{% endblock %}
             {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
         </div>

@@ -6,6 +6,8 @@
         {% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" %}
         <hr />
     {% endfor %}
+
+    {% if soirees|length == maxPerEvent %}
     <div>
         <a id="paginate"
            class="btn btn-primary btn-lg btn-flat btn-block"
@@ -14,6 +16,7 @@
             <i class="fa fa-chevron-down"></i> Page {{ page + 1 }}
         </a>
     </div>
+    {% endif %}
 {% endif %}
 {% endspaceless %}{% endblock %}
 

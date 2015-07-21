@@ -246,17 +246,35 @@ fos_elastica:
                         analyzer:
                             custom_french_analyzer:
                                 type: custom
-                                tokenizer: letter
-                                filter: ["asciifolding", "lowercase", "french_stem", "stop_fr"]
+                                tokenizer: nGram
+                                filter: [stopwords, asciifolding, lowercase, snowball, elision, worddelimiter]
+                            custom_search_analyzer:
+                                type: custom
+                                tokenizer: standard
+                                filter: [stopwords, asciifolding, lowercase, snowball, elision, worddelimiter]
+                        tokenizer:
+                            nGram:
+                                type:     nGram
+                                min_gram: 2
+                                max_gram: 20
                         filter:
-                            stop_fr:
-                                type: "stop"
-                                stopwords: ["l", "m", "t", "qu", "n", "s", "j", "d"]
+                            snowball:
+                                type:     snowball
+                                language: French
+                            elision:
+                                type:     elision
+                                articles: [l, m, t, qu, n, s, j, d]
+                            stopwords:
+                                type:      stop
+                                stopwords: [_french_]
+                                ignore_case : true
+                            worddelimiter :
+                                type:      word_delimiter
             types:
                 event:
                     mappings:
-                        nom: { boost: 5, analyzer: custom_french_analyzer }
-                        descriptif: { analyzer: custom_french_analyzer }
+                        nom: { boost: 5, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        descriptif: { index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         dateDebut: { type: date, format: Y-m-d }
                         dateFin: { type: date, format: Y-m-d }
                         commune: ~
@@ -264,12 +282,12 @@ fos_elastica:
                         place:
                             type: "object"
                             properties:
-                                nom: { boost: 3, analyzer: custom_french_analyzer }
-                                rue: { analyzer: custom_french_analyzer }
+                                nom: { boost: 3, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                                rue: { index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                                 ville:
                                     type: "object"
                                     properties:
-                                        nom: { boost: 2, analyzer: custom_french_analyzer }
+                                        nom: { boost: 2, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                                         codePostal: ~
                         site:
                             type: "object"
@@ -283,13 +301,29 @@ fos_elastica:
                         listener: ~ # by default, listens to "insert", "update" and "delete"
                         finder: ~
                 user:
-                    mappings: ~
+                    mappings:
+                        username: { boost: 5, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        firstname: { boost: 1, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        lastname: { boost: 1, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        site:
+                            type: "object"
+                            properties:
+                                id: ~
                     persistence:
                         driver: orm
                         model:  TBN\UserBundle\Entity\User
+                        repository: TBN\UserBundle\SearchRepository\UserRepository
                         provider: ~
                         listener: ~ # by default, listens to "insert", "update" and "delete"
                         finder: ~
+
+jms_serializer:
+    metadata:
+        auto_detection: true
+        directories:
+            FOSUserBundle:
+                namespace_prefix: "FOS\\UserBundle"
+                path: "@TBNUserBundle/Resources/config/serializer/fos"
 
 services:
     twig.extension.intl:

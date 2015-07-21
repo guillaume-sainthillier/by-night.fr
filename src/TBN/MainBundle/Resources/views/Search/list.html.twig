@@ -6,7 +6,7 @@
 
 {% block breadcrumb_search -%}   
     {% if term %}
-    {% set test = menu.addItem(term, path('tbn_search_query',{'q': term})) %}
+    {% set item = menu.addItem(term, path('tbn_search_query',{'q': term})) %}
     {% endif %}
 {%- endblock %}
 

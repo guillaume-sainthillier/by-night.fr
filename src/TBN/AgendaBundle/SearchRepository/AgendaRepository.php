@@ -6,6 +6,7 @@ use FOS\ElasticaBundle\Repository;
 use TBN\AgendaBundle\Search\SearchAgenda;
 use TBN\MainBundle\Entity\Site;
 use Elastica\Filter\Term;
+use Elastica\Filter\Terms;
 use Elastica\Filter\Bool;
 use Elastica\Query;
 use Elastica\Query\Bool as QueryBool;
@@ -13,6 +14,9 @@ use Elastica\Query\QueryString;
 use Elastica\Filter\NumericRange;
 use Elastica\Query\Match;
 use Elastica\Util;
+use Elastica\Query\MultiMatch;
+use Elastica\Query\MatchAll;
+use Elastica\Query\Filtered;
 
 class AgendaRepository extends Repository {
 
@@ -20,17 +24,17 @@ class AgendaRepository extends Repository {
      * @param $searchText
      * @return \Pagerfanta\Pagerfanta
      */
-    public function findWithSearch(Site $site, SearchAgenda $search, $page = 1, $limit = 15) {
-        $filters = new Bool();
-        $queries = new QueryBool();
-        $analyzer = 'custom_french_analyzer';
-        $filters->addMust(
+    public function findWithSearch(Site $site, SearchAgenda $search) {
+
+	//Filters
+        $filter = new Bool;
+	$filter->addMust(
             new Term(['site.id' => $site->getId()])
-        );
+        );        
 
         if ($search->getDu()) {
             if (!$search->getAu()) { 
-                $filters->addMust(new NumericRange('date_fin', [
+                $filter->addMust(new NumericRange('date_fin', [
                     'gte' => $search->getDu()->format("Y-m-d")])
                 );
             } else {
@@ -79,43 +83,53 @@ class AgendaRepository extends Repository {
                         ->addShould($cas2)
                         ->addShould($cas3)
                         ->addShould($cas4);
-
-                $filters->addMust($cas);
+		
+                $filter->addMust($cas);
             }
         }
 
+	//Query
+	$queries = new QueryBool;
         if ($search->getTerm()) {
-            $queries->addMust(new QueryString(Util::replaceBooleanWordsAndEscapeTerm($search->getTerm())));
+            $query = new MultiMatch;
+	    $query->setQuery($search->getTerm())
+		->setFields(['nom', 'descriptif', 'type_manifestation', 
+		    'theme_manifestation', 'categorie_manifestation', 'place.nom', 'place.rue',
+		    'place.ville.nom'])
+		->setOperator('and')
+		->setFuzziness(0.8)
+		->setMinimumShouldMatch('80%')
+		;
+        }else
+	{
+	    $query = new MatchAll;
+	}
+	$queries->addMust($query);
+
+        if($search->getLieux())
+        {
+	    $placeQuery = new Terms('place.id', $search->getLieux());
+            $filter->addMust($placeQuery);
         }
 
         if($search->getCommune())
         {
-            $matchCommunes = new Match();
-            $matchCommunes->setField('commune', Util::replaceBooleanWordsAndEscapeTerm(implode(" ", $search->getCommune())));
-            $queries->addMust($matchCommunes);
+	    $communeQuery = new Terms('place.ville.id', $search->getCommune());
+            $filter->addMust($communeQuery);
         }
 
         if($search->getTypeManifestation())
         {
-            $matchTypeManifestation = new Match();
-            $matchTypeManifestation->setField('type_manifestation', Util::replaceBooleanWordsAndEscapeTerm(implode(" ", $search->getTypeManifestation())));
-            $queries->addMust($matchTypeManifestation);
+	    $communeTypeManifestationQuery = new Match;
+	    $communeTypeManifestationQuery->setField('type_manifestation', implode(' ',$search->getTypeManifestation()));
+            $queries->addMust($communeTypeManifestationQuery);
         }
 
         //Construction de la requête finale
-        $finalQuery = new Query();
+	$filtered = new Filtered($queries, $filter);
+	$finalQuery = Query::create($filtered)
+                ->addSort(['date_fin' => 'asc', 'date_debut' => 'desc']);
 
-        if(count($queries->getParams()))
-        {
-            $finalQuery->setQuery($queries);
-        }
-
-        $finalQuery->setPostFilter($filters)
-                ->addSort(['date_fin' => 'asc', 'date_debut' => 'desc'])
-                ->setFrom(($page -1)*$limit)
-                ->setSize($limit);
-
-        // return $this->findHybrid($query); if you also want the ES ResultSet
         return $this->findPaginated($finalQuery);
     }
 }
