@@ -1,7 +1,7 @@
 @echo off
 SETLOCAL
 
-TITLE Elasticsearch Service 1.4.1
+TITLE Elasticsearch Service 1.7.0
 
 if NOT DEFINED JAVA_HOME goto err
 
@@ -13,7 +13,7 @@ if not exist "%JAVA_HOME%\bin\java.exe" (
 echo JAVA_HOME points to an invalid Java installation (no java.exe found in "%JAVA_HOME%"^). Exiting...
 goto:eof
 )
-"%JAVA_HOME%\bin\java" -version 2>&1 | find "64-Bit" >nul:
+"%JAVA_HOME%\bin\java" -version 2>&1 | "%windir%\System32\find" "64-Bit" >nul:
 
 if errorlevel 1 goto x86
 set EXECUTABLE=%ES_HOME%\bin\elasticsearch-service-x64.exe
@@ -31,7 +31,7 @@ if EXIST "%EXECUTABLE%" goto okExe
 echo elasticsearch-service-(x86|x64).exe was not found...
 
 :okExe
-set ES_VERSION=1.4.1
+set ES_VERSION=1.7.0
 
 if "%LOG_DIR%" == "" set LOG_DIR=%ES_HOME%\logs
 

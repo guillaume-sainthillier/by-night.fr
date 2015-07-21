@@ -2,13 +2,10 @@
 
 namespace TBN\SocialBundle\Social;
 
-use Symfony\Component\Console\Output\OutputInterface;
 
 use TBN\UserBundle\Entity\SiteInfo;
 use TBN\MajDataBundle\Parser\AgendaParser;
 
-use Facebook\FacebookSession;
-use Facebook\FacebookRequest;
 use Facebook\GraphPage;
 use Facebook\GraphObject;
 
@@ -103,10 +100,10 @@ class FacebookAdmin extends FacebookEvents {
 	$key = 'pages.'.$id_page;
 	if(! isset($this->cache[$key]))
 	{
-	    $session = new FacebookSession($this->siteInfo->getFacebookAccessToken());
-	    $request = new FacebookRequest($session, 'GET', '/' .$id_page);
+            $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+	    $response = $this->client->get('/' .$id_page);
 
-	    $this->cache[$key] = $request->execute()->getGraphObject(GraphPage::className());
+	    $this->cache[$key] = $response->getGraphPage();
 	}
 
 	return $this->cache[$key];

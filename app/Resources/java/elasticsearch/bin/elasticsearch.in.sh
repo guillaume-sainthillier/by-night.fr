@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ES_CLASSPATH=$ES_CLASSPATH:$ES_HOME/lib/elasticsearch-1.4.1.jar:$ES_HOME/lib/*:$ES_HOME/lib/sigar/*
+ES_CLASSPATH=$ES_CLASSPATH:$ES_HOME/lib/elasticsearch-1.7.0.jar:$ES_HOME/lib/*:$ES_HOME/lib/sigar/*
 
 if [ "x$ES_MIN_MEM" = "x" ]; then
     ES_MIN_MEM=256m
@@ -29,9 +29,6 @@ fi
 if [ "x$ES_DIRECT_SIZE" != "x" ]; then
     JAVA_OPTS="$JAVA_OPTS -XX:MaxDirectMemorySize=${ES_DIRECT_SIZE}"
 fi
-
-# reduce the per-thread stack size
-JAVA_OPTS="$JAVA_OPTS -Xss256k"
 
 # set to headless, just in case
 JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true"
@@ -65,3 +62,6 @@ JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 
 # Disables explicit GC
 JAVA_OPTS="$JAVA_OPTS -XX:+DisableExplicitGC"
+
+# Ensure UTF-8 encoding by default (e.g. filenames)
+JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
