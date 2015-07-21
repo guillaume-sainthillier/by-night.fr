@@ -4,8 +4,9 @@ namespace TBN\SocialBundle\Social;
 
 use TBN\SocialBundle\Exception\SocialException;
 
-use Facebook\FacebookSession;
+//use Facebook\FacebookSession;
 use Facebook\GraphObject;
+use Facebook\Facebook as Client;
 
 /**
  * Description of Facebook
@@ -16,7 +17,7 @@ class Facebook extends Social {
 
     /**
      *
-     * @var ApiFacebook $client
+     * @var Client $client
      */
     protected $client;
 
@@ -26,7 +27,11 @@ class Facebook extends Social {
     protected static $MIN_EVENT_FIELDS = "id,updated_time,owner{id}";
 
     protected function constructClient() {
-	FacebookSession::setDefaultApplication($this->id, $this->secret);
+        $this->client = new Client([
+            'app_id' => $this->id,
+            'app_secret' => $this->secret,
+            'default_graph_version' => 'v2.4',
+        ]);
     }
 
     public function getPagePictureURL(GraphObject $object, $testCover = true, $testPicture = true)
