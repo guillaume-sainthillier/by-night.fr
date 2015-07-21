@@ -16,10 +16,6 @@ and open the template in the editor.
     padding-top: 10px;
     padding-bottom: 10px;
 
-    .nom_soiree {
-        margin-bottom: 5px;
-    }
-
     .icon {
         text-align: right;
         margin-right: 10px;
@@ -54,6 +50,10 @@ and open the template in the editor.
     .infos_evenement, .description_evenement {
         min-height: 150px;
     }
+    
+    .image_soiree {
+        padding-right: 0;
+    }
 }
 
 // > 998
@@ -63,28 +63,29 @@ and open the template in the editor.
     }
 }
 
-//Portable
-@media (max-width: @screen-xs-min) {
-
-    .event {
-        .image_soiree {
-            margin-bottom: 10px;
+@media (max-width: @screen-xs-min) { 
+    .event {  
+        padding-top: 0;
+        padding-bottom: 0;
+        
+        .description_evenement, .infos_evenement {
+            min-height: 50px;
         }
-    }
-}
-
-// < 781px
-@media (max-width: @screen-sm-max) {
-
-
-    .event {
-        .icon_description {
-            font-size: 1em;
+        
+        .nom_soiree {
+         font-size: 18px;   
         }
-
-        .image_soiree {
-            margin-bottom: 10px;
+        
+        .description_evenement {
             margin-top: 10px;
+        }
+  
+        .img {
+            max-height: 100px;
+        }
+        
+        .image_soiree {
+            padding-right: 15px;
         }
     }
 }

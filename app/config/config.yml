@@ -137,8 +137,8 @@ hwi_oauth:
             type:                facebook
             client_id:           %api_facebook_id%
             client_secret:       %api_facebook_secret%
-            scope:               email, publish_pages, manage_pages
-            authorization_url:   https://www.facebook.com/v2.4/dialog/oauth
+            scope:               email, publish_actions, manage_pages
+            authorization_url:   https://www.facebook.com/v2.3/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
@@ -149,8 +149,8 @@ hwi_oauth:
             type:                facebook
             client_id:           %api_facebook_id%
             client_secret:       %api_facebook_secret%
-            scope:               email, publish_actions
-            authorization_url:   https://www.facebook.com/v2.4/dialog/oauth
+            scope:               email, user_posts
+            authorization_url:   https://www.facebook.com/v2.3/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
@@ -162,7 +162,7 @@ hwi_oauth:
             client_id:           %api_facebook_id%
             client_secret:       %api_facebook_secret%
             scope:               email
-            authorization_url:   https://www.facebook.com/v2.4/dialog/oauth
+            authorization_url:   https://www.facebook.com/v2.3/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email

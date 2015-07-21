@@ -15,9 +15,7 @@
     {% set item = menu.addItem("Connexion", path('fos_user_security_login')) %}
 {% endblock %}
     
-{% block meta_keywords_espace %}{% spaceless %}
-    connexion,login,
-{% endspaceless %}{% endblock %}
+{% block meta_keywords_espace %}connexion,login,{% endblock %}
     
 {% block meta_description_espace %}
     Connectez-vous sur {{ block('nom_site') }}, créez vos propres événements et partagez les automatiquement avec vos amis sur les réseaux sociaux !

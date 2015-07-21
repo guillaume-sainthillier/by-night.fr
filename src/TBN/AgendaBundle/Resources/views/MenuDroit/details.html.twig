@@ -1,15 +1,19 @@
-<!-- Tendances -->
-{% include "TBNAgendaBundle:Widget:tendances.html.twig" %}
-<!-- ./Tendances -->
+<div class="col-sm-6 col-md-12">
+    <!-- Tendances -->
+    {% include "TBNAgendaBundle:Widget:tendances.html.twig" %}
+    <!-- ./Tendances -->
 
-{% if site.facebookIdPage %}
-<!-- Facebook -->
-{% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
-<!-- ./Facebook -->
+    {% if site.facebookIdPage %}
+    <!-- Facebook -->
+    {% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
+    <!-- ./Facebook -->
 {% endif %}
+</div>
 
-<!-- Événements similaires -->
-{% include "TBNAgendaBundle:Widget:evenements_similaires.html.twig" %}
-<!-- ./Événements similaires -->
+<div class="col-sm-6 col-md-12">
+    <!-- Événements similaires -->
+    {% include "TBNAgendaBundle:Widget:evenements_similaires.html.twig" %}
+    <!-- ./Événements similaires -->
 
-{% include "TBNAgendaBundle:Widget:ads.html.twig" %}
+    {% include "TBNAgendaBundle:Widget:ads.html.twig" %}
+</div>

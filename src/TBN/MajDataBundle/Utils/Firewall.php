@@ -6,7 +6,7 @@ use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Entity\Site;
-use TBN\MajDataBundle\Entity\BlackList;
+use TBN\MajDataBundle\Entity\Exploration;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -18,22 +18,21 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
  */
 class Firewall {
 
-    protected $blackList;
-    protected $fbBlackList;
+    protected $explorations;
+    protected $fbExploration;
     protected $comparator;
     protected $om;
-    protected $repoBlackList;
+    protected $repoExploration;
     protected $cache;
     protected $geocoder;
 
     public function __construct(Cache $cache, Registry $doctrine, Comparator $comparator)
     {
-        $this->cache	    = $cache;
-        $this->om	    = $doctrine->getManager();
-        $this->repoBlackList= $this->om->getRepository('TBNMajDataBundle:BlackList');
-        $this->comparator   = $comparator;
-        $this->fbBlackList  = [];
-        $this->blackList    = [];
+        $this->cache		= $cache;
+        $this->om		= $doctrine->getManager();
+        $this->repoExploration	= $this->om->getRepository('TBNMajDataBundle:Exploration');
+        $this->comparator	= $comparator;
+        $this->explorations	= [];
     }
 
     public function isPersisted($object)
@@ -48,11 +47,11 @@ class Firewall {
 	//Vérification supplémentaire de la validité géographique du lieux déclaré de l'event
 	if(!$agenda->isTrustedLocation() && $isGoodEvent)
 	{
-	    $place = $agenda->getPlace();
+	    $place  = $agenda->getPlace();
 
-	    $retour = $place && $this->isLocationBounded($place);
+	    $isGoodLocation = $place && $this->isLocationBounded($place);
 
-	    if(!$retour)
+	    if(!$isGoodLocation)
 	    {
 		var_dump(sprintf('%s en [%f, %f] <error>refusay</error> !', $place ? $place->getNom() : '?', $place ? $place->getLatitude() : '?', $place ? $place->getLongitude() : '?'));
 	    }else
@@ -60,20 +59,16 @@ class Firewall {
 		var_dump(sprintf('%s en [%f, %f] <info>acceptay</info> !', $place ? $place->getNom() : '?', $place ? $place->getLatitude() : '?', $place ? $place->getLongitude() : '?'));
 	    }
 
+	    //Observation de l'exploration
 	    $fbId = $agenda->getFacebookEventId();
-	    $site = $agenda->getSite();
-	    if(! $retour && $fbId && ! $this->isBlackListed($fbId, $site))
+	    if($fbId)
 	    {
-		$blackList = (new BlackList)
-			->setFacebookId($fbId)
-			->setReason('Coordonnées non conformes')
-			->setSite($site);
-
-		$this->blackList[] = $blackList;
-		$this->fbBlackList[$fbId] = true;
+		$site = $agenda->getSite();
+		$exploration = $this->getExploration($fbId, $site);
+		$exploration->setBlackListed(! $isGoodLocation);
 	    }
-
-	    return $retour;
+	    
+	    return $isGoodLocation;
 	}
 	
         return $isGoodEvent;
@@ -99,6 +94,7 @@ class Firewall {
     protected function checkEvent(Agenda $agenda)
     {
 	return ($this->checkMinLengthValidity($agenda->getNom(), 3) &&
+		$this->checkMinLengthValidity($agenda->getDescriptif(), 20) &&
                 ! $this->isSPAMContent($agenda->getDescriptif()) &&
                 $agenda->getDateDebut() instanceof \DateTime &&
 		($agenda->getDateFin() === null || $agenda->getDateFin() instanceof \DateTime));
@@ -127,17 +123,27 @@ class Firewall {
                      $this->checkLengthValidity($codePostal, 5));
     }
 
-    public function isBlackListed($fbId, Site $site)
+    /**
+     *
+     * @param int $fbId
+     * @param Site $site
+     * @return Exploration
+     */
+    public function getExploration($fbId, Site $site)
     {
-	if(! isset($this->fbBlackList[$fbId]))
+	$key = $fbId.'.'.$site->getId();
+	if(! isset($this->explorations[$key]))
 	{
-	    $blackList = $this->repoBlackList->findOneBy(['facebookId' => $fbId, 'site' => $site]);
-
-	    //L'entité est trouvée, l'item est blacklisté
-	    $this->fbBlackList[$fbId] = ($blackList !== null);
+	    $exploration = $this->repoExploration->findOneBy(['facebookId' => $fbId, 'site' => $site]);
+	    if(null === $exploration)
+	    {
+		$exploration = (new Exploration)->setFacebookId($fbId)->setSite($site);
+	    }
+	    
+	    $this->explorations[$key] = $exploration;
 	}
 
-	return $this->fbBlackList[$fbId];
+	return $this->explorations[$key];
     }
 
     private function isSPAMContent($content)
@@ -160,37 +166,15 @@ class Firewall {
 
     private function checkLengthValidity($str, $length)
     {
-        $key = 'checkLengthValidity.'.md5($str.$length);
-        if(! $this->cache->contains($key))
-        {
-            $retour = strlen($this->comparator->sanitize($str)) === $length;
-            $returnSave = $this->cache->save($key, $retour);
-            if(! $returnSave)
-            {
-                return $retour;
-            }
-        }
-        return $this->cache->fetch($key);
+	return strlen($this->comparator->sanitize($str)) === $length;
     }
 
     public function checkMinLengthValidity($str, $min)
     {
-        $key = 'checkMinLengthValidity.'.md5($str.$min);
-        if(! $this->cache->contains($key))
-        {
-            $retour = strlen($this->comparator->sanitize($str)) >= $min;
-            $returnSave = $this->cache->save($key, $retour);
-
-            if(! $returnSave)
-            {
-                return $retour;
-            }
-        }
-        
-        return $this->cache->fetch($key);
+	return strlen($this->comparator->sanitize($str)) >= $min;
     }
 
-    public function getBlackList() {
-	return $this->blackList;
+    public function getExplorations() {
+	return $this->explorations;
     }
 }

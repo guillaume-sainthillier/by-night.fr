@@ -58,6 +58,7 @@ class Merger {
             'latitude',
             'longitude',
             'rue',
+	    'url'
         ]);
     }
 

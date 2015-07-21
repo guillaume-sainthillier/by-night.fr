@@ -193,17 +193,18 @@ class AgendaRepository extends EntityRepository {
 
     public function findTopSoiree(Site $site, $page = 1, $limit = 7)
     {
+	$du = new \DateTime('last monday');
+	$au = new \DateTime('this sunday');
+	
         return $this->_em
         ->createQueryBuilder()
         ->select('a')
         ->from('TBNAgendaBundle:Agenda',"a")
         ->where("a.site = :site")
-        ->andWhere("a.dateDebut >= :du")        
+        ->andWhere("a.dateFin BETWEEN :du AND :au")
         ->orderBy("a.fbParticipations", "DESC")
         ->addOrderBy("a.participations", "DESC")
-        ->addOrderBy("a.interets", "DESC")
-        ->addOrderBy("a.fbInterets", "DESC")
-        ->setParameters([":site" => $site->getId(), "du" => \date("Y-m-d")])
+        ->setParameters([":site" => $site->getId(), "du" => $du->format("Y-m-d"), "au" => $au->format("Y-m-d")])
         ->setFirstResult(($page-1) * $limit)
         ->setMaxResults($limit)
         ->getQuery()

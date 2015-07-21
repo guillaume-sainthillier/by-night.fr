@@ -216,7 +216,7 @@ class Agenda
     /**
      * @var string
      *
-     * @ORM\Column(name="reservation_internet", type="string", length=128, nullable=true)
+     * @ORM\Column(name="reservation_internet", type="string", length=255, nullable=true)
      * @Assert\Url()
      */
     protected $reservationInternet;
@@ -363,14 +363,14 @@ class Agenda
     /**
      * @var integer
      *
-     * @ORM\Column(name="fb_participations", type="string", length=256, nullable=true)
+     * @ORM\Column(name="fb_participations", type="integer", nullable=true)
      */
     protected $fbParticipations;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="fb_interets", type="string", length=256, nullable=true)
+     * @ORM\Column(name="fb_interets",type="integer", nullable=true)
      */
     protected $fbInterets;
 
@@ -378,14 +378,14 @@ class Agenda
     /**
      * @var integer
      *
-     * @ORM\Column(name="participations", type="string", length=256, nullable=true)
+     * @ORM\Column(name="participations", type="integer", nullable=true)
      */
     protected $participations;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="interets", type="string", length=256, nullable=true)
+     * @ORM\Column(name="interets", type="integer", nullable=true)
      */
     protected $interets;
 

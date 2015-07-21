@@ -2,25 +2,15 @@
 
 {% set ville = site.subdomain %}
 
-{% block title %}{% spaceless %}
-    {% block title_agenda %}{% endblock %}
-{% endspaceless %}{% endblock %}
+{% block title %}{% block title_agenda %}{% endblock %}{% endblock %}
 
-{% block nom_site %}{% spaceless %}
-    {{ site.nom }} {{ parent() }}
-{% endspaceless %}{% endblock %}
+{% block nom_site %}{{ site.nom }} {{ parent() }}{% endblock %}
 
-{% block titre %}{% spaceless %}
-    {% block titre_agenda %}{% endblock %}
-{% endspaceless %}{% endblock %}
+{% block titre %}{% block titre_agenda %}{% endblock %}{% endblock %}
 
-{% block meta_keywords %}{% spaceless %}
-    {{ site.nom|lower }},
-{% endspaceless %}{% endblock %}
+{% block meta_keywords %}{{ site.nom|lower }},{% endblock %}
 
-{% block meta_description %}{% spaceless %}
-L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos propres événements et diffusez les automatiquement sur les réseaux sociaux !
-{% endspaceless %}{% endblock %}
+{% block meta_description %}L'agenda des événements, sorties, concerts, spectacles à {{ site.nom }}. Publiez vos propres événements et diffusez les automatiquement sur les réseaux sociaux !{% endblock %}
     
 {% block body %}<div id="fb-root"></div>{% block body_agenda %}{% endblock %}{% endblock %}
 {% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
@@ -68,7 +58,7 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
 {% endblock %}
     
 {% block head_js %}
-    <script type="application/ld+json">{% spaceless %}
+    <script type="application/ld+json">
         {
             "@context": "http://schema.org",
             "@type": "WebSite",
@@ -79,7 +69,7 @@ L'agenda des événements, concerts, spectacles à {{ site.nom }}. Publiez vos p
                 "query-input": "required name=search_term_string"
             }
         }
-    {% endspaceless %}
+    
     </script>
     <script type="text/javascript">
         var ville = "{{ site.nom }}";

@@ -13,7 +13,7 @@ services:
         arguments:    [{ id: %api_facebook_id%, secret: %api_facebook_secret%}  , @site_manager, @security.context, @router, @session, @request_stack]
     tbn.social.facebook_admin:
         class:        TBN\SocialBundle\Social\FacebookAdmin
-        arguments:    [{ id: %api_facebook_id%, secret: %api_facebook_secret%}  , @site_manager, @security.context, @router, @session, @request_stack]
+        arguments:    [{ id: %api_facebook_id%, secret: %api_facebook_secret%}  , @site_manager, @security.context, @router, @session, @request_stack, @doctrine.orm.entity_manager]
     tbn.social.google:
         class:        TBN\SocialBundle\Social\Google
         arguments:    [{ id: %google_app_id%, secret: %google_app_secret%}      , @site_manager, @security.context, @router, @session, @request_stack]
