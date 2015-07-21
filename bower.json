@@ -18,7 +18,7 @@
         "jquery": "2.*",
         "bootstrap": "latest",
         "font-awesome": "latest",
-        "bootstrap-material-design" : "master",
+        "bootstrap-material-design" : "0.3.*",
         "dropdown.js": "master",
         "bootstrap-select": "latest",
         "fancybox": "latest",

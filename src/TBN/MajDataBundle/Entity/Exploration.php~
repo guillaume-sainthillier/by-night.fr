@@ -1,0 +1,68 @@
+<?php
+
+namespace TBN\MajDataBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Exploration
+ *
+ * @ORM\Table
+ * @ORM\Entity
+ */
+class Exploration
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="facebook_id", type="string", length=255)
+     */
+    private $facebookId;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_updated", type="datetime", nullable=true)
+     */
+    private $lastUpdated;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="black_listed", type="boolean", nullable=true)
+     */
+    private $blackListed;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="reason", type="string", length=255)
+     */
+    private $reason;
+
+
+    /**
+    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
+    * @ORM\JoinColumn(nullable=false)
+    */
+    protected $site;
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+}

@@ -138,8 +138,8 @@ hwi_oauth:
             client_id:           %api_facebook_id%
             client_secret:       %api_facebook_secret%
             scope:               email, publish_actions, manage_pages
-            authorization_url:   https://www.facebook.com/v2.1/dialog/oauth
-            infos_url:           https://graph.facebook.com/me?fields=username,name,email,picture.type(large)
+            authorization_url:   https://www.facebook.com/v2.3/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
@@ -149,9 +149,9 @@ hwi_oauth:
             type:                facebook
             client_id:           %api_facebook_id%
             client_secret:       %api_facebook_secret%
-            scope:               email, publish_actions
-            authorization_url:   https://www.facebook.com/v2.1/dialog/oauth
-            infos_url:           https://graph.facebook.com/me?fields=username,name,email,picture.type(large)
+            scope:               email, user_posts
+            authorization_url:   https://www.facebook.com/v2.3/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
@@ -162,8 +162,8 @@ hwi_oauth:
             client_id:           %api_facebook_id%
             client_secret:       %api_facebook_secret%
             scope:               email
-            authorization_url:   https://www.facebook.com/v2.1/dialog/oauth
-            infos_url:           https://graph.facebook.com/me?fields=username,name,email,picture.type(large)
+            authorization_url:   https://www.facebook.com/v2.3/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url

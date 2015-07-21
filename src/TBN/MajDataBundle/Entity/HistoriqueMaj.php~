@@ -67,9 +67,9 @@ class HistoriqueMaj
     /**
      * @var integer
      *
-     * @ORM\Column(name="black_lists", type="integer")
+     * @ORM\Column(name="explorations", type="integer")
      */
-    private $blackLists;
+    private $explorations;
 
 
     public function __construct()
@@ -95,5 +95,181 @@ class HistoriqueMaj
         return $this->dateFin->diff($this->dateDebut)->format("%s");
     }
 
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set dateDebut
+     *
+     * @param \DateTime $dateDebut
+     *
+     * @return HistoriqueMaj
+     */
+    public function setDateDebut($dateDebut)
+    {
+        $this->dateDebut = $dateDebut;
     
+        return $this;
+    }
+
+    /**
+     * Get dateDebut
+     *
+     * @return \DateTime
+     */
+    public function getDateDebut()
+    {
+        return $this->dateDebut;
+    }
+
+    /**
+     * Set fromData
+     *
+     * @param string $fromData
+     *
+     * @return HistoriqueMaj
+     */
+    public function setFromData($fromData)
+    {
+        $this->fromData = $fromData;
+    
+        return $this;
+    }
+
+    /**
+     * Get fromData
+     *
+     * @return string
+     */
+    public function getFromData()
+    {
+        return $this->fromData;
+    }
+
+    /**
+     * Set dateFin
+     *
+     * @param \DateTime $dateFin
+     *
+     * @return HistoriqueMaj
+     */
+    public function setDateFin($dateFin)
+    {
+        $this->dateFin = $dateFin;
+    
+        return $this;
+    }
+
+    /**
+     * Get dateFin
+     *
+     * @return \DateTime
+     */
+    public function getDateFin()
+    {
+        return $this->dateFin;
+    }
+
+    /**
+     * Set nouvellesSoirees
+     *
+     * @param integer $nouvellesSoirees
+     *
+     * @return HistoriqueMaj
+     */
+    public function setNouvellesSoirees($nouvellesSoirees)
+    {
+        $this->nouvellesSoirees = $nouvellesSoirees;
+    
+        return $this;
+    }
+
+    /**
+     * Get nouvellesSoirees
+     *
+     * @return integer
+     */
+    public function getNouvellesSoirees()
+    {
+        return $this->nouvellesSoirees;
+    }
+
+    /**
+     * Set updateSoirees
+     *
+     * @param integer $updateSoirees
+     *
+     * @return HistoriqueMaj
+     */
+    public function setUpdateSoirees($updateSoirees)
+    {
+        $this->updateSoirees = $updateSoirees;
+    
+        return $this;
+    }
+
+    /**
+     * Get updateSoirees
+     *
+     * @return integer
+     */
+    public function getUpdateSoirees()
+    {
+        return $this->updateSoirees;
+    }
+
+    /**
+     * Set explorations
+     *
+     * @param integer $explorations
+     *
+     * @return HistoriqueMaj
+     */
+    public function setExplorations($explorations)
+    {
+        $this->explorations = $explorations;
+    
+        return $this;
+    }
+
+    /**
+     * Get explorations
+     *
+     * @return integer
+     */
+    public function getExplorations()
+    {
+        return $this->explorations;
+    }
+
+    /**
+     * Set site
+     *
+     * @param \TBN\MainBundle\Entity\Site $site
+     *
+     * @return HistoriqueMaj
+     */
+    public function setSite(\TBN\MainBundle\Entity\Site $site = null)
+    {
+        $this->site = $site;
+    
+        return $this;
+    }
+
+    /**
+     * Get site
+     *
+     * @return \TBN\MainBundle\Entity\Site
+     */
+    public function getSite()
+    {
+        return $this->site;
+    }
 }

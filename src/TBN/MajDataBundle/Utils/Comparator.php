@@ -31,7 +31,7 @@ class Comparator {
     public function getMatchingScoreVille(Ville $a = null, Ville $b = null)
     {
         $pourcentage = 0;
-        if($a !== null && $b !== null)
+        if($a !== null && $b !== null && $a->getSite() === $b->getSite())
         {
             if($this->getMatchingScoreText($a->getNom(), $b->getNom()) > 80)
             {
@@ -55,26 +55,31 @@ class Comparator {
 
     public function getMatchingScorePlace(Place $a = null, Place $b = null)
     {
-        if ($a !== null && $b !== null && $a->getSite() === $b->getSite())
+        if ($a !== null && $b !== null && $a->getSite() === $b->getSite() && $this->getMatchingScoreVille($a->getVille(), $b->getVille()) >= 60)
         {
-            if($this->getMatchingScoreText($a->getNom(), $b->getNom()) > 80)
+	    //~ Même ville et même rue
+	    if($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100)
+	    {
+		//var_dump(sprintf('Même rue entre %s et %s', $a->getRue(), $b->getRue()));
+		return 100;
+	    }
+
+            if($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80)
             {
-                return 100;
+		//var_dump(sprintf('Ressemblance entre %s et %s', $a->getNom(), $b->getNom()));
+                return 90;
             }
 
-            if($this->isSubInSub($a->getNom(), $b->getNom(), $a, $b))
+            if($this->isSubInSub($a->getNom(), $b->getNom()))
             {
+		//var_dump(sprintf('SubInSub entre %s et %s', $a->getNom(), $b->getNom()));
                 return 85;
             }
 
-            if($this->getMatchingScoreText($a->getRue(), $b->getRue()) > 80)
-            {
-                return $this->getMatchingScoreVille($a->getVille(), $b->getVille());
-            }
-
             if($this->getMatchingScoreText($a->getLatitude(), $b->getLatitude()) === 100 &&
-                    $this->getMatchingScoreText($a->getLongitude(), $b->getLongitude()))
+                    $this->getMatchingScoreText($a->getLongitude(), $b->getLongitude()) === 100)
             {
+		//var_dump(sprintf('Même latitude %s et %s', $a->getNom(), $b->getNom()));
                 return 75;
             }
         }
@@ -90,28 +95,26 @@ class Comparator {
 
     protected function getMatchingScoreEvent(Agenda $a, Agenda $b)
     {
-        if(! $this->isSameMoment($a, $b))
+        if($this->isSameMoment($a, $b))
         {
-            return 0;
-        }
+            //Fort taux de ressemblance du nom ou descriptif ou égalité de l'id FB
+	    if($this->getMatchingScoreText($a->getNom(), $b->getNom()) > 75 ||
+		$this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) > 75 ||
+		$this->getMatchingScoreText($a->getFacebookEventId(), $b->getFacebookEventId()) >= 100)
+	    {
+		return 100;
+	    }
 
-        //Fort taux de ressemblance du nom ou descriptif ou égalité de l'id FB
-        if($this->getMatchingScoreText($a->getNom(), $b->getNom()) > 75 ||
-            $this->getMatchingScoreText($a->getDescriptif(), $b->getDescriptif()) > 75 ||
-            $this->getMatchingScoreText($a->getFacebookEventId(), $b->getFacebookEventId()) >= 100)
-        {
-            return 100;
-        }
+	    if($this->isSubInSub($a->getNom(), $b->getNom()))
+	    {
+		return 85;
+	    }
 
-        if($this->isSubInSub($a->getNom(), $b->getNom()))
-        {
-            return 85;
-        }
-
-        if($this->getMatchingScorePlace($a->getPlace(), $b->getPlace()) >= 75)
-        {
-            return 80;
-        }
+	    if($this->getMatchingScorePlace($a->getPlace(), $b->getPlace()) >= 75)
+	    {
+		return 80;
+	    }
+        }        
 
         return 0;
     }
@@ -136,16 +139,12 @@ class Comparator {
         return $bestItem;
     }
 
-    protected function isSubInSub($str1, $str2, $itemA = null, $itemB = null)
+    protected function isSubInSub($str1, $str2)
     {
         $sanitized1 = $this->sanitize($str1);
         $sanitized2 = $this->sanitize($str2);
-//        if(strlen($sanitized1) === 0 || strlen($sanitized2) === 0)
-//        {
-//            return false;
-//        }
 
-        return $this->isSubstrInStr($str1, $str2) || $this->isSubstrInStr($str2, $str1);
+        return $this->isSubstrInStr($str1, $str2) || $this->isSubstrInStr($str2, $str1) || $this->isSubstrInStr($sanitized1, $sanitized2) || $this->isSubstrInStr($sanitized2, $sanitized1);
     }
 
     protected function isSubstrInStr($needle, $haystack)
@@ -153,29 +152,44 @@ class Comparator {
         return strpos($haystack, $needle) !== false;
     }
 
+    protected function getMatchingScore($a, $b)
+    {
+	$pourcentage = 0;
+	if(strlen($a) > 0 && strlen($b) > 0)
+	{
+	    if($a === $b)
+	    {
+		return 100;
+	    }
+
+	    similar_text($a, $b, $pourcentage);
+	}
+
+	return $pourcentage;
+    }
+
+    protected function getMatchingScoreRue($a, $b)
+    {
+	$trimedA = $this->sanitizeRue($a);
+	$trimedB = $this->sanitizeRue($b);
+
+	return $this->getMatchingScore($trimedA, $trimedB);
+    }
+    
+    protected function getMatchingScoreHTML($a, $b)
+    {
+	$trimedA = $this->sanitizeHTML($a);
+	$trimedB = $this->sanitizeHTML($b);
+
+	return $this->getMatchingScore($trimedA, $trimedB);
+    }
 
     protected function getMatchingScoreText($a, $b)
     {
-        $key = 'getMatchingScoreText.'.md5($a.'.'.$b);
-        if(! $this->cache->contains($key))
-        {
-            $trimedA = $this->sanitize($a);
-            $trimedB = $this->sanitize($b);
+	$trimedA = $this->sanitize($a);
+	$trimedB = $this->sanitize($b);
 
-            $pourcentage = 0;
-            if(strlen($trimedA) > 0 && strlen($trimedB) > 0)
-            {
-                similar_text($a, $b, $pourcentage);
-            }
-
-            $retourSave = $this->cache->save($key, $pourcentage);
-            if(! $retourSave)
-            {
-                return $pourcentage;
-            }
-        }
-
-        return $this->cache->fetch($key);
+	return $this->getMatchingScore($trimedA, $trimedB);
     }
 
     public function getBestContent($valueA, $valueB)
@@ -206,15 +220,26 @@ class Comparator {
         return $this->isSameDate($dateDebutA, $dateDebutB) && $this->isSameDate($dateFinA, $dateFinB);
     }
 
-    
+    public function sanitizeRue($string) {
+        $step1 = $this->util->utf8LowerCase($string);
+        $step2 = $this->util->replaceAccents($step1);
+        $step3 = $this->util->deleteMultipleSpaces($step2);
+
+        return trim($step3);
+    }
+
+    public function sanitizeHTML($string) {
+	return $this->sanitize(strip_tags($string));
+    }
 
     public function sanitize($string) {
         $step1 = $this->util->utf8LowerCase($string);
         $step2 = $this->util->replaceAccents($step1);
         $step3 = $this->util->replaceNonAlphanumericChars($step2);
-        $step4 = $this->util->deleteMultipleSpaces($step3);
+        $step4 = $this->util->deleteStopWords($step3);
+        $step5 = $this->util->deleteMultipleSpaces($step4);
 
-        return trim($step4);
+        return trim($step5);
     }
 
     private function isSameDate(\DateTime $a, \DateTime $b)
@@ -222,35 +247,22 @@ class Comparator {
         return $a->format('Y-m-d') === $b->format('Y-m-d');
     }
 
-    private function replaceAccents($string) {
-        return str_replace(array('à', 'á', 'â', 'ã', 'ä', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ù', 'ú', 'û', 'ü', 'ý', 'ÿ', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ù', 'Ú', 'Û', 'Ü', 'Ý'), array('a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'y', 'y', 'A', 'A', 'A', 'A', 'A', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'N', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y'), $string);
-    }
-
     private function isSameText($a, $b, $minPourcentage = 100, $equalsAreSame = false)
     {
-        $key = 'isSameText.'.md5($a.'.'.$b.($equalsAreSame ? '1' : '0'));
-        if(! $this->cache->contains($key))
-        {
-            $trimedA = $this->sanitize($a);
-            $trimedB = $this->sanitize($b);
+	$trimedA = $this->sanitize($a);
+	$trimedB = $this->sanitize($b);
 
-            if(strlen($trimedA) === 0 || strlen($trimedB) === 0)
-            {
-                $retour = $equalsAreSame;
-            }else
-            {
-                $pourcentage = 0;
-                similar_text($a, $b, $pourcentage);
-                $retour = $trimedA === $trimedB || $pourcentage >= $minPourcentage;
-            }
-
-            $retourSave = $this->cache->save($key, $retour);
-            if(! $retourSave)
-            {
-                return $retour;
-            }
-        }
-
-        return $this->cache->fetch($key);        
+	if(strlen($trimedA) === 0 || strlen($trimedB) === 0)
+	{
+	    return $equalsAreSame;
+	}elseif($trimedA === $trimedB)
+	{
+	    return true;
+	}else
+	{
+	    $pourcentage = 0;
+	    similar_text($a, $b, $pourcentage);
+	    return $pourcentage >= $minPourcentage;
+	}
     }
 }

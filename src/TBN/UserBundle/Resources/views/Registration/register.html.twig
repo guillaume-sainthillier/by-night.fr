@@ -15,13 +15,9 @@
     {% set item = menu.addItem("Inscription", path('fos_user_registration_register')) %}
 {% endblock %}
     
-{% block meta_keywords_espace %}{% spaceless %}
-    inscription,
-{% endspaceless %}{% endblock %}
+{% block meta_keywords_espace %}inscription,{% endblock %}
 
-{% block meta_description_espace %}
-    Inscrivez-vous sur {{ block('nom_site') }}, créez vos propres événements et partagez les automatiquement avec vos amis sur les réseaux sociaux !
-{% endblock %}
+{% block meta_description_espace %}Inscrivez-vous sur {{ block('nom_site') }}, créez vos propres événements et partagez les automatiquement avec vos amis sur les réseaux sociaux !{% endblock %}
     
 {% block fos_user_content %}
     <br />

@@ -1,4 +1,3 @@
-{% spaceless %}
 <!DOCTYPE HTML>
 <html prefix="og: http://ogp.me/ns#" lang="fr" xmlns:hx="http://purl.org/NET/hinclude" xmlns:fb="http://ogp.me/ns/fb#">
     <head>
@@ -8,17 +7,17 @@
         <!--[if IE]>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <![endif]-->        
-        <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
-        <meta name="keywords" content="{% spaceless %}{% block meta_keywords %}{% endblock %},night,agenda,événement,soirée,sortir,musique,concert,spectacle"{% endspaceless %}>
-        <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
+        <title>{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}</title>
+        <meta name="keywords" content="{% block meta_keywords %}{% endblock %},night,agenda,événement,soirée,sortir,musique,concert,spectacle">
+        <meta name="description" content="{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}">
         
         <!-- OpenGraph -->
         <meta property="og:site_name" content="{{ block('nom_site') }}">
         <meta property="og:description" content="{% block og_description %}{{ block('description') }}{% endblock %}">
-        <meta property="og:title" content="{% spaceless %}{% block og_titre %}{{ block('title') }}{% endblock %}"{% endspaceless %}>
-        <meta property="og:type" content="{% spaceless %}{% block og_type %}website{% endblock %}"{% endspaceless %}>        
-        <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('tbn_main_index') }}{% endblock %}"{% endspaceless %}>
-        <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ asset('img/by-night.png') }}{% endblock %}"{% endspaceless %}>
+        <meta property="og:title" content="{% block og_titre %}{{ block('title') }}{% endblock %}">
+        <meta property="og:type" content="{% block og_type %}website{% endblock %}">        
+        <meta property="og:url" content="{% block og_url %}{{ url('tbn_main_index') }}{% endblock %}">
+        <meta property="og:image" content="{% block og_image %}{{ asset('img/by-night.png') }}{% endblock %}">
         <!-- ./OpenGraph -->
         
         <!-- IE10+ -->
@@ -30,7 +29,7 @@
         <meta name="msapplication-wide310x150logo" content="{{ asset('wide.png') }}">
         <meta name="msapplication-square310x310logo" content="{{ asset('large.png') }}">
         <!-- ./IE10+ -->
-        
+        {# hacked by louis#}
         <!-- Twitter -->
         {% block twitter %}{% endblock %}
         <!-- ./Twitter -->
@@ -91,7 +90,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
-                        <h1 class="titrebloc">{% spaceless %}{% block titre %}{% endblock %}{% endspaceless %}</h1>
+                        <h1 class="titrebloc">{% block titre %}{% endblock %}</h1>
                         <div class="divider">
                             <span class="text-primary divider-icon"></span>
                         </div>
@@ -186,4 +185,4 @@
         <!-- ./JS -->
     </body>
 </html>
-{% endspaceless %}
+

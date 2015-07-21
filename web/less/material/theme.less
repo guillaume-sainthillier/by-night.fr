@@ -25,7 +25,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 // Panels =====================================================================
-.panel-heading {
+.panel-heading {    
     .fa {
         margin-top: .2em;
         margin-right: .2em;
@@ -54,7 +54,8 @@ h1, h2, h3, h4, h5, h6,
     }
 
     .btn {
-        padding-left: 5px;
+        padding-left: 0px;
+        line-height: 15px;
     }
 }
 
@@ -81,11 +82,27 @@ h1, h2, h3, h4, h5, h6,
 }
 
 // Navbar =====================================================================
-.navbar .navbar-nav>li>a {
-    &:hover, &:focus {
-        color: white;
-        background-color: rgba(0, 0, 0, 0.05);
+.navbar {
+    font-family: Roboto;
+    
+    &, a {
+        font-weight: 300;
     }
+    
+    .navbar-header a {
+        height: 100%;
+        
+        strong {
+            font-weight: 400;
+        }
+    }    
+    
+    .navbar-nav>li>a, .navbar-header a {
+        &:hover, &:focus {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    }    
 }
 // BreadCrumb =================================================================
 #bread {
@@ -185,7 +202,6 @@ h1, h2, h3, h4, h5, h6,
 
 
 // DatePicker =================================================================
-
 html body .datepicker table tr td {
     &.active,
     &.active:hover,

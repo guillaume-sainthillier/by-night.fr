@@ -27,7 +27,7 @@ class SearchType extends AbstractType
             ->add("du", "date", [
                 "required" => true,
                 "label" => "Du",
-                'label_attr' => array('class' => 'col-sm-5 control-label'),
+                'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "widget" => "single_text",
                 "format" => "dd/MM/yyyy",
                 "attr" => ["data-date-format" => "dd/mm/yyyy"]
@@ -35,15 +35,15 @@ class SearchType extends AbstractType
             ->add("au", "date", [
                 "required" => false,
                 "label"     => "Au",
-                'label_attr' => array('class' => 'col-sm-5 control-label'),
+                'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "widget" => "single_text",
                 "format" => "dd/MM/yyyy",
                 "attr" => ["data-date-format" => "dd/mm/yyyy"]
             ])
             ->add("type_manifestation", "choice", [
                 "choices"  => $this->types_manifesation,
-                "label"    => "Types d'événement",
-                'label_attr' => array('class' => 'col-sm-6 control-label'),
+                "label"    => 'Genre',
+                'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "multiple" => true,
                 "expanded" => false,
                 "required" => false,
@@ -51,7 +51,7 @@ class SearchType extends AbstractType
              ->add("lieux", "choice", [
                 "choices"  => $this->lieux,
                 "label"    => "Lieux",
-                 'label_attr' => array('class' => 'col-sm-6 control-label'),
+                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "multiple" =>  true,
                 "expanded" => false,
                 "required" => false,
@@ -67,7 +67,7 @@ class SearchType extends AbstractType
             ->add('term', 'text', [
                 "required" => false,
                 "label"    => "Mot-clés",
-                'label_attr' => array('class' => 'col-sm-4 control-label'),
+                'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "attr" => ["class" => "form-control","placeholder" => "Quel événement cherchez-vous ?"]])
             ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-lg btn-primary btn-block"]])
         ;

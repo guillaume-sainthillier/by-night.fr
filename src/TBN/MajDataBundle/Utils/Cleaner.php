@@ -32,6 +32,12 @@ class Cleaner {
             $agenda->setDateFin($agenda->getDateDebut());
         }
 
+	if($agenda->getDateFin() < $agenda->getDateDebut())
+	{
+	    $lastDate = $agenda->getDateDebut();
+	    $agenda->setDateDebut($agenda->getDateFin())->setDateFin($lastDate);
+	}
+
         return $agenda->setNom($this->clean($agenda->getNom()) ?: null)
                 ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
         ;
@@ -59,7 +65,7 @@ class Cleaner {
 
     private function cleanString($string, $delimiters = [])
     {
-        $step1 = $this->util->utf8LowerCase($string);
+        $step1 = $this->util->utf8TitleCase($string);
         $step2 = $this->util->deleteMultipleSpaces($step1);
         $step3 = $this->util->deleteSpaceBetween($step2, $delimiters);
 

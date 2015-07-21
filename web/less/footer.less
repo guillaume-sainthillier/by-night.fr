@@ -58,20 +58,58 @@
             font-size: 20px;
         }
     }
-}
-
-//Téléphone
-@media (max-width: @screen-xs-min) {
-    #footer {
+    
+    //Tablettes (< 992 px)
+    @media (max-width: @screen-sm-max) {
         .sous-header {  
             .footer_border {
-                border-bottom: thin dotted rgba(175, 162, 162, 0.78);
-                border-right: none;
-
                 &:last-child {
-                    border-bottom: none;
+                    border-right: none;
                 }
             }
         }
     }
+    
+    //Téléphone (< 768px)
+    @media (min-width: @screen-xs-min) and (max-width: @screen-xs-max)  {
+        .sous-header {  
+            p.pull-left {
+                float: none!important;
+            }
+        }
+    }
+    
+    //Petit Téléphone (< 481px)
+    @media (max-width: @screen-xs-min) {
+        .sous-header {  
+            .footer_border {
+                border-bottom: thin dotted rgba(175, 162, 162, 0.78);
+                border-right: none;
+                min-height: @tailleFooter;
+            }
+            
+            .counts {                
+                & > div {
+                    padding-left: 0;
+                    padding-right: 0;
+                    
+                    .social {
+                        .fa {
+                            font-size: 2.5em;
+                        }
+                    }
+                }
+            }
+            
+            .sites {
+                margin-top: 15px;
+            }
+
+            hr {
+                margin-top: 0;
+            }
+        }
+    }
+    
+    
 }

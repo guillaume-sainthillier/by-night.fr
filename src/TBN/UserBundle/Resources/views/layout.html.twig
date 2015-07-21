@@ -8,14 +8,9 @@
 
 {% block breadcrumb_agenda %}{% block breadcrumb_espace %}{% endblock %}{% endblock %}
 
-{% block meta_keywords %}{% spaceless %}
-    {% block meta_keywords_espace %}{% endblock %}
-    {{ parent() }}
-{% endspaceless %}{% endblock %}
+{% block meta_keywords %}{% block meta_keywords_espace %}{% endblock %}{{ parent() }}{% endblock %}
 
-{% block meta_description %}{% spaceless %}
-    {% block meta_description_espace %}{{ parent() }}{% endblock %}
-{% endspaceless %}{% endblock %}
+{% block meta_description %}{% block meta_description_espace %}{{ parent() }}{% endblock %}{% endblock %}
     
 {% block body_agenda %}
     {% block body_espace %}
@@ -30,10 +25,6 @@
 
 {% block head_js_agenda %}{% block head_js_espace %}{% endblock %}{% endblock %}
 
-{% block js_agenda %}
-    {% block js_espace %}{% endblock %}
-{% endblock %}
+{% block js_agenda %}{% block js_espace %}{% endblock %}{% endblock %}
 
-{% block css_agenda %}
-    {% block css_espace %}{% endblock %}
-{% endblock %}
+{% block css_agenda %}{% block css_espace %}{% endblock %}{% endblock %}

@@ -12,13 +12,9 @@
     {% block breadcrumb_membre %}{% endblock %}
 {% endblock %}
 
-{% block meta_keywords_espace %}
-    {% spaceless %}{% block meta_keywords_membre %}{% endblock %}{% endspaceless %}
-{% endblock %}
+{% block meta_keywords_espace %}{% block meta_keywords_membre %}{% endblock %}{% endblock %}
         
-{% block body_agenda %}
-    {% block body_membre %}{% endblock %}
-{% endblock %}
+{% block body_agenda %}{% block body_membre %}{% endblock %}{% endblock %}
 
 {% block css_espace %}{% block css_membre %}{% endblock %}{% endblock %}
 {% block js_espace %}{% block js_membre %}{% endblock %}{% endblock %}

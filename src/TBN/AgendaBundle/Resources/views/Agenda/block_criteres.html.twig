@@ -1,35 +1,38 @@
-{% spaceless %}
-{{ form_start(form, {'attr': {'data-pjax': ''}}) }}
+{{ form_start(form) }}
 {{ form_errors(form) }}
-<div class="form-horizontal block_criteres panel panel-primary">      
+<div class="form-horizontal block_criteres panel panel-default">
+    <div class="panel-heading bg-white">
+        <h2 class="modal-title">
+            <i class="pull-right fa text-primary fa-search"></i>
+            Trouvez une idée sortie 
+        </h2>
+    </div>
     <div class="panel-body">
-        <h2 class="modal-title">Trouvez une idée sortie <span class="info">{% if isPost and nbEvents %}{{ nbEvents }} événément{{ nbEvents > 1 ? 's' : '' }}{% endif %}</span></h2>
-        <br />
-        <div class="row">
-            <div class="col-xs-4">
+        <div class="row main_criteres">
+            <div class="col-md-4 col-xs-6">
                 <div class="form-group">
-                    {{ form_label(form.du) }}
-                    <div class="col-sm-7">
-                        {{ form_widget(form.du) }}
-                        {{ form_errors(form.du) }}
-                    </div>
+                    <label class="col-sm-4 control-label">Quand ?</label>
+                    <div class="col-sm-8">
+                        <select class="form-control shorcuts_date" placeholder="Raccourcis">
+                            <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">Aujourd'hui</option>
+                            <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">Ce Week End</option>
+                            <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">Cette semaine</option>
+                            <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">Ce mois</option>
+                        </select>
+                    </div>                    
+                </div>                
+            </div>                
+            <div class="col-md-5 col-xs-6">
+                <div class="form-group">
+                    {{ form_label(form.type_manifestation) }}
+                    <div class="col-sm-9">
+                        {{ form_widget(form.type_manifestation) }}
+                        {{ form_errors(form.type_manifestation) }}
+                    </div>                    
                 </div>
             </div>
-            <div class="col-xs-4">
-                <div class="form-group">
-                    {{ form_label(form.au) }}
-                    <div class="col-sm-7">
-                        {{ form_widget(form.au) }}
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-4">
-                <select class="form-control shorcuts_date" placeholder="Raccourcis">
-                    <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">Aujourd'hui</option>
-                    <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">Ce Week End</option>
-                    <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">Cette semaine</option>
-                    <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">Ce mois</option>
-                </select>
+            <div class="col-md-3 col-xs-12">
+                {{ form_widget(form.chercher) }}
             </div>
         </div>
         {% if isPost and (search.lieux or search.commune or search.term) %}
@@ -39,44 +42,53 @@
         {% endif %}
         <div class="row">
             <div class="col-xs-8">
-                <div class="form-group no_margin_bottom">
-                    {{ form_label(form.type_manifestation) }}
-                    <div class="col-sm-6">
-                        {{ form_widget(form.type_manifestation) }}
-                    </div>
-                </div>
                 <button type="button" class="btn_criteres btn btn-primary btn-flat">
                     <i class="fa size-135 {{ options.iconClass }}"></i> 
                     Recherche avancée
                 </button>
             </div>
-            <div class="col-xs-4">
-                {{ form_widget(form.chercher) }}
-            </div>               
+                           
         </div>        
         <div class="{{ options.hiddenClass }} criteres">
             <div class="row">
-                <div class="col-xs-8">
-                    <div class="form-group">
-                        {{ form_label(form.lieux) }}
-                        <div class="col-sm-6">
-                            {{ form_widget(form.lieux) }}
+                <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                {{ form_label(form.du) }}
+                                <div class="col-sm-9">
+                                    {{ form_widget(form.du) }}
+                                    {{ form_errors(form.du) }}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-xs-4">
-                    <div class="form-group">
-                        {{ form_label(form.commune) }}
-                        <div class="col-sm-9">
-                            {{ form_widget(form.commune) }}
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                {{ form_label(form.au) }}
+                                <div class="col-sm-9">
+                                    {{ form_widget(form.au) }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="form-horizontal">
                 <div class="form-group">
+                    {{ form_label(form.lieux) }}
+                    <div class="col-sm-7">
+                        {{ form_widget(form.lieux) }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.commune) }}
+                    <div class="col-sm-7">
+                        {{ form_widget(form.commune) }}
+                    </div>
+                </div>
+                <div class="form-group">
                     {{ form_label(form.term) }}
-                    <div class="col-sm-8">
+                    <div class="col-sm-7">
                         {{ form_widget(form.term) }}
                     </div>
                 </div>
@@ -85,4 +97,3 @@
     </div>
 </div>
 {{ form_end(form) }}
-{% endspaceless %}

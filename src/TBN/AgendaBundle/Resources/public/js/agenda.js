@@ -77,35 +77,40 @@ function init_criteres()
         "css_icon_class_open": 'fa-chevron-down',
         "css_icon_class_close": 'fa-chevron-up',
         "selector_btn_criteres": ".btn_criteres",
+        "selector_icon": ".fa",
         "selector_block_criteres": ".criteres",
         "selector_main_block": ".block_criteres",
         "duration": 300
     };
     
     //Bon bloc indigeste :)
-    $(options.selector_btn_criteres).click(function ()
+    var block = $(options.selector_btn_criteres).click(function ()
     {
-        var div_criteres = $(this).closest(options.selector_main_block).find(options.selector_block_criteres);
-        if (div_criteres.hasClass(options.css_hidden))
+        if (block.hasClass(options.css_hidden))
         {
-            $(this).find('.fa').removeClass(options.css_icon_class_open).addClass(options.css_icon_class_close);
-            div_criteres.show(options.duration, function ()
+            $(this).find(options.selector_icon).removeClass(options.css_icon_class_open).addClass(options.css_icon_class_close);
+            block.show(options.duration, function ()
             {
                 $(this).removeClass(options.css_hidden);
             });
         } else
         {
-            $(this).find('.fa').removeClass(options.css_icon_class_close).addClass(options.css_icon_class_open);
-            div_criteres.hide(options.duration, function ()
+            $(this).find(options.selector_icon).removeClass(options.css_icon_class_close).addClass(options.css_icon_class_open);
+            block.hide(options.duration, function ()
             {
                 $(this).addClass(options.css_hidden);
             });
         }
     })
     .closest(options.selector_main_block)
-    .find(options.selector_block_criteres)
-    .removeClass(options.css_initial_hidden)
-    .addClass(options.css_hidden);
+    .find(options.selector_block_criteres);
+    
+    //Pas de besoins d'ouvrir la recherche avancée
+    if(block.hasClass(options.css_hidden))
+    {
+        block.hide()
+        .removeClass(options.css_initial_hidden);
+    }
 }
 
 /**

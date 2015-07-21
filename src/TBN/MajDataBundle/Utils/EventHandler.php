@@ -166,15 +166,14 @@ class EventHandler
 
         $bestEvent = $this->comparator->getBestEvent($persistedEvents, $testedAgenda);
 
-        //Pas de place existante trouvée
+        //Pas d'événement existant trouvé
         if($bestEvent === null && $testedAgenda !== null)
         {
             $persistedEvents[] = $testedAgenda;
             return $testedAgenda;
         }
 
-        //On fusionne l'event exis
-	//tant avec celui découvert
+        //On fusionne l'event existant avec celui découvert
         return $this->merger->mergeEvent($bestEvent, $testedAgenda);
     }
 

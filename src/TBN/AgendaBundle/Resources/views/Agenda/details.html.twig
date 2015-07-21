@@ -43,9 +43,7 @@
     {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}    
 {% endblock %}
     
-{% block meta_description %}{% spaceless %}
-    {{ nomSoiree }}. Plus d'infos sur {{ block('nom_site') }}.
-{% endspaceless %}{% endblock %}
+{% block meta_description %}{{ nomSoiree }} {% if place %}à {{ place.nom }}{% endif %}. Plus d'infos sur {{ block('nom_site') }}.{% endblock %}
 
 {% block metas %}
     <link rel="image_src" href="{{ original }}" />
@@ -126,12 +124,12 @@
                                 <span itemprop="name">{{ place.nom }}</span>
                             {% endif %}
 
-                            {% if place.rue or ville %}
+                            {% if place.rue or villePlace %}
                                 <div itemprop="address" itemscope itemtype="http://schema.org/Address">
                                     {% if place.rue %}
                                         <div itemprop="streetAddress">{{ place.rue }}</div>
                                     {% endif %}
-                                    {% if villePlace.codePostal or villePlace.nom %}
+                                    {% if villePlace and (villePlace.codePostal or villePlace.nom) %}
                                         <div>
                                             {% if villePlace.codePostal %}
                                                 <span itemprop="postalCode">{{ villePlace.codePostal }} </span>
@@ -156,16 +154,15 @@
                                     <meta itemprop="longitude" content="{{ place.longitude }}" />
                                 </span>
                             {% endif %}
-
-                            {% if readableAdresse %}
-                            <button 
-                                class="btn btn-primary btn-raised btn-sm" 
-                                id="loadMap"
-                                data-map="https://www.google.com/maps/embed/v1/search?q={{ readableAdresse|raw|url_encode }}&key={{ googleMapKey }}&language=fr&zoom=16"
-                                >Afficher sur une carte</button>
-                            <div id="googleMap"></div>
-                            {% endif %}
                         </div>
+                        {% if readableAdresse %}
+                        <button 
+                            class="btn btn-primary btn-raised btn-sm" 
+                            id="loadMap"
+                            data-map="https://www.google.com/maps/embed/v1/search?q={{ readableAdresse|raw|url_encode }}&key={{ googleMapKey }}&language=fr&zoom=16"
+                            >Afficher sur une carte</button>
+                        <div id="googleMap"></div>
+                        {% endif %}
                     </li>
                     {% endif %}                
                     {% if soiree.tarif %}

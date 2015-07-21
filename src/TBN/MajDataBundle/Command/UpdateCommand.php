@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\RuntimeException;
-use Symfony\Component\Console\Helper\ProgressBar;
 
 use TBN\MajDataBundle\Entity\HistoriqueMaj;
 
@@ -33,7 +32,6 @@ class UpdateCommand extends EventCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        set_time_limit(0);
         ini_set('memory_limit', '-1');
 
 	//Début de construction de l'historique de la MAJ
@@ -116,19 +114,26 @@ class UpdateCommand extends EventCommand
             //Gestion de l'événement + sa place et sa ville associée
             $cleanedEvent = $handler->handle($places, $villes, $site, $tmpAgenda);
 
-            //Récupération des events de la même période en base
-            $existingEvents = $repo->findBy([
-                'dateDebut' => $cleanedEvent->getDateDebut(),
-                'dateFin' => $cleanedEvent->getDateFin(),
-                'site' => $site
-            ]);
+	    if(! $cleanedEvent->getDateDebut() instanceof \DateTime || ! $cleanedEvent->getDateFin() instanceof \DateTime)
+	    {
+		$agenda = null;
+	    }else
+	    {
+		//Récupération des events de la même période en base
+		$existingEvents = $repo->findBy([
+		    'dateDebut' => $cleanedEvent->getDateDebut(),
+		    'dateFin' => $cleanedEvent->getDateFin(),
+		    'site' => $site
+		]);
 
-            //Gestion de l'événement & persistance si besoin 
-            $agenda = $handler->handleEvent($existingEvents, $cleanedEvent);
+		//Gestion de l'événement & persistance si besoin
+		$agenda = $handler->handleEvent($existingEvents, $cleanedEvent);
+	    }
+            
             if($agenda !== null)
             {
                 //Récupération de l'image distante si besoin
-                if($env !== 'dev2' && $agenda->getPath() === null && $agenda->getUrl() !== null)
+                if($env !== 'dev' && $agenda->getPath() === null && $agenda->getUrl() !== null)
                 {
                     $handler->downloadImage($agenda);
                 }
@@ -152,25 +157,25 @@ class UpdateCommand extends EventCommand
         $this->writeln($output, 'GESTION : <info>'.($end - $start).' ms</info>');
 	$em->flush();
 
-	//Gestion des blackLists + historique de la maj
-	$blackLists = $firewall->getBlackList();
+	//Gestion des explorations + historique de la maj
+	$explorations = $firewall->getExplorations();
         $historique
                 ->setFromData($parserName ?: 'tous')
-                ->setBlackLists($nbBlackList + count($blackLists))
+                ->setExplorations($nbBlackList + count($explorations))
                 ->setNouvellesSoirees($nbInsert)
                 ->setUpdateSoirees($nbUpdate)
                 ->setSite($site)
         ;
 
-	foreach($blackLists as $blackList)
+	foreach($explorations as $exploration)
 	{
-	    $em->persist($blackList);
+	    $em->persist($exploration);
 	}
 	
         $em->persist($historique);
         $em->flush();
         $this->writeln($output, 'NEW: <info>'.$nbInsert.'</info>');
         $this->writeln($output, 'UPDATES: <info>'.$nbUpdate.'</info>');
-        $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.count($blackLists).'</info>');         
+        $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.count($exploration).'</info>');
     }
 }

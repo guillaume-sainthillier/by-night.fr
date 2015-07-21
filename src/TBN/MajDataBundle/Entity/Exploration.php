@@ -5,12 +5,14 @@ namespace TBN\MajDataBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * BlackList
+ * Exploration
  *
- * @ORM\Table()
- * @ORM\Entity(repositoryClass="TBN\MajDataBundle\Entity\BlackListRepository")
+ * @ORM\Table(name="exploration", indexes={
+ *   @ORM\Index(name="exploration_facebook_id_site_idx", columns={"facebook_id", "site_id"})
+ * })
+ * @ORM\Entity
  */
-class BlackList
+class Exploration
 {
     /**
      * @var integer
@@ -29,12 +31,18 @@ class BlackList
     private $facebookId;
 
     /**
-     * @var string
+     * @var \DateTime
      *
-     * @ORM\Column(name="reason", type="string", length=255)
+     * @ORM\Column(name="last_updated", type="datetime", nullable=true)
      */
-    private $reason;
+    private $lastUpdated;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="black_listed", type="boolean", nullable=true)
+     */
+    private $blackListed;
 
     /**
     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
@@ -56,7 +64,8 @@ class BlackList
      * Set facebookId
      *
      * @param string $facebookId
-     * @return BlackList
+     *
+     * @return Exploration
      */
     public function setFacebookId($facebookId)
     {
@@ -68,7 +77,7 @@ class BlackList
     /**
      * Get facebookId
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookId()
     {
@@ -76,10 +85,59 @@ class BlackList
     }
 
     /**
+     * Set lastUpdated
+     *
+     * @param \DateTime $lastUpdated
+     *
+     * @return Exploration
+     */
+    public function setLastUpdated($lastUpdated)
+    {
+        $this->lastUpdated = $lastUpdated;
+    
+        return $this;
+    }
+
+    /**
+     * Get lastUpdated
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdated()
+    {
+        return $this->lastUpdated;
+    }
+
+    /**
+     * Set blackListed
+     *
+     * @param boolean $blackListed
+     *
+     * @return Exploration
+     */
+    public function setBlackListed($blackListed)
+    {
+        $this->blackListed = $blackListed;
+    
+        return $this;
+    }
+
+    /**
+     * Get blackListed
+     *
+     * @return boolean
+     */
+    public function getBlackListed()
+    {
+        return $this->blackListed;
+    }
+
+    /**
      * Set reason
      *
      * @param string $reason
-     * @return BlackList
+     *
+     * @return Exploration
      */
     public function setReason($reason)
     {
@@ -91,7 +149,7 @@ class BlackList
     /**
      * Get reason
      *
-     * @return string 
+     * @return string
      */
     public function getReason()
     {
@@ -102,7 +160,8 @@ class BlackList
      * Set site
      *
      * @param \TBN\MainBundle\Entity\Site $site
-     * @return BlackList
+     *
+     * @return Exploration
      */
     public function setSite(\TBN\MainBundle\Entity\Site $site)
     {
@@ -114,7 +173,7 @@ class BlackList
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site 
+     * @return \TBN\MainBundle\Entity\Site
      */
     public function getSite()
     {
