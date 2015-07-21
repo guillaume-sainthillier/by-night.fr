@@ -2,8 +2,6 @@
 
 namespace TBN\SocialBundle\Social;
 
-use Facebook\FacebookSession;
-use Facebook\FacebookRequest;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use TBN\UserBundle\Entity\User;
 
@@ -23,8 +21,8 @@ class FacebookEvents extends Facebook {
             $date       = $this->getDuree($dateDebut, $dateFin);
             
             //Authentification
-            $session    = new FacebookSession($user->getInfo()->getFacebookAccessToken());
-	    $request    = new FacebookRequest($session, 'POST', '/me/feed', [
+            $this->client->setDefaultAccessToken($user->getInfo()->getFacebookAccessToken());
+	    $request    = $this->client->post('/me/feed', [
 		'link' => $this->getLink($agenda),
 		'picture' => $this->getLinkPicture($agenda),
 		'name' => $agenda->getNom(),
@@ -39,7 +37,7 @@ class FacebookEvents extends Facebook {
 		])
 	    ]);
 
-            $post = $request->execute()->getGraphObject();
+            $post = $request->getGraphObject();
 	    $agenda->setFbPostId($post->getProperty("id"));
 	}
     }

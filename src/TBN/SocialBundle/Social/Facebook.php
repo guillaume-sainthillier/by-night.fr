@@ -4,7 +4,6 @@ namespace TBN\SocialBundle\Social;
 
 use TBN\SocialBundle\Exception\SocialException;
 
-//use Facebook\FacebookSession;
 use Facebook\GraphObject;
 use Facebook\Facebook as Client;
 
@@ -22,7 +21,7 @@ class Facebook extends Social {
     protected $client;
 
     //protected static $FIELDS = "id,name,venue,end_time,owner,cover,is_date_only,ticket_uri,description,location,picture.type(large).redirect(false)";
-    protected static $FIELDS = "id,name,venue,end_time,owner,cover,is_date_only,ticket_uri,description,location";
+    protected static $FIELDS = "id,name,place,end_time,owner,cover,is_date_only,ticket_uri,description";
     protected static $ATTENDING_FIELDS = "id,name,picture.type(square).redirect(false)";
 
     protected function constructClient() {

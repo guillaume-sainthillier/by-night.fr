@@ -3,13 +3,11 @@
 namespace TBN\MajDataBundle\Parser\Common;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Ivory\GoogleMap\Services\Geocoding\Geocoder;
-use Facebook\GraphObject;
+use Facebook\GraphNodes\GraphNode;
 
 use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
-use TBN\MajDataBundle\Entity\BlackList;
 use TBN\MajDataBundle\Parser\AgendaParser;
 use TBN\MajDataBundle\Utils\Firewall;
 use TBN\AgendaBundle\Repository\AgendaRepository;
@@ -66,7 +64,7 @@ class FaceBookParser extends AgendaParser {
         $place_events   = $this->getEventsFromPlaces($now);
 
 	//Calcul de l'ID FB des propriétaires des événements précédemment trouvés
-        $event_users = array_map(function(GraphObject $event)
+        $event_users = array_map(function(GraphNode $event)
         {
             $owner = $event->getProperty("owner");
             return $owner ? $owner->getProperty("id") : null;
@@ -141,7 +139,7 @@ class FaceBookParser extends AgendaParser {
     protected function filterEvents($events) {
 	$fbIds		    = [];
 
-	return array_filter($events, function(GraphObject $event) use(&$fbIds)
+	return array_filter($events, function(GraphNode $event) use(&$fbIds)
 	{
 	    $fbId = $event->getProperty("id");
 	    //Pas déjà présent & conforme
@@ -186,10 +184,10 @@ class FaceBookParser extends AgendaParser {
 
     /**
      * Retourne les informations d'un événement en fonction de l'ID de cet événement sur Facebook
-     * @param type $event
+     * @param GraphNode $event
      * @return array l'agenda parsé
      */
-    public function getInfoAgenda(GraphObject $event) {
+    public function getInfoAgenda(GraphNode $event) {
 	$tab_retour			    = [];
 	
 	$tab_retour["nom"]		    = $event->getProperty("name");
