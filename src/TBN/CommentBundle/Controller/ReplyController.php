@@ -72,11 +72,9 @@ class ReplyController extends Controller
 
         if($request->getMethod() == "POST")
         {
-            $securityContext = $this->container->get('security.context');
-            $token = $securityContext->getToken();
-            $user = $token->getUser();
+            $user = $this->getUser();
 
-            if(! $user instanceof User)
+            if(! $user)
             {
                 $this->get('session')->getFlashBag()->add(
                     'warning',

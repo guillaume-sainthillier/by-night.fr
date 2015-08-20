@@ -60,26 +60,22 @@ class Comparator {
 	    //~ Même ville et même rue
 	    if($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100)
 	    {
-		//var_dump(sprintf('Même rue entre %s et %s', $a->getRue(), $b->getRue()));
 		return 100;
 	    }
 
             if($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80)
             {
-		//var_dump(sprintf('Ressemblance entre %s et %s', $a->getNom(), $b->getNom()));
                 return 90;
             }
 
             if($this->isSubInSub($a->getNom(), $b->getNom()))
             {
-		//var_dump(sprintf('SubInSub entre %s et %s', $a->getNom(), $b->getNom()));
                 return 85;
             }
 
             if($this->getMatchingScoreText($a->getLatitude(), $b->getLatitude()) === 100 &&
                     $this->getMatchingScoreText($a->getLongitude(), $b->getLongitude()) === 100)
             {
-		//var_dump(sprintf('Même latitude %s et %s', $a->getNom(), $b->getNom()));
                 return 75;
             }
         }
@@ -194,8 +190,12 @@ class Comparator {
 
     public function getBestContent($valueA, $valueB)
     {
+        if(is_object($valueA) && is_object($valueB))
+        {
+            return $valueA ?: $valueB;
+        }        
+        
         $compareA = $this->sanitize($valueA);
-
         return strlen($compareA) > 0 ? ($valueA?: null) : ($valueB?:null);
     }
 

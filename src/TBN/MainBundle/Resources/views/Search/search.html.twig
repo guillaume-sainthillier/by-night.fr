@@ -20,6 +20,8 @@
     {% set nom = 'Membres' %}
 {% endif %}
 
+{% if term %}{% set title = term %}{% endif %}
+
 {% block breadcrumb_agenda  %}
     {% set item = menu.addItem('Recherche', path('tbn_search_query')) %}
     

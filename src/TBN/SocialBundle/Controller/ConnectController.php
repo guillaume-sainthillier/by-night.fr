@@ -11,7 +11,6 @@
 namespace TBN\SocialBundle\Controller;
 
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,7 +47,7 @@ class ConnectController extends BaseController
             throw new NotFoundHttpException();
         }
 
-        $hasUser = $this->container->get('security.context')->isGranted('IS_AUTHENTICATED_REMEMBERED');
+        $hasUser = $this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
         if (!$hasUser) {
             throw new AccessDeniedException('Cannot connect an account.');
         }
@@ -57,13 +56,12 @@ class ConnectController extends BaseController
         $resourceOwner = $this->getResourceOwnerByName($service);
 
         $session = $request->getSession();
-
         $key = $request->query->get('key', time());
 
         if ($resourceOwner->handles($request)) {
             $accessToken = $resourceOwner->getAccessToken(
                 $request,
-                $this->generate('hwi_oauth_connect_service', ['service' => $service], true)
+                $this->container->get('hwi_oauth.security.oauth_utils')->getServiceAuthUrl($request, $resourceOwner)
             );
 
             // save in session
@@ -116,17 +114,29 @@ class ConnectController extends BaseController
                 }else // On connecte normalement l'utilisateur*/
                 {
                     /** @var $currentToken OAuthToken */
-                    $currentToken = $this->container->get('security.context')->getToken();
+                    $currentToken = $this->container->get('security.token_storage')->getToken();
                     $currentUser  = $currentToken->getUser();
 
                     $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
+                    
+                    if ($currentToken instanceof OAuthToken) {
+                        // Update user token with new details
+                        $this->authenticateUser($request, $currentUser, $service, $currentToken->getRawToken(), false);
+                    }
+
+                    return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), array(
+                        'userInformation' => $userInformation,
+                        'service' => $service,
+                    ));
+                    
+                    /*
                     if ($currentToken instanceof OAuthToken) {
                         // Update user token with new details
                         $this->authenticateUser($request, $currentUser, $service, $currentToken->getRawToken(), false);
                     }else if ($currentToken instanceof UsernamePasswordToken) {
                         // Update user token with new details
                         $this->authenticateBasicUser($currentUser);
-                    }
+                    }*/
                 }
 
                 return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), [

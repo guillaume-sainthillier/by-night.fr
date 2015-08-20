@@ -1,13 +1,13 @@
 tbn_disconnect_service_confirm:
-    pattern: /confirmation/deconnexion/{service}
+    path: /confirmation/deconnexion/{service}
     defaults: { _controller: TBNSocialBundle:Social:disconnectConfirm}
+    methods: [GET]
     requirements:
-        service: (facebook|google|twitter)
-        _method: GET
+        service: (facebook|google|twitter)        
 
 tbn_disconnect_service:
-    pattern: /deconnexion/{service}
+    path: /deconnexion/{service}
     defaults: { _controller: TBNSocialBundle:Social:disconnect}
+    methods: [POST]
     requirements:
         service: (facebook|google|twitter)
-        _method: POST

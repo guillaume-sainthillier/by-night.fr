@@ -34,6 +34,7 @@
         "morris.js": "0.5.*",
         "bootstrap-datepicker": "latest",
         "typeahead-addresspicker": "latest",
-        "typeahead.js": "latest"        
+        "typeahead.js": "latest",
+        "jquery.cookiebar": "latest"
     }
 }

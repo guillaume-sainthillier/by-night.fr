@@ -4,7 +4,7 @@ namespace TBN\SocialBundle\Social;
 
 use TBN\SocialBundle\Exception\SocialException;
 
-use Facebook\GraphObject;
+use Facebook\GraphNodes\GraphNode;
 use Facebook\Facebook as Client;
 
 /**
@@ -21,8 +21,10 @@ class Facebook extends Social {
     protected $client;
 
     //protected static $FIELDS = "id,name,venue,end_time,owner,cover,is_date_only,ticket_uri,description,location,picture.type(large).redirect(false)";
-    protected static $FIELDS = "id,name,place,end_time,owner,cover,is_date_only,ticket_uri,description";
-    protected static $ATTENDING_FIELDS = "id,name,picture.type(square).redirect(false)";
+    //protected static $FIELDS = "id,name,place,end_time,owner,cover,is_date_only,ticket_uri,description";
+    protected static $FIELDS            = "id,name,place,start_time,end_time,owner,cover,ticket_uri,description,picture.type(large).redirect(false),attending_count,maybe_count";
+    protected static $ATTENDING_FIELDS  = "id,name,picture.type(square).redirect(false)";
+    protected static $MIN_EVENT_FIELDS  = "id,updated_time,owner{id}";
 
     protected function constructClient() {
         $this->client = new Client([
@@ -32,14 +34,18 @@ class Facebook extends Social {
         ]);
     }
 
-    public function getPagePictureURL(GraphObject $event)
+    public function getPagePictureURL(GraphNode $object, $testCover = true, $testPicture = true)
     {
-	if($event->getProperty("cover"))
+	$cover = $object->getField("cover");
+	if($testCover && $cover && $cover->getField("source"))
         {
-            $cover = $event->getProperty("cover");
-            return $cover->getProperty("source");
+            return $cover->getField("source");
         }
-
+	$picture = $object->getField("picture");
+	if($testPicture && $picture && $picture->getField("url") && $picture->getField('is_silhouette') === false)
+        {
+            return $picture->getField("url");
+        }
 	return null;
     }
 
@@ -61,8 +67,13 @@ class Facebook extends Social {
         return $dateDebut === $dateFin ? "Le ".$dateDebut : "Du ".$dateDebut." au ".$dateFin;
     }
 
-    protected function getReadableDate(\DateTime $date, $dateFormat = \IntlDateFormatter::FULL, $timeFormat = \IntlDateFormatter::NONE)
+    protected function getReadableDate(\DateTime $date = null, $dateFormat = \IntlDateFormatter::FULL, $timeFormat = \IntlDateFormatter::NONE)
     {
+	if(! $date)
+	{
+	    return null;
+	}
+	
         $intl       = new \IntlDateFormatter(\Locale::getDefault(), $dateFormat, $timeFormat);
         
         return $intl->format($date);

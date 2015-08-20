@@ -14,7 +14,7 @@ use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
 use TBN\UserBundle\Entity\Info;
 use TBN\MainBundle\Site\SiteManager;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -46,9 +46,9 @@ abstract class Social {
 
     /**
      *
-     * @var SecurityContextInterface $securityContext
+     * @var TokenStorageInterface $tokenStorage
      */
-    protected $securityContext;
+    protected $tokenStorage;
 
     /**
      *
@@ -68,7 +68,7 @@ abstract class Social {
      */
     protected $requestStack;
 
-    public function __construct($config, SiteManager $siteManager, SecurityContextInterface $securityContext, RouterInterface $router, SessionInterface $session, RequestStack $requestStack) {
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack) {
 
 	if(!isset($config["id"]))
 	{
@@ -83,7 +83,7 @@ abstract class Social {
 	$this->id		= $config["id"];
 	$this->secret		= $config["secret"];
         $this->siteManager	= $siteManager;
-	$this->securityContext	= $securityContext;
+	$this->tokenStorage	= $tokenStorage;
 	$this->router		= $router;
 	$this->session		= $session;
 	$this->requestStack     = $requestStack;
@@ -155,7 +155,7 @@ abstract class Social {
 
     public function poster(Agenda $agenda)
     {
-        $user = $this->securityContext->getToken()->getUser();
+        $user = $this->tokenStorage->getToken()->getUser();
 
         try {
             $this->post($user, $agenda);

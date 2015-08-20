@@ -14,7 +14,7 @@ use TBN\AgendaBundle\Repository\AgendaRepository;
 use TBN\AgendaBundle\Entity\PlaceRepository;
 
 /**
- *
+ * Classe de parsing des événéments FB
  * @author Guillaume SAINTHILLIER
  */
 class FaceBookParser extends AgendaParser {
@@ -52,7 +52,7 @@ class FaceBookParser extends AgendaParser {
 	$this->repoPlace	= $om->getRepository('TBNAgendaBundle:Place');
     }
 
-    
+
     public function getRawAgendas() {
 	$this->api->setSiteInfo($this->getSiteInfo());
 	$this->api->setParser($this);
@@ -66,11 +66,11 @@ class FaceBookParser extends AgendaParser {
 	//Calcul de l'ID FB des propriétaires des événements précédemment trouvés
         $event_users = array_map(function(GraphNode $event)
         {
-            $owner = $event->getProperty("owner");
-            return $owner ? $owner->getProperty("id") : null;
+            $owner = $event->getField("owner");
+            return $owner ? $owner->getField("id") : null;
         }, $place_events);
 
-	//On ne garde que les événements dont le propriétaire est connu
+	//On ne garde que les événements dont le propriétaire est renseigné
         $real_event_users = array_filter($event_users);
 
         //Récupération en base des différents ID des utilisateurs FB
@@ -101,145 +101,190 @@ class FaceBookParser extends AgendaParser {
 
 	//Création des instances d'Agenda
 	$i = 0;
-	foreach ($filtered_events as $event) {
-	    $i++;
-	    $start = microtime(true);
-	    $agendas[] = $this->getInfoAgenda($event);
-	    $end = microtime(true);
-	    $this->writeln(sprintf('%d / %d : Récupération en <info>%f ms</info>', $i, $nbFilteredEvents, ($end - $start)));
+	$eventsPerRequest = 30;
+	$nbIterations = ceil($nbFilteredEvents / $eventsPerRequest);
+	for($i = 0; $i < $nbIterations; $i++)
+	{
+            try {
+                $currentIdsEvents	= array_slice($filtered_events, $i* $eventsPerRequest, $eventsPerRequest);
+                $start		= microtime(true);
+                $events		= $this->api->getEventsFromIds($currentIdsEvents);
+
+                foreach ($events as $event) {
+                    $agendas[] = $this->getInfoAgenda($event);
+                }
+                $end = microtime(true);
+                $this->writeln(sprintf('%d / %d : Récupération en <info>%d ms</info>', $i, $nbIterations, ($end - $start)*1000));
+            } catch (\Facebook\Exceptions\FacebookSDKException $ex) {
+                $this->writeln(sprintf('%d / %d : Erreur <error>%s</error>', $i, $nbIterations, $ex->getMessage()));
+            }	    
 	}
-	return $agendas;
+
+	return $agendas; 
     }
 
     protected function getEventsFromPlaces(\DateTime $now)
     {
 	//Récupération des lieux existants en  base
 	$places		= $this->repoPlace->findBy(['site' => $this->getSite()]);
-        $event_places	= array_map(function(Place $place)
+        $nom_places	= array_map(function(Place $place)
         {
 	    return $place->getNom();
 	}, $places);
 
-	//Récupération des lieux aux alentours de la ville du parser
+	//Récupération des lieux aux alentours de la ville courante
         $this->write("Recherche d'endroits vers [".$this->getSite()->getLatitude()."; ".$this->getSite()->getLongitude()."]...");
         $fb_places      = $this->api->getPlacesFromGPS($this->getSite()->getLatitude(), $this->getSite()->getLongitude(), $this->getSite()->getDistanceMax()* 10000);
-        $this->writeln(" <info>".(count($fb_places))."</info> endroits trouvés");
+        $this->writeln(" <info>".(count($fb_places))."</info> places trouvées");
 
-	//Calcul de toutes les places à traiter
-        $full_places    = array_unique(array_merge($event_places, $fb_places));
+	//Récupération des événements depuis les lieux trouvés
+	$this->write("Recherche des événements associés aux endroits ...");
+	$places_events	= $this->api->getEventsFromPlaces($fb_places, $now);
+	$this->writeln("<info>".(count($places_events))."</info> événements trouvés");
 
-	//Récupération des événements de l'API marqués comme se tenant aux lieux calculés
-	$this->writeln("Recherche d'événements associés aux endroits...");
-        $events         = $this->api->searchEventsFromKeywords($full_places, $now);
+	//Récupération des événements par mots-clés
+	$this->writeln("Recherche d'événements associés aux mots clés...");
+        $keywords_events        = $this->api->searchEvents($nom_places, $now);
+	$events			= array_merge($keywords_events, $places_events);
         $this->writeln("<info>".(count($events))."</info> événements trouvés");
 	
         return $events;
     }
 
     protected function filterEvents($events) {
-	$fbIds		    = [];
-
-	return array_filter($events, function(GraphNode $event) use(&$fbIds)
+        $uniqs = array_unique($events);
+	$filtered = array_filter($uniqs, function(GraphNode $event)
 	{
-	    $fbId = $event->getProperty("id");
-	    //Pas déjà présent & conforme
-	    if(!isset($fbIds[$fbId]) && !$this->firewall->isBlackListed($fbId, $this->getSite()))
-	    {
-		$fbIds[$fbId] = $fbId;
-		return true;
-	    }
-	    return false;
+	    $exploration = $this->firewall->getExploration($event->getField('id'), $this->getSite());
+
+            //Pas blacklisté
+            if(null === $exploration)
+            {
+                return true;
+            }
+            
+	    $lastUpdatedEventTime	= $event->getField('updated_time');
+	    $lastUpdatedExplorationTime = $exploration->getLastUpdated();
+
+	    $exploration->setLastUpdated($lastUpdatedEventTime);
+
+	    //Jamais exploré ou déjà exploré mais expiré
+	    return true !== $exploration->getBlackListed() && !$this->isSameTime($lastUpdatedEventTime, $lastUpdatedExplorationTime);
 	});
-    }
 
-    protected function getDateFromEvent($event, $key) {
-	$str_date = $event->getProperty($key);
-	if ($str_date === null) {
-	    return null;
-	}
-
-	return \DateTime::createFromFormat($event->getProperty("is_date_only") ? "Y-m-d" : "Y-m-d\TH:i:sP", $str_date);
+	return array_map(function(GraphNode $event)
+	{
+	    return $event->getField('id');
+	}, $filtered);
     }
 
     public function isTrustedLocation() {
 	return false; //On ne connait pas ici le lieu réel de l'événement qui peut se situer n'importe où dans le monde
     }
 
-    private function isSameDay($date1, $date2) {
-	return $date1->format("Y-m-d") === $date2->format("Y-m-d");
+
+    private function isSameTime(\DateTime $date1 = null, \DateTime $date2 = null) {
+	if(! $date1 || ! $date2) //Non prmissif
+	{
+	    return false;
+	}
+
+	return $date1->format("Y-m-d H:i:s") === $date2->format("Y-m-d H:i:s");
     }
 
     protected function getPageInfos($page) {
-	if ($page->getProperty("id")) {
-	    $venue = $this->api->getPageFromId($page->getProperty("id"));
 
-	    return [
-		"reservation_internet" => $venue->getProperty("website"),
-		"reservation_telephone" => $venue->getProperty("phone")
-	    ];
+	$id_page = $page->getField('id');
+
+	if($id_page)
+	{
+	    try
+	    {
+		$place = $this->api->getPageFromId($id_page, [
+		    'fields' => 'website,phone,picture.type(large).redirect(false)'
+		]);
+
+		return [
+		    "reservation_internet"	=> $this->ensureGoodValue($place->getField('website')),
+		    "reservation_telephone"	=> $this->ensureGoodValue($place->getField("phone")),
+		    "place.url"			=> $this->api->getPagePictureURL($place, false)
+		];
+	    } catch(\Facebook\FacebookSDKException $ex) {}
 	}
-
 	return [];
     }
 
     /**
      * Retourne les informations d'un événement en fonction de l'ID de cet événement sur Facebook
-     * @param GraphNode $event
+     * @param $event
      * @return array l'agenda parsé
      */
     public function getInfoAgenda(GraphNode $event) {
+
 	$tab_retour			    = [];
 	
-	$tab_retour["nom"]		    = $event->getProperty("name");
-	$tab_retour["facebook_event_id"]    = $event->getProperty("id");
-	$tab_retour["descriptif"]	    = nl2br($event->getProperty("description"));
-	$tab_retour["place.nom"]	    = $event->getProperty("location");
-	$tab_retour["date_debut"]	    = $this->getDateFromEvent($event, "start_time");
-	$tab_retour["date_fin"]		    = $this->getDateFromEvent($event, "end_time");
+	$tab_retour["nom"]		    = $event->getField("name");
+	$tab_retour["facebook_event_id"]    = $event->getField("id");
+	$tab_retour["descriptif"]	    = nl2br($event->getField("description"));
+	$tab_retour["date_debut"]	    = $event->getField("start_time");
+	$tab_retour["date_fin"]		    = $event->getField("end_time");
+	$tab_retour["date_modification"]    = $event->getField("updated_time");
+	$tab_retour["fb_participations"]    = $event->getField("attending_count");
+	$tab_retour["fb_interets"]	    = $event->getField("maybe_count");
 
 
 	//Horaires
-	if (!$event->getProperty("is_date_only")) //Des dates & heures précises sont remplies
-	{
-	    $dateDebut	= $tab_retour["date_debut"];
-	    $dateFin	= $tab_retour["date_fin"];
-	    
-	    if ($dateFin && $this->isSameDay($dateDebut, $dateFin)) {
-		$horaires = sprintf("De %s à %s", $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
-	    } else {
-		$horaires = sprintf("A %s", $dateDebut->format("H\hi"));
-	    }
+        $dateDebut	= $tab_retour["date_debut"];
+        $dateFin	= $tab_retour["date_fin"];
+        $horaires	= null;
 
-	    $tab_retour["horaires"] = $horaires;
-	}        
+        if ($dateDebut instanceof \DateTime && $dateFin instanceof \DateTime) {
+            $horaires = sprintf("De %s à %s", $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
+        } elseif($dateDebut instanceof \DateTime) {
+            $horaires = sprintf("A %s", $dateDebut->format("H\hi"));
+        }
 
+        $tab_retour["horaires"] = $horaires;
+	        
         //Image
-	$tab_retour["url"]		    = $this->api->getPagePictureURL($event);
+	$tab_retour["url"]		    = $this->ensureGoodValue($this->api->getPagePictureURL($event));
         
         //Reservations
-	$tab_retour["reservation_internet"] = $event->getProperty("ticket_uri");
+	$tab_retour["reservation_internet"] = $this->ensureGoodValue($event->getField("ticket_uri"));
 
-	if ($event->getProperty("venue")) {
-	    $venue = $event->getProperty("venue");
+	//Place
+	$place = $event->getField("place");
+	if ($place) {
+
+	    $tab_retour["place.nom"] = $place->getField("name");
 
 	    //Résa URL & Téléphone
-	    $tab_retour = array_merge($tab_retour, $this->getPageInfos($venue));
+	    $tab_retour = array_merge($tab_retour, $this->getPageInfos($place));
 
-	    //Lieux
-	    $tab_retour["place.rue"] = $venue->getProperty("street");
-	    $tab_retour["place.latitude"] = $venue->getProperty("latitude");
-	    $tab_retour["place.longitude"] = $venue->getProperty("longitude");
-	    $tab_retour["place.ville.code_postal"] = $venue->getProperty("zip");
-	    $tab_retour["place.ville.nom"] = $venue->getProperty("city");
+	    //Location
+	    $location		    = $place->getField('location');
+	    if($location)
+	    {
+		$tab_retour["place.rue"]		= $this->ensureGoodValue($location->getField("street"));
+		$tab_retour["place.latitude"]		= $this->ensureGoodValue($location->getField("latitude"));
+		$tab_retour["place.longitude"]		= $this->ensureGoodValue($location->getField("longitude"));
+		$tab_retour["place.ville.code_postal"]	= $this->ensureGoodValue($location->getField("zip"));
+		$tab_retour["place.ville.nom"]		= $this->ensureGoodValue($location->getField("city"));
+	    }	    
 	}
 
 	//Propriétaire de l'événement
-	$owner = $event->getProperty("owner");
+	$owner = $event->getField("owner");
 	if ($owner) {
-	    $tab_retour["facebook_owner_id"] = $owner->getProperty("id");
+	    $tab_retour["facebook_owner_id"] = $owner->getField("id");
 	}
 
 	return $tab_retour;
+    }
+    
+    private function ensureGoodValue($value)
+    {
+        return $value !== '<<not-applicable>>' ? $value : null;
     }
     
     public function getNomData() {

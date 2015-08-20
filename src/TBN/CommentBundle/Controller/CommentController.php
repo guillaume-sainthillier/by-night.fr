@@ -56,11 +56,10 @@ class CommentController extends Controller
         $comment = new Comment();
         $form = $this->getCreateForm($comment, $soiree);
 
-        $securityContext = $this->container->get('security.context');
-        $token = $securityContext->getToken();
-        $user = $token->getUser();
+        $tokenStorage = $this->container->get('security.token_storage');
+        $user = $tokenStorage->getToken()->getUser();
 
-        if(! $user instanceof User) // Si l'utilisateur n'est pas connecté
+        if(! $user)
         {
             return new JsonResponse([
                 "success" => false,

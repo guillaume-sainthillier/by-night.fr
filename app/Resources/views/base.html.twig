@@ -29,7 +29,7 @@
         <meta name="msapplication-wide310x150logo" content="{{ asset('wide.png') }}">
         <meta name="msapplication-square310x310logo" content="{{ asset('large.png') }}">
         <!-- ./IE10+ -->
-        {# hacked by louis#}
+        
         <!-- Twitter -->
         {% block twitter %}{% endblock %}
         <!-- ./Twitter -->
@@ -52,6 +52,7 @@
         <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400|Roboto+Condensed:100,300,400|Roboto+Draft:100,300,400' rel='stylesheet' type='text/css'>
         
         {% stylesheets 
+            'bower/jquery.cookiebar/jquery.cookiebar.css'
             'bower/bootstrap/dist/css/bootstrap.min.css'
             'bower/fontawesome/css/font-awesome.min.css'
             'bower/bootstrap-material-design/dist/css/roboto.css'
@@ -156,23 +157,24 @@
                 <i class="fa fa-chevron-up"></i>
             </span>
         </a>
-           
-        <!-- JS -->
-        <script type="text/javascript">           
+        
+        <script type="text/javascript">
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
             ga('create', 'UA-45716709-2', 'by-night.fr');
             ga('require', 'displayfeatures');
-            ga('send', 'pageview');
+            ga('send', 'pageview');                
         </script>
+        <!-- JS -->
         {% javascripts 
             'bower/jquery/dist/jquery.min.js'
             'bower/bootstrap/dist/js/bootstrap.min.js'            
             'bower/bootstrap-material-design/dist/js/ripples.js'
             'bower/bootstrap-material-design/dist/js/material.js'
+            'bower/jquery.cookiebar/jquery.cookiebar.js'
             'bower/jquery.scrollTo/jquery.scrollTo.min.js'
             'js/overrides.js'
             'js/socials.js'
@@ -180,7 +182,20 @@
 
             output='prod/js/app.js' %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
-        {% endjavascripts %}        
+        {% endjavascripts %}
+        <script type="text/javascript"> 
+            $(document).ready(function(){
+                $.cookieBar({
+                    message: 'En poursuivant votre navigation, vous acceptez l\'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d\'intérêts et mesurer la fréquentation de nos services.',
+                    acceptText: 'J\'ai compris',
+                    bottom: true,
+                    fixed: true,
+                    policyButton: true,
+                    policyText: 'En savoir plus',
+                    policyURL: '{{ path('tbn_main_cookie') }}'
+                });
+            });
+        </script>
         {% block js -%}{%- endblock %}        
         <!-- ./JS -->
     </body>

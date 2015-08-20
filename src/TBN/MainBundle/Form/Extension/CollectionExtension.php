@@ -2,7 +2,7 @@
 
 namespace TBN\MainBundle\Form\Extension;
 
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -31,7 +31,7 @@ class CollectionExtension extends AbstractTypeExtension
     /**
      * {@inheritDoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver) {
+    public function configureOptions(OptionsResolver $resolver) {
 
         $resolver->setDefaults(array(
             'allow_add' => true,
@@ -44,13 +44,10 @@ class CollectionExtension extends AbstractTypeExtension
             'by_reference' => false, //GARANTIE D'APPEL de addXXX sur l'objet parent de la collection
         ));
 
-        $resolver->setNormalizers(array(
-            'options' => function (Options $options, $value) {
-                $value['block_name'] = 'entry';
-
-                return $value;
-            }
-        ));
+        $resolver->setNormalizer('options', function (Options $options, $value) {
+            $value['block_name'] = 'entry';
+            return $value;
+        });
     }
 
 

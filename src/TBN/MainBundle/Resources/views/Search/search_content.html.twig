@@ -37,14 +37,12 @@
                 <span class="number">{{ result.count }}</span>
             {% endif %}
             {{ result.label }}{{ s }} trouvé{{ s }}
-            pour la recherche <strong>{{ term }}</strong>
         </h2>
         <br />
         {% if events|length > 0 and (not type or type == 'evenements') %}
             {% if type != 'evenements' %}
                 {% set s = nbEvents > 1 ? 's': null %}
-                <h3><span class="number">{{ nbEvents }}</span> Événement{{ s }}</h3>
-                <br>
+                <h3>Événement{{ s }} <span class="badge label-info number number-sm">{{ nbEvents }}</span></h3>
             {% endif %}
             {% include "TBNMainBundle:Search:content_events.html.twig" %}
         {% endif %}

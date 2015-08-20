@@ -1,4 +1,0 @@
-foo:
-    resource: foobar.yml
-    type:     be_simple_i18n
-    locales: { en: /foo, fr: /bar }

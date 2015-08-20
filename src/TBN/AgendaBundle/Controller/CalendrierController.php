@@ -15,7 +15,7 @@ class CalendrierController extends Controller
         /**
          * @var TBNUserBundle:User Description
          */
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->get('security.token_storage')->getToken()->getUser();
 
         $em         = $this->getDoctrine()->getManager();
         $calendrier = $em->getRepository("TBNAgendaBundle:Calendrier")->findOneBy(["user" => $user, "agenda" => $agenda]);

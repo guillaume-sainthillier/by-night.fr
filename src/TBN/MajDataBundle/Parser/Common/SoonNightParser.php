@@ -32,7 +32,6 @@ class SoonNightParser extends LinksParser {
         $date_lieu                      = preg_split("/-/",$this->parser->filter(".titre h2")->text());
         $nom                            = preg_replace("/\&(\d+);/i", "&#$1;", $this->parser->filter(".titre h1")->text())." @ ".$date_lieu[1];
         $tab_retour["nom"]              = $this->decodeNumCharacter($nom);
-        $tab_retour["lieu_nom"]         = $date_lieu[1];
         $date                           = $this->parseDate($date_lieu[0]);
 
         $tab_retour["date_debut"]       = \DateTime::createFromFormat("Y-n-d",$date);
@@ -40,6 +39,7 @@ class SoonNightParser extends LinksParser {
         //Lieux
         $rue                            = null;
         $code_postal                    = null;
+        $lieu                           = null;
         $ville                          = null;
         $lieux                          = $this->getNodeFromHeading($this->parser->filter(".lieu"));
         if($lieux)
@@ -47,15 +47,17 @@ class SoonNightParser extends LinksParser {
             $node_rue                       = $lieux->filter("span[property='v:street-address']");
             $node_code_postal               = $lieux->filter("span[property='v:postal-code']");
             $node_ville                     = $lieux->filter("span[property='v:locality']");
+            $node_lieu                      = $lieux->filter("span[property='v:name']");
 
             $rue                            = $node_rue->count() ? trim($node_rue->text()) : null;
             $code_postal                    = $node_code_postal->count() ? trim($node_code_postal->text()) : null;
             $ville                          = $node_ville->count() ? trim($node_ville->text()) : null;
+            $lieu                           = $node_lieu->count() ? trim($node_lieu->text()) : null;
         }
-        $tab_retour["rue"]		    = $rue;
-        $tab_retour["code_postal"]          = $code_postal;
-        $tab_retour["commune"]              = $ville;
-        $tab_retour["ville"]                = $ville;
+        $tab_retour["place.nom"]		    = $lieu;
+        $tab_retour["place.rue"]		    = $rue;
+        $tab_retour["place.ville.code_postal"]      = $code_postal;
+        $tab_retour["place.ville.nom"]              = $ville;
 
         //Téléphone & Tarifs
         $telephone                          = null;        

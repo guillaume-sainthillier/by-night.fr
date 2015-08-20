@@ -65,13 +65,13 @@ class SocialController extends BaseController
             throw $this->createNotFoundException('La page demandée est introuvable');
         }
 
-        $user = $this->get('security.context')->getToken()->getUser();
-
-        $role = "ROLE_".strtoupper($service);
+        $user = $this->getUser();
+        /* $role = "ROLE_".strtoupper($service);
         if(! $user->hasRole($role))
         {
             throw new AccessDeniedException("Vous n'avez pas accès à cette fonctionnalité");
         }
+         */
 
         return $user;
     }

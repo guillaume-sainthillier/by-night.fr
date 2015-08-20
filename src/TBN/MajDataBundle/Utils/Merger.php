@@ -48,7 +48,8 @@ class Merger {
             'tweet_post_system_id',
             'google_post_id',
             'google_system_post_id',
-            'source'
+            'source',
+            'place'
         ]);
     }
 
@@ -58,7 +59,8 @@ class Merger {
             'latitude',
             'longitude',
             'rue',
-	    'url'
+	    'url',
+            'ville'
         ]);
     }
 

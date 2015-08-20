@@ -34,6 +34,14 @@ class Firewall {
         $this->comparator	= $comparator;
         $this->explorations	= [];
     }
+    
+    public function loadExplorations()
+    {
+        $explorations = $this->repoExploration->findAll();
+        foreach($explorations as $exploration){
+            $this->addExploration($exploration->getSite(), $exploration->getFacebookId(), $exploration);
+        }
+    }
 
     public function isPersisted($object)
     {
@@ -43,14 +51,13 @@ class Firewall {
     public function isGoodEvent(Agenda $agenda)
     {
 	$isGoodEvent = $this->checkEvent($agenda);
-
+        
 	//Vérification supplémentaire de la validité géographique du lieux déclaré de l'event
 	if(!$agenda->isTrustedLocation() && $isGoodEvent)
 	{
 	    $place  = $agenda->getPlace();
 
 	    $isGoodLocation = $place && $this->isLocationBounded($place);
-
 	    if(!$isGoodLocation)
 	    {
 		var_dump(sprintf('%s en [%f, %f] <error>refusay</error> !', $place ? $place->getNom() : '?', $place ? $place->getLatitude() : '?', $place ? $place->getLongitude() : '?'));
@@ -58,19 +65,28 @@ class Firewall {
 	    {
 		var_dump(sprintf('%s en [%f, %f] <info>acceptay</info> !', $place ? $place->getNom() : '?', $place ? $place->getLatitude() : '?', $place ? $place->getLongitude() : '?'));
 	    }
-
-	    //Observation de l'exploration
-	    $fbId = $agenda->getFacebookEventId();
-	    if($fbId)
-	    {
-		$site = $agenda->getSite();
-		$exploration = $this->getExploration($fbId, $site);
-		$exploration->setBlackListed(! $isGoodLocation);
-	    }
 	    
-	    return $isGoodLocation;
+	    $isGoodEvent = $isGoodLocation;
 	}
-	
+        
+        //Observation de l'exploration
+        $fbId = $agenda->getFacebookEventId();
+        if($fbId)
+        {
+            $site = $agenda->getSite();
+            $exploration = $this->getExploration($fbId, $site);
+            if(null === $exploration)
+            {
+                $exploration = (new Exploration)
+                        ->setFacebookId($fbId)
+                        ->setLastUpdated($agenda->getDateModification())
+                        ->setSite($site);
+                $this->addExploration($site, $fbId, $exploration);
+            }
+
+            $exploration->setBlackListed(! $isGoodEvent);
+        }
+        
         return $isGoodEvent;
     }
 
@@ -137,7 +153,7 @@ class Firewall {
 	    $exploration = $this->repoExploration->findOneBy(['facebookId' => $fbId, 'site' => $site]);
 	    if(null === $exploration)
 	    {
-		$exploration = (new Exploration)->setFacebookId($fbId)->setSite($site);
+		return null;
 	    }
 	    
 	    $this->explorations[$key] = $exploration;
@@ -172,6 +188,12 @@ class Firewall {
     public function checkMinLengthValidity($str, $min)
     {
 	return strlen($this->comparator->sanitize($str)) >= $min;
+    }
+    
+    public function addExploration(Site $site, $fbId, Exploration $exploration)
+    {
+        $key = $fbId.'.'.$site->getId();
+        $this->explorations[$key] = $exploration;
     }
 
     public function getExplorations() {

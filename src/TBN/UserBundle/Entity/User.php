@@ -121,10 +121,9 @@ class User extends BaseUser
             {
                 return $info->getGoogleProfilePicture();
             }
-        }
+        }        
         
-        
-        return "http://placehold.it/250&text=".substr($this->getUsername(), 0, 1    );
+        return "//placehold.it/250x250&text=".substr($this->getUsername(), 0, 1);
     }
     
     public function getUsername() {

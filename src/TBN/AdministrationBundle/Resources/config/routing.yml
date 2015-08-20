@@ -33,24 +33,24 @@ tbn_administration_site_edit:
         id: (\d+)
 
 tbn_administration_connect_site:
-    pattern: /connect/{service}
+    path: /connect/{service}
     defaults: { _controller: TBNAdministrationBundle:Info:connectInfo}
     requirements:
         service: (facebook|google|twitter)
 
 tbn_administration_site_service_confirm:
-    pattern: /confirmation/deconnexion/{service}
+    path: /confirmation/deconnexion/{service}
     defaults: { _controller: TBNSocialBundle:Social:disconnectConfirm, from_site: true }
+    methods: [GET]
     requirements:
         service: (facebook|google|twitter)
-        _method: GET
         
 tbn_administration_site_service:
-    pattern: /deconnexion/{service}
+    path: /deconnexion/{service}
     defaults: { _controller: TBNSocialBundle:Social:disconnectSite}
+    methods: [POST]
     requirements:
         service: (facebook|google|twitter)
-        _method: POST
 
 tbn_administration_historique_index:
     path:  /historique

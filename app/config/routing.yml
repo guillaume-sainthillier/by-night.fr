@@ -101,17 +101,17 @@ hwi_oauth_redirect:
 
 #Login twitter
 twitter_login:
-    pattern: /login/check-twitter
+    path: /login/check-twitter
     host:   "{subdomain}.%base_host%"
 
 #Login facebook
 facebook_login:
-    pattern: /login/check-facebook
+    path: /login/check-facebook
     host:   "{subdomain}.%base_host%"
  
 #Login Google
 google_login:
-    pattern: /login/check-google
+    path: /login/check-google
     host:   "{subdomain}.%base_host%"
 
 tbn_user:

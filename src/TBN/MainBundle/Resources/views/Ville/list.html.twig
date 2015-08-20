@@ -28,18 +28,14 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
 
 
 {% block body_main %}
-    <div class="panel panel-primary">
-        <div class="panel-body">
-            <h2 class="modal-title">Envie de sortir ?</h2>
-            <br />
-            <p>
-                By Night vous propose les agendas des événements, concerts, spectacles et manifestations dans les plus grandes villes de France.
-            </p>
-            <p>
-                Qu'attendez vous ? Choisissez votre ville et découvrez tous les événements !
-            </p>
-        </div>
-    </div>    
+    <h2>Envie de sortir ?</h2>
+    <br />
+    <p>
+        By Night vous propose les agendas des événements, concerts, spectacles et manifestations dans les plus grandes villes de France.
+    </p>
+    <p>
+        Qu'attendez vous ? Choisissez votre ville et découvrez tous les événements !
+    </p>
     <br />
     <div class="row">
     {% for i, site in sites %}

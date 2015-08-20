@@ -1,3 +1,0 @@
-homepage_locale:
-    locales: { en: /en/, fr: /fr/, de: /de/ }
-    defaults: { _controller: TestBundle:Frontend:homepageLocale }

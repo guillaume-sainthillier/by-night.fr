@@ -159,7 +159,7 @@ class EventHandler
 
     public function handleEvent(&$persistedEvents, Agenda $testedAgenda = null)
     {
-        if(! $this->firewall->isGoodEvent($testedAgenda))
+        if(null === $testedAgenda || ! $this->firewall->isGoodEvent($testedAgenda))
         {
             return null;
         }
@@ -198,7 +198,7 @@ class EventHandler
     }
 
     public function handlePlace(&$persistedPlaces, Place $testedPlace = null)
-    {
+    {        
         if(! $this->firewall->isGoodPlace($testedPlace))
         {
             return null;

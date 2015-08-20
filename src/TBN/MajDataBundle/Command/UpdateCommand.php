@@ -33,6 +33,8 @@ class UpdateCommand extends EventCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         ini_set('memory_limit', '-1');
+        
+        try {
 
 	//Début de construction de l'historique de la MAJ
 	$historique         = new HistoriqueMaj();
@@ -50,6 +52,7 @@ class UpdateCommand extends EventCommand
         $handler            = $this->container->get('tbn.event_handler');
 
         //Récupération des repos
+        $em->getConnection()->getConfiguration()->setSQLLogger(null);
         $repo               = $em->getRepository('TBNAgendaBundle:Agenda');
         $repoPlace          = $em->getRepository('TBNAgendaBundle:Place');
         $repoVille          = $em->getRepository('TBNAgendaBundle:Ville');
@@ -59,6 +62,9 @@ class UpdateCommand extends EventCommand
         //Récupération du site demandé par l'user
         $site               = $repoSite->findOneBy(['subdomain' => $subdomainSite]);
         $siteInfo           = $repoSiteInfo->findOneBy([]);
+        
+        //Chargement des explorations existantes
+        $firewall->loadExplorations();
 
 	if($site === null)
         {
@@ -113,7 +119,6 @@ class UpdateCommand extends EventCommand
         {
             //Gestion de l'événement + sa place et sa ville associée
             $cleanedEvent = $handler->handle($places, $villes, $site, $tmpAgenda);
-
 	    if(! $cleanedEvent->getDateDebut() instanceof \DateTime || ! $cleanedEvent->getDateFin() instanceof \DateTime)
 	    {
 		$agenda = null;
@@ -176,6 +181,12 @@ class UpdateCommand extends EventCommand
         $em->flush();
         $this->writeln($output, 'NEW: <info>'.$nbInsert.'</info>');
         $this->writeln($output, 'UPDATES: <info>'.$nbUpdate.'</info>');
-        $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.count($exploration).'</info>');
+        $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.count($explorations).'</info>');
+        
+        } catch(\Exception $e)
+        {
+            $this->writeln($output, $e->getTraceAsString());
+            throw new \Exception('Erreur dans le traitement', 0, $e);
+        }
     }
 }
