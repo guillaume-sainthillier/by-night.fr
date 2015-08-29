@@ -504,4 +504,11 @@ class Site
     {
         return $this->images;
     }
+    
+    public function __toString() {
+        return json_encode([
+            'id' => $this->id,
+            'subdomain' => $this->subdomain
+        ]);
+    }
 }

@@ -16,7 +16,7 @@ use TBN\MainBundle\Site\SiteManager;
 use Facebook\GraphNodes\GraphPage;
 use Facebook\GraphNodes\GraphNode;
 use Facebook\FacebookResponse;
-use Facebook\FacebookSDKException;
+use Facebook\Exceptions\FacebookSDKException;
 
 /**
  * Description of Facebook
@@ -166,7 +166,7 @@ class FacebookAdmin extends FacebookEvents {
     public function searchEvents($keywords, \DateTime $since, $limit = 500) {
 	$this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
 	$events	    = [];
-	$keywords   = array_slice($keywords, 0, min(100, count($keywords))); //TODO: SUPPRIMER CA
+	$keywords   = array_slice($keywords, 0, min(1, count($keywords))); //TODO: SUPPRIMER CA
 	$nbKeywords = count($keywords);
         
 	//Récupération des events en fonction d'un mot-clé
@@ -200,17 +200,22 @@ class FacebookAdmin extends FacebookEvents {
     protected function findPaginated(\Facebook\GraphNodes\GraphEdge $graph, callable $callBack = null)
     {
         $datas = [];
-        do {
-            if ($graph->getField('error_code')) {
-                $this->writeln(sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
-                $graph = null;                
-            }else
-            {
-                $currentData    = $callBack ? array_map($callBack, $graph->all()) : $graph->all();
-                $datas          = array_merge($datas, $currentData);
-                $graph          = $this->client->next($graph);
-            }
-        }while($graph !== null && $graph->count() > 0);
+        try {
+            do {
+                if ($graph->getField('error_code')) {
+                    $this->writeln(sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
+                    $graph = null;                
+                }else
+                {
+                    $currentData    = $callBack ? array_map($callBack, $graph->all()) : $graph->all();
+                    $datas          = array_merge($datas, $currentData);
+                    $graph          = $this->client->next($graph);
+                }
+            }while($graph !== null && $graph->count() > 0);
+        } catch (FacebookSDKException $ex) {
+            $this->writeln(sprintf('<error>Erreur dans findPaginated : %s</error>', $ex->getMessage()));
+        }
+        
         
         return $datas;
     }
@@ -324,7 +329,7 @@ class FacebookAdmin extends FacebookEvents {
     
     public function getEventsFromPlaces($places, \DateTime $since, $limit = 500)
     {
-	$places	    = array_slice($places, 0, 100); // TODO: SUPPRIMER CA
+	$places	    = array_slice($places, 0, 1); // TODO: SUPPRIMER CA
 	$id_places  = array_map(function(GraphNode $place)
 	{
 	    return $place->getField('id');
@@ -356,13 +361,18 @@ class FacebookAdmin extends FacebookEvents {
      */
     protected function handlePaginate($accessToken, $endPoint, $params, $limit = 500, $page = 0, $requestMethod = 'GET')
     {
-	//Construction de la requête
-	$params['offset']   = $page * $limit;
-	$params['limit']    = $limit;	
-	$request	    = $this->client->sendRequest($requestMethod, $endPoint, $params, $accessToken);
+        try {
+            //Construction de la requête
+            $params['offset']   = $page * $limit;
+            $params['limit']    = $limit;	
+            $request	    = $this->client->sendRequest($requestMethod, $endPoint, $params, $accessToken);
 
-	//Récupération des données
-	return $this->findPaginated($request->getGraphEdge());
+            //Récupération des données
+            return $this->findPaginated($request->getGraphEdge());
+        } catch (FacebookSDKException $ex) {
+            $this->writeln(sprintf('<error>Erreur dans handlePaginate : %s</error>', $ex->getMessage()));
+        }
+	
     }
 
     public function getEventsFromUsers($users, \DateTime $since) {

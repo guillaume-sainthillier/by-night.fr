@@ -18,6 +18,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
  */
 class Firewall {
 
+    protected $toSaveExplorations;
     protected $explorations;
     protected $fbExploration;
     protected $comparator;
@@ -32,6 +33,7 @@ class Firewall {
         $this->om		= $doctrine->getManager();
         $this->repoExploration	= $this->om->getRepository('TBNMajDataBundle:Exploration');
         $this->comparator	= $comparator;
+        $this->toSaveExplorations = [];
         $this->explorations	= [];
     }
     
@@ -81,7 +83,7 @@ class Firewall {
                         ->setFacebookId($fbId)
                         ->setLastUpdated($agenda->getDateModification())
                         ->setSite($site);
-                $this->addExploration($site, $fbId, $exploration);
+                $this->addExploration($site, $fbId, $exploration, true);
             }
 
             $exploration->setBlackListed(! $isGoodEvent);
@@ -150,15 +152,10 @@ class Firewall {
 	$key = $fbId.'.'.$site->getId();
 	if(! isset($this->explorations[$key]))
 	{
-	    $exploration = $this->repoExploration->findOneBy(['facebookId' => $fbId, 'site' => $site]);
-	    if(null === $exploration)
-	    {
-		return null;
-	    }
-	    
-	    $this->explorations[$key] = $exploration;
+	    return null;
 	}
 
+        $this->toSaveExplorations[] = $this->explorations[$key];
 	return $this->explorations[$key];
     }
 
@@ -190,13 +187,23 @@ class Firewall {
 	return strlen($this->comparator->sanitize($str)) >= $min;
     }
     
-    public function addExploration(Site $site, $fbId, Exploration $exploration)
+    public function addExploration(Site $site, $fbId, Exploration $exploration, $isNewEntity = false)
     {
         $key = $fbId.'.'.$site->getId();
         $this->explorations[$key] = $exploration;
+        
+        if($isNewEntity)
+        {
+            $this->toSaveExplorations[] = $this->explorations[$key];
+        }
     }
 
     public function getExplorations() {
 	return $this->explorations;
+    }
+    
+    public function getExplorationsToSave()
+    {
+        return $this->toSaveExplorations;
     }
 }

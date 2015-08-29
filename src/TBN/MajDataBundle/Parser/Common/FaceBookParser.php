@@ -209,7 +209,7 @@ class FaceBookParser extends AgendaParser {
 		    "reservation_telephone"	=> $this->ensureGoodValue($place->getField("phone")),
 		    "place.url"			=> $this->api->getPagePictureURL($place, false)
 		];
-	    } catch(\Facebook\FacebookSDKException $ex) {}
+	    } catch(\Facebook\Exceptions\FacebookSDKException $ex) {}
 	}
 	return [];
     }

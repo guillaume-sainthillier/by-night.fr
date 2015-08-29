@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\RuntimeException;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 use TBN\MajDataBundle\Entity\HistoriqueMaj;
 
@@ -115,7 +116,14 @@ class UpdateCommand extends EventCommand
         $nbUpdate = 0;
         $nbInsert = 0;
         $nbBlackList = 0;
-        foreach($agendas as $tmpAgenda)
+        $batchSize = 20;
+        $i = 0;
+        $size = ceil(count($agendas) / $batchSize);        
+        
+        // Starting progress
+        $progress = new ProgressBar($output, $size);
+        $progress->start();
+        foreach($agendas as $j => $tmpAgenda)
         {
             //Gestion de l'événement + sa place et sa ville associée
             $cleanedEvent = $handler->handle($places, $villes, $site, $tmpAgenda);
@@ -145,6 +153,16 @@ class UpdateCommand extends EventCommand
 
                 //Persistence en base
                 $em->persist($agenda);
+                if (($i % $batchSize) === 0) {
+                    $end = microtime(true);
+                    $progress->clear();
+                    $this->writeln($output, 'Persistance : <info>'.($end - $start).' ms</info>');
+                    $start = microtime(true);
+                    $em->flush(); // Executes all deletions.
+                    //$em->clear(); // Detaches all objects from Doctrine!
+                }
+                $i++;
+                
                 if(! $firewall->isPersisted($agenda))
                 {
                     $nbInsert++;
@@ -156,14 +174,21 @@ class UpdateCommand extends EventCommand
             {
                 $nbBlackList++;
             }
+            
+            if(($j % $batchSize) === 0)
+            {
+                $progress->advance($batchSize);
+            }            
         }
 
         $end = microtime(true);
-        $this->writeln($output, 'GESTION : <info>'.($end - $start).' ms</info>');
+        $progress->clear();
+        $this->writeln($output, 'Fin de persistance : <info>'.($end - $start).' ms</info>');        
 	$em->flush();
+        $progress->finish();
 
 	//Gestion des explorations + historique de la maj
-	$explorations = $firewall->getExplorations();
+	$explorations = $firewall->getExplorationsToSave();
         $historique
                 ->setFromData($parserName ?: 'tous')
                 ->setExplorations($nbBlackList + count($explorations))
@@ -172,13 +197,23 @@ class UpdateCommand extends EventCommand
                 ->setSite($site)
         ;
 
+        var_dump(count($explorations));
+        $progress->start(ceil(count($explorations) / $batchSize));
+        $i = 0;
 	foreach($explorations as $exploration)
 	{
 	    $em->persist($exploration);
+            if (($i % $batchSize) === 0) {
+                $progress->advance();
+                $em->flush(); // Executes all deletions.
+            }
+            $i++;
 	}
 	
         $em->persist($historique);
         $em->flush();
+        $progress->finish();
+        $progress->clear();
         $this->writeln($output, 'NEW: <info>'.$nbInsert.'</info>');
         $this->writeln($output, 'UPDATES: <info>'.$nbUpdate.'</info>');
         $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.count($explorations).'</info>');

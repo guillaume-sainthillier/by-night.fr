@@ -10,10 +10,11 @@ use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Utils\Comparator;
 use TBN\MajDataBundle\Utils\Firewall;
 use TBN\MajDataBundle\Utils\Merger;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use \SplFixedArray;
 
 /**
  * Description of UpdateCommand
@@ -48,38 +49,50 @@ class MigrationCommand extends EventCommand {
                 ->setName('events:migrate')
                 ->setDescription('Migration des lieux des événements');
     }
+    
+    /**
+     * 
+     * @return EntityManager
+     */
+    private function getManager() {
+        return $this->getContainer()->get('doctrine')->getManager();
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         ini_set('memory_limit', '-1');
 
-        //Récupérations des dépendances        
-        $em	    = $this->getContainer()->get('doctrine')->getManager();
+        //Récupérations des dépendances
+        
+        $em	    = $this->getManager();
         $fbApi	    = $this->getContainer()->get('tbn.social.facebook_admin');
         $repo	    = $em->getRepository('TBNAgendaBundle:Agenda');
         $repoPlaces = $em->getRepository('TBNAgendaBundle:Place');
         $repoVilles = $em->getRepository('TBNAgendaBundle:Ville');
-        $repoSites  = $em->getRepository('TBNMainBundle:Site');
        
         $this->env	= $input->getOption('env');
         $this->handler	= $this->getContainer()->get('tbn.event_handler');
 
-	$maxItems	= 1000;
-        $sites = $repoSites->findAll();
-        foreach($sites as $i => $site)
+        $query          = $em->createQuery('SELECT s FROM TBNMainBundle:Site s');
+        $sitesIterator  = $query->iterate();
+        $batchSize = 20;
+        $i = 0;
+        foreach($sitesIterator as $rowSite)
         {
+            $site = $rowSite[0];
             //Récupération des données existantes
             $this->writeln($output, 'Parcours des événements à '.$site->getNom().'...');
+            
             $agendas = \SplFixedArray::fromArray($repo->findBy([
                 'site' => $site,
-                'isMigrated' => null],
-	    null, $maxItems)); //On récupère les événements qui n'ont pas déjà un lieux de remplis
+                'isMigrated' => null
+            ])); //On récupère les événements qui n'ont pas déjà un lieux de remplis
             
             $places = $repoPlaces->findBy(['site' => $site]);
             $villes = $repoVilles->findBy(['site' => $site]);
 
             $nbAgendas = $agendas->count();
 
-	    $progress = new ProgressBar($output, $nbAgendas);
+	    $progress = new ProgressBar($output, ceil($nbAgendas / $batchSize));
 	    $progress->start(); 
             foreach ($agendas as $i => $tmpAgenda) {
 
@@ -107,25 +120,23 @@ class MigrationCommand extends EventCommand {
 		    try {
 			$stats = $fbApi->getEventCountStats($agenda->getFacebookEventId());
 			$agenda->setFbParticipations($stats['participations'])->setFbInterets($stats['interets']);
-		    } catch (\Facebook\FacebookSDKException $ex) {
+		    } catch (\Facebook\Exceptions\FacebookSDKException $ex) {
 			$output->writeln('<error>'. $ex->getMessage() .'</error>');
 		    }
 		}
 
 		$agenda->setIsMigrated(true);
 		$em->persist($agenda);
-
-		$progress->advance();
-
-                if($i === $nbAgendas)
-                {
-                    break;
+                if (($i % $batchSize) === 0) {
+                    $em->flush(); // Executes all insertions.
+                    $progress->advance();
                 }
+                $i++;		
             }
-
+            $em->flush();
+            $em->clear();
 	    $progress->finish();
             $this->writeln($output, "\n".'Persistance de <info>'.$nbAgendas.'</info> événement(s)...');
-            $em->flush();
             $this->writeln($output, '<info>' .$nbAgendas. '</info> événement(s) mis à jour');
             $this->writeln($output, '<info>' .count($places). '</info> places mise(s) à jour');
             $this->writeln($output, '<info>' .count($villes). '</info> villes mise(s) à jour');
