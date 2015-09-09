@@ -25,7 +25,6 @@ class Firewall {
     protected $om;
     protected $repoExploration;
     protected $cache;
-    protected $geocoder;
 
     public function __construct(Cache $cache, Registry $doctrine, Comparator $comparator)
     {
@@ -99,14 +98,10 @@ class Firewall {
     public function isLocationBounded(Place $place)
     {
 	$site = $place->getSite();
-
-	if(! $this->isPreciseLocation($place) || !$site)
-	{
-	    return false;
-	}
-	
-	return (abs($place->getLatitude() - $site->getLatitude()) <= $site->getDistanceMax() &&
-		abs($place->getLongitude() - $site->getLongitude()) <= $site->getDistanceMax());
+	return $site &&
+                $this->isPreciseLocation($place) &&
+                abs($place->getLatitude() - $site->getLatitude()) <= $site->getDistanceMax() &&
+		abs($place->getLongitude() - $site->getLongitude()) <= $site->getDistanceMax();
     }
 
     protected function checkEvent(Agenda $agenda)

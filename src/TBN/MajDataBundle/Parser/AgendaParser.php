@@ -85,7 +85,7 @@ abstract class AgendaParser implements ParserInterface {
 
     protected function parseDate($date)
     {
-        $tabMois = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+        $tabMois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
         return preg_replace_callback("/(.+)(\d{2}) (".implode("|", $tabMois).") (\d{4})(.*)/iu",
                 function($items) use($tabMois)

@@ -15,18 +15,6 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
     {% endfor %}
 {% endblock %}
 
-{% set defaultImage = '//placehold.it/900x500&text=?' %}
-{% set images = {
-    'toulouse': [
-        '//s4.splcdn.net/images/hotels/48770/toulouse-grand-hotel-de-lopera-335928_1000_560.jpg'
-    ],
-    'paris': [
-        '//comparoptions.com/wp-content/uploads/2012/11/paris_de_nuit1.jpg',
-        '//www.veryworldtrip.com/wp-content/uploads/2013/03/Tourisme-a%CC%80-Paris-Muse%CC%81e-du-Louvre.png'
-    ]
-}%}
-
-
 {% block body_main %}
     <h2>Envie de sortir ?</h2>
     <br />

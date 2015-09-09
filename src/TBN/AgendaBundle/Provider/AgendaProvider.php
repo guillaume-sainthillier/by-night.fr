@@ -18,16 +18,17 @@ use \Symfony\Component\OptionsResolver\Options;
 use Debril\RssAtomBundle\Protocol\Parser\FeedContent;
 use Debril\RssAtomBundle\Protocol\Parser\Item;
 use Debril\RssAtomBundle\Exception\FeedNotFoundException;
-use Debril\RssAtomBundle\Provider\FeedContentProvider;
+use Debril\RssAtomBundle\Provider\FeedContentProviderInterface;
 
 use TBN\MainBundle\Site\SiteManager;
 use Doctrine\ORM\EntityManager;
 use BeSimple\I18nRoutingBundle\Routing\Router;
 
-class AgendaProvider implements FeedContentProvider
+class AgendaProvider implements FeedContentProviderInterface
 {
 
     /**
+
      *
      * @var EntityManager
      */
@@ -51,25 +52,17 @@ class AgendaProvider implements FeedContentProvider
 	$this->site_manager = $site_manager;
 	$this->router = $router;
     }
-
     /**
      *
      * @param \Symfony\Component\OptionsResolver\Options $options
      * @return \Debril\RssAtomBundle\Protocol\Parser\FeedContent
      * @throws \Debril\RssAtomBundle\Protocol\FeedNotFoundException
      */
-    public function getFeedContent(Options $options)
+    public function getFeedContent(array $options)
     {
-        $id = $options->get('id');
-
-        if ($id === 'not-found') {
-	    throw new FeedNotFoundException;
-	}
-
 	$currentSite = $this->site_manager->getCurrentSite();
 
 	$content = new FeedContent;
-        $content->setPublicId($id);
 
         $content->setTitle($currentSite->getNom()." By Night");
         $content->setDescription('Retrouvez tous les derniers événements à '.$currentSite->getNom());

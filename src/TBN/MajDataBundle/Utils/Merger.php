@@ -87,7 +87,7 @@ class Merger {
         //Un ou les deux est nul, pas la peine de merger
         if($a === null || $b === null)
         {
-            return ($a?: $b); //Retourne une Ville ou null selon les cas
+            return ($a?: $b); //Retourne l'objet non nul s'il existe
         }
         
         foreach($fields as $field)

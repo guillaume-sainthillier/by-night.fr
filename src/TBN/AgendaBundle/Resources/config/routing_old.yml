@@ -1,0 +1,28 @@
+tbn_agenda_details_old:
+    path: /{slug}.html
+    defaults: { _controller: TBNAgendaBundle:OldEvent:details}
+    requirements:
+        slug: ([^/]+)
+
+tbn_agenda_soirees_similaires_old:
+    path: /{slug}.html/autres-soirees/{page}
+    defaults: { _controller: TBNAgendaBundle:OldEvent:soireesSimilaires, page: 1}
+    requirements:
+        page: (\d+)
+
+tbn_agenda_soirees_tendances_old:
+    path: /{slug}.html/tendances
+    defaults: { _controller: TBNAgendaBundle:OldEvent:tendances}
+    
+tbn_agenda_soirees_membres_old:
+    path: /{slug}.html/membres/{page}
+    defaults: { _controller: TBNAgendaBundle:OldEvent:fbMembres, page: 1}
+    requirements:
+        page: (\d+)
+
+tbn_agenda_pagination_old:
+    path: /page/{page}
+    defaults: { _controller: TBNAgendaBundle:OldEvent:list}
+    methods: [GET]
+    requirements:
+        page: \d+

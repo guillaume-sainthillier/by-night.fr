@@ -34,7 +34,6 @@
         "willdurand/geocoder": "2.*",
         "jms/serializer-bundle" : "0.13.*",
         "friendsofsymfony/elastica-bundle" : "3.1.*",
-        "hearsay/require-js-bundle": "2.0.*@dev",
         "white-october/pagerfanta-bundle": "dev-master"
     },
     "scripts": {

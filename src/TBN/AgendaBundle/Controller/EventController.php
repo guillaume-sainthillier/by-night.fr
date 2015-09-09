@@ -6,8 +6,6 @@ use TBN\MainBundle\Controller\TBNController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use TBN\MainBundle\Entity\Site;
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Agenda;
 
 use TBN\UserBundle\Entity\User;
@@ -56,6 +54,19 @@ class EventController extends Controller {
 		    'interet' => $interet
 	]);
     }
+    
+    public function indexAction()
+    {
+        $siteManager = $this->get('site_manager');
+        $em         = $this->getDoctrine()->getManager();
+        $repo       = $em->getRepository("TBNAgendaBundle:Agenda");
+        
+        $topEvents  = $repo->findTopSoiree($siteManager->getCurrentSite(), 1, 7);
+        
+        return $this->render('TBNAgendaBundle:Agenda:index.html.twig', [
+            'topEvents' => $topEvents
+        ]);
+    }
 
     public function listAction(Request $request, $page) {
 	//État de la page
@@ -84,7 +95,7 @@ class EventController extends Controller {
 
 	//Création du formulaire
 	$form		= $this->createForm(new SearchType($types_manif, $lieux, $communes), $search, [
-	    'action' => $this->generateUrl('tbn_agenda_index')
+	    'action' => $this->generateUrl('tbn_agenda_agenda')
 	]);
 
 	//Bind du formulaire avec la requête courante
@@ -118,14 +129,14 @@ class EventController extends Controller {
 
     protected function getTypesEvenements($repo, Site $site) {
 	$cache = $this->get('winzou_cache');
-	$key = 'types_evenements.' . $site->getSubdomain();
+	$key = 'categories_evenements.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {
 	    $soirees_type_manifestation = $repo->getTypesEvenements($site);
 	    $type_manifestation = [];
 
 	    foreach ($soirees_type_manifestation as $soiree) {//
-		$types_manifestation = preg_split('/,/', $soiree->getTypeManifestation());
+		$types_manifestation = preg_split('/,/', $soiree->getCategorieManifestation());
 		foreach ($types_manifestation as $type) {
 		    $type = trim($type);
 		    if (!in_array($type, $type_manifestation) && $type != '') {

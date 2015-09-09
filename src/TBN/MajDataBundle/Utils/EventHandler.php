@@ -3,6 +3,7 @@
 namespace TBN\MajDataBundle\Utils;
 
 use Ivory\GoogleMap\Services\Geocoding\Geocoder;
+use Doctrine\Common\Cache\Cache;
 use TBN\MajDataBundle\Utils\Firewall;
 use TBN\MajDataBundle\Utils\Cleaner;
 use TBN\MajDataBundle\Utils\Comparator;
@@ -27,9 +28,11 @@ class EventHandler
     private $cleaner;
     private $comparator;
     private $merger;
+    private $cache;
 
-    public function __construct(Geocoder $geocoder, Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger)
+    public function __construct(Cache $cache, Geocoder $geocoder, Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger)
     {
+        $this->cache    = $cache;
         $this->geocoder = $geocoder;
         $this->firewall = $firewall;
         $this->cleaner = $cleaner;
@@ -95,62 +98,101 @@ class EventHandler
 
     private function guessPlacesFromLocation($nom)
     {
-	$places = [];
-
-	if($nom)
+        $places = [];
+        
+        if($nom)
 	{
-	    $geocoder = $this->geocoder;
-	    $response = $geocoder->geocode($nom);
-	    $status = $response->getStatus();
+            $key = $nom;
+            if(! $this->cache->contains($key))
+            {
+                var_dump('Je cherche', $nom);
+                $geocoder = $this->geocoder;
+                $response = $geocoder->geocode($nom);
+                $status = $response->getStatus();
 
-	    if ($status === 'OK')
-	    {
-		$results = $response->getResults();
-		foreach ($results as $result) {
-		    if (!$result->isPartialMatch()) { //L'adresse a été trouvée précisément
-			$places[] = $this->googleMapResultToPlace($result);
-		    }
-		}
-	    }
+                if ($status === 'OK')
+                {
+                    $results = $response->getResults();
+                    foreach ($results as $result) {
+                        if (!$result->isPartialMatch()) { //L'adresse a été trouvée précisément
+                            $places[] = $this->googleMapResultToPlace($result);
+                        }
+                    }
+                }
+                
+                $this->cache->save($key, $places);
+            }
+            
+            return $this->cache->fetch($key);
 	}
-
+        
 	return $places;
     }
 
-    public function handle(&$persistedPlaces, &$persistedVilles, Site $site, Agenda $agenda)
+    public function handle(&$persistedPlaces, &$persistedVilles, Site &$site, Agenda &$agenda)
     {
+        $start = microtime(true);
         //Assignation du site
         $agenda->setSite($site);
 
         $tmpPlace = $agenda->getPlace();
         if($tmpPlace !== null) //Analyse de la place
         {
+            $end = microtime(true);
+            var_dump('FLAG0.0 : '.(($end - $start)*1000).' ms');
+            $start = microtime(true);
 	    $tmpPlace->setSite($site);
 	    $tmpVille = $tmpPlace->getVille();
 
 	    //Source non fiable + lieu imprécis -> geocoding
 	    if(! $agenda->isTrustedLocation() && !$this->firewall->isPreciseLocation($tmpPlace))
 	    {
-		$candidatesPlaces = $this->guessPlacesFromLocation($tmpPlace->getNom());
+                $end = microtime(true);
+                var_dump('FLAG0.1 : '.(($end - $start)*1000).' ms');
+                $start = microtime(true);
+                try {
+                    $candidatesPlaces = $this->guessPlacesFromLocation($tmpPlace->getNom());
+                } catch (\Ivory\GoogleMap\Exception\Exception $ex) {
+                    $candidatesPlaces = [];
+                }
+		
+                $end = microtime(true);
+                var_dump('FLAG0.2 : '.(($end - $start)*1000).' ms');
+                $start = microtime(true);
 		$filteredCandidatesPlaces = array_filter($candidatesPlaces, [$this->firewall, 'isLocationBounded']);
 		foreach($filteredCandidatesPlaces as $filteredCandidatesPlace)
 		{
 		    $tmpPlace = $filteredCandidatesPlace;
 		    $tmpVille = $tmpPlace->getVille();
 		}
+                $end = microtime(true);
+                var_dump('FLAG0.4 : '.(($end - $start)*1000).' ms');
+                $start = microtime(true);
 	    }
             
             if($tmpVille !== null)
             {
+                $end = microtime(true);
+                var_dump('FLAG0.5 : '.(($end - $start)*1000).' ms');
+                $start = microtime(true);
 		//Recherche d'une meilleure ville déjà existante
                 $tmpVille->setSite($site);
                 $ville = $this->handleVille($persistedVilles, $this->cleaner->getCleanedVille($tmpVille));
                 $tmpPlace->setVille($ville);
+                $end = microtime(true);
+                var_dump('FLAG0.6 : '.(($end - $start)*1000).' ms');
+                $start = microtime(true);
             }
 
+            $end = microtime(true);
+            var_dump('FLAG0.7 : '.(($end - $start)*1000).' ms');
+            $start = microtime(true);
 	    //Recherche d'une meilleure place déjà existante	    
             $place = $this->handlePlace($persistedPlaces, $this->cleaner->getCleanedPlace($tmpPlace));
             $agenda->setPlace($place);
+            $end = microtime(true);
+            var_dump('FLAG0.8 : '.(($end - $start)*1000).' ms');
+            $start = microtime(true);
         }
 
         //Nettoyage de l'événement

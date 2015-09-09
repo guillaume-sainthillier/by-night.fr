@@ -139,7 +139,7 @@ abstract class EventCommand extends ContainerAwareCommand
 
     protected function cleanEvent(Agenda $agenda)
     {
-	if(in_array(strtolower($agenda->getTarif()), ["gratuit"]))
+	if(in_array(strtolower($agenda->getTarif()), ['gratuit']))
 	{
 	    $agenda->setTarif(null);
 	}

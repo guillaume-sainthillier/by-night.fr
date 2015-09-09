@@ -8,7 +8,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <![endif]-->        
         <title>{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}</title>
-        <meta name="keywords" content="{% block meta_keywords %}{% endblock %},night,agenda,événement,soirée,sortir,musique,concert,spectacle">
+        <meta name="keywords" content="{% block meta_keywords %}{% endblock %},ce,soir,soiree,sortie,concert,spectable,musique,discoteque,boite,de,nuit">
         <meta name="description" content="{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}">
         
         <!-- OpenGraph -->
@@ -49,13 +49,12 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
         
         <!-- CSS -->
-        <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400|Roboto+Condensed:100,300,400|Roboto+Draft:100,300,400' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400|Roboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
         
         {% stylesheets 
             'bower/jquery.cookiebar/jquery.cookiebar.css'
             'bower/bootstrap/dist/css/bootstrap.min.css'
             'bower/fontawesome/css/font-awesome.min.css'
-            'bower/bootstrap-material-design/dist/css/roboto.css'
             'bower/bootstrap-material-design/dist/css/ripples.css'
             'css/themes/blue.css'
             'css/social-icons.css'            
@@ -65,8 +64,14 @@
             'css/respond.css'
             output='prod/css/style.css'
         %}
-            <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-        {% endstylesheets %}       
+            <link rel="stylesheet" href="{{ asset_url }}" type="text/css" >
+        {% endstylesheets %}
+        {% stylesheets 
+            'css/print.css'
+            output='prod/css/print.css'
+        %}
+            <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="print">
+        {% endstylesheets %}   
         {% block css %}
         {% endblock %}
         <!-- ./CSS -->
@@ -79,15 +84,17 @@
         
     </head>
     <body itemscope itemtype="http://schema.org/WebPage">
-        <div id="wrap">            
-            <!-- Menu -->
-            {% block menu -%}
-                {% include "::menu.html.twig" %}
-            {%- endblock %}
-            <!-- ./Menu -->            
-            
-            {% block breadcrumb -%}{%- endblock %}
+        <div id="wrap">
+            <header>
+                <!-- Menu -->
+                {% block menu -%}
+                    {% include "::menu.html.twig" %}
+                {%- endblock %}
+                <!-- ./Menu -->            
 
+                {% block breadcrumb -%}{%- endblock %}
+            </header>
+            {% block container_titre %}
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-10 col-md-offset-1">
@@ -95,24 +102,24 @@
                         <div class="divider">
                             <span class="text-primary divider-icon"></span>
                         </div>
-                        
-                        {% for key, messages in app.session.flashbag.all() %}
-                            {% for message in messages %}
-                                <div class="alert alert-{{ key == "error" ? "danger" : key }}">
-                                    <i class="fa fa-{{ key == 'info' ? 'info-circle' : (key == 'error' ? 'warning' : key == 'success' ? 'check' : key) }}"></i> 
-                                    {{ message|trans|raw }}
-                                </div>
-                            {% endfor %}
-                        {% endfor %}
                     </div>
-                </div>
-                            
+                </div>                            
             </div>
+            {% endblock %}
             
             <!-- Main -->
+            {% block helper_top %}{% endblock %}
             {% block start_container -%}
             <div class="container panel panel-primary" id="container">
             {%- endblock %}
+                {% for key, messages in app.session.flashbag.all() %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ key == "error" ? "danger" : key }}">
+                            <i class="fa fa-{{ key == 'info' ? 'info-circle' : (key == 'error' ? 'warning' : key == 'success' ? 'check' : key) }}"></i> 
+                            {{ message|trans|raw }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
                 {% block helper %}{% endblock %}
                 {% block body -%}{%- endblock %}
                 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>

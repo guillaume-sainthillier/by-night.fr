@@ -45,7 +45,7 @@ services:
         class: TBN\MajDataBundle\Utils\Util
     tbn.event_handler:
         class: TBN\MajDataBundle\Utils\EventHandler
-        arguments: [@ivory_google_map.geocoder, @tbn.firewall, @tbn.cleaner, @tbn.comparator, @tbn.merger]
+        arguments: [@file_cache, @ivory_google_map.geocoder, @tbn.firewall, @tbn.cleaner, @tbn.comparator, @tbn.merger]
     tbn.comparator:
         class: TBN\MajDataBundle\Utils\Comparator
         arguments: [@tbn.util, @winzou_cache]

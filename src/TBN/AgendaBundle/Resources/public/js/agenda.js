@@ -32,7 +32,6 @@ function load_infinite_scroll()
         
         if($(window).scrollTop() + $(window).height() > $('#paginate').offset().top - marginScroll)
         {
-            console.log('OK');
             isLoading = true;
             $('#paginate').trigger('click');
         }

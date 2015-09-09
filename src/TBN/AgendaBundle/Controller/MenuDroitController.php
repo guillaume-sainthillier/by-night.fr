@@ -157,19 +157,8 @@ class MenuDroitController extends Controller {
     protected function getTopSoirees(Site $site) {
         $em	    = $this->getDoctrine()->getManager();
         $repo	    = $em->getRepository('TBNAgendaBundle:Agenda');
-        $soirees    = $repo->findTopSoiree($site);
-
-        uasort($soirees, function(Agenda $a, Agenda $b)
-        {
-            if($a->getDateFin() === $b->getDateFin())
-            {
-                return 0;
-            }
-
-            return $a->getDateFin() > $b->getDateFin() ? -1 : 1;
-        });
-
-        return $soirees;
+        
+        return $repo->findTopSoiree($site);
     }
 
     protected function getTopMembres(Site $site) {

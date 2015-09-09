@@ -15,6 +15,6 @@ class HistoriqueMajRepository extends EntityRepository
 
     public function findAll()
     {
-        return $this->findBy([], ["id" => "DESC"]);
+        return $this->findBy([], ['id' => 'DESC']);
     }
 }

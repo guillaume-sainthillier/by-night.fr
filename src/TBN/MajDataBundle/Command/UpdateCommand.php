@@ -64,7 +64,7 @@ class UpdateCommand extends EventCommand
         $site               = $repoSite->findOneBy(['subdomain' => $subdomainSite]);
         $siteInfo           = $repoSiteInfo->findOneBy([]);
         
-        //Chargement des explorations existantes
+        //Chargement des explorations existantes en base
         $firewall->loadExplorations();
 
 	if($site === null)
@@ -125,8 +125,12 @@ class UpdateCommand extends EventCommand
         $progress->start();
         foreach($agendas as $j => $tmpAgenda)
         {
+            $start = microtime(true);
             //Gestion de l'événement + sa place et sa ville associée
             $cleanedEvent = $handler->handle($places, $villes, $site, $tmpAgenda);
+            $end = microtime(true);
+            $this->writeln($output, 'FLAG0 : <info>'.(($end - $start)*1000).' ms</info>');
+            $start = microtime(true);
 	    if(! $cleanedEvent->getDateDebut() instanceof \DateTime || ! $cleanedEvent->getDateFin() instanceof \DateTime)
 	    {
 		$agenda = null;
@@ -139,8 +143,16 @@ class UpdateCommand extends EventCommand
 		    'site' => $site
 		]);
 
-		//Gestion de l'événement & persistance si besoin
+                $end = microtime(true);
+                $this->writeln($output, 'FLAG1 : <info>'.(($end - $start)*1000).' ms</info>');
+                $start = microtime(true);
+                
+                
+		//Gestion de l'événement
 		$agenda = $handler->handleEvent($existingEvents, $cleanedEvent);
+                $end = microtime(true);
+                $this->writeln($output, 'FLAG2 : <info>'.(($end - $start)*1000).' ms</info>');
+                $start = microtime(true);
 	    }
             
             if($agenda !== null)
@@ -156,7 +168,7 @@ class UpdateCommand extends EventCommand
                 if (($i % $batchSize) === 0) {
                     $end = microtime(true);
                     $progress->clear();
-                    $this->writeln($output, 'Persistance : <info>'.($end - $start).' ms</info>');
+                    $this->writeln($output, 'Persistance : <info>'.(($end - $start)*1000).' ms</info>');
                     $start = microtime(true);
                     $em->flush(); // Executes all deletions.
                     //$em->clear(); // Detaches all objects from Doctrine!
@@ -175,6 +187,8 @@ class UpdateCommand extends EventCommand
                 $nbBlackList++;
             }
             
+            $end = microtime(true);
+            $this->writeln($output, 'FLAG3 : <info>'.(($end - $start)*1000).' ms</info>');
             if(($j % $batchSize) === 0)
             {
                 $progress->advance($batchSize);
@@ -183,7 +197,7 @@ class UpdateCommand extends EventCommand
 
         $end = microtime(true);
         $progress->clear();
-        $this->writeln($output, 'Fin de persistance : <info>'.($end - $start).' ms</info>');        
+        $this->writeln($output, 'Fin de persistance : <info>'.(($end - $start)*1000).' ms</info>');        
 	$em->flush();
         $progress->finish();
 
@@ -197,7 +211,6 @@ class UpdateCommand extends EventCommand
                 ->setSite($site)
         ;
 
-        var_dump(count($explorations));
         $progress->start(ceil(count($explorations) / $batchSize));
         $i = 0;
 	foreach($explorations as $exploration)
@@ -205,7 +218,7 @@ class UpdateCommand extends EventCommand
 	    $em->persist($exploration);
             if (($i % $batchSize) === 0) {
                 $progress->advance();
-                $em->flush(); // Executes all deletions.
+                $em->flush();
             }
             $i++;
 	}

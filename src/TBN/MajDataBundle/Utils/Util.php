@@ -52,7 +52,7 @@ class Util {
 
     public function deleteSpaceBetween($string, $delimiters = '-')
     {
-        if(is_string($delimiters) && strlen($delimiters) > 0)
+        if(is_string($delimiters) && isset($delimiters[0])) //Strlen > 0
         {
             return preg_replace('/\s+('.preg_quote($delimiters).'\s+/u', '$1', $string);
         }elseif(is_array($delimiters) && count($delimiters) > 0)
@@ -72,7 +72,10 @@ class Util {
     
     public function deleteMultipleSpaces($string)
     {
-        return preg_replace('/\s+/u', ' ', $string);
+        while (strpos($string, '  ') !== false) {
+            $string = str_replace('  ', ' ', $string);
+        }
+        return $string;
     }
 
     public function utf8TitleCase($string)

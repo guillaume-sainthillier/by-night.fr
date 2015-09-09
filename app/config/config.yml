@@ -33,6 +33,11 @@ doctrine_cache:
             namespace: xcache_cache_ns
             aliases:
                 - winzou_cache
+        php_file:
+            type: array
+            namespace: file_cache_ns
+            aliases:
+                - file_cache
         
 # Twig Configuration
 twig:
@@ -195,6 +200,17 @@ liip_imagine:
 
     filter_sets:
         cache: ~
+        thumb_site_large:
+            quality: 75
+            filters:
+                thumbnail: { size: [1970, 500], mode: outbound }
+                interlace:
+                    # mode can be one of none,line,plane,partition
+                    mode: line
+        thumb_site:
+            quality: 100
+            filters:
+                relative_resize: { heighten: 350 }
         thumb_site:
             quality: 100
             filters:

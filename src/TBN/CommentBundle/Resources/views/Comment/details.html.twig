@@ -14,7 +14,7 @@
     </div>
     <div class="col-xs-9 col-sm-10">
         <div class="infos">
-            <a href="#">{{ comment.user.username }}</a> 
+            <a href="{{ path('tbn_user_details', {'username': comment.user.username}) }}">{{ comment.user.username }}</a> 
             <span title="{{ comment.dateCreation|localizeddate('medium','medium')|capitalize}}">
                 <i class="fa fa-clock-o"></i> {{ comment.dateCreation|diff_date }}
             </span>            

@@ -73,6 +73,24 @@
                     {% endif %}                
                 </div>
             {% endif %}
+            {% set tags = soiree.categorieManifestation|split(",") %}
+            {% set tags = tags|merge(soiree.typeManifestation|split(",")) %}
+            {% set tags = tags|merge(soiree.themeManifestation|split(",")) %}
+            {% set distinctTags = [] %}
+            {% for tag in tags %}
+                {% set cleanTag = tag|trim %}
+                {% if cleanTag|length and cleanTag not in distinctTags %}
+                    {% set distinctTags = distinctTags|merge([cleanTag|capitalize]) %}
+                {% endif %}
+            {% endfor %}
+            {% if distinctTags|length %}
+                <div class="trait" >                        
+                    <i class="fa fa-tag pull-left icon"></i> 
+                    {% for tag in distinctTags %}
+                    <span class="label label-info">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
             {% if soiree.tarif %}   
                 <div class="trait" itemprop="offers" itemscope itemtype="http://schema.org/Offer">                        
                     <i class="fa fa-ticket pull-left icon"></i> 

@@ -41,7 +41,7 @@ class FlushCommand extends EventCommand
         
 	
         //Récupération du site demandé
-        $site               = $repoSite->findOneBy(["subdomain" => $subdomainSite]);
+        $site               = $repoSite->findOneBy(['subdomain' => $subdomainSite]);
 
         if(! $site)
         {
@@ -49,7 +49,7 @@ class FlushCommand extends EventCommand
         }else
         {
             $this->write($output, "Recherche d'événements indésirables...");
-            $agendas	= $repo->findBy(["site" => $site]);
+            $agendas	= $repo->findBy(['site' => $site]);
             $nbSpam     = 0;
             $nbMaj      = 0;
             foreach($agendas as $agenda)

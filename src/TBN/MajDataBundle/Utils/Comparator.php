@@ -22,7 +22,7 @@ class Comparator {
         $this->cache = $cache;
     }
 
-    public function getBestVille($villes, Ville $testedVille = null, $debug = false)
+    public function getBestVille(& $villes, Ville $testedVille = null, $debug = false)
     {
         $this->debug = $debug;
         return $this->getBest($villes, [$this, 'getMatchingScoreVille'], $testedVille);
@@ -47,7 +47,7 @@ class Comparator {
         return $pourcentage;
     }
     
-    public function getBestPlace($places, Place $testedPlace = null, $debug = false)
+    public function getBestPlace(& $places, Place $testedPlace = null, $debug = false)
     {
         $this->debug = $debug;
         return $this->getBest($places, [$this, 'getMatchingScorePlace'], $testedPlace, 60);
@@ -83,7 +83,7 @@ class Comparator {
         return 0;
     }
 
-    public function getBestEvent($events, Agenda $testedEvent, $debug = false)
+    public function getBestEvent(& $events, Agenda $testedEvent, $debug = false)
     {
         $this->debug = $debug;
         return $this->getBest($events, [$this, 'getMatchingScoreEvent'], $testedEvent);
@@ -115,7 +115,7 @@ class Comparator {
         return 0;
     }
 
-    private function getBest($items, $machingFunction, $testedItem = null, $minScore = 75)
+    private function getBest(& $items, $machingFunction, $testedItem = null, $minScore = 75)
     {
         $bestScore = 0;
         $bestItem = null;
@@ -151,7 +151,8 @@ class Comparator {
     protected function getMatchingScore($a, $b)
     {
 	$pourcentage = 0;
-	if(strlen($a) > 0 && strlen($b) > 0)
+        // = strlen > 0
+	if(isset($a[0]) && isset($b[0]) > 0)
 	{
 	    if($a === $b)
 	    {
@@ -196,7 +197,7 @@ class Comparator {
         }        
         
         $compareA = $this->sanitize($valueA);
-        return strlen($compareA) > 0 ? ($valueA?: null) : ($valueB?:null);
+        return isset($compareA[0]) ? ($valueA?: null) : ($valueB?:null);
     }
 
     public function sanitizeNumber($string)
@@ -252,7 +253,8 @@ class Comparator {
 	$trimedA = $this->sanitize($a);
 	$trimedB = $this->sanitize($b);
 
-	if(strlen($trimedA) === 0 || strlen($trimedB) === 0)
+        // = strlen > 0
+	if(! isset($trimedA[0]) || ! isset($trimedB[0]))
 	{
 	    return $equalsAreSame;
 	}elseif($trimedA === $trimedB)

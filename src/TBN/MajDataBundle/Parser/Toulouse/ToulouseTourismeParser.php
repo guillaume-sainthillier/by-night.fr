@@ -61,20 +61,20 @@ class ToulouseTourismeParser extends LinksParser {
 		$date_debut = preg_replace("/du (".$date_format_regex.")(.+)/i","$1", $dates);
 	    }
 
-	    $tab_retour["date_fin"] = \DateTime::createFromFormat("d/m/Y", $date_fin) ?: null;
+	    $tab_retour['date_fin'] = \DateTime::createFromFormat('d/m/Y', $date_fin) ?: null;
 	}
 
 
 	//Tarifs
-	$tarifs			    = $this->parser->filter(".tarifs .main_info");
+	$tarifs			    = $this->parser->filter('.tarifs .main_info');
 	$tarif			    = $tarifs->count() ? $tarifs->text() : null;
-	if($tarif === "Gratuit")
+	if($tarif === 'Gratuit')
 	{
 	    $tarif = null;
 	}
 
 	//Réservations Internet & Téléphone
-	$infos_resa = $this->parser->filter("ul.children")->eq(0)->filter("li")->each(function(Crawler $info)
+	$infos_resa = $this->parser->filter('ul.children')->eq(0)->filter('li')->each(function(Crawler $info)
 	{
 	    return $info->text();
 	});
@@ -85,7 +85,7 @@ class ToulouseTourismeParser extends LinksParser {
 	foreach($infos_resa as $info_resa)
 	{
 	    $info_resa = trim($info_resa);
-	    if(filter_var("http://".$info_resa, FILTER_VALIDATE_URL))
+	    if(filter_var('http://'.$info_resa, FILTER_VALIDATE_URL))
 	    {
 		$resa_internet[] = $info_resa;
 	    }else
@@ -121,25 +121,25 @@ class ToulouseTourismeParser extends LinksParser {
 	$ville = preg_replace("/^(\d+)(.+)/i","$2", $cp_ville);
 
 
-	$tab_retour["date_debut"]		= \DateTime::createFromFormat("d/m/Y", $date_debut) ?: null;
-	$tab_retour["url"]			= $this->parser->filter("#pictures_img .smoothbox")->count() ? $this->parser->filter("#pictures_img .smoothbox")->attr("href") : null;
-	$tab_retour["nom"]			= $this->parser->filter("h1.gotham_black")->count() ? $this->parser->filter("h1.gotham_black")->text() : null;
-	$tab_retour["theme_manifestation"]      = $this->parser->filter(".localisation")->count() ? $this->parser->filter(".localisation")->eq(0)->text() : null;
-	$tab_retour["place.nom"]		= $lieu;
-	$tab_retour["place.rue"]		= $rue;
-	$tab_retour["place.ville.code_postal"]	= $cp;
-	$tab_retour["place.ville.nom"]		= $ville;
-	$tab_retour["descriptif"]		= $description_start." ".$description_end;
-	$tab_retour["reservation_telephone"]	= implode(",", $resa_telephone);
-	$tab_retour["reservation_internet"]	= implode(",", $resa_internet);
-	$tab_retour["tarif"]			= $tarif;
-        $tab_retour["source"]                   = $this->url;
+	$tab_retour['date_debut']		= \DateTime::createFromFormat('d/m/Y', $date_debut) ?: null;
+	$tab_retour['url']			= $this->parser->filter('#pictures_img .smoothbox')->count() ? $this->parser->filter('#pictures_img .smoothbox')->attr('href') : null;
+	$tab_retour['nom']			= $this->parser->filter('h1.gotham_black')->count() ? $this->parser->filter('h1.gotham_black')->text() : null;
+	$tab_retour['theme_manifestation']      = $this->parser->filter('.localisation')->count() ? $this->parser->filter('.localisation')->eq(0)->text() : null;
+	$tab_retour['place.nom']		= $lieu;
+	$tab_retour['place.rue']		= $rue;
+	$tab_retour['place.ville.code_postal']	= $cp;
+	$tab_retour['place.ville.nom']		= $ville;
+	$tab_retour['descriptif']		= $description_start.' '.$description_end;
+	$tab_retour['reservation_telephone']	= implode(',', $resa_telephone);
+	$tab_retour['reservation_internet']	= implode(',', $resa_internet);
+	$tab_retour['tarif']			= $tarif;
+        $tab_retour['source']                   = $this->url;
 
 	return $tab_retour;
     }
 
     public function getLinks() {
-	$this->parseContent("HTML");
+	$this->parseContent('HTML');
 
 	$urls = [];
 	while($this->url !== null)

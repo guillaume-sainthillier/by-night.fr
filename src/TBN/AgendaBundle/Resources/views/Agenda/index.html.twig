@@ -1,0 +1,85 @@
+{% extends "TBNAgendaBundle::layout.html.twig" %}
+
+{% block titre_agenda %}<strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong>, <strong>soirées</strong> à <strong>{{ site.nom }}</strong>{% endblock %}
+
+{% block title_agenda %}{{ block('titre_agenda')|striptags  }}{% endblock %}
+
+{% block container_titre %}{% endblock %}
+{% block helper_top %}
+    <section class="full_wrapper" {% if site.images|length > 0 %}style="background-image: url({{ site.images[0].webPath|imagine_filter('thumb_site_large') }})"{% endif %}>
+        <div class="fade-black-transp"></div>
+        <div class="wrapper">
+            <h1 class="titrebloc text-center">
+                <span class="home-title">{{ block('titre_agenda') }}</span>
+                <span class="home-subtitle">42 500 colocations disponibles</span>
+            </h1>
+            <div class="search_container">
+
+            </div>
+        </div>
+        <div class="footer_wrapper">
+            <h2 data-automation="seotag">Colocation , Colocataire  &amp; chambre à louer</h2>
+        </div>
+    </section>
+{% endblock %}
+{% block body_agenda -%}
+    <h2>Envie de sortir à {{ site.nom }} ?</h2>
+    <p>Si vous cherchez <strong>que faire à {{ site.nom }}</strong>, trouvez facilement un <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>, <strong>café</strong> ou <strong>sortie</strong> dans votre ville préférée. 
+        Il y en a pour tous les goûts, pour toutes les couleurs et pour tous les âges ! De la <strong>visite de parcs en famille</strong> aux <strong>soirées étudiantes</strong> les plus branchées dans les <strong>discothèques</strong> de {{ site.nom }}, trouvez l'événement qui vous correspond !
+    </p>
+    <p>{{ site.nom }} By Night est une solution alternative pour chercher et trouver facilement des <strong>événements culturels</strong> sur la ville de {{ site.nom }} et ses environs.
+        Notre but est avant tout de centraliser les <strong>bons plans</strong> et vous offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
+    </p>    
+    <br />
+    <a href="{{ path('tbn_agenda_agenda') }}" class="btn btn-lg btn-block btn-primary"><i class="fa fa-chevron-right"></i> Agenda des événéments, concerts, spectacles à {{ site.nom }}</a>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Concert</h3>
+            <p>Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples à 
+                {{ site.nom }} ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et soirées et pour <strong>sortir se détendre</strong> à {{ site.nom }}.
+            </p>
+        </div>
+        <div class="col-md-4">
+            <h3>Etudiant</h3>
+            <p>Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>, d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en <strong>discothèque</strong> ce soir ?
+                {{ site.nom }} By Night regroupe <strong>l'agenda des soirées</strong> rien que pour vous !
+            </p>
+        </div>
+        <div class="col-md-4">
+            <h3>Famille</h3>
+            <p>Trouvez des idées pour <strong>sortir en famille</strong> à {{ site.nom }} avec tous <strong>les spectacles enfants</strong>.
+                Découvrez de nouveaux <strong>spectacles jeune public</strong>, des <strong>parcs </strong> ou de jolies <strong>balades</strong> près de {{ site.nom }} !
+            </p>
+        </div>        
+    </div>
+    <br />
+    <br />
+    <h2>Les concerts, spectacles, sorties de la semaine</h2>
+    {% for i, soiree in topEvents %}
+        {% include 'TBNAgendaBundle:Agenda:block_preview_soiree.html.twig' %}
+        {% if (i + 1) < topEvents|length %}
+            <hr />
+        {% endif %}
+    {% endfor %}
+{%- endblock %}
+
+{% block css_agenda %}
+    {% stylesheets 
+        'bundles/tbnagenda/css/liste.css'
+        'bundles/tbnagenda/css/index.css'
+        output='prod/css/evenements/index.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
+    {% endstylesheets %}
+{% endblock %}
+
+{% block js_agenda %}
+    {% javascripts 
+        'bower/jquery-unveil/jquery.unveil.min.js'
+        '@TBNAgendaBundle/Resources/public/js/index.js'
+        output='prod/js/evenements/index.js'
+    %}
+        <script src="{{ asset_url }}" type="text/javascript"></script>
+    {% endjavascripts %}
+{% endblock %}

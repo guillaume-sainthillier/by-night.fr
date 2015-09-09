@@ -1,6 +1,7 @@
 {% extends "TBNAgendaBundle::layout-fluid.html.twig" %}
 
-{% block breadcrumb_agenda %}    
+{% block breadcrumb_agenda %}
+    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda')) %}
     {% if page > 1 %}
         {% set item = menu.addItem("Page " ~ page, path('tbn_agenda_pagination', {'page': page})) %}
     {% endif %}

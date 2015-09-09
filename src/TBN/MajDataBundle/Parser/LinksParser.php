@@ -50,29 +50,13 @@ abstract class LinksParser extends AgendaParser {
 
             if(! $this->isMultiArray($infosAgenda))
             {
-                $infosAgenda = [$infosAgenda];
-                
+                $infosAgenda = [$infosAgenda];                
             }
+            
             $agendas = array_merge($agendas, $infosAgenda);
         }
 
         return $agendas;
-
-        /*
-        return array_filter(array_map(function($link) {            
-            try {
-                $this->setUrl($link);
-                $this->parseContent(); //Positionne le parser sur chaque lien
-                $infos_agenda = $this->getInfosAgenda(); //Récupère les infos de l'agenda depuis le lien
-                return $this->hydraterAgenda($infos_agenda); //Créé ou récupère l'agenda associé aux infos
-            }catch(\Exception $e)
-            {
-                return null;
-            }
-        }, $links), function($agenda)
-        {
-            return $agenda !== null;
-        });*/
     }
 
     protected function getSilentNode(Crawler $node)

@@ -31,17 +31,17 @@ class SoonNightParser extends LinksParser {
         //Date & Nom
         $date_lieu                      = preg_split("/-/",$this->parser->filter(".titre h2")->text());
         $nom                            = preg_replace("/\&(\d+);/i", "&#$1;", $this->parser->filter(".titre h1")->text())." @ ".$date_lieu[1];
-        $tab_retour["nom"]              = $this->decodeNumCharacter($nom);
+        $tab_retour['nom']              = $this->decodeNumCharacter($nom);
         $date                           = $this->parseDate($date_lieu[0]);
 
-        $tab_retour["date_debut"]       = \DateTime::createFromFormat("Y-n-d",$date);
+        $tab_retour['date_debut']       = \DateTime::createFromFormat('Y-n-d',$date);
         
         //Lieux
         $rue                            = null;
         $code_postal                    = null;
         $lieu                           = null;
         $ville                          = null;
-        $lieux                          = $this->getNodeFromHeading($this->parser->filter(".lieu"));
+        $lieux                          = $this->getNodeFromHeading($this->parser->filter('.lieu'));
         if($lieux)
         {
             $node_rue                       = $lieux->filter("span[property='v:street-address']");
@@ -54,22 +54,22 @@ class SoonNightParser extends LinksParser {
             $ville                          = $node_ville->count() ? trim($node_ville->text()) : null;
             $lieu                           = $node_lieu->count() ? trim($node_lieu->text()) : null;
         }
-        $tab_retour["place.nom"]		    = $lieu;
-        $tab_retour["place.rue"]		    = $rue;
-        $tab_retour["place.ville.code_postal"]      = $code_postal;
-        $tab_retour["place.ville.nom"]              = $ville;
+        $tab_retour['place.nom']		    = $lieu;
+        $tab_retour['place.rue']		    = $rue;
+        $tab_retour['place.ville.code_postal']      = $code_postal;
+        $tab_retour['place.ville.nom']              = $ville;
 
         //Téléphone & Tarifs
         $telephone                          = null;        
-        $infoline                           = $this->getNodeFromHeading($this->parser->filter(".infoline"));
+        $infoline                           = $this->getNodeFromHeading($this->parser->filter('.infoline'));
         if($infoline)
         {
             $telephone = $infoline->text();
         }
-        $tab_retour["reservation_telephone"]    = $telephone;
+        $tab_retour['reservation_telephone']    = $telephone;
 
-        $tarifs                                 = $this->getNodeFromHeading($this->parser->filter(".prix"));
-        $tab_retour["tarif"]                    = $tarifs ? trim($tarifs->text()) : null;
+        $tarifs                                 = $this->getNodeFromHeading($this->parser->filter('.prix'));
+        $tab_retour['tarif']                    = $tarifs ? trim($tarifs->text()) : null;
 
         //Description
         $descriptif_long                        = $this->parser->filter("#bloc_texte span[property='v:description']");
@@ -82,7 +82,7 @@ class SoonNightParser extends LinksParser {
             {                
                 if($children->nodeType === XML_TEXT_NODE || ! in_array($children->nodeName, ['span', 'div']))
                 {
-                    $descriptif .= ($children->nodeName === "br" ? "<br>" : $children->textContent." ");
+                    $descriptif .= ($children->nodeName === 'br' ? '<br>' : $children->textContent.' ');
                 }
             }            
         }
@@ -94,41 +94,41 @@ class SoonNightParser extends LinksParser {
             "Afficher le numéro du service de mise en relation"
         ];
         $clean_descriptif                       = str_replace($black_list,"",$descriptif);
-        $tab_retour["descriptif"]               = $clean_descriptif;
+        $tab_retour['descriptif']               = $clean_descriptif;
 
         //Catégorie & Thème
-        $node_categorie                         = $this->getNodeFromHeading($this->parser->filter(".genre"));
-        $tab_retour["categorie_manifestation"]  = $node_categorie ? trim($node_categorie->text()) : null;
+        $node_categorie                         = $this->getNodeFromHeading($this->parser->filter('.genre'));
+        $tab_retour['categorie_manifestation']  = $node_categorie ? trim($node_categorie->text()) : null;
 
-        $node_musique                           = $this->getNodeFromHeading($this->parser->filter(".musique"));
-        $tab_retour["theme_manifestation"]      = $node_musique ? trim($node_musique->text()) : null;
+        $node_musique                           = $this->getNodeFromHeading($this->parser->filter('.musique'));
+        $tab_retour['theme_manifestation']      = $node_musique ? trim($node_musique->text()) : null;
         $tab_retour['type_manifestation']       = 'Soirée';
 
         //Image
-        $image                                  = $this->parser->filter(".case_visuel img");
-        $tab_retour["url"]                      = $image->count() ? $image->attr("src") : null;
-        $tab_retour["source"]                   = $this->url;
+        $image                                  = $this->parser->filter('.case_visuel img');
+        $tab_retour['url']                      = $image->count() ? $image->attr('src') : null;
+        $tab_retour['source']                   = $this->url;
 
         return $tab_retour;
     }
 
     public function getLinks()
     {
-        $this->parseContent("HTML");
-        return $this->parser->filter("div.affichage_liste_1 a.titre")->each(function(Crawler $item)
+        $this->parseContent('HTML');
+        return $this->parser->filter('div.affichage_liste_1 a.titre')->each(function(Crawler $item)
         {
 
-            return $this->base_url.$item->attr("href");
+            return $this->base_url.$item->attr('href');
         });
     }
 
     public function getNomData() {
-        return "SoonNight";
+        return 'SoonNight';
     }
 
     protected function parseDate($date)
     {
-        $tabMois = ["janvier","fevrier","mars","avril","mai","juin","juillet","aout","septembre","octobre","novembre","decembre"];
+        $tabMois = ['janvier','fevrier','mars','avril','mai','juin','juillet','aout','septembre','octobre','novembre','decembre'];
 
         return preg_replace_callback("/(.+)(\d{2}) (".implode("|", $tabMois).") (\d{4})(.+)/iu",
                 function($items) use($tabMois)

@@ -66,8 +66,8 @@ class FaceBookParser extends AgendaParser {
 	//Calcul de l'ID FB des propriétaires des événements précédemment trouvés
         $event_users = array_map(function(GraphNode $event)
         {
-            $owner = $event->getField("owner");
-            return $owner ? $owner->getField("id") : null;
+            $owner = $event->getField('owner');
+            return $owner ? $owner->getField('id') : null;
         }, $place_events);
 
 	//On ne garde que les événements dont le propriétaire est renseigné
@@ -82,7 +82,7 @@ class FaceBookParser extends AgendaParser {
 	}, $fb_events);
 
         //Fusion et tri de tous les propriétaires d'événement trouvés
-	$full_users     = array_unique(array_merge($fb_users, $real_event_users));
+	$full_users     = array_unique(array_filter(array_merge($fb_users, $real_event_users)));
         $this->writeln('<info>'.count($full_users).'</info> propriétaires trouvés');
 
 	//Récupération de tous les événements depuis les propriétaires
@@ -98,39 +98,29 @@ class FaceBookParser extends AgendaParser {
         $filtered_events    = $this->filterEvents($events);
 	$nbFilteredEvents   = count($filtered_events);
         $this->writeln(sprintf('<info>%d</info> événéments retenus, récupération des infos', $nbFilteredEvents));
+        
+        //Libération de la RAM
+        unset($place_events);
+        unset($event_users);
+        unset($fb_events);
+        unset($real_event_users);
+        unset($user_events);
+        unset($full_users);
+        unset($fb_users);
+        unset($events);
 
-	//Création des instances d'Agenda
-	$i = 0;
-	$eventsPerRequest = 30;
-	$nbIterations = ceil($nbFilteredEvents / $eventsPerRequest);
-	for($i = 0; $i < $nbIterations; $i++)
-	{
-            try {
-                $currentIdsEvents	= array_slice($filtered_events, $i* $eventsPerRequest, $eventsPerRequest);
-                $start		= microtime(true);
-                $events		= $this->api->getEventsFromIds($currentIdsEvents);
-
-                foreach ($events as $event) {
-                    $agendas[] = $this->getInfoAgenda($event);
-                }
-                $end = microtime(true);
-                $this->writeln(sprintf('%d / %d : Récupération en <info>%d ms</info>', $i, $nbIterations, ($end - $start)*1000));
-            } catch (\Facebook\Exceptions\FacebookSDKException $ex) {
-                $this->writeln(sprintf('%d / %d : Erreur <error>%s</error>', $i, $nbIterations, $ex->getMessage()));
-            }	    
-	}
-
-	return $agendas; 
+        //Récupération des événements par Batch
+        return array_map([$this, 'getInfoAgenda'], $this->api->getEventsFromIds($filtered_events));
     }
 
     protected function getEventsFromPlaces(\DateTime $now)
     {
 	//Récupération des lieux existants en  base
 	$places		= $this->repoPlace->findBy(['site' => $this->getSite()]);
-        $nom_places	= array_map(function(Place $place)
+        $nom_places	= array_filter(array_map(function(Place $place)
         {
 	    return $place->getNom();
-	}, $places);
+	}, $places));
 
 	//Récupération des lieux aux alentours de la ville courante
         $this->write("Recherche d'endroits vers [".$this->getSite()->getLatitude()."; ".$this->getSite()->getLongitude()."]...");
@@ -151,7 +141,7 @@ class FaceBookParser extends AgendaParser {
         return $events;
     }
 
-    protected function filterEvents($events) {
+    protected function filterEvents(& $events) {
         $uniqs = array_unique($events);
 	$filtered = array_filter($uniqs, function(GraphNode $event)
 	{
@@ -192,28 +182,6 @@ class FaceBookParser extends AgendaParser {
 	return $date1->format("Y-m-d H:i:s") === $date2->format("Y-m-d H:i:s");
     }
 
-    protected function getPageInfos($page) {
-
-	$id_page = $page->getField('id');
-
-	if($id_page)
-	{
-	    try
-	    {
-		$place = $this->api->getPageFromId($id_page, [
-		    'fields' => 'website,phone,picture.type(large).redirect(false)'
-		]);
-
-		return [
-		    "reservation_internet"	=> $this->ensureGoodValue($place->getField('website')),
-		    "reservation_telephone"	=> $this->ensureGoodValue($place->getField("phone")),
-		    "place.url"			=> $this->api->getPagePictureURL($place, false)
-		];
-	    } catch(\Facebook\Exceptions\FacebookSDKException $ex) {}
-	}
-	return [];
-    }
-
     /**
      * Retourne les informations d'un événement en fonction de l'ID de cet événement sur Facebook
      * @param $event
@@ -223,60 +191,59 @@ class FaceBookParser extends AgendaParser {
 
 	$tab_retour			    = [];
 	
-	$tab_retour["nom"]		    = $event->getField("name");
-	$tab_retour["facebook_event_id"]    = $event->getField("id");
-	$tab_retour["descriptif"]	    = nl2br($event->getField("description"));
-	$tab_retour["date_debut"]	    = $event->getField("start_time");
-	$tab_retour["date_fin"]		    = $event->getField("end_time");
-	$tab_retour["date_modification"]    = $event->getField("updated_time");
-	$tab_retour["fb_participations"]    = $event->getField("attending_count");
-	$tab_retour["fb_interets"]	    = $event->getField("maybe_count");
+	$tab_retour['nom']		    = $event->getField('name');
+	$tab_retour['facebook_event_id']    = $event->getField('id');
+	$tab_retour['descriptif']	    = nl2br($event->getField('description'));
+	$tab_retour['date_debut']	    = $event->getField('start_time');
+	$tab_retour['date_fin']		    = $event->getField('end_time');
+	$tab_retour['date_modification']    = $event->getField('updated_time');
+	$tab_retour['fb_participations']    = $event->getField('attending_count');
+	$tab_retour['fb_interets']	    = $event->getField('maybe_count');
 
 
 	//Horaires
-        $dateDebut	= $tab_retour["date_debut"];
-        $dateFin	= $tab_retour["date_fin"];
+        $dateDebut	= $tab_retour['date_debut'];
+        $dateFin	= $tab_retour['date_fin'];
         $horaires	= null;
 
         if ($dateDebut instanceof \DateTime && $dateFin instanceof \DateTime) {
-            $horaires = sprintf("De %s à %s", $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
+            $horaires = sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
         } elseif($dateDebut instanceof \DateTime) {
             $horaires = sprintf("A %s", $dateDebut->format("H\hi"));
         }
 
-        $tab_retour["horaires"] = $horaires;
+        $tab_retour['horaires'] = $horaires;
 	        
         //Image
-	$tab_retour["url"]		    = $this->ensureGoodValue($this->api->getPagePictureURL($event));
+	$tab_retour['url']		    = $this->ensureGoodValue($this->api->getPagePictureURL($event));
         
         //Reservations
-	$tab_retour["reservation_internet"] = $this->ensureGoodValue($event->getField("ticket_uri"));
+	$tab_retour['reservation_internet'] = $this->ensureGoodValue($event->getField('ticket_uri'));
 
 	//Place
-	$place = $event->getField("place");
+	$place = $event->getField('place');
 	if ($place) {
 
-	    $tab_retour["place.nom"] = $place->getField("name");
-
-	    //Résa URL & Téléphone
-	    $tab_retour = array_merge($tab_retour, $this->getPageInfos($place));
+	    $tab_retour['place.nom']            = $place->getField('name');
 
 	    //Location
 	    $location		    = $place->getField('location');
 	    if($location)
 	    {
-		$tab_retour["place.rue"]		= $this->ensureGoodValue($location->getField("street"));
-		$tab_retour["place.latitude"]		= $this->ensureGoodValue($location->getField("latitude"));
-		$tab_retour["place.longitude"]		= $this->ensureGoodValue($location->getField("longitude"));
-		$tab_retour["place.ville.code_postal"]	= $this->ensureGoodValue($location->getField("zip"));
-		$tab_retour["place.ville.nom"]		= $this->ensureGoodValue($location->getField("city"));
+		$tab_retour['place.rue']		= $this->ensureGoodValue($location->getField('street'));
+		$tab_retour['place.latitude']		= $this->ensureGoodValue($location->getField('latitude'));
+		$tab_retour['place.longitude']		= $this->ensureGoodValue($location->getField('longitude'));
+		$tab_retour['place.ville.code_postal']	= $this->ensureGoodValue($location->getField('zip'));
+		$tab_retour['place.ville.nom']		= $this->ensureGoodValue($location->getField('city'));
 	    }	    
 	}
 
 	//Propriétaire de l'événement
-	$owner = $event->getField("owner");
+	$owner = $event->getField('owner');
 	if ($owner) {
-	    $tab_retour["facebook_owner_id"] = $owner->getField("id");
+	    $tab_retour['facebook_owner_id'] = $owner->getField('id');
+            $tab_retour['reservation_internet']	= $this->ensureGoodValue($owner->getField('website'));
+            $tab_retour['reservation_telephone']= $this->ensureGoodValue($owner->getField("phone"));
 	}
 
 	return $tab_retour;
@@ -288,6 +255,6 @@ class FaceBookParser extends AgendaParser {
     }
     
     public function getNomData() {
-	return "Facebook";
+	return 'Facebook';
     }
 }

@@ -25,6 +25,7 @@
 
 
 {% block body_membre %}
+{% set imageURL = user.profileDefault ? user.profileDefault : asset('img/empty_user.png')|imagine_filter('thumb_user') %}
 <div class="row">
     <div class="col-md-3">
         <div class="panel panel-default fiche_profil text-center">
@@ -32,7 +33,7 @@
                 <h2 class="modal-title">Profil</h2>
             </div>      
             <div class="panel-body">                    
-                <img class="img img-responsive component" src="{{ user.profileDefault }}" />
+                <img class="img img-responsive component" src="{{ imageURL }}" />
                 <br />
                 <div class="row">
                     <div class="col-xs-6 preserve">

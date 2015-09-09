@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use JMS\Serializer\SerializerInterface;
 
 use TBN\UserBundle\Entity\SiteInfo;
 use TBN\MajDataBundle\Parser\AgendaParser;
@@ -15,6 +16,7 @@ use TBN\MainBundle\Site\SiteManager;
 
 use Facebook\GraphNodes\GraphPage;
 use Facebook\GraphNodes\GraphNode;
+use Facebook\GraphNodes\GraphEdge;
 use Facebook\FacebookResponse;
 use Facebook\Exceptions\FacebookSDKException;
 
@@ -38,11 +40,18 @@ class FacebookAdmin extends FacebookEvents {
     protected $parser;
 
     protected $cache;
+    
+    /**
+     *
+     * @var SerializerInterface 
+     */
+    protected $serializer;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, ObjectManager $om) {
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, ObjectManager $om, SerializerInterface $serializer) {
         parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack);
 
         $this->siteInfo = $this->siteManager->getSiteInfo();
+        $this->serializer = $serializer;
 	$this->cache	= [];
         $this->parser	= null;
 
@@ -89,7 +98,7 @@ class FacebookAdmin extends FacebookEvents {
 	    try {
 		$page = $this->getPageFromId($site->getFacebookIdPage());                
 		return $page->getField('likes');
-	    } catch (\Exception $ex) {}
+	    } catch (FacebookSDKException $ex) {}
 	}
 
 	return 0;
@@ -110,40 +119,66 @@ class FacebookAdmin extends FacebookEvents {
 	return $this->cache[$key];
     }
 
-    public function getEventsFromIds($ids_event)
+    public function getEventsFromIds(& $ids_event, $idsPerRequest = 20, $limit = 500)
     {
-	try {
-	    $request		= $this->client->sendRequest('GET', '/', [
-		'ids'	    => implode(',', $ids_event),
-		'fields'    => self::$FIELDS
-	    ], $this->siteInfo->getFacebookAccessToken());
-            
-            $events     = [];
-            $graph      = $request->getGraphNode();
-            $indexes    = $graph->getFieldNames();
-            foreach($indexes as $index)
-            {
-                $events[] = $graph->getField($index);
-            }
-            
-	    return $events;
-            
-	} catch (FacebookSDKException $ex) {
-	    $this->parser->writeln('<error>Erreur dans la récupération des pages : '. $ex->getMessage() .'</error>');
+        $requestPerBatch = 50;
+        $idsPerBatch = $requestPerBatch * $idsPerRequest;
+        $nbBatchs   = ceil(count($ids_event) / $idsPerBatch);
+	$finalEvents = [];
+        $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
 
-	    return array_map(function($id_event)
-	    {
-		try {
-		    return $this->getEventFromId($id_event);
-		} catch (FacebookSDKException $ex) {
-		    $this->parser->writeln(sprintf(
-                        '<error>Erreur dans la récupération de l\'événement #%s : %s</error>', 
-                        $id_event, 
-                        $ex->getMessage()
-		    ));
-		}
-	    }, $ids_event);
+        for($i = 0; $i < $nbBatchs; $i++)
+        {
+            $requests = [];
+            $batch_ids = array_slice($ids_event, $i * $idsPerBatch, $idsPerBatch);
+            $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
+            try
+            {
+                for($j = 0; $j < $nbIterations; $j++)
+                {
+                    $current_ids	= array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
+                    $requests[]        = $this->client->request('GET', '/', [
+                        'ids'	    => implode(',', $current_ids),
+                        'fields'    => self::$FIELDS,
+                        'limit'	    => $limit
+                    ]);
+                }
+                
+                //Exécution du batch
+                $start = microtime(true);
+                $responses = $this->client->sendBatchRequest($requests);
+                
+                //Traitement des réponses
+                $fetchedEvents = 0;
+                foreach ($responses as $response) {
+                    if ($response->isError()) {
+                        $e = $response->getThrownException();
+                        $this->parser->writeln('<error>Erreur dans le batch de la recherche par IDS événements : '.($e ? $e->getMessage() : 'Erreur Inconnue').'</error>');
+                    } else {
+                        $datas  = $this->findAssociativeEvents($response);
+                        $fetchedEvents += count($datas);
+                        $finalEvents	= array_merge($finalEvents, $datas);
+                    }
+                }
+                $end	= microtime(true);
+                $this->parser->writeln(sprintf('%d / %d : Récupération détaillée de <info>%d</info> événement(s) en %d ms', $i + 1, $nbBatchs, $fetchedEvents, 1000 * ($end - $start)));
+            } catch (FacebookSDKException $ex) {
+                $this->parser->writeln('<error>Erreur dans la récupération détaillée des événements : '. $ex->getMessage() .'</error>');
+
+                foreach($batch_ids as $current_id)
+                {
+                    try {
+                        $finalEvents   = array_merge($finalEvents, [$this->getEventFromId($current_id)]);
+                    } catch (FacebookSDKException $ex) {
+                        $this->parser->writeln(sprintf(
+                                '<error>Erreur dans la récupération l\'événement #%s : %s</error>', $current_id, $ex->getMessage()
+                        ));
+                    }
+                }
+            }
 	}
+
+	return $finalEvents;
     }
 
     public function getPageFromId($id_page, $params = [])
@@ -163,61 +198,97 @@ class FacebookAdmin extends FacebookEvents {
 	return $this->cache[$key];
     }
     
-    public function searchEvents($keywords, \DateTime $since, $limit = 500) {
+    public function searchEvents(& $keywords, \DateTime $since, $limit = 500) {
 	$this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
 	$events	    = [];
-	$keywords   = array_slice($keywords, 0, min(1, count($keywords))); //TODO: SUPPRIMER CA
 	$nbKeywords = count($keywords);
+        $requestsParBatch = 50;
         
-	//Récupération des events en fonction d'un mot-clé
-	foreach($keywords as $i => $keyword)
-	{
+        $nbBatchs   = ceil($nbKeywords / $requestsParBatch);
+        $nbBatchs   = 1; //TODO: SUPPRIMER CA
+        
+	//Récupération des events en fonction des mot-clés
+        for($i = 0; $i < $nbBatchs; $i++)
+        {
             try {
-		$start = microtime(true);
-                $request	= $this->client->sendRequest('GET', '/search', [
-                    'q'		    => $keyword,
-                    'type'	    => 'event',
-                    'since'	    => $since->format('Y-m-d'),
-                    'fields'	    => self::$MIN_EVENT_FIELDS,
-                    'limit'	    => $limit
-                ], $this->siteInfo->getFacebookAccessToken());
+                $requests = [];
+                $current_keywords = array_slice($keywords, $i * $requestsParBatch, $requestsParBatch);
+                foreach($current_keywords as $keyword)
+                {
+                    //Construction des requêtes du batch
+                    $requests[]	= $this->client->request('GET', '/search?', [
+                        'q'         => $keyword,
+                        'type'	    => 'event',
+                        'since'	    => $since->format('Y-m-d'),
+                        'fields'    => self::$MIN_EVENT_FIELDS,
+                        'limit'	    => $limit
+                    ], $this->siteInfo->getFacebookAccessToken());
+                }
 
-                $datas	= $this->findPaginated($request->getGraphEdge());
-                $events	= array_merge($events, $datas);
-		$end	= microtime(true);
-		$this->parser->writeln(sprintf('%d / %d: <info>%d</info> événement(s) trouvé(s) pour %s en <info>%d ms</info>',
-			$i, $nbKeywords - 1, count($datas), $keyword, ($end - $start)* 1000));
+                //Exécution du batch
+                $start = microtime(true);
+                $responses = $this->client->sendBatchRequest($requests);
+                
+                //Traitement des réponses
+                $fetchedEvents = 0;
+                foreach ($responses as $response) {
+                    if ($response->isError()) {
+                        $e = $response->getThrownException();
+                        $this->parser->writeln('<error>Erreur dans le batch de la recherche par mot-clés : '.($e ? $e->getMessage() : 'Erreur Inconnue').'</error>');
+                    } else {
+                        $datas  = $this->findPaginated($response->getGraphEdge());
+                        $fetchedEvents += count($datas);
+                        $events	= array_merge($events, $datas);
+                    }
+                }
+
+                $end	= microtime(true);
+                        $this->parser->writeln(sprintf('%d / %d: <info>%d</info> événement(s) trouvé(s) pour %d mots-clés en <info>%d ms</info>',
+                                $i + 1 , $nbBatchs, $fetchedEvents, count($current_keywords), ($end - $start)* 1000));
             }catch(FacebookSDKException $e)
             {
                 $this->parser->writeln('<error>Erreur dans la recherche par mot-clé : '.$e->getMessage().'</error>');
-                sleep(600);
             }
-	}
+        }
 
 	return $events;
     }
     
-    protected function findPaginated(\Facebook\GraphNodes\GraphEdge $graph, callable $callBack = null)
+    protected function findPaginated(GraphEdge $graph = null, callable $callBack = null)
     {
         $datas = [];
-        try {
-            do {
-                if ($graph->getField('error_code')) {
-                    $this->writeln(sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
-                    $graph = null;                
-                }else
-                {
-                    $currentData    = $callBack ? array_map($callBack, $graph->all()) : $graph->all();
-                    $datas          = array_merge($datas, $currentData);
-                    $graph          = $this->client->next($graph);
-                }
-            }while($graph !== null && $graph->count() > 0);
-        } catch (FacebookSDKException $ex) {
-            $this->writeln(sprintf('<error>Erreur dans findPaginated : %s</error>', $ex->getMessage()));
-        }
         
+        if($graph !== null)
+        {
+            try {
+                do {
+                    if ($graph->getField('error_code')) {
+                        $this->parser->writeln(sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
+                        $graph = null;                
+                    }else
+                    {
+                        $currentData    = $callBack ? array_map($callBack, $graph->all()) : $graph->all();
+                        $datas          = array_merge($datas, $currentData);
+                        $graph          = $this->client->next($graph);
+                    }
+                }while($graph !== null && $graph->count() > 0);
+            } catch (FacebookSDKException $ex) {
+                $this->parser->writeln(sprintf('<error>Erreur dans findPaginated : %s</error>', $ex->getMessage()));
+            }
+        }        
         
         return $datas;
+    }
+    
+    protected function findAssociativeEvents(FacebookResponse $response)
+    {
+        $graph      = $response->getGraphNode();
+        $indexes    = $graph->getFieldNames();
+        
+        return array_map(function($index) use($graph)
+        {
+            return $graph->getField($index);
+        }, $indexes);
     }
     
     protected function findAssociativePaginated(FacebookResponse $response)
@@ -228,13 +299,7 @@ class FacebookAdmin extends FacebookEvents {
         foreach($indexes as $index)
         {
             $subGraph = $graph->getField($index);
-            $datas = array_merge($datas, $graph->getField($index)->all());
-            
-            $next = $subGraph->getPaginationUrl('next');
-            if($next)
-            {
-                $datas = $this->findPaginated($this->client->get($next)->getGraphEdge());
-            }
+            $datas = array_merge($datas, $this->findPaginated($subGraph));
         }
         
         return $datas;
@@ -283,59 +348,83 @@ class FacebookAdmin extends FacebookEvents {
 	];
     }
 
-    private function handleEventsEdge($ids, \DateTime $since, $idsPerRequest = 20, $limit = 1000)
+    private function handleEventsEdge(& $ids, \DateTime $since, $idsPerRequest = 50, $limit = 500)
     {
+        $requestPerBatch = 50;
+        $idsPerBatch = $requestPerBatch * $idsPerRequest;
+        $nbBatchs   = ceil(count($ids) / $idsPerBatch);
 	$finalEvents = [];
-	$nbIterations = ceil(count($ids) / $idsPerRequest);
         $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
 
-	for($i = 0; $i < $nbIterations; $i++)
-	{
-            $current_ids	= array_slice($ids, $i * $idsPerRequest, $idsPerRequest);
-	    try
-	    {                
-                $request        = $this->client->sendRequest('GET', '/events', [
-                    'ids'	    => implode(',', $current_ids),
-                    'fields'        => self::$MIN_EVENT_FIELDS,
-                    'since'	    => $since->format('Y-m-d'),
-                    'limit'	    => $limit
-                ]);
+        for($i = 0; $i < $nbBatchs; $i++)
+        {
+            $requests = [];
+            $batch_ids = array_slice($ids, $i * $idsPerBatch, $idsPerBatch);
+            $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
+            try
+            {
+                for($j = 0; $j < $nbIterations; $j++)
+                {
+                    $current_ids	= array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
+                    $requests[]        = $this->client->request('GET', '/events', [
+                        'ids'	    => implode(',', $current_ids),
+                        'fields'    => self::$MIN_EVENT_FIELDS,
+                        'since'	    => $since->format('Y-m-d'),
+                        'limit'	    => $limit
+                    ]);
+                }
                 
-                $currentEvents  = $this->findAssociativePaginated($request);
-		$finalEvents	= array_merge($finalEvents, $currentEvents);
-		$this->parser->writeln(sprintf('%d / %d : Récupération de <info>%d</info> evenement(s)', $i, $nbIterations, count($currentEvents)));
-	    } catch (FacebookSDKException $ex) {
-		$this->parser->writeln('<error>Erreur dans la récupération associatives des pages : '. $ex->getMessage() .'</error>');
+                //Exécution du batch
+                $start = microtime(true);
+                $responses = $this->client->sendBatchRequest($requests);
+                
+                //Traitement des réponses
+                $fetchedEvents = 0;
+                foreach ($responses as $response) {
+                    if ($response->isError()) {
+                        $e = $response->getThrownException();
+                        $this->parser->writeln('<error>Erreur dans le batch de la recherche par événements : '.($e ? $e->getMessage() : 'Erreur Inconnue').'</error>');
+                    } else {
+                        $datas  = $this->findAssociativePaginated($response);
+                        $fetchedEvents += count($datas);
+                        $finalEvents	= array_merge($finalEvents, $datas);
+                    }
+                }
+                $end	= microtime(true);
+                $this->parser->writeln(sprintf('%d / %d : Récupération de <info>%d</info> événement(s) en %d ms', $i + 1, $nbBatchs, $fetchedEvents, 1000 * ($end - $start)));
 
-		foreach($current_ids as $current_id)
-		{
-		    try {
-			$request    = $this->client->sendRequest('GET', '/'.$current_id.'/events', [
-				'fields'    => self::$MIN_EVENT_FIELDS,
-				'limit'	    => $limit
-			    ]);
-			$finalEvents   = array_merge($finalEvents, $this->findPaginated($request));
-		    } catch (FacebookSDKException $ex) {
-			$this->parser->writeln(sprintf(
-				'<error>Erreur dans la récupération des événéments de l\'objet #%s : %s</error>', $current_id, $ex->getMessage()
-			));
-		    }
-		}
-	    }
+            } catch (FacebookSDKException $ex) {
+                $this->parser->writeln('<error>Erreur dans la récupération associatives des pages : '. $ex->getMessage() .'</error>');
+
+                foreach($batch_ids as $current_id)
+                {
+                    try {
+                        $request    = $this->client->sendRequest('GET', '/'.$current_id.'/events', [
+                                'fields'    => self::$MIN_EVENT_FIELDS,
+                                'limit'	    => $limit
+                            ]);
+                        $finalEvents   = array_merge($finalEvents, $this->findPaginated($request->getGraphEdge()));
+                    } catch (FacebookSDKException $ex) {
+                        $this->parser->writeln(sprintf(
+                                '<error>Erreur dans la récupération des événéments de l\'objet #%s : %s</error>', $current_id, $ex->getMessage()
+                        ));
+                    }
+                }
+            }
 	}
 
-	return $finalEvents;
+	return array_unique($finalEvents);
     }
     
-    public function getEventsFromPlaces($places, \DateTime $since, $limit = 500)
+    public function getEventsFromPlaces(& $places, \DateTime $since)
     {
-	$places	    = array_slice($places, 0, 1); // TODO: SUPPRIMER CA
+	$places	    = array_slice($places, 0, 5); // TODO: SUPPRIMER CA
 	$id_places  = array_map(function(GraphNode $place)
 	{
 	    return $place->getField('id');
 	}, $places);
 
-	return $this->handleEventsEdge($id_places, $since);
+	return $this->handleEventsEdge($id_places, $since, 40);
     }
 
     public function getPlacesFromGPS($latitude, $longitude, $distance, $limit = 500)
@@ -365,18 +454,19 @@ class FacebookAdmin extends FacebookEvents {
             //Construction de la requête
             $params['offset']   = $page * $limit;
             $params['limit']    = $limit;	
-            $request	    = $this->client->sendRequest($requestMethod, $endPoint, $params, $accessToken);
+            $request            = $this->client->sendRequest($requestMethod, $endPoint, $params, $accessToken);
 
             //Récupération des données
             return $this->findPaginated($request->getGraphEdge());
         } catch (FacebookSDKException $ex) {
-            $this->writeln(sprintf('<error>Erreur dans handlePaginate : %s</error>', $ex->getMessage()));
+            $this->parser->writeln(sprintf('<error>Erreur dans handlePaginate : %s</error>', $ex->getMessage()));
         }
 	
+        return [];
     }
 
-    public function getEventsFromUsers($users, \DateTime $since) {
-	return $this->handleEventsEdge($users, $since);
+    public function getEventsFromUsers(& $users, \DateTime $since) {
+	return $this->handleEventsEdge($users, $since, 40);
     }
 
     public function setParser(AgendaParser $parser)

@@ -37,6 +37,7 @@
 {% block title_agenda %}{{ nomSoiree }}{% endblock %}
 
 {% block breadcrumb_agenda %}
+    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda')) %}
     {% if place %}
         {% set item = menu.addItem(place.nom, path('tbn_search_query',{'q': place.nom, 'type': 'evenements'})) %}
     {% endif %}

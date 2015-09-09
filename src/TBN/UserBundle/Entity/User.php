@@ -123,7 +123,7 @@ class User extends BaseUser
             }
         }        
         
-        return "//placehold.it/250x250&text=".substr($this->getUsername(), 0, 1);
+        return null;
     }
     
     public function getUsername() {

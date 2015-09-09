@@ -193,10 +193,10 @@ class AgendaRepository extends EntityRepository {
 
     public function findTopSoiree(Site $site, $page = 1, $limit = 7)
     {
-	$du = new \DateTime('last monday');
-	$au = new \DateTime('this sunday');
+	$du = new \DateTime('monday this week');
+	$au = new \DateTime('sunday this week');
 	
-        return $this->_em
+        $soirees = $this->_em
         ->createQueryBuilder()
         ->select('a')
         ->from('TBNAgendaBundle:Agenda',"a")
@@ -209,6 +209,18 @@ class AgendaRepository extends EntityRepository {
         ->setMaxResults($limit)
         ->getQuery()
         ->execute();
+        
+        usort($soirees, function(Agenda $a, Agenda $b)
+        {
+            if($a->getDateFin() === $b->getDateFin())
+            {
+                return 0;
+            }
+
+            return $a->getDateFin() > $b->getDateFin() ? -1 : 1;
+        });
+        
+        return $soirees;
     }
 
     public function findTopMembres(Site $site, $page = 1, $limit = 7)
@@ -397,10 +409,10 @@ class AgendaRepository extends EntityRepository {
         ->select('a')
         ->from('TBNAgendaBundle:Agenda',"a")
         ->where("a.site = :site")
-        ->andWhere("a.typeManifestation != ''")
+        ->andWhere("a.categorieManifestation != ''")
         //->andWhere("a.dateDebut >= :today")
-        ->groupBy("a.typeManifestation")
-        ->orderBy("a.typeManifestation", "DESC")
+        ->groupBy("a.categorieManifestation")
+        ->orderBy("a.categorieManifestation", "DESC")
         ->setParameters([":site" => $site->getId()])
         ->getQuery()
         ->execute();

@@ -3,14 +3,11 @@
 {% set ville = site.subdomain %}
 
 {% block title %}{% block title_agenda %}{% endblock %}{% endblock %}
-
 {% block nom_site %}{{ site.nom }} {{ parent() }}{% endblock %}
-
 {% block titre %}{% block titre_agenda %}{% endblock %}{% endblock %}
+{% block meta_keywords %}{{ site.nom|lower }}{% endblock %}
 
-{% block meta_keywords %}{{ site.nom|lower }},{% endblock %}
-
-{% block meta_description %}L'agenda des événements, sorties, concerts, spectacles à {{ site.nom }}. Publiez vos propres événements et diffusez les automatiquement sur les réseaux sociaux !{% endblock %}
+{% block meta_description %}Sortir à {{ site.nom }}. Agenda des concerts, spectacles, cafés, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.{% endblock %}
     
 {% block body %}<div id="fb-root"></div>{% block body_agenda %}{% endblock %}{% endblock %}
 {% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
@@ -18,7 +15,7 @@
 {% block breadcrumb %}    
     <div id="bread" class="bg-white">
         <div class="container">
-            {% set item = menu.addItem('Accueil', path('tbn_main_index')) %}    
+            {% set item = menu.addItem('Sortir', path('tbn_main_index')) %}    
             {% set item = menu.addItem(site.nom, path('tbn_agenda_index')) %}    
             {% block breadcrumb_agenda %}{% endblock %}
             {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
