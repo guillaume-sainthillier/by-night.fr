@@ -4,7 +4,7 @@ namespace TBN\SocialBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\HttpFoundation\Request;
 
 use TBN\UserBundle\Entity\User;
 
@@ -30,9 +30,9 @@ class SocialController extends BaseController
         return new JsonResponse(["success" => true]);
     }
 
-    public function disconnectAction($service)
+    public function disconnectAction(Request $request, $service)
     {
-        $user = $this->getUserWithService($service);
+        $user = $this->getUserWithService($request, $service);
         /** @var social Social */
         $social = $this->container->get("tbn.social.".strtolower($service === "facebook" ? "facebook_events" : $service));
         $social->disconnectUser($user);
@@ -41,9 +41,9 @@ class SocialController extends BaseController
         return new JsonResponse(["success" => true]);
     }
 
-    public function disconnectConfirmAction($service, $from_site = false)
+    public function disconnectConfirmAction(Request $request, $service, $from_site = false)
     {
-        $this->getUserWithService($service);
+        $this->getUserWithService($request, $service);
 
         return $this->render('TBNSocialBundle:Social:confirm_disconnect_'.($from_site ? "site_" : "").$service.'.html.twig', [
             "service" => $service
@@ -57,21 +57,14 @@ class SocialController extends BaseController
      * @throws type
      * @throws AccessDeniedException
      */
-    protected function getUserWithService($service)
+    protected function getUserWithService(Request $request, $service)
     {
-        $request = $this->getRequest();
         if (!$request->isXmlHttpRequest())
         {
             throw $this->createNotFoundException('La page demandée est introuvable');
         }
 
         $user = $this->getUser();
-        /* $role = "ROLE_".strtoupper($service);
-        if(! $user->hasRole($role))
-        {
-            throw new AccessDeniedException("Vous n'avez pas accès à cette fonctionnalité");
-        }
-         */
 
         return $user;
     }

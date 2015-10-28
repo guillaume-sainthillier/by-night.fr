@@ -2,17 +2,19 @@
 
 namespace TBN\AgendaBundle\Entity;
 
-use TBN\AgendaBundle\Entity\Place;
 use Doctrine\ORM\Mapping as ORM;
+use \Doctrine\Common\Collections\ArrayCollection;
+
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Gedmo\Mapping\Annotation as Gedmo;
-use \Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use TBN\AgendaBundle\Entity\Agenda;
 
+use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
+
+use TBN\AgendaBundle\Entity\Place;
+use TBN\AgendaBundle\Entity\Agenda;
 
 /**
  * Agenda
@@ -21,13 +23,13 @@ use JMS\Serializer\Annotation\Type;
  *   @ORM\Index(name="agenda_slug_idx", columns={"slug"}),
  *   @ORM\Index(name="agenda_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
- *   @ORM\Index(name="agenda_commune_idx", columns={"commune"}),
  *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
- *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"})
+ *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"}),
+ *   @ORM\Index(name="agenda_search_idx", columns={"date_fin", "date_debut", "site_id"})
  * })
  * 
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")
- * @ORM\HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("all")
  */
 class Agenda
@@ -71,6 +73,13 @@ class Agenda
      * @ORM\Column(name="date_modification", type="datetime", nullable=true)
      */
     protected $dateModification;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fb_date_modification", type="datetime", nullable=true)
+     */
+    protected $fbDateModification;
 
     /**
      * @var \DateTime
@@ -215,7 +224,7 @@ class Agenda
     /**
      * @var string
      *
-     * @ORM\Column(name="reservation_internet", type="string", length=128, nullable=true)
+     * @ORM\Column(name="reservation_internet", type="string", length=255, nullable=true)
      * @Assert\Url()
      */
     protected $reservationInternet;
@@ -335,7 +344,7 @@ class Agenda
     protected $googleSystemPostId;
 
     /**
-    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"remove"})
+    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"remove"}, fetch="EXTRA_LAZY")
     */
     protected $calendriers;
 
@@ -347,7 +356,7 @@ class Agenda
     protected $site;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="agenda")
+     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="agenda", cascade={"remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $commentaires;
@@ -362,14 +371,15 @@ class Agenda
     /**
      * @var integer
      *
-     * @ORM\Column(name="fb_participations", type="string", length=256, nullable=true)
+     * @ORM\Column(name="fb_participations", type="integer", nullable=true)
+     * @Expose
      */
     protected $fbParticipations;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="fb_interets", type="string", length=256, nullable=true)
+     * @ORM\Column(name="fb_interets",type="integer", nullable=true)
      */
     protected $fbInterets;
 
@@ -377,16 +387,21 @@ class Agenda
     /**
      * @var integer
      *
-     * @ORM\Column(name="participations", type="string", length=256, nullable=true)
+     * @ORM\Column(name="participations", type="integer", nullable=true)
      */
     protected $participations;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="interets", type="string", length=256, nullable=true)
+     * @ORM\Column(name="interets", type="integer", nullable=true)
      */
     protected $interets;
+
+    /**
+     * @var boolean
+     */
+    protected $isTrustedLocation;
 
     /**
      * @var integer
@@ -396,7 +411,7 @@ class Agenda
     protected $source;
     
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", inversedBy="evenements", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
      * @Expose
      * @Assert\Valid()
@@ -450,8 +465,8 @@ class Agenda
     }
 
     /**
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function majDateFin()
     {
@@ -460,8 +475,8 @@ class Agenda
         }
     }
     /**
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function preUpload()
     {
@@ -473,8 +488,8 @@ class Agenda
     }
 
     /**
-     * @ORM\PostPersist()
-     * @ORM\PostUpdate()
+     * @ORM\PostPersist
+     * @ORM\PostUpdate
      */
     public function upload()
     {
@@ -497,9 +512,8 @@ class Agenda
         $this->file = null;
     }
 
-
     /**
-     * @ORM\PostRemove()
+     * @ORM\PostRemove
      */
     public function removeUpload()
     {
@@ -509,8 +523,8 @@ class Agenda
     }
 
     /**
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function preDateModification()
     {
@@ -1705,10 +1719,10 @@ class Agenda
      */
     public function setPlace(\TBN\AgendaBundle\Entity\Place $place = null)
     {
-        if($place !== null)
-        {
-            $place->addEvenement($this);
-        }
+//        if($place !== null)
+//        {
+//            $place->addEvenement($this);
+//        }
         
         $this->place = $place;
 
@@ -1746,5 +1760,35 @@ class Agenda
     public function getIsMigrated()
     {
         return $this->isMigrated;
+    }
+
+    public function isTrustedLocation() {
+	return $this->isTrustedLocation;
+    }
+
+    public function setTrustedLocation($isTrustedLocation) {
+	$this->isTrustedLocation = $isTrustedLocation;
+	return $this;
+    }
+    
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function toJSON()
+    {
+        return json_encode($this->toArray());
+    }
+    
+    public function toArray() {
+        return [
+            'place' => $this->place ? $this->place->toArray() : null,
+            'site' => $this->site ? $this->site->toArray() : null,
+            'nom' => $this->nom,
+            'descriptif' => $this->descriptif,
+            'dateDebut' => $this->dateDebut,
+            'dateFin' => $this->dateFin
+        ];
     }
 }

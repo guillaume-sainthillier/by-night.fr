@@ -56,8 +56,7 @@ class FaceBookParser extends AgendaParser {
     public function getRawAgendas() {
 	$this->api->setSiteInfo($this->getSiteInfo());
 	$this->api->setParser($this);
-        
-	$agendas        = [];
+
         $now            = new \DateTime;
 
 	//Recherche d'événements de l'API en fonction de lieux déjà connus dans la BD
@@ -145,22 +144,31 @@ class FaceBookParser extends AgendaParser {
         $uniqs = array_unique($events);
 	$filtered = array_filter($uniqs, function(GraphNode $event)
 	{
-	    $exploration = $this->firewall->getExploration($event->getField('id'), $this->getSite());
-
-            //Pas blacklisté
-            if(null === $exploration)
-            {
-                return true;
+            $lastUpdatedEventTime   = $event->getField('updated_time');
+	    $exploration            = $this->firewall->getExploration($event->getField('id'), $this->getSite());
+            
+            //Connu et (brigand ou non mis à jour) -> on ejecte
+            if(null !== $exploration && 
+                    ($exploration->getBlackListed() === true || 
+                    //Plus grand = plus récent
+                    $this->isMoreRecent($lastUpdatedEventTime, $exploration->getLastUpdated()))) {
+                return false;
             }
             
-	    $lastUpdatedEventTime	= $event->getField('updated_time');
-	    $lastUpdatedExplorationTime = $exploration->getLastUpdated();
-
-	    $exploration->setLastUpdated($lastUpdatedEventTime);
-
-	    //Jamais exploré ou déjà exploré mais expiré
-	    return true !== $exploration->getBlackListed() && !$this->isSameTime($lastUpdatedEventTime, $lastUpdatedExplorationTime);
-	});
+            //Lieu déjà connu pour être moisi -> on ejecte
+            $place = $event->getField('place');
+            if($place && $place->getField('id')) {
+                $placeId = $place->getField('id');
+                $explorationPlace = $this->firewall->getExploration($placeId, $this->getSite());
+                if(null !== $explorationPlace && $explorationPlace->getBlackListed() === true)
+                {
+                    return false;
+                }
+            }
+            
+            //Pas connu des services de police -> présumé innocent              
+            return true;    
+        });
 
 	return array_map(function(GraphNode $event)
 	{
@@ -173,13 +181,13 @@ class FaceBookParser extends AgendaParser {
     }
 
 
-    private function isSameTime(\DateTime $date1 = null, \DateTime $date2 = null) {
-	if(! $date1 || ! $date2) //Non prmissif
+    private function isMoreRecent(\DateTime $date1 = null, \DateTime $date2 = null) {
+	if(! $date1 || ! $date2) //Non permissif
 	{
 	    return false;
 	}
 
-	return $date1->format("Y-m-d H:i:s") === $date2->format("Y-m-d H:i:s");
+	return $date1 > $date2;
     }
 
     /**
@@ -196,10 +204,9 @@ class FaceBookParser extends AgendaParser {
 	$tab_retour['descriptif']	    = nl2br($event->getField('description'));
 	$tab_retour['date_debut']	    = $event->getField('start_time');
 	$tab_retour['date_fin']		    = $event->getField('end_time');
-	$tab_retour['date_modification']    = $event->getField('updated_time');
+	$tab_retour['fb_date_modification'] = $event->getField('updated_time');
 	$tab_retour['fb_participations']    = $event->getField('attending_count');
 	$tab_retour['fb_interets']	    = $event->getField('maybe_count');
-
 
 	//Horaires
         $dateDebut	= $tab_retour['date_debut'];
@@ -225,6 +232,7 @@ class FaceBookParser extends AgendaParser {
 	if ($place) {
 
 	    $tab_retour['place.nom']            = $place->getField('name');
+	    $tab_retour['place.facebookId']     = $place->getField('id');
 
 	    //Location
 	    $location		    = $place->getField('location');
@@ -233,8 +241,8 @@ class FaceBookParser extends AgendaParser {
 		$tab_retour['place.rue']		= $this->ensureGoodValue($location->getField('street'));
 		$tab_retour['place.latitude']		= $this->ensureGoodValue($location->getField('latitude'));
 		$tab_retour['place.longitude']		= $this->ensureGoodValue($location->getField('longitude'));
-		$tab_retour['place.ville.code_postal']	= $this->ensureGoodValue($location->getField('zip'));
-		$tab_retour['place.ville.nom']		= $this->ensureGoodValue($location->getField('city'));
+		$tab_retour['place.code_postal']	= $this->ensureGoodValue($location->getField('zip'));
+		$tab_retour['place.ville']		= $this->ensureGoodValue($location->getField('city'));
 	    }	    
 	}
 
@@ -244,9 +252,53 @@ class FaceBookParser extends AgendaParser {
 	    $tab_retour['facebook_owner_id'] = $owner->getField('id');
             $tab_retour['reservation_internet']	= $this->ensureGoodValue($owner->getField('website'));
             $tab_retour['reservation_telephone']= $this->ensureGoodValue($owner->getField("phone"));
+            $fbCategory = $this->ensureGoodValue($owner->getField("category"));
+            list($categorie, $type) = $this->guessTypeEventFromCategory($fbCategory);
+            $tab_retour['categorie_manifestation'] = $categorie;
+            $tab_retour['type_manifestation'] = $type;
+            $tab_retour['theme_manifestation'] = $fbCategory;
 	}
 
 	return $tab_retour;
+    }
+    
+    private function guessTypeEventFromCategory($category) {
+        $list = [
+            'Album' => ['type' => 'Musique', 'categorie' => ''],
+            'Arts' => ['type' => 'Art', 'categorie' => ''],
+            'Athlete' => ['type' => 'Sport', 'categorie' => ''],
+            'Artist' => ['type' => 'Concert', 'categorie' => ''],
+            'Bar' => ['type' => 'Soirée', 'categorie' => 'Bar'],
+            'Cafe' => ['type' => 'Café', 'categorie' => ''],
+            'Club' => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
+            'Comedian' => ['type' => 'Spectacle', 'categorie' => 'Comédie'],
+            'Concert' => ['type' => 'Concert', 'categorie' => ''],
+            'Just For Fun' => ['type' => 'Détente', 'categorie' => ''],
+            'Gallery' => ['type' => 'Art', 'categorie' => 'Galerie'],
+            'Groove' => ['type' => 'Musique', 'categorie' => ''],
+            'Library' => ['type' => 'Culture', 'categorie' => ''],
+            'Museum' => ['type' => 'Culture', 'categorie' => 'Musée'],
+            'Music' => ['type' => 'Musique', 'categorie' => ''],
+            'Night' => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],  
+            'Political' => ['type' => 'Politique', 'categorie' => ''],
+            'Record Label' => ['type' => 'Musique', 'categorie' => ''],
+            'Restaurant' => ['type' => 'Restaurant', 'categorie' => ''],
+            'Sport' => ['type' => 'Art', 'categorie' => ''],
+            'Travel' => ['type' => 'Culture', 'categorie' => ''],
+            'University' => ['type' => 'Etudiant', 'categorie' => ''],
+        ];
+        
+        $types = [];
+        $categories = [];
+        foreach($list as $subStr => $group)
+        {
+            if(false !== strstr($subStr, $category)) {
+                $types[] = $group['type'];
+                $categories[] = $group['categorie'];
+            }
+        }
+        
+        return [implode(',', $types), implode(',', $categories)];
     }
     
     private function ensureGoodValue($value)

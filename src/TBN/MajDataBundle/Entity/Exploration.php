@@ -45,7 +45,7 @@ class Exploration
     private $blackListed;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
+    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"merge"})
     * @ORM\JoinColumn(nullable=false)
     */
     protected $site;

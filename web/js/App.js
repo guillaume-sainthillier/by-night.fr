@@ -4,7 +4,7 @@ var App = {
         $(function ()
         {
             App.initComponents(selecteur);
-            App.initHideMenuOnScroll();
+            //App.initHideMenuOnScroll();
             App.initScrollTo();
         });
 

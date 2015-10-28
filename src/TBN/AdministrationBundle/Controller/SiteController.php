@@ -18,7 +18,7 @@ class SiteController extends Controller
         ]);
     }
 
-    public function newAction()
+    public function newAction(Request $request)
     {
         $site = new Site;
 
@@ -33,21 +33,18 @@ class SiteController extends Controller
             ]
         ]);
 
-        if ($this->getRequest()->isMethod('POST'))
+        $form->handleRequest($request);
+        if ($form->isValid())
         {
-            $form->bind($this->getRequest());
-            if ($form->isValid())
-            {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($site);
-                $em->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($site);
+            $em->flush();
 
-                $this->get('session')->getFlashBag()->add(
-                    'info',
-                    'Le site <b>'.$site->getNom()."</b> a bien été ajouté"
-                );
-                return $this->redirect($this->generateUrl('tbn_administration_site_index'));
-            }
+            $this->get('session')->getFlashBag()->add(
+                'info',
+                'Le site <b>'.$site->getNom()."</b> a bien été ajouté"
+            );
+            return $this->redirect($this->generateUrl('tbn_administration_site_index'));
         }
 
         return $this->render('TBNAdministrationBundle:Site:new.html.twig', [
@@ -71,22 +68,19 @@ class SiteController extends Controller
             ]
         ]);
 
-        if ($request->isMethod('POST'))
+        $form->handleRequest($request);
+        if ($form->isValid())
         {
-            $form->bind($this->getRequest());
-            if ($form->isValid())
-            {
-		$em = $this->getDoctrine()->getManager();
-                $em->persist($site);
-                $em->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($site);
+            $em->flush();
 
-                $this->get('session')->getFlashBag()->add(
-                    'info',
-                    'Le site <b>'.$site->getNom()."</b> a bien été modifié"
-                );
-                return $this->redirect($this->generateUrl('tbn_administration_site_index'));
-            }
-        }
+            $this->get('session')->getFlashBag()->add(
+                'info',
+                'Le site <b>'.$site->getNom()."</b> a bien été modifié"
+            );
+            return $this->redirect($this->generateUrl('tbn_administration_site_index'));
+        }        
 
         return $this->render('TBNAdministrationBundle:Site:edit.html.twig', [
             'form' => $form->createView(),

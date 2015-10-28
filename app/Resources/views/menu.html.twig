@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar shadow navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -6,10 +6,14 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="{{ path('tbn_agenda_index') }}" class="navbar-brand" title="Accueil"><strong>{{ site.nom }} By Night</strong></a>
+            <a href="{{ path('tbn_agenda_index') }}" title="By Night : les concerts, spectacles, sorties à {{ site.nom }}" class="navbar-brand">
+                <img src="{{ asset('img/by-night_40x40.png') }}" alt="{{ site.nom }} By Night" />
+            </a>
         </div>
         <div class="navbar-collapse collapse navbar-responsive-collapse" id="navbar-main">
             <ul class="nav navbar-nav">
+                <li>
+                    <a href="{{ path('tbn_agenda_agenda') }}" title="L'agenda des sorties, c'est par ici !"><strong>Agenda</strong></a>
                 <li>
                     <a title="Créez votre événement en 1 clic !" href="{{ path('tbn_agenda_new') }}">Créer un événement</a>
                 </li>

@@ -222,4 +222,22 @@ class Ville
     {
         return $this->site;
     }
+    
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
+    
+    public function toJSON()
+    {
+        return json_encode($this->toArray());
+    }
+    
+    public function toArray() {
+        return [
+            'nom' => $this->nom,
+            'codePostal' => $this->codePostal,
+            'site' => $this->getSite() ? $this->getSite()->toArray() : null
+        ];
+    }
 }

@@ -2,7 +2,6 @@
 
 namespace TBN\MajDataBundle\Utils;
 
-use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Utils\Util;
@@ -25,7 +24,7 @@ class Cleaner {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
-    public function getCleanedEvent(Agenda $agenda)
+    public function cleanEvent(Agenda $agenda)
     {
         if(!$agenda->getDateFin() instanceof \DateTime)
         {
@@ -49,13 +48,9 @@ class Cleaner {
                 ->setRue($this->cleanNormalString($place->getRue()) ?: null)
                 ->setLatitude($this->util->replaceNonNumericChars($place->getLatitude()) ?: null)
                 ->setLongitude($this->util->replaceNonNumericChars($place->getLongitude()) ?: null)
+                ->setVille($this->cleanPostalString($place->getVille()) ?: null)
+                ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null)
         ;
-    }
-
-    public function getCleanedVille(Ville $ville)
-    {
-        return $ville->setNom($this->cleanPostalString($ville->getNom()) ?: null)
-                ->setCodePostal($this->util->replaceNonNumericChars($ville->getCodePostal()) ?: null);
     }
 
     private function clean($string)

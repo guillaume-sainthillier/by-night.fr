@@ -11,6 +11,7 @@ namespace TBN\MajDataBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Output\OutputInterface;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\MainBundle\Entity\Site;
 
 /**
  * Description of EventCommand
@@ -19,6 +20,58 @@ use TBN\AgendaBundle\Entity\Agenda;
  */
 abstract class EventCommand extends ContainerAwareCommand
 {
+    
+    protected function postFlush(array &$places, array &$newPlaces)
+    {
+        $this->mergeNewEntities('place', $places, $newPlaces);
+    }
+    
+    protected function postManage(Agenda &$agenda, array &$places, array &$newPlaces)
+    {
+        $place = $agenda->getPlace();
+        if($place !== null)
+        {
+            $this->insertOrUpdate('place', $place, $places, $newPlaces);
+        }
+    }
+    protected function mergeNewEntities($keyPrefix, array &$persistedEntities, array &$newEntities)
+    {
+        foreach($newEntities as $newEntity)
+        {
+            $persistedEntities[$keyPrefix.$newEntity->getId()] = $newEntity;
+        }
+        
+        unset($newEntities);
+        $newEntities = [];
+    }
+    
+    protected function insertOrUpdate($keyPrefix, $entity, array &$persistedEntities, array &$newEntities)
+    {
+        if($entity !== null)
+        {
+            if($entity->getId())
+            {
+                $persistedEntities[$keyPrefix.$entity->getId()] = $entity;
+            }else
+            {
+                $hash = md5($entity->toJSON());
+                $newEntities[$hash] = $entity;
+            }
+        }
+    }
+    
+    protected function loadPlaces($repo, Site $site)
+    {
+        $cache = [];
+        $places = $repo->findBy(['site' => $site]);
+        foreach($places as $place)
+        {
+            $cache['place'.$place->getId()] = $place;
+        }
+        
+        return $cache;
+    }
+    
     protected function downloadImage(Agenda $agenda)
     {
         try
@@ -94,13 +147,6 @@ abstract class EventCommand extends ContainerAwareCommand
                 {
                     return true;
                 }
-                
-//                if($date_fin_needle !== null && $date_fin_event !== null and
-//                        $date_fin_event->format("Y-m-d") === $date_fin_needle->format("Y-m-d") and
-//                        strtoupper($event->getLieuNom()) === strtoupper($agenda->getLieuNom()))
-//                {
-//                    return true;
-//                }
             }
         }
 

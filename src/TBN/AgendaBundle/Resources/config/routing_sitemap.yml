@@ -1,3 +1,0 @@
-site_map:
-    path: /sitemap.xml
-    defaults: { _controller: DebrilRssAtomBundle:Stream:index, format: rss, id: null}

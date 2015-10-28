@@ -30,8 +30,11 @@ class PlaceType extends AbstractType
             ->add('longitude','hidden', [
                 "required" => false,
             ])
-            ->add('ville', new VilleType, [
-                "label" => false,
+            ->add('ville', 'text', [
+                "label" => "Ville"
+            ])
+            ->add('codePostal','text', [
+                "required" => false,
             ])
         ;
     }

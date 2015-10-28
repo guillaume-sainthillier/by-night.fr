@@ -27,5 +27,12 @@
 
 {% block title_agenda %}
     {% if page > 1 %}Page {{page}} - {% endif %}
-    Agenda des événements
+{% if villeName is not null %}Sortir à {{ villeName|capitalize }}
+{% elseif placeName is not null %}Sortir à {{ placeName|capitalize }}
+{% elseif tag is not null %}{{ tag|capitalize }}
+{% elseif type == 'concert' %}Concerts
+{% elseif type == 'famille' %}Sorties familles
+{% elseif type == 'spectacle' %}Spectacles
+{% elseif type == 'etudiant' %}Soirées étudiantes
+{% else %}Agenda des événements{% endif %}
 {% endblock %}

@@ -505,10 +505,14 @@ class Site
         return $this->images;
     }
     
-    public function __toString() {
-        return json_encode([
-            'id' => $this->id,
+    public function toJSON()
+    {
+        return json_encode($this->toArray());
+    }
+    
+    public function toArray() {
+        return [
             'subdomain' => $this->subdomain
-        ]);
+        ];
     }
 }

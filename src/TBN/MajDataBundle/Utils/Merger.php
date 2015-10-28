@@ -2,7 +2,6 @@
 
 namespace TBN\MajDataBundle\Utils;
 
-use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Utils\Comparator;
@@ -25,23 +24,26 @@ class Merger {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
-    public function mergeEvent(Agenda $a = null, Agenda $b = null)
+    public function mergeEvent(Agenda &$a = null, Agenda &$b = null)
     {
         return $this->merge($a, $b, [
             'nom',
             'descriptif',
+            'horaires',
             'modification_derniere_minute',
             'type_manifestation',
             'categorie_manifestation',
             'theme_manifestation',
             'station_metro_tram',
-            'theme_manifestation',
             'reservation_telephone',
             'reservation_email',
             'reservation_internet',
             'tarif',
             'url',
             'facebook_event_id',
+            'facebook_owner_id',
+            'fb_participations',
+            'fb_interets',
             'fb_post_id',
             'fb_post_system_id',
             'tweet_post_id',
@@ -49,30 +51,21 @@ class Merger {
             'google_post_id',
             'google_system_post_id',
             'source',
+            'fb_date_modification',
             'place'
         ]);
     }
 
-    public function mergePlace(Place $a = null, Place $b = null)
+    public function mergePlace(Place &$a = null, Place &$b = null)
     {
         return $this->merge($a, $b, [
             'latitude',
             'longitude',
             'rue',
 	    'url',
-            'ville'
-        ]);
-    }
-
-    /**
-     * Merge b dans a et retourne l'entité mergée
-     * @param Ville $a
-     * @param Ville $b
-     */
-    public function mergeVille(Ville $a = null, Ville $b = null)
-    {
-        return $this->merge($a, $b, [
-            'codePostal'
+            'ville',
+            'codePostal',
+            'facebook_id'
         ]);
     }
 
@@ -92,13 +85,21 @@ class Merger {
         
         foreach($fields as $field)
         {
-            $valueA = $this->propertyAccessor->getValue($a, $field);
-            $valueB = $this->propertyAccessor->getValue($b, $field);
+            $getter = 'get'.$this->skakeToCamel($field);
+            $setter = 'set'.$this->skakeToCamel($field);
+            
+            $valueA = $a->$getter();
+            $valueB = $b->$getter();
             $value  = $this->comparator->getBestContent($valueA, $valueB);
             
-            $this->propertyAccessor->setValue($a, $field, $value);
+            $a->$setter($value);
         }
 
         return $a;
+    }
+    
+    private function skakeToCamel($str)
+    {
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));
     }
 }

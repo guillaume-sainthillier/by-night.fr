@@ -4,7 +4,31 @@ tbn_agenda_index:
     
 tbn_agenda_agenda:
     path: /agenda
-    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, tag: null, ville: null, slug: null}
+    
+tbn_agenda_sortir:
+    path: /agenda/sortir/{type}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, tag: null, ville: null, slug: null}
+    requirements:
+        type: concert|spectacle|etudiant|famille
+        
+tbn_agenda_tags:
+    path: /agenda/tag/{tag}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, ville: null, slug: null}
+    requirements:
+        tag: (.+)
+        
+tbn_agenda_place:
+    path: /agenda/sortir-a/{slug}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, ville: null, tag: null}
+    requirements:
+        tag: (.+)
+        
+tbn_agenda_ville:
+    path: /agenda/sortir-dans/{ville}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, slug: null, tag: null}
+    requirements:
+        tag: (.+)
 
 tbn_agenda_pagination:
     path: /agenda/page/{page}

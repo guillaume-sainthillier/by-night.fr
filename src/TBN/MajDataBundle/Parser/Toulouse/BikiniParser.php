@@ -45,12 +45,12 @@ class BikiniParser extends LinksParser {
 	$ville = $full_adresse[1];
 	if(preg_match('/\d/i', $ville))
 	{
-	    $tab_retour['place.ville.code_postal'] = preg_replace('/\D/i', '', $ville);
+	    $tab_retour['place.code_postal'] = preg_replace('/\D/i', '', $ville);
 	    $ville = preg_replace('/\d/i', '', $ville);
 	}
 
         $tab_retour['place.rue'] = $full_adresse[0];
-        $tab_retour['place.ville.nom'] = $ville;
+        $tab_retour['place.ville'] = $ville;
 
         $this->parser->filter('#blocContenu')->children()->each(function(Crawler $sibling) use(&$tab_retour)
         {

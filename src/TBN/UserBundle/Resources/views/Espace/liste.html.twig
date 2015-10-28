@@ -1,5 +1,8 @@
 {% extends "TBNUserBundle::layout.html.twig" %}
 
+{% block start_container -%}
+<div class="container" id="container">
+{%- endblock %}
 
 {% block titre_espace %}Mes événements depuis le {{ app.user.dateCreation|localizeddate('short', 'none') }}{% endblock %}
 
@@ -14,11 +17,10 @@
 <div class="text-center">
     <a class="btn btn-success btn-raised" href="{{ path('tbn_agenda_new') }}"><i class="fa fa-plus"></i> Nouvel événement</a>
 </div>
-<hr />
+<br />
+<br />
 
-
-{% if soirees|length > 0 %}
-    
+{% if soirees|length > 0 %}    
 {% import ":Form:macros.html.twig" as macros %}
 <table class="table table-striped bg-white component">
     <thead>
@@ -36,8 +38,8 @@
         {% for soiree in soirees %}
         <tr>
             <td><a href="{{ path('tbn_agenda_details', {'slug': soiree.slug }) }}" title="Accéder à l'événement">{{ soiree.nom }}</a></td>
-            <td>{{ soiree.place.nom }}</td>
-            <td>{{ soiree.place.ville.nom }}</td>
+            <td>{{ soiree.place ? soiree.place.nom : '' }}</td>
+            <td>{{ soiree.place ? soiree.place.ville : '' }}</td>
             <td>
                 {{ macros.dates(soiree.dateDebut, soiree.dateFin) }}
             </td>

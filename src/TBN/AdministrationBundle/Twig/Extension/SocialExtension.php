@@ -39,8 +39,8 @@ class SocialExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            'tbn_oauth_authorization_site_url' => new \Twig_Function_Method($this, 'getAuthorizationSiteUrl'),
-            'tbn_oauth_logout_site_url' => new \Twig_Function_Method($this, 'getLogoutSiteUrl')
+            new \Twig_SimpleFunction('tbn_oauth_authorization_site_url', [$this, 'getAuthorizationSiteUrl']),
+            new \Twig_SimpleFunction('tbn_oauth_logout_site_url', [$this, 'getLogoutSiteUrl'])
         ];
     }
 

@@ -1,6 +1,7 @@
 var SocialSDK = {
     facebook: function ()
     {
+        console.log('INIT');
         //FB
         window.fbAsyncInit = function () {
             FB.init({

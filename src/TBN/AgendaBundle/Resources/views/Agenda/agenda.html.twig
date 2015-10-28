@@ -2,6 +2,13 @@
 
 {% block breadcrumb_agenda %}
     {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda')) %}
+    {% if placeName is not null %}
+        {% set item = menu.addItem(placeName|capitalize, path('tbn_agenda_place', {'slug' : placeSlug})) %}
+    {% elseif tag is not null %}
+        {% set item = menu.addItem(tag|capitalize, path('tbn_agenda_tags', {'tag' : tag})) %}
+    {% elseif type is not null %}
+        {% set item = menu.addItem(type|capitalize, path('tbn_agenda_sortir', {'type' : type})) %}
+    {% endif %}
     {% if page > 1 %}
         {% set item = menu.addItem("Page " ~ page, path('tbn_agenda_pagination', {'page': page})) %}
     {% endif %}
@@ -9,7 +16,15 @@
 
 
 {% block titre_agenda %}
-    Agenda des <strong>événements</strong> à <strong>{{ site.nom }}</strong>
+{% if villeName is not null %}Sortir à {{ villeName|capitalize }}
+{% elseif placeName is not null %}Sortir à {{ placeName|capitalize }}
+{% elseif tag is not null %}{{ tag|capitalize }}
+{% elseif type == 'concert' %}Concerts
+{% elseif type == 'famille' %}Sorties familles
+{% elseif type == 'spectacle' %}Spectacles
+{% elseif type == 'etudiant' %}Soirées étudiantes
+{% else %}Agenda des <strong>événements</strong> {% endif %}
+{% if placeName is null and villeName is null%}à <strong>{{ site.nom }}</strong>{% endif %}
 {% endblock %}
 
 {% block helper -%}

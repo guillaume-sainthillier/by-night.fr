@@ -42,7 +42,7 @@ class Util {
 
     public function replaceNonNumericChars($string)
     {
-        return preg_replace('/[^\d.]/u', '', $string);
+        return preg_replace('/[^\d.-]/u', '', $string);
     }
 
     public function replaceNonAlphanumericChars($string)

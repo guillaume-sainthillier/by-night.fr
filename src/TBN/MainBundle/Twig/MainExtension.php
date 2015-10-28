@@ -50,9 +50,9 @@ class MainExtension extends \Twig_Extension{
     public function getFilters()
     {
         return [
-            'resume'            => new \Twig_Filter_Method($this, 'resume'),
-            'partial_extends'   => new \Twig_Filter_Method($this, 'partialExtendsFilter'),
-            'url_decode'        => new \Twig_Filter_Method($this, 'urlDecode')
+            new \Twig_SimpleFilter('resume', [$this, 'resume']),
+            new \Twig_SimpleFilter('partial_extends', [$this, 'partialExtendsFilter']),
+            new \Twig_SimpleFilter('url_decode', [$this, 'urlDecode'])
         ];
     }
 

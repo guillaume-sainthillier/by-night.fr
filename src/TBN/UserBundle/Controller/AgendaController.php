@@ -21,7 +21,7 @@ class AgendaController extends Controller
         $modificationDerniereMinute = ($annuler === 'true' ? 'ANNULÉ' : null);
 
         $em = $this->getDoctrine()->getManager();
-        $agenda->setModificationDerniereMinute($modificationDerniereMinute);
+        $agenda->setModificationDerniereMinute($modificationDerniereMinute)->setDateModification(new \DateTime);
         $em->persist($agenda);
         $em->flush();
 
@@ -36,7 +36,7 @@ class AgendaController extends Controller
         $isBrouillon = ($brouillon === 'true');
         
         $em = $this->getDoctrine()->getManager();
-        $agenda->setIsBrouillon($isBrouillon);
+        $agenda->setIsBrouillon($isBrouillon)->setDateModification(new \DateTime);
         $em->persist($agenda);
         $em->flush();
 
@@ -45,7 +45,7 @@ class AgendaController extends Controller
 
     public function listAction()
     {
-        $user = $this->getCurrentUser();
+        $user = $this->getUser();
         $soirees = $user->getEvenements();
 
         return $this->render('TBNUserBundle:Espace:liste.html.twig', [
@@ -67,18 +67,20 @@ class AgendaController extends Controller
         return $this->redirect($this->generateUrl('tbn_agenda_list'));
     }
 
-    public function editAction(Agenda $agenda)
+    public function editAction(Request $request, Agenda $agenda)
     {
         $this->checkIfOwner($agenda);
         $form = $this->createEditForm($agenda);
         $formDelete = $this->createDeleteForm($agenda);
 
-        if ($this->getRequest()->isMethod('POST'))
+        $form->handleRequest($request);
+        if ($form->isValid())
         {
-            $form->bind($this->getRequest());
-            if ($form->isValid())
-            {
-                $em = $this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()->getManager();
+            $agenda->setTrustedLocation(false);
+            $agenda = $this->handleEvent($em, $agenda);
+            
+            if($agenda !== null) {
                 $em->persist($agenda);
                 $em->flush();
 
@@ -91,7 +93,8 @@ class AgendaController extends Controller
                 );
                 return $this->redirect($this->generateUrl('tbn_agenda_list'));
             }
-        }
+            
+        }        
 
         return $this->render('TBNUserBundle:Espace:edit.html.twig', [
             "form"         => $form->createView(),
@@ -100,29 +103,28 @@ class AgendaController extends Controller
        ]);
     }
 
-    public function newAction()
+    public function newAction(Request $request)
     {
         $agenda     = new Agenda;
         $form = $this->createCreateForm($agenda);
 
-        if ($this->getRequest()->isMethod('POST'))
+        $form->handleRequest($request);
+        if ($form->isValid())
         {
-            $form->bind($this->getRequest());
-            if ($form->isValid())
+            $em = $this->getDoctrine()->getManager();
+
+            $agenda->setTrustedLocation(false);
+            $agenda = $this->handleEvent($em, $agenda);
+
+            if($agenda !== null)
             {
                 $user   = $this->getCurrentUser();
-                $siteManager = $this->get('site_manager');
-                $site = $siteManager->getCurrentSite();
-                $em = $this->getDoctrine()->getManager();
-
+                $agenda->setUser($user)
+                    ->setParticipations(1);
                 $calendriers = $agenda->getCalendriers();
                 $calendrier = (new Calendrier)->setAgenda($agenda)->setUser($user)->setParticipe(1);
                 $calendriers->add($calendrier);
-                
-                $agenda->setUser($this->getCurrentUser());
-                $agenda->setSite($site)->setParticipations(1);
-                $agenda->getPlace()->setSite($site)->getVille()->setSite($site);
-               
+
                 $em->persist($agenda);
                 $em->persist($calendrier);
                 $em->flush();
@@ -132,17 +134,44 @@ class AgendaController extends Controller
 
                 $this->get('session')->getFlashBag()->add(
                     'success',
-                    'Votre événement a bien été créé'
+                    'Votre événement a bien été créé. Merci !'
                 );
-
-                return $this->redirect($this->generateUrl('tbn_agenda_list'));
+            }else {
+                $this->get('session')->getFlashBag()->add(
+                    'danger',
+                    "Nous n'avons pas été en mesure de créér votre événement car il ne répondait pas aux critères de validation établis par notre plateforme."
+                );
             }
+
+            return $this->redirect($this->generateUrl('tbn_agenda_list'));
         }
+        
 
         return $this->render('TBNUserBundle:Espace:new.html.twig', [
             "form"         => $form->createView(),
             "agenda"       => $agenda
        ]);
+    }
+    
+    private function handleEvent($em, Agenda &$tmpAgenda)
+    {
+        $repoEvents = $em->getRepository('TBNAgendaBundle:Agenda');
+        $repoPlaces = $em->getRepository('TBNAgendaBundle:Place');
+        
+        $eventHandler   = $this->get('tbn.event_handler');
+        $siteManager    = $this->get('site_manager');
+        $site           = $siteManager->getCurrentSite();
+        
+        $places = $repoPlaces->findBy(['site' => $site]);
+        $agenda = $eventHandler->handle($places, $site, $tmpAgenda);
+        
+        $events = $repoEvents->findBy([
+            'dateDebut' => $agenda->getDateDebut(),
+            'dateFin' => $agenda->getDateFin(),
+            'site' => $agenda->getSite()
+        ]);
+        
+        return $eventHandler->handleEvent($events, $agenda);
     }
 
     protected function getServiceByName($service)
@@ -169,7 +198,7 @@ class AgendaController extends Controller
 
     protected function createEditForm(Agenda $agenda)
     {
-        return $this->createForm($this->getAgendaForm(),$agenda, [
+        return $this->createForm($this->getAgendaForm(), $agenda, [
             'action' => $this->generateUrl('tbn_agenda_edit', [
                 "slug" => $agenda->getSlug()
             ]),
@@ -185,7 +214,7 @@ class AgendaController extends Controller
 
     protected function getAgendaForm()
     {
-        $user = $this->getCurrentUser();
+        $user = $this->getUser();
         $repo = $this->getDoctrine()->getManager()->getRepository("TBNUserBundle:SiteInfo");
 
         $config = $this->container->getParameter('tbn_user.social');
@@ -221,15 +250,10 @@ class AgendaController extends Controller
         }
     }
 
-    protected function getCurrentUser()
-    {
-        return $this->getUser();
-    }
-
     protected function checkIfOwner(Agenda $agenda)
     {
         $user_agenda = $agenda->getUser();
-        $current_user = $this->getCurrentUser();
+        $current_user = $this->getUser();
 
         if(!$current_user->hasRole("ROLE_ADMIN") && $user_agenda !== $current_user)
         {

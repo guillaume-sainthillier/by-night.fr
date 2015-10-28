@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\AgendaBundle\Entity\Place;
 
 use TBN\UserBundle\Entity\User;
 use TBN\AgendaBundle\Form\Type\SearchType;
@@ -31,15 +32,13 @@ class EventController extends Controller {
             ]));
         }
 
-	$user = $this->get('security.token_storage')->getToken()->getUser();
-
-
 	$em = $this->getDoctrine()->getManager();
 	$repo = $em->getRepository('TBNAgendaBundle:Calendrier');
 
 	$participer = false;
 	$interet = false;
 
+        $user = $this->getUser();
 	if ($user instanceof User) {
 	    $calendrier = $repo->findOneBy(['user' => $user, 'agenda' => $agenda]);
 	    if ($calendrier !== null) {
@@ -55,20 +54,61 @@ class EventController extends Controller {
 	]);
     }
     
+    protected function handleSearch(SearchAgenda $search, $type, $tag, $ville, Place $place = null) {
+        if($ville !== null) {
+            $term = null;
+            $search->setCommune([$ville]);
+            $formAction = $this->generateUrl('tbn_agenda_ville', ['ville' => $ville]);
+        }elseif($place !== null) {
+            $term = null;
+            $search->setLieux([$place->getId()]);
+            $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug()]);
+        }elseif($tag !== null) {
+            $term = $tag;
+            $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag]);
+        }elseif($type !== null) {
+            $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type]);
+            switch($type) {
+                case 'concert':
+                    $term = 'concert, musique, artiste';
+                break;
+                case 'famille':
+                    $term = 'famille, enfant';
+                break;
+                case 'spectacle':
+                    $term = 'spectacle, exposition, théâtre';
+                break;
+                case 'etudiant':
+                    $term = 'soirée, étudiant, bar, discothèque, boîte de nuit, after';
+                break;
+            }
+        }else {
+            $formAction = $this->generateUrl('tbn_agenda_agenda');
+            $term = '';
+        }
+        
+        $search->setTerm($term);
+        
+        return $formAction;
+    }
+    
     public function indexAction()
     {
         $siteManager = $this->get('site_manager');
         $em         = $this->getDoctrine()->getManager();
         $repo       = $em->getRepository("TBNAgendaBundle:Agenda");
         
-        $topEvents  = $repo->findTopSoiree($siteManager->getCurrentSite(), 1, 7);
+        $site       = $siteManager->getCurrentSite();
+        $search     = (new SearchAgenda)->setDu(null);
+        $topEvents  = $repo->findTopSoiree($site, 1, 7);
         
         return $this->render('TBNAgendaBundle:Agenda:index.html.twig', [
-            'topEvents' => $topEvents
+            'topEvents' => $topEvents,
+            'nbEvents'  => $repo->findCountWithSearch($site, $search)
         ]);
     }
 
-    public function listAction(Request $request, $page) {
+    public function listAction(Request $request, $page, $type, $tag, $ville, $slug) {
 	//État de la page
 	$isAjax		    = $request->isXmlHttpRequest();
 	$isPost		    = $request->isMethod('POST');
@@ -87,6 +127,14 @@ class EventController extends Controller {
 
         //Recherche des événements
 	$search = new SearchAgenda();
+        $place = null;
+        if($slug !== null) {
+            $places = $em->getRepository('TBNAgendaBundle:Place')->findBy(['slug' => $slug]);
+            if(isset($places[0])) {
+                $place = $places[0];
+            }            
+        }
+        $formAction = $this->handleSearch($search, $type, $tag, $ville, $place);
 
 	//Récupération des lieux, types événéments et villes
 	$lieux		= $this->getPlaces($repo, $site);
@@ -95,7 +143,7 @@ class EventController extends Controller {
 
 	//Création du formulaire
 	$form		= $this->createForm(new SearchType($types_manif, $lieux, $communes), $search, [
-	    'action' => $this->generateUrl('tbn_agenda_agenda')
+	    'action' => $formAction
 	]);
 
 	//Bind du formulaire avec la requête courante
@@ -117,6 +165,11 @@ class EventController extends Controller {
 	$nbSoireesTotales = $results->getNbResults();
         
 	return $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
+                    'villeName' => $ville,
+                    'placeName' => (null !== $place) ? $place->getNom() : null,
+                    'placeSlug' => (null !== $place) ? $place->getSlug() : null,
+                    'tag' => $tag,
+                    'type' => $type,
 		    'soirees' => $soirees,
 		    'nbEvents' => $nbSoireesTotales,
 		    'maxPerEvent' => $nbSoireeParPage,
@@ -156,11 +209,11 @@ class EventController extends Controller {
 	$key = 'villes.' . $site->getSubdomain();
 
 	if (!$cache->contains($key)) {
-	    $villes = $repo->getAgendaVilles($site);
+	    $places = $repo->getAgendaVilles($site);
 	    $tab_villes = [];
-	    foreach($villes as $ville)
+	    foreach($places as $place)
 	    {
-		$tab_villes[$ville->getId()] = $ville->getNom();
+		$tab_villes[$place->getVille()] = $place->getVille();
 	    }
 
 	    $cache->save($key, $tab_villes, 24*60*60);

@@ -6,9 +6,9 @@
     {{ form_row(form.place.nom) }}
     {{ form_row(form.adresse) }}
 
-    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.place.rue}) %}
-    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.place.ville.codePostal}) %}
-    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : form.place.ville.nom}) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place ? form.place.rue : '') }) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place ? form.place.codePostal : '') }) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place ? form.place.ville : '') }) %}
     
     <br />
     <br />

@@ -10,10 +10,8 @@ use Elastica\Filter\Terms;
 use Elastica\Filter\Bool;
 use Elastica\Query;
 use Elastica\Query\Bool as QueryBool;
-use Elastica\Query\QueryString;
 use Elastica\Filter\NumericRange;
 use Elastica\Query\Match;
-use Elastica\Util;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\MatchAll;
 use Elastica\Query\Filtered;
@@ -93,10 +91,12 @@ class AgendaRepository extends Repository {
         if ($search->getTerm()) {
             $query = new MultiMatch;
 	    $query->setQuery($search->getTerm())
-		->setFields(['nom', 'descriptif', 'type_manifestation', 
-		    'theme_manifestation', 'categorie_manifestation', 'place.nom', 'place.rue',
-		    'place.ville.nom'])
-		->setOperator('and')
+		->setFields([
+                    'nom', 'descriptif', 'type_manifestation', 
+		    'theme_manifestation', 'categorie_manifestation', 'place.nom', 
+                    'place.rue', 'place.ville', 'place.code_postal'
+                ])
+		->setOperator(false !== strstr(',', $search->getTerm()) ? 'or' : 'and')
 		->setFuzziness(0.8)
 		->setMinimumShouldMatch('80%')
 		;
@@ -114,7 +114,7 @@ class AgendaRepository extends Repository {
 
         if($search->getCommune())
         {
-	    $communeQuery = new Terms('place.ville.id', $search->getCommune());
+	    $communeQuery = new Terms('place.ville', $search->getCommune());
             $filter->addMust($communeQuery);
         }
 
@@ -128,7 +128,9 @@ class AgendaRepository extends Repository {
         //Construction de la requête finale
 	$filtered = new Filtered($queries, $filter);
 	$finalQuery = Query::create($filtered)
-                ->addSort(['date_fin' => 'asc', 'date_debut' => 'desc']);
+                ->addSort(['date_fin' => 'asc'])
+                ->addSort(['date_debut' => 'desc'])
+                ->addSort(['fb_participations' => ['order' => 'desc', 'unmapped_type' => 'integer']]);
 
         return $this->findPaginated($finalQuery);
     }

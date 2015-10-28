@@ -1,5 +1,9 @@
 {% extends "TBNUserBundle:Membres:layout.html.twig" %}
 
+{% block start_container -%}
+<div class="container" id="container">
+{%- endblock %}
+
 {% set username = user.username|capitalize %}
 {% block title_membre %}{{ username }}{% endblock %}
 {% block titre_membre %}{{ username }}{% endblock %}

@@ -16,7 +16,7 @@ and open the template in the editor.
     padding-top: 10px;
     padding-bottom: 10px;
 
-    .icon {
+    .description_evenement .fa {
         text-align: right;
         margin-right: 10px;
         min-width: 25px;
@@ -26,6 +26,21 @@ and open the template in the editor.
 
     &.odd {
         background-color: darken(#ffffff, 5%);
+    }
+    
+    .image-container {
+        position: relative;
+        
+        .label {
+            position: absolute;
+            line-height: 2.4em;
+            padding: 0 10px;
+            top: 10px;
+            
+            .fa {
+                margin-right: 5px;
+            }
+        }
     }
 
     .img {

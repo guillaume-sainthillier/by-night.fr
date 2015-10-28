@@ -27,7 +27,6 @@
 {% endfor %}
 
 {% set place = soiree.place %}
-{% set villePlace = place ? place.ville : null %}
 
 {% block titre_agenda %}
     {% if is_granted('ROLE_ADMIN') %}<a href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>{% endif %}
@@ -39,7 +38,7 @@
 {% block breadcrumb_agenda %}
     {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda')) %}
     {% if place %}
-        {% set item = menu.addItem(place.nom, path('tbn_search_query',{'q': place.nom, 'type': 'evenements'})) %}
+        {% set item = menu.addItem(place.nom, path('tbn_agenda_place',{'slug': place.slug})) %}
     {% endif %}
     {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}    
 {% endblock %}
@@ -71,6 +70,12 @@
 {% endblock %}
 
 {% block body_agenda %}
+{% if soiree.isBrouillon %}
+<div class="alert alert-warning">
+    <i class="fa fa-warning"></i>
+    Cet événément n'est pas encore disponible publiquement. Merci de patienter encore un peu !
+</div>
+{% else %}
 <div class="panel panel-default details_evenement" itemscope itemtype="http://schema.org/Event">
     <div class="panel-heading bg-white">
         <h3 class="modal-title">
@@ -122,23 +127,23 @@
                             {% set readableAdresse = "" %}
                             {% if place.nom %}
                                 {% set readableAdresse = place.nom %}
-                                <span itemprop="name">{{ place.nom }}</span>
+                                <a itemprop="name" href="{{ path('tbn_agenda_place', {'slug': place.slug }) }}" title="Sortir à {{ place.nom }}">{{ place.nom }}</a>
                             {% endif %}
 
-                            {% if place.rue or villePlace %}
+                            {% if place.rue or place.ville or place.codePostal %}
                                 <div itemprop="address" itemscope itemtype="http://schema.org/Address">
                                     {% if place.rue %}
                                         <div itemprop="streetAddress">{{ place.rue }}</div>
                                     {% endif %}
-                                    {% if villePlace and (villePlace.codePostal or villePlace.nom) %}
+                                    {% if place.ville or place.codePostal %}
                                         <div>
-                                            {% if villePlace.codePostal %}
-                                                <span itemprop="postalCode">{{ villePlace.codePostal }} </span>
+                                            {% if place.codePostal %}
+                                                <span itemprop="postalCode">{{ place.codePostal }} </span>
                                                 <meta itemprop="addressCountry" content="FR" />
                                             {% endif %}
-                                            {% if villePlace.nom %}
-                                                {% set readableAdresse = readableAdresse ~ " " ~ villePlace.nom %}
-                                                <span itemprop="addressLocality">{{ villePlace.nom }}</span>
+                                            {% if place.ville %}
+                                                {% set readableAdresse = readableAdresse ~ " " ~ place.ville %}
+                                                <span itemprop="addressLocality">{{ place.ville }}</span>
                                             {% endif %}
                                         </div>                                    
                                     {% endif %}
@@ -200,7 +205,7 @@
                     <li>
                         <i class="fa fa-li fa-facebook"></i> 
                         {% set lien = "https://www.facebook.com/events/" ~ soiree.facebookEventId %}
-                        <a href="{{ lien }}" rel="external">{{ lien }}</a>
+                        <a href="{{ lien }}" rel="nofollow">{{ lien }}</a>
                     </li>
                     {% endif %}
 
@@ -208,7 +213,7 @@
                         <li class="tags">
                             <i class="fa fa-li fa-tags"></i>
                             {% for tag in distinctTags %}
-                            <span class="label label-info">{{ tag|trim }}</span>                               
+                            <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag}) }}">{{ tag }}</a>
                             {% endfor %}
                         </li>
                     {% endif %}
@@ -263,6 +268,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block css_agenda %}

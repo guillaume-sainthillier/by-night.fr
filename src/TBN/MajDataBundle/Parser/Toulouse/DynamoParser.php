@@ -133,8 +133,8 @@ class DynamoParser extends LinksParser {
             //Lieux
             $tab_retour['place.nom']        = 'La Dynamo';
             $tab_retour['place.rue']        = '6 rue Amélie';
-            $tab_retour['place.ville.code_postal'] = '31000';
-            $tab_retour['place.ville.nom']  = 'Toulouse';
+            $tab_retour['place.code_postal'] = '31000';
+            $tab_retour['place.ville']  = 'Toulouse';
 
             //Source
             $nodeSource                     = $this->currentEvent->filter(".evo_event_schema a[itemprop='url']");

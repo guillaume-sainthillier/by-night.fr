@@ -2,11 +2,9 @@
 
 namespace TBN\AgendaBundle\Entity;
 
-use TBN\AgendaBundle\Entity\Ville;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
-use \Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 
@@ -17,7 +15,7 @@ use JMS\Serializer\Annotation\Expose;
  *   @ORM\Index(name="place_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="place_slug_idx", columns={"slug"}),
  * })
- * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Entity\PlaceRepository")
+ * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")
  */
@@ -36,7 +34,7 @@ class Place
     /**
      * @var string
      *
-     * @ORM\Column(name="rue", type="string", length=255, nullable=true)
+     * @ORM\Column(name="rue", type="string", length=127, nullable=true)
      * @Expose
      */
     private $rue;
@@ -84,20 +82,18 @@ class Place
      * @ORM\Column(name="url", type="string", length=255, nullable=true)
      */
     private $url;
-
-    /**
-    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Agenda", mappedBy="place")
-    * @ORM\OrderBy({"dateModification" = "DESC"})
-    */
-    protected $evenements;
     
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Ville", cascade={"persist"})
-    * @ORM\JoinColumn(nullable=true)
+    * @ORM\Column(name="ville", type="string", length=127, nullable=true)
     * @Expose
-    * @Assert\Valid()
     */
     protected $ville;
+    
+    /**
+    * @ORM\Column(name="code_postal", type="string", length=7, nullable=true)
+    * @Expose
+    */
+    protected $codePostal;
 
     /**
     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
@@ -106,12 +102,33 @@ class Place
     protected $site;
     
     /**
-     * Constructor
+     * @var string
+     *
+     * @ORM\Column(name="facebook_id", type="string", length=256, nullable=true)
      */
-    public function __construct()
+    protected $facebookId;
+    
+    
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
+
+        
+    public function toJSON()
     {
-        $this->evenements   = new ArrayCollection();
-        $this->ville        = new Ville();
+        return json_encode($this->toArray());
+    }
+    
+    public function toArray() {
+        
+        return [
+            'nom' => $this->nom,
+            'rue' => $this->rue,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+            'site' => $this->site ? $this->site->toArray() : null
+        ];
     }
 
     /**
@@ -133,7 +150,7 @@ class Place
     public function setRue($rue)
     {
         $this->rue = $rue;
-    
+
         return $this;
     }
 
@@ -156,7 +173,7 @@ class Place
     public function setLatitude($latitude)
     {
         $this->latitude = $latitude;
-    
+
         return $this;
     }
 
@@ -179,7 +196,7 @@ class Place
     public function setLongitude($longitude)
     {
         $this->longitude = $longitude;
-    
+
         return $this;
     }
 
@@ -202,7 +219,7 @@ class Place
     public function setNom($nom)
     {
         $this->nom = $nom;
-    
+
         return $this;
     }
 
@@ -225,7 +242,7 @@ class Place
     public function setSlug($slug)
     {
         $this->slug = $slug;
-    
+
         return $this;
     }
 
@@ -248,7 +265,7 @@ class Place
     public function setPath($path)
     {
         $this->path = $path;
-    
+
         return $this;
     }
 
@@ -271,7 +288,7 @@ class Place
     public function setUrl($url)
     {
         $this->url = $url;
-    
+
         return $this;
     }
 
@@ -286,36 +303,72 @@ class Place
     }
 
     /**
-     * Add evenements
+     * Set ville
      *
-     * @param \TBN\AgendaBundle\Entity\Agenda $evenements
+     * @param string $ville
      * @return Place
      */
-    public function addEvenement(\TBN\AgendaBundle\Entity\Agenda $evenements)
+    public function setVille($ville)
     {
-        $this->evenements[] = $evenements;
-    
+        $this->ville = $ville;
+
         return $this;
     }
 
     /**
-     * Remove evenements
+     * Get ville
      *
-     * @param \TBN\AgendaBundle\Entity\Agenda $evenements
+     * @return string 
      */
-    public function removeEvenement(\TBN\AgendaBundle\Entity\Agenda $evenements)
+    public function getVille()
     {
-        $this->evenements->removeElement($evenements);
+        return $this->ville;
     }
 
     /**
-     * Get evenements
+     * Set codePostal
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @param string $codePostal
+     * @return Place
      */
-    public function getEvenements()
+    public function setCodePostal($codePostal)
     {
-        return $this->evenements;
+        $this->codePostal = $codePostal;
+
+        return $this;
+    }
+
+    /**
+     * Get codePostal
+     *
+     * @return string 
+     */
+    public function getCodePostal()
+    {
+        return $this->codePostal;
+    }
+
+    /**
+     * Set facebookId
+     *
+     * @param string $facebookId
+     * @return Place
+     */
+    public function setFacebookId($facebookId)
+    {
+        $this->facebookId = $facebookId;
+
+        return $this;
+    }
+
+    /**
+     * Get facebookId
+     *
+     * @return string 
+     */
+    public function getFacebookId()
+    {
+        return $this->facebookId;
     }
 
     /**
@@ -327,11 +380,7 @@ class Place
     public function setSite(\TBN\MainBundle\Entity\Site $site)
     {
         $this->site = $site;
-        if($this->getVille())
-        {
-            $this->getVille()->setSite($site);
-        }
-        
+
         return $this;
     }
 
@@ -343,28 +392,5 @@ class Place
     public function getSite()
     {
         return $this->site;
-    }
-
-    /**
-     * Set ville
-     *
-     * @param \TBN\AgendaBundle\Entity\Ville $ville
-     * @return Place
-     */
-    public function setVille(\TBN\AgendaBundle\Entity\Ville $ville = null)
-    {
-        $this->ville = $ville;
-    
-        return $this;
-    }
-
-    /**
-     * Get ville
-     *
-     * @return \TBN\AgendaBundle\Entity\Ville 
-     */
-    public function getVille()
-    {
-        return $this->ville;
     }
 }

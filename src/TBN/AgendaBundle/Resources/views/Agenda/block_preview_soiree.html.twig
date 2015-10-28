@@ -18,9 +18,14 @@
                 {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
             {% endif %}
             <meta itemprop="image" content="{{ original }}" />
-            <a class="image-gallery" href="{{ original }}" title="{{ soiree.nom }}" >
-                <img class="img img-responsive loading" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ soiree.nom }}" />      
-            </a>
+            <div class="image-container">
+                {% if soiree.fbParticipations %}
+                <span class="label label-warning"><i class="fa fa-facebook"></i> <span class="number">{{ soiree.fbParticipations }}</span></span>
+                {% endif %}
+                <a class="image-gallery" href="{{ original }}" title="{{ soiree.nom }}" >
+                    <img class="img img-responsive loading" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ soiree.nom }}" />      
+                </a>
+            </div>
         </div>
         <div class="col-xs-9 description_evenement" >
             <h3 class="modal-title nom_soiree">
@@ -31,7 +36,7 @@
             <div class="trait">
                 {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
                 {% set dateFin = soiree.dateFin|date('d/m/Y') %}
-                <i class="fa fa-calendar pull-left icon"></i>
+                <i class="fa fa-calendar pull-left"></i>
                 <span>
                     {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}                        
                         Le <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
@@ -45,7 +50,7 @@
                 </span>
             </div>                        
             <div class="trait hidden-xs hidden-sm">
-                <i class="fa fa-quote-left pull-left icon"></i>
+                <i class="fa fa-quote-left pull-left"></i>
                 <div itemprop="description" class="description">
                     {{ soiree.descriptif|striptags|replace({'&#13;' : ' '})|truncate(300, true, '...')|raw }}
                 </div>
@@ -53,8 +58,8 @@
             {% set place = soiree.place %}
             {% if place and place.nom %}
                 <div class="trait" itemprop="location" itemscope itemtype="http://schema.org/Place">
-                    <i class="fa fa-map-marker pull-left icon"></i>
-                    <span itemprop="name">{{ place.nom }}</span>
+                    <i class="fa fa-map-marker pull-left"></i>
+                    <a itemprop="name" href="{{ path('tbn_agenda_place', {'slug': place.slug }) }}" title="Sortir à {{ place.nom }}">{{ place.nom }}</a>
                     {% if place.latitude and place.longitude %}
                         <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
                             <meta itemprop="latitude" content="{{ place.latitude }}" />
@@ -63,9 +68,9 @@
                     {% endif %}
                     {% if place.ville %}
                         <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">, 
-                            <span itemprop="addressLocality">{{ place.ville.nom }}</span>
-                            {% if place.ville.codePostal %}
-                                <meta itemprop="addressRegion" content="{{ place.ville.codePostal }}" />
+                            <span itemprop="addressLocality">{{ place.ville }}</span>
+                            {% if place.codePostal %}
+                                <meta itemprop="addressRegion" content="{{ place.codePostal }}" />
                                 <meta itemprop="addressCountry" content="FR" />
                                 <meta itemprop="streetAddress" content="{{ place.rue }}" />
                             {% endif %}
@@ -85,22 +90,22 @@
             {% endfor %}
             {% if distinctTags|length %}
                 <div class="trait" >                        
-                    <i class="fa fa-tag pull-left icon"></i> 
+                    <i class="fa fa-tag pull-left"></i> 
                     {% for tag in distinctTags %}
-                    <span class="label label-info">{{ tag }}</span>
+                    <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag}) }}">{{ tag }}</a>
                     {% endfor %}
                 </div>
             {% endif %}
             {% if soiree.tarif %}   
                 <div class="trait" itemprop="offers" itemscope itemtype="http://schema.org/Offer">                        
-                    <i class="fa fa-ticket pull-left icon"></i> 
+                    <i class="fa fa-ticket pull-left"></i> 
                     <span itemprop="price">{{ soiree.tarif }}</span>
                     <meta itemprop="priceCurrency" content="EUR" />
                 </div>
             {% endif %}
             {% if soiree.user %}   
                 <div class="trait">
-                    <i class="fa fa-user pull-left icon"></i>
+                    <i class="fa fa-user pull-left"></i>
                     Par 
                     <a class="display_inline" href="{{ path('tbn_user_details', {'username': soiree.user.username} ) }}" title="Accédez au profil de {{ soiree.user.username }}">
                         {{ soiree.user.username }}

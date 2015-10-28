@@ -18,8 +18,8 @@ class TBNExtension extends \Twig_Extension{
     public function getFilters()
     {
         return [
-            'diff_date' => new \Twig_Filter_Method($this, 'diffDate'),
-            'parse_tags' => new \Twig_Filter_Method($this, 'parseTags'),
+            new \Twig_SimpleFilter('diff_date', [$this, 'diffDate']),
+            new \Twig_SimpleFilter('parse_tags', [$this, 'parseTags']),
         ];
     }
 
@@ -43,10 +43,14 @@ class TBNExtension extends \Twig_Extension{
                 $texte
             );
         }
-
-        return $texte;
+        
+        if(! preg_match("/<(script|style|link)/i", $texte)) {
+            return $texte;
+        }
+        
+        return strip_tags($texte, "<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>");    
     }
-
+    
     public function diffDate(\DateTime $date)
     {
         $diff = $date->diff(new \DateTime);

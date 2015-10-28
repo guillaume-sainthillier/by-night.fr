@@ -13,8 +13,6 @@ use TBN\UserBundle\Entity\SiteInfo;
 use TBN\MajDataBundle\Parser\AgendaParser;
 use TBN\MainBundle\Site\SiteManager;
 
-
-use Facebook\GraphNodes\GraphPage;
 use Facebook\GraphNodes\GraphNode;
 use Facebook\GraphNodes\GraphEdge;
 use Facebook\FacebookResponse;
@@ -69,7 +67,8 @@ class FacebookAdmin extends FacebookEvents {
             $dateDebut  = $this->getReadableDate($agenda->getDateDebut());
             $dateFin    = $this->getReadableDate($agenda->getDateFin());
             $date       = $this->getDuree($dateDebut, $dateFin);
-            $message    = $user->getUsername() . ' présente : '. $agenda->getNom().' @ '.$agenda->getLieuNom();
+            $message    = $user->getUsername() . ' présente : '. $agenda->getNom(). ($place ? " @ " . $place->getNom() : '');
+            
 
             //Authentification
 	    $request = $this->client->post('/' . $site->getFacebookIdPage() . '/feed', [
@@ -96,7 +95,7 @@ class FacebookAdmin extends FacebookEvents {
 
 	if ($site !== null && $this->siteInfo !== null) {
 	    try {
-		$page = $this->getPageFromId($site->getFacebookIdPage());                
+		$page = $this->getPageFromId($site->getFacebookIdPage(), ['fields' => 'likes']);
 		return $page->getField('likes');
 	    } catch (FacebookSDKException $ex) {}
 	}
@@ -126,7 +125,8 @@ class FacebookAdmin extends FacebookEvents {
         $nbBatchs   = ceil(count($ids_event) / $idsPerBatch);
 	$finalEvents = [];
         $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
-
+        
+        //$nbBatchs = min(2, $nbBatchs); // TODO: SUPPRIMER CA
         for($i = 0; $i < $nbBatchs; $i++)
         {
             $requests = [];
@@ -205,7 +205,7 @@ class FacebookAdmin extends FacebookEvents {
         $requestsParBatch = 50;
         
         $nbBatchs   = ceil($nbKeywords / $requestsParBatch);
-        $nbBatchs   = 1; //TODO: SUPPRIMER CA
+        //$nbBatchs   = min(2, $nbBatchs); //TODO: SUPPRIMER CA
         
 	//Récupération des events en fonction des mot-clés
         for($i = 0; $i < $nbBatchs; $i++)
@@ -258,24 +258,22 @@ class FacebookAdmin extends FacebookEvents {
     {
         $datas = [];
         
-        if($graph !== null)
-        {
+        while($graph !== null && $graph->count() > 0) {
             try {
-                do {
-                    if ($graph->getField('error_code')) {
-                        $this->parser->writeln(sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
-                        $graph = null;                
-                    }else
-                    {
-                        $currentData    = $callBack ? array_map($callBack, $graph->all()) : $graph->all();
-                        $datas          = array_merge($datas, $currentData);
-                        $graph          = $this->client->next($graph);
-                    }
-                }while($graph !== null && $graph->count() > 0);
+                if ($graph->getField('error_code')) {
+                    $this->parser->writeln(sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
+                    $graph = null;                
+                }else
+                {
+                    $currentData    = $graph->all();
+                    $datas          = array_merge($datas, $currentData);
+                    $graph          = $this->client->next($graph);
+                }
             } catch (FacebookSDKException $ex) {
+                $graph = null;
                 $this->parser->writeln(sprintf('<error>Erreur dans findPaginated : %s</error>', $ex->getMessage()));
             }
-        }        
+        }     
         
         return $datas;
     }
@@ -307,30 +305,36 @@ class FacebookAdmin extends FacebookEvents {
 
     public function getEventStats($id_event)
     {
-        return [
-	    'participations'	=> 0,
-	    'interets'		=> 0,
-            'membres'           => []
-	];
-        
 	$this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+        
+        $request	= $this->client->sendRequest('GET', '/' .$id_event.'', [
+            'fields' => 'attending_count,maybe_count'
+        ]);
+	$graph          = $request->getGraphPage();
+      
+        $nbParticipations   = $graph->getField('attending_count');
+        $nbInterets         = $graph->getField('maybe_count');
 
 	$request	= $this->client->sendRequest('GET', '/' .$id_event.'/attending', [
-            'fields' => static::$ATTENDING_FIELDS
+            'fields' => static::$ATTENDING_FIELDS,
+            'limit' => 1000
         ]);
-	$graph		= $request->getGraphPage();
-	$partipations	= $graph->getPropertyAsArray('data');
+	$graph		= $request->getGraphEdge();
+	$partipations	= $graph->all();
 
-	$request	= new FacebookRequest($session, 'GET', '/' .$id_event.'/maybe', [
-            'fields' => static::$ATTENDING_FIELDS
+	$request	= $this->client->sendRequest('GET', '/' .$id_event.'/maybe', [
+            'fields' => static::$ATTENDING_FIELDS,
+            'limit' => 1000
         ]);
-	$graph		= $request->execute()->getGraphObject(GraphPage::className());
-	$interets	= $graph->getPropertyAsArray('data');
+	$graph		= $request->getGraphEdge();
+	$interets	= $graph->all();
 
 	return [
+            'nbParticipations'  => $nbParticipations,
+            'nbInterets'        => $nbInterets,
 	    'participations'	=> count($partipations),
 	    'interets'		=> count($interets),
-            'membres'           => $partipations + $interets
+            'membres'           => array_merge($partipations, $interets)
 	];
     }
 
@@ -348,7 +352,7 @@ class FacebookAdmin extends FacebookEvents {
 	];
     }
 
-    private function handleEventsEdge(& $ids, \DateTime $since, $idsPerRequest = 50, $limit = 500)
+    private function handleEventsEdge(& $ids, \DateTime $since, $idsPerRequest = 49, $limit = 500)
     {
         $requestPerBatch = 50;
         $idsPerBatch = $requestPerBatch * $idsPerRequest;
@@ -418,7 +422,7 @@ class FacebookAdmin extends FacebookEvents {
     
     public function getEventsFromPlaces(& $places, \DateTime $since)
     {
-	$places	    = array_slice($places, 0, 5); // TODO: SUPPRIMER CA
+	//$places	    = array_slice($places, 0, min(10, count($places))); // TODO: SUPPRIMER CA
 	$id_places  = array_map(function(GraphNode $place)
 	{
 	    return $place->getField('id');
@@ -466,7 +470,8 @@ class FacebookAdmin extends FacebookEvents {
     }
 
     public function getEventsFromUsers(& $users, \DateTime $since) {
-	return $this->handleEventsEdge($users, $since, 40);
+        $this->debug = true;
+	return $this->handleEventsEdge($users, $since);
     }
 
     public function setParser(AgendaParser $parser)

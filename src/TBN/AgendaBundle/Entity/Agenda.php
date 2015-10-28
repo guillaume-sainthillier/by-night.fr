@@ -24,11 +24,12 @@ use TBN\AgendaBundle\Entity\Agenda;
  *   @ORM\Index(name="agenda_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
  *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
- *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"})
+ *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"}),
+ *   @ORM\Index(name="agenda_search_idx", columns={"date_fin", "date_debut", "site_id"})
  * })
  * 
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")
- * @ORM\HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("all")
  */
 class Agenda
@@ -72,6 +73,13 @@ class Agenda
      * @ORM\Column(name="date_modification", type="datetime", nullable=true)
      */
     protected $dateModification;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="fb_date_modification", type="datetime", nullable=true)
+     */
+    protected $fbDateModification;
 
     /**
      * @var \DateTime
@@ -147,7 +155,6 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="commune", type="string", length=255, nullable=true)
-     * @Expose
      */
     protected $commune;
 
@@ -336,7 +343,7 @@ class Agenda
     protected $googleSystemPostId;
 
     /**
-    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"remove"})
+    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"remove"}, fetch="EXTRA_LAZY")
     */
     protected $calendriers;
 
@@ -348,7 +355,7 @@ class Agenda
     protected $site;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="agenda")
+     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="agenda", cascade={"remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $commentaires;
@@ -364,6 +371,7 @@ class Agenda
      * @var integer
      *
      * @ORM\Column(name="fb_participations", type="integer", nullable=true)
+     * @Expose
      */
     protected $fbParticipations;
 
@@ -402,7 +410,7 @@ class Agenda
     protected $source;
     
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", inversedBy="evenements", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
      * @Expose
      * @Assert\Valid()
@@ -456,8 +464,8 @@ class Agenda
     }
 
     /**
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function majDateFin()
     {
@@ -466,8 +474,8 @@ class Agenda
         }
     }
     /**
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function preUpload()
     {
@@ -479,8 +487,8 @@ class Agenda
     }
 
     /**
-     * @ORM\PostPersist()
-     * @ORM\PostUpdate()
+     * @ORM\PostPersist
+     * @ORM\PostUpdate
      */
     public function upload()
     {
@@ -504,7 +512,7 @@ class Agenda
     }
 
     /**
-     * @ORM\PostRemove()
+     * @ORM\PostRemove
      */
     public function removeUpload()
     {
@@ -514,8 +522,8 @@ class Agenda
     }
 
     /**
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function preDateModification()
     {
@@ -1761,6 +1769,48 @@ class Agenda
 	$this->isTrustedLocation = $isTrustedLocation;
 	return $this;
     }
+    
+    public function setId($id) {
+        $this->id = $id;
+        return $this;
+    }
 
+    public function toJSON()
+    {
+        return json_encode($this->toArray());
+    }
+    
+    public function toArray() {
+        return [
+            'place' => $this->place ? $this->place->toArray() : null,
+            'site' => $this->site ? $this->site->toArray() : null,
+            'nom' => $this->nom,
+            'descriptif' => $this->descriptif,
+            'dateDebut' => $this->dateDebut,
+            'dateFin' => $this->dateFin
+        ];
+    }
 
+    /**
+     * Set fbDateModification
+     *
+     * @param \DateTime $fbDateModification
+     * @return Agenda
+     */
+    public function setFbDateModification($fbDateModification)
+    {
+        $this->fbDateModification = $fbDateModification;
+
+        return $this;
+    }
+
+    /**
+     * Get fbDateModification
+     *
+     * @return \DateTime 
+     */
+    public function getFbDateModification()
+    {
+        return $this->fbDateModification;
+    }
 }

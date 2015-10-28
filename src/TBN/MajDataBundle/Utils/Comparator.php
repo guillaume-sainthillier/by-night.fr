@@ -3,7 +3,6 @@
 namespace TBN\MajDataBundle\Utils;
 
 use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Agenda;
 use Doctrine\Common\Cache\Cache;
 use TBN\MajDataBundle\Utils\Util;
@@ -21,82 +20,90 @@ class Comparator {
         $this->util = $util;
         $this->cache = $cache;
     }
-
-    public function getBestVille(& $villes, Ville $testedVille = null, $debug = false)
-    {
-        $this->debug = $debug;
-        return $this->getBest($villes, [$this, 'getMatchingScoreVille'], $testedVille);
-    }
-
-    public function getMatchingScoreVille(Ville $a = null, Ville $b = null)
+    public function getMatchingScoreVille(Place &$a = null, Place &$b = null)
     {
         $pourcentage = 0;
         if($a !== null && $b !== null && $a->getSite() === $b->getSite())
         {
-            if($this->getMatchingScoreText($a->getNom(), $b->getNom()) > 80)
+            $isMatchingCP = ($a->getCodePostal() && $b->getCodePostal()) ? $this->isSameText($a->getCodePostal(), $b->getCodePostal()) : false;
+            //Même CP -> fortement identiques
+            if($isMatchingCP)
             {
-                $pourcentage += 80;
+                return 100;
             }
-
-            if($this->isSameText($a->getCodePostal(), $b->getCodePostal()))
+            
+            $matchingNom = ($a->getVille() && $b->getVille()) ? $this->getMatchingScoreText($a->getVille(), $b->getVille()) : 0;
+            
+            //Même Nom et pas de CP sur l'une des villes -> fortement identiques
+            if($matchingNom >= 80 && (!$a->getCodePostal() || !$b->getCodePostal()))
             {
-                $pourcentage += 60;
+                return 80;
+            }elseif($matchingNom >= 80) {
+                return 75;
             }
         }
 
         return $pourcentage;
     }
     
-    public function getBestPlace(& $places, Place $testedPlace = null, $debug = false)
+    public function getBestPlace(array &$places, Place &$testedPlace = null)
     {
-        $this->debug = $debug;
-        return $this->getBest($places, [$this, 'getMatchingScorePlace'], $testedPlace, 60);
+        return $this->getBest('place', $places, 'getMatchingScorePlace', $testedPlace, 80);
     }
 
-    public function getMatchingScorePlace(Place $a = null, Place $b = null)
+    public function getMatchingScorePlace(Place &$a = null, Place &$b = null)
     {
-        if ($a !== null && $b !== null && $a->getSite() === $b->getSite() && $this->getMatchingScoreVille($a->getVille(), $b->getVille()) >= 60)
+        if ($a !== null && $b !== null && $a->getSite() === $b->getSite())
         {
-	    //~ Même ville et même rue
-	    if($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100)
-	    {
-		return 100;
-	    }
-
-            if($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80)
+            if($a->getFacebookId() !== null && $a->getFacebookId() === $b->getFacebookId())
             {
-                return 90;
+                return 100;
             }
 
-            if($this->isSubInSub($a->getNom(), $b->getNom()))
-            {
-                return 85;
-            }
+            if($this->getMatchingScoreVille($a, $b) >= 80)
+            {                
+                //~ Même ville et même rue
+                if($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100)
+                {
+                    return 100;
+                }
 
-            if($this->getMatchingScoreText($a->getLatitude(), $b->getLatitude()) === 100 &&
-                    $this->getMatchingScoreText($a->getLongitude(), $b->getLongitude()) === 100)
-            {
-                return 75;
+                if($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80)
+                {
+                    return 90;
+                }
+
+                if($this->isSubInSub($a->getNom(), $b->getNom()))
+                {
+                    return 85;
+                }
+
+                if($a->getLatitude() !== null && 
+                        $a->getLongitude() !== null && 
+                        $a->getLatitude() === $b->getLatitude() &&
+                        $a->getLongitude() === $b->getLongitude())
+                {
+                    return 75;
+                }
             }
         }
 
         return 0;
     }
 
-    public function getBestEvent(& $events, Agenda $testedEvent, $debug = false)
+    public function getBestEvent(array &$events, Agenda &$testedEvent)
     {
-        $this->debug = $debug;
-        return $this->getBest($events, [$this, 'getMatchingScoreEvent'], $testedEvent);
+        return $this->getBest('agenda', $events, 'getMatchingScoreEvent', $testedEvent);
     }
 
-    protected function getMatchingScoreEvent(Agenda $a, Agenda $b)
+    protected function getMatchingScoreEvent(Agenda &$a, Agenda &$b)
     {
         if($this->isSameMoment($a, $b))
         {
             //Fort taux de ressemblance du nom ou descriptif ou égalité de l'id FB
-	    if($this->getMatchingScoreText($a->getNom(), $b->getNom()) > 75 ||
-		$this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) > 75 ||
-		$this->getMatchingScoreText($a->getFacebookEventId(), $b->getFacebookEventId()) >= 100)
+	    if($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
+		$this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75 ||
+		($a->getFacebookEventId() !== null && $a->getFacebookEventId() === $b->getFacebookEventId()))
 	    {
 		return 100;
 	    }
@@ -106,7 +113,9 @@ class Comparator {
 		return 85;
 	    }
 
-	    if($this->getMatchingScorePlace($a->getPlace(), $b->getPlace()) >= 75)
+            $placeA = $a->getPlace();
+            $placeB = $b->getPlace();
+	    if($this->getMatchingScorePlace($placeA, $placeB) >= 75)
 	    {
 		return 80;
 	    }
@@ -115,23 +124,44 @@ class Comparator {
         return 0;
     }
 
-    private function getBest(& $items, $machingFunction, $testedItem = null, $minScore = 75)
+    private function getBest($keyPrefix, array &$items, $machingFunction, &$testedItem = null, $minScore = 75)
     {
+        if(null === $testedItem)
+        {
+            return null;
+        }elseif($testedItem->getId() !== null && isset($items[$keyPrefix. $testedItem->getId()])) {
+            return $items[$keyPrefix . $testedItem->getId()]; 
+        }
+        
         $bestScore = 0;
         $bestItem = null;
 
+        $hashA = md5($testedItem->toJSON());
         foreach ($items as $item) {
-            $score = call_user_func($machingFunction, $item, $testedItem);
+            $score = null;
+            
+            $hashB = md5($item->toJSON());
+            $keys = ['getBest.'.$hashA.'.'.$hashB, 'getBest.'.$hashB.'.'.$hashA];
+            foreach($keys as $key) {                
+                if($this->cache->contains($key)) {
+                    $score = $this->cache->fetch($key);
+                    break;
+                }
+            }
+            
+            if(null === $score) {
+                $score = $this->$machingFunction($item, $testedItem);
+                $this->cache->save($keys[0], $score);
+            }
+            
             if($score >= 100)
             {
                 return $item;
             }elseif($score >= $minScore && $score > $bestScore)
             {
-                $bestScore = $score;
                 $bestItem = $item;
             }
-        }
-
+        }        
         return $bestItem;
     }
 
@@ -150,7 +180,7 @@ class Comparator {
 
     protected function getMatchingScore($a, $b)
     {
-	$pourcentage = 0;
+        $pourcentage = 0;
         // = strlen > 0
 	if(isset($a[0]) && isset($b[0]) > 0)
 	{
@@ -158,11 +188,42 @@ class Comparator {
 	    {
 		return 100;
 	    }
-
-	    similar_text($a, $b, $pourcentage);
+            
+            if(isset($a[250]) || isset($b[250]))
+            {
+                $start = microtime(true);
+                similar_text($a, $b, $pourcentage);
+                $end = microtime(true);
+            }else
+            {
+                try {
+                    $pourcentage = $this->getDiffPourcentage($a, $b);
+                } catch (\Exception $ex) {                    
+                    echo 'ERR levenstein : ' .max(strlen($a), strlen($b))."\n";
+                } 
+            }           
 	}
 
-	return $pourcentage;
+	return 0;
+    }
+    
+    private function getDiffPourcentage($a, $b)
+    {
+        $hashA = md5($a);
+        $hashB = md5($b);
+        $keys = ['getDiffPourcentage.'.$hashA.'.'.$hashB, 'getDiffPourcentage.'.$hashB.'.'.$hashA];
+        
+        foreach($keys as $key) {
+            if($this->cache->contains($key)) {
+                return $this->cache->fetch($key);
+            }
+        }
+    
+        $score = ( 1-levenshtein($a, $b)/max(strlen($a), strlen($b))) * 100;
+        
+        $this->cache->save($keys[0], $score);
+        
+        return $score;
     }
 
     protected function getMatchingScoreRue($a, $b)
@@ -191,7 +252,12 @@ class Comparator {
 
     public function getBestContent($valueA, $valueB)
     {
-        if(is_object($valueA) && is_object($valueB))
+        if(is_bool($valueA))
+        {
+            return $valueA;
+        }
+        
+        if(is_object($valueA) || is_object($valueB))
         {
             return $valueA ?: $valueB;
         }        
@@ -205,7 +271,7 @@ class Comparator {
         return preg_replace('/\D/', '', $string);
     }
 
-    public function isSameMoment(Agenda $a, Agenda $b)
+    public function isSameMoment(Agenda &$a, Agenda &$b)
     {
         $dateDebutA = $a->getDateDebut();
         $dateDebutB = $b->getDateDebut();
@@ -248,7 +314,7 @@ class Comparator {
         return $a->format('Y-m-d') === $b->format('Y-m-d');
     }
 
-    private function isSameText($a, $b, $minPourcentage = 100, $equalsAreSame = false)
+    private function isSameText($a, $b, $minPourcentage = 100, $nullAreSame = false)
     {
 	$trimedA = $this->sanitize($a);
 	$trimedB = $this->sanitize($b);
@@ -256,15 +322,17 @@ class Comparator {
         // = strlen > 0
 	if(! isset($trimedA[0]) || ! isset($trimedB[0]))
 	{
-	    return $equalsAreSame;
+	    return $nullAreSame;
 	}elseif($trimedA === $trimedB)
 	{
 	    return true;
-	}else
+	}elseif($minPourcentage < 100)
 	{
 	    $pourcentage = 0;
 	    similar_text($a, $b, $pourcentage);
 	    return $pourcentage >= $minPourcentage;
 	}
+        
+        return false;
     }
 }

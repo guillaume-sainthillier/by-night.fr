@@ -98,7 +98,7 @@ abstract class AgendaParser implements ParserInterface {
     {
         if($this->output !== null)
         {
-	    $this->output->write(\utf8_decode($text));
+	    $this->output->write($text);
         } else {
 	    echo $text;
         }

@@ -133,8 +133,8 @@ var EventHandler = {
     {
         $('#tbn_agenda_place_latitude').val(result.lat());
         $('#tbn_agenda_place_longitude').val(result.lng());
-        $('#tbn_agenda_place_ville_nom').val(result.nameForType('locality'));
-        $('#tbn_agenda_place_ville_codePostal').val(result.nameForType('postal_code'));
+        $('#tbn_agenda_place_ville').val(result.nameForType('locality'));
+        $('#tbn_agenda_place_codePostal').val(result.nameForType('postal_code'));
 
         var rue = ((result.nameForType('street_number') ? result.nameForType('street_number') : '') + ' ' + (result.nameForType('route') || '')).trim();
         $('#tbn_agenda_place_rue').val(rue);

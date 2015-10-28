@@ -68,8 +68,8 @@ class AgendaRepository extends EntityRepository {
         ->from('TBNAgendaBundle:Calendrier',"c")
         ->leftJoin("TBNAgendaBundle:Agenda", "a", 'WITH', "c.agenda = a")
         ->where("c.user = :user")
-        ->andWhere("a.dateDebut ".($isNext ? ">=" : "<")." :date_debut")
-        ->orderBy("a.dateDebut", $isNext ? "ASC" : "DESC")
+        ->andWhere("a.dateFin ".($isNext ? ">=" : "<")." :date_debut")
+        ->orderBy("a.dateFin", $isNext ? "ASC" : "DESC")
         ->setParameters([":user" => $user->getId(), "date_debut" => date("Y-m-d")])
         ->setFirstResult(($page-1) * $limit)
         ->setMaxResults($limit)
@@ -203,7 +203,7 @@ class AgendaRepository extends EntityRepository {
         ->where("a.site = :site")
         ->andWhere("a.dateFin BETWEEN :du AND :au")
         ->orderBy("a.fbParticipations", "DESC")
-        ->addOrderBy("a.participations", "DESC")
+        ->addOrderBy("a.fbInterets", "DESC")
         ->setParameters([":site" => $site->getId(), "du" => $du->format("Y-m-d"), "au" => $au->format("Y-m-d")])
         ->setFirstResult(($page-1) * $limit)
         ->setMaxResults($limit)
@@ -300,7 +300,6 @@ class AgendaRepository extends EntityRepository {
                 ->select('COUNT(a) as nombre')
                 ->from('TBNAgendaBundle:Agenda','a');
 
-
         return
             $this->makeQuery($qb, $site, $search)
             ->getQuery()
@@ -388,15 +387,14 @@ class AgendaRepository extends EntityRepository {
     {
         return $this->_em
         ->createQueryBuilder()
-        ->select('v')
-        ->from('TBNAgendaBundle:Agenda',"a")
-        ->leftJoin("TBNAgendaBundle:Place", "p", "WITH", "p = a.place")
-        ->leftJoin("TBNAgendaBundle:Ville", "v", "WITH", "v = p.ville")
+        ->select('p')
+        ->from('TBNAgendaBundle:Agenda','a')
+        ->leftJoin("TBNAgendaBundle:Place", 'p', 'WITH', 'p = a.place')
         ->where("a.site = :site")
-        ->andWhere("v.nom != ''")
+        ->andWhere("p.ville != ''")
 	->andWhere("a.dateDebut >= :today")
-        ->groupBy("v.nom")
-        ->orderBy("v.nom")
+        ->groupBy("p.ville")
+        ->orderBy("p.ville")
         ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
         ->getQuery()
         ->execute();

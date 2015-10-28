@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Description of MenuDroitController
@@ -20,10 +21,32 @@ class MenuDroitController extends Controller {
      * @Cache(expires="tomorrow", public=true)
      */
     public function programmeTVAction() {
+        
+        $fileSystem = new Filesystem;
         $parser = $this->get("tbn.programmetv");
 
+        $programmes     = $parser->getProgrammesTV();        
+        $webPath        = $this->get('kernel')->getRootDir() . '/../web';
+        $relativePath   = '/uploads/programmes';
+        $absolutePath   = $webPath . $relativePath;
+        
+        $fileSystem->mkdir($absolutePath, 0755);
+        foreach($programmes as & $programme)
+        {
+            if($programme['logo'])
+            {
+                $pathFile   = '/' . md5($programme['logo']) . '.gif';
+                $absolutePathFile = $absolutePath . $pathFile;
+                if(! $fileSystem->exists($absolutePathFile))
+                {
+                    $fileSystem->copy($programme['logo'], $absolutePathFile);
+                }
+                $programme['asset'] = $relativePath . $pathFile;
+            }
+        }
+        
         return $this->render("TBNAgendaBundle:Hinclude:programme_tv.html.twig", [
-                    "programmes" => $parser->getProgrammesTV()
+            "programmes" => $programmes
         ]);
     }
 
@@ -52,18 +75,17 @@ class MenuDroitController extends Controller {
         ]);
     }
 
-    //Pas de cache par défaut ici (à cause des détails FB)
     public function tendancesAction(Agenda $soiree) {
         $this->getFBStatsEvent($soiree);
 
         $nbItems    = 30;
-        $membres    = $this->getFBMembres($soiree, 1, 30);
+        $membres    = $this->getFBMembres($soiree, 1, $nbItems);
 
         return $this->render("TBNAgendaBundle:Hinclude:tendances.html.twig", [
             "tendancesParticipations" => $this->getSoireesTendancesParticipations($soiree),
             "tendancesInterets" => $this->getSoireesTendancesInterets($soiree),
             "count_participer" => $soiree->getParticipations() + $soiree->getFbParticipations(),
-            "count_interets" => $soiree->getInterets($soiree) + $soiree->getFbInterets(),
+            "count_interets" => $soiree->getInterets() + $soiree->getFbInterets(),
             "membres" => $membres,
             "maxItems" => $nbItems
         ]);
@@ -134,7 +156,7 @@ class MenuDroitController extends Controller {
     protected function getFBStatsEvent(Agenda $soiree) {
         $id = $soiree->getFacebookEventId();
         if ($id !== null) {
-            $dureeCache = 0;
+            $dureeCache = 24;
             $dateModification = $soiree->getDateModification();
             $today = new \DateTime;
             $dateModification->modify("+" . $dureeCache . " hours");
@@ -144,8 +166,9 @@ class MenuDroitController extends Controller {
                 $cache  = $this->get("winzou_cache");
                 $cache->save("fb.stats." . $id, $retour["membres"]);
 
-                $soiree->setFbInterets($retour["interets"]);
-                $soiree->setFbParticipations($retour["participations"]);
+                $soiree->setFbInterets($retour["nbInterets"]);
+                $soiree->setFbParticipations($retour["nbParticipations"]);
+                $soiree->setDateModification(new \DateTime);
 
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($soiree);

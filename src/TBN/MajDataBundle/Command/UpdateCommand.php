@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Console\Helper\ProgressBar;
+use TBN\AgendaBundle\Entity\Agenda;
 
 use TBN\MajDataBundle\Entity\HistoriqueMaj;
 
@@ -32,9 +33,7 @@ class UpdateCommand extends EventCommand
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        ini_set('memory_limit', '-1');
-        
+    {        
         try {
 
 	//Début de construction de l'historique de la MAJ
@@ -56,21 +55,24 @@ class UpdateCommand extends EventCommand
         $em->getConnection()->getConfiguration()->setSQLLogger(null);
         $repo               = $em->getRepository('TBNAgendaBundle:Agenda');
         $repoPlace          = $em->getRepository('TBNAgendaBundle:Place');
-        $repoVille          = $em->getRepository('TBNAgendaBundle:Ville');
         $repoSite           = $em->getRepository('TBNMainBundle:Site');
         $repoSiteInfo       = $em->getRepository('TBNUserBundle:SiteInfo');
 	
         //Récupération du site demandé par l'user
         $site               = $repoSite->findOneBy(['subdomain' => $subdomainSite]);
         $siteInfo           = $repoSiteInfo->findOneBy([]);
-        
-        //Chargement des explorations existantes en base
-        $firewall->loadExplorations();
 
 	if($site === null)
         {
             throw new RuntimeException(sprintf('<error>Le site %s demandé est introuvable en base</error>', $subdomainSite));
         }
+        
+        //Chargement des explorations existantes en base
+        $firewall->loadExplorations($site);
+        $key = "TBN\MajDataBundle\Entity\Exploration";
+        
+        $em->clear($key);        
+        //var_dump(array_keys($em->getUnitOfWork()->getIdentityMap()[$key])); die();
 
         //Définition des parsers disponibles pour chaque site
         $parsers = [
@@ -109,73 +111,66 @@ class UpdateCommand extends EventCommand
         $agendas = $parserManager->getAgendas($output);
 
         //Récupération des places & villes
-        $places = $repoPlace->findBy(['site' => $site]);
-        $villes = $repoVille->findBy(['site' => $site]);
+        $persistedPlaces = $this->loadPlaces($repoPlace, $site);
 
-        $start = microtime(true);
+        $persistedEvents    = [];
+        $unpersistedEvents  = [];
+        $unpersistedPlaces  = [];
+        
+        $nbExplorations = 0;
         $nbUpdate = 0;
         $nbInsert = 0;
         $nbBlackList = 0;
-        $batchSize = 20;
-        $i = 0;
+        $batchSize = 100;
         $size = ceil(count($agendas) / $batchSize);        
         
-        // Starting progress
         $progress = new ProgressBar($output, $size);
         $progress->start();
-        foreach($agendas as $j => $tmpAgenda)
+        foreach($agendas as $i => $agenda)
         {
-            $start = microtime(true);
+            $fullPlaces = array_merge($persistedPlaces, $unpersistedPlaces);
             //Gestion de l'événement + sa place et sa ville associée
-            $cleanedEvent = $handler->handle($places, $villes, $site, $tmpAgenda);
-            $end = microtime(true);
-            $this->writeln($output, 'FLAG0 : <info>'.(($end - $start)*1000).' ms</info>');
             $start = microtime(true);
-	    if(! $cleanedEvent->getDateDebut() instanceof \DateTime || ! $cleanedEvent->getDateFin() instanceof \DateTime)
+            $tmpAgenda = $handler->handle($fullPlaces, $site, $agenda);
+            $end = microtime(true);
+
+	    if($tmpAgenda === null || ! $tmpAgenda->getDateDebut() instanceof \DateTime || ! $tmpAgenda->getDateFin() instanceof \DateTime)
 	    {
-		$agenda = null;
+		$tmpAgenda = null;
 	    }else
 	    {
-		//Récupération des events de la même période en base
-		$existingEvents = $repo->findBy([
-		    'dateDebut' => $cleanedEvent->getDateDebut(),
-		    'dateFin' => $cleanedEvent->getDateFin(),
-		    'site' => $site
-		]);
-
-                $end = microtime(true);
-                $this->writeln($output, 'FLAG1 : <info>'.(($end - $start)*1000).' ms</info>');
-                $start = microtime(true);
+		//Récupération des events de la même période en base	
+                $currentPersistedEvents = $this->loadAgendasByDates($repo, $tmpAgenda, $persistedEvents);
+                $key = $this->getAgendaCacheKey($tmpAgenda);
+                if(! isset($unpersistedEvents[$key]))
+                {
+                    $unpersistedEvents[$key] = [];
+                }
+                $currentUnpersistedEvents = $unpersistedEvents[$key];
                 
-                
-		//Gestion de l'événement
-		$agenda = $handler->handleEvent($existingEvents, $cleanedEvent);
-                $end = microtime(true);
-                $this->writeln($output, 'FLAG2 : <info>'.(($end - $start)*1000).' ms</info>');
-                $start = microtime(true);
+		//Gestion & filtrage de l'événement
+                $fullEvents = array_merge($currentPersistedEvents, $currentUnpersistedEvents);
+		$tmpAgenda = $handler->handleEvent($fullEvents, $tmpAgenda);
 	    }
             
-            if($agenda !== null)
+            if($tmpAgenda !== null)
             {
                 //Récupération de l'image distante si besoin
-                if($env !== 'dev' && $agenda->getPath() === null && $agenda->getUrl() !== null)
+                if($env !== 'dev' && $tmpAgenda->getPath() === null && $tmpAgenda->getUrl() !== null)
                 {
-                    $handler->downloadImage($agenda);
+                    $handler->downloadImage($tmpAgenda);
                 }
 
                 //Persistence en base
-                $em->persist($agenda);
-                if (($i % $batchSize) === 0) {
-                    $end = microtime(true);
-                    $progress->clear();
-                    $this->writeln($output, 'Persistance : <info>'.(($end - $start)*1000).' ms</info>');
-                    $start = microtime(true);
-                    $em->flush(); // Executes all deletions.
-                    //$em->clear(); // Detaches all objects from Doctrine!
-                }
-                $i++;
+                $tmpAgenda->preDateModification();
+                $managedAgenda = $em->merge($tmpAgenda);
                 
-                if(! $firewall->isPersisted($agenda))
+                //MAJ des tableaux
+                $this->insertOrUpdate('agenda', $managedAgenda, $currentPersistedEvents, $currentUnpersistedEvents);
+                $this->postManage($managedAgenda, $persistedPlaces, $unpersistedPlaces);
+                
+                //Stats
+                if(! $firewall->isPersisted($managedAgenda))
                 {
                     $nbInsert++;
                 }else
@@ -187,35 +182,56 @@ class UpdateCommand extends EventCommand
                 $nbBlackList++;
             }
             
-            $end = microtime(true);
-            $this->writeln($output, 'FLAG3 : <info>'.(($end - $start)*1000).' ms</info>');
-            if(($j % $batchSize) === 0)
+            //Commit
+            if(($i % $batchSize) === 0)
             {
-                $progress->advance($batchSize);
+                $start = microtime(true);
+                $progress->clear();
+                
+                //Gestion des explorations + historique de la maj
+                $explorations = $firewall->getExplorationsToSave();
+                $nbExplorations += count($explorations);
+                foreach($explorations as $exploration)
+                {
+                    $em->merge($exploration);
+                }               
+                $em->flush();
+                $firewall->flushNewExplorations(); 
+                
+                //Les événements sont maintenants persistés en base
+                foreach($unpersistedEvents as $key => &$newPersistedEvents)
+                {
+                    $currentPersistedEvents = $persistedEvents[$key];
+                    $this->mergeNewEntities('event', $currentPersistedEvents, $newPersistedEvents);
+                }
+                $this->postFlush($persistedPlaces, $unpersistedPlaces);
+                $end = microtime(true);
+                $progress->advance();
             }            
         }
-
+        
+        
         $end = microtime(true);
         $progress->clear();
-        $this->writeln($output, 'Fin de persistance : <info>'.(($end - $start)*1000).' ms</info>');        
-	$em->flush();
+        $this->writeln($output, 'Fin de persistance : <info>'.round((($end - $start)*1000.0)).' ms</info>');        
+	$em->flush(); 
         $progress->finish();
 
-	//Gestion des explorations + historique de la maj
-	$explorations = $firewall->getExplorationsToSave();
-        $historique
+        $explorations = $firewall->getExplorationsToSave();
+        $nbExplorations += count($explorations);
+	$historique
                 ->setFromData($parserName ?: 'tous')
-                ->setExplorations($nbBlackList + count($explorations))
+                ->setExplorations($nbBlackList + $nbExplorations)
                 ->setNouvellesSoirees($nbInsert)
                 ->setUpdateSoirees($nbUpdate)
                 ->setSite($site)
         ;
 
         $progress->start(ceil(count($explorations) / $batchSize));
-        $i = 0;
+        $i = 0;        
 	foreach($explorations as $exploration)
 	{
-	    $em->persist($exploration);
+	    $em->merge($exploration);
             if (($i % $batchSize) === 0) {
                 $progress->advance();
                 $em->flush();
@@ -223,7 +239,7 @@ class UpdateCommand extends EventCommand
             $i++;
 	}
 	
-        $em->persist($historique);
+        $em->merge($historique->setDateFin(new \DateTime));
         $em->flush();
         $progress->finish();
         $progress->clear();
@@ -236,5 +252,32 @@ class UpdateCommand extends EventCommand
             $this->writeln($output, $e->getTraceAsString());
             throw new \Exception('Erreur dans le traitement', 0, $e);
         }
+    }
+    
+    private function loadAgendasByDates($repo, Agenda $agenda, array &$persistedEvents)
+    {
+        //Récupération des events de la même période en base
+        $key = $this->getAgendaCacheKey($agenda);
+        if(! isset($persistedEvents[$key]))
+        {
+            $agendas = $repo->findBy([
+                'dateDebut' => $agenda->getDateDebut(),
+                'dateFin' => $agenda->getDateFin(),
+                'site' => $agenda->getSite()
+            ]);
+            
+            $persistedEvents[$key] = [];
+            foreach($agendas as $persistedAgenda)
+            {
+                $persistedEvents[$key][$persistedAgenda->getId()] = $persistedAgenda;
+            }
+        }
+        
+        return $persistedEvents[$key];
+    }
+    
+    private function getAgendaCacheKey(Agenda $agenda)
+    {
+        return $agenda->getSite()->getId().'.'.$agenda->getDateDebut()->format('Y-m-d').'.'.$agenda->getDateFin()->format('Y-m-d');
     }
 }

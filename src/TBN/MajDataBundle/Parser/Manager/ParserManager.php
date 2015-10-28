@@ -51,10 +51,10 @@ class ParserManager {
 
     protected function writeln(OutputInterface $output, $text)
     {
-        $output->writeln(utf8_decode($text));
+        $output->writeln($text);
     }
     protected function write(OutputInterface $output, $text)
     {
-        $output->write(utf8_decode($text));
+        $output->write($text);
     }
 }

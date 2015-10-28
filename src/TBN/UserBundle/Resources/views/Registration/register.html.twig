@@ -36,7 +36,7 @@
     <br />
     <br />
 
-    <form action="{{ path('fos_user_registration_register') }}" {{ form_enctype(form) }} method="POST" class="fos_user_registration_register">
+    <form action="{{ path('fos_user_registration_register') }}" method="post" class="fos_user_registration_register">
         {% if error is defined and error %}
             <div class="alert alert-danger">
                 <i class="fa fa-warning"></i> 

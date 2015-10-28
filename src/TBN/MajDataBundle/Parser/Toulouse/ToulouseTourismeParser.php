@@ -127,8 +127,8 @@ class ToulouseTourismeParser extends LinksParser {
 	$tab_retour['theme_manifestation']      = $this->parser->filter('.localisation')->count() ? $this->parser->filter('.localisation')->eq(0)->text() : null;
 	$tab_retour['place.nom']		= $lieu;
 	$tab_retour['place.rue']		= $rue;
-	$tab_retour['place.ville.code_postal']	= $cp;
-	$tab_retour['place.ville.nom']		= $ville;
+	$tab_retour['place.codePostal']         = $cp;
+	$tab_retour['place.ville']		= $ville;
 	$tab_retour['descriptif']		= $description_start.' '.$description_end;
 	$tab_retour['reservation_telephone']	= implode(',', $resa_telephone);
 	$tab_retour['reservation_internet']	= implode(',', $resa_internet);

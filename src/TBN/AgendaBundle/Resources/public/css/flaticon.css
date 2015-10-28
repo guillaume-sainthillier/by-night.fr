@@ -1,0 +1,36 @@
+@font-face {
+    font-family: "Flaticon";
+    src: url("../font/flaticon.eot");
+    src: url("../font/flaticon.eot#iefix") format("embedded-opentype"),
+        url("../font/flaticon.woff") format("woff"),
+        url("../font/flaticon.ttf") format("truetype"),
+        url("../font/flaticon.svg") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+[class^="flaticon-"]:before, [class*=" flaticon-"]:before
+{   
+    font-family: Flaticon;
+    font-size: 20px;
+    font-style: normal;
+    margin-left: 20px;
+}
+
+.flaticon-calendar60:before {
+	content: "\e000";
+}
+.flaticon-father16:before {
+	content: "\e001";
+}
+.flaticon-microphone47:before {
+	content: "\e002";
+}
+.flaticon-students17:before {
+	content: "\e003";
+}
+.flaticon-theater1:before {
+	content: "\e004";
+}
+.flaticon-tickets:before {
+	content: "\e005";
+}

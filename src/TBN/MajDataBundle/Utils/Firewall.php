@@ -2,7 +2,6 @@
 
 namespace TBN\MajDataBundle\Utils;
 
-use TBN\AgendaBundle\Entity\Ville;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Entity\Site;
@@ -36,11 +35,13 @@ class Firewall {
         $this->explorations	= [];
     }
     
-    public function loadExplorations()
+    public function loadExplorations(Site $site)
     {
-        $explorations = $this->repoExploration->findAll();
+        $explorations = $this->repoExploration->findBy([
+            'site' => $site
+        ]);
         foreach($explorations as $exploration){
-            $this->addExploration($exploration->getSite(), $exploration->getFacebookId(), $exploration);
+            $this->addExploration($exploration, false);
         }
     }
 
@@ -49,23 +50,32 @@ class Firewall {
         return ($object !== null && $object->getId() !== null);
     }
 
-    public function isGoodEvent(Agenda $agenda)
+    public function isGoodEvent(Agenda &$agenda)
     {
 	$isGoodEvent = $this->checkEvent($agenda);
+        $site = $agenda->getSite();
         
 	//Vérification supplémentaire de la validité géographique du lieux déclaré de l'event
-	if(!$agenda->isTrustedLocation() && $isGoodEvent)
+	if($agenda->isTrustedLocation() === false && $isGoodEvent)
 	{
 	    $place  = $agenda->getPlace();
 
 	    $isGoodLocation = $place && $this->isLocationBounded($place);
-	    if(!$isGoodLocation)
-	    {
-		var_dump(sprintf('%s en [%f, %f] <error>refusay</error> !', $place ? $place->getNom() : '?', $place ? $place->getLatitude() : '?', $place ? $place->getLongitude() : '?'));
-	    }else
-	    {
-		var_dump(sprintf('%s en [%f, %f] <info>acceptay</info> !', $place ? $place->getNom() : '?', $place ? $place->getLatitude() : '?', $place ? $place->getLongitude() : '?'));
-	    }
+            
+            //Observation du lieu
+            if($place && $place->getFacebookId()) {
+                $explorationPlace = $this->getExploration($place->getFacebookId(), $site);
+                if(null === $explorationPlace)
+                {
+                    $explorationPlace = (new Exploration)
+                            ->setFacebookId($place->getFacebookId())
+                            ->setSite($site);
+                }
+                
+                $explorationPlace->setBlackListed(! $isGoodLocation);
+                //Ajout ou update
+                $this->addExploration($explorationPlace);
+            }
 	    
 	    $isGoodEvent = $isGoodLocation;
 	}
@@ -74,28 +84,29 @@ class Firewall {
         $fbId = $agenda->getFacebookEventId();
         if($fbId)
         {
-            $site = $agenda->getSite();
-            $exploration = $this->getExploration($fbId, $site);
+            
+            $exploration = $this->getExploration($fbId, $site, true);
             if(null === $exploration)
             {
                 $exploration = (new Exploration)
                         ->setFacebookId($fbId)
-                        ->setLastUpdated($agenda->getDateModification())
                         ->setSite($site);
-                $this->addExploration($site, $fbId, $exploration, true);
             }
-
-            $exploration->setBlackListed(! $isGoodEvent);
+            $exploration->setBlackListed(! $isGoodEvent)
+                    ->setLastUpdated($agenda->getFbDateModification());
+            
+            //Ajout ou update
+            $this->addExploration($exploration);
         }
         
         return $isGoodEvent;
     }
 
-    public function isPreciseLocation(Place $place) {
+    public function isPreciseLocation(Place &$place) {
 	return $place->getLatitude() && $place->getLongitude() && $place->getNom();
     }
 
-    public function isLocationBounded(Place $place)
+    public function isLocationBounded(Place &$place)
     {
 	$site = $place->getSite();
 	return $site &&
@@ -104,7 +115,7 @@ class Firewall {
 		abs($place->getLongitude() - $site->getLongitude()) <= $site->getDistanceMax();
     }
 
-    protected function checkEvent(Agenda $agenda)
+    protected function checkEvent(Agenda &$agenda)
     {
 	return ($this->checkMinLengthValidity($agenda->getNom(), 3) &&
 		$this->checkMinLengthValidity($agenda->getDescriptif(), 20) &&
@@ -120,20 +131,13 @@ class Firewall {
             return false;
         }
         
-        return $this->checkMinLengthValidity($place->getNom(), 2);
-    }
-
-    public function isGoodVille(Ville $ville = null)
-    {
-        if($ville === null)
-        {
-            return false;
-        }
+        $codePostal = $this->comparator->sanitizeNumber($place->getCodePostal());
         
-        $codePostal = $this->comparator->sanitizeNumber($ville->getCodePostal());
-        return   $this->checkMinLengthValidity($ville->getNom(), 2) &&
-                    ($this->checkLengthValidity($codePostal, 0) ||
-                     $this->checkLengthValidity($codePostal, 5));
+        return $this->checkMinLengthValidity($place->getNom(), 2) &&
+            $this->checkMinLengthValidity($place->getVille(), 2) &&
+            ($this->checkLengthValidity($codePostal, 0) ||
+                     $this->checkLengthValidity($codePostal, 5))
+        ;
     }
 
     /**
@@ -149,8 +153,7 @@ class Firewall {
 	{
 	    return null;
 	}
-
-        $this->toSaveExplorations[] = $this->explorations[$key];
+        
 	return $this->explorations[$key];
     }
 
@@ -179,18 +182,23 @@ class Firewall {
 
     public function checkMinLengthValidity($str, $min)
     {
-	return strlen($this->comparator->sanitize($str)) >= $min;
+	return isset($this->comparator->sanitize($str)[$min]);
     }
     
-    public function addExploration(Site $site, $fbId, Exploration $exploration, $isNewEntity = false)
+    public function addExploration(Exploration $exploration, $isNewEntity = true)
     {
-        $key = $fbId.'.'.$site->getId();
+        $key = $exploration->getFacebookId().'.'.$exploration->getSite()->getId();
         $this->explorations[$key] = $exploration;
         
-        if($isNewEntity)
-        {
-            $this->toSaveExplorations[] = $this->explorations[$key];
-        }
+        if($isNewEntity) {
+            $this->toSaveExplorations[$key] = $this->explorations[$key];
+        }        
+    }
+    
+    public function flushNewExplorations()
+    {
+        unset($this->toSaveExplorations);
+        $this->toSaveExplorations = [];
     }
 
     public function getExplorations() {

@@ -1,7 +1,9 @@
 <div class="col-sm-6 col-md-12">
+    {% if not soiree.isBrouillon %}
     <!-- Tendances -->
     {% include "TBNAgendaBundle:Widget:tendances.html.twig" %}
     <!-- ./Tendances -->
+    {% endif %}
 
     {% if site.facebookIdPage %}
     <!-- Facebook -->

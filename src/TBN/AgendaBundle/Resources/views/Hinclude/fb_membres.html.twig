@@ -2,7 +2,7 @@
     {% set picture = fbUser.getProperty('picture') %}
     {% if picture is not null %}
         <a href="https://www.facebook.com/{{ fbUser.getProperty('id') }}" 
-           rel="external"
+           rel="nofollow"
            itemprop="attendee" 
            itemscope
            itemtype="http://schema.org/Person"

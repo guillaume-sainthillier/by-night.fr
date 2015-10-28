@@ -1,15 +1,3 @@
-#tbn_user_post_search:
-#    path: /requete
-#    defaults: { _controller: TBNUserBundle:User:searchRedirect }
-#    requirements:
-#        method: POST
-#
-#tbn_user_search:
-#    path: /recherche/{term}
-#    defaults: { _controller: TBNUserBundle:User:search, term: null }
-#    requirements:
-#        method: GET
-
 tbn_user_search:
     path: /recherche/{term}
     defaults: { _controller: TBNUserBundle:User:urlRedirect, term: null }

@@ -20,6 +20,8 @@ class FacebookEvents extends Facebook {
             $dateFin    = $this->getReadableDate($agenda->getDateFin());
             $date       = $this->getDuree($dateDebut, $dateFin);
             
+            $place = $agenda->getPlace();
+            
             //Authentification
             $this->client->setDefaultAccessToken($user->getInfo()->getFacebookAccessToken());
 	    $request    = $this->client->post('/me/feed', [
@@ -27,8 +29,8 @@ class FacebookEvents extends Facebook {
 		'picture' => $this->getLinkPicture($agenda),
 		'name' => $agenda->getNom(),
 		'description' => $date.". ".strip_tags($agenda->getDescriptif()),
-		'message' => $agenda->getNom()." @ ".$agenda->getLieuNom(),
-                'privacy' => json_encode(['value' => 'SELF']),
+		'message' => $agenda->getNom(). ($place ? " @ " . $place->getNom() : ''),
+                //'privacy' => json_encode(['value' => 'SELF']),
 		'actions' => json_encode([
 		    [
 			"name" => $user->getUsername() . " sur " . $user->getSite()->getNom() . " By Night",
