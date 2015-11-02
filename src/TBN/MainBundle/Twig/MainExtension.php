@@ -55,33 +55,35 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     public function getGlobals()
     {
         $globals = [];
-	$site = $this->siteManager->getCurrentSite();
-	if($site !== null && $this->requestStack->getParentRequest() === null)
-	{
-            $key = "sites";
-            if(! $this->cache->contains($key))
+        try {
+            $site = $this->siteManager->getCurrentSite();
+            if($site !== null && $this->requestStack->getParentRequest() === null)
             {
-                $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
-                $this->cache->save($key, $repo->findBy([], ["nom" => "ASC"], 0, 3), self::$LIFE_TIME_CACHE);
+                $key = "sites";
+                if(! $this->cache->contains($key))
+                {
+                    $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
+                    $this->cache->save($key, $repo->findBy([], ["nom" => "ASC"], 0, 3), self::$LIFE_TIME_CACHE);
+                }
+
+                $globals = [
+                    "site"      => $this->siteManager->getCurrentSite(),
+                    "sites"     => $this->cache->fetch($key),
+                    "siteInfo"  => $this->siteManager->getSiteInfo()
+                ];
+
+                foreach($this->socials as $name => $social)
+                {
+                    $key = 'tbn.counts.'.$name;
+                    if(! $this->cache->contains($key))
+                    {
+                        $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
+                    }
+
+                    $globals['count_'.$name] = $this->cache->fetch($key);
+                }
             }
-
-            $globals = [
-                "site"      => $this->siteManager->getCurrentSite(),
-                "sites"     => $this->cache->fetch($key),
-                "siteInfo"  => $this->siteManager->getSiteInfo()
-            ];
-        
-	    foreach($this->socials as $name => $social)
-	    {
-		$key = 'tbn.counts.'.$name;
-		if(! $this->cache->contains($key))
-		{
-		    $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
-		}
-
-		$globals['count_'.$name] = $this->cache->fetch($key);
-	    }
-	}
+        }catch(\Exception $ex) {}
 
 	return $globals;
     }
