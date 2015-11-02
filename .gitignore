@@ -1,4 +1,8 @@
+#SiteMaps
+/web/sitemap/*
+
 # Sécurité
+/app/sessions/*
 /web/config.php
 .htaccess
 
