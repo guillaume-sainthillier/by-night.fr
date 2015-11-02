@@ -50,16 +50,6 @@ class ProgrammeTVParser {
                 "episode"   => null,
                 "asset"     => null,
             ];
-            
-            return [
-                "logo"      => $channel->filter(".channelItem img")->attr("src"),
-                "chaine"    => str_replace("Programme de ", "", $channel->filter(".channelItem a.channel_label")->attr("title")),
-                "heure"     => $programme->filter(".prog_heure")->text(),
-                "nom"       => $programme->filter(".prog_name")->text(),
-                "lien"      => "http://www.programme-tv.net/".$programme->filter(".prog_name")->attr("href"),
-                "type"      => $programme->filter(".prog_type")->text(),
-                "episode"   => $episode->count() ? $episode->text() : null
-            ];
         });
     }
 }

@@ -2,10 +2,4 @@ parameters:
 #    tbn_comment.example.class: TBN\CommentBundle\Example
 
 services:
-    tbn.twig.tbn_extension:
-        class: TBN\CommentBundle\Twig\TBNExtension
-        tags:
-            - { name: twig.extension }
-#    tbn_comment.example:
-#        class: %tbn_comment.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
+

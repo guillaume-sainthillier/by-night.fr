@@ -42,18 +42,12 @@ class Twitter extends Social
             if($site !== null)
             {
                 $page = $this->client->get('users/show', ['screen_name' => $site->getTwitterIdPage()]);
-                var_dump($page);
                 if(isset($page['followers_count']))
                 {
                     return $page['followers_count'];
                 }
             }
-        }catch(\Exception $e)
-        {
-            var_dump($e->getMessage());
-        }
-        
-        die();
+        }catch(\Exception $e){}
 
         return 0;
     }

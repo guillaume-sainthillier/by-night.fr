@@ -3,20 +3,25 @@ namespace TBN\UserBundle\Security\Core\User;
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use TBN\UserBundle\Entity\Info;
-use TBN\SocialBundle\Social\Social;
+use FOS\UserBundle\Model\UserManagerInterface;
+use TBN\UserBundle\Entity\UserInfo;
+use TBN\MainBundle\Site\SiteManager;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 
 class FOSUBUserProvider extends BaseClass
 {
-    /** @var ContainerInterface */
-    protected $container;
+    private $container;
+    private $socials;
+    private $doctrine;
+    private $siteManager;
 
-    public function __construct(\FOS\UserBundle\Model\UserManagerInterface $userManager, ContainerInterface $container, array $properties) {
-        $this->container = $container;
+    public function __construct(UserManagerInterface $userManager, array $properties, SiteManager $siteManager, $doctrine, array $socials) {
         parent::__construct($userManager, $properties);
+        
+        $this->siteManager = $siteManager;
+        $this->doctrine = $doctrine;
+        $this->socials = $socials;
     }
 
     public function connectSite(UserResponseInterface $response)
@@ -58,19 +63,17 @@ class FOSUBUserProvider extends BaseClass
      */
     protected function getSocialService($service)
     {
-        $social = $this->container->get("tbn.social.".strtolower($service));
-        if(! $social instanceof Social)
-        {
+        $key = strtolower($service);
+        if(! isset($this->socials[$key])) {
             throw new RuntimeException(sprintf("Le service %s est introuvable", $service));
         }
-
-        return $social;
+        
+        return $this->socials[$key];
     }
 
     protected function findUserBySocialInfo(UserResponseInterface $cle, $valeur)
     {
-        $doctrine   = $this->container->get("doctrine");
-        $em         = $doctrine->getManager();
+        $em         = $this->doctrine->getManager();
         $repo       = $em->getRepository('TBNUserBundle:Info');
 
         $info       = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
@@ -143,14 +146,12 @@ class FOSUBUserProvider extends BaseClass
     {
         if($user->getInfo() === null)
         {
-            $user->setInfo(new Info);
+            $user->setInfo(new UserInfo);
         }
 
-        if($user->getSite() === null)
+        if($user->getSite() === null && $this->siteManager->getCurrentSite())
         {
-            $villeListener = $this->container->get("ville_listener");
-            $siteManager = $villeListener->getSiteManager();
-            $user->setSite($siteManager->getCurrentSite());
+            $user->setSite($this->siteManager->getCurrentSite());
         }
 
         if($user->getEmail() === null)

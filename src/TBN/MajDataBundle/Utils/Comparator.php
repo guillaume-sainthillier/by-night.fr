@@ -191,16 +191,12 @@ class Comparator {
             
             if(isset($a[250]) || isset($b[250]))
             {
-                $start = microtime(true);
                 similar_text($a, $b, $pourcentage);
-                $end = microtime(true);
             }else
             {
                 try {
                     $pourcentage = $this->getDiffPourcentage($a, $b);
-                } catch (\Exception $ex) {                    
-                    echo 'ERR levenstein : ' .max(strlen($a), strlen($b))."\n";
-                } 
+                } catch (\Exception $ex) {} 
             }           
 	}
 

@@ -46,26 +46,6 @@ class SocialExtension extends \Twig_Extension
 
 
     /**
-     * @param string $name
-     *
-     * @return string
-     */
-    public function getAuthorizationSiteUrl($name)
-    {
-        return $this->router->generate("tbn_administration_connect_site", ["service" => $name]);
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    public function getLogoutSiteUrl($name)
-    {
-        return $this->router->generate("tbn_administration_disconnect_site", ["service" => $name]);
-    }
-
-    /**
      * Returns the name of the extension.
      *
      * @return string The extension name

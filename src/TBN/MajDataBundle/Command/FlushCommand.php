@@ -27,9 +27,6 @@ class FlushCommand extends EventCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        set_time_limit(0);
-        ini_set('memory_limit', '-1');
-
         //Récupération des arguments / options
         $subdomainSite      = $input->getArgument('site');
 

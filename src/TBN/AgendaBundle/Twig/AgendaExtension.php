@@ -36,28 +36,6 @@ class AgendaExtension extends \Twig_Extension{
 	$this->socials	    = ['facebook' => $facebook, 'twitter' => $twitter, 'google' => $google];
     }
 
-    public function getGlobals()
-    {
-	$globals = [];
-
-	$site = $this->siteManager->getCurrentSite();
-	if($site !== null && $this->requestStack->getParentRequest() === null)
-	{
-	    foreach($this->socials as $name => $social)
-	    {
-		$key = 'tbn.counts.'.$name;
-		if(! $this->cache->contains($key))
-		{
-		    $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
-		}
-
-		$globals['count_'.$name] = $this->cache->fetch($key);
-	    }
-	}
-
-	return $globals;
-    }    
-
     public function getName() {
         return 'agenda_extension';
     }

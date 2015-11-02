@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('tbn_comment');
+        $treeBuilder->root('tbn_comment');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

@@ -51,7 +51,7 @@ class ToulouseTourismeParser extends LinksParser {
 	    //du 27/09/2014 au 31/10/2014 -> 31/10/2014
 	    $date_fin = preg_replace("/(.+)au (".$date_format_regex.")/i","$2", $dates);
 	    //du 27 au 31/09/2014
-	    if(($patterns = preg_match("/du (\d{2}) au ".$date_format_regex."/i", $dates)))
+	    if(preg_match("/du (\d{2}) au ".$date_format_regex."/i", $dates))
 	    {
 		//du 27 -> 27/09/2014
 		$date_debut = preg_replace("/du (\d{2}) au ".$date_format_regex."/i","$1/$3/$4", $dates);

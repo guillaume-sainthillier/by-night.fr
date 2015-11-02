@@ -22,6 +22,7 @@ class SiteManager
     public function __construct()
     {
         $this->currentSite = null;
+        $this->siteInfo = null;
     }
     
     /**

@@ -56,8 +56,7 @@ class CommentController extends Controller
         $comment = new Comment();
         $form = $this->getCreateForm($comment, $soiree);
 
-        $tokenStorage = $this->container->get('security.token_storage');
-        $user = $tokenStorage->getToken()->getUser();
+        $user = $this->getUser();
 
         if(! $user)
         {

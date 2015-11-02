@@ -1,13 +1,7 @@
 parameters:
 #    tbn_agenda.example.class: TBN\AgendaBundle\Example
 
-services:
-    tbn.agenda_extension:
-        class: TBN\AgendaBundle\Twig\AgendaExtension
-        arguments : [ @request_stack, @site_manager, @winzou_cache, @tbn.social.facebook_admin, @tbn.social.twitter, @tbn.social.google ]
-        tags:
-            - { name: twig.extension }
-        
+services:        
     debril.provider.default:
         class: TBN\AgendaBundle\Provider\AgendaProvider
         arguments: [ @doctrine.orm.entity_manager, @site_manager, @router ]

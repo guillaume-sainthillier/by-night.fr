@@ -1,4 +1,5 @@
 parameters:
+    router.class: TBN\MainBundle\Routing\Router
 #    tbn_city.example.class: TBN\CityBundle\Example
     #router.class: TBN\MainBundle\Routing\Router
 
@@ -11,14 +12,14 @@ services:
         class: TBN\MainBundle\Listener\SubDomainListener
         arguments: [@site_manager, @doctrine.orm.entity_manager, "%base_host%"]
         tags:
-           - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100 }
+           - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}
            
     tbn.twig.main_extension:
         class: TBN\MainBundle\Twig\MainExtension
-        arguments : [@request_stack, @site_manager, @winzou_cache, @doctrine]
+        arguments : [@service_container]
         tags:
             - { name: twig.extension }
-
+           
 #Forms
     #Collections
     tbn.collections:

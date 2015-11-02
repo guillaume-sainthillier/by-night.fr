@@ -9,7 +9,16 @@ use TBN\AgendaBundle\Search\SearchAgenda;
 use Doctrine\ORM\QueryBuilder;
 
 class AgendaRepository extends EntityRepository {
+   
+    public function createQueryBuilder($alias, $indexBy = null) {
+        $qb = parent::createQueryBuilder($alias, $indexBy);
 
+        $qb->select($alias, 'p')
+            ->leftJoin($alias.'.place', 'p');
+
+        return $qb;
+    }
+    
     public function getLastDateStatsUser(User $user)
     {
         return $this->_em
@@ -178,10 +187,8 @@ class AgendaRepository extends EntityRepository {
 
     public function findAllSimilaires(Agenda $soiree, $page = 1, $limit = 7)
     {
-        return $this->_em
-        ->createQueryBuilder()
-        ->select('a')
-        ->from('TBNAgendaBundle:Agenda','a')
+        return $this
+        ->createQueryBuilder('a')
         ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
         ->orderBy('a.nom','ASC')
         ->setParameters([":date_debut" => $soiree->getDateDebut(), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
@@ -196,10 +203,8 @@ class AgendaRepository extends EntityRepository {
 	$du = new \DateTime('monday this week');
 	$au = new \DateTime('sunday this week');
 	
-        $soirees = $this->_em
-        ->createQueryBuilder()
-        ->select('a')
-        ->from('TBNAgendaBundle:Agenda',"a")
+        $soirees = $this
+        ->createQueryBuilder('a')
         ->where("a.site = :site")
         ->andWhere("a.dateFin BETWEEN :du AND :au")
         ->orderBy("a.fbParticipations", "DESC")
@@ -402,10 +407,8 @@ class AgendaRepository extends EntityRepository {
 
     public function getTypesEvenements(Site $site)
     {
-        return $this->_em
-        ->createQueryBuilder()
-        ->select('a')
-        ->from('TBNAgendaBundle:Agenda',"a")
+        return $this
+        ->createQueryBuilder('a')
         ->where("a.site = :site")
         ->andWhere("a.categorieManifestation != ''")
         //->andWhere("a.dateDebut >= :today")

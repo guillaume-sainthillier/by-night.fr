@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\CommentBundle\Entity\Comment;
-use TBN\UserBundle\Entity\User;
 use TBN\AgendaBundle\Entity\Agenda;
 
 

@@ -48,7 +48,8 @@ class EventHandler
         try {
             $image = file_get_contents($url);
         } catch (\Exception $ex) {
-            var_dump($ex->getMessage(), $ex->getLine());
+            print_r($ex->getMessage());
+            print_r($ex->getLine());
             $image = false;
         }
 

@@ -8,53 +8,152 @@
 
 namespace TBN\MainBundle\Twig;
 
-use Symfony\Component\HttpFoundation\RequestStack;
-use TBN\MainBundle\Site\SiteManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Description of TBNExtension
  *
  * @author guillaume
  */
-class MainExtension extends \Twig_Extension{
+class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface{
 
+    public static $LIFE_TIME_CACHE = 86400; // 3600*24
     private $requestStack;
     private $doctrine;
     private $cache;
     private $siteManager;
+    private $socials;
 
-    public function __construct(RequestStack $requestStack, SiteManager $siteManager, $cache, $doctrine)
+    public function __construct(ContainerInterface $container)
     {
-	$this->requestStack = $requestStack;
-	$this->cache        = $cache;
-	$this->doctrine     = $doctrine;
-        $this->siteManager  = $siteManager;
-    }
-
-    public function getGlobals()
-    {
-	$key = "sites";
-	if(! $this->cache->contains($key))
-	{
-	    $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
-	    $this->cache->save($key, $repo->findBy([], ["nom" => "ASC"]), 0, 3);
-	}
-        
-        return [
-            "site"      => $this->siteManager->getCurrentSite(),
-            "sites"     => $this->cache->fetch($key),
-            "siteInfo"  => $this->siteManager->getSiteInfo()
+        //@request_stack, @site_manager, @winzou_cache, @doctrine
+	$this->requestStack = $container->get('request_stack');
+	$this->cache        = $container->get('winzou_cache');
+	$this->doctrine     = $container->get('doctrine');
+        $this->siteManager  = $container->get('site_manager');
+        $this->requestStack = $container->get('request_stack');
+	$this->socials	    = [
+            'facebook' => $container->get('tbn.social.facebook_admin'),
+            'twitter' => $container->get('tbn.social.twitter'),
+            'google' => $container->get('tbn.social.google')
         ];
     }
-
+    
     public function getFilters()
     {
         return [
+            new \Twig_SimpleFunction('tbn_oauth_authorization_site_url', [$this, 'getAuthorizationSiteUrl']),
+            new \Twig_SimpleFunction('tbn_oauth_logout_site_url', [$this, 'getLogoutSiteUrl']),
+            new \Twig_SimpleFilter('diff_date', [$this, 'diffDate']),
+            new \Twig_SimpleFilter('parse_tags', [$this, 'parseTags']),
             new \Twig_SimpleFilter('resume', [$this, 'resume']),
             new \Twig_SimpleFilter('partial_extends', [$this, 'partialExtendsFilter']),
             new \Twig_SimpleFilter('url_decode', [$this, 'urlDecode'])
         ];
     }
+    
+    public function getGlobals()
+    {
+        $globals = [];
+	$site = $this->siteManager->getCurrentSite();
+	if($site !== null && $this->requestStack->getParentRequest() === null)
+	{
+            $key = "sites";
+            if(! $this->cache->contains($key))
+            {
+                $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
+                $this->cache->save($key, $repo->findBy([], ["nom" => "ASC"], 0, 3), self::$LIFE_TIME_CACHE);
+            }
+
+            $globals = [
+                "site"      => $this->siteManager->getCurrentSite(),
+                "sites"     => $this->cache->fetch($key),
+                "siteInfo"  => $this->siteManager->getSiteInfo()
+            ];
+        
+	    foreach($this->socials as $name => $social)
+	    {
+		$key = 'tbn.counts.'.$name;
+		if(! $this->cache->contains($key))
+		{
+		    $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
+		}
+
+		$globals['count_'.$name] = $this->cache->fetch($key);
+	    }
+	}
+
+	return $globals;
+    }
+    
+    public function parseTags($texte)
+    {
+        $regex = "((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)";
+        $regex_2 = "#href=['\"]([^'^\"]+)['\"]#i";
+
+        if(preg_match($regex_2, $texte))
+        {
+            $texte = preg_replace(
+                $regex_2,
+                "href=\"$1\" rel=\"nofollow\"",
+                $texte
+            );
+        }else
+        {
+            $texte = preg_replace(
+                "#".$regex."#ie",
+                "'<a rel=\"nofollow\" href=\"$1\" target=\"_blank\">$3</a>$4'",
+                $texte
+            );
+        }
+        
+        if(! preg_match("/<(script|style|link)/i", $texte)) {
+            return $texte;
+        }
+        
+        return strip_tags($texte, "<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>");    
+    }
+    
+    public function diffDate(\DateTime $date)
+    {
+        $diff = $date->diff(new \DateTime);
+
+
+        if($diff->y > 0) //Années
+        {
+            $message = sprintf("Il y a %d %s",$diff->y, "an".($diff->y > 1 ? "s" : ""));
+        }else if($diff->m > 0) //Mois
+        {
+            $message = sprintf("Il y a %d mois",$diff->m);
+        }else if($diff->d > 0) //Jours
+        {
+            $message = sprintf("Il y a %d jours",$diff->d);
+        }else if($diff->h > 0) //Heures
+        {
+            $message = sprintf("Il y a %d %s",$diff->h, "heure".($diff->h > 1 ? "s" : ""));
+        }else if($diff->i > 0) //Minutes
+        {
+            $message = sprintf("Il y a %d %s",$diff->i, "minute".($diff->i > 1 ? "s" : ""));
+        }else if($diff->s > 30) //Secondes
+        {
+            $message = sprintf("Il y a %d secondes",$diff->s);
+        }else{
+            $message = "A l'instant";
+        }
+
+        return $message;
+    }
+    
+    public function getAuthorizationSiteUrl($name)
+    {
+        return $this->router->generate("tbn_administration_connect_site", ["service" => $name]);
+    }
+
+    public function getLogoutSiteUrl($name)
+    {
+        return $this->router->generate("tbn_administration_disconnect_site", ["service" => $name]);
+    }
+
 
     public function urlDecode($value)
     {

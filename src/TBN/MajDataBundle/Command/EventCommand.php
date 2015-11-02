@@ -123,7 +123,6 @@ abstract class EventCommand extends ContainerAwareCommand
 	$clean_descriptif_event     = strtolower(preg_replace("/[^a-zA-Z0-9]+/u", " ", html_entity_decode($event->getDescriptif())));
 	$nom_event                  = $event->getNom();
 	$date_debut_event	    = $event->getDateDebut();
-	$date_fin_event             = $event->getDateFin();
 
 	if(strlen($clean_descriptif_event) <= 50) //Moins de 70 caractères, on l'ejecte
 	{
@@ -133,7 +132,6 @@ abstract class EventCommand extends ContainerAwareCommand
         foreach($agendas as $agenda)
         {
             $date_debut_needle  = $agenda->getDateDebut();
-            $date_fin_needle    = $agenda->getDateFin();
             $nom_needle         = trim($agenda->getNom());
             
             if($nom_needle != "" && $nom_event != "" && $date_debut_event->format("Y-m-d") === $date_debut_needle->format("Y-m-d"))

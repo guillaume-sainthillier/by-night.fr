@@ -12,20 +12,22 @@ class SubDomainListener {
     private $siteManager;
     private $em;
     private $baseHost;
-
+    
     public function __construct(SiteManager $siteManager, EntityManager $em, $baseHost) {
         $this->siteManager = $siteManager;
         $this->em = $em;
         $this->baseHost = $baseHost;
-
-        $siteInfo = $this->em
-                ->getRepository('TBNUserBundle:SiteInfo')
-                ->findOneBy([]);
-        $this->siteManager->setSiteInfo($siteInfo);
     }
 
     public function onDomainParse(GetResponseEvent $event) {
-
+        if($this->siteManager->getSiteInfo() === null) {
+            $siteInfo = $this->em
+                ->getRepository('TBNUserBundle:SiteInfo')
+                ->findOneBy([]);
+                
+            $this->siteManager->setSiteInfo($siteInfo);
+        }        
+        
         //Chargement du site
         if ($this->siteManager->getCurrentSite() === null) {
             $request = $event->getRequest();
@@ -38,8 +40,8 @@ class SubDomainListener {
             }
 
             $site = $this->em
-                    ->getRepository('TBNMainBundle:Site')
-                    ->findOneBy(['subdomain' => $subdomain]);
+                ->getRepository('TBNMainBundle:Site')
+                ->findOneBy(['subdomain' => $subdomain]);                  
                 
             if (!$site || ($site && !$site->getIsActif())) {
                 throw new NotFoundHttpException(sprintf(
@@ -50,9 +52,4 @@ class SubDomainListener {
             $this->siteManager->setCurrentSite($site);
         }            
     }
-
-    public function getSiteManager() {
-        return $this->siteManager;
-    }
-
 }

@@ -55,8 +55,6 @@ class MigrationCommand extends EventCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        ini_set('memory_limit', '-1');
-
         //Récupérations des dépendances
         $em	    = $this->getManager();
         $em->clear();

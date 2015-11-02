@@ -6,8 +6,6 @@ use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Utils\Comparator;
 
-use Symfony\Component\PropertyAccess\PropertyAccess;
-
 /**
  * Description of Merger
  *
@@ -15,13 +13,11 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 class Merger {
 
-    private $propertyAccessor;
     private $comparator;
     
     public function __construct(Comparator $comparator)
     {
         $this->comparator = $comparator;
-        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     public function mergeEvent(Agenda &$a = null, Agenda &$b = null)
