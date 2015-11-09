@@ -90,26 +90,10 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     
     public function parseTags($texte)
     {
-        $regex = "((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)";
-        $regex_2 = "#href=['\"]([^'^\"]+)['\"]#i";
-
-        if(preg_match($regex_2, $texte))
-        {
-            $texte = preg_replace(
-                $regex_2,
-                "href=\"$1\" rel=\"nofollow\"",
-                $texte
-            );
-        }else
-        {
-            $texte = preg_replace(
-                "#".$regex."#ie",
-                "'<a rel=\"nofollow\" href=\"$1\" target=\"_blank\">$3</a>$4'",
-                $texte
-            );
-        }
+        $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", "<a href=\"$2\" target=\"_blank\" rel=\"nofollow\">", $texte);
+        $texte = preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", "\\1<a href=\"\\4\" target=\"_blank\" rel=\"nofollow\">\\4</a>", $texte);
         
-        if(! preg_match("/<(script|style|link)/i", $texte)) {
+        if(! preg_match("/<(.*)(script|style|link)/i", $texte)) {
             return $texte;
         }
         

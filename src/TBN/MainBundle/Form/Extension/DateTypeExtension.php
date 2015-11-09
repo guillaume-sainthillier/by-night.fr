@@ -3,7 +3,7 @@
 namespace TBN\MainBundle\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
 /**
@@ -19,7 +19,7 @@ class DateTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritDoc}
      */     
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {        
         $resolver->setDefaults(array(
             'input'  => 'datetime',

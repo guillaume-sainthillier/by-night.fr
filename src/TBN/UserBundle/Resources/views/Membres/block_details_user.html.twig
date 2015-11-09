@@ -1,5 +1,5 @@
 <div class="overlay">
-    {% set imageURL = user.profileDefault ? user.profileDefault : asset('img/empty_user.png')|imagine_filter('thumb_user') %}
+    {% set imageURL = comment.user.profileDefault ? user.profileDefault : 'img/empty_user.png'|imagine_filter('thumb_user') %}
     <img class="pull-left component" height="115" width="115" src="{{ imageURL }}" />
     <h3><a class="thin" href="{{ path('tbn_user_details', {'username' : user.username}) }}">{{ user.username[:22] }}</a></h3>
     <p>

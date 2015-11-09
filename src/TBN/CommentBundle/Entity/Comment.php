@@ -94,7 +94,7 @@ class Comment
         $this->setDateCreation(new \DateTime());
         $this->setDateModification(new \DateTime());
 
-        $this->setIsApprouve(true);
+        $this->setApprouve(true);
     }    
 
     /**
@@ -146,7 +146,7 @@ class Comment
      *
      * @return Comment
      */
-    public function setIsApprouve($isApprouve)
+    public function setApprouve($isApprouve)
     {
         $this->isApprouve = $isApprouve;
     
@@ -158,7 +158,7 @@ class Comment
      *
      * @return boolean 
      */
-    public function getIsApprouve()
+    public function isApprouve()
     {
         return $this->isApprouve;
     }

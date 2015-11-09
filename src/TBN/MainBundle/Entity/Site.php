@@ -386,7 +386,7 @@ class Site
      * @param boolean $isActif
      * @return Site
      */
-    public function setIsActif($isActif)
+    public function setActif($isActif)
     {
         $this->isActif = $isActif;
 
@@ -398,7 +398,7 @@ class Site
      *
      * @return boolean 
      */
-    public function getIsActif()
+    public function isActif()
     {
         return $this->isActif;
     }

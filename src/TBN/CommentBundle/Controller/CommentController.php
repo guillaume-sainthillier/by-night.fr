@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\CommentBundle\Entity\Comment;
-use TBN\UserBundle\Entity\User;
 
 class CommentController extends Controller
 {

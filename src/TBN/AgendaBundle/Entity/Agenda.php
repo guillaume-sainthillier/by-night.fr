@@ -1259,7 +1259,7 @@ class Agenda
      * @param boolean $isBrouillon
      * @return Agenda
      */
-    public function setIsBrouillon($isBrouillon)
+    public function setBrouillon($isBrouillon)
     {
         $this->isBrouillon = $isBrouillon;
 
@@ -1271,7 +1271,7 @@ class Agenda
      *
      * @return boolean
      */
-    public function getIsBrouillon()
+    public function isBrouillon()
     {
         return $this->isBrouillon;
     }
@@ -1717,12 +1717,7 @@ class Agenda
      * @return Agenda
      */
     public function setPlace(\TBN\AgendaBundle\Entity\Place $place = null)
-    {
-//        if($place !== null)
-//        {
-//            $place->addEvenement($this);
-//        }
-        
+    {        
         $this->place = $place;
 
         return $this;
@@ -1744,7 +1739,7 @@ class Agenda
      * @param boolean $isMigrated
      * @return Agenda
      */
-    public function setIsMigrated($isMigrated)
+    public function setMigrated($isMigrated)
     {
         $this->isMigrated = $isMigrated;
     
@@ -1756,7 +1751,7 @@ class Agenda
      *
      * @return boolean 
      */
-    public function getIsMigrated()
+    public function isMigrated()
     {
         return $this->isMigrated;
     }

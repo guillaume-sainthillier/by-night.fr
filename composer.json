@@ -21,19 +21,19 @@
         "stof/doctrine-extensions-bundle": "dev-master",
         "friendsofsymfony/user-bundle": "~2.0@dev",
         "hwi/oauth-bundle": "0.4.*@dev",
-        "facebook/php-sdk-v4": "5.0.*",
+        "facebook/php-sdk-v4": "5.*",
         "google/apiclient": "dev-master",
-        "ricardoper/twitteroauth": "dev-master",        
+        "ricardoper/twitteroauth": "2.*",        
         "presta/sitemap-bundle": "dev-master",
         "whiteoctober/breadcrumbs-bundle": "dev-master",
-        "genemu/form-bundle": "2.2.*",
         "liip/imagine-bundle":"dev-master",
-        "doctrine/doctrine-cache-bundle": "1.0.*@dev",
+        "doctrine/doctrine-cache-bundle": "dev-master",
         "egeloen/google-map-bundle": "~2.1",
         "willdurand/geocoder": "2.*",
-        "jms/serializer-bundle" : "0.13.*",
-        "friendsofsymfony/elastica-bundle" : "3.1.*",
-        "white-october/pagerfanta-bundle": "dev-master"
+        "jms/serializer-bundle" : "0.*",
+        "friendsofsymfony/elastica-bundle" : "3.*",
+        "white-october/pagerfanta-bundle": "dev-master",
+        "social-links/social-links": "dev-master"
     },
     "scripts": {
         "post-root-package-install": [

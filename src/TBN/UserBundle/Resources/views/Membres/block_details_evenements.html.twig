@@ -1,15 +1,15 @@
 <div class="overlay">
     {% if soiree.webPath %}
             {% set original = asset(soiree.webPath) %}
-            {% set thumb = original|imagine_filter('thumb_user_evenement') %}
+            {% set thumb = soiree.webPath|imagine_filter('thumb_user_evenement') %}
         {% elseif soiree.url %}
             {% set original = soiree.url %}
             {% set thumb = original %}
         {% else %}
             {% set original = asset('img/empty_event.png') %}
-            {% set thumb = original|imagine_filter('thumb_user_evenement') %}
+            {% set thumb = 'img/empty_event.png'|imagine_filter('thumb_user_evenement') %}
         {% endif %}
-    <img class="pull-left component" title="{{ event.nom }}" height="115" width="115" src="{{ thumb }}" />
+    <img class="pull-left" title="{{ event.nom }}" height="115" width="115" src="{{ thumb }}" />
     <div class="title">
         <h3 class=""><a class="link thin" title="Accédez à toutes les informations de {{ event.nom }}" href="{{ path('tbn_agenda_details', {'slug' : soiree.slug}) }}">
             {{ event.nom }}

@@ -256,7 +256,7 @@ class FaceBookParser extends AgendaParser {
             list($categorie, $type) = $this->guessTypeEventFromCategory($fbCategory);
             $tab_retour['categorie_manifestation'] = $categorie;
             $tab_retour['type_manifestation'] = $type;
-            $tab_retour['theme_manifestation'] = $fbCategory;
+            //$tab_retour['theme_manifestation'] = $fbCategory;
 	}
 
 	return $tab_retour;

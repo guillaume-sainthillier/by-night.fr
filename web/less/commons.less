@@ -13,6 +13,47 @@ html body {
         }
     }
     
+    .margin-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .share {
+        display: block;        
+        color: white;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        
+        i, span {
+            line-height: 1em;
+        }
+        
+        i {
+            min-width: 1.3em;
+            border-right: 1px solid white;
+            margin-right: 10px;
+            text-align: center;
+        }
+        
+        &:hover {
+            .opacity(.8);
+            color: white;
+        }
+        
+        &.facebook {
+            background-color: #3b5998;
+        }
+        
+        &.twitter {
+            background-color: #48c4d2;
+        }
+        
+        &.google-plus {
+            background-color: #d94a39;
+        }
+    }
+    
     .icon {
         display: inline-block;
         margin-top: 10px;

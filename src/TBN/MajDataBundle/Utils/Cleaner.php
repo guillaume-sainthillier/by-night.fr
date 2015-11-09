@@ -6,8 +6,6 @@ use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Utils\Util;
 
-use Symfony\Component\PropertyAccess\PropertyAccess;
-
 /**
  * Description of Merger
  *
@@ -15,13 +13,11 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 class Cleaner {
 
-    private $propertyAccessor;
     private $util;
 
     public function __construct(Util $util)
     {
         $this->util = $util;
-        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     public function cleanEvent(Agenda $agenda)

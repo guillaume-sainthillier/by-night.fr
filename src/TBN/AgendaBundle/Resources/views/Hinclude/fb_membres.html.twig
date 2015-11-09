@@ -1,4 +1,4 @@
-{% for fbUser in membres|slice(0, 30) -%}
+{% for fbUser in membres -%}
     {% set picture = fbUser.getProperty('picture') %}
     {% if picture is not null %}
         <a href="https://www.facebook.com/{{ fbUser.getProperty('id') }}" 

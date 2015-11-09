@@ -4,11 +4,21 @@ var App = {
         $(function ()
         {
             App.initComponents(selecteur);
-            //App.initHideMenuOnScroll();
+            App.initPopups();
             App.initScrollTo();
         });
-
-        //return object;
+    },
+    initPopups: function() {
+        $('a.popup').click(function() {
+            var width = 520,
+                height = 350,
+                leftPosition = (window.screen.width / 2) - ((width / 2) + 10),
+                topPosition = (window.screen.height / 2) - ((height / 2) + 50),
+                windowFeatures = "status=no,height=" + height + ",width=" + width + ",left=" + leftPosition + ",top=" + topPosition + ",screenX=" + leftPosition + ",screenY=" + topPosition + ",toolbar=0,status=0";
+            
+            window.open($(this).attr('href'), 'sharer', windowFeatures);
+            return false;
+        });
     },
     initComponents: function (selecteur)
     {
@@ -112,52 +122,43 @@ var App = {
         var options = {
             "css_selecteur_participer": ".btn.participer",
             "css_selecteur_interesser": ".btn.interesser",
-            "css_active_class": "active",
+            "css_active_class": "btn-primary",
+            "css_unactive_class": "btn-default",
             "css_buttons": ".buttons",
             "css_hidden": "hidden",
             "css_selecteur_icon": ".check"
         };
 
-        $(options.css_selecteur_participer + ", " + options.css_selecteur_interesser, selecteur || document).unbind("click").click(function ()
+        $(options.css_selecteur_participer + ", " + options.css_selecteur_interesser, selecteur || document).click(function ()
         {
             var btn = $(this);
 
-            if (btn.hasClass(options.css_active_class))
+            if (btn.hasClass(options.css_active_class) || btn.hasClass('connexion'))
             {
                 return false;
             }
 
-            btn.data("loading-text", btn.text()).button("loading");
-            $.post(btn.data("href")
-                    ).done(function (msg)
+            btn.attr('disabled', true);
+            //btn.data("loading-text", btn.text()).button("loading");
+            $.post(btn.data("href")).done(function (msg)
             {
+                btn.attr('disabled', ! msg.success);
                 if (msg.success)
-                {
-                    btn.button("reset");
-                    if (msg.participer)//L'utilisateur participe
-                    {
-                        $(options.css_selecteur_interesser).removeClass(options.css_active_class).find(options.css_selecteur_icon).addClass(options.css_hidden);
-                        $(options.css_selecteur_participer).addClass(options.css_active_class).find(options.css_selecteur_icon).removeClass(options.css_hidden);
-
-                    }
-
-                    if (msg.interet)//L'utilisateur est interessé
-                    {
-                        $(options.css_selecteur_participer).removeClass(options.css_active_class).find(options.css_selecteur_icon).addClass(options.css_hidden);
-                        $(options.css_selecteur_interesser).addClass(options.css_active_class).find(options.css_selecteur_icon).removeClass(options.css_hidden);
-                    }
+                {                    
+//                    btn.button("reset");
+//                    var on = $(msg.participer ? options.css_selecteur_interesser : options.css_selecteur_participer);
+//                    var off = $(msg.participer ? options.css_selecteur_participer : options.css_selecteur_interesser);
+//                    
+                    $(options.css_selecteur_participer + ", " + options.css_selecteur_interesser, selecteur || document)
+                            .toggleClass(options.css_unactive_class)
+                            .toggleClass(options.css_active_class)
+                            .find(options.css_selecteur_icon)
+                            .toggleClass(options.css_hidden);
+                    //on.removeClass(options.css_active_class).addClass(options.css_unactive_class).find(options.css_selecteur_icon).removeClass(options.css_hidden);
+                    //off.addClass(options.css_active_class).removeClass(options.css_unactive_class).find(options.css_selecteur_icon).addClass(options.css_hidden);
                 }
             });
-        }).each(function ()
-        {
-            if ($(this).hasClass(options.css_active_class))//L'utilisateur est interessé
-            {
-                $(this).find(options.css_selecteur_icon).removeClass(options.css_hidden);
-            } else
-            {
-                $(this).find(options.css_selecteur_icon).addClass(options.css_hidden);
-            }
-        }).closest(options.css_buttons).removeClass(options.css_hidden);
+        });
     },
     //Deps: ['bootstrap']
     initTooltips: function (selecteur)

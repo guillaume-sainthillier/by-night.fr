@@ -4,9 +4,7 @@ namespace TBN\AgendaBundle\Controller;
 
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Entity\Site;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+use TBN\MainBundle\Controller\TBNController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -50,7 +48,9 @@ class MenuDroitController extends Controller {
         ]);
     }
 
-    //Pas de cache par défaut
+    /**
+     * @Cache(expires="tomorrow", public=true)
+     */
     public function soireesSimilairesAction(Agenda $soiree, $page) {
         if($page <= 0)
         {
@@ -65,13 +65,15 @@ class MenuDroitController extends Controller {
         ]);
     }
 
-    //Pas de cache par défaut
+    /**
+     * @Cache(expires="tomorrow", public=true)
+     */
     public function topSoireesAction() {
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
 
         return $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-                    "soirees" => $this->getTopSoirees($site)
+            "soirees" => $this->getTopSoirees($site)
         ]);
     }
 
@@ -91,6 +93,9 @@ class MenuDroitController extends Controller {
         ]);
     }
 
+    /**
+     * @Cache(expires="tomorrow", public=true)
+     */
     public function fbMembresAction(Agenda $soiree, $page)
     {
         if($page <= 1)
@@ -107,74 +112,16 @@ class MenuDroitController extends Controller {
         ]);
     }
 
-    protected function getFBMembres(Agenda $soiree, $page, $offset)
-    {
-        $membres = [];
-        if ($soiree->getFacebookEventId()) {
-            $key = "fb.stats." . $soiree->getFacebookEventId();
-            $cache = $this->get("winzou_cache");
-            if ($cache->contains($key)) {
-                $membres = $cache->fetch($key);
-            }
-        }
-
-        return array_slice($membres, ($page - 1) * $offset, $offset);
-    }
-
-    //Pas de cache par défaut ici
-    public function topMembresAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNUserBundle:User");
+    /**
+     * @Cache(expires="+6 hours", public=true)
+     */
+    public function topMembresAction() {
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
-        $str_date = $repo->getLastDateUser($site);
-
-        $response = $this->cacheVerif($str_date);
-        if ($response !== null && $response->isNotModified($request)) {
-            return $response;
-        }
-
-        return $response->setContent($this->renderView("TBNAgendaBundle:Hinclude:membres.html.twig", [
-                            "membres" => $this->getTopMembres($site)
-        ]));
-    }
-
-    protected function cacheVerif($str_date) {
-        $response = new Response();
-
-        if ($str_date !== null) {
-            //2014-05-08 11:49:21
-            if (($date = \DateTime::createFromFormat("Y-m-d H:i:s", $str_date))) {
-                $response->setPublic(); //Afin d'être partagée avec tout le monde
-                $response->setLastModified($date);
-            }
-        }
-
-        return $response;
-    }
-
-    protected function getFBStatsEvent(Agenda $soiree) {
-        $id = $soiree->getFacebookEventId();
-        if ($id !== null) {
-            $dureeCache = 24;
-            $dateModification = $soiree->getDateModification();
-            $today = new \DateTime;
-            $dateModification->modify("+" . $dureeCache . " hours");
-            if ($dateModification <= $today || $soiree->getFbParticipations() === null || $soiree->getFbInterets() === null) {
-                $api    = $this->get("tbn.social.facebook_admin");
-                $retour = $api->getEventStats($id);
-                $cache  = $this->get("winzou_cache");
-                $cache->save("fb.stats." . $id, $retour["membres"]);
-
-                $soiree->setFbInterets($retour["nbInterets"]);
-                $soiree->setFbParticipations($retour["nbParticipations"]);
-                $soiree->setDateModification(new \DateTime);
-
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($soiree);
-                $em->flush();
-            }
-        }
+        
+        return $this->render("TBNAgendaBundle:Hinclude:membres.html.twig", [
+            "membres" => $this->getTopMembres($site)
+        ]);
     }
 
     protected function getTopSoirees(Site $site) {
@@ -194,18 +141,6 @@ class MenuDroitController extends Controller {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         return $repo->findAllSimilaires($soiree, $page, $offset);
-    }
-
-    protected function getSoireesTendancesParticipations(Agenda $soiree) {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        return $repo->findAllTendancesParticipations($soiree);
-    }
-
-    protected function getSoireesTendancesInterets(Agenda $soiree) {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        return $repo->findAllTendancesInterets($soiree);
     }
 
 }

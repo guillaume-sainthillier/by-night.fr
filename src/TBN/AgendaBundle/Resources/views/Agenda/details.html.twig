@@ -13,7 +13,7 @@
     {% set thumb = original %}
 {% else %}
     {% set original = app.request.getUriForPath('/img/empty_event.png') %}
-    {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
+    {% set thumb = 'img/empty_event.png'|imagine_filter('thumbs_evenement') %}
 {% endif %}
 
 {% set tags = soiree.themeManifestation|split(",") %}
@@ -66,7 +66,7 @@
 {% block og_image %}{{ original }}{% endblock %}
 
 {% block widgets_agenda %}
-    {% include "TBNAgendaBundle:MenuDroit:details.html.twig" with({'soiree': soiree}) %}
+    {% include "TBNAgendaBundle:MenuDroit:details.html.twig" with({'soiree': soiree, 'stats': stats}) %}
 {% endblock %}
 
 {% block body_agenda %}
@@ -103,11 +103,7 @@
         {% if soiree.modificationDerniereMinute %}
             <div class="alert alert-warning">
                 <i class="fa fa-warning"></i>
-                Cet événement a été signalé 
-                {% if soiree.user %}
-                    par <a href="{{ path('tbn_user_details', {'username': soiree.user.username} ) }}">{{ soiree.user.username }}</a>
-                {% endif %}
-                comme étant 
+                Cet événement a été signalé comme étant 
                 <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
             </div>
         {% endif %}
@@ -252,15 +248,14 @@
     <div class="panel-body">
         <br />
         <div class="row">
-            <div class="col-xs-4 share">
-                <div class="fb-like" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
-            </div>
-            <div class="col-xs-4 share">
-                <div class="g-plusone" data-action="share" ></div>                        
-            </div>
-            <div class="col-xs-4 share">
-                <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>                        
-            </div>
+            {% for name, social in stats.socials %}
+                <div class="col-xs-4">
+                    <a href="{{ social.shareUrl }}" class="popup share {{ name }}">
+                        <i class="fa fa-2x fa-{{ name }}"></i>
+                        <span class="number number-xbig">{{ social.shareCount }} partage{{ social.shareCount > 1 ? 's': '' }}</span>
+                    </a>
+                </div>
+            {% endfor %}
         </div>
 
         <div class="comments" data-url="{{ path('tbn_comment_list',{'id': soiree.id }) }}">

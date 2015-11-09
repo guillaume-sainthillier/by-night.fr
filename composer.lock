@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d571642be7de131f7df274cda6b86d15",
-    "content-hash": "f5a400927394bd3f7486a479e5cd104c",
+    "hash": "45565a792f81e6101fa6494a63074398",
+    "content-hash": "f6353225cdb3519d2f30a9d466509ca7",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -117,16 +117,16 @@
         },
         {
             "name": "doctrine/cache",
-            "version": "v1.5.0",
+            "version": "v1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/cache.git",
-                "reference": "eb8a73619af4f1c8711e2ce482f5de3643258a1f"
+                "reference": "2b9cec5a5e722010cbebc91713d4c11eaa064d5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/eb8a73619af4f1c8711e2ce482f5de3643258a1f",
-                "reference": "eb8a73619af4f1c8711e2ce482f5de3643258a1f",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/2b9cec5a5e722010cbebc91713d4c11eaa064d5e",
+                "reference": "2b9cec5a5e722010cbebc91713d4c11eaa064d5e",
                 "shasum": ""
             },
             "require": {
@@ -183,7 +183,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2015-10-28 11:27:45"
+            "time": "2015-11-02 18:35:48"
         },
         {
             "name": "doctrine/collections",
@@ -479,20 +479,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineCacheBundle.git",
-                "reference": "30f0ed4b5681842a2a78b861f54136782fbea963"
+                "reference": "34fce1cd7bc74634fc119f8bf985a137087927d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineCacheBundle/zipball/30f0ed4b5681842a2a78b861f54136782fbea963",
-                "reference": "30f0ed4b5681842a2a78b861f54136782fbea963",
+                "url": "https://api.github.com/repos/doctrine/DoctrineCacheBundle/zipball/34fce1cd7bc74634fc119f8bf985a137087927d2",
+                "reference": "34fce1cd7bc74634fc119f8bf985a137087927d2",
                 "shasum": ""
             },
             "require": {
-                "doctrine/cache": "~1.3",
+                "doctrine/cache": "^1.4.2",
                 "doctrine/inflector": "~1.0",
                 "php": ">=5.3.2",
-                "symfony/doctrine-bridge": "~2.2",
-                "symfony/security": "~2.2"
+                "symfony/doctrine-bridge": "~2.2|~3.0",
+                "symfony/security-acl": "~2.7|~3.0"
             },
             "require-dev": {
                 "instaclick/coding-standard": "~1.1",
@@ -501,11 +501,12 @@
                 "phpunit/phpunit": "~4",
                 "satooshi/php-coveralls": "~0.6.1",
                 "squizlabs/php_codesniffer": "~1.5",
-                "symfony/console": "~2.2",
-                "symfony/finder": "~2.2",
-                "symfony/framework-bundle": "~2.2",
-                "symfony/validator": "~2.2",
-                "symfony/yaml": "~2.2"
+                "symfony/console": "~2.2|~3.0",
+                "symfony/finder": "~2.2|~3.0",
+                "symfony/framework-bundle": "~2.2|~3.0",
+                "symfony/phpunit-bridge": "~2.7|~3.0",
+                "symfony/validator": "~2.2|~3.0",
+                "symfony/yaml": "~2.2|~3.0"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -548,13 +549,13 @@
                     "email": "fabien@symfony.com"
                 }
             ],
-            "description": "Symfony2 Bundle for Doctrine Cache",
+            "description": "Symfony Bundle for Doctrine Cache",
             "homepage": "http://www.doctrine-project.org",
             "keywords": [
                 "cache",
                 "caching"
             ],
-            "time": "2015-06-26 14:39:14"
+            "time": "2015-11-04 17:07:43"
         },
         {
             "name": "doctrine/inflector",
@@ -972,16 +973,16 @@
         },
         {
             "name": "facebook/php-sdk-v4",
-            "version": "5.0.0",
+            "version": "5.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/facebook/facebook-php-sdk-v4.git",
-                "reference": "b5d7e5c8b85419f9031b08a161e9030dca35f5a1"
+                "reference": "cc551f793492fa92ca107d596a6f1e3a62fb894c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facebook/facebook-php-sdk-v4/zipball/b5d7e5c8b85419f9031b08a161e9030dca35f5a1",
-                "reference": "b5d7e5c8b85419f9031b08a161e9030dca35f5a1",
+                "url": "https://api.github.com/repos/facebook/facebook-php-sdk-v4/zipball/cc551f793492fa92ca107d596a6f1e3a62fb894c",
+                "reference": "cc551f793492fa92ca107d596a6f1e3a62fb894c",
                 "shasum": ""
             },
             "require": {
@@ -1023,7 +1024,7 @@
                 "facebook",
                 "sdk"
             ],
-            "time": "2015-07-08 19:08:57"
+            "time": "2015-10-13 22:11:58"
         },
         {
             "name": "firebase/php-jwt",
@@ -1157,12 +1158,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "d5b28c367d393f9d9fbc48c4138b2a74d51c0c83"
+                "reference": "45d6f40178216a840885b4ca6d7de9e67068568a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/d5b28c367d393f9d9fbc48c4138b2a74d51c0c83",
-                "reference": "d5b28c367d393f9d9fbc48c4138b2a74d51c0c83",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/45d6f40178216a840885b4ca6d7de9e67068568a",
+                "reference": "45d6f40178216a840885b4ca6d7de9e67068568a",
                 "shasum": ""
             },
             "require": {
@@ -1216,7 +1217,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2015-09-15 13:15:07"
+            "time": "2015-11-03 10:24:23"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -1298,87 +1299,17 @@
             "time": "2015-09-28 16:39:27"
         },
         {
-            "name": "genemu/form-bundle",
-            "version": "v2.2.2",
-            "target-dir": "Genemu/Bundle/FormBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/genemu/GenemuFormBundle.git",
-                "reference": "9fecbe7a12fba1761228909e843301c4d1a11e7c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/genemu/GenemuFormBundle/zipball/9fecbe7a12fba1761228909e843301c4d1a11e7c",
-                "reference": "9fecbe7a12fba1761228909e843301c4d1a11e7c",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "symfony/form": "~2.3",
-                "symfony/framework-bundle": "~2.3"
-            },
-            "require-dev": {
-                "doctrine/doctrine-bundle": "1.*",
-                "doctrine/mongodb-odm-bundle": "*",
-                "doctrine/orm": "2.*",
-                "propel/propel-bundle": "*",
-                "symfony/doctrine-bridge": "~2.3",
-                "symfony/finder": "2.*"
-            },
-            "suggest": {
-                "symfony/doctrine-bundle": "In order to use some form types with Doctrine",
-                "symfony/finder": "For an image type",
-                "symfony/mongodb-odm-bundle": "For MongoDB integration",
-                "symfony/twig-bridge": "For integration into Twig templates"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.2-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Genemu\\Bundle\\FormBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Olivier Chauvel",
-                    "email": "olivier@generation-multiple.com"
-                },
-                {
-                    "name": "Community contributions",
-                    "homepage": "https://github.com/genemu/GenemuFormBundle/contributors"
-                },
-                {
-                    "name": "Bilal Amarni",
-                    "email": "bilal.amarni@gmail.com"
-                }
-            ],
-            "description": "Extra form types for your Symfony2 projects",
-            "keywords": [
-                "extra form",
-                "form"
-            ],
-            "time": "2014-03-23 12:12:05"
-        },
-        {
             "name": "google/apiclient",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client.git",
-                "reference": "4d10885f6393d2802a54a7d386828242b97b3bc0"
+                "reference": "b822dd452a9245aa6a28faccfe9f5f1904af8885"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/4d10885f6393d2802a54a7d386828242b97b3bc0",
-                "reference": "4d10885f6393d2802a54a7d386828242b97b3bc0",
+                "url": "https://api.github.com/repos/google/google-api-php-client/zipball/b822dd452a9245aa6a28faccfe9f5f1904af8885",
+                "reference": "b822dd452a9245aa6a28faccfe9f5f1904af8885",
                 "shasum": ""
             },
             "require": {
@@ -1417,7 +1348,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2015-10-29 20:47:49"
+            "time": "2015-11-04 18:16:53"
         },
         {
             "name": "google/auth",
@@ -2810,7 +2741,7 @@
         },
         {
             "name": "ricardoper/twitteroauth",
-            "version": "dev-master",
+            "version": "v2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ricardoper/TwitterOAuth.git",
@@ -3071,6 +3002,55 @@
             ],
             "description": "A security checker for your composer.lock",
             "time": "2015-08-11 12:11:25"
+        },
+        {
+            "name": "social-links/social-links",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/oscarotero/social-links.git",
+                "reference": "b6824a86caf49dc772095730d631001797936da7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/oscarotero/social-links/zipball/b6824a86caf49dc772095730d631001797936da7",
+                "reference": "b6824a86caf49dc772095730d631001797936da7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialLinks\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oscar Otero",
+                    "email": "oom@oscarotero.com",
+                    "homepage": "http://oscarotero.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP library to generate share buttons",
+            "homepage": "https://github.com/oscarotero/social-links",
+            "keywords": [
+                "buttons",
+                "facebook",
+                "links",
+                "opengraph",
+                "share",
+                "social",
+                "twitter",
+                "twittercards"
+            ],
+            "time": "2015-10-08 22:45:31"
         },
         {
             "name": "stof/doctrine-extensions-bundle",
@@ -3774,12 +3754,12 @@
         "friendsofsymfony/user-bundle": 20,
         "hwi/oauth-bundle": 20,
         "google/apiclient": 20,
-        "ricardoper/twitteroauth": 20,
         "presta/sitemap-bundle": 20,
         "whiteoctober/breadcrumbs-bundle": 20,
         "liip/imagine-bundle": 20,
         "doctrine/doctrine-cache-bundle": 20,
-        "white-october/pagerfanta-bundle": 20
+        "white-october/pagerfanta-bundle": 20,
+        "social-links/social-links": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

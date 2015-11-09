@@ -3,23 +3,20 @@
 namespace TBN\AgendaBundle\Controller;
 
 use TBN\MainBundle\Controller\TBNController as Controller;
+use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
+use TBN\AgendaBundle\Entity\Calendrier;
 
-use TBN\UserBundle\Entity\User;
 use TBN\AgendaBundle\Form\Type\SearchType;
 use TBN\AgendaBundle\Search\SearchAgenda;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class EventController extends Controller {
 
-    /**
-     * @Cache(lastmodified="agenda.getDateModification()", etag="'Agenda' ~ agenda.getId() ~ agenda.getDateModification().format('Y-m-d H:i:s')")
-     */
-    public function detailsAction(Agenda $agenda) {
+    public function detailsAction(Request $request, Agenda $agenda) {
         $siteManager = $this->container->get('site_manager');
 	$site = $siteManager->getCurrentSite();
 
@@ -32,28 +29,99 @@ class EventController extends Controller {
             ]));
         }
 
-	$em = $this->getDoctrine()->getManager();
-	$repo = $em->getRepository('TBNAgendaBundle:Calendrier');
-
-	$participer = false;
+	return $this->render('TBNAgendaBundle:Agenda:details.html.twig', [
+            'soiree' => $agenda,
+            'stats' => $this->getAgendaStats($agenda, $request)
+	]);
+    }
+    
+    protected function getAgendaStats(Agenda $agenda, Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        
+        $participer = false;
 	$interet = false;
 
         $user = $this->getUser();
-	if ($user instanceof User) {
-	    $calendrier = $repo->findOneBy(['user' => $user, 'agenda' => $agenda]);
+	if ($user) {
+            $repoCalendrier = $em->getRepository('TBNAgendaBundle:Calendrier');
+	    $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
 	    if ($calendrier !== null) {
 		$participer = $calendrier->getParticipe();
 		$interet = $calendrier->getInteret();
 	    }
+            
+            $userInfo = $user->getInfo();
+            if($userInfo && $agenda->getFacebookEventId() && $userInfo->getFacebookId()) {
+                $cache = $this->get('winzou_cache');
+                $key = 'users.'.$user->getId().'.stats.'.$agenda->getId();
+                if(! $cache->contains($key)) {
+                    $api = $this->get('tbn.social.facebook_admin');
+                    $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $userInfo->getFacebookId());
+                    $cache->save($key, $stats);
+                }else {
+                    $stats = $cache->fetch($key);
+                }
+                
+                if($stats['participer'] || $stats['interet']) {
+                    if(null === $calendrier) {
+                        $calendrier = new Calendrier;
+                        $calendrier->setUser($user)->setAgenda($agenda);
+                    }
+                    
+                    $participer = $calendrier->getParticipe() || $stats['participer'];
+                    $interet = $calendrier->getInteret() || $stats['interet'];
+                    
+                    $calendrier
+                        ->setParticipe($participer)
+                        ->setInteret($interet);
+                    
+                    $em->persist($calendrier);
+                    $em->flush();
+                }
+            }
 	}
-
-	return $this->render('TBNAgendaBundle:Agenda:details.html.twig', [
-		    'soiree' => $agenda,
-		    'participer' => $participer,
-		    'interet' => $interet
-	]);
+        $maxItems = 50;
+        $this->getFBStatsEvent($agenda);
+        
+        return [
+            'socials' => $this->getSocialStats($agenda, $request),
+            "tendancesParticipations" => $repo->findAllTendancesParticipations($agenda),
+            "tendancesInterets" => $repo->findAllTendancesInterets($agenda),
+            "count_participer" => $agenda->getParticipations() + $agenda->getFbParticipations(),
+            "count_interets" => $agenda->getInterets() + $agenda->getFbInterets(),
+            'maxItems' => $maxItems,
+            'membres' => $this->getFBMembres($agenda, 1, $maxItems),
+            'participer' => $participer,
+            'interet' => $interet
+        ];
     }
     
+    protected function getSocialStats(Agenda $agenda, Request $request) {
+        $key = 'agenda.stats.'. $agenda->getId();
+        $cache = $this->get('winzou_cache');
+        if(! $cache->contains($key)) {
+            $link = $this->generateUrl('tbn_agenda_details', [
+                'slug' => $agenda->getSlug(),
+            ], true);
+
+            $page = new Page([
+                'url' => $link,
+                'title' => $agenda->getNom(),
+                'text' => $agenda->getDescriptif(),
+                'image' => $request->getUriForPath("/".$agenda->getWebPath()),
+            ]);
+            $page->shareCount(['twitter', 'facebook', 'plus']);
+            $cache->save($key, [
+                'facebook' => $page->facebook,
+                'twitter' => $page->twitter,
+                'google-plus' => $page->plus,
+            ], 24*3600);
+        }
+
+        return $cache->fetch($key);
+    }
+
     protected function handleSearch(SearchAgenda $search, $type, $tag, $ville, Place $place = null) {
         if($ville !== null) {
             $term = null;
@@ -165,18 +233,18 @@ class EventController extends Controller {
 	$nbSoireesTotales = $results->getNbResults();
         
 	return $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
-                    'villeName' => $ville,
-                    'placeName' => (null !== $place) ? $place->getNom() : null,
-                    'placeSlug' => (null !== $place) ? $place->getSlug() : null,
-                    'tag' => $tag,
-                    'type' => $type,
-		    'soirees' => $soirees,
-		    'nbEvents' => $nbSoireesTotales,
-		    'maxPerEvent' => $nbSoireeParPage,
-		    'page' => $page,
-		    'search' => $search,
-		    'isPost' => $isPost,
-		    'form' => $form->createView()
+            'villeName' => $ville,
+            'placeName' => (null !== $place) ? $place->getNom() : null,
+            'placeSlug' => (null !== $place) ? $place->getSlug() : null,
+            'tag' => $tag,
+            'type' => $type,
+            'soirees' => $soirees,
+            'nbEvents' => $nbSoireesTotales,
+            'maxPerEvent' => $nbSoireeParPage,
+            'page' => $page,
+            'search' => $search,
+            'isPost' => $isPost,
+            'form' => $form->createView()
 	]); 
     }
 

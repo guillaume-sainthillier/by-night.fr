@@ -1,13 +1,12 @@
 var SocialSDK = {
     facebook: function ()
     {
-        console.log('INIT');
         //FB
         window.fbAsyncInit = function () {
             FB.init({
                 appId: fbAppId,
                 xfbml: true,
-                version: 'v2.1'
+                version: 'v2.5'
             });
         };
 
@@ -18,6 +17,7 @@ var SocialSDK = {
             }
             js = d.createElement(s);
             js.id = id;
+            js.async = true;
             js.src = "//connect.facebook.net/fr_FR/sdk.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
@@ -32,6 +32,7 @@ var SocialSDK = {
             if (!d.getElementById(id)) {
                 js = d.createElement(s);
                 js.id = id;
+                js.async = true;
                 js.src = p + "://platform.twitter.com/widgets.js";
                 fjs.parentNode.insertBefore(js, fjs);
             }

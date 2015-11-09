@@ -113,7 +113,7 @@ class MigrationCommand extends EventCommand {
 		    }
 		}
 
-		$agenda->setIsMigrated(true);
+		$agenda->setMigrated(true);
 		$em->persist($agenda);
                 $this->postManage($agenda, $places, $newPlaces);
                 if (($i % $batchSize) === 0) {

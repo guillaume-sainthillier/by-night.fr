@@ -58,6 +58,8 @@ class FacebookAdmin extends FacebookEvents {
 	{
 	    $this->siteInfo = $om->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
 	}
+        
+        $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
     }
     
     protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
@@ -67,6 +69,7 @@ class FacebookAdmin extends FacebookEvents {
             $dateDebut  = $this->getReadableDate($agenda->getDateDebut());
             $dateFin    = $this->getReadableDate($agenda->getDateFin());
             $date       = $this->getDuree($dateDebut, $dateFin);
+            $place      = $agenda->getPlace();
             $message    = $user->getUsername() . ' présente : '. $agenda->getNom(). ($place ? " @ " . $place->getNom() : '');
             
 
@@ -102,6 +105,40 @@ class FacebookAdmin extends FacebookEvents {
 
 	return 0;
     }
+    
+    public function updateEventStatut($id_event, $userAccessToken, $isParticiper) {
+        try {
+            $url = $id_event.'/'.($isParticiper ? 'attending' : 'maybe');
+            $this->client->sendRequest('POST', $url, [], $userAccessToken);
+            return true;
+        } catch (FacebookSDKException $ex) {}
+        
+        return false;
+    }
+    
+    public function getUserEventStats($id_event, $id_user) {
+        $stats = ['participer' => false, 'interet' => false];
+        
+        try 
+        {
+            $url = '/'.$id_event.'/%s/'.$id_user;
+            $requests = array(
+                $this->client->request('GET', sprintf($url, 'attending')),
+                $this->client->request('GET', sprintf($url, 'maybe'))
+            );
+
+            $responses = $this->client->sendBatchRequest($requests);
+            foreach ($responses as $i => $response) {
+                if (! $response->isError()) {
+                    $isXXX = $response->getGraphEdge()->count() > 0;
+                    $stats[$i === 0 ? 'participer' : 'interet'] = $isXXX;
+                }
+            }
+        }
+        catch (FacebookSDKException $ex) {}
+        
+        return $stats;
+    }
 
     public function getEventFromId($id_event, $fields = null)
     {
@@ -118,7 +155,7 @@ class FacebookAdmin extends FacebookEvents {
 	return $this->cache[$key];
     }
 
-    public function getEventsFromIds(& $ids_event, $idsPerRequest = 20, $limit = 500)
+    public function getEventsFromIds(& $ids_event, $idsPerRequest = 20, $limit = 1000)
     {
         $requestPerBatch = 50;
         $idsPerBatch = $requestPerBatch * $idsPerRequest;
@@ -198,7 +235,7 @@ class FacebookAdmin extends FacebookEvents {
 	return $this->cache[$key];
     }
     
-    public function searchEvents(& $keywords, \DateTime $since, $limit = 500) {
+    public function searchEvents(array &$keywords, \DateTime $since, $limit = 1000) {
 	$this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
 	$events	    = [];
 	$nbKeywords = count($keywords);
@@ -254,7 +291,7 @@ class FacebookAdmin extends FacebookEvents {
 	return $events;
     }
     
-    protected function findPaginated(GraphEdge $graph = null, callable $callBack = null)
+    protected function findPaginated(GraphEdge $graph = null)
     {
         $datas = [];
         
@@ -274,7 +311,6 @@ class FacebookAdmin extends FacebookEvents {
                 $this->parser->writeln(sprintf('<error>Erreur dans findPaginated : %s</error>', $ex->getMessage()));
             }
         }     
-        
         return $datas;
     }
     
@@ -352,7 +388,7 @@ class FacebookAdmin extends FacebookEvents {
 	];
     }
 
-    private function handleEventsEdge(& $ids, \DateTime $since, $idsPerRequest = 49, $limit = 500)
+    private function handleEventsEdge(& $ids, \DateTime $since, $idsPerRequest = 49, $limit = 1000)
     {
         $requestPerBatch = 50;
         $idsPerBatch = $requestPerBatch * $idsPerRequest;
@@ -427,11 +463,11 @@ class FacebookAdmin extends FacebookEvents {
 	{
 	    return $place->getField('id');
 	}, $places);
-
+       
 	return $this->handleEventsEdge($id_places, $since, 40);
     }
 
-    public function getPlacesFromGPS($latitude, $longitude, $distance, $limit = 500)
+    public function getPlacesFromGPS($latitude, $longitude, $distance, $limit = 1000)
     {
 	return $this->handlePaginate($this->siteInfo->getFacebookAccessToken(), '/search', [
             'q'             => '*',
@@ -452,16 +488,15 @@ class FacebookAdmin extends FacebookEvents {
      * @param string $requestMethod
      * @return array
      */
-    protected function handlePaginate($accessToken, $endPoint, $params, $limit = 500, $page = 0, $requestMethod = 'GET')
+    protected function handlePaginate($accessToken, $endPoint, $params, $limit = 1000, $requestMethod = 'GET')
     {
         try {
             //Construction de la requête
-            $params['offset']   = $page * $limit;
             $params['limit']    = $limit;	
-            $request            = $this->client->sendRequest($requestMethod, $endPoint, $params, $accessToken);
-
+            $response           = $this->client->sendRequest($requestMethod, $endPoint, $params, $accessToken);
+            
             //Récupération des données
-            return $this->findPaginated($request->getGraphEdge());
+            return $this->findPaginated($response->getGraphEdge());
         } catch (FacebookSDKException $ex) {
             $this->parser->writeln(sprintf('<error>Erreur dans handlePaginate : %s</error>', $ex->getMessage()));
         }

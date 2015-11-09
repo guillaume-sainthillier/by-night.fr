@@ -4,7 +4,8 @@
         {{ form_errors(form.commentaire) }}
         <div class="row">        
             <div class="col-xs-3 col-sm-2">
-                <img class="img-rounded img-responsive pull-right" src="//placehold.it/96x96&text={{ app.user.username }}" alt=""/>
+                {% set imageURL = app.user.profileDefault ? app.user.profileDefault : 'img/empty_user.png'|imagine_filter('thumb_user') %}
+                <img class="img-rounded img-responsive pull-right" src="{{ imageURL }}" alt=""/>
             </div>
             <div class="col-xs-9 col-sm-10">
                 {{ form_label(form.commentaire) }}

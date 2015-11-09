@@ -4,7 +4,7 @@ namespace TBN\UserBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use TBN\UserBundle\Entity\SiteInfo;
 use TBN\UserBundle\Entity\User;
 
@@ -197,7 +197,7 @@ class AgendaType extends AbstractType
         ;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'TBN\AgendaBundle\Entity\Agenda'

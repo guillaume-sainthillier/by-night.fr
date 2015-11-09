@@ -85,7 +85,7 @@ class Firewall {
         if($fbId)
         {
             
-            $exploration = $this->getExploration($fbId, $site, true);
+            $exploration = $this->getExploration($fbId, $site);
             if(null === $exploration)
             {
                 $exploration = (new Exploration)
@@ -94,7 +94,7 @@ class Firewall {
             }
             $exploration->setBlackListed(! $isGoodEvent)
                     ->setLastUpdated($agenda->getFbDateModification());
-            
+                        
             //Ajout ou update
             $this->addExploration($exploration);
         }
@@ -118,7 +118,7 @@ class Firewall {
     protected function checkEvent(Agenda &$agenda)
     {
 	return ($this->checkMinLengthValidity($agenda->getNom(), 3) &&
-		$this->checkMinLengthValidity($agenda->getDescriptif(), 20) &&
+		($agenda->isTrustedLocation() === true || $this->checkMinLengthValidity($agenda->getDescriptif(), 20)) &&
                 ! $this->isSPAMContent($agenda->getDescriptif()) &&
                 $agenda->getDateDebut() instanceof \DateTime &&
 		($agenda->getDateFin() === null || $agenda->getDateFin() instanceof \DateTime));

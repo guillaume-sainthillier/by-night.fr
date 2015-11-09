@@ -12,9 +12,12 @@ use TBN\MajDataBundle\Parser\LinksParser;
  */
 class BikiniParser extends LinksParser {
 
+    private $cache;
+    
     public function __construct() {
         parent::__construct();
 
+        $this->cache = [];
         $this->setURL('http://www.lebikini.com/programmation/rss');
     }
     /**
@@ -25,10 +28,11 @@ class BikiniParser extends LinksParser {
     {
         $tab_retour = [];
 
-        $date_affichage                             = $this->parseDate($this->parser->filter('#date')->text());
+        $full_date                                  = $this->parser->filter('#date')->text();
+        $date_affichage                             = $this->parseDate($full_date);
         $tab_retour['reservation_internet']         = implode(' ',$this->parser->filter('#reservation a.boutonReserverSpectacle')->each(function(Crawler $item) { return $item->attr('href'); }));
         $tab_retour['date_debut']                   = \DateTime::createFromFormat('Y-n-d', $date_affichage);
-        $tab_retour['horaires']                     = preg_replace('/^(.+)à (\d{2}):(\d{2})$/i','A $2h$3.', $date_affichage);
+        $tab_retour['horaires']                     = preg_replace('/^(.+)à (\d{2}):(\d{2})$/i','A $2h$3', $full_date);
         $tab_retour['nom']                          = $this->parser->filter('#blocContenu h2')->text();
         $tab_retour['place.nom']                    = $this->parser->filter('#salle h3')->text();
         $adresse                                    = $this->parser->filter('#salle #adresse')->html();
@@ -50,6 +54,7 @@ class BikiniParser extends LinksParser {
 	}
 
         $tab_retour['place.rue'] = $full_adresse[0];
+        $tab_retour['place.code_postal'] = isset($this->cache[$this->url]) ? $this->cache[$this->url] : null;
         $tab_retour['place.ville'] = $ville;
 
         $this->parser->filter('#blocContenu')->children()->each(function(Crawler $sibling) use(&$tab_retour)
@@ -66,6 +71,7 @@ class BikiniParser extends LinksParser {
             if($sibling->attr('id') === 'type')
             {
                 $tab_retour['theme_manifestation'] = preg_replace('/style\s?:\s?/i', '', trim($sibling->text()));
+                $tab_retour['theme_manifestation'] = implode(',', explode('/', $tab_retour['theme_manifestation']));
                 return $sibling;
             }
             return false;
@@ -81,10 +87,14 @@ class BikiniParser extends LinksParser {
     public function getLinks()
     {
         $this->parseContent('XML');
-        return $this->parser->filter('item')->each(function(Crawler $item)
+        return array_filter($this->parser->filter('item')->each(function(Crawler $item)
         {
-            return trim(preg_replace('/(.*)<link>(.*)<description>(.*)/im','$2',preg_replace('/\n/','',$item->html())));
-        });
+            if(preg_match('/<link>(.+)<description>(.+)(\d{5}).*<\/description>/im', preg_replace('/\n/','',$item->html()), $matches)) {
+                $this->cache[$matches[1]] = $matches[3];
+                
+                return trim($matches[1]);
+            }
+        }));
     }    
 
     public function getNomData() {

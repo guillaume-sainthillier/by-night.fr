@@ -15,7 +15,7 @@
                 {% set thumb = original %}
             {% else %}
                 {% set original = app.request.getUriForPath('/img/empty_event.png') %}
-                {% set thumb = asset('img/empty_event.png')|imagine_filter('thumbs_evenement') %}
+                {% set thumb = 'img/empty_event.png'|imagine_filter('thumbs_evenement') %}
             {% endif %}
             <meta itemprop="image" content="{{ original }}" />
             <div class="image-container">

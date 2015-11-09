@@ -16,7 +16,6 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            //new BeSimple\I18nRoutingBundle\BeSimpleI18nRoutingBundle(),
             new Presta\SitemapBundle\PrestaSitemapBundle(),
             new TBN\MainBundle\TBNMainBundle(),
             new FOS\UserBundle\FOSUserBundle(),
@@ -30,13 +29,13 @@ class AppKernel extends Kernel
             new TBN\AdministrationBundle\TBNAdministrationBundle(),
 
             new WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle(),
-            new Genemu\Bundle\FormBundle\GenemuFormBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
             new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
 	    new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
             new \FOS\ElasticaBundle\FOSElasticaBundle(),
+            //new Astina\Bundle\SocialLinksBundle\AstinaSocialLinksBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

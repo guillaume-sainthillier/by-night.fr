@@ -36,7 +36,7 @@ class AgendaController extends Controller
         $isBrouillon = ($brouillon === 'true');
         
         $em = $this->getDoctrine()->getManager();
-        $agenda->setIsBrouillon($isBrouillon)->setDateModification(new \DateTime);
+        $agenda->setBrouillon($isBrouillon)->setDateModification(new \DateTime);
         $em->persist($agenda);
         $em->flush();
 

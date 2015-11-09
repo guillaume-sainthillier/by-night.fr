@@ -71,8 +71,7 @@ class UpdateCommand extends EventCommand
         $firewall->loadExplorations($site);
         $key = "TBN\MajDataBundle\Entity\Exploration";
         
-        $em->clear($key);        
-        //var_dump(array_keys($em->getUnitOfWork()->getIdentityMap()[$key])); die();
+        $em->clear($key);
 
         //Définition des parsers disponibles pour chaque site
         $parsers = [
@@ -80,7 +79,6 @@ class UpdateCommand extends EventCommand
                 'toulouse',
                 'tourisme',
                 'bikini',
-                'dynamo',
 		'soonnight',
                 'facebook',
             ],
@@ -108,7 +106,10 @@ class UpdateCommand extends EventCommand
         }
         
         //Récupération des événements
+        $start = microtime(true);
         $agendas = $parserManager->getAgendas($output);
+        $end = microtime(true);
+        $this->writeln($output, 'Récupération : <info>'.round((($end - $start)*1000.0)).' ms</info>');
 
         //Récupération des places & villes
         $persistedPlaces = $this->loadPlaces($repoPlace, $site);
@@ -126,13 +127,12 @@ class UpdateCommand extends EventCommand
         
         $progress = new ProgressBar($output, $size);
         $progress->start();
+        $start = microtime(true);
         foreach($agendas as $i => $agenda)
         {
             $fullPlaces = array_merge($persistedPlaces, $unpersistedPlaces);
             //Gestion de l'événement + sa place et sa ville associée
-            $start = microtime(true);
             $tmpAgenda = $handler->handle($fullPlaces, $site, $agenda);
-            $end = microtime(true);
 
 	    if($tmpAgenda === null || ! $tmpAgenda->getDateDebut() instanceof \DateTime || ! $tmpAgenda->getDateFin() instanceof \DateTime)
 	    {
@@ -186,7 +186,6 @@ class UpdateCommand extends EventCommand
             if(($i % $batchSize) === 0)
             {
                 $start = microtime(true);
-                $progress->clear();
                 
                 //Gestion des explorations + historique de la maj
                 $explorations = $firewall->getExplorationsToSave();
@@ -205,17 +204,13 @@ class UpdateCommand extends EventCommand
                     $this->mergeNewEntities('event', $currentPersistedEvents, $newPersistedEvents);
                 }
                 $this->postFlush($persistedPlaces, $unpersistedPlaces);
-                $end = microtime(true);
                 $progress->advance();
             }            
-        }
-        
-        
+        }              
         $end = microtime(true);
-        $progress->clear();
-        $this->writeln($output, 'Fin de persistance : <info>'.round((($end - $start)*1000.0)).' ms</info>');        
 	$em->flush(); 
         $progress->finish();
+        $this->writeln($output, 'Persistance : <info>'.round((($end - $start)*1000.0)).' ms</info>');        
 
         $explorations = $firewall->getExplorationsToSave();
         $nbExplorations += count($explorations);
@@ -242,10 +237,9 @@ class UpdateCommand extends EventCommand
         $em->merge($historique->setDateFin(new \DateTime));
         $em->flush();
         $progress->finish();
-        $progress->clear();
         $this->writeln($output, 'NEW: <info>'.$nbInsert.'</info>');
         $this->writeln($output, 'UPDATES: <info>'.$nbUpdate.'</info>');
-        $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.count($explorations).'</info>');
+        $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.$nbExplorations.'</info>');
         
         } catch(\Exception $e)
         {

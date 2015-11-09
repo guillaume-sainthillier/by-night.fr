@@ -1,4 +1,4 @@
-SocialSDK.facebook().twitter().google();
+SocialSDK.facebook();
 
 $(function ()
 {

@@ -5,11 +5,32 @@ namespace TBN\AgendaBundle\Controller;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Calendrier;
+use TBN\UserBundle\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CalendrierController extends Controller
 {
 
+    private function updateFBEvent(Agenda $agenda, User $user, Calendrier $calendrier) {
+        if($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookAccessToken()) {
+            $key = 'users.'.$user->getId().'.stats.'.$agenda->getId();
+            $cache = $this->get('winzou_cache');
+            $api = $this->get('tbn.social.facebook_admin');
+            $api->updateEventStatut(
+                $agenda->getFacebookEventId(),
+                $user->getInfo()->getFacebookAccessToken(),
+                $calendrier->getParticipe()
+            );
+            
+            $datas = [
+                'participer' => $calendrier->getParticipe(),
+                'interet' => $calendrier->getInteret()
+            ];
+            
+            $cache->save($key, $datas);
+        }
+    }
+    
     public function participerAction(Agenda $agenda, $participer, $interet)
     {
         /**
@@ -20,13 +41,13 @@ class CalendrierController extends Controller
         $em         = $this->getDoctrine()->getManager();
         $calendrier = $em->getRepository("TBNAgendaBundle:Calendrier")->findOneBy(["user" => $user, "agenda" => $agenda]);
 
-
         if($calendrier === null)
         {
             $calendrier = new Calendrier;
             $calendrier->setUser($user)->setAgenda($agenda);
         }
         $calendrier->setParticipe($participer)->setInteret($interet);
+        $this->updateFBEvent($agenda, $user, $calendrier);
         
         $em->persist($calendrier);
         $em->flush();
