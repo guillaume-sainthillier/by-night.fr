@@ -6,7 +6,7 @@
 
 {% block container_titre %}{% endblock %}
 {% block helper_top %}
-    <section class="full_wrapper" style="background-image: url({{ asset('img/sites/' ~ site.nom ~ '.jpg') }})">
+    <section class="full_wrapper" style="background-image: url({{ asset('img/sites/' ~ site.subdomain ~ '.jpg') }})">
         <div class="fade-black-transp"></div>
         <div class="wrapper">
             <h1 class="titrebloc text-center">{{ block('titre_agenda') }}</h1>
