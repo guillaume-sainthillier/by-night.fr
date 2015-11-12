@@ -531,7 +531,7 @@ class Agenda
     }
 
     /**
-     * @Assert\True(message = "La date de fin de l'événement doit être supérieure à la date de début")
+     * @Assert\IsTrue(message = "La date de fin de l'événement doit être supérieure à la date de début")
      */
     public function isDatesValid()
     {

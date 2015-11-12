@@ -7,9 +7,9 @@ use TBN\AgendaBundle\Search\SearchAgenda;
 use TBN\MainBundle\Entity\Site;
 use Elastica\Filter\Term;
 use Elastica\Filter\Terms;
-use Elastica\Filter\Bool;
+use Elastica\Filter\BoolFilter;
 use Elastica\Query;
-use Elastica\Query\Bool as QueryBool;
+use Elastica\Query\BoolQuery as QueryBool;
 use Elastica\Filter\NumericRange;
 use Elastica\Query\Match;
 use Elastica\Query\MultiMatch;
@@ -25,7 +25,7 @@ class AgendaRepository extends Repository {
     public function findWithSearch(Site $site, SearchAgenda $search) {
 
 	//Filters
-        $filter = new Bool;
+        $filter = new BoolFilter;
 	$filter->addMust(
             new Term(['site.id' => $site->getId()])
         );        
@@ -43,10 +43,10 @@ class AgendaRepository extends Repository {
                  * - 3) deb € [debForm; finForm]
                  * - 4) fin € [debForm; finForm]                 *
                  */
-                $cas = new Bool;
+                $cas = new BoolFilter;
 
                 //Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
-                $cas1 = new Bool;
+                $cas1 = new BoolFilter;
                 $cas1->addMust(new NumericRange('date_debut', [
                     'lte' => $search->getDu()->format("Y-m-d")
                         ])
@@ -55,7 +55,7 @@ class AgendaRepository extends Repository {
                 ]));
 
                 //Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
-                $cas2 = new Bool;
+                $cas2 = new BoolFilter;
                 $cas2->addMust(new NumericRange('date_debut', [
                     'gte' => $search->getDu()->format("Y-m-d")
                         ])
@@ -64,14 +64,14 @@ class AgendaRepository extends Repository {
                 ]));
 
                 //Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
-                $cas3 = new Bool;
+                $cas3 = new BoolFilter;
                 $cas3->addMust(new NumericRange('date_debut', [
                     'gte' => $search->getDu()->format("Y-m-d"),
                     'lte' => $search->getAu()->format("Y-m-d")
                 ]));
 
                 //Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
-                $cas4 = new Bool;
+                $cas4 = new BoolFilter;
                 $cas4->addMust(new NumericRange('date_fin', [
                     'gte' => $search->getDu()->format("Y-m-d"),
                     'lte' => $search->getAu()->format("Y-m-d")
@@ -96,7 +96,7 @@ class AgendaRepository extends Repository {
 		    'theme_manifestation', 'categorie_manifestation', 'place.nom', 
                     'place.rue', 'place.ville', 'place.code_postal'
                 ])
-		->setOperator(false !== strstr(',', $search->getTerm()) ? 'or' : 'and')
+		->setOperator(false !== strstr($search->getTerm(), ',') ? 'or' : 'and')
 		->setFuzziness(0.8)
 		->setMinimumShouldMatch('80%')
 		;

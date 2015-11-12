@@ -292,7 +292,7 @@ class FaceBookParser extends AgendaParser {
         $categories = [];
         foreach($list as $subStr => $group)
         {
-            if(false !== strstr($subStr, $category)) {
+            if(false !== strstr($category, $subStr)) {
                 $types[] = $group['type'];
                 $categories[] = $group['categorie'];
             }

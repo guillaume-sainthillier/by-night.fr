@@ -99,7 +99,7 @@ class SoonNightParser extends LinksParser {
         //Catégorie & Thème
         $node_categorie                         = $this->getNodeFromHeading($this->parser->filter('.genre'));
         $tab_retour['categorie_manifestation']  = $node_categorie ? trim($node_categorie->text()) : null;
-        $tab_retour['categorie_manifestation']  = strstr('After Work', $tab_retour['categorie_manifestation']) !== false ? 'After Work' : $tab_retour['categorie_manifestation'];
+        $tab_retour['categorie_manifestation']  = strstr($tab_retour['categorie_manifestation'], 'After Work') !== false ? 'After Work' : $tab_retour['categorie_manifestation'];
 
         $node_musique                           = $this->getNodeFromHeading($this->parser->filter('.musique'));
         $tab_retour['theme_manifestation']      = $node_musique ? trim($node_musique->text()) : null;
