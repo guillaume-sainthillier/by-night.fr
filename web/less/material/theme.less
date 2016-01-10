@@ -1,3 +1,14 @@
+a, a:hover, a:focus {
+    color: @brand-primary;
+}
+
+// Forms ======================================================================
+.no-margin-form {
+    .form-group {
+        margin-top: 0;
+    }
+}
+
 // Typo =======================================================================
 .color-primary {
     color: @color-primary;
@@ -65,7 +76,7 @@ h1, h2, h3, h4, h5, h6,
 
 //Dropdown.js =================================================================
 .dropdownjs:after {
-    top: 7px;
+    top: 15px;
     font-size: 15px;
     content: "\f0d7";
     font-family: FontAwesome;
@@ -91,6 +102,13 @@ h1, h2, h3, h4, h5, h6,
     &.shadow {
         box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 0px 2px 2px rgba(0, 0, 0, 0.098), 0px 0px 5px 1px rgba(0, 0, 0, 0.084);
     }
+    
+    form .btn {
+        margin-bottom: 0;
+        margin-top: 0;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
         
     font-family: Roboto;
     
@@ -99,7 +117,7 @@ h1, h2, h3, h4, h5, h6,
     } 
     
     .navbar-brand {
-        padding: 10px 20px;
+        padding: 5px 20px;
     }
     
     .navbar-nav>li>a, .navbar-header a {
@@ -111,6 +129,11 @@ h1, h2, h3, h4, h5, h6,
             background-color: rgba(0, 0, 0, 0.05);
         }
     }    
+    
+    .navbar-nav > li.profile > a {
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
 }
 // BreadCrumb =================================================================
 #bread {
@@ -128,7 +151,7 @@ h1, h2, h3, h4, h5, h6,
         line-height: 1.75em;
 
         a{
-            color: @primary;
+            color: @brand-primary;
             &:hover, &:focus {
                 color: #222;
             }
@@ -147,24 +170,24 @@ h1, h2, h3, h4, h5, h6,
 
 // Footer =====================================================================
 #footer {
-    border-top: solid 5px @primary;
+    border-top: solid 5px @brand-primary;
 
     .social:hover a{
-        color: @warning;
+        color: @brand-warning;
     }
 
     a{
-        color: @info;
+        color: @brand-info;
         &:hover, &:focus {
-            color: @warning;
+            color: @brand-warning;
         }
     }
 }
 
 // Header =====================================================================
-.divider {
+div.divider {
     span:after {
-        color: @info;
+        color: @brand-info;
     }
 }
 
@@ -180,7 +203,7 @@ h1, h2, h3, h4, h5, h6,
     > li {
         > a,
         > span {
-            color: @primary;
+            color: @brand-primary;
         }
     }
 
@@ -189,8 +212,8 @@ h1, h2, h3, h4, h5, h6,
         &,
         &:hover,
             &:focus {
-            background-color: @info;
-            border-color: @info;
+            background-color: @brand-info;
+            border-color: @brand-info;
         }
     }
 }
@@ -202,7 +225,7 @@ h1, h2, h3, h4, h5, h6,
 
 .tt-suggestion.tt-cursor {
     color: #fff;
-    background-color: @info;
+    background-color: @brand-info;
     cursor: pointer;
 }
 
@@ -215,7 +238,7 @@ html body .datepicker table tr td {
     &.active:hover,
         &.active.disabled,
         &.active.disabled:hover {
-        background-color: @primary!important;
+        background-color: @brand-primary!important;
     }
 }
 

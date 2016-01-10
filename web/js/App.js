@@ -23,14 +23,34 @@ var App = {
     initComponents: function (selecteur)
     {
         $.material.init();
+        App.initAutofocus(selecteur);
         App.initConnexion(selecteur);
         App.initRegister(selecteur);
         App.initTooltips(selecteur);
         App.initParticiper(selecteur);
         App.initMore(selecteur);
         App.initSelectpicker(selecteur);
-        App.initDatepicker(selecteur);
-        App.initAutofocus(selecteur);
+        App.initDatepicker(selecteur)        
+        App.initGallery(selecteur)        
+    },
+    initGallery: function(container) {
+        $(".image-gallery", container || document).each(function ()
+        {
+            $(this).fancybox({
+                helpers: {
+                    title: {
+                        type: 'inside',
+                        position: 'top'
+                    },
+                    overlay: {
+                        locked: false
+                    }
+                }
+            }).click(function ()
+            {
+                return false;
+            });
+        });
     },
     //Deps: []
     initMore: function (container)
@@ -139,23 +159,17 @@ var App = {
             }
 
             btn.attr('disabled', true);
-            //btn.data("loading-text", btn.text()).button("loading");
             $.post(btn.data("href")).done(function (msg)
             {
-                btn.attr('disabled', ! msg.success);
+                btn.attr('disabled', !msg.success);
                 if (msg.success)
-                {                    
-//                    btn.button("reset");
-//                    var on = $(msg.participer ? options.css_selecteur_interesser : options.css_selecteur_participer);
-//                    var off = $(msg.participer ? options.css_selecteur_participer : options.css_selecteur_interesser);
-//                    
-                    $(options.css_selecteur_participer + ", " + options.css_selecteur_interesser, selecteur || document)
-                            .toggleClass(options.css_unactive_class)
-                            .toggleClass(options.css_active_class)
-                            .find(options.css_selecteur_icon)
-                            .toggleClass(options.css_hidden);
-                    //on.removeClass(options.css_active_class).addClass(options.css_unactive_class).find(options.css_selecteur_icon).removeClass(options.css_hidden);
-                    //off.addClass(options.css_active_class).removeClass(options.css_unactive_class).find(options.css_selecteur_icon).addClass(options.css_hidden);
+                {
+                    var active = msg.participer ? $(options.css_selecteur_participer) : $(options.css_selecteur_interesser);
+                    var unActive = msg.participer ? $(options.css_selecteur_interesser) : $(options.css_selecteur_participer);
+                    
+                    unActive.removeClass(options.css_active_class).addClass(options.css_unactive_class).find(options.css_selecteur_icon).addClass(options.css_hidden);
+                    active.removeClass(options.css_unactive_class).addClass(options.css_active_class).find(options.css_selecteur_icon).removeClass(options.css_hidden);
+                    
                 }
             });
         });

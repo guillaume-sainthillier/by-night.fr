@@ -57,46 +57,49 @@ html body {
     .icon {
         display: inline-block;
         margin-top: 10px;
+        border-radius: 50%;
+        padding: 30px;
         
-        &:before {
-            border-radius: 50%;
-            padding: 20px;
+        & > span {
+            position: relative;
+            left: -10px;
         }
     }
     
-    .icon-red:before {
+    .icon-red {
         color: @red-A200;
         border: 1px solid @red-A100;
     }
-    .icon-orange:before {
+    .icon-orange {
         color: @orange-A200;
         border: 1px solid @orange-A100;
     }
-    .icon-yellow:before {
+    .icon-yellow {
         color: @lime-A200;
         border: 1px solid @lime-A100;
     }
-    .icon-green:before {
+    .icon-green {
         color: @light-green-A200;
         border: 1px solid @light-green-A100;
     }
-    .icon-blue:before {
+    .icon-blue {
         color: @blue-A200;
         border: 1px solid @blue-A100;
     }
-    .icon-darkblue:before {
+    .icon-darkblue {
         color: @deep-purple-A200;
         border: 1px solid @deep-purple-A100;
     }
-    .icon-purple:before {
+    .icon-purple {
         color: @purple-A400;
         border: 1px solid @purple-A200;
     }
     
     .big-icon {
-        &:before, &:after {
-            margin-left: 0;
-            font-size: 4em;
+        & > span {
+            &, &:before {
+                font-size: 2em;
+            }            
         }        
     }
     

@@ -8,7 +8,6 @@ html {
     }
 
     body {
-        font-family: Helvetica;
         background-color: @bgColor;
         padding-top: 60px;
         word-break: break-word;
@@ -29,7 +28,6 @@ html {
             font-weight: bold;
             color: #222;
             &:hover, &:focus {
-                //color: @color-primary;
                 text-decoration: none;
             }
         }
@@ -46,7 +44,7 @@ html {
             }
         }
         
-        .divider {
+        div.divider {
             width: 40%;
             @dividerColor: #E0E0E0;
             margin: 31px auto 30px;
@@ -98,12 +96,6 @@ html {
             z-index: 2;
         }
 
-        #toTopHover {
-            display: block;
-            overflow: hidden;
-            float: left;
-        }
-
         #toTop {
             display: none;
             text-decoration: none;
@@ -113,6 +105,7 @@ html {
             overflow: hidden;
             width: 60px;
             height: 60px;
+            line-height: 60px;
             border: none;
             z-index: 100;
         }
