@@ -1,1 +1,51 @@
-.hinclude_errors .error{display:none;width:100%;text-align:center}.include_404 .error_404,.include_500 .error_500{display:inline-block}.include_404 .hinclude_no_error,.include_500 .hinclude_no_error{display:none}.panel-twitter{min-height:400px}.panel-twitter iframe{display:block;margin-left:auto;margin-right:auto}.tendances strong{display:block}.buttons{margin-bottom:15px}html body #widgets .trait{padding-bottom:5px;padding-top:5px}html body #widgets .trait a{display:block}html body #widgets .trait small{font-style:italic}html body #widgets .trait .user_profil_picture{padding-right:0}
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 7 mars 2014, 18:05:06
+    Author     : guillaume
+*/
+.hinclude_errors .error {
+  display: none;
+  width: 100%;
+  text-align: center;
+}
+.include_404 .error_404 {
+  display: inline-block;
+}
+.include_500 .error_500 {
+  display: inline-block;
+}
+.include_404 .hinclude_no_error,
+.include_500 .hinclude_no_error {
+  display: none;
+}
+.panel-twitter {
+  min-height: 400px;
+}
+.panel-twitter iframe {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.tendances strong {
+  display: block;
+}
+.buttons {
+  margin-bottom: 15px;
+}
+html body #widgets .trait {
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+html body #widgets .trait a {
+  display: block;
+}
+html body #widgets .trait small {
+  font-style: italic;
+}
+html body #widgets .trait .user_profil_picture {
+  padding-right: 0;
+}

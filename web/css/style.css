@@ -1,1 +1,128 @@
-html,html body{height:100%;-webkit-font-smoothing:antialiased}html body{font-family:Helvetica;background-color:#f0f0f0;padding-top:60px;word-break:break-word}html body #container{margin-bottom:50px;padding:20px;padding-top:0}html body #ad-footer{margin-top:40px}html body a{font-weight:700;color:#222}html body a:focus,html body a:hover{text-decoration:none}html body .titrebloc{text-align:center;margin-bottom:0;font-size:60px;padding-bottom:0;letter-spacing:-3px}html body .titrebloc strong{font-weight:300}html body .divider{width:40%;margin:31px auto 30px;border:0;height:1px;color:#dedede;background-color:#e3e3e3}html body .divider span{background:#f0f0f0;position:relative;margin:0 auto;display:block;width:35px;height:1px}html body .divider span:after,html body .divider span:before{font-size:20px;position:absolute;top:-15px}html body .divider span:before{left:6px;content:"{"}html body .divider span:after{right:6px;content:"}"}html body #fb-root{display:none}html body .fb_iframe_widget,html body .fb_iframe_widget span,html body .fb_iframe_widget span iframe[style]{width:100%!important}html body .ui-datepicker{z-index:2}html body #toTopHover{display:block;overflow:hidden;float:left}html body #toTop{display:none;text-decoration:none;position:fixed;bottom:50px;right:50px;overflow:hidden;width:60px;height:60px;border:none;z-index:100}
+/*
+
+To get this list of colors inject jQuery at http://www.google.com/design/spec/style/color.html#color-color-palette
+
+Then, run this script to get the list.
+
+
+(function() {
+  var colors = {}, main = {};
+  $(".color-group").each(function() {
+    var color = $(this).find(".name").text().trim().toLowerCase().replace(" ", "-");
+    colors[color] = {};
+
+    $(this).find(".color").not(".main-color").each(function() {
+      var shade = $(this).find(".shade").text().trim(),
+          hex   = $(this).find(".hex").text().trim();
+
+      colors[color][shade] = hex;
+    });
+    main[color] = color + "-" + $(this).find(".main-color .shade").text().trim();
+
+  });
+  var LESS = "";
+  $.each(colors, function(name, shades) {
+    LESS += "\n\n";
+    $.each(shades, function(shade, hex) {
+      LESS += "@" + name + "-" + shade + ": " + hex + ";\n";
+    });
+    if (main[name]) {
+      LESS += "@" + name + ": " + main[name] + ";\n";
+    }
+  });
+  console.log(LESS);
+})();
+
+
+*/
+html,
+html body {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+html body {
+  background-color: #f0f0f0;
+  padding-top: 60px;
+  word-break: break-word;
+  /* To fill the container and nothing else */
+}
+html body #container {
+  margin-bottom: 50px;
+  padding: 20px;
+  padding-top: 0;
+}
+html body #ad-footer {
+  margin-top: 40px;
+}
+html body a {
+  font-weight: bold;
+  color: #222;
+}
+html body a:hover,
+html body a:focus {
+  text-decoration: none;
+}
+html body .titrebloc {
+  text-align: center;
+  margin-bottom: 0;
+  font-size: 60px;
+  padding-bottom: 0;
+  letter-spacing: -3px;
+}
+html body .titrebloc strong {
+  font-weight: 300;
+}
+html body div.divider {
+  width: 40%;
+  margin: 31px auto 30px;
+  border: 0;
+  height: 1px;
+  color: #dedede;
+  background-color: #e3e3e3;
+}
+html body div.divider span {
+  background: #f0f0f0;
+  position: relative;
+  margin: 0 auto;
+  display: block;
+  width: 35px;
+  height: 1px;
+}
+html body div.divider span:before,
+html body div.divider span:after {
+  font-size: 20px;
+  position: absolute;
+  top: -15px;
+}
+html body div.divider span:before {
+  left: 6px;
+  content: "{";
+}
+html body div.divider span:after {
+  right: 6px;
+  content: "}";
+}
+html body #fb-root {
+  display: none;
+}
+html body .fb_iframe_widget,
+html body .fb_iframe_widget span,
+html body .fb_iframe_widget span iframe[style] {
+  width: 100% !important;
+}
+html body .ui-datepicker {
+  z-index: 2;
+}
+html body #toTop {
+  display: none;
+  text-decoration: none;
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  overflow: hidden;
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  border: none;
+  z-index: 100;
+}

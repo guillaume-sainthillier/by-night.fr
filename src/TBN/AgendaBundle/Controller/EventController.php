@@ -59,9 +59,8 @@ class EventController extends Controller {
                     $api = $this->get('tbn.social.facebook_admin');
                     $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $userInfo->getFacebookId());
                     $cache->save($key, $stats);
-                }else {
-                    $stats = $cache->fetch($key);
                 }
+                $stats = $cache->fetch($key);
                 
                 if($stats['participer'] || $stats['interet']) {
                     if(null === $calendrier) {
@@ -82,7 +81,7 @@ class EventController extends Controller {
             }
 	}
         $maxItems = 50;
-        $this->getFBStatsEvent($agenda);
+        $membres = $this->getFBMembres($agenda, 1, $maxItems);
         
         return [
             'socials' => $this->getSocialStats($agenda, $request),
@@ -91,7 +90,7 @@ class EventController extends Controller {
             "count_participer" => $agenda->getParticipations() + $agenda->getFbParticipations(),
             "count_interets" => $agenda->getInterets() + $agenda->getFbInterets(),
             'maxItems' => $maxItems,
-            'membres' => $this->getFBMembres($agenda, 1, $maxItems),
+            'membres' => $membres,
             'participer' => $participer,
             'interet' => $interet
         ];
@@ -137,6 +136,9 @@ class EventController extends Controller {
         }elseif($type !== null) {
             $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type]);
             switch($type) {
+                case 'exposition':
+                    $term = 'expo, exposition';
+                break;
                 case 'concert':
                     $term = 'concert, musique, artiste';
                 break;

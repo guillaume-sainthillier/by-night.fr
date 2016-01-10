@@ -1,1 +1,109 @@
-#wrap{margin:0 auto;min-height:100%;height:auto}#wrap .obsolete{display:none}.no-mediaqueries #wrap .obsolete{display:block}#footer{min-height:230px;padding:15px 0;background-color:#222;color:#f0f0f0}#footer .sous-header .footer_border{min-height:110px;border-right:thin dotted rgba(175,162,162,.78)}#footer .sous-header .social{border:1px solid transparent;display:block;line-height:100px}#footer .sous-header .social:hover{border:1px dashed rgba(175,162,162,.78);background-color:rgba(202,189,189,.09);opacity:.7;filter:alpha(opacity=70)}#footer .sous-header .social span{color:#E9EFF5}#footer .sous-header .love{font-size:20px}@media (max-width:991px){#footer .sous-header .footer_border:last-child{border-right:none}}@media (min-width:480px) and (max-width:767px){#footer .sous-header p.pull-left{float:none!important}}@media (max-width:480px){#footer .sous-header .footer_border{border-bottom:thin dotted rgba(175,162,162,.78);border-right:none;min-height:100px}#footer .sous-header .counts>div{padding-left:0;padding-right:0}#footer .sous-header .counts>div .social .fa{font-size:2.5em}#footer .sous-header .sites{margin-top:15px}#footer .sous-header hr{margin-top:0}}
+/* 
+    Created on : 22 mars 2014, 11:18:10
+    Author     : guillaume
+*/
+/*
+
+To get this list of colors inject jQuery at http://www.google.com/design/spec/style/color.html#color-color-palette
+
+Then, run this script to get the list.
+
+
+(function() {
+  var colors = {}, main = {};
+  $(".color-group").each(function() {
+    var color = $(this).find(".name").text().trim().toLowerCase().replace(" ", "-");
+    colors[color] = {};
+
+    $(this).find(".color").not(".main-color").each(function() {
+      var shade = $(this).find(".shade").text().trim(),
+          hex   = $(this).find(".hex").text().trim();
+
+      colors[color][shade] = hex;
+    });
+    main[color] = color + "-" + $(this).find(".main-color .shade").text().trim();
+
+  });
+  var LESS = "";
+  $.each(colors, function(name, shades) {
+    LESS += "\n\n";
+    $.each(shades, function(shade, hex) {
+      LESS += "@" + name + "-" + shade + ": " + hex + ";\n";
+    });
+    if (main[name]) {
+      LESS += "@" + name + ": " + main[name] + ";\n";
+    }
+  });
+  console.log(LESS);
+})();
+
+
+*/
+#wrap {
+  margin: 0 auto;
+  min-height: 100%;
+  height: auto;
+}
+#wrap .obsolete {
+  display: none;
+}
+.no-mediaqueries #wrap .obsolete {
+  display: block;
+}
+#footer {
+  min-height: 230px;
+  padding: 15px 0;
+  background-color: #222222;
+  color: #f0f0f0;
+}
+#footer .sous-header .footer_border {
+  min-height: 110px;
+  border-right: thin dotted rgba(175, 162, 162, 0.78);
+}
+#footer .sous-header .social {
+  border: 1px solid transparent;
+  display: block;
+  line-height: 100px;
+}
+#footer .sous-header .social:hover {
+  border: 1px dashed rgba(175, 162, 162, 0.78);
+  background-color: rgba(202, 189, 189, 0.09);
+  opacity: 0.7;
+  filter: alpha(opacity=70);
+}
+#footer .sous-header .social span {
+  color: #E9EFF5;
+}
+#footer .sous-header .love {
+  font-size: 20px;
+}
+@media (max-width: 991px) {
+  #footer .sous-header .footer_border:last-child {
+    border-right: none;
+  }
+}
+@media (min-width: 480px) and (max-width: 767px) {
+  #footer .sous-header p.pull-left {
+    float: none!important;
+  }
+}
+@media (max-width: 480px) {
+  #footer .sous-header .footer_border {
+    border-bottom: thin dotted rgba(175, 162, 162, 0.78);
+    border-right: none;
+    min-height: 100px;
+  }
+  #footer .sous-header .counts > div {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  #footer .sous-header .counts > div .social .fa {
+    font-size: 2.5em;
+  }
+  #footer .sous-header .sites {
+    margin-top: 15px;
+  }
+  #footer .sous-header hr {
+    margin-top: 0;
+  }
+}

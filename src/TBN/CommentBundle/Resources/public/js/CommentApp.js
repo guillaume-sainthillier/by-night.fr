@@ -98,7 +98,7 @@ function init_list_reponses(commentaire)
             block_reponse.load($(this).data("url"), function ()
             {
                 init_load_more_comments(block_reponse);
-                $(this).slideDown(options.animation_duration, function ()
+                $(this).show(options.animation_duration, function ()
                 {
                     $(this).addClass(options.css_has_showed_reponses);
                 });
@@ -113,7 +113,7 @@ function init_list_reponses(commentaire)
         {
             if (!block_reponse.hasClass(options.css_has_showed_reponses)) //Les réponses ne sont pas affichées, on les affiche donc
             {
-                block_reponse.slideDown(options.animation_duration, function ()
+                block_reponse.show(options.animation_duration, function ()
                 {
                     $(this).addClass(options.css_has_showed_reponses);
                     icon_list
@@ -122,7 +122,7 @@ function init_list_reponses(commentaire)
                 });
             } else
             {
-                block_reponse.slideUp(options.animation_duration, function ()
+                block_reponse.hide(options.animation_duration, function ()
                 {
                     $(this).removeClass(options.css_has_showed_reponses);
                     icon_list
@@ -146,7 +146,7 @@ function init_load_new_reponse(commentaires)
         {
             App.initComponents(block_post_reponse); //On bind les liens connexion/inscription
             init_new_reponse(block_post_reponse); //On bind le formulaire d'envoi d'une nouvelle réponse
-            $(this).slideDown(options.animation_duration, function ()
+            $(this).show(options.animation_duration, function ()
             {
                 link.text(link.data("text"));
             });
@@ -178,7 +178,7 @@ function init_new_reponse(block_post_reponse)
             if (retour.success) //La réponse est envoyée
             {
                 block_reponses.prepend(retour.comment); //On ajoute la réponse dans la liste
-                main_block_reponses.find(options.css_block_post_reponse).slideUp(options.animation_duration);
+                main_block_reponses.find(options.css_block_post_reponse).hide(options.animation_duration);
                 maj_nb_reponses(main_block_reponses, retour.nb_reponses); //On met à jour le nombre de réponses
                 var link = main_block_reponses.find(options.css_link_repondre);
 
@@ -218,7 +218,7 @@ function init_new_comment(commentaire)
 
                 if (retour.success) //Commentaire bien envoyé
                 {
-                    block_poster_commentaire.slideUp(options.animation_duration);
+                    block_poster_commentaire.hide(options.animation_duration);
                     block_commentaires.prepend(retour.comment); //On ajoute le commentaire à la liste
                     main_block_commentaire.find(options.css_heading_commentaires).replaceWith(retour.header); //On remplace le heading par le nouveau
 

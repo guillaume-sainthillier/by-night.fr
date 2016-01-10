@@ -14,6 +14,7 @@
             <ul class="nav navbar-nav">
                 <li>
                     <a href="{{ path('tbn_agenda_agenda') }}" title="L'agenda des sorties, c'est par ici !"><strong>Agenda</strong></a>
+                </li>
                 <li>
                     <a title="Créez votre événement en 1 clic !" href="{{ path('tbn_agenda_new') }}">Créer un événement</a>
                 </li>
@@ -25,12 +26,10 @@
             </ul>
             
             <form action="{{ path('tbn_search_query') }}" method="GET" class="navbar-form navbar-left" role="search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autofocus autocomplete="off">
-                    <span class="input-group-btn">
-                         <button class="btn btn-primary btn-normal" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-                    </span>
+                <div class="form-group">
+                    <input type="text" class="form-control col-md-8" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
                 </div>
+                <button class="btn btn-raised btn-primary" type="submit"><i class="fa fa-search"></i></button>
             </form>
     
             <ul class="nav navbar-nav navbar-right">
@@ -45,16 +44,17 @@
                 </li>
                 {% endif %}
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            {{ app.user.username }} 
+                    <li class="dropdown profile">
+                        <a href="#" title="{{ app.user.username }} " class="dropdown-toggle" data-toggle="dropdown">
+                            {% set imageURL = app.user.profileDefault ? app.user.profileDefault : 'img/empty_user.png'|imagine_filter('thumb_user') %}
+                            <img class="img-circle" height="30" width="30" src="{{ imageURL }}" alt="Mon profil" /> 
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a title="Accéder à mon compte" href="{{ path('fos_user_profile_show') }}"><i class="fa fa-cogs"></i> Mon compte</a></li>                    
                             <li><a title="Accéder à mon profil public" href="{{ path('tbn_user_details', {'username' : app.user.username}) }}"><i class="fa fa-user"></i> Mon profil</a></li>                    
                             <li class="divider"></li>
-                            <li><a href="{{ path('fos_user_security_logout') }}">Déconnexion</a></li>                                     
+                            <li><a href="{{ path('fos_user_security_logout') }}"><i class="fa fa-power-off"></i> Déconnexion</a></li>                                     
                         </ul>
                     </li>                  
                 {% else %}

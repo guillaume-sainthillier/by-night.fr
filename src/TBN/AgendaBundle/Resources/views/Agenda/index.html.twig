@@ -11,7 +11,7 @@
         <div class="wrapper">
             <h1 class="titrebloc text-center">{{ block('titre_agenda') }}</h1>
             <div class="row">
-                <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-lg-offset-3 col-lg-6 panel panel-primary search_container img-rounded">
+                <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-lg-offset-3 col-lg-6 no-margin-form panel panel-primary search_container img-rounded">
                     <form name="tbn_search_agenda" role="search" action="{{ path('tbn_agenda_agenda') }}" method="POST">
                         <div class="row">
                             <div class="col-md-8">
@@ -29,7 +29,7 @@
                                 </select>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-block btn-lg btn-warning search"><i class="fa fa-search"></i> Chercher</button>
+                        <button type="submit" class="btn btn-raised btn-block btn-lg btn-warning search"><i class="fa fa-search"></i> Chercher</button>
                     </form>
                 </div>
             </div>
@@ -49,7 +49,7 @@
             </p>    
             <br />
             <a href="{{ path('tbn_agenda_agenda') }}" 
-               class="btn btn-lg btn-block btn-primary">
+               class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i> 
                 Agenda des événéments<span class="hidden-xs hidden-sm">, concerts, spectacles à {{ site.nom }}</span>
             </a>
@@ -99,7 +99,7 @@
                     'title': 'Exposition',
                     'icon': 'flaticon-theater1',
                     'color': 'darkblue',
-                    'link': path('tbn_agenda_sortir', {'type': 'concert'}),
+                    'link': path('tbn_agenda_sortir', {'type': 'exposition'}),
                     'title_link': 'Les expos à ' ~ site.nom,
                     'text': "Les <strong>expos à " ~ site.nom ~ "</strong> sont nombreuses ! Envie d'aller visiter les 
                     <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir 
@@ -119,10 +119,10 @@
                 <div class="col-sm-6 col-md-4">
                     <div class="panel panel-primary">
                         <div class="panel-body text-center">
-                            <span class="{{ content.icon }} icon big-icon icon-{{ content.color }}"></span>
+                            <span class="icon big-icon icon-{{ content.color }}"><span class="{{ content.icon }}"></span></span>
                             <h3 class="text-primary">{{ content.title }}</h3>
                             <p>{{ content.text|raw }}</p>
-                            <a class="btn btn-flat btn-block btn-primary" 
+                            <a class="btn btn-flat btn-block btn-info" 
                                href="{{ content.link }}" 
                                title="{{ content.title_link }}">
                                 <i class="fa fa-chevron-right"></i> 
@@ -146,8 +146,10 @@
                     <hr />
                 {% endif %}
             {% endfor %}
+            <br />
+            <br />
             <a href="{{ path('tbn_agenda_agenda') }}" 
-               class="btn btn-lg btn-block btn-primary">
+               class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i> 
                 Tous les événéments<span class="hidden-xs hidden-sm">, concerts, spectacles à {{ site.nom }}</span>
             </a>
@@ -158,24 +160,9 @@
 {% block start_container -%}<div>{% endblock %}
 
 {% block css_agenda %}
-    {% stylesheets 
-        'bower/dropdown.js/jquery.dropdown.css'
-        'bundles/tbnagenda/css/flaticon.css'
-        'bundles/tbnagenda/css/liste.css'
-        'bundles/tbnagenda/css/index.css'
-        output='prod/css/evenements/index.css'
-    %}
-        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-    {% endstylesheets %}
+<link rel="stylesheet" href="{{ asset('prod/evenements/css/index.min.css') }}" type="text/css" >
 {% endblock %}
 
 {% block js_agenda %}
-    {% javascripts 
-        'bower/jquery-unveil/jquery.unveil.min.js'
-        'bower/dropdown.js/jquery.dropdown.js'
-        '@TBNAgendaBundle/Resources/public/js/index.js'
-        output='prod/js/evenements/index.js'
-    %}
-        <script src="{{ asset_url }}" type="text/javascript"></script>
-    {% endjavascripts %}
+<script src="{{ asset('prod/evenements/js/index.min.js') }}" type="text/javascript"></script>
 {% endblock %}

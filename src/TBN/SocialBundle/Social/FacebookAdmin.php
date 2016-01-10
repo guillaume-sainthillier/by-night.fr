@@ -253,13 +253,15 @@ class FacebookAdmin extends FacebookEvents {
                 foreach($current_keywords as $keyword)
                 {
                     //Construction des requêtes du batch
-                    $requests[]	= $this->client->request('GET', '/search?', [
+                    $request = $this->client->request('GET', '/search?', [
                         'q'         => $keyword,
                         'type'	    => 'event',
                         'since'	    => $since->format('Y-m-d'),
                         'fields'    => self::$MIN_EVENT_FIELDS,
                         'limit'	    => $limit
                     ], $this->siteInfo->getFacebookAccessToken());
+                    var_dump($request->getUrl(), $request->getParams());
+                    $requests[] = $request;
                 }
 
                 //Exécution du batch
@@ -341,36 +343,41 @@ class FacebookAdmin extends FacebookEvents {
 
     public function getEventStats($id_event)
     {
-	$this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+        $nbParticipations = 0;
+        $nbInterets = 0;
+        $participations = [];
+        $interets = [];
         
-        $request	= $this->client->sendRequest('GET', '/' .$id_event.'', [
-            'fields' => 'attending_count,maybe_count'
-        ]);
-	$graph          = $request->getGraphPage();
-      
-        $nbParticipations   = $graph->getField('attending_count');
-        $nbInterets         = $graph->getField('maybe_count');
+        try {
+            $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+        
+            $request	= $this->client->sendRequest('GET', '/' .$id_event.'', [
+                'fields' => 'attending_count,maybe_count'
+            ]);
+            $graph          = $request->getGraphPage();
 
-	$request	= $this->client->sendRequest('GET', '/' .$id_event.'/attending', [
-            'fields' => static::$ATTENDING_FIELDS,
-            'limit' => 1000
-        ]);
-	$graph		= $request->getGraphEdge();
-	$partipations	= $graph->all();
+            $nbParticipations   = $graph->getField('attending_count');
+            $nbInterets         = $graph->getField('maybe_count');
 
-	$request	= $this->client->sendRequest('GET', '/' .$id_event.'/maybe', [
-            'fields' => static::$ATTENDING_FIELDS,
-            'limit' => 1000
-        ]);
-	$graph		= $request->getGraphEdge();
-	$interets	= $graph->all();
+            $request	= $this->client->sendRequest('GET', '/' .$id_event.'/attending', [
+                'fields' => static::$ATTENDING_FIELDS,
+                'limit' => 1000
+            ]);
+            $graph		= $request->getGraphEdge();
+            $partipations	= $graph->all();
+
+            $request	= $this->client->sendRequest('GET', '/' .$id_event.'/maybe', [
+                'fields' => static::$ATTENDING_FIELDS,
+                'limit' => 1000
+            ]);
+            $graph		= $request->getGraphEdge();
+            $interets	= $graph->all();
+        } catch (FacebookSDKException $ex) {}
 
 	return [
             'nbParticipations'  => $nbParticipations,
             'nbInterets'        => $nbInterets,
-	    'participations'	=> count($partipations),
-	    'interets'		=> count($interets),
-            'membres'           => array_merge($partipations, $interets)
+            'membres'           => array_merge($participations, $interets)
 	];
     }
 

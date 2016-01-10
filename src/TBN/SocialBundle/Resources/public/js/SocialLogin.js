@@ -32,7 +32,7 @@ var SocialLogin = {
 
                 $(ck).prop('checked', true);
                 bloc_config.find(".username").text(user.username);
-                bloc_config.find(".when_on").slideDown("normal", function ()
+                bloc_config.find(".when_on").show("normal", function ()
                 {
                     $(this).removeClass("hidden");
                 });
@@ -86,7 +86,7 @@ var SocialLogin = {
         var bloc_config = $(ck).closest(".bloc_config");
 
         $(ck).prop("checked", false);
-        bloc_config.find(".when_on").slideUp("normal", function ()
+        bloc_config.find(".when_on").hide("normal", function ()
         {
             $(this).addClass("hidden");
         });

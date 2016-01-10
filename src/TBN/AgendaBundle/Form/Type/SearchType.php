@@ -27,7 +27,7 @@ class SearchType extends AbstractType
             ->add("du", "date", [
                 "required" => true,
                 "label" => "Du",
-                'label_attr' => array('class' => 'col-sm-3 control-label'),
+                'label_attr' => array('class' => 'col-sm-6 control-label'),
                 "widget" => "single_text",
                 "format" => "dd/MM/yyyy",
                 "attr" => ["data-date-format" => "dd/mm/yyyy"]
@@ -42,7 +42,7 @@ class SearchType extends AbstractType
             ])
             ->add("type_manifestation", "choice", [
                 "choices"  => $this->types_manifesation,
-                "label"    => 'Genre',
+                "label"    => 'Quoi ?',
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "multiple" => true,
                 "expanded" => false,
@@ -69,7 +69,7 @@ class SearchType extends AbstractType
                 "label"    => "Mot-clés",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "attr" => ["class" => "form-control","placeholder" => "Quel événement cherchez-vous ?"]])
-            ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-lg btn-primary btn-block"]])
+            ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-raised btn-lg btn-primary btn-block"]])
         ;
     }
 

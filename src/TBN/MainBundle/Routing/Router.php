@@ -42,7 +42,7 @@ class Router extends BaseRouter
      *
      * @throws \InvalidArgumentException When the route doesn't exists
      */
-    public function generate($name, $parameters = [], $absolute = false)
+    public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
     {
         if(! $this->subdomain && $this->siteManager->getCurrentSite())
         {
@@ -54,13 +54,13 @@ class Router extends BaseRouter
             if($this->cache->contains($key) && !isset($parameters) && $this->subdomain) {
                 $parameters['subdomain'] = $this->subdomain;
             }
-            return parent::generate($name, $parameters, $absolute);
+            return parent::generate($name, $parameters, $referenceType);
         } catch (MissingMandatoryParametersException $e) {
             $this->cache->save($key, true);
             if($this->subdomain)
             {
                 $parameters["subdomain"] = $this->subdomain;
-                return parent::generate($name, $parameters, $absolute);
+                return parent::generate($name, $parameters, $referenceType);
             }
 
             throw $e;

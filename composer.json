@@ -4,19 +4,22 @@
     "type": "project",
     "description": "The \"Symfony Standard Edition\" distribution",
     "autoload": {
-        "psr-0": { "": "src/", "SymfonyStandard": "app/" }
+        "psr-4": { "": "src/" },
+        "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
     },
     "require": {
         "php": ">=5.3.9",
-        "symfony/symfony": "2.7.*",
+        "symfony/symfony": "2.8.*",
         "doctrine/orm": "^2.4.8",
         "doctrine/doctrine-bundle": "~1.4",
-        "symfony/assetic-bundle": "~2.3",
         "symfony/swiftmailer-bundle": "~2.3",
         "symfony/monolog-bundle": "~2.4",
-        "sensio/distribution-bundle": "~4.0",
+        "sensio/distribution-bundle": "~5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
+        "symfony/assetic-bundle" : "2.*",
+        "sensio/generator-bundle" : "dev-master",
+        "doctrine/doctrine-cache-bundle": "^1.2",
         "twig/extensions": "1.*",
         "stof/doctrine-extensions-bundle": "dev-master",
         "friendsofsymfony/user-bundle": "~2.0@dev",
@@ -27,7 +30,6 @@
         "presta/sitemap-bundle": "dev-master",
         "whiteoctober/breadcrumbs-bundle": "dev-master",
         "liip/imagine-bundle":"dev-master",
-        "doctrine/doctrine-cache-bundle": "dev-master",
         "egeloen/google-map-bundle": "~2.1",
         "willdurand/geocoder": "2.*",
         "jms/serializer-bundle" : "0.*",
@@ -36,16 +38,13 @@
         "social-links/social-links": "dev-master"
     },
     "scripts": {
-        "post-root-package-install": [
-            "SymfonyStandard\\Composer::hookRootPackageInstall"
-        ],
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -53,7 +52,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"  
         ]
     },
     "config": {
@@ -67,7 +66,7 @@
             "file": "app/config/parameters.yml"
         },
         "branch-alias": {
-            "dev-master": "2.6-dev"
+            "dev-master": "2.8-dev"
         }
     }
 }

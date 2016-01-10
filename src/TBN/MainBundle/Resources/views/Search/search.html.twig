@@ -54,19 +54,9 @@
 {% endblock %}
 
 {% block js_agenda %}
-    {% javascripts 
-        'bower/dropdown.js/jquery.dropdown.js'
-        output='prod/js/recherche/scripts.js'
-    %}
-        <script src="{{ asset_url }}" type="text/javascript"></script>
-    {% endjavascripts %}
+<script src="{{ asset('prod/search/js/search.min.js') }}" type="text/javascript"></script>
 {% endblock %}
 
 {% block css_agenda %}
-    {% stylesheets 
-        'bower/dropdown.js/jquery.dropdown.css'
-        output='prod/css/recherche/style.css'
-    %}
-        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-    {% endstylesheets %}
+<link rel="stylesheet" href="{{ asset('prod/search/css/search.min.css') }}" type="text/css" >
 {% endblock %}

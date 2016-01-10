@@ -23,74 +23,71 @@
     <br />
     <br />
     <div class="row text-center">
-        <div class="col-xs-4">
+        <div class="col-xs-4 preserve">
             <a class="social-facebook big-social tbn_tooltip" title="Inscrivez-vous avec Facebook" href="{{ hwi_oauth_login_url('facebook') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 preserve">
             <a class="social-twitter big-social tbn_tooltip" title="Inscrivez-vous avec Twitter" href="{{ hwi_oauth_login_url('twitter') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 preserve">
             <a class="social-googleplus big-social tbn_tooltip" title="Inscrivez-vous avec Google+" href="{{ hwi_oauth_login_url('google') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
     </div>
     <br />
     <br />
 
-    <form action="{{ path('fos_user_registration_register') }}" method="post" class="fos_user_registration_register">
-        {% if error is defined and error %}
-            <div class="alert alert-danger">
-                <i class="fa fa-warning"></i> 
-                {{ error }}
+    <div class="no-margin-form">
+        <form action="{{ path('fos_user_registration_register') }}" method="post" class="fos_user_registration_register">
+            {% if error is defined and error %}
+                <div class="alert alert-danger">
+                    <i class="fa fa-warning"></i> 
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <div class="form-group form-group-lg">
+                {{ form_label(form.username) }}
+                {{ form_errors(form.username) }}
+                {{ form_widget(form.username, { 'attr': { 'placeholder': '2 caractères au minimum, sans espace'} } ) }}
             </div>
-        {% endif %}
-        
-        <div class="form-group">
-            {{ form_label(form.username) }}
-            {{ form_errors(form.username) }}
-            {{ form_widget(form.username, { 'attr': { 'placeholder': '2 caractères minimum, sans espace', 'class': 'floating-label'} } ) }}
-        </div>
 
-        <div class="form-group">
-            {{ form_label(form.email) }}
-            {{ form_errors(form.email) }}
-            {{ form_widget(form.email, { 'attr': { 'placeholder': 'Saisissez une adresse mail valide', 'class': 'floating-label'} } ) }}
-        </div>
+            <div class="form-group form-group-lg">
+                {{ form_label(form.email) }}
+                {{ form_errors(form.email) }}
+                {{ form_widget(form.email, { 'attr': { 'placeholder': 'Veuillez saisir une adresse mail valide'} } ) }}
+            </div>
 
-        <div class="form-group">
-            {{ form_label(form.plainPassword.first) }}
-            {{ form_errors(form.plainPassword.first) }}
-            {{ form_widget(form.plainPassword.first, { 'attr': { 'placeholder': 'Soyez malin et adoptez un mot de passe sûr', 'class': 'floating-label'} } ) }}
-        </div>
+            <div class="form-group form-group-lg">
+                {{ form_label(form.plainPassword.first) }}
+                {{ form_errors(form.plainPassword.first) }}
+                {{ form_widget(form.plainPassword.first, { 'attr': { 'placeholder': 'Soyez malin et adoptez un mot de passe sûr'} } ) }}
+            </div>
 
-        <div class="form-group">
-            {{ form_label(form.plainPassword.second) }}
-            {{ form_errors(form.plainPassword.second) }}
-            {{ form_widget(form.plainPassword.second, { 'attr': { 'placeholder': 'Saisissez à nouveau votre mot de passe', 'class': 'floating-label'} } ) }}
-        </div>
+            <div class="form-group form-group-lg">
+                {{ form_label(form.plainPassword.second) }}
+                {{ form_errors(form.plainPassword.second) }}
+                {{ form_widget(form.plainPassword.second, { 'attr': { 'placeholder': 'Saisissez à nouveau votre mot de passe'} } ) }}
+            </div>
 
 
-        {% if not partial %}
-            {% include "TBNUserBundle:Registration:block_buttons.html.twig" %}
-        {% endif %}
+            {% if not partial %}
+                {% include "TBNUserBundle:Registration:block_buttons.html.twig" %}
+            {% endif %}
 
-        {{ form_rest(form) }}
+            {{ form_rest(form) }}
 
-        <br />
-        <br />
-        <p>
-            Vous avez déjà un compte? 
-            <a class="connexion" href="{{ path('fos_user_security_login') }}" title="Connectez-vous sur {{ site.nom }} By Night">
-                Connectez-vous!
-            </a>
-        </p>
-    </form>                
+            <br />
+            <p>
+                Vous avez déjà un compte? 
+                <a class="connexion" href="{{ path('fos_user_security_login') }}" title="Connectez-vous sur {{ site.nom }} By Night">
+                    Connectez-vous!
+                </a>
+            </p>
+        </form>
+    </div>
 {% endblock %}
     
 
-{% block form_action_espace %}
-    {{ path('fos_user_registration_register') }}
-{% endblock %}
+{% block form_action_espace %}{{ path('fos_user_registration_register') }}{% endblock %}
 
-{% block modal_buttons_espace %}
-    {% include "TBNUserBundle:Registration:block_buttons.html.twig" %}
-{% endblock %}
+{% block modal_buttons_espace %}{% include "TBNUserBundle:Registration:block_buttons.html.twig" %}{% endblock %}

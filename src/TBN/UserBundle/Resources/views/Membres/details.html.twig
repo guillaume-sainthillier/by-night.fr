@@ -155,24 +155,8 @@
 {% endblock %}
     
 {% block css_membre %}
-    {% stylesheets 
-        'bower/morris.js/morris.css'
-        'bundles/tbnuser/css/membre.css'
-
-        output='prod/css/membres/details.css'
-    %}
-        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-    {% endstylesheets %}
-{% endblock %}
+<link rel="stylesheet" href="{{ asset('prod/membres/css/detail.min.css') }}" type="text/css" >{% endblock %}
 
 {% block js_membre %}
-    {% javascripts 
-        'bower/raphael/raphael-min.js'
-        'bower/morris.js/morris.min.js'
-        '@TBNUserBundle/Resources/public/js/UserDetails.js'
-
-        output='prod/js/membres/details.js'
-    %}
-        <script src="{{ asset_url }}" type="text/javascript"></script>
-    {% endjavascripts %}
+<script src="{{ asset('prod/membres/js/detail.min.js') }}" type="text/javascript"></script>
 {% endblock %}

@@ -1,5 +1,8 @@
 {% extends "TBNAgendaBundle::layout-fluid.html.twig" %}
 
+{% block start_container %}<div itemscope itemtype="http://schema.org/Event">{{ parent() }}{% endblock %}
+{% block end_container %}{{ parent() }}</div>{% endblock %}
+
 {% set nomSoiree = soiree.nom %}
 {% if soiree.modificationDerniereMinute %}
     {% set nomSoiree = '[' ~ soiree.modificationDerniereMinute ~ '] ' ~ soiree.nom %}
@@ -48,8 +51,7 @@
 {% block metas %}
     <link rel="image_src" href="{{ original }}" />
     <link rel="thumbnail" href="{{ thumb }}" />
-    <meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />
-    
+    <meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />    
     <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ site.facebookIdPage }}" />
     {% if soiree.user %}
         <meta property="article:author" content="{{ url('tbn_user_details', {'username': soiree.user.usernameCanonical}) }}" />
@@ -76,7 +78,7 @@
     Cet événément n'est pas encore disponible publiquement. Merci de patienter encore un peu !
 </div>
 {% else %}
-<div class="panel panel-default details_evenement" itemscope itemtype="http://schema.org/Event">
+<div class="panel panel-default details_evenement">
     <div class="panel-heading bg-white">
         <h3 class="modal-title">
             <i class="pull-right fa fa-calendar text-primary"></i>
@@ -97,9 +99,7 @@
     </div>
     <div class="panel-body">
         <meta itemprop="name" content="{{ nomSoiree }}" />
-        <meta itemprop="url" content="{{ path('tbn_agenda_details',{'slug' : soiree.slug} ) }}" />
-        <meta itemprop="image" content="{{ original }}" />
-
+        
         {% if soiree.modificationDerniereMinute %}
             <div class="alert alert-warning">
                 <i class="fa fa-warning"></i>
@@ -127,7 +127,7 @@
                             {% endif %}
 
                             {% if place.rue or place.ville or place.codePostal %}
-                                <div itemprop="address" itemscope itemtype="http://schema.org/Address">
+                                <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
                                     {% if place.rue %}
                                         <div itemprop="streetAddress">{{ place.rue }}</div>
                                     {% endif %}
@@ -142,10 +142,6 @@
                                                 <span itemprop="addressLocality">{{ place.ville }}</span>
                                             {% endif %}
                                         </div>                                    
-                                    {% endif %}
-
-                                    {% if readableAdresse %}
-                                        <meta itemprop="hasMap" content="https://www.google.com/maps/?q={{ readableAdresse|raw|url_encode }}&zoom=16" />
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -267,12 +263,7 @@
 {% endblock %}
 
 {% block css_agenda %}
-    {% stylesheets 
-        'bundles/tbnagenda/css/details.css'
-        output='prod/css/evenement/details.css'
-    %}
-        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-    {% endstylesheets %}
+<link rel="stylesheet" href="{{ asset('prod/evenements/css/details.min.css') }}" type="text/css" >
 {% endblock %}
         
 {% block head_js_agenda %}
@@ -281,11 +272,5 @@
 {% endblock %}
     
 {% block js_agenda %}
-    {% javascripts 
-        '@TBNCommentBundle/Resources/public/js/CommentApp.js'
-        '@TBNAgendaBundle/Resources/public/js/details.js'
-        output='prod/js/evenements/details.js'
-    %}
-        <script src="{{ asset_url }}" type="text/javascript"></script>
-    {% endjavascripts %}
+<script src="{{ asset('prod/evenements/js/details.min.js') }}" type="text/javascript"></script>
 {% endblock %}

@@ -17,7 +17,7 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="row bloc">
                 <div class="col-sm-4 text-center">
-                    <i class="fa fa-5x fa-cogs icon even"></i>
+                    <span class="icon even"><i class="fa fa-5x fa-cogs"></i></span>
                 </div>
                 <div class="col-sm-8">
                     <h3 class="label even">Configurer</h3>
@@ -35,7 +35,7 @@
             <hr />
             <div class="row bloc">
                 <div class="col-sm-4 text-center">
-                    <i class="fa fa-5x fa-bullhorn icon odd"></i>
+                    <span class="icon odd"><i class="fa fa-5x fa-bullhorn"></i></span>
                 </div>
                 <div class="col-sm-8">
                     <h3 class="label odd">Communiquer</h3>
@@ -51,7 +51,7 @@
             <hr />
             <div class="row bloc">
                 <div class="col-sm-4 text-center">
-                    <i class="fa fa-5x fa-eye icon even"></i>
+                    <span class="icon even"><i class="fa fa-5x fa-eye"></i></span>
                 </div>
                 <div class="col-sm-8">
                     <h3 class="label even">Contrôler</h3>
@@ -63,7 +63,7 @@
             <hr />
             <div class="row bloc">
                 <div class="col-sm-4 text-center">
-                    <i class="fa fa-5x fa-bar-chart-o icon odd"></i>
+                    <span class="icon odd"><i class="fa fa-5x fa-bar-chart-o"></i></span>
                 </div>
                 <div class="col-sm-8">
                     <h3 class="label odd">Analyser</h3>
@@ -86,11 +86,5 @@
 {% endblock %}
 
 {% block css_agenda %}
-    {% stylesheets 
-        'bundles/tbnagenda/css/plus.css'
-
-        output='prod/css/en-savoir-plus.css'
-    %}
-        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-    {% endstylesheets %}
+<link rel="stylesheet" href="{{ asset('prod/plus/css/style.min.css') }}" type="text/css">
 {% endblock %}

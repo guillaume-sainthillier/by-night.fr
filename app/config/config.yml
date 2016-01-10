@@ -22,11 +22,13 @@ framework:
 #        assets_version_format: %%2$s/%%1$s
     default_locale:  "%locale%"
     trusted_proxies: ~
+    trusted_hosts:   ~
     session:
         handler_id: session.handler.native_file
-        save_path: "%kernel.root_dir%/sessions"
+        save_path: "%kernel.root_dir%/../var/sessions/%kernel.environment%"
     fragments:       { path: /_fragment }
     http_method_override: true
+    assets: ~
     
 doctrine_cache:
     providers:
@@ -45,8 +47,7 @@ doctrine_cache:
 twig:
     debug:            %kernel.debug%
     strict_variables: %kernel.debug%
-    form:
-        resources:
+    form_themes:
             - ':Form:fields.html.twig'
     globals:
         menu: "@white_october_breadcrumbs"
@@ -55,20 +56,6 @@ twig:
         facebook: "@tbn.social.facebook"
         google: "@tbn.social.google"
         googleMapKey: %google_map_key%
-
-# Assetic Configuration
-assetic:
-    debug:          %kernel.debug%
-    use_controller: false
-
-    java: 'java'
-    filters:
-        cssrewrite:
-            apply_to: "\.css$"
-        yui_css:
-            jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar
-        yui_js:
-            jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar
 
 # Doctrine Configuration
 doctrine:
@@ -84,6 +71,7 @@ doctrine:
 
     orm:
         auto_generate_proxy_classes: %kernel.debug%
+        naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
 
 # Swiftmailer Configuration
@@ -103,7 +91,7 @@ stof_doctrine_extensions:
 
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
-    firewall_name: main
+    firewall_name: main  
     user_class: TBN\UserBundle\Entity\User
     profile:
         form:
@@ -122,7 +110,7 @@ hwi_oauth:
         account_connector: my_user_provider
         confirmation: false
     # name of the firewall in which this bundle is active, this setting MUST be set
-    firewall_name: main
+    firewall_names: [main]
     http_client:
         timeout:       10 # Time in seconds, after library will shutdown request, by default: 5
         verify_peer:   false # Setting allowing you to turn off SSL verification, by default: true

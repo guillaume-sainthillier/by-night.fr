@@ -13,16 +13,17 @@ monolog:
             handler:      grouped
         grouped:
             type:    group
-            members: [streamed, buffered]
-        buffered:
-            type:    buffer
-            handler: swift
-        swift:
-            type:       swift_mailer
-            from_email: guillaume.sainthillier@gmail.com
-            to_email:   guillaume.sainthillier@gmail.com
-            subject:    Erreur sur By Night
-            level:      error
+            #members: [streamed, buffered]
+            members: [streamed]
+#        buffered:
+#            type:    buffer
+#            handler: swift
+#        swift:
+#            type:       swift_mailer
+#            from_email: guillaume.sainthillier@gmail.com
+#            to_email:   guillaume.sainthillier@gmail.com
+#            subject:    Erreur sur By Night
+#            level:      error
         streamed:
             type:  stream
             path:  %kernel.logs_dir%/%kernel.environment%.log

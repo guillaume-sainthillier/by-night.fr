@@ -25,13 +25,13 @@
     <br />
     <br />
     <div class="row text-center">
-        <div class="col-xs-4">
+        <div class="col-xs-4 preserve">
             <a class="social-facebook big-social tbn_tooltip" title="Connectez vous avec Facebook" href="{{ hwi_oauth_login_url('facebook') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 preserve">
             <a class="social-twitter big-social tbn_tooltip" title="Connectez vous avec Twitter" href="{{ hwi_oauth_login_url('twitter') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 preserve">
             <a class="social-googleplus big-social tbn_tooltip" title="Connectez vous avec Google+" href="{{ hwi_oauth_login_url('google') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
     </div>
@@ -47,12 +47,12 @@
 
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
 
-        <div class="form-group">
-            <label for="username">{{ 'security.login.username'|trans }}</label>
+        <div class="form-group form-group-lg label-static">
+            <label for="username" class="control-label">{{ 'security.login.username'|trans }}</label>
             <input class="form-control" type="text" id="username" name="_username" value="{{ last_username }}" required="required" />
         </div>
 
-        <div class="form-group">
+        <div class="form-group form-group-lg label-static">
             <label for="password" class="control-label">{{ 'security.login.password'|trans }}</label>
             <input class="form-control" type="password" id="password" name="_password" required="required" />
         </div>

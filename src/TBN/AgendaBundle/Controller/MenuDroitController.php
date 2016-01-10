@@ -78,7 +78,6 @@ class MenuDroitController extends Controller {
     }
 
     public function tendancesAction(Agenda $soiree) {
-        $this->getFBStatsEvent($soiree);
 
         $nbItems    = 30;
         $membres    = $this->getFBMembres($soiree, 1, $nbItems);

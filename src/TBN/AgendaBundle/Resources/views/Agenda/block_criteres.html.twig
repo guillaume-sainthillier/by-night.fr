@@ -11,9 +11,9 @@
         <div class="row main_criteres">
             <div class="col-md-4 col-xs-6">
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">Quand ?</label>
+                    <label for="shorcuts_date" class="col-sm-4 control-label">Quand ?</label>
                     <div class="col-sm-8">
-                        <select class="form-control shorcuts_date" placeholder="Raccourcis">
+                        <select id="shorcuts_date" class="form-control shorcuts_date" placeholder="Raccourcis">
                             <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">Aujourd'hui</option>
                             <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">Ce Week End</option>
                             <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">Cette semaine</option>
@@ -35,7 +35,7 @@
                 {{ form_widget(form.chercher) }}
             </div>
         </div>
-        {% if isPost and (search.lieux or search.commune or search.term) %}
+        {% if isPost and (search.au or search.lieux or search.commune or search.term) %}
             {% set options = {hiddenClass: '', iconClass: 'fa-chevron-up'} %}
         {% else %}
             {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}            
@@ -51,24 +51,20 @@
         </div>        
         <div class="{{ options.hiddenClass }} criteres">
             <div class="row">
-                <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                                {{ form_label(form.du) }}
-                                <div class="col-sm-9">
-                                    {{ form_widget(form.du) }}
-                                    {{ form_errors(form.du) }}
-                                </div>
-                            </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        {{ form_label(form.du) }}
+                        <div class="col-sm-5">
+                            {{ form_widget(form.du) }}
+                            {{ form_errors(form.du) }}
                         </div>
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                                {{ form_label(form.au) }}
-                                <div class="col-sm-9">
-                                    {{ form_widget(form.au) }}
-                                </div>
-                            </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        {{ form_label(form.au) }}
+                        <div class="col-sm-5">
+                            {{ form_widget(form.au) }}
                         </div>
                     </div>
                 </div>

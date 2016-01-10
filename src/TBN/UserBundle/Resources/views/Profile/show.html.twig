@@ -17,20 +17,9 @@
 {% endblock body_espace %}
 
 {% block css_espace %}
-    {% stylesheets 
-        'bundles/tbnsocial/css/social_login.css'
-
-        output='prod/css/espace-perso/login.css'
-    %}
-        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-    {% endstylesheets %}       
+<link rel="stylesheet" href="{{ asset('prod/espace-perso/login/css/login.min.css') }}" type="text/css" >
 {% endblock %}
 
 {% block js_espace %}
-    {% javascripts 
-        '@TBNSocialBundle/Resources/public/js/SocialLogin.js'
-        output='prod/js/espace-perso/login.js'
-    %}
-        <script src="{{ asset_url }}" type="text/javascript"></script>
-    {% endjavascripts %}
+<script src="{{ asset('prod/espace-perso/login/js/login.min.js') }}" type="text/javascript"></script>
 {% endblock %}

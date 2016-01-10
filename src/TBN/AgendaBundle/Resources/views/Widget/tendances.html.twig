@@ -5,15 +5,15 @@
 {% block icone %}fa-line-chart{% endblock %}
 {% block body %}
     <div class="text-center">
-        <div class="btn-group buttons" data-toggle="buttons">
+        <div class="btn-group btn-group-justified" data-toggle="buttons">
             <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#"}}" 
-               class="btn participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.participer ? "btn-primary" : "btn-default"}}" 
+               class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.participer ? "btn-primary" : "btn-default"}}" 
                data-href="{{ path('tbn_user_participer', {'id' : soiree.id }) }}">
                 <i class="fa fa-check check{{ stats.participer ? '' : ' hidden' }}" ></i>
                 <input type="radio" name="interet" /> J'y serai
             </a>
             <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#"}}" 
-               class="btn interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.interet ? "btn-primary" : "btn-default"}}" 
+               class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.interet ? "btn-primary" : "btn-default"}}" 
                data-href="{{ path('tbn_user_interesser', {'id' : soiree.id }) }}">
                 <i class="fa fa-check check{{ stats.interet ? '' : ' hidden' }}" ></i>
                 <input type="radio" name="interet" /> Ça m'interesse

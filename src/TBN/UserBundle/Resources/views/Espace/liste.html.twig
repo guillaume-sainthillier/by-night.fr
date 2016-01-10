@@ -73,12 +73,6 @@
 {% endif %}
 {%- endblock %}
 
-
 {% block js_espace %}
-    {% javascripts 
-        '@TBNUserBundle/Resources/public/js/ListEvents.js'
-        output='prod/js/espace-perso/evenements/liste.js'
-    %}
-    <script src="{{ asset_url }}" type="text/javascript"></script>
-    {% endjavascripts %}
+<script src="{{ asset('prod/espace-perso/evenements/js/liste.min.js') }}" type="text/javascript"></script>
 {% endblock %}

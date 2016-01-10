@@ -5,7 +5,7 @@ namespace TBN\UserBundle\SearchRepository;
 use FOS\ElasticaBundle\Repository;
 use TBN\MainBundle\Entity\Site;
 use Elastica\Filter\Term;
-use Elastica\Filter\Bool;
+use Elastica\Filter\BoolFilter;
 use Elastica\Query;
 
 use Elastica\Query\Filtered;
@@ -20,7 +20,7 @@ class UserRepository extends Repository {
     public function findWithSearch(Site $site, $q) {
 	
 	//Filtres
-	$filter = new Bool;
+	$filter = new BoolFilter;
 	$filter->addMust(
             new Term(['site.id' => $site->getId()])
         );

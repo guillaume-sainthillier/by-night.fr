@@ -25,20 +25,20 @@ services:
     tbn.collections:
         class: TBN\MainBundle\Form\Extension\CollectionExtension
         tags:
-            - { name: form.type_extension, alias: collection }
+            - { name: form.type_extension, extended_type: collection }
     
     #Surcouche globale des formulaires
     tbn.forms:
         class: TBN\MainBundle\Form\Extension\WidgetFormTypeExtension
         tags:
-            - { name: form.type_extension, alias: form }
+            - { name: form.type_extension, extended_type: form }
     #Datepicker
     tbn.forms.datepicker:
         class: TBN\MainBundle\Form\Extension\DateTypeExtension
         tags:
-            - { name: form.type_extension, alias: date }
+            - { name: form.type_extension, extended_type: date }
     #Image
     tbn.image_type_extension:
         class: TBN\MainBundle\Form\Extension\ImageTypeExtension
         tags:
-            - { name: form.type_extension, alias: file }
+            - { name: form.type_extension, extended_type: file }

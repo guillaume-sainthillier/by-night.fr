@@ -3,7 +3,8 @@
 use Symfony\Component\ClassLoader\XcacheClassLoader;
 use Symfony\Component\HttpFoundation\Request;
 
-$loader = require_once __DIR__.'/../app/bootstrap.php.cache';
+$loader = require __DIR__.'/../app/autoload.php';
+include_once __DIR__.'/../app/bootstrap.php.cache';
 
 $XCacheLoader = new XcacheClassLoader(sha1(__FILE__), $loader);
 $loader->unregister();

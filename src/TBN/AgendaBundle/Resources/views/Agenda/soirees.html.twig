@@ -30,6 +30,7 @@
 {% if villeName is not null %}Sortir à {{ villeName|capitalize }}
 {% elseif placeName is not null %}Sortir à {{ placeName|capitalize }}
 {% elseif tag is not null %}{{ tag|capitalize }}
+{% elseif type == 'exposition' %}Expositions
 {% elseif type == 'concert' %}Concerts
 {% elseif type == 'famille' %}Sorties familles
 {% elseif type == 'spectacle' %}Spectacles

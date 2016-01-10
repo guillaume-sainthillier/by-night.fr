@@ -5,8 +5,6 @@ framework:
     router:
         resource: "%kernel.root_dir%/config/routing_dev.yml"
         strict_requirements: true
-    templating:
-        engines: ['twig']
     profiler: { only_exceptions: false }
 
 web_profiler:
@@ -26,19 +24,21 @@ monolog:
             type:  stream
             path:  %kernel.logs_dir%/%kernel.environment%.log
             level: warning
-        firephp:
-            type:  firephp
-            level: info
-        chromephp:
-            type:  chromephp
-            level: info
-
-assetic:
-    use_controller: true
-
-parameters:
-    domain: "local"
-    force_refresh:     false
-    
+            channels: ["!event"]
+        console:
+            type:   console
+            bubble: false
+            verbosity_levels:
+                VERBOSITY_VERBOSE: INFO
+                VERBOSITY_VERY_VERBOSE: DEBUG
+            channels: ["!doctrine"]
+        console_very_verbose:
+            type:   console
+            bubble: false
+            verbosity_levels:
+                VERBOSITY_VERBOSE: NOTICE
+                VERBOSITY_VERY_VERBOSE: NOTICE
+                VERBOSITY_DEBUG: DEBUG
+            channels: ["doctrine"]    
 #swiftmailer:
 #    delivery_address: me@example.com

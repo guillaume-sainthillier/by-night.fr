@@ -15,7 +15,6 @@ function init_soirees(selector)
 {
     init_pagination();
     init_unveil(selector);
-    init_fancybox(selector);
 }
 
 function load_infinite_scroll()
@@ -136,33 +135,6 @@ function init_shorcut_date()
         var selected = $(this).find("option:selected");
         $("#tbn_search_agenda_du").val(selected.data("date-debut") || "");
         $("#tbn_search_agenda_au").val(selected.data("date-fin") || "");
-    });
-}
-
-
-/**
- * Initialise les fancybox
- * @param {type} selecteur
- * @returns {undefined}
- */
-function init_fancybox(selecteur)
-{
-    $(".image-gallery", selecteur || document).each(function ()
-    {
-        $(this).fancybox({
-            helpers: {
-                title: {
-                    type: 'inside',
-                    position: 'top'
-                },
-                overlay: {
-                    locked: false
-                }
-            }
-        }).click(function ()
-        {
-            return false;
-        });
     });
 }
 

@@ -10,7 +10,7 @@ tbn_agenda_sortir:
     path: /agenda/sortir/{type}
     defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, tag: null, ville: null, slug: null}
     requirements:
-        type: concert|spectacle|etudiant|famille
+        type: concert|spectacle|etudiant|famille|exposition
         
 tbn_agenda_tags:
     path: /agenda/tag/{tag}

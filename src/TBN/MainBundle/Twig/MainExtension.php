@@ -63,12 +63,18 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
                 if(! $this->cache->contains($key))
                 {
                     $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
-                    $this->cache->save($key, $repo->findBy([], ["nom" => "ASC"], 0, 3), self::$LIFE_TIME_CACHE);
+                    $sites = $repo->findBy([], ["nom" => "ASC"], 5);
+                    $nomSites = [];
+                    foreach($sites as $site) {
+                        $nomSites[] = ['nom' => $site->getNom(), 'subdomain' => $site->getSubdomain()];
+                    }
+                    $this->cache->save($key, $nomSites);
                 }
-
+                $sites = $this->cache->fetch($key);
+                
                 $globals = [
                     "site"      => $this->siteManager->getCurrentSite(),
-                    "sites"     => $this->cache->fetch($key),
+                    "sites"     => $sites,
                     "siteInfo"  => $this->siteManager->getSiteInfo()
                 ];
 

@@ -1,1 +1,173 @@
-@media (min-width:992px){html body .nav>li>a{font-size:16px}}@media (min-width:768px) and (max-width:1199px){html body h1.titrebloc{font-size:50px}html body .navbar .navbar-brand{padding:15px 10px}html body .navbar .nav>li>a,html body .navbar .navbar-brand{line-height:30px}html body #widgets{padding-left:0;padding-right:0}}@media (min-width:768px) and (max-width:991px){html body h1.titrebloc{font-size:45px}html body .navbar .navbar-form button{padding-left:15px;padding-right:15px}html body .navbar .nav>li>a{padding-left:10px;padding-right:10px}html body #bread .container,html body .navbar .container{width:100%}}@media (max-width:767px){html body{padding-top:50px}html body .page-header{margin-top:20px;margin-bottom:30px}html body h1.titrebloc{font-size:40px}html body h3{font-size:20px}html body .divider{width:60%}}@media (max-width:480px){html body .col-xs-offset-1,html body .col-xs-offset-10,html body .col-xs-offset-11,html body .col-xs-offset-12,html body .col-xs-offset-2,html body .col-xs-offset-3,html body .col-xs-offset-4,html body .col-xs-offset-5,html body .col-xs-offset-6,html body .col-xs-offset-7,html body .col-xs-offset-8,html body .col-xs-offset-9{margin-left:0}html body .col-xs-10:not(.preserve),html body .col-xs-11:not(.preserve),html body .col-xs-12:not(.preserve),html body .col-xs-1:not(.preserve),html body .col-xs-2:not(.preserve),html body .col-xs-3:not(.preserve),html body .col-xs-4:not(.preserve),html body .col-xs-5:not(.preserve),html body .col-xs-6:not(.preserve),html body .col-xs-7:not(.preserve),html body .col-xs-8:not(.preserve),html body .col-xs-9:not(.preserve){width:100%}html body h1.titrebloc{font-size:30px}html body h2{font-size:25px}html body h3{font-size:18px}html body .divider{width:80%}html body #widgets h3.modal-title{font-size:19px}html body #widgets h4.modal-title{font-size:16px}html body #widgets>div{padding-left:0;padding-right:0}html body .number{font-size:1.1em}html body .number.number-xbig{font-size:1.5em}html body .sm-margin-top{margin-top:10px}html body .sm-margin-bottom{margin-bottom:10px}html body #container-fluid,html body #content{padding-left:0;padding-right:0}}.reset-padding{padding-left:0;padding-right:0}
+/* 
+    Created on : 1 avr. 2014, 21:00:54
+    Author     : Guillaume S
+*/
+/*
+
+To get this list of colors inject jQuery at http://www.google.com/design/spec/style/color.html#color-color-palette
+
+Then, run this script to get the list.
+
+
+(function() {
+  var colors = {}, main = {};
+  $(".color-group").each(function() {
+    var color = $(this).find(".name").text().trim().toLowerCase().replace(" ", "-");
+    colors[color] = {};
+
+    $(this).find(".color").not(".main-color").each(function() {
+      var shade = $(this).find(".shade").text().trim(),
+          hex   = $(this).find(".hex").text().trim();
+
+      colors[color][shade] = hex;
+    });
+    main[color] = color + "-" + $(this).find(".main-color .shade").text().trim();
+
+  });
+  var LESS = "";
+  $.each(colors, function(name, shades) {
+    LESS += "\n\n";
+    $.each(shades, function(shade, hex) {
+      LESS += "@" + name + "-" + shade + ": " + hex + ";\n";
+    });
+    if (main[name]) {
+      LESS += "@" + name + ": " + main[name] + ";\n";
+    }
+  });
+  console.log(LESS);
+})();
+
+
+*/
+@media (min-width: 992px) {
+  html body .nav > li > a {
+    font-size: 16px;
+  }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  html body h1.titrebloc {
+    font-size: 50px;
+  }
+  html body .navbar .navbar-brand {
+    padding: 15px 10px;
+  }
+  html body .navbar .navbar-brand,
+  html body .navbar .nav > li > a {
+    line-height: 30px;
+  }
+  html body #widgets {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  html body h1.titrebloc {
+    font-size: 45px;
+  }
+  html body .navbar .navbar-form button {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  html body .navbar .nav > li > a {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  html body .navbar .container,
+  html body #bread .container {
+    width: 100%;
+  }
+}
+@media (max-width: 767px) {
+  html body {
+    padding-top: 50px;
+  }
+  html body .page-header {
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
+  html body h1.titrebloc {
+    font-size: 40px;
+  }
+  html body h3 {
+    font-size: 20px;
+  }
+  html body .divider {
+    width: 60%;
+  }
+  html body #bread #fil-ariane li {
+    padding: 0;
+  }
+}
+@media (max-width: 480px) {
+  html body .col-xs-offset-1,
+  html body .col-xs-offset-2,
+  html body .col-xs-offset-3,
+  html body .col-xs-offset-4,
+  html body .col-xs-offset-5,
+  html body .col-xs-offset-6,
+  html body .col-xs-offset-7,
+  html body .col-xs-offset-8,
+  html body .col-xs-offset-9,
+  html body .col-xs-offset-10,
+  html body .col-xs-offset-11,
+  html body .col-xs-offset-12 {
+    margin-left: 0;
+  }
+  html body .col-xs-1:not(.preserve),
+  html body .col-xs-2:not(.preserve),
+  html body .col-xs-3:not(.preserve),
+  html body .col-xs-4:not(.preserve),
+  html body .col-xs-5:not(.preserve),
+  html body .col-xs-6:not(.preserve),
+  html body .col-xs-7:not(.preserve),
+  html body .col-xs-8:not(.preserve),
+  html body .col-xs-9:not(.preserve),
+  html body .col-xs-10:not(.preserve),
+  html body .col-xs-11:not(.preserve),
+  html body .col-xs-12:not(.preserve) {
+    width: 100%;
+  }
+  html body h1.titrebloc {
+    font-size: 30px;
+  }
+  html body h2 {
+    font-size: 25px;
+  }
+  html body h3 {
+    font-size: 18px;
+  }
+  html body .divider {
+    width: 80%;
+  }
+  html body #widgets h3.modal-title {
+    font-size: 19px;
+  }
+  html body #widgets h4.modal-title {
+    font-size: 16px;
+  }
+  html body #widgets > div {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  html body .number {
+    font-size: 1.1em;
+  }
+  html body .number.number-xbig {
+    font-size: 1.5em;
+  }
+  html body .sm-margin-top {
+    margin-top: 10px;
+  }
+  html body .sm-margin-bottom {
+    margin-bottom: 10px;
+  }
+  html body #container-fluid,
+  html body #content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+.reset-padding {
+  padding-left: 0;
+  padding-right: 0;
+}

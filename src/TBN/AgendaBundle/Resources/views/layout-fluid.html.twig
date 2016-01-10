@@ -20,22 +20,11 @@
 {% endblock %}
 
 {% block css %}
-    {% stylesheets 'bundles/tbnagenda/css/widgets.css' 'bundles/tbnagenda/css/style.css' 'bundles/tbnagenda/css/jquery.mCustomScrollbar.css'
-       
-        output='prod/css/widgets/style.css'
-    %}
-        <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-    {% endstylesheets %}
-    {% block css_agenda %}{% endblock %}
+<link rel="stylesheet" href="{{ asset('prod/widgets/css/widgets.min.css') }}" type="text/css" >
+{% block css_agenda %}{% endblock %}
 {% endblock %}
 
 {% block js_template %}
-    {% javascripts 
-            'bower/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js'
-            '@TBNAgendaBundle/Resources/public/js/widgets.js'
-            output='prod/js/evenements/widgets.js' 
-    %}
-        <script src="{{ asset_url }}" type="text/javascript"></script>
-    {% endjavascripts %}
-    {% block js_agenda %}{% endblock %}
+<script src="{{ asset('prod/widgets/js/widgets.min.js') }}" type="text/javascript"></script>
+{% block js_agenda %}{% endblock %}
 {% endblock %}

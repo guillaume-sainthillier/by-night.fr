@@ -12,10 +12,10 @@ $(function ()
 
         if(gMap.attr("data-toggled") === "1") //Masquer
         {
-            gMap.attr("data-toggled", "0").slideUp("normal");
+            gMap.attr("data-toggled", "0").hide("normal");
         }else //Afficher
         {
-            gMap.attr("data-toggled", "1").slideDown("normal");
+            gMap.attr("data-toggled", "1").show("normal");
         }
 
         e.preventDefault();
