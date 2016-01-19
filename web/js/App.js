@@ -30,8 +30,8 @@ var App = {
         App.initParticiper(selecteur);
         App.initMore(selecteur);
         App.initSelectpicker(selecteur);
-        App.initDatepicker(selecteur)        
-        App.initGallery(selecteur)        
+        App.initDatepicker(selecteur);    
+        App.initGallery(selecteur);    
     },
     initGallery: function(container) {
         $(".image-gallery", container || document).each(function ()

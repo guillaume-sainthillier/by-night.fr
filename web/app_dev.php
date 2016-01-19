@@ -1,5 +1,4 @@
 <?php
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
 // If you don't want to setup permissions the proper way, just uncomment the following PHP line
@@ -20,6 +19,7 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
  */
 $loader = require __DIR__.'/../app/autoload.php';
 Debug::enable();
+
 $kernel = new AppKernel('dev', true);
 $kernel->loadClassCache();
 $request = Request::createFromGlobals();
