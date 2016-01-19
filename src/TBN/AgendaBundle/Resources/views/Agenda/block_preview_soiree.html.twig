@@ -1,3 +1,4 @@
+{% for i, soiree in events %}
 <div itemscope itemtype="http://schema.org/Event">
     <div class="row event">
         {% if soiree.modificationDerniereMinute %}
@@ -23,7 +24,7 @@
                 <span class="label label-warning"><i class="fa fa-facebook"></i> <span class="number">{{ soiree.fbParticipations }}</span></span>
                 {% endif %}
                 <a class="image-gallery" href="{{ original }}" title="{{ soiree.nom }}" >
-                    <img class="img img-responsive loading" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ soiree.nom }}" />      
+                    <img class="img img-responsive loading" width="200" height="200" src="{{ asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ soiree.nom }}" />      
                 </a>
             </div>
         </div>
@@ -78,16 +79,7 @@
                     {% endif %}                
                 </div>
             {% endif %}
-            {% set tags = soiree.categorieManifestation|split(",") %}
-            {% set tags = tags|merge(soiree.typeManifestation|split(",")) %}
-            {% set tags = tags|merge(soiree.themeManifestation|split(",")) %}
-            {% set distinctTags = [] %}
-            {% for tag in tags %}
-                {% set cleanTag = tag|trim %}
-                {% if cleanTag|length and cleanTag not in distinctTags %}
-                    {% set distinctTags = distinctTags|merge([cleanTag|capitalize]) %}
-                {% endif %}
-            {% endfor %}
+            {% set distinctTags = soiree.distinctTags %}
             {% if distinctTags|length %}
                 <div class="trait" >                        
                     <i class="fa fa-tag pull-left"></i> 
@@ -115,3 +107,7 @@
         </div>
     </div>
 </div>
+{% if (i + 1) < events|length %}
+    <hr />
+{% endif %}
+{% endfor %}

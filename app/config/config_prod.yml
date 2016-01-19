@@ -4,6 +4,18 @@ imports:
 framework:
     templating:
         engines: ['twig']
+        
+doctrine:
+    orm:
+        metadata_cache_driver: 
+            type: service
+            id: winzou_cache
+        query_cache_driver: 
+            type: service
+            id: winzou_cache
+        result_cache_driver: 
+            type: service
+            id: winzou_cache
 
 monolog:
     handlers:

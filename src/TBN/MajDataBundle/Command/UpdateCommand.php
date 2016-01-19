@@ -156,7 +156,7 @@ class UpdateCommand extends EventCommand
             if($tmpAgenda !== null)
             {
                 //Récupération de l'image distante si besoin
-                if($env !== 'dev' && $tmpAgenda->getPath() === null && $tmpAgenda->getUrl() !== null)
+                if($env !== 'prod' && $tmpAgenda->getPath() === null && $tmpAgenda->getUrl() !== null)
                 {
                     $handler->downloadImage($tmpAgenda);
                 }

@@ -11,16 +11,16 @@ class SiteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('subdomain','text',[
+            ->add('subdomain',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'Sous Domaine'
             ])
-            ->add('nom','text',[
+            ->add('nom',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'Nom de la ville'
             ])
-            ->add('adjectifSingulier','text',[
+            ->add('adjectifSingulier',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'Adjectif singulier'
             ])
-            ->add('adjectifPluriel','text',[
+            ->add('adjectifPluriel',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'Adjectif pluriel'
             ])
             ->add('description','textarea',[
@@ -33,23 +33,23 @@ class SiteType extends AbstractType
 		'type' => new ImageType,
 		'required' => false
 	    ])
-            ->add('facebookIdPage','text',[
+            ->add('facebookIdPage',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'N° Page FaceBook',
                 'required'  => false
             ])
-            ->add('googleIdPage','text',[
+            ->add('googleIdPage',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'N° Page Google+',
                 'required'  => false
             ])
-            ->add('twitterIdPage','text',[
+            ->add('twitterIdPage',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'N° Page Twitter',
                 'required'  => false
             ])
-            ->add('twitterURLWidget','text',[
+            ->add('twitterURLWidget',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'URL du Widget Twitter',
                 'required'  => false
             ])
-            ->add('twitterIdWidget','text',[
+            ->add('twitterIdWidget',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 'label' => 'ID du Widget Twitter',
                 'required'  => false
             ])

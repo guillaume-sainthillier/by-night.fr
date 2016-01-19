@@ -14,26 +14,26 @@ class PlaceType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('nom', 'text', [
+            ->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "required" => true,
                 "label" => "Où ça ?",
                 "attr" => [
                     "placeholder" => "Indiquez le nom du lieu"
                 ]
             ])
-           ->add('rue','text', [
+           ->add('rue',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "required" => false,
             ])
-            ->add('latitude','hidden', [
+            ->add('latitude',SymfonyComponentFormExtensionCoreTypeHiddenType, [
                 "required" => false,
             ])
-            ->add('longitude','hidden', [
+            ->add('longitude',SymfonyComponentFormExtensionCoreTypeHiddenType, [
                 "required" => false,
             ])
-            ->add('ville', 'text', [
+            ->add('ville', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "label" => "Ville"
             ])
-            ->add('codePostal','text', [
+            ->add('codePostal',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "required" => false,
             ])
         ;

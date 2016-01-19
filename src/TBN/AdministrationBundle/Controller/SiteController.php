@@ -26,7 +26,7 @@ class SiteController extends Controller
             'action' => $this->generateUrl('tbn_administration_site_new'),
             'method' => 'POST'
         ])
-        ->add("ajouter","submit",[
+        ->add("ajouter", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,[
             "label" => "ajouter",
             "attr" => [
                 "class" => "btn btn-primary"
@@ -61,7 +61,7 @@ class SiteController extends Controller
             ]),
             'method' => 'POST'
         ])
-        ->add("modifier","submit",[
+        ->add("modifier", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,[
             "label" => "Modifier",
             "attr" => [
                 "class" => "btn btn-primary"

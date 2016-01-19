@@ -24,7 +24,7 @@
         "stof/doctrine-extensions-bundle": "dev-master",
         "friendsofsymfony/user-bundle": "~2.0@dev",
         "hwi/oauth-bundle": "0.4.*@dev",
-        "facebook/php-sdk-v4": "5.*",
+        "facebook/php-sdk-v4": "^5.1",
         "google/apiclient": "dev-master",
         "ricardoper/twitteroauth": "2.*",        
         "presta/sitemap-bundle": "dev-master",
@@ -32,10 +32,14 @@
         "liip/imagine-bundle":"dev-master",
         "egeloen/google-map-bundle": "~2.1",
         "willdurand/geocoder": "2.*",
-        "jms/serializer-bundle" : "0.*",
+        "jms/serializer-bundle" : "1.*",
         "friendsofsymfony/elastica-bundle" : "3.*",
         "white-october/pagerfanta-bundle": "dev-master",
         "social-links/social-links": "dev-master"
+    },
+    "require-dev": {
+        "sensio/generator-bundle": "~3.0",
+        "symfony/phpunit-bridge": "~2.7"
     },
     "scripts": {
         "post-install-cmd": [
@@ -52,11 +56,14 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"  
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
         ]
     },
     "config": {
-        "bin-dir": "bin"
+        "bin-dir": "bin",
+        "platform": {
+            "php": "5.4.12"
+        }
     },
     "extra": {
         "symfony-app-dir": "app",

@@ -103,7 +103,7 @@ class CommentController extends Controller
             'action' => $this->generateUrl('tbn_comment_new', ["id" => $soiree->getId()]),
             'method' => 'POST'
             ])
-            ->add("poster","submit", [
+            ->add("poster", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
                 "label" => "Poster",
                 "attr" => [
                     "class" => "btn btn-primary btn-submit btn-raised",

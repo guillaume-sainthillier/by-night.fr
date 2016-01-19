@@ -32,9 +32,9 @@ framework:
     
 doctrine_cache:
     providers:
-        xcache:
-            type: xcache
-            namespace: xcache_cache_ns
+        redis:
+            type: file_system
+            namespace: redis_cache_ns
             aliases:
                 - winzou_cache
         php_file:

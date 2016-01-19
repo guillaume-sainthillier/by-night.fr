@@ -24,7 +24,7 @@ class SearchType extends AbstractType
     {
         $builder
 	    ->add('page', 'hidden')
-            ->add("du", "date", [
+            ->add("du", \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
                 "required" => true,
                 "label" => "Du",
                 'label_attr' => array('class' => 'col-sm-6 control-label'),
@@ -32,7 +32,7 @@ class SearchType extends AbstractType
                 "format" => "dd/MM/yyyy",
                 "attr" => ["data-date-format" => "dd/mm/yyyy"]
             ])
-            ->add("au", "date", [
+            ->add("au", \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
                 "required" => false,
                 "label"     => "Au",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
@@ -40,7 +40,7 @@ class SearchType extends AbstractType
                 "format" => "dd/MM/yyyy",
                 "attr" => ["data-date-format" => "dd/mm/yyyy"]
             ])
-            ->add("type_manifestation", "choice", [
+            ->add("type_manifestation", \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 "choices"  => $this->types_manifesation,
                 "label"    => 'Quoi ?',
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
@@ -48,7 +48,7 @@ class SearchType extends AbstractType
                 "expanded" => false,
                 "required" => false,
                 "attr" => ["title" => "Tous", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
-             ->add("lieux", "choice", [
+             ->add("lieux", \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 "choices"  => $this->lieux,
                 "label"    => "Lieux",
                  'label_attr' => array('class' => 'col-sm-3 control-label'),
@@ -56,7 +56,7 @@ class SearchType extends AbstractType
                 "expanded" => false,
                 "required" => false,
                 "attr" => ["title" => "Tous", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
-             ->add("commune", "choice", [
+             ->add("commune", \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 "choices"  => $this->commune,
                 "label"    => "Villes",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
@@ -64,12 +64,17 @@ class SearchType extends AbstractType
                 "expanded" => false,
                 "required" => false,
                 "attr" => ["title" => "Toutes", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
-            ->add('term', 'text', [
+            ->add('term', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "required" => false,
                 "label"    => "Mot-clés",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "attr" => ["class" => "form-control","placeholder" => "Quel événement cherchez-vous ?"]])
-            ->add('chercher', 'submit', ["label" => "Go !", "attr" => ["class" => "btn btn-raised btn-lg btn-primary btn-block"]])
+            ->add('chercher', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+                "label" => "Go !", 
+                "attr" => [
+                    "class" => "btn btn-raised btn-lg btn-primary btn-block"
+                ]
+            ])
         ;
     }
 

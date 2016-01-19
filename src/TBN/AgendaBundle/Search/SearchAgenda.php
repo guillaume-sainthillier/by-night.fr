@@ -64,7 +64,7 @@ class SearchAgenda {
 
     public function getTerms()
     {
-        return explode(" ", $this->getTerm());
+        return array_unique(array_filter(explode(" ", $this->getTerm())));
     }
     
     public function getDu() {

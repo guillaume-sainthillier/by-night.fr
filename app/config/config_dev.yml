@@ -14,9 +14,15 @@ web_profiler:
 doctrine:
     orm:
         auto_mapping: true
-        metadata_cache_driver: xcache
-        query_cache_driver: xcache
-        result_cache_driver: xcache
+        metadata_cache_driver: 
+            type: service
+            id: winzou_cache
+        query_cache_driver: 
+            type: service
+            id: winzou_cache
+        result_cache_driver: 
+            type: service
+            id: winzou_cache
                 
 monolog:
     handlers:

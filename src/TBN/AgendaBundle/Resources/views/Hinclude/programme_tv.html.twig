@@ -2,7 +2,11 @@
     <div class="widget_item">
         <div class="row">
             <div class="col-xs-3 col-md-2 min_membre preserve">
-                <img height="30" width="70" class="img img-responsive loading" src="{{ programme.asset ? asset(programme.asset) : programme.logo }}" title="{{ programme.chaine }}" />
+                {% if programme.css_chaine %}
+                    <div class="chaine {{ programme.css_chaine }}"></div>
+                {% else %}
+                    <img height="30" width="70" class="img img-responsive" src="{{ programme.logo }}" title="{{ programme.chaine }}" />
+                {% endif %}                
             </div>
             <div class="col-xs-9 col-md-10 preserve">
                 <h4 class="modal-title">

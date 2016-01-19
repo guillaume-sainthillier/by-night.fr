@@ -260,7 +260,6 @@ class FacebookAdmin extends FacebookEvents {
                         'fields'    => self::$MIN_EVENT_FIELDS,
                         'limit'	    => $limit
                     ], $this->siteInfo->getFacebookAccessToken());
-                    var_dump($request->getUrl(), $request->getParams());
                     $requests[] = $request;
                 }
 

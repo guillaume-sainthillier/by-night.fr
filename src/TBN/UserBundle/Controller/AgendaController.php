@@ -187,7 +187,7 @@ class AgendaController extends Controller
             ]),
             'method' => 'DELETE'
         ])
-        ->add("supprimer","submit",[
+        ->add("supprimer", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,[
             "label" => "Supprimer",
             "attr" => [
                 "class" => "btn btn-danger btn-lg btn-block"
@@ -204,7 +204,7 @@ class AgendaController extends Controller
             ]),
             'method' => 'POST'
         ])
-        ->add("ajouter","submit",[
+        ->add("ajouter", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             "label" => "Enregistrer",
             "attr" => [
                 "class" => "btn btn-primary btn-raised btn-lg btn-block"
@@ -228,7 +228,7 @@ class AgendaController extends Controller
             'action' => $this->generateUrl('tbn_agenda_new'),
             'method' => 'POST'
         ])
-        ->add("ajouter","submit",[
+        ->add("ajouter", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
             "label" => "Enregistrer",
             "attr" => [
                 "class" => "btn btn-primary btn-raised btn-lg btn-block"

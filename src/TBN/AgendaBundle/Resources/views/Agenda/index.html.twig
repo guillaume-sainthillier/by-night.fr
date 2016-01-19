@@ -140,12 +140,7 @@
     <section class="bg-white padding-tb-30">
         <div class="container">
             <h2 class="text-primary">Les concerts, spectacles & sorties de la semaine</h2>
-            {% for i, soiree in topEvents %}
-                {% include 'TBNAgendaBundle:Agenda:block_preview_soiree.html.twig' %}
-                {% if (i + 1) < topEvents|length %}
-                    <hr />
-                {% endif %}
-            {% endfor %}
+            {% include 'TBNAgendaBundle:Agenda:block_preview_soiree.html.twig' with({'events': topEvents, 'page': 1}) %}
             <br />
             <br />
             <a href="{{ path('tbn_agenda_agenda') }}" 

@@ -43,7 +43,7 @@ class AgendaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nom','text',[
+            ->add('nom',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
                 "label" => "Titre",
                 "attr" => [
                     "placeholder" => "Choisissez un titre accrocheur..."
@@ -62,7 +62,7 @@ class AgendaType extends AbstractType
                 'image_path' => 'webPath',
 		'image_filter' => 'thumb_evenement'
             ])
-            ->add('dateDebut','date', [
+            ->add('dateDebut',\Symfony\Component\Form\Extension\Core\Type\DateType::class, [
                 "label" => "A partir du ",
                 'widget' => 'single_text',
                 "required" => true,
@@ -71,7 +71,7 @@ class AgendaType extends AbstractType
                     "placeholder" => "Le / Du..."
                 ]
             ])
-            ->add('dateFin','date', [
+            ->add('dateFin',\Symfony\Component\Form\Extension\Core\Type\DateType::class, [
                 "label" => "Jusqu'au",
                 'widget' => 'single_text',
                 "required" => false,
@@ -80,7 +80,7 @@ class AgendaType extends AbstractType
                     "placeholder" => "Au..."
                 ]
             ])
-            ->add('horaires','text', [
+            ->add('horaires',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "label" => "Horaires",
                 "required" => false,
                 "attr" => [
@@ -142,28 +142,28 @@ class AgendaType extends AbstractType
             ]);
         }
 
-            $builder->add('tarif','text', [
+            $builder->add('tarif',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "label" => "Tarif",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "17€ avec préventes, 20€ sur place"
                 ]
             ])
-            ->add('categorieManifestation','text', [
+            ->add('categorieManifestation',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "label" => "Catégorie",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Concert, Spectacle, ..."
                 ]
             ])
-            ->add('themeManifestation','text', [
+            ->add('themeManifestation',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "label" => "Thèmes",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Humour, Tragédie, Jazz, Rock, Rap, ..."
                 ]
             ])
-            ->add('adresse', 'text', [
+            ->add('adresse', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "required" => false,
                 "label" => "Adresse",
                 "attr" => [
@@ -180,7 +180,7 @@ class AgendaType extends AbstractType
                     "placeholder" => "L'URL où trouver un billet"
                 ]
             ])
-            ->add('reservationTelephone','text', [
+            ->add('reservationTelephone',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
                 "label" => "Réservation téléphonique",
                 "required" => false,
                 "attr" => [

@@ -1,5 +1,6 @@
 #SiteMaps
 /web/sitemap/*
+/.idea/
 
 # Sécurité
 /app/sessions/*

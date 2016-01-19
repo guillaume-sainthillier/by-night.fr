@@ -126,7 +126,7 @@ class ReplyController extends Controller
             'action' => $this->generateUrl('tbn_comment_reponse_new', ["id" => $comment->getId()]),
             'method' => 'POST'
             ])
-            ->add("poster","submit", [
+            ->add("poster", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
                 "label" => "Répondre",
                 "attr" => [
                     "class" => "btn btn-primary btn-submit btn-raised",

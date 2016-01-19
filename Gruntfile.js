@@ -5,10 +5,19 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-spritesmith');
   
   // Configuration du projet
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    
+    sprite:{
+        all: {
+            src: 'web/bundles/tbnagenda/images/programmes/*.png',
+            dest: 'web/bundles/tbnagenda/images/spritesheet.png',
+            destCss: 'web/bundles/tbnagenda/css/sprites.css'
+        }
+    },
     
     cssmin: {
         options: {
@@ -102,6 +111,11 @@ module.exports = function(grunt) {
         },
         evenements: {
             dest: 'web/prod/evenements/images/',
+            relativeSrc: '../../../web/bundles/tbnagenda/images/',
+            options: {type: 'dir'}
+        },
+        sprites: {
+            dest: 'web/prod/widgets/images/',
             relativeSrc: '../../../web/bundles/tbnagenda/images/',
             options: {type: 'dir'}
         },
@@ -218,6 +232,7 @@ module.exports = function(grunt) {
         widgetCss: {
             src: [
                 'web/bundles/tbnagenda/css/widgets.css',
+                'web/bundles/tbnagenda/css/sprites.css',
                 'web/bundles/tbnagenda/css/style.css',
                 'web/bundles/tbnagenda/css/jquery.mCustomScrollbar.css'
             ],
@@ -340,8 +355,9 @@ module.exports = function(grunt) {
   });
 
   // Default task(s).
+  
   grunt.registerTask('default', ['css', 'javascript']);
-  grunt.registerTask('css', ['concat', 'cssmin']);
+  grunt.registerTask('css', ['sprite', 'concat', 'cssmin']);
   grunt.registerTask('javascript', ['concat', 'uglify']);
   grunt.registerTask('assets:install', ['symlink']);
   grunt.registerTask('deploy', ['assets:install', 'default']);

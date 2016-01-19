@@ -1,5 +1,3 @@
-SocialSDK.facebook();
-
 $(function ()
 {
     var gMap = $("#googleMap").attr("data-toggled", "0");

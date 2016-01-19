@@ -551,8 +551,12 @@ class Agenda
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
     }
-
-
+    
+    public function getDistinctTags() {
+        $tags = $this->getCategorieManifestation().','.$this->getTypeManifestation().','.$this->getThemeManifestation();
+        return array_map('ucfirst', array_unique(array_filter(explode(',', $tags))));
+    }
+    
     /**
      * Get id
      *

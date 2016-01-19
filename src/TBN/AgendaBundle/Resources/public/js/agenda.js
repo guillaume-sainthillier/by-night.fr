@@ -1,5 +1,3 @@
-SocialSDK.facebook().twitter();
-
 var countLoads = 0;
 var isLoading = false;
 
@@ -71,7 +69,7 @@ function init_criteres()
 {
     var options = {
         "css_hidden": "cache",
-        "css_initial_hidden": "hidden",
+        "css_initial_hidden": SymfonyComponentFormExtensionCoreTypeHiddenType,
         "css_icon_class_open": 'fa-chevron-down',
         "css_icon_class_close": 'fa-chevron-up',
         "selector_btn_criteres": ".btn_criteres",
@@ -118,9 +116,9 @@ function init_criteres()
  */
 function init_unveil(selecteur)
 {
-    $(".img", selecteur || document).unveil(200, function ()
+    $(".img.loading", selecteur || document).unveil(200, function ()
     {
-        $(this).removeClass("loading");
+        $(this).removeClass("loading").removeAttr("width").removeAttr("height");
     });
 }
 
