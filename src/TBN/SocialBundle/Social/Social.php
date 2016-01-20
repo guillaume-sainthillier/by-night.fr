@@ -70,25 +70,25 @@ abstract class Social {
 
     public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack) {
 
-	if(!isset($config["id"]))
-	{
-	    throw new SocialException("Le paramètre 'id' est absent");
-	}
+        if(!isset($config["id"]))
+        {
+            throw new SocialException("Le paramètre 'id' est absent");
+        }
 
-	if(!isset($config["secret"]))
-	{
-	    throw new SocialException("Le paramètre 'secret' est absent");
-	}
+        if(!isset($config["secret"]))
+        {
+            throw new SocialException("Le paramètre 'secret' est absent");
+        }
 
-	$this->id		= $config["id"];
-	$this->secret		= $config["secret"];
+        $this->id		= $config["id"];
+        $this->secret		= $config["secret"];
         $this->siteManager	= $siteManager;
-	$this->tokenStorage	= $tokenStorage;
-	$this->router		= $router;
-	$this->session		= $session;
-	$this->requestStack     = $requestStack;
+        $this->tokenStorage	= $tokenStorage;
+        $this->router		= $router;
+        $this->session		= $session;
+        $this->requestStack     = $requestStack;
 
-	$this->constructClient();
+        $this->constructClient();
     }
 
 

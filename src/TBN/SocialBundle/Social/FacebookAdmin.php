@@ -50,16 +50,22 @@ class FacebookAdmin extends FacebookEvents {
 
         $this->siteInfo = $this->siteManager->getSiteInfo();
         $this->serializer = $serializer;
-	$this->cache	= [];
+	    $this->cache	= [];
         $this->parser	= null;
 
-	//CLI
-	if(!$this->siteInfo)
-	{
-	    $this->siteInfo = $om->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
-	}
-        
-        $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+        //CLI
+        if($this->isCLI())
+        {
+            $this->siteInfo = $om->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
+        }
+
+        if($this->siteInfo) {
+            $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+        }
+    }
+
+    protected function isCLI() {
+        return php_sapi_name() === 'cli';
     }
     
     protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
