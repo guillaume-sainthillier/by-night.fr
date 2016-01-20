@@ -10,7 +10,7 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
 
     
 {% block meta_keywords_main %}
-    {% for site in site %}
+    {% for site in sites %}
         {{ site.nom }},
     {% endfor %}
 {% endblock %}
@@ -59,11 +59,11 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
 
                 <!-- Controls -->
                 <a class="left carousel-control" href="#carousel-{{ i }}" role="button" data-slide="prev">
-                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    <i class="icon-prev fa fa-chevron-left" aria-hidden="true"></i>
                     <span class="sr-only">Précédent</span>
                 </a>
                 <a class="right carousel-control" href="#carousel-{{ i }}" role="button" data-slide="next">
-                    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                    <i class="icon-next fa fa-chevron-right" aria-hidden="true"></i>
                     <span class="sr-only">Suivant</span>
                 </a>
             </div>
