@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Exploration
  *
- * @ORM\Table(name="exploration", indexes={
+ * @ORM\Table(name="Exploration", indexes={
  *   @ORM\Index(name="exploration_facebook_id_site_idx", columns={"facebook_id", "site_id"})
  * })
  * @ORM\Entity

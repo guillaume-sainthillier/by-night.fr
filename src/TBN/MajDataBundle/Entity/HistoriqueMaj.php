@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * HistoriqueMaj
  *
- * @ORM\Table()
+ * @ORM\Table(name="HistoriqueMaj")
  * @ORM\Entity(repositoryClass="TBN\MajDataBundle\Entity\HistoriqueMajRepository")
  * @ORM\HasLifecycleCallbacks
  */

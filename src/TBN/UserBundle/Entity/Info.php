@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Info
  *
- * @ORM\Table( 
+ * @ORM\Table(name="Info"
  *             indexes={@ORM\Index(
  *                  name="recherche_info_idx",
  *                  columns={"facebook_id", "twitter_id", "google_id"}

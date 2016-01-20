@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation\Expose;
 /**
  * Site
  *
- * @ORM\Table()
+ * @ORM\Table(name="Image")
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")

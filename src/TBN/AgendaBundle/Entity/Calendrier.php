@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Calendrier
  * 
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\CalendrierRepository")
- * @ORM\Table(name="calendrier",
+ * @ORM\Table(name="Calendrier",
  *      uniqueConstraints={
  *          @ORM\UniqueConstraint(name="user_agenda_unique",columns={"user_id","agenda_id"})
  *      })

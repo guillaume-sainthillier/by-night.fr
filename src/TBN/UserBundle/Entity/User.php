@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation\Expose;
 /**
  * User
  * 
- * @ORM\Table(name="tbn_user", indexes={@ORM\Index(name="user_nom_idx", columns={"nom"})})
+ * @ORM\Table(name="User", indexes={@ORM\Index(name="user_nom_idx", columns={"nom"})})
  * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\UserRepository")
  * @ExclusionPolicy("all")
  */

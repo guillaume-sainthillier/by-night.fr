@@ -11,7 +11,7 @@ use TBN\UserBundle\Entity\User;
 /**
  * Comment
  *
- * @ORM\Table()
+ * @ORM\Table(name="Comment")
  * @ORM\Entity(repositoryClass="TBN\CommentBundle\Repository\CommentRepository")
  * @ORM\HasLifecycleCallbacks()
  */

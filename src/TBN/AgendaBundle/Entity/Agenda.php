@@ -19,7 +19,7 @@ use TBN\AgendaBundle\Entity\Agenda;
 /**
  * Agenda
  *
- * @ORM\Table(name="agenda", indexes={
+ * @ORM\Table(name="Agenda", indexes={
  *   @ORM\Index(name="agenda_slug_idx", columns={"slug"}),
  *   @ORM\Index(name="agenda_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
