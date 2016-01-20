@@ -9,16 +9,7 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
 
         <!-- CSS -->
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" media="screen" >
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css" type="text/css" media="screen" >
-        {% stylesheets 
-            'css/erreurs.css'
-
-            filter='cssrewrite,?yui_css'
-            output='prod/css/erreurs.css'
-        %}
-            <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" >
-        {% endstylesheets %}
+        <link rel="stylesheet" href="{{ asset('prod/css/erreurs.min.css') }}" type="text/css" media="screen" >
         <!-- ./CSS-->
     </head>
     <body>

@@ -143,6 +143,14 @@ module.exports = function(grunt) {
             ],
             dest: 'web/prod/css/print.css'
         },
+        errors: {
+            src: [
+                'web/bower/bootstrap/dist/css/bootstrap.min.css',
+                'web/bower/font-awesome/css/font-awesome.min.css',
+                'web/css/erreurs.css'
+            ],
+            dest: 'web/prod/css/erreurs.css'
+        },
         mainJs: {
             src: [
                 'web/bower/jquery/dist/jquery.min.js',
@@ -161,7 +169,7 @@ module.exports = function(grunt) {
             src: [
                 'web/bower/jquery.cookiebar/jquery.cookiebar.css',
                 'web/bower/bootstrap/dist/css/bootstrap.min.css',
-                'web/bower/fontawesome/css/font-awesome.min.css',
+                'web/bower/font-awesome/css/font-awesome.min.css',
                 'web/bower/bootstrap-material-design/dist/css/ripples.css',
                 'web/css/material/theme.blue.css',
                 'web/css/social-icons.css',    
