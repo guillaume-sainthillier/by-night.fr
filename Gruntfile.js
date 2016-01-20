@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-  grunt.loadNpmTasks('grunt-symlink');
+  grunt.loadNpmTasks('grunt-contrib-symlink');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -33,9 +33,9 @@ module.exports = function(grunt) {
                 ext: '.min.css'
             },{
                 expand: true,
-                cwd: 'web/prod/css/evenements',
+                cwd: 'web/prod/css/',
                 src: ['*.css', '!*.min.css'],
-                dest: 'web/prod/css/evenements',
+                dest: 'web/prod/css/',
                 ext: '.min.css'
             },{
                 expand: true,
@@ -99,31 +99,42 @@ module.exports = function(grunt) {
     // Définition de la tache 'symlink'
     // https://github.com/gruntjs/grunt-contrib-symlink
     symlink: {
-        flaticon: {
-            dest: 'web/prod/evenements/font/',
-            relativeSrc: '../../../web/bundles/tbnagenda/font/',
-            options: {type: 'dir'}
+        options: {
+            overwrite: false
         },
-        font_awesome: {
-            dest: 'web/prod/main/fonts/',
-            relativeSrc: '../../../web/bower/font-awesome/fonts/',
-            options: {type: 'dir'}
-        },
-        evenements: {
-            dest: 'web/prod/evenements/images/',
-            relativeSrc: '../../../web/bundles/tbnagenda/images/',
-            options: {type: 'dir'}
-        },
-        sprites: {
-            dest: 'web/prod/widgets/images/',
-            relativeSrc: '../../../web/bundles/tbnagenda/images/',
-            options: {type: 'dir'}
-        },
-        login: {
-            dest: 'web/prod/main/img/icons/',
-            relativeSrc: '../../../web/img/icons/',
-            options: {type: 'dir'}
-        }
+        expanded: {
+            files: [
+            {
+                expand: true,
+                src: ['*'],
+                dest: 'web/prod/evenements/font',
+                cwd: 'web/bundles/tbnagenda/font'
+            },
+            {
+                expand: true,
+                src: ['*'],
+                dest: 'web/prod/main/fonts',
+                cwd: 'web/bower/font-awesome/fonts'
+            },
+            {
+                expand: true,
+                src: ['*'],
+                dest: 'web/prod/evenements/images',
+                cwd: 'web/bundles/tbnagenda/images'
+            },
+            {
+                expand: true,
+                src: ['*'],
+                dest: 'web/prod/widgets/images',
+                cwd: 'web/bundles/tbnagenda/images'
+            },
+            {
+                expand: true,
+                src: ['*'],
+                dest: 'web/prod/main/img/icons',
+                cwd: 'web/img/icons'
+            }
+        ]}
     },
     concat: {
         print: {
