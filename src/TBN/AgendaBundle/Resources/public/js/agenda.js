@@ -69,7 +69,7 @@ function init_criteres()
 {
     var options = {
         "css_hidden": "cache",
-        "css_initial_hidden": SymfonyComponentFormExtensionCoreTypeHiddenType,
+        "css_initial_hidden": 'hidden',
         "css_icon_class_open": 'fa-chevron-down',
         "css_icon_class_close": 'fa-chevron-up',
         "selector_btn_criteres": ".btn_criteres",
