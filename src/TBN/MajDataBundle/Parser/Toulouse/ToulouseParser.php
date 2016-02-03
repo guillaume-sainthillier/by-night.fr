@@ -71,7 +71,7 @@ class ToulouseParser extends AgendaParser {
                     'reservation_internet' => $tab[24],
                     'manifestation_gratuite' => $tab[25],
                     'tarif' => $tab[26],
-                    'source' => 'http://data.toulouse-metropole.fr/web/guest/les-donnees/-/opendata/card/21905-agenda-des-manifestations-culturelles/'
+                    'source' => 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/export/'
                 ];
             }
         }
@@ -81,7 +81,7 @@ class ToulouseParser extends AgendaParser {
 
     protected function getURL()
     {
-        return "http://data.grandtoulouse.fr/web/guest/les-donnees/-/opendata/card/21905-agenda-des-manifestations-culturelles/resource/document?p_p_state=exclusive&_5_WAR_opendataportlet_jspPage=%2Fsearch%2Fview_card_license.jsp";
+        return "https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=xls&timezone=Europe/Berlin&use_labels_for_header=true";
     }
 
     /**
