@@ -5,9 +5,11 @@ namespace TBN\MajDataBundle\Parser;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use \DateTime;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Entity\Site;
 use TBN\UserBundle\Entity\SiteInfo;
+use Symfony\Component\Filesystem\Filesystem;
 
 /*
  * Classe abstraite représentant le parse des données d'un site Internet
@@ -16,7 +18,9 @@ use TBN\UserBundle\Entity\SiteInfo;
  *
  * @author Guillaume SAINTHILLIER
  */
-abstract class AgendaParser implements ParserInterface {
+
+abstract class AgendaParser implements ParserInterface
+{
 
     /**
      * Url du site à parser
@@ -49,24 +53,48 @@ abstract class AgendaParser implements ParserInterface {
     public function __construct()
     {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $this->output           = null;
-	$this->site             = null;
-        $this->siteInfo         = null;
+        $this->output = null;
+        $this->site = null;
+        $this->siteInfo = null;
 
         return $this;
     }
 
     public abstract function getRawAgendas();
 
-    public function isTrustedLocation() {
-	return true;
+    public function isTrustedLocation()
+    {
+        return true;
     }
 
     public function parse()
     {
         //Tableau des informations récoltées
-        $raw = $this->getRawAgendas();
-        
+
+        $fs = new Filesystem();
+        $file = 'C:/wamp/www/ByNight/web/events.json';
+        if (true || !$fs->exists($file)) {
+//            $fs->touch($file);
+            $raw = $this->getRawAgendas();
+//            $fs->dumpFile($file, json_encode($raw));
+        }
+        else {
+            $raw = json_decode(file_get_contents($file), true);
+            foreach ($raw as &$rawAgenda) {
+                if (isset($rawAgenda['fb_date_modification']['date'])) {
+                    $rawAgenda['fb_date_modification'] = new DateTime($rawAgenda['fb_date_modification']['date']);
+                }
+                if (isset($rawAgenda['date_debut']['date'])) {
+                    $rawAgenda['date_debut'] = new DateTime($rawAgenda['date_debut']['date']);
+                }
+                if (!$rawAgenda['date_fin']) {
+                    $rawAgenda['date_fin'] = $rawAgenda['date_debut'];
+                } elseif(isset($rawAgenda['date_fin']['date'])) {
+                    $rawAgenda['date_fin'] = new DateTime($rawAgenda['date_fin']['date']);
+                }
+            }
+        }
+
         return array_map([$this, 'arrayToAgenda'], $raw);
     }
 
@@ -74,65 +102,68 @@ abstract class AgendaParser implements ParserInterface {
     {
         $agenda = new Agenda;
 
-        foreach($infos as $field => $value)
-        {
+        foreach ($infos as $field => $value) {
             $this->propertyAccessor->setValue($agenda, $field, $value);
         }
-        
+
         return $agenda;
     }
-    
+
 
     protected function parseDate($date)
     {
-        $tabMois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+        $tabMois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
-        return preg_replace_callback("/(.+)(\d{2}) (".implode("|", $tabMois).") (\d{4})(.*)/iu",
-                function($items) use($tabMois)
-        {
-            return $items[4]."-".(array_search($items[3],$tabMois) +1)."-".$items[2];
-        }, $date);
+        return preg_replace_callback("/(.+)(\d{2}) (" . implode("|", $tabMois) . ") (\d{4})(.*)/iu",
+            function ($items) use ($tabMois) {
+                return $items[4] . "-" . (array_search($items[3], $tabMois) + 1) . "-" . $items[2];
+            }, $date);
     }
 
     public function write($text)
     {
-        if($this->output !== null)
-        {
-	    $this->output->write($text);
+        if ($this->output !== null) {
+            $this->output->write($text);
         } else {
-	    echo $text;
+            echo $text;
         }
     }
 
     public function writeln($text)
     {
-        $this->write($text."\n");
+        $this->write($text . "\n");
     }
 
-    public function getOutput() {
+    public function getOutput()
+    {
         return $this->output;
     }
 
-    public function setOutput(OutputInterface $output) {
+    public function setOutput(OutputInterface $output)
+    {
         $this->output = $output;
         return $this;
     }
 
-    public function getSite() {
-	return $this->site;
+    public function getSite()
+    {
+        return $this->site;
     }
 
-    public function getSiteInfo() {
-	return $this->siteInfo;
+    public function getSiteInfo()
+    {
+        return $this->siteInfo;
     }
 
-    public function setSite(Site $site) {
-	$this->site = $site;
-	return $this;
+    public function setSite(Site $site)
+    {
+        $this->site = $site;
+        return $this;
     }
 
-    public function setSiteInfo(SiteInfo $siteInfo) {
-	$this->siteInfo = $siteInfo;
-	return $this;
+    public function setSiteInfo(SiteInfo $siteInfo)
+    {
+        $this->siteInfo = $siteInfo;
+        return $this;
     }
 }

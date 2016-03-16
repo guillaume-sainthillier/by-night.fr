@@ -65,7 +65,7 @@ class Site
      */
     protected $description;
 
-     /**
+    /**
      * @ORM\OneToMany(targetEntity="TBN\MainBundle\Entity\Image", mappedBy="site", cascade={"persist", "remove"})
      */
     protected $images;
@@ -135,15 +135,15 @@ class Site
 
     public function __construct()
     {
-        $this->isActif	= false;
-	$this->images	= new ArrayCollection;
+        $this->isActif = false;
+        $this->images = new ArrayCollection;
     }
 
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -166,7 +166,7 @@ class Site
     /**
      * Get subdomain
      *
-     * @return string 
+     * @return string
      */
     public function getSubdomain()
     {
@@ -189,7 +189,7 @@ class Site
     /**
      * Get nom
      *
-     * @return string 
+     * @return string
      */
     public function getNom()
     {
@@ -212,7 +212,7 @@ class Site
     /**
      * Get adjectifSingulier
      *
-     * @return string 
+     * @return string
      */
     public function getAdjectifSingulier()
     {
@@ -235,7 +235,7 @@ class Site
     /**
      * Get adjectifPluriel
      *
-     * @return string 
+     * @return string
      */
     public function getAdjectifPluriel()
     {
@@ -258,7 +258,7 @@ class Site
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -281,7 +281,7 @@ class Site
     /**
      * Get facebookIdPage
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookIdPage()
     {
@@ -304,7 +304,7 @@ class Site
     /**
      * Get googleIdPage
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleIdPage()
     {
@@ -327,7 +327,7 @@ class Site
     /**
      * Get twitterIdPage
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterIdPage()
     {
@@ -350,7 +350,7 @@ class Site
     /**
      * Get twitterIdWidget
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterIdWidget()
     {
@@ -373,7 +373,7 @@ class Site
     /**
      * Get twitterURLWidget
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterURLWidget()
     {
@@ -393,10 +393,15 @@ class Site
         return $this;
     }
 
+    public function setIsActif($isActif)
+    {
+        return $this->setActif($isActif);
+    }
+
     /**
      * Get isActif
      *
-     * @return boolean 
+     * @return boolean
      */
     public function isActif()
     {
@@ -419,7 +424,7 @@ class Site
     /**
      * Get distanceMax
      *
-     * @return float 
+     * @return float
      */
     public function getDistanceMax()
     {
@@ -442,7 +447,7 @@ class Site
     /**
      * Get latitude
      *
-     * @return float 
+     * @return float
      */
     public function getLatitude()
     {
@@ -465,7 +470,7 @@ class Site
     /**
      * Get longitude
      *
-     * @return float 
+     * @return float
      */
     public function getLongitude()
     {
@@ -481,7 +486,7 @@ class Site
     public function addImage(\TBN\MainBundle\Entity\Image $images)
     {
         $this->images[] = $images->setSite($this);
-    
+
         return $this;
     }
 
@@ -504,13 +509,14 @@ class Site
     {
         return $this->images;
     }
-    
+
     public function toJSON()
     {
         return json_encode($this->toArray());
     }
-    
-    public function toArray() {
+
+    public function toArray()
+    {
         return [
             'subdomain' => $this->subdomain
         ];

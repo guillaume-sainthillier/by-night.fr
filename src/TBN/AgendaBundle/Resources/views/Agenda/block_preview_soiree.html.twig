@@ -9,13 +9,13 @@
         {% endif %}
         <div class="col-xs-3 image_soiree">
             {% if soiree.webPath %}
-                {% set original = app.request.getUriForPath('/' ~ soiree.webPath) %}
+                {% set original =  absolute_url(asset('/' ~ soiree.webPath)) %}
                 {% set thumb = soiree.webPath|imagine_filter('thumbs_evenement') %}
             {% elseif soiree.url %}
                 {% set original = soiree.url %}
                 {% set thumb = original %}
             {% else %}
-                {% set original = app.request.getUriForPath('/img/empty_event.png') %}
+                {% set original = absolute_url(asset('/img/empty_event.png')) %}
                 {% set thumb = 'img/empty_event.png'|imagine_filter('thumbs_evenement') %}
             {% endif %}
             <meta itemprop="image" content="{{ original }}" />
@@ -84,7 +84,7 @@
                 <div class="trait" >                        
                     <i class="fa fa-tag pull-left"></i> 
                     {% for tag in distinctTags %}
-                    <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag}) }}">{{ tag }}</a>
+                    <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag|trim}) }}">{{ tag }}</a>
                     {% endfor %}
                 </div>
             {% endif %}

@@ -37,6 +37,11 @@ doctrine_cache:
             namespace: redis_cache_ns
             aliases:
                 - winzou_cache
+        array:
+            type: array
+            namespace: array_cache_ns
+            aliases:
+                - array_cache
         php_file:
             type: file_system
             namespace: file_cache_ns
@@ -329,6 +334,8 @@ presta_sitemap:
     route_annotation_listener: false
 
 services:
+    fos_user.doctrine_registry:
+        alias: doctrine
     twig.extension.intl:
         class: Twig_Extensions_Extension_Intl
         tags:

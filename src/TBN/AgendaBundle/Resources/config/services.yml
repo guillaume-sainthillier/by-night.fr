@@ -1,9 +1,9 @@
 parameters:
 #    tbn_agenda.example.class: TBN\AgendaBundle\Example
 
-services:        
+services:
     debril.provider.default:
         class: TBN\AgendaBundle\Provider\AgendaProvider
-        arguments: [ @doctrine.orm.entity_manager, @site_manager, @router ]
+        arguments: [ "@doctrine.orm.entity_manager", "@site_manager", "@router" ]
     tbn.programmetv:
         class: TBN\AgendaBundle\Parser\ProgrammeTVParser

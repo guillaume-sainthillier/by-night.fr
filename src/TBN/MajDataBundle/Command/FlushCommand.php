@@ -46,7 +46,7 @@ class FlushCommand extends EventCommand
         }else
         {
             $this->write($output, "Recherche d'événements indésirables...");
-            $agendas	= $repo->findBy(['site' => $site]);
+            $agendas	= $repo->findBy(['site' => $site->getId()]);
             $nbSpam     = 0;
             $nbMaj      = 0;
             foreach($agendas as $agenda)

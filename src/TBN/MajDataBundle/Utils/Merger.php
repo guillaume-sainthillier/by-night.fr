@@ -11,10 +11,11 @@ use TBN\MajDataBundle\Utils\Comparator;
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
-class Merger {
+class Merger
+{
 
     private $comparator;
-    
+
     public function __construct(Comparator $comparator)
     {
         $this->comparator = $comparator;
@@ -23,6 +24,7 @@ class Merger {
     public function mergeEvent(Agenda &$a = null, Agenda &$b = null)
     {
         return $this->merge($a, $b, [
+            'id',
             'nom',
             'descriptif',
             'horaires',
@@ -55,10 +57,11 @@ class Merger {
     public function mergePlace(Place &$a = null, Place &$b = null)
     {
         return $this->merge($a, $b, [
+            'id',
             'latitude',
             'longitude',
             'rue',
-	    'url',
+            'url',
             'ville',
             'codePostal',
             'facebook_id'
@@ -74,26 +77,24 @@ class Merger {
     private function merge($a, $b, $fields)
     {
         //Un ou les deux est nul, pas la peine de merger
-        if($a === null || $b === null)
-        {
-            return ($a?: $b); //Retourne l'objet non nul s'il existe
+        if ($a === null || $b === null) {
+            return ($a ?: $b); //Retourne l'objet non nul s'il existe
         }
-        
-        foreach($fields as $field)
-        {
-            $getter = 'get'.$this->skakeToCamel($field);
-            $setter = 'set'.$this->skakeToCamel($field);
-            
+
+        foreach ($fields as $field) {
+            $getter = 'get' . $this->skakeToCamel($field);
+            $setter = 'set' . $this->skakeToCamel($field);
+
             $valueA = $a->$getter();
             $valueB = $b->$getter();
-            $value  = $this->comparator->getBestContent($valueA, $valueB);
-            
+            $value = $this->comparator->getBestContent($valueA, $valueB);
+
             $a->$setter($value);
         }
 
         return $a;
     }
-    
+
     private function skakeToCamel($str)
     {
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));

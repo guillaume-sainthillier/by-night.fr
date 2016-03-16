@@ -12,6 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Output\OutputInterface;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Entity\Site;
+use TBN\MajDataBundle\Utils\DoctrineEventHandler;
+use TBN\MajDataBundle\Utils\Monitor;
 
 /**
  * Description of EventCommand
@@ -20,96 +22,21 @@ use TBN\MainBundle\Entity\Site;
  */
 abstract class EventCommand extends ContainerAwareCommand
 {
-    
-    protected function postFlush(array &$places, array &$newPlaces)
-    {
-        $this->mergeNewEntities('place', $places, $newPlaces);
-    }
-    
-    protected function postManage(Agenda &$agenda, array &$places, array &$newPlaces)
-    {
-        $place = $agenda->getPlace();
-        if($place !== null)
-        {
-            $this->insertOrUpdate('place', $place, $places, $newPlaces);
-        }
-    }
-    protected function mergeNewEntities($keyPrefix, array &$persistedEntities, array &$newEntities)
-    {
-        foreach($newEntities as $newEntity)
-        {
-            $persistedEntities[$keyPrefix.$newEntity->getId()] = $newEntity;
-        }
-        
-        unset($newEntities);
-        $newEntities = [];
-    }
-    
-    protected function insertOrUpdate($keyPrefix, $entity, array &$persistedEntities, array &$newEntities)
-    {
-        if($entity !== null)
-        {
-            if($entity->getId())
-            {
-                $persistedEntities[$keyPrefix.$entity->getId()] = $entity;
-            }else
-            {
-                $hash = md5($entity->toJSON());
-                $newEntities[$hash] = $entity;
-            }
-        }
-    }
-    
-    protected function loadPlaces($repo, Site $site)
-    {
-        $cache = [];
-        $places = $repo->findBy(['site' => $site]);
-        foreach($places as $place)
-        {
-            $cache['place'.$place->getId()] = $place;
-        }
-        
-        return $cache;
-    }
-    
-    protected function downloadImage(Agenda $agenda)
-    {
-        try
-        {
-            $url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
-            $agenda->setUrl($url);
-            //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = preg_replace("/\?(.+)/", "", pathinfo($url, PATHINFO_EXTENSION));
 
-            $filename = sha1(uniqid(mt_rand(), true)).".".$ext;
-            $result = $this->getData($url);
+    protected function displayStats(OutputInterface $output, DoctrineEventHandler $doctrineHandler) {
+        $stats = $doctrineHandler->getStats();
+        $nbExplorations = $stats['nbExplorations'];
+        $nbUpdate = $stats['nbUpdates'];
+        $nbInsert = $stats['nbInserts'];
+        $nbBlackList = $stats['nbBlacklists'];
 
-            if($result !== false)
-            {
-                // Save it to disk
-                $savePath = $agenda->getUploadRootDir()."/".$filename;
-                $fp = @fopen($savePath,'x');
+        Monitor::displayStats();
 
-                if($fp !== false)
-                {
-                    $agenda->setPath($filename);
-                    fwrite($fp, $result);
-                    fclose($fp);
-                }else
-                {
-                    $agenda->setUrl(null);
-                }
-            }else
-            {
-                $agenda->setUrl(null);
-            }
+        $this->writeln($output, sprintf('NEW: <info>%d</info>', $nbInsert));
+        $this->writeln($output, sprintf('UPDATES: <info>%d</info>', $nbUpdate));
+        $this->writeln($output, sprintf('BLACKLIST: <info>%d / %d</info>', $nbBlackList, $nbExplorations));
 
-
-        }catch(\Exception $e)
-        {
-            $agenda->setPath(null);
-            $this->get("logger")->error($e->getMessage());
-        }
+        return $stats;
     }
 
     /**

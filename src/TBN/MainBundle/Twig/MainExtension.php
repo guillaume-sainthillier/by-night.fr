@@ -15,9 +15,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @author guillaume
  */
-class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface{
+class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface {
 
     public static $LIFE_TIME_CACHE = 86400; // 3600*24
+    private $router;
     private $requestStack;
     private $doctrine;
     private $cache;
@@ -26,24 +27,29 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function __construct(ContainerInterface $container)
     {
-        //@request_stack, @site_manager, @winzou_cache, @doctrine
-	$this->requestStack = $container->get('request_stack');
-	$this->cache        = $container->get('winzou_cache');
-	$this->doctrine     = $container->get('doctrine');
+        $this->router       = $container->get('router');
+        $this->requestStack = $container->get('request_stack');
+        $this->cache        = $container->get('winzou_cache');
+        $this->doctrine     = $container->get('doctrine');
         $this->siteManager  = $container->get('site_manager');
         $this->requestStack = $container->get('request_stack');
-	$this->socials	    = [
+        $this->socials	    = [
             'facebook' => $container->get('tbn.social.facebook_admin'),
             'twitter' => $container->get('tbn.social.twitter'),
             'google' => $container->get('tbn.social.google')
         ];
     }
-    
+
+    public function getFunctions() {
+        return [
+            new \Twig_SimpleFunction('tbn_oauth_authorization_site_url', [$this, 'getAuthorizationSiteUrl']),
+            new \Twig_SimpleFunction('tbn_oauth_logout_site_url', [$this, 'getLogoutSiteUrl'])
+        ];
+    }
+
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFunction('tbn_oauth_authorization_site_url', [$this, 'getAuthorizationSiteUrl']),
-            new \Twig_SimpleFunction('tbn_oauth_logout_site_url', [$this, 'getLogoutSiteUrl']),
             new \Twig_SimpleFilter('diff_date', [$this, 'diffDate']),
             new \Twig_SimpleFilter('parse_tags', [$this, 'parseTags']),
             new \Twig_SimpleFilter('resume', [$this, 'resume']),
@@ -59,11 +65,11 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $site = $this->siteManager->getCurrentSite();
             if($site !== null && $this->requestStack->getParentRequest() === null)
             {
-                $key = "sites";
+                $key = "sites.". $site->getSubdomain();
                 if(! $this->cache->contains($key))
                 {
                     $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
-                    $sites = $repo->findBy([], ["nom" => "ASC"], 5);
+                    $sites = $repo->findRandom($site);
                     $nomSites = [];
                     foreach($sites as $site) {
                         $nomSites[] = ['nom' => $site->getNom(), 'subdomain' => $site->getSubdomain()];
@@ -90,8 +96,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
                 }
             }
         }catch(\Exception $ex) {}
-
-	return $globals;
+	    return $globals;
     }
     
     public function parseTags($texte)

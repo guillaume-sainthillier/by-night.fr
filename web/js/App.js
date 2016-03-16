@@ -20,9 +20,21 @@ var App = {
             return false;
         });
     },
+    initLazyLoading: function(selecteur) {
+        /**
+         * Initialise le lazy loading des images
+         * @param {type} selecteur
+         * @returns {undefined}
+         */
+        $(".img, .loading", selecteur || document).unveil(200, function ()
+        {
+            $(this).removeClass("loading").removeAttr("width").removeAttr("height");
+        });
+    },
     initComponents: function (selecteur)
     {
         $.material.init();
+        App.initLazyLoading(selecteur);
         App.initAutofocus(selecteur);
         App.initConnexion(selecteur);
         App.initRegister(selecteur);

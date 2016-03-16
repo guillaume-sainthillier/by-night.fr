@@ -12,7 +12,6 @@ $(function ()
 function init_soirees(selector)
 {
     init_pagination();
-    init_unveil(selector);
 }
 
 function load_infinite_scroll()
@@ -54,6 +53,7 @@ function init_pagination()
         {
             isLoading = false;
             self.replaceWith(html);
+            App.initComponents(container);
             init_soirees(container);
         });
         
@@ -107,19 +107,6 @@ function init_criteres()
         block.hide()
         .removeClass(options.css_initial_hidden);
     }
-}
-
-/**
- * Initialise le lazy loading des images
- * @param {type} selecteur
- * @returns {undefined}
- */
-function init_unveil(selecteur)
-{
-    $(".img.loading", selecteur || document).unveil(200, function ()
-    {
-        $(this).removeClass("loading").removeAttr("width").removeAttr("height");
-    });
 }
 
 /**

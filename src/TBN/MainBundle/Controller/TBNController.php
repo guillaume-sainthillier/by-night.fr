@@ -18,11 +18,10 @@ class TBNController extends Controller
             if (! $cache->contains($key)) {
                 $api    = $this->get("tbn.social.facebook_admin");
                 $retour = $api->getEventStats($id);
-                
+
                 $cache->save($key, $retour["membres"], self::$CACHE_TTL);
                 $soiree->setFbInterets($retour["nbInterets"]);
                 $soiree->setFbParticipations($retour["nbParticipations"]);
-                $soiree->preDateModification();
 
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($soiree);

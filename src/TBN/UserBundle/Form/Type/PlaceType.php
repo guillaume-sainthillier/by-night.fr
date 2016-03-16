@@ -3,6 +3,8 @@
 namespace TBN\UserBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,29 +16,28 @@ class PlaceType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('nom', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('nom', TextType::class, [
                 "required" => true,
                 "label" => "Où ça ?",
                 "attr" => [
                     "placeholder" => "Indiquez le nom du lieu"
                 ]
             ])
-           ->add('rue',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('rue', TextType::class, [
                 "required" => false,
             ])
-            ->add('latitude',SymfonyComponentFormExtensionCoreTypeHiddenType, [
+            ->add('latitude', HiddenType::class, [
                 "required" => false,
             ])
-            ->add('longitude',SymfonyComponentFormExtensionCoreTypeHiddenType, [
+            ->add('longitude', HiddenType::class, [
                 "required" => false,
             ])
-            ->add('ville', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('ville', TextType::class, [
                 "label" => "Ville"
             ])
-            ->add('codePostal',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('codePostal', TextType::class, [
                 "required" => false,
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -96,7 +96,7 @@ class Place
     protected $codePostal;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
+    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
     * @ORM\JoinColumn(nullable=false)
     */
     protected $site;

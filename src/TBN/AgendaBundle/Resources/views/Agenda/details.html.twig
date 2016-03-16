@@ -9,13 +9,13 @@
 {% endif %}
 {% set descriptionSoiree =  soiree.descriptif|parse_tags|raw  %}
 {% if soiree.webPath %}
-    {% set original = app.request.getUriForPath('/' ~ soiree.webPath) %}
+    {% set original = absolute_url(asset('/' ~ soiree.webPath)) %}
     {% set thumb = soiree.webPath|imagine_filter('thumbs_evenement') %}
 {% elseif soiree.url %}
     {% set original = soiree.url %}
     {% set thumb = original %}
 {% else %}
-    {% set original = app.request.getUriForPath('/img/empty_event.png') %}
+    {% set original = absolute_url(asset('/img/empty_event.png')) %}
     {% set thumb = 'img/empty_event.png'|imagine_filter('thumbs_evenement') %}
 {% endif %}
 
@@ -51,7 +51,7 @@
 {% block metas %}
     <link rel="image_src" href="{{ original }}" />
     <link rel="thumbnail" href="{{ thumb }}" />
-    <meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />    
+    {% if soiree.dateModification %}<meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />{% endif %}
     <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ site.facebookIdPage }}" />
     {% if soiree.user %}
         <meta property="article:author" content="{{ url('tbn_user_details', {'username': soiree.user.usernameCanonical}) }}" />

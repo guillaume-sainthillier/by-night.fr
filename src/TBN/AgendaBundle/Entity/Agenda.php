@@ -25,6 +25,7 @@ use TBN\AgendaBundle\Entity\Agenda;
  *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
  *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
  *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"}),
+ *   @ORM\Index(name="agenda_fb_idx", columns={"facebook_event_id"}),
  *   @ORM\Index(name="agenda_search_idx", columns={"date_fin", "date_debut", "site_id"})
  * })
  * 
@@ -208,14 +209,14 @@ class Agenda
     /**
      * @var string
      *
-     * @ORM\Column(name="reservation_telephone", type="string", length=128, nullable=true)
+     * @ORM\Column(name="reservation_telephone", type="string", length=255, nullable=true)
      */
     protected $reservationTelephone;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="reservation_email", type="string", length=128, nullable=true)
+     * @ORM\Column(name="reservation_email", type="string", length=255, nullable=true)
      * @Assert\Email()
      */
     protected $reservationEmail;
@@ -223,7 +224,7 @@ class Agenda
     /**
      * @var string
      *
-     * @ORM\Column(name="reservation_internet", type="string", length=255, nullable=true)
+     * @ORM\Column(name="reservation_internet", type="string", length=512, nullable=true)
      * @Assert\Url()
      */
     protected $reservationInternet;
@@ -231,7 +232,7 @@ class Agenda
     /**
      * @var string
      *
-     * @ORM\Column(name="tarif", type="string", length=128, nullable=true)
+     * @ORM\Column(name="tarif", type="string", length=255, nullable=true)
      */
     protected $tarif;
 
@@ -348,7 +349,7 @@ class Agenda
     protected $calendriers;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
+    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
     * @ORM\JoinColumn(nullable=false)
     * @Expose
     */
@@ -416,6 +417,8 @@ class Agenda
      * @Assert\Valid()
      */
     protected $place;
+
+    protected $rejectReasons;
 
     public function getAbsolutePath()
     {
@@ -546,6 +549,7 @@ class Agenda
 
     public function __construct()
     {
+        $this->rejectReasons = [];
         $this->dateDebut = new \DateTime;
         $this->place = new Place;
         $this->calendriers = new ArrayCollection();
@@ -554,7 +558,17 @@ class Agenda
     
     public function getDistinctTags() {
         $tags = $this->getCategorieManifestation().','.$this->getTypeManifestation().','.$this->getThemeManifestation();
-        return array_map('ucfirst', array_unique(array_filter(explode(',', $tags))));
+        return array_map('trim', array_map('ucfirst', array_unique(array_filter(explode(',', $tags)))));
+    }
+
+    public function addRejectReason($reason) {
+        $this->rejectReasons[] = $reason;
+
+        return $this;
+    }
+
+    public function getRejectReaons() {
+        return $this->rejectReasons;
     }
     
     /**

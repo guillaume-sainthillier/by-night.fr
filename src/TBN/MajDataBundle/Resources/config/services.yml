@@ -1,6 +1,14 @@
 parameters:
-    url_soonnight_tlse: http://www.soonnight.com/midi-pyrenees/sortir-midi-pyrenees,4.html
-    url_soonnight_paris: http://www.soonnight.com/paris/sortir-paris,4.html       
+    url_soonnight_tlse: http://www.soonnight.com/midi-pyrenees/sortir-midi-pyrenees,4.html?id_dept=15
+    url_soonnight_paris: http://www.soonnight.com/paris/sortir-paris,4.html
+    url_soonnight_marseille: http://www.soonnight.com/paca/sortir-paca,4.html?id_dept=40
+    url_soonnight_lyon: http://www.soonnight.com/rhone-alpes/sortir-rhone-alpes,4.html?id_dept=21
+    url_soonnight_brest: http://www.soonnight.com/bretagne/sortir-bretagne,4.html?id_dept=85
+    url_soonnight_nantes: http://www.soonnight.com/pays-de-la-loire/sortir-pays-de-la-loire,4.html?id_dept=89
+    url_soonnight_lille: http://www.soonnight.com/nord-pas-de-calais/sortir-nord-pas-de-calais,4.html?id_dept=32
+    url_soonnight_montpellier: http://www.soonnight.com/languedoc-roussillon/sortir-languedoc-roussillon,4.html?id_dept=26
+    url_soonnight_nice: http://www.soonnight.com/paca/sortir-paca,4.html?id_dept=11
+    url_soonnight_bordeaux: http://www.soonnight.com/aquitaine/sortir-aquitaine,4.html?id_dept=36
 
 services:
     #Parsers
@@ -10,7 +18,7 @@ services:
         class: TBN\MajDataBundle\Parser\Common\SoonNightParser
     tbn.parser.abstracts.facebook:
         class: TBN\MajDataBundle\Parser\Common\FaceBookParser
-        arguments: [@doctrine.orm.entity_manager, @tbn.firewall, @tbn.social.facebook_admin]
+        arguments: ["@doctrine.orm.entity_manager", "@tbn.firewall", "@tbn.social.facebook_admin"]
     #Toulouse
     tbn.parser.toulouse.bikini:
         class: TBN\MajDataBundle\Parser\Toulouse\BikiniParser
@@ -23,7 +31,7 @@ services:
     tbn.parser.toulouse.soonnight:
         parent: tbn.parser.abstracts.soonnight
         calls:
-            - ['setUrl', [%url_soonnight_tlse%]]
+            - ['setUrl', ["%url_soonnight_tlse%"]]
     tbn.parser.toulouse.facebook:
         parent: tbn.parser.abstracts.facebook
     #Paris
@@ -32,10 +40,66 @@ services:
     tbn.parser.paris.soonnight:
         parent: tbn.parser.abstracts.soonnight
         calls:
-            - ['setUrl', [%url_soonnight_paris%]]
+            - ['setUrl', ["%url_soonnight_paris%"]]
     tbn.parser.paris.facebook:
         parent: tbn.parser.abstracts.facebook
-    
+    #Marseille
+    tbn.parser.marseille.facebook:
+        parent: tbn.parser.abstracts.facebook
+    tbn.parser.marseille.soonnight:
+      parent: tbn.parser.abstracts.soonnight
+      calls:
+        - ['setUrl', ["%url_soonnight_marseille%"]]
+    #lyon
+    tbn.parser.lyon.facebook:
+        parent: tbn.parser.abstracts.facebook
+    tbn.parser.lyon.soonnight:
+      parent: tbn.parser.abstracts.soonnight
+      calls:
+        - ['setUrl', ["%url_soonnight_lyon%"]]
+    #brest
+    tbn.parser.brest.facebook:
+        parent: tbn.parser.abstracts.facebook
+    tbn.parser.brest.soonnight:
+      parent: tbn.parser.abstracts.soonnight
+      calls:
+        - ['setUrl', ["%url_soonnight_brest%"]]
+    #nice
+    tbn.parser.nice.facebook:
+        parent: tbn.parser.abstracts.facebook
+    tbn.parser.nice.soonnight:
+      parent: tbn.parser.abstracts.soonnight
+      calls:
+            - ['setUrl', ["%url_soonnight_nice%"]]
+    #nantes
+    tbn.parser.nantes.facebook:
+        parent: tbn.parser.abstracts.facebook
+    tbn.parser.nantes.soonnight:
+      parent: tbn.parser.abstracts.soonnight
+      calls:
+        - ['setUrl', ["%url_soonnight_nantes%"]]
+    #bordeaux
+    tbn.parser.bordeaux.facebook:
+        parent: tbn.parser.abstracts.facebook
+    tbn.parser.bordeaux.soonnight:
+      parent: tbn.parser.abstracts.soonnight
+      calls:
+        - ['setUrl', ["%url_soonnight_bordeaux%"]]
+    #lille
+    tbn.parser.lille.facebook:
+        parent: tbn.parser.abstracts.facebook
+    tbn.parser.lille.soonnight:
+      parent: tbn.parser.abstracts.soonnight
+      calls:
+        - ['setUrl', ["%url_soonnight_lille%"]]
+    #montpellier
+    tbn.parser.montpellier.facebook:
+        parent: tbn.parser.abstracts.facebook
+    tbn.parser.montpellier.soonnight:
+      parent: tbn.parser.abstracts.soonnight
+      calls:
+        - ['setUrl', ["%url_soonnight_montpellier%"]]
+        
     #Manager
     parser_manager:
         class: TBN\MajDataBundle\Parser\Manager\ParserManager
@@ -43,18 +107,21 @@ services:
     #Utils
     tbn.util:
         class: TBN\MajDataBundle\Utils\Util
+    tbn.doctrine_event_handler:
+        class: TBN\MajDataBundle\Utils\DoctrineEventHandler
+        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.social.facebook_admin", "@winzou_cache"]
     tbn.event_handler:
         class: TBN\MajDataBundle\Utils\EventHandler
-        arguments: [@file_cache, @ivory_google_map.geocoder, @tbn.firewall, @tbn.cleaner, @tbn.comparator, @tbn.merger]
+        arguments: ["@array_cache", "@ivory_google_map.geocoder", "@tbn.firewall", "@tbn.cleaner", "@tbn.comparator", "@tbn.merger"]
     tbn.comparator:
         class: TBN\MajDataBundle\Utils\Comparator
-        arguments: [@tbn.util, @winzou_cache]
+        arguments: ["@tbn.util", "@array_cache"]
     tbn.cleaner:
         class: TBN\MajDataBundle\Utils\Cleaner
-        arguments: [@tbn.util]
+        arguments: ["@tbn.util"]
     tbn.firewall:
         class: TBN\MajDataBundle\Utils\Firewall
-        arguments: [@winzou_cache, @doctrine, @tbn.comparator]
+        arguments: ["@doctrine", "@tbn.comparator"]
     tbn.merger:
         class: TBN\MajDataBundle\Utils\Merger
-        arguments: [@tbn.comparator]
+        arguments: ["@tbn.comparator"]

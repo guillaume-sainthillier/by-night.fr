@@ -4,6 +4,7 @@ namespace TBN\MajDataBundle\Parser\Common;
 
 use Symfony\Component\DomCrawler\Crawler;
 use TBN\MajDataBundle\Parser\LinksParser;
+use \ForceUTF8\Encoding;
 
 /**
  * Description of SoonNightParser
@@ -93,7 +94,7 @@ class SoonNightParser extends LinksParser {
             "réservation simple et rapide au ",
             "Afficher le numéro du service de mise en relation"
         ];
-        $clean_descriptif                       = str_replace($black_list,"",$descriptif);
+        $clean_descriptif                       = $this->decodeNumCharacter(str_replace($black_list,"",$descriptif));
         $tab_retour['descriptif']               = $clean_descriptif;
 
         //Catégorie & Thème
@@ -140,6 +141,9 @@ class SoonNightParser extends LinksParser {
 
     protected function decodeNumCharacter($t)
     {
+        return Encoding::UTF8FixWin1252Chars(Encoding::fixUTF8($t));
+        return Encoding::toUTF8($t);
+
         $convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
         return mb_decode_numericentity($t, $convmap, 'UTF-8');
     }
@@ -162,5 +166,10 @@ class SoonNightParser extends LinksParser {
         }
 
         return $node;
+    }
+
+    public function isTrustedLocation()
+    {
+        return false;
     }
 }

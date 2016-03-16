@@ -2,10 +2,12 @@
 
 namespace TBN\AdministrationBundle\Controller;
 
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use TBN\MainBundle\Entity\Site;
 use TBN\MainBundle\Form\Type\SiteType;
+
 class SiteController extends Controller
 {
     public function listAction()
@@ -22,27 +24,26 @@ class SiteController extends Controller
     {
         $site = new Site;
 
-        $form = $this->createForm(new SiteType(),$site,[
+        $form = $this->createForm(new SiteType(), $site, [
             'action' => $this->generateUrl('tbn_administration_site_new'),
             'method' => 'POST'
         ])
-        ->add("ajouter", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,[
-            "label" => "ajouter",
-            "attr" => [
-                "class" => "btn btn-primary"
-            ]
-        ]);
+            ->add("ajouter", SubmitType::class, [
+                "label" => "ajouter",
+                "attr" => [
+                    "class" => "btn btn-primary"
+                ]
+            ]);
 
         $form->handleRequest($request);
-        if ($form->isValid())
-        {
+        if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($site);
             $em->flush();
 
             $this->get('session')->getFlashBag()->add(
                 'info',
-                'Le site <b>'.$site->getNom()."</b> a bien été ajouté"
+                'Le site <b>' . $site->getNom() . "</b> a bien été ajouté"
             );
             return $this->redirect($this->generateUrl('tbn_administration_site_index'));
         }
@@ -55,32 +56,31 @@ class SiteController extends Controller
 
     public function editAction(Request $request, Site $site)
     {
-        $form = $this->createForm(new SiteType(),$site,[
-            'action' => $this->generateUrl('tbn_administration_site_edit',[
+        $form = $this->createForm(new SiteType(), $site, [
+            'action' => $this->generateUrl('tbn_administration_site_edit', [
                 "id" => $site->getId()
             ]),
             'method' => 'POST'
         ])
-        ->add("modifier", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class,[
-            "label" => "Modifier",
-            "attr" => [
-                "class" => "btn btn-primary"
-            ]
-        ]);
+            ->add("modifier", SubmitType::class, [
+                "label" => "Modifier",
+                "attr" => [
+                    "class" => "btn btn-primary"
+                ]
+            ]);
 
         $form->handleRequest($request);
-        if ($form->isValid())
-        {
+        if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($site);
             $em->flush();
 
             $this->get('session')->getFlashBag()->add(
                 'info',
-                'Le site <b>'.$site->getNom()."</b> a bien été modifié"
+                'Le site <b>' . $site->getNom() . "</b> a bien été modifié"
             );
             return $this->redirect($this->generateUrl('tbn_administration_site_index'));
-        }        
+        }
 
         return $this->render('TBNAdministrationBundle:Site:edit.html.twig', [
             'form' => $form->createView(),

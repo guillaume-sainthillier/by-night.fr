@@ -1,6 +1,4 @@
-{% for event in events %}
-    {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'soiree': event}) %}
-{% endfor %}
+{% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" with({'events': events}) %}
 
 {% if events|length == maxItems %}
     <div>

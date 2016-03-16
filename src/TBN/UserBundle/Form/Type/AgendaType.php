@@ -3,6 +3,8 @@
 namespace TBN\UserBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use TBN\UserBundle\Entity\SiteInfo;
@@ -35,34 +37,34 @@ class AgendaType extends AbstractType
     public function __construct(SiteInfo $siteInfo, User $user, array $options)
     {
         $this->siteInfo = $siteInfo;
-        $this->user     = $user;
+        $this->user = $user;
         $this->userInfo = $user->getInfo();
-        $this->options  = $options;
+        $this->options = $options;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nom',\Symfony\Component\Form\Extension\Core\Type\TextType::class,[
+            ->add('nom', TextType::class, [
                 "label" => "Titre",
                 "attr" => [
                     "placeholder" => "Choisissez un titre accrocheur..."
                 ]
             ])
-            ->add('descriptif','textarea',[
+            ->add('descriptif', 'textarea', [
                 "label" => "Description",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Décrivez votre événement...",
                 ]
             ])
-            ->add('file','file', [
+            ->add('file', 'file', [
                 "label" => "Affiche / Flyer",
                 "required" => false,
                 'image_path' => 'webPath',
-		'image_filter' => 'thumb_evenement'
+                'image_filter' => 'thumb_evenement'
             ])
-            ->add('dateDebut',\Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add('dateDebut', DateType::class, [
                 "label" => "A partir du ",
                 'widget' => 'single_text',
                 "required" => true,
@@ -71,7 +73,7 @@ class AgendaType extends AbstractType
                     "placeholder" => "Le / Du..."
                 ]
             ])
-            ->add('dateFin',\Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add('dateFin', DateType::class, [
                 "label" => "Jusqu'au",
                 'widget' => 'single_text',
                 "required" => false,
@@ -80,7 +82,7 @@ class AgendaType extends AbstractType
                     "placeholder" => "Au..."
                 ]
             ])
-            ->add('horaires',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('horaires', TextType::class, [
                 "label" => "Horaires",
                 "required" => false,
                 "attr" => [
@@ -88,82 +90,74 @@ class AgendaType extends AbstractType
                 ]
             ]);
 
-        foreach($this->options as $service => $config)
-        {
+        foreach ($this->options as $service => $config) {
             $nomService = $config["nom"];
             $accessService = ucfirst($service);
-            if($nomService === '')
-            {
+            if ($nomService === '') {
                 $nomService = $accessService;
             }
 
-            $getter = "get".$accessService."AccessToken";
+            $getter = "get" . $accessService . "AccessToken";
             $is_api_ready = ($config["enabled"] && $this->siteInfo && $this->siteInfo->$getter());
-            
-            if(! $is_api_ready)
-            {
-                $message = "L'accès à ".$nomService." est momentanément désactivé";
+
+            if (!$is_api_ready) {
+                $message = "L'accès à " . $nomService . " est momentanément désactivé";
                 $post_checked = false;
                 $post_disabled = true;
-            }else
-            {
-                if($service === "facebook")
-                {
+            } else {
+                if ($service === "facebook") {
                     $role = "ROLE_FACEBOOK_EVENTS";
-                }else
-                {
-                    $role = "ROLE_".strtoupper($service);
+                } else {
+                    $role = "ROLE_" . strtoupper($service);
                 }
                 $post_disabled = false;
                 $post_checked = $this->user->hasRole($role);
 
-                if($post_checked)
-                {
+                if ($post_checked) {
                     $info = $this->user->getInfo();
-                    $getter = "get".$accessService."Nickname";
-                    $message = "Connecté sous ".($service === 'twitter' ? '@': '').$info->$getter();
-                }else
-                {
-                    $message = "Connectez vous à ".$nomService;
+                    $getter = "get" . $accessService . "Nickname";
+                    $message = "Connecté sous " . ($service === 'twitter' ? '@' : '') . $info->$getter();
+                } else {
+                    $message = "Connectez vous à " . $nomService;
                 }
             }
 
-            $builder->add('share_' .$service,'checkbox', [
-                "label" => "Poster mon événement sur " .$nomService,
+            $builder->add('share_' . $service, 'checkbox', [
+                "label" => "Poster mon événement sur " . $nomService,
                 "required" => false,
                 "mapped" => false,
                 "disabled" => $post_disabled,
                 "data" => $post_checked,
                 "attr" => array(
-                    "class" => "social_post onoffswitch-checkbox ".($post_checked ? "checked" : ""),
+                    "class" => "social_post onoffswitch-checkbox " . ($post_checked ? "checked" : ""),
                     "data-connected" => (!$post_disabled && $post_checked) ? "1" : "0",
                     "data-message" => $message
                 )
             ]);
         }
 
-            $builder->add('tarif',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
-                "label" => "Tarif",
-                "required" => false,
-                "attr" => [
-                    "placeholder" => "17€ avec préventes, 20€ sur place"
-                ]
-            ])
-            ->add('categorieManifestation',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+        $builder->add('tarif', TextType::class, [
+            "label" => "Tarif",
+            "required" => false,
+            "attr" => [
+                "placeholder" => "17€ avec préventes, 20€ sur place"
+            ]
+        ])
+            ->add('categorieManifestation', TextType::class, [
                 "label" => "Catégorie",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Concert, Spectacle, ..."
                 ]
             ])
-            ->add('themeManifestation',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('themeManifestation', TextType::class, [
                 "label" => "Thèmes",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Humour, Tragédie, Jazz, Rock, Rap, ..."
                 ]
             ])
-            ->add('adresse', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('adresse', TextType::class, [
                 "required" => false,
                 "label" => "Adresse",
                 "attr" => [
@@ -173,28 +167,27 @@ class AgendaType extends AbstractType
             ->add('place', new PlaceType, [
                 "label" => false,
             ])
-            ->add('reservationInternet','url', [
+            ->add('reservationInternet', 'url', [
                 "label" => "Réservation par internet",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "L'URL où trouver un billet"
                 ]
             ])
-            ->add('reservationTelephone',\Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('reservationTelephone', TextType::class, [
                 "label" => "Réservation téléphonique",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Le numéro à appeler pour acheter un billet"
                 ]
             ])
-            ->add('reservationEmail','email', [
+            ->add('reservationEmail', 'email', [
                 "label" => "Réservation par mail",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Le mail pour vous contacter"
                 ]
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -5,11 +5,17 @@ namespace TBN\MajDataBundle\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use TBN\AgendaBundle\Entity\Agenda;
 
+use TBN\AgendaBundle\Entity\Place;
+use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Entity\HistoriqueMaj;
+use TBN\MajDataBundle\Utils\DoctrineEventHandler;
+use TBN\MajDataBundle\Utils\Monitor;
 
 
 /**
@@ -19,259 +25,185 @@ use TBN\MajDataBundle\Entity\HistoriqueMaj;
  */
 class UpdateCommand extends EventCommand
 {
-
+    /**
+     * @var ContainerInterface
+     */
     protected $container;
-    
+
     protected function configure()
     {
         $this
             ->setName('events:update')
             ->setDescription('Mettre à jour les événements sur By Night')
-            ->addArgument('site',       InputArgument::REQUIRED,    'Quel site voulez-vous mettre à jour ?')
-            ->addArgument('parser',     InputArgument::OPTIONAL,    'Si défini, le nom du parser à lancer, sinon tous les parsers disponibles')
-        ;
+            ->addArgument('site', InputArgument::REQUIRED, 'Quel site voulez-vous mettre à jour ?')
+            ->addArgument('parser', InputArgument::OPTIONAL, 'Si défini, le nom du parser à lancer, sinon tous les parsers disponibles');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
-    {        
+    {
         try {
+            //Début de construction de l'historique de la MAJ
+            $historique = new HistoriqueMaj();
 
-	//Début de construction de l'historique de la MAJ
-	$historique         = new HistoriqueMaj();
+            //Récupération des arguments / options
+            $subdomainSite = $input->getArgument('site');
+            $parserName = $input->getArgument('parser');
+            $env = $input->getOption('env');
 
-        //Récupération des arguments / options
-        $subdomainSite      = $input->getArgument('site');
-        $parserName         = $input->getArgument('parser');
-        $env                = $input->getOption('env');
+            //Récupérations des dépendances
+            $this->container = $this->getContainer();
+            $parserManager = $this->container->get('parser_manager');
+            $em = $this->container->get('doctrine')->getManager();
+            /**
+             * @var DoctrineEventHandler $doctrineHandler
+             */
+            $doctrineHandler = $this->container->get('tbn.doctrine_event_handler');
 
-        //Récupérations des dépendances
-        $this->container    = $this->getContainer();
-        $parserManager      = $this->container->get('parser_manager');
-        $em                 = $this->container->get('doctrine')->getManager();
-        $firewall           = $this->container->get('tbn.firewall');
-        $handler            = $this->container->get('tbn.event_handler');
+            //Récupération des repos
+            $em->getConnection()->getConfiguration()->setSQLLogger(null);
+            $repoSite = $em->getRepository('TBNMainBundle:Site');
+            $repoSiteInfo = $em->getRepository('TBNUserBundle:SiteInfo');
 
-        //Récupération des repos
-        $em->getConnection()->getConfiguration()->setSQLLogger(null);
-        $repo               = $em->getRepository('TBNAgendaBundle:Agenda');
-        $repoPlace          = $em->getRepository('TBNAgendaBundle:Place');
-        $repoSite           = $em->getRepository('TBNMainBundle:Site');
-        $repoSiteInfo       = $em->getRepository('TBNUserBundle:SiteInfo');
-	
-        //Récupération du site demandé par l'user
-        $site               = $repoSite->findOneBy(['subdomain' => $subdomainSite]);
-        $siteInfo           = $repoSiteInfo->findOneBy([]);
+            //Récupération du site demandé par l'user
+            $site = $repoSite->findOneBy(['subdomain' => $subdomainSite]);
+            $siteInfo = $repoSiteInfo->findOneBy([]);
 
-	if($site === null)
-        {
-            throw new RuntimeException(sprintf('<error>Le site %s demandé est introuvable en base</error>', $subdomainSite));
-        }
-        
-        //Chargement des explorations existantes en base
-        $firewall->loadExplorations($site);
-        $key = "TBN\MajDataBundle\Entity\Exploration";
-        
-        $em->clear($key);
+            Monitor::$output = $output;
+            Monitor::$log = false;
 
-        //Définition des parsers disponibles pour chaque site
-        $parsers = [
-            'toulouse' => [
-                'toulouse',
-                'tourisme',
-                'bikini',
-		'soonnight',
-                'facebook',
-            ],
-            'paris' => [
-                'tourisme',
-                'soonnight',
-                'facebook'
-            ]
-        ];
-        
-        $this->writeln($output, sprintf('<info>[%s]</info> Mise à jour de <info>%s By Night</info>...', $env, $site->getNom()));
-
-        //Récupération des parsers
-        foreach($parsers[$subdomainSite] as $serviceName)
-        {
-            if(!$parserName || $serviceName === $parserName)
-            {
-                $parser = $this->container->get('tbn.parser.'.$subdomainSite.'.'.$serviceName);
-		
-		//Dépendances dynamiques liées aux différents parsers
-		$parser->setOutput($output)->setSite($site)->setSiteInfo($siteInfo);
-    
-                $parserManager->add($parser);
+            if ($site === null) {
+                throw new RuntimeException(sprintf('<error>Le site %s demandé est introuvable en base</error>', $subdomainSite));
             }
-        }
-        
-        //Récupération des événements
-        $start = microtime(true);
-        $agendas = $parserManager->getAgendas($output);
-        $end = microtime(true);
-        $this->writeln($output, 'Récupération : <info>'.round((($end - $start)*1000.0)).' ms</info>');
 
-        //Récupération des places & villes
-        $persistedPlaces = $this->loadPlaces($repoPlace, $site);
+            //Chargement des explorations existantes en base
+            $doctrineHandler->init($site, true);
 
-        $persistedEvents    = [];
-        $unpersistedEvents  = [];
-        $unpersistedPlaces  = [];
-        
-        $nbExplorations = 0;
-        $nbUpdate = 0;
-        $nbInsert = 0;
-        $nbBlackList = 0;
-        $batchSize = 100;
-        $size = ceil(count($agendas) / $batchSize);        
-        
-        $progress = new ProgressBar($output, $size);
-        $progress->start();
-        $start = microtime(true);
-        foreach($agendas as $i => $agenda)
-        {
-            $fullPlaces = array_merge($persistedPlaces, $unpersistedPlaces);
-            //Gestion de l'événement + sa place et sa ville associée
-            $tmpAgenda = $handler->handle($fullPlaces, $site, $agenda);
+            //Définition des parsers disponibles pour chaque site
+            $parsers = [
+                'toulouse' => [
+                    'toulouse',
+                    'tourisme',
+                    'bikini',
+                    'soonnight',
+                    'facebook',
+                ],
+                'paris' => [
+                    'tourisme',
+                    'soonnight',
+                    'facebook'
+                ],
+                'montpellier' => ['soonnight', 'facebook'],
+                'lyon' => ['soonnight', 'facebook'],
+                'lille' => ['soonnight', 'facebook'],
+                'nice' => ['soonnight', 'facebook'],
+                'nantes' => ['soonnight', 'facebook'],
+                'marseille' => ['soonnight', 'facebook'],
+                'bordeaux' => ['soonnight', 'facebook'],
+                'brest' => ['soonnight', 'facebook'],
+            ];
 
-	    if($tmpAgenda === null || ! $tmpAgenda->getDateDebut() instanceof \DateTime || ! $tmpAgenda->getDateFin() instanceof \DateTime)
-	    {
-		$tmpAgenda = null;
-	    }else
-	    {
-		//Récupération des events de la même période en base	
-                $currentPersistedEvents = $this->loadAgendasByDates($repo, $tmpAgenda, $persistedEvents);
-                $key = $this->getAgendaCacheKey($tmpAgenda);
-                if(! isset($unpersistedEvents[$key]))
-                {
-                    $unpersistedEvents[$key] = [];
+            $this->writeln($output, sprintf('<info>[%s]</info> Mise à jour de <info>%s By Night</info>...', $env, $site->getNom()));
+
+            //Récupération des parsers
+            foreach ($parsers[$subdomainSite] as $serviceName) {
+                if (!$parserName || $serviceName === $parserName) {
+                    $parser = $this->container->get('tbn.parser.' . $subdomainSite . '.' . $serviceName);
+
+                    //Dépendances dynamiques liées aux différents parsers
+                    $parser->setOutput($output)->setSite($site)->setSiteInfo($siteInfo);
+                    $parserManager->add($parser);
                 }
-                $currentUnpersistedEvents = $unpersistedEvents[$key];
-                
-		//Gestion & filtrage de l'événement
-                $fullEvents = array_merge($currentPersistedEvents, $currentUnpersistedEvents);
-		$tmpAgenda = $handler->handleEvent($fullEvents, $tmpAgenda);
-	    }
-            
-            if($tmpAgenda !== null)
-            {
-                //Récupération de l'image distante si besoin
-                if($env !== 'prod' && $tmpAgenda->getPath() === null && $tmpAgenda->getUrl() !== null)
-                {
-                    $handler->downloadImage($tmpAgenda);
-                }
-
-                //Persistence en base
-                $tmpAgenda->preDateModification();
-                $managedAgenda = $em->merge($tmpAgenda);
-                
-                //MAJ des tableaux
-                $this->insertOrUpdate('agenda', $managedAgenda, $currentPersistedEvents, $currentUnpersistedEvents);
-                $this->postManage($managedAgenda, $persistedPlaces, $unpersistedPlaces);
-                
-                //Stats
-                if(! $firewall->isPersisted($managedAgenda))
-                {
-                    $nbInsert++;
-                }else
-                {
-                    $nbUpdate++;
-                }
-            }else
-            {
-                $nbBlackList++;
             }
-            
-            //Commit
-            if(($i % $batchSize) === 0)
-            {
-                $start = microtime(true);
-                
-                //Gestion des explorations + historique de la maj
-                $explorations = $firewall->getExplorationsToSave();
-                $nbExplorations += count($explorations);
-                foreach($explorations as $exploration)
-                {
-                    $em->merge($exploration);
-                }               
-                $em->flush();
-                $firewall->flushNewExplorations(); 
-                
-                //Les événements sont maintenants persistés en base
-                foreach($unpersistedEvents as $key => &$newPersistedEvents)
-                {
-                    $currentPersistedEvents = $persistedEvents[$key];
-                    $this->mergeNewEntities('event', $currentPersistedEvents, $newPersistedEvents);
-                }
-                $this->postFlush($persistedPlaces, $unpersistedPlaces);
-                $progress->advance();
-            }            
-        }              
-        $end = microtime(true);
-	$em->flush(); 
-        $progress->finish();
-        $this->writeln($output, 'Persistance : <info>'.round((($end - $start)*1000.0)).' ms</info>');        
 
-        $explorations = $firewall->getExplorationsToSave();
-        $nbExplorations += count($explorations);
-	$historique
+            //Récupération des événements
+            $agendas = Monitor::bench('Récupération Parser', function() use(&$parserManager, &$output) {
+                return $parserManager->getAgendas($output);
+            }, true);
+//            $agendas = array_slice($agendas, 0, 100);
+
+            $batchSize = 50;
+            $size = ceil(count($agendas) / $batchSize);
+
+
+            $progress = new ProgressBar($output, $size);
+            $progress->start();
+            foreach ($agendas as $i => $agenda) {
+                if(! $agenda->getSite()) {
+                    $agenda->setSite($site);
+                }
+                if($agenda->getPlace() && !$agenda->getPlace()->getSite()) {
+                    $agenda->getPlace()->setSite($site);
+                }
+
+                $doctrineHandler->handleEvent($agenda, $env !== 'prod');
+                if (($i % $batchSize) === $batchSize - 1) {
+                    $doctrineHandler->flush();
+                    $progress->advance();
+                }
+            }
+            $doctrineHandler->flush();
+            $progress->finish();
+            $this->writeln($output, '');
+
+            $stats = $this->displayStats($output, $doctrineHandler);
+            $nbExplorations = $stats['nbExplorations'];
+            $nbUpdate = $stats['nbUpdates'];
+            $nbInsert = $stats['nbInserts'];
+            $nbBlackList = $stats['nbBlacklists'];
+
+            $historique
                 ->setFromData($parserName ?: 'tous')
                 ->setExplorations($nbBlackList + $nbExplorations)
                 ->setNouvellesSoirees($nbInsert)
                 ->setUpdateSoirees($nbUpdate)
-                ->setSite($site)
-        ;
+                ->setSite($site);
 
-        $progress->start(ceil(count($explorations) / $batchSize));
-        $i = 0;        
-	foreach($explorations as $exploration)
-	{
-	    $em->merge($exploration);
-            if (($i % $batchSize) === 0) {
-                $progress->advance();
-                $em->flush();
-            }
-            $i++;
-	}
-	
-        $em->merge($historique->setDateFin(new \DateTime));
-        $em->flush();
-        $progress->finish();
-        $this->writeln($output, 'NEW: <info>'.$nbInsert.'</info>');
-        $this->writeln($output, 'UPDATES: <info>'.$nbUpdate.'</info>');
-        $this->writeln($output, 'BLACKLIST: <info>'.$nbBlackList.' + '.$nbExplorations.'</info>');
-        
-        } catch(\Exception $e)
-        {
+            $em->merge($historique->setDateFin(new \DateTime));
+            $em->flush();
+
+        } catch (\Exception $e) {
             $this->writeln($output, $e->getTraceAsString());
             throw new \Exception('Erreur dans le traitement', 0, $e);
         }
     }
-    
-    private function loadAgendasByDates($repo, Agenda $agenda, array &$persistedEvents)
+
+    /**
+     * Loads the ContainerBuilder from the cache.
+     *
+     * @return ContainerBuilder
+     *
+     * @throws \LogicException
+     */
+    protected function getContainerBuilder()
     {
-        //Récupération des events de la même période en base
-        $key = $this->getAgendaCacheKey($agenda);
-        if(! isset($persistedEvents[$key]))
-        {
-            $agendas = $repo->findBy([
-                'dateDebut' => $agenda->getDateDebut(),
-                'dateFin' => $agenda->getDateFin(),
-                'site' => $agenda->getSite()
-            ]);
-            
-            $persistedEvents[$key] = [];
-            foreach($agendas as $persistedAgenda)
-            {
-                $persistedEvents[$key][$persistedAgenda->getId()] = $persistedAgenda;
-            }
+        if ($this->containerBuilder) {
+            return $this->containerBuilder;
         }
-        
-        return $persistedEvents[$key];
+
+        if (!is_file($cachedFile = $this->getContainer()->getParameter('debug.container.dump'))) {
+            throw new \LogicException(sprintf('Debug information about the container could not be found. Please clear the cache and try again.'));
+        }
+
+        $container = new ContainerBuilder();
+
+        $loader = new XmlFileLoader($container, new FileLocator());
+        $loader->load($cachedFile);
+
+        return $this->containerBuilder = $container;
     }
-    
-    private function getAgendaCacheKey(Agenda $agenda)
+
+    private function findServiceIdsContaining(ContainerBuilder $builder, $name)
     {
-        return $agenda->getSite()->getId().'.'.$agenda->getDateDebut()->format('Y-m-d').'.'.$agenda->getDateFin()->format('Y-m-d');
+        $serviceIds = $builder->getServiceIds();
+        $foundServiceIds = array();
+        $name = strtolower($name);
+        foreach ($serviceIds as $serviceId) {
+            if (false === strpos($serviceId, $name)) {
+                continue;
+            }
+            $foundServiceIds[] = $serviceId;
+        }
+
+        return $foundServiceIds;
     }
 }

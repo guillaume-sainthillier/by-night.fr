@@ -3,7 +3,8 @@
 namespace TBN\MainBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\RouterInterface;
 use TBN\MainBundle\Site\SiteManager;
 use Doctrine\ORM\EntityManager;
 
@@ -12,9 +13,11 @@ class SubDomainListener {
     private $siteManager;
     private $em;
     private $baseHost;
+    private $router;
     
-    public function __construct(SiteManager $siteManager, EntityManager $em, $baseHost) {
+    public function __construct(SiteManager $siteManager, EntityManager $em, RouterInterface $router, $baseHost) {
         $this->siteManager = $siteManager;
+        $this->router = $router;
         $this->em = $em;
         $this->baseHost = $baseHost;
     }
@@ -44,12 +47,11 @@ class SubDomainListener {
                 ->findOneBy(['subdomain' => $subdomain]);                  
                 
             if (!$site || !$site->isActif()) {
-                throw new NotFoundHttpException(sprintf(
-                        'Le sous domaine "%s" est introuvable sur "%s"', $subdomain, $this->baseHost
-                ));
+                $response = new RedirectResponse($this->router->generate('tbn_main_index'));
+                $event->setResponse($response);
+            }else {
+                $this->siteManager->setCurrentSite($site);
             }
-            
-            $this->siteManager->setCurrentSite($site);
         }            
     }
 }

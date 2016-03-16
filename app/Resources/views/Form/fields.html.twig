@@ -5,7 +5,7 @@
     {% if image_url is not null %}
         <img src="{{ image_url|imagine_filter(image_filter) }}" class="img-responsive display_inline_block margin_right_15" />
     {% endif %}
-    <input type="text" readonly class="form-control floating-label" placeholder="Télécharger..." />
+    {#<input type="text" readonly class="form-control floating-label" placeholder="Télécharger..." />#}
     {{ block('form_widget') }}
 {%- endspaceless -%}{% endblock %}
 

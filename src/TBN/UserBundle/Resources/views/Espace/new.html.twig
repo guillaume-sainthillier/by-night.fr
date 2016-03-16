@@ -2,63 +2,67 @@
 
 {% block start_container -%}
 <div class="container" id="container">
-{%- endblock %}
-            
-{% block titre_espace %}
-    Créer un nouvel événement
-{% endblock %}
+    {%- endblock %}
 
-{% block title_espace %}
-    Nouvel événement
-{% endblock %}
+    {% block titre_espace %}
+        Créer un nouvel événement
+    {% endblock %}
 
-{% block breadcrumb_espace %}
-    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", path('tbn_agenda_list')) %}
-    {% set item = menu.addItem("Nouveau", path('tbn_agenda_new')) %}
-{% endblock %}
+    {% block title_espace %}
+        Nouvel événement
+    {% endblock %}
 
-{% block body_espace %}
-    <div class="mon_evenement">
-        {% block body_form %}
-            {{ form_start(form) }}            
-            {{ form_errors(form) }}            
-            <div class="row">
-                <div class="col-md-6">
-                    {% include "TBNUserBundle:Espace:event_part_1.html.twig" %}
-                    {% include "TBNUserBundle:Espace:event_part_4.html.twig" %}
-                </div>      
-                <div class="col-md-6">
-                   {% include "TBNUserBundle:Espace:event_part_2.html.twig" %}     
-                   {% include "TBNUserBundle:Espace:event_part_3.html.twig" %}         
-                </div> 
-            </div>
-            <hr />
-            <div class="row">
-                <div class="col-md-4 text-left">
-                    {% block button_submit %}
-                        {{ form_row(form.ajouter) }}
-                    {% endblock %}
+    {% block breadcrumb_espace %}
+        {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
+        {% set item = menu.addItem("Mes événements", path('tbn_agenda_list')) %}
+        {% set item = menu.addItem("Nouveau", path('tbn_agenda_new')) %}
+    {% endblock %}
+
+    {% block body_espace %}
+        <div class="mon_evenement">
+            {% block body_form %}
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {% include "TBNUserBundle:Espace:event_part_1.html.twig" %}
+                        {% include "TBNUserBundle:Espace:event_part_4.html.twig" %}
+                    </div>
+                    <div class="col-md-6">
+                        {% include "TBNUserBundle:Espace:event_part_2.html.twig" %}
+                        {% include "TBNUserBundle:Espace:event_part_3.html.twig" %}
+                    </div>
                 </div>
-            </div>
-            {{ form_rest(form) }}
-            {{ form_end(form) }}
-        {% endblock %}
-        <br />
-        <br />
-        <br />
-        <a class="btn btn-default btn-raised bg-white" href="{{ path('tbn_agenda_list') }}" title="Retourner à mes soirées">Retour</a>
-    </div>
-{% endblock %}
+                <hr/>
+                <div class="row">
+                    <div class="col-md-4 text-left">
+                        {% block button_submit %}
+                            {{ form_row(form.ajouter) }}
+                        {% endblock %}
+                    </div>
+                </div>
+                {{ form_rest(form) }}
+                {{ form_end(form) }}
+            {% endblock %}
+            <br/>
+            <br/>
+            <br/>
+            <a class="btn btn-default btn-raised bg-white" href="{{ path('tbn_agenda_list') }}"
+               title="Retourner à mes soirées">
+                <i class="fa fa-chevron-left"></i>
+                Retour
+            </a>
+        </div>
+    {% endblock %}
 
-{% block css_agenda %}
-<link rel="stylesheet" href="{{ asset('prod/espace-perso/evenements/css/manager.min.css') }}" type="text/css" >
-{% endblock %}
+    {% block css_agenda %}
+        <link rel="stylesheet" href="{{ asset('prod/espace-perso/evenements/css/manager.min.css') }}" type="text/css">
+    {% endblock %}
 
-{% block head_js_espace %}
-    <script src="//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=fr&libraries=places"></script>
-{% endblock %}
+    {% block head_js_espace %}
+        <script src="//maps.googleapis.com/maps/api/js?v=3.exp&key={{ googleMapKey }}&language=fr&libraries=places"></script>
+    {% endblock %}
 
-{% block js_espace %}
-<script src="{{ asset('prod/espace-perso/evenements/js/manager.min.js') }}" type="text/javascript"></script>
-{% endblock %}
+    {% block js_espace %}
+        <script src="{{ asset('prod/espace-perso/evenements/js/manager.min.js') }}" type="text/javascript"></script>
+    {% endblock %}

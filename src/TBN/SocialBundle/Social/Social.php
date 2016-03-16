@@ -80,7 +80,7 @@ abstract class Social {
             throw new SocialException("Le paramètre 'secret' est absent");
         }
 
-        $this->id		= $config["id"];
+        $this->id		    = $config["id"];
         $this->secret		= $config["secret"];
         $this->siteManager	= $siteManager;
         $this->tokenStorage	= $tokenStorage;

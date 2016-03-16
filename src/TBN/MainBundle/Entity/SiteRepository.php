@@ -12,4 +12,15 @@ use Doctrine\ORM\EntityRepository;
  */
 class SiteRepository extends EntityRepository
 {
+    public function findRandom(Site $site, $limit = 5) {
+        $qb = $this->createQueryBuilder('s');
+        $qb->where('s.id != :id')
+            ->setParameter('id', $site->getId());
+
+        $results = $qb->getQuery()
+            ->getResult();
+
+        shuffle($results);
+        return array_slice($results, 0, $limit);
+    }
 }

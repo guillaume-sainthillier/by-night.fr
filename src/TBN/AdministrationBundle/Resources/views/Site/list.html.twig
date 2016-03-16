@@ -7,10 +7,15 @@
 {% block titre_site %}
     Sites
 {% endblock %}
+
+{% block helper_top %}
+<div class="text-center">
+    <a class="btn btn-success btn-raised" href="{{ path('tbn_administration_site_new') }}"><i class="fa fa-plus"></i> Nouvau site</a>
+</div>
+<br />
+{% endblock %}
     
 {% block body_site %}
-    
-    <a href="{{ path('tbn_administration_site_new') }}" class="btn btn-primary">Nouveau</a>
     <table class="table table-striped">
         <thead>
             <tr>

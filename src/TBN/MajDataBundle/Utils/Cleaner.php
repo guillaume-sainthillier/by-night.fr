@@ -11,7 +11,8 @@ use TBN\MajDataBundle\Utils\Util;
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
-class Cleaner {
+class Cleaner
+{
 
     private $util;
 
@@ -22,31 +23,31 @@ class Cleaner {
 
     public function cleanEvent(Agenda $agenda)
     {
-        if(!$agenda->getDateFin() instanceof \DateTime)
-        {
+        if (!$agenda->getDateFin() instanceof \DateTime) {
             $agenda->setDateFin($agenda->getDateDebut());
         }
 
-	if($agenda->getDateFin() < $agenda->getDateDebut())
-	{
-	    $lastDate = $agenda->getDateDebut();
-	    $agenda->setDateDebut($agenda->getDateFin())->setDateFin($lastDate);
-	}
+        if ($agenda->getDateFin() < $agenda->getDateDebut()) {
+            $lastDate = $agenda->getDateDebut();
+            $agenda->setDateDebut($agenda->getDateFin())->setDateFin($lastDate);
+        }
 
         return $agenda->setNom($this->clean($agenda->getNom()) ?: null)
-                ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
+            ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
+            ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127))
+            ->setReservationTelephone(substr($agenda->getReservationTelephone(), 0, 127))
+            ->setReservationInternet(substr($agenda->getReservationInternet(), 0, 511))
         ;
     }
 
     public function getCleanedPlace(Place $place)
     {
         return $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
-                ->setRue($this->cleanNormalString($place->getRue()) ?: null)
-                ->setLatitude($this->util->replaceNonNumericChars($place->getLatitude()) ?: null)
-                ->setLongitude($this->util->replaceNonNumericChars($place->getLongitude()) ?: null)
-                ->setVille($this->cleanPostalString($place->getVille()) ?: null)
-                ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null)
-        ;
+            ->setRue($this->cleanNormalString($place->getRue()) ?: null)
+            ->setLatitude($this->util->replaceNonNumericChars($place->getLatitude()) ?: null)
+            ->setLongitude($this->util->replaceNonNumericChars($place->getLongitude()) ?: null)
+            ->setVille($this->cleanPostalString($place->getVille()) ?: null)
+            ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
     }
 
     private function clean($string)

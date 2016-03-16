@@ -43,7 +43,7 @@ class TBNMainBundle extends Bundle
                         'tbn_agenda_plus'
                     ];
                     
-                    $agendas = $em->getRepository('TBNAgendaBundle:Agenda')->findBy(['site' => $site]);
+                    $agendas = $em->getRepository('TBNAgendaBundle:Agenda')->findBy(['site' => $site->getId()]);
                     foreach($agendas as $agenda) {
                         $url = $router->generate('tbn_agenda_details', ['subdomain' => $site->getSubdomain(), 'slug' => $agenda->getSlug()], true);
                         $event->getGenerator()->addUrl(

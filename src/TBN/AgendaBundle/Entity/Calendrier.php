@@ -63,6 +63,7 @@ class Calendrier
      */
     public function __construct()
     {
+        $this->lastDate = new \DateTime();
         $this->participe = false;
         $this->interet = false;
     }

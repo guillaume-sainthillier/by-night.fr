@@ -13,11 +13,12 @@
                 <div class="form-group">
                     <label for="shorcuts_date" class="col-sm-4 control-label">Quand ?</label>
                     <div class="col-sm-8">
-                        <select id="shorcuts_date" class="form-control shorcuts_date" placeholder="Raccourcis">
-                            <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">Aujourd'hui</option>
-                            <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">Ce Week End</option>
-                            <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">Cette semaine</option>
-                            <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">Ce mois</option>
+                        <select name="shortcut" id="shorcuts_date" class="form-control shorcuts_date" placeholder="Raccourcis">
+                            <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today" {{ app.request.get('shortcut') == 'today' ? 'selected': '' }}>Aujourd'hui</option>
+                            <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow" {{ app.request.get('shortcut') == 'tomorrow' ? 'selected': '' }}>Demain</option>
+                            <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend" {{ app.request.get('shortcut') == 'weekend' ? 'selected': '' }}>Ce Week End</option>
+                            <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week" {{ app.request.get('shortcut') == 'week' ? 'selected': '' }}>Cette semaine</option>
+                            <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month" {{ app.request.get('shortcut') == 'month' ? 'selected': '' }}>Ce mois</option>
                         </select>
                     </div>                    
                 </div>                

@@ -18,6 +18,20 @@ class AgendaRepository extends EntityRepository {
 
         return $qb;
     }
+
+    public function findAllOfWeek() {
+        $now = new \DateTime();
+
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('a')
+            ->from('TBNAgendaBundle:Agenda',"a")
+            ->where("a.dateFin BETWEEN :date_debut AND :date_fin")
+            ->andWhere("a.facebookEventId IS NOT NULL")
+            ->setParameters([":date_debut" => $now->format('Y-m-d'), ":date_fin" => $now->add(new \DateInterval('P7D'))->format('Y-m-d')])
+            ->getQuery()
+            ->getResult();
+    }
     
     public function getLastDateStatsUser(User $user)
     {
@@ -333,14 +347,35 @@ class AgendaRepository extends EntityRepository {
                 ->execute();
     }
 
+    //Appelé par DoctrineEventParser
+    public function findAllByDate(Agenda $agenda)
+    {
+        $params = [
+            'date_debut' => $agenda->getDateDebut()->format("Y-m-d"),
+            'date_fin' => $agenda->getDateFin()->format("Y-m-d"),
+            'site' => $agenda->getSite()->getId()
+        ];
+
+        $query = $this
+            ->createQueryBuilder('a')
+            ->where("a.dateDebut = :date_debut AND a.dateFin = :date_fin AND a.site = :site");
+
+        if($agenda->getFacebookEventId()) {
+            $query = $query->orWhere("a.facebookEventId = :fb_event_id");
+            $params['fb_event_id'] = $agenda->getFacebookEventId();
+        }
+
+        return $query
+            ->setParameters($params)
+            ->getQuery()
+            ->getResult();
+    }
+
     //Appelé par AgendaParser
     public function findOneByPlace($lieuNom, \DateTime $dateDebut, \DateTime $dateFin)
     {
-        $query = $this->_em
-        ->createQueryBuilder()
-        ->select('a')
-        ->from('TBNAgendaBundle:Agenda',"a")
-        ->leftJoin("TBNAgendaBundle:Place", "p", "WITH", "p = a.place")
+        $query = $this
+        ->createQueryBuilder('a')
         ->where("p.nom = :nom")
         ->andWhere("a.dateDebut = :date_debut")
         ->andWhere("a.dateFin = :date_fin")
@@ -359,10 +394,8 @@ class AgendaRepository extends EntityRepository {
 
     public function getEventsWithFBOwner(Site $site)
     {
-        return $this->_em
-        ->createQueryBuilder()
-        ->select('a')
-        ->from('TBNAgendaBundle:Agenda',"a")
+        return $this
+        ->createQueryBuilder('a')
         ->where("a.site = :site")
         ->andWhere("a.facebookOwnerId != ''")
         ->groupBy("a.facebookOwnerId")

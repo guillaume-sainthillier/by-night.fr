@@ -2,6 +2,7 @@
 
 namespace TBN\CommentBundle\Controller;
 
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,8 +47,8 @@ class ReplyController extends Controller
 
     public function detailsAction(Comment $comment)
     {
-        return $this->render("TBNCommentBundle:Reply:details.html.twig",[
-           "comment" => $comment,
+        return $this->render("TBNCommentBundle:Reply:details.html.twig", [
+            "comment" => $comment,
             "nb_reponses" => $this->getNbReponses($comment)
         ]);
     }
@@ -69,12 +70,10 @@ class ReplyController extends Controller
         $reponse = new Comment();
         $form = $this->getCreateForm($reponse, $comment);
 
-        if($request->getMethod() == "POST")
-        {
+        if ($request->getMethod() == "POST") {
             $user = $this->getUser();
 
-            if(! $user)
-            {
+            if (!$user) {
                 $this->get('session')->getFlashBag()->add(
                     'warning',
                     "Vous devez vous connecter pour répondre à cet utilisateur"
@@ -86,8 +85,7 @@ class ReplyController extends Controller
             $reponse->setAgenda($comment->getAgenda());
 
             $form->bind($request);
-            if ($form->isValid())
-            {
+            if ($form->isValid()) {
                 $reponse->setParent($comment);
                 $comment->addReponse($reponse);
                 $em = $this->getDoctrine()->getManager();
@@ -96,14 +94,13 @@ class ReplyController extends Controller
 
                 return new JsonResponse([
                     "success" => true,
-                    "comment" => $this->container->get("templating")->render("TBNCommentBundle:Reply:details.html.twig",[
+                    "comment" => $this->container->get("templating")->render("TBNCommentBundle:Reply:details.html.twig", [
                         "comment" => $reponse,
                         "success_confirmation" => true,
                     ]),
                     "nb_reponses" => $this->getNbReponses($comment)
                 ]);
-            }else
-            {
+            } else {
                 return new JsonResponse([
                     "success" => false,
                     "post" => $this->container->get("templating")->render("TBNCommentBundle:Reply:post.html.twig", [
@@ -122,16 +119,16 @@ class ReplyController extends Controller
 
     protected function getCreateForm(Comment $reponse, Comment $comment)
     {
-        return $this->createForm(new CommentType(), $reponse,[
+        return $this->createForm(new CommentType(), $reponse, [
             'action' => $this->generateUrl('tbn_comment_reponse_new', ["id" => $comment->getId()]),
             'method' => 'POST'
-            ])
-            ->add("poster", \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
+        ])
+            ->add("poster", SubmitType::class, [
                 "label" => "Répondre",
                 "attr" => [
                     "class" => "btn btn-primary btn-submit btn-raised",
                     "data-loading-text" => "En cours..."
                 ]
-        ]);
+            ]);
     }
 }

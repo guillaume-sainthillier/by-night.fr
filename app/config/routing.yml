@@ -33,7 +33,7 @@ tbn_membres:
 tbn_city:
     resource: "@TBNMainBundle/Resources/config/routing.yml"
     prefix:   /
-    host:   "%base_host%"
+    host:   '%base_host%'
 
 tbn_social:
     resource: "@TBNSocialBundle/Resources/config/routing.yml"

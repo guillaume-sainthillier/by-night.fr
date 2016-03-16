@@ -10,11 +10,11 @@ class ProgrammeTVParser {
     public function __construct()    
     {
         $this->parser = new Crawler();
-        $this->parser->addContent(\file_get_contents("http://www.programme-tv.net/programme/toutes-les-chaines/"), "HTML");
     }
     
     public function getProgrammesTV()
     {
+        $this->parser->addContent(\file_get_contents("http://www.programme-tv.net/programme/toutes-les-chaines/"), "HTML");
         return $this->parser->filter(".block.programme .channel")->each(function(Crawler $channel)
         {            
             $programmes  = $channel->filter(".programme");        

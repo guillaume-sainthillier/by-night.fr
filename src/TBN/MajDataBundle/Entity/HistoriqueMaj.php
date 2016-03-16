@@ -23,7 +23,7 @@ class HistoriqueMaj
     private $id;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"merge"}, fetch="EAGER")
+    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"}, fetch="EAGER")
     * @ORM\JoinColumn(nullable=true)
     */
     protected $site;

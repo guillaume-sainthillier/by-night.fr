@@ -10,13 +10,13 @@ services:
       
     ville_listener:
         class: TBN\MainBundle\Listener\SubDomainListener
-        arguments: [@site_manager, @doctrine.orm.entity_manager, "%base_host%"]
+        arguments: ["@site_manager", "@doctrine.orm.entity_manager", "@router", "%base_host%"]
         tags:
            - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}
            
     tbn.twig.main_extension:
         class: TBN\MainBundle\Twig\MainExtension
-        arguments : [@service_container]
+        arguments : ["@service_container"]
         tags:
             - { name: twig.extension }
            

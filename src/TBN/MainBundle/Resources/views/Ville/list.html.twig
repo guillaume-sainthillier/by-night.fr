@@ -38,6 +38,7 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
         <div class="{{ classLeft }}" >
             <div id="carousel-{{ i }}" data-ride="carousel" class="carousel slide">
                 {% set currentImages = site.images %}
+                {% set currentImages = currentImages|merge([{'webPath': 'img/sites/' ~ site.subdomain ~ '.jpg'}]) %}
                 
                 <!-- Indicators -->
                 <ol class="carousel-indicators">
@@ -52,7 +53,7 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
                     {% for j, image in currentImages %}
                         {% set activeClass = j == 0 ? 'active' : '' %}
                         <div class="item {{ activeClass }}">
-                            <img src="{{ image.webPath|imagine_filter('thumb_site') }}" >
+                            <img class="img-responsive img loading" src="{{ asset('img/loading_site.png') }}" data-src="{{ image.webPath|imagine_filter('thumb_site') }}" >
                         </div>
                     {% endfor %}
                 </div>

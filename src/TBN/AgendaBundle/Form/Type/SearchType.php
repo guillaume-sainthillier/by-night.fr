@@ -3,6 +3,10 @@
 namespace TBN\AgendaBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,8 +27,8 @@ class SearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-	    ->add('page', 'hidden')
-            ->add("du", \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add('page', 'hidden')
+            ->add("du", DateType::class, [
                 "required" => true,
                 "label" => "Du",
                 'label_attr' => array('class' => 'col-sm-6 control-label'),
@@ -32,57 +36,56 @@ class SearchType extends AbstractType
                 "format" => "dd/MM/yyyy",
                 "attr" => ["data-date-format" => "dd/mm/yyyy"]
             ])
-            ->add("au", \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add("au", DateType::class, [
                 "required" => false,
-                "label"     => "Au",
+                "label" => "Au",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "widget" => "single_text",
                 "format" => "dd/MM/yyyy",
                 "attr" => ["data-date-format" => "dd/mm/yyyy"]
             ])
-            ->add("type_manifestation", \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                "choices"  => $this->types_manifesation,
-                "label"    => 'Quoi ?',
+            ->add("type_manifestation", ChoiceType::class, [
+                "choices" => $this->types_manifesation,
+                "label" => 'Quoi ?',
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "multiple" => true,
                 "expanded" => false,
                 "required" => false,
                 "attr" => ["title" => "Tous", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
-             ->add("lieux", \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                "choices"  => $this->lieux,
-                "label"    => "Lieux",
-                 'label_attr' => array('class' => 'col-sm-3 control-label'),
-                "multiple" =>  true,
+            ->add("lieux", ChoiceType::class, [
+                "choices" => $this->lieux,
+                "label" => "Lieux",
+                'label_attr' => array('class' => 'col-sm-3 control-label'),
+                "multiple" => true,
                 "expanded" => false,
                 "required" => false,
                 "attr" => ["title" => "Tous", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
-             ->add("commune", \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
-                "choices"  => $this->commune,
-                "label"    => "Villes",
+            ->add("commune", ChoiceType::class, [
+                "choices" => $this->commune,
+                "label" => "Villes",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
-                "multiple" =>  true,
+                "multiple" => true,
                 "expanded" => false,
                 "required" => false,
                 "attr" => ["title" => "Toutes", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
-            ->add('term', \Symfony\Component\Form\Extension\Core\Type\TextType::class, [
+            ->add('term', TextType::class, [
                 "required" => false,
-                "label"    => "Mot-clés",
+                "label" => "Mot-clés",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
-                "attr" => ["class" => "form-control","placeholder" => "Quel événement cherchez-vous ?"]])
-            ->add('chercher', \Symfony\Component\Form\Extension\Core\Type\SubmitType::class, [
-                "label" => "Go !", 
+                "attr" => ["class" => "form-control", "placeholder" => "Quel événement cherchez-vous ?"]])
+            ->add('chercher', SubmitType::class, [
+                "label" => "Go !",
                 "attr" => [
                     "class" => "btn btn-raised btn-lg btn-primary btn-block"
                 ]
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'TBN\AgendaBundle\Search\SearchAgenda',
-	    'csrf_protection' => false
+            'csrf_protection' => false
         ]);
     }
 
