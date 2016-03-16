@@ -14,18 +14,14 @@
     </script>
 {% endblock %}
 
-{% block meta_keywords_membre %}
-    {{ username }},
-{% endblock %}
+{% block meta_keywords_membre %}{{ username }},{% endblock %}
 
 {% block breadcrumb_membre %}
     {% set item = menu.addItem(username, path('tbn_user_details', {'username' : user.username})) %}
 {% endblock %}
 
 {% set totalCount = count_participations + count_interets %}
-{% block meta_description_espace %}
-{{ username }} est en relation avec {{ totalCount }} événement{{ totalCount > 1 ? "s" : "" }} à {{ ville }}.
-{% endblock %}
+{% block meta_description_espace %}{{ username }} est en relation avec {{ totalCount }} événement{{ totalCount > 1 ? "s" : "" }} à {{ ville|capitalize }}.{% endblock %}
 
 
 {% block body_membre %}
@@ -82,7 +78,7 @@
                         {% else %}
                             <div class="alert alert-info">
                                 <i class="fa fa-info-circle"></i>
-                                Aucun événément à venir pour {{ user.username }} !
+                                Aucun événément de prévu pour {{ user.username }} !
                             </div>
                         {% endfor %}
                     </div>

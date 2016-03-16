@@ -7,27 +7,27 @@
         <!--[if IE]>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <![endif]-->        
-        <title>{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}</title>
-        <meta name="keywords" content="{% block meta_keywords %}{% endblock %},ce,soir,soiree,sortie,concert,spectable,musique,discoteque,boite,de,nuit">
-        <meta name="description" content="{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}">
+        <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
+        <meta name="keywords" content="{% spaceless %}{% block meta_keywords %}{% endblock %}",ce,soir,soiree,sortie,concert,spectable,musique,discoteque,boite,de,nuit{% endspaceless %}">
+        <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
         
         <!-- OpenGraph -->
-        <meta property="og:site_name" content="{{ block('nom_site') }}">
-        <meta property="og:description" content="{% block og_description %}{{ block('description') }}{% endblock %}">
-        <meta property="og:title" content="{% block og_titre %}{{ block('title') }}{% endblock %}">
-        <meta property="og:type" content="{% block og_type %}website{% endblock %}">        
-        <meta property="og:url" content="{% block og_url %}{{ url('tbn_main_index') }}{% endblock %}">
-        <meta property="og:image" content="{% block og_image %}{{ asset('img/by-night.png') }}{% endblock %}">
+        <meta property="og:site_name" content="{% spaceless %}{{ block('nom_site') }}{% endspaceless %}">
+        <meta property="og:description" content="{% spaceless %}{% block og_description %}{{ block('description') }}{% endblock %}{% endspaceless %}">
+        <meta property="og:title" content="{% spaceless %}{% block og_titre %}{{ block('title') }}{% endblock %}{% endspaceless %}">
+        <meta property="og:type" content="{% spaceless %}{% block og_type %}website{% endblock %}{% endspaceless %}">
+        <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('tbn_main_index') }}{% endblock %}{% endspaceless %}">
+        <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ asset('img/by-night.png') }}{% endblock %}{% endspaceless %}">
         <!-- ./OpenGraph -->
         
         <!-- IE10+ -->
         <meta name="application-name" content="{{ block('nom_site') }}">
         <meta name="msapplication-TileColor" content="#000000">
         <meta name="msapplication-tooltip" content="Agenda des événements">
-        <meta name="msapplication-square70x70logo" content="{{ asset('tiny.png') }}">
-        <meta name="msapplication-square150x150logo" content="{{ asset('square.png') }}">
-        <meta name="msapplication-wide310x150logo" content="{{ asset('wide.png') }}">
-        <meta name="msapplication-square310x310logo" content="{{ asset('large.png') }}">
+        <meta name="msapplication-square70x70logo" content="{{ absolute_url(asset('tiny.png')) }}">
+        <meta name="msapplication-square150x150logo" content="{{ absolute_url(asset('square.png')) }}">
+        <meta name="msapplication-wide310x150logo" content="{{ absolute_url(asset('wide.png')) }}">
+        <meta name="msapplication-square310x310logo" content="{{ absolute_url(asset('large.png')) }}">
         <!-- ./IE10+ -->
         
         <!-- Twitter -->
