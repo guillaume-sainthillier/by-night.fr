@@ -13,6 +13,20 @@ use TBN\MainBundle\Entity\Site;
  */
 class UserRepository extends EntityRepository
 {
+
+    public function findTopMembres(Site $site, $page = 1, $limit = 7)
+    {
+        return $this->createQueryBuilder('u')
+            ->select('u', 'i')
+            ->leftJoin('u.info', 'i')
+            ->where("u.site = :site")
+            ->orderBy('u.lastLogin','DESC')
+            ->setParameters([":site" => $site->getId()])
+            ->setFirstResult(($page-1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->execute();
+    }
     public function getLastDateUser(Site $site)
     {
         return $this->_em

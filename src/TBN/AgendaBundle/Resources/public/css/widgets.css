@@ -39,46 +39,6 @@ Then, run this script to get the list.
     Created on : 13 sept. 2014, 15:19:29
     Author     : Guillaume S. <guillaume@sainthillier.fr>
 */
-#widgets {
-  /*
-    @offset: 1;
-    margin-top: 50px;
-
-    // < 480px
-    @media (max-width: @screen-xs-min)
-        {
-        padding-right: percentage(@offset / (2*@grid-columns));
-        padding-left: percentage(@offset / (2*@grid-columns));
-    }
-
-    // [480px;781px]
-    @media (min-width: @screen-xs) and (max-width: @screen-md)
-        {
-        padding-right: percentage(@offset / (0.5*@grid-columns));
-        padding-left: percentage(@offset / (0.5*@grid-columns));
-    }
-
-    // [990px; 1200px;]
-    @media (min-width: @screen-md) and (max-width: @screen-lg)
-        {
-        padding-right: percentage(@offset / (2*@grid-columns));
-        padding-left: percentage(@offset / (2*@grid-columns));
-    }
-
-    // > 1200px
-    @media (min-width: @screen-lg)
-        {
-        padding-right: percentage(@offset / (1.5*@grid-columns));
-        padding-left: percentage(@offset / (1.5*@grid-columns));
-    }
-
-    h1, h2, h3, h4, h5, h6{
-        color: #222;
-        font-weight: bold;
-    }
-    
-    */
-}
 #widgets h4.modal-title {
   font-size: 17px;
 }
@@ -103,6 +63,9 @@ Then, run this script to get the list.
 }
 #widgets .widget .widget_item .min_membre {
   padding-right: 0;
+}
+#widgets .widget .widget_item .min_membre img {
+  max-height: 50px;
 }
 #widgets .widget .widget_item .min_membre .month {
   font-size: 1.3em;

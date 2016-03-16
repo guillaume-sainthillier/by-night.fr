@@ -8,10 +8,10 @@
         <div class="col-xs-9 col-md-10 preserve text-left">
             <h4 class="modal-title">
                 <a href="{{ path('tbn_user_details', {'username': user.username} ) }}" title="Accédez au profil de {{ user.username }}">
-                    {{ user.username }}
+                    {{ user.username|capitalize }}
                 </a>
             </h4>
-            Membre depuis le <span class="text-primary number">{{ user.dateCreation|date("d/m/Y") }}</span>
+            Connecté <span class="text-primary number">{{ user.lastLogin|diff_date }}</span>
         </div>
     </div>
 </div>

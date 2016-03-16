@@ -6,118 +6,80 @@
 */
 #widgets {
 
-    /*
-    @offset: 1;
-    margin-top: 50px;
+  h4.modal-title {
+    font-size: 17px;
+  }
 
-    // < 480px
-    @media (max-width: @screen-xs-min)
-        {
-        padding-right: percentage(@offset / (2*@grid-columns));
-        padding-left: percentage(@offset / (2*@grid-columns));
-    }
+  h3.modal-title {
+    font-size: 21px;
+  }
 
-    // [480px;781px]
-    @media (min-width: @screen-xs) and (max-width: @screen-md)
-        {
-        padding-right: percentage(@offset / (0.5*@grid-columns));
-        padding-left: percentage(@offset / (0.5*@grid-columns));
-    }
+  .widget {
+    margin-bottom: 40px;
 
-    // [990px; 1200px;]
-    @media (min-width: @screen-md) and (max-width: @screen-lg)
-        {
-        padding-right: percentage(@offset / (2*@grid-columns));
-        padding-left: percentage(@offset / (2*@grid-columns));
-    }
+    .widget_item {
+      padding: 10px 0;
+      border-bottom: 1px solid white;
+      border-top: 1px solid #CCC;
 
-    // > 1200px
-    @media (min-width: @screen-lg)
-        {
-        padding-right: percentage(@offset / (1.5*@grid-columns));
-        padding-left: percentage(@offset / (1.5*@grid-columns));
-    }
+      .item_title {
+        margin-top: 2px;
+        font-size: 14px;
+      }
 
-    h1, h2, h3, h4, h5, h6{
-        color: #222;
-        font-weight: bold;
-    }
-    
-    */
-    
-    h4.modal-title {
-        font-size: 17px;
-    }
+      &:first-child {
+        padding-top: 0;
+        border-top: none;
+      }
 
-    h3.modal-title {
-        font-size: 21px;
-    }    
-    
-    .widget {                
-        margin-bottom: 40px;
-        
-        .widget_item {
-            padding: 10px 0;
-            border-bottom: 1px solid white;
-            border-top: 1px solid #CCC;
+      .min_membre {
+        padding-right: 0;
 
-            .item_title {
-                margin-top: 2px;
-                font-size: 14px;
-            }
-
-            &:first-child {
-                padding-top: 0;
-                border-top: none;
-            }
-
-            .min_membre {
-                padding-right: 0;
-                
-                .month {
-                    font-size: 1.3em;
-                }
-                
-                span {
-                    display: block;
-                }
-            }
-
-            .count {
-                font-size: 2em;
-                font-weight: 300;
-            }
+        img {
+          max-height: 50px;
+        }
+        .month {
+          font-size: 1.3em;
         }
 
-        .scrollable {
-            max-height: 500px;
-            overflow-y: auto;
-            position: relative;
-            
-            &.scrollable-large {
-                max-height: 600px;
-            }
+        span {
+          display: block;
         }
-        
-        
+      }
 
-        .membres {
-            max-height: 300px;
-            
-            .fb_membres {
-                a {
-                    display: block;
-                    float: left;
-                }
-            }
-        }
-
+      .count {
+        font-size: 2em;
+        font-weight: 300;
+      }
     }
 
-    .panel-default {
-        .panel-heading {
-            background-color: white;
-        }                    
+    .scrollable {
+      max-height: 500px;
+      overflow-y: auto;
+      position: relative;
+
+      &.scrollable-large {
+        max-height: 600px;
+      }
     }
+
+    .membres {
+      max-height: 300px;
+
+      .fb_membres {
+        a {
+          display: block;
+          float: left;
+        }
+      }
+    }
+
+  }
+
+  .panel-default {
+    .panel-heading {
+      background-color: white;
+    }
+  }
 }
 

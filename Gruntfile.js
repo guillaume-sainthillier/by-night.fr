@@ -200,7 +200,6 @@ module.exports = function (grunt) {
             },
             indexCss: {
                 src: [
-
                     'web/bower/dropdown.js/jquery.dropdown.css',
                     'web/bundles/tbnagenda/css/flaticon.css',
                     'web/bundles/tbnagenda/css/liste.css',
@@ -381,7 +380,7 @@ module.exports = function (grunt) {
     // Default task(s).
 
     grunt.registerTask('default', ['css', 'javascript']);
-    grunt.registerTask('css', ['concat', 'cssmin', 'sprite']);
+    grunt.registerTask('css', ['sprite', 'concat', 'cssmin']);
     grunt.registerTask('javascript', ['concat', 'uglify']);
     grunt.registerTask('assets:install', ['symlink']);
     grunt.registerTask('deploy', ['assets:install', 'default']);

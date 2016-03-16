@@ -49,7 +49,7 @@ class MenuDroitController extends Controller {
             case 'France 5':
                 return 'france5';
             case 'D8':
-                return 'd8';
+                return 'direct8';
             case 'W9':
                 return 'w9';
             case 'TMC':
@@ -63,7 +63,7 @@ class MenuDroitController extends Controller {
             case 'France 4':
                 return 'france4';
             case 'BFM TV':
-                return 'bfm';
+                return 'bfm_tv';
             case 'i>Télé':
                 return 'itele';
             case 'D17':
@@ -156,7 +156,7 @@ class MenuDroitController extends Controller {
     }
 
     /**
-     * @Cache(expires="tomorrow", public=true)
+     * @Cache(expires="+8 hours", public=true)
      */
     public function fbMembresAction(Agenda $soiree, $page)
     {
@@ -195,7 +195,7 @@ class MenuDroitController extends Controller {
 
     protected function getTopMembres(Site $site) {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repo = $em->getRepository("TBNUserBundle:User");
         return $repo->findTopMembres($site);
     }
 

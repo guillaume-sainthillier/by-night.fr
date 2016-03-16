@@ -242,22 +242,6 @@ class AgendaRepository extends EntityRepository {
         return $soirees;
     }
 
-    public function findTopMembres(Site $site, $page = 1, $limit = 7)
-    {
-        return $this->_em
-        ->createQueryBuilder()
-        ->select('u')
-        ->from('TBNUserBundle:User',"u")
-        ->leftJoin("TBNAgendaBundle:Calendrier", "c", 'WITH', "c.user = u")
-        ->where("u.site = :site")
-        ->orderBy('u.lastLogin','DESC')
-        ->setParameters([":site" => $site->getId()])
-        ->setFirstResult(($page-1) * $limit)
-        ->setMaxResults($limit)
-        ->getQuery()
-        ->execute();
-    }
-
     protected function makeQuery(QueryBuilder $qb, Site $site, SearchAgenda $search)
     {       
         $params = [":site" => $site->getId()];
