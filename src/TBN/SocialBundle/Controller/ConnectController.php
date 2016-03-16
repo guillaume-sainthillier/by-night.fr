@@ -103,7 +103,7 @@ class ConnectController extends BaseController
                     $em->persist($currentSite);
                     $em->flush();
 
-                    $cache = $this->container->get("winzou_cache");
+                    $cache = $this->container->get("memory_cache");
 		    $key = $currentSite->getSubdomain();
 		    if($cache->contains($key))
 		    {

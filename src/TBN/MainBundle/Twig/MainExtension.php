@@ -29,7 +29,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     {
         $this->router       = $container->get('router');
         $this->requestStack = $container->get('request_stack');
-        $this->cache        = $container->get('winzou_cache');
+        $this->cache        = $container->get('memory_cache');
         $this->doctrine     = $container->get('doctrine');
         $this->siteManager  = $container->get('site_manager');
         $this->requestStack = $container->get('request_stack');

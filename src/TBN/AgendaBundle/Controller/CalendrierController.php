@@ -14,7 +14,7 @@ class CalendrierController extends Controller
     private function updateFBEvent(Agenda $agenda, User $user, Calendrier $calendrier) {
         if($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookAccessToken()) {
             $key = 'users.'.$user->getId().'.stats.'.$agenda->getId();
-            $cache = $this->get('winzou_cache');
+            $cache = $this->get('memory_cache');
             $api = $this->get('tbn.social.facebook_admin');
             $api->updateEventStatut(
                 $agenda->getFacebookEventId(),

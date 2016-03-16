@@ -109,7 +109,7 @@ services:
         class: TBN\MajDataBundle\Utils\Util
     tbn.doctrine_event_handler:
         class: TBN\MajDataBundle\Utils\DoctrineEventHandler
-        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.social.facebook_admin", "@winzou_cache"]
+        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.social.facebook_admin", "@memory_cache"]
     tbn.event_handler:
         class: TBN\MajDataBundle\Utils\EventHandler
         arguments: ["@array_cache", "@ivory_google_map.geocoder", "@tbn.firewall", "@tbn.cleaner", "@tbn.comparator", "@tbn.merger"]

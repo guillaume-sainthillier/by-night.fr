@@ -32,21 +32,16 @@ framework:
     
 doctrine_cache:
     providers:
-        redis:
+        memcache:
             type: file_system
-            namespace: redis_cache_ns
+            namespace: memory_cache_ns
             aliases:
-                - winzou_cache
+                - memory_cache
         array:
             type: array
             namespace: array_cache_ns
             aliases:
                 - array_cache
-        php_file:
-            type: file_system
-            namespace: file_cache_ns
-            aliases:
-                - file_cache
         
 # Twig Configuration
 twig:

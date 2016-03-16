@@ -55,7 +55,7 @@ class EventController extends Controller
 
             $userInfo = $user->getInfo();
             if ($userInfo && $agenda->getFacebookEventId() && $userInfo->getFacebookId()) {
-                $cache = $this->get('winzou_cache');
+                $cache = $this->get('memory_cache');
                 $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
                 if (!$cache->contains($key)) {
                     $api = $this->get('tbn.social.facebook_admin');
@@ -101,7 +101,7 @@ class EventController extends Controller
     protected function getSocialStats(Agenda $agenda, Request $request)
     {
         $key = 'agenda.stats.' . $agenda->getId();
-        $cache = $this->get('winzou_cache');
+        $cache = $this->get('memory_cache');
         if (!$cache->contains($key)) {
             $link = $this->generateUrl('tbn_agenda_details', [
                 'slug' => $agenda->getSlug(),
@@ -255,7 +255,7 @@ class EventController extends Controller
 
     protected function getTypesEvenements($repo, Site $site)
     {
-        $cache = $this->get('winzou_cache');
+        $cache = $this->get('memory_cache');
         $key = 'categories_evenements.' . $site->getSubdomain();
 
         if (!$cache->contains($key)) {
@@ -280,7 +280,7 @@ class EventController extends Controller
 
     protected function getVilles($repo, Site $site)
     {
-        $cache = $this->get('winzou_cache');
+        $cache = $this->get('memory_cache');
         $key = 'villes.' . $site->getSubdomain();
 
         if (!$cache->contains($key)) {
@@ -298,7 +298,7 @@ class EventController extends Controller
 
     protected function getPlaces($repo, Site $site)
     {
-        $cache = $this->get('winzou_cache');
+        $cache = $this->get('memory_cache');
         $key = 'places.' . $site->getSubdomain();
 
         if (!$cache->contains($key)) {

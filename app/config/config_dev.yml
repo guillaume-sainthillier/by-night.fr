@@ -16,13 +16,13 @@ doctrine:
         auto_mapping: true
         metadata_cache_driver: 
             type: service
-            id: winzou_cache
+            id: memory_cache
         query_cache_driver: 
             type: service
-            id: winzou_cache
+            id: memory_cache
         result_cache_driver: 
             type: service
-            id: winzou_cache
+            id: memory_cache
                 
 monolog:
     handlers:

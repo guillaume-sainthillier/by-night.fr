@@ -14,7 +14,7 @@ class TBNController extends Controller
         $id = $soiree->getFacebookEventId();
         if ($id) {
             $key = 'fb.stats.'. $id;
-            $cache  = $this->get("winzou_cache");
+            $cache  = $this->get("memory_cache");
             if (! $cache->contains($key)) {
                 $api    = $this->get("tbn.social.facebook_admin");
                 $retour = $api->getEventStats($id);
