@@ -1,17 +1,17 @@
-
 {% set info = user.info %}
 
-{% if info.facebookAccessToken != null %}
+{% if info and (info.facebookAccessToken or info.twitterNickname or info.googleAccessToken) %}<hr />{% endif %}
+{% if info.facebookAccessToken %}
     <a class="social-facebook social" href="https://www.facebook.com/{{ info.facebookId }}" title="{{ info.facebookRealname }} sur Facebook">
     </a>
 {% endif %}
 
-{% if info.twitterNickname != null %}
+{% if info.twitterNickname %}
     <a class="social-twitter social" href="https://twitter.com/{{ info.twitterNickname }}" title="{{ info.twitterRealname }} sur Twitter" >
     </a>
 {% endif %}
 
-{% if info.googleAccessToken != null %}
+{% if info.googleAccessToken %}
     <a class="social-googleplus social" href="https://plus.google.com/{{ info.googleId }}" title="{{ info.googleRealname }} sur Google+">
     </a>
 {% endif %}

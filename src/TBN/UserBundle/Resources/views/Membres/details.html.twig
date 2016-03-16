@@ -41,22 +41,23 @@
                 <br />
                 <div class="row">
                     <div class="col-xs-6 preserve">
-                        <strong class="number number-big">{{ count_participations }}</strong> 
+                        <strong class="number number-xbig">{{ count_participations }}</strong>
                         <span class="text-primary">participation{{ count_participations > 1 ? "s" : "" }}</span>
                     </div>
                     <div class="col-xs-6 preserve">
-                        <strong class="number number-big">{{ count_interets }}</strong> 
+                        <strong class="number number-xbig">{{ count_interets }}</strong>
                         <span class="text-primary">intérêt{{ count_interets > 1 ? "s" : "" }}</span>
                     </div>
                 </div>
+                <hr />
+                {% if user.dateCreation %}Membre depuis le <strong class="number number-big">{{ user.dateCreation.format('d/m/Y') }}</strong><br />{% endif %}
+                Dernière connexion <strong class="number number-big">{{ user.lastLogin|diff_date }}</strong>
                 {% if user.description %}
                 <hr />
-                <p class="">
-                    <i class="fa fa-quote-left fa-2x fa-border" ></i> 
+                <p>
                     {{ user.description }}
                 </p>
                 {% endif %}
-                <hr />
                 {% include "TBNUserBundle:Membres:social_info.html.twig" %}
             </div>
         </div>
