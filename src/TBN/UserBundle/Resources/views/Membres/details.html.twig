@@ -70,30 +70,24 @@
             <div class="panel-body">                            
                 <div class="tab-content">
                     <div class="tab-pane active" id="a-venir">
-                        {% for i, soiree in next_events %}
-                            {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'event' : soiree}) %}
-                            {% if (i+1) < next_events|length %}
-                                <hr />
-                            {% endif %}
-                        {% else %}
+                        {% if not next_events|length %}
                             <div class="alert alert-info">
                                 <i class="fa fa-info-circle"></i>
-                                Aucun événément de prévu pour {{ user.username }} !
+                                Aucun événément de prévu pour {{ username }} !
                             </div>
-                        {% endfor %}
+                        {% else %}
+                            {% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" with({'events' : next_events}) %}
+                        {% endif %}
                     </div>
                     <div class="tab-pane" id="passes">
-                        {% for i, soiree in previous_events %}
-                            {% include "TBNUserBundle:Membres:block_details_evenements.html.twig" with({'event' : soiree}) %}
-                            {% if (i+1) < previous_events|length %}
-                                <hr />
-                            {% endif %}
-                        {% else %}
+                        {% if not previous_events|length %}
                             <div class="alert alert-info">
                                 <i class="fa fa-info-circle"></i>
-                                Aucun événément passé pour {{ user.username }} !
+                                Aucun événément passé pour {{ username }} !
                             </div>
-                        {% endfor %}                        
+                        {% else %}
+                            {% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" with({'events' : previous_events}) %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
