@@ -28,17 +28,23 @@ class UserController extends Controller {
         $em         = $this->getDoctrine()->getManager();
         $repo       = $em->getRepository("TBNAgendaBundle:Agenda");
 
-        $response   = new Response;
+        $siteManager = $this->get('site_manager');
+        $currentSite = $siteManager->getCurrentSite();
+        if($currentSite && $user->getSite() !== $currentSite) {
+            return new RedirectResponse($this->generateUrl('tbn_user_details', [
+                'username' => $user->getUsername(),
+                'subdomain' => $user->getSite()->getSubdomain()
+            ]));
+        }
 
-
-        return $response->setContent($this->renderView('TBNUserBundle:Membres:details.html.twig', [
+        return $this->render('TBNUserBundle:Membres:details.html.twig', [
                     "user" => $user,
                     "next_events" => $repo->findAllNextEvents($user),
                     "previous_events" => $repo->findAllNextEvents($user, false),
                     "etablissements" => $repo->findAllPlaces($user),
                     "count_participations" => $repo->getCountParticipations($user),
                     "count_interets" => $repo->getCountInterets($user),
-        ]));
+        ]);
     }
 
     public function statsAction(Request $request, User $user, $type) {
@@ -85,7 +91,6 @@ class UserController extends Controller {
             {
                 $response->setPublic(); //Afin d'être partagée avec tout le monde
                 $response->setLastModified($date);
-
             }
         }
 
