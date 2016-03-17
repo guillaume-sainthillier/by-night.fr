@@ -25,7 +25,7 @@
     "friendsofsymfony/user-bundle": "~2.0@dev",
     "hwi/oauth-bundle": "^0.4.0",
     "facebook/php-sdk-v4": "^5.1",
-    "google/apiclient": "dev-master",
+    "google/apiclient": "^2.0.0@RC",
     "ricardoper/twitteroauth": "2.*",
     "presta/sitemap-bundle": "dev-master",
     "whiteoctober/breadcrumbs-bundle": "dev-master",

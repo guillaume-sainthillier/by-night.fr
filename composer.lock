@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e38cb2652ad27be8e265884d83dde04a",
-    "content-hash": "baf4e856bc0684694db38a70611140f5",
+    "hash": "804c1e2cd3d835539b994689f2f77854",
+    "content-hash": "e3b356e0d01bdba42018506a25d27331",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1304,7 +1304,7 @@
         },
         {
             "name": "google/apiclient",
-            "version": "dev-master",
+            "version": "v2.0.0-RC6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client.git",
@@ -3015,16 +3015,16 @@
         },
         {
             "name": "sensio/distribution-bundle",
-            "version": "v5.0.4",
+            "version": "v5.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "2c167426fc24f9de116345195bc1697a748ee847"
+                "reference": "3a160355bb1364da55ed9e415c1aa1fa8d457b6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/2c167426fc24f9de116345195bc1697a748ee847",
-                "reference": "2c167426fc24f9de116345195bc1697a748ee847",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/3a160355bb1364da55ed9e415c1aa1fa8d457b6f",
+                "reference": "3a160355bb1364da55ed9e415c1aa1fa8d457b6f",
                 "shasum": ""
             },
             "require": {
@@ -3063,7 +3063,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2016-02-12 16:21:30"
+            "time": "2016-03-15 16:21:41"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -4338,12 +4338,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/whiteoctober/WhiteOctoberPagerfantaBundle.git",
-                "reference": "1c5abdd352d0bd0ffd6b5da7e8d05baa3b37956e"
+                "reference": "ed0754faabf7d2263ccfe452897e3f8c872ed601"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/1c5abdd352d0bd0ffd6b5da7e8d05baa3b37956e",
-                "reference": "1c5abdd352d0bd0ffd6b5da7e8d05baa3b37956e",
+                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/ed0754faabf7d2263ccfe452897e3f8c872ed601",
+                "reference": "ed0754faabf7d2263ccfe452897e3f8c872ed601",
                 "shasum": ""
             },
             "require": {
@@ -4382,7 +4382,7 @@
                 "page",
                 "paging"
             ],
-            "time": "2016-02-01 09:58:52"
+            "time": "2016-03-17 12:45:57"
         },
         {
             "name": "whiteoctober/breadcrumbs-bundle",
@@ -4555,7 +4555,7 @@
         "sensio/generator-bundle": 20,
         "stof/doctrine-extensions-bundle": 20,
         "friendsofsymfony/user-bundle": 20,
-        "google/apiclient": 20,
+        "google/apiclient": 5,
         "presta/sitemap-bundle": 20,
         "whiteoctober/breadcrumbs-bundle": 20,
         "liip/imagine-bundle": 20,
