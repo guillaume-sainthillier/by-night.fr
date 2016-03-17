@@ -9,6 +9,7 @@ parameters:
     url_soonnight_montpellier: http://www.soonnight.com/languedoc-roussillon/sortir-languedoc-roussillon,4.html?id_dept=26
     url_soonnight_nice: http://www.soonnight.com/paca/sortir-paca,4.html?id_dept=11
     url_soonnight_bordeaux: http://www.soonnight.com/aquitaine/sortir-aquitaine,4.html?id_dept=36
+    url_opendata_toulouse: https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true
 
 services:
     #Parsers
@@ -24,6 +25,8 @@ services:
         class: TBN\MajDataBundle\Parser\Toulouse\BikiniParser
     tbn.parser.toulouse.toulouse:
         class: TBN\MajDataBundle\Parser\Toulouse\ToulouseParser
+        calls:
+            - ['setUrl', ["%url_opendata_toulouse%"]]
     tbn.parser.toulouse.tourisme:
         class: TBN\MajDataBundle\Parser\Toulouse\ToulouseTourismeParser
     tbn.parser.toulouse.dynamo:

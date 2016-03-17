@@ -2,6 +2,8 @@
 
 namespace TBN\MajDataBundle\Parser\Toulouse;
 
+use ForceUTF8\Encoding;
+use Symfony\Component\Filesystem\Filesystem;
 use TBN\MajDataBundle\Parser\AgendaParser;
 
 /**
@@ -9,13 +11,13 @@ use TBN\MajDataBundle\Parser\AgendaParser;
  *
  * @author guillaume
  */
-class ToulouseParser extends AgendaParser {
+class ToulouseParser extends AgendaParser
+{
 
     public function getRawAgendas()
     {
         $fichier = $this->downloadCSV();
-        if($fichier !== null)
-        {
+        if ($fichier !== null) {
             return $this->parseCSV($fichier);
         }
 
@@ -31,23 +33,19 @@ class ToulouseParser extends AgendaParser {
     {
         $tab_agendas = [];
 
-        $fic = fopen($fichier,"r");
-        $cursor = fgetcsv($fic,0,';','"','"'); //Ouverture de la première ligne
-        
-        while($cursor = fgetcsv($fic,0,';','"','"'))
-        {
-            $tab = array_map(function($e)
-            {
-                return iconv('CP1252', 'UTF-8', $e);
-            },$cursor);
+        $fic = fopen($fichier, "r");
+        fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
 
+        while ($cursor = fgetcsv($fic, 0, ';', '"', '"')) {
+            $tab = array_map(function ($e) {
+                return Encoding::toUTF8($e);
+            }, $cursor);
 
-            if($tab[1] !== "" || $tab[2] !== "")
-            {
-                $nom = $tab[1] !== "" ? $tab[1] : $tab[2];
+            if ($tab[1] || $tab[2]) {
+                $nom = $tab[1] ?: $tab[2];
 
-                $date_debut = \DateTime::createFromFormat("d/m/Y", $tab[5]);
-                $date_fin = \DateTime::createFromFormat("d/m/Y", $tab[6]);
+                $date_debut = new \DateTime($tab[5]);
+                $date_fin = new \DateTime($tab[6]);
 
                 $tab_agendas[] = [
                     'nom' => $nom,
@@ -65,7 +63,7 @@ class ToulouseParser extends AgendaParser {
                     'type_manifestation' => $tab[16],
                     'categorie_manifestation' => $tab[17],
                     'theme_manifestation' => $tab[18],
-                    'station_metro_tram' => $tab[19],                    
+                    'station_metro_tram' => $tab[19],
                     'reservation_telephone' => $tab[22],
                     'reservation_email' => $tab[23],
                     'reservation_internet' => $tab[24],
@@ -79,11 +77,6 @@ class ToulouseParser extends AgendaParser {
         return $tab_agendas;
     }
 
-    protected function getURL()
-    {
-        return "https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=xls&timezone=Europe/Berlin&use_labels_for_header=true";
-    }
-
     /**
      * Télécharge un fichier CSV sur le repertoire TEMP depuis l'URI de l'Open Data Toulouse
      * @return string le chemin absolu vers le fichier
@@ -91,61 +84,14 @@ class ToulouseParser extends AgendaParser {
     protected function downloadCSV()
     {
         $data = file_get_contents($this->getURL());
-
-        $output_dir = sys_get_temp_dir()."/";
-        $output_file = "data_manifestations";
-        $output_dir_zip = $output_dir.$output_file."/";
-        $output_file_zip = $output_dir.$output_file.".zip";
-
-        $fic = false;
-        if(($fic = fopen($output_file_zip, "w")) && fwrite($fic, $data))
-        {
-            fclose($fic);
-
-            $zip = new \ZipArchive();
-            if($zip->open($output_file_zip) && $zip->extractTo($output_dir_zip))
-            {
-                foreach(scandir($output_dir_zip) as $fichier)
-                {
-                    if($this->isGoodDataFolder($fichier, $output_dir_zip))
-                    {
-                        foreach(scandir($output_dir_zip.$fichier) as $csv)
-                        {
-                            if($this->isGoodDataFile($csv))
-                            {
-                                return $output_dir_zip.$fichier."/".$csv;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
+        $path_file = sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());
+        $fs = new Filesystem();
+        $fs->dumpFile($path_file, $data);
+        return $path_file;
     }
 
-    /**
-     * Retoune la validation du fichier ZIP passé en paramètre
-     * @param string $fic le nom du fichier
-     * @param string $dir le chemin vers le repertoire du fichier
-     * @return boolean vrai si le nom du fichier ZIP est correct, faux sinon
-     */
-    protected function isGoodDataFolder($fic, $dir)
+    public function getNomData()
     {
-        return \preg_match("/Agenda So Toulouse/i",$fic) && \is_dir($dir.$fic);
-    }
-
-    /**
-     * Retourne le test d'une extension .CSV
-     * @param string $fichier le nom du fichier
-     * @return boolean vrai si le fichier est un fichier CSV, faux sinon
-     */
-    protected function isGoodDataFile($fichier)
-    {
-        return \preg_match("/\.csv$/i",$fichier);
-    }
-
-    public function getNomData() {
         return "Toulouse";
     }
 }

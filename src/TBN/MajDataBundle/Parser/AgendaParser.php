@@ -67,6 +67,18 @@ abstract class AgendaParser implements ParserInterface
         return true;
     }
 
+    public function setURL($url)
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getURL()
+    {
+        return $this->url;
+    }
+
     public function parse()
     {
         //Tableau des informations récoltées

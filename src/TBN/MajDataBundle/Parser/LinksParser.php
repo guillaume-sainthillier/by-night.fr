@@ -16,7 +16,6 @@ abstract class LinksParser extends AgendaParser {
      */
     protected $parser;
 
-    protected $url;
     protected $base_url;
 
     public function __construct() {
@@ -81,19 +80,6 @@ abstract class LinksParser extends AgendaParser {
     public function setBaseUrl($base_url) {
         $this->base_url = $base_url;
         return $this;
-    }
-
-
-    public function setURL($url)
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    public function getURL()
-    {
-        return $this->url;
     }
 
     /**

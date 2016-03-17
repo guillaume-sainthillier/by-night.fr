@@ -37,6 +37,7 @@ class Cleaner
             ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127))
             ->setReservationTelephone(substr($agenda->getReservationTelephone(), 0, 127))
             ->setReservationInternet(substr($agenda->getReservationInternet(), 0, 511))
+            ->setHoraires(substr($agenda->getHoraires(), 0, 255))
         ;
     }
 

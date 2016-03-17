@@ -104,7 +104,7 @@ class Agenda
     /**
      * @var string
      *
-     * @ORM\Column(name="horaires", type="string", length=128, nullable=true)
+     * @ORM\Column(name="horaires", type="string", length=256, nullable=true)
      */
     protected $horaires;
 

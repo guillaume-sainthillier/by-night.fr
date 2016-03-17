@@ -116,6 +116,8 @@ class Monitor
         $memoryEnd = memory_get_usage();
         $end = microtime(true);
         $time = ($end - $start);
+        $memory = ($memoryEnd - $memoryStart);
+        $memory = is_nan($memory) ? 0 : $memory;
         if (($display === true || self::$log === true) && self::$output) {
             self::$output->writeln(sprintf('%s : <info>%01.2f ms</info>',
                 $message,
