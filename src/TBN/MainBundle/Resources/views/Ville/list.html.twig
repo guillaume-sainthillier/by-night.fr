@@ -1,5 +1,7 @@
 {% extends "TBNMainBundle::layout.html.twig" %}
 
+{% block start_container -%}<div>{% endblock %}
+
 {% block titre_main %}Bienvenue sur By Night !{% endblock %}
 
 {% block title_main %}Choisissez votre ville{% endblock %}
@@ -16,77 +18,51 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
 {% endblock %}
 
 {% block body_main %}
-    <h2>Envie de sortir ?</h2>
+<section class="bg-white">
+    <div class="container">
+        <h2 class="text-primary">Envie de sortir ?</h2>
+        <br />
+        <p class="lead">
+            By Night vous propose les <strong>agendas des événements</strong>, concerts, spectacles et manifestations dans les plus grandes villes de France.
+        </p>
+        <p class="lead">
+            Qu'attendez vous ? Choisissez votre ville et découvrez tous les événements !
+        </p>
+    </div>
     <br />
-    <p>
-        By Night vous propose les agendas des événements, concerts, spectacles et manifestations dans les plus grandes villes de France.
-    </p>
-    <p>
-        Qu'attendez vous ? Choisissez votre ville et découvrez tous les événements !
-    </p>
-    <br />
+</section>
+<br />
+<br />
+<br />
+<div class="container">
     <div class="row">
     {% for i, site in sites %}
-        {% if i is odd %}
-            {% set classLeft = 'col-md-6 col-md-push-6' %}
-            {% set classRight = 'col-md-6 col-md-pull-6' %}
-        {% else %}
-            {% set classLeft = 'col-md-6' %}
-            {% set classRight = 'col-md-6' %}
-        {% endif %}
-
-        <div class="{{ classLeft }}" >
-            <div id="carousel-{{ i }}" data-ride="carousel" class="carousel slide">
-                {% set currentImages = site.images %}
-                {% set currentImages = currentImages|merge([{'webPath': 'img/sites/' ~ site.subdomain ~ '.jpg'}]) %}
-                
-                <!-- Indicators -->
-                <ol class="carousel-indicators">
-                    {% for j, image in currentImages %}
-                        {% set activeClass = j == 0 ? 'active' : '' %}
-                        <li data-target="#carousel-{{ i }}" data-slide-to="{{ j }}" class="{{ activeClass }}"></li>
-                    {% endfor %}
-                </ol>
-
-                <!-- Wrapper for slides -->
-                <div class="carousel-inner" role="listbox">
-                    {% for j, image in currentImages %}
-                        {% set activeClass = j == 0 ? 'active' : '' %}
-                        <div class="item {{ activeClass }}">
-                            <img class="img-responsive img loading" src="{{ asset('img/loading_site.png') }}" data-src="{{ image.webPath|imagine_filter('thumb_site') }}" >
-                        </div>
-                    {% endfor %}
+        <div class="col-md-6" >
+            <div class=" panel panel-default">
+                <div class="panel-body">
+                <img class="img-responsive img margin-auto loading" src="{{ asset('img/loading_site.png') }}"
+                     data-src="{{ ('img/sites/' ~ site.subdomain ~ '.jpg')|imagine_filter('thumb_site') }}" >
+                <div class="caption">
+                    <h2 class="modal-title">
+                        <a title="Accéder aux événements de {{ site.nom }}"
+                           href="{{ path('tbn_agenda_index', {'subdomain': site.subdomain }) }}">
+                            {{ site.nom }}
+                        </a>
+                    </h2>
+                    {{ site.description|raw }}
+                    <a title="Accéder aux événements de {{ site.nom }}"
+                       class="btn btn-primary btn-flat"
+                       href="{{ path('tbn_agenda_index', {'subdomain': site.subdomain }) }}">
+                        <i class="fa fa-chevron-right"></i> Accéder
+                    </a>
                 </div>
-
-                <!-- Controls -->
-                <a class="left carousel-control" href="#carousel-{{ i }}" role="button" data-slide="prev">
-                    <i class="icon-prev fa fa-chevron-left" aria-hidden="true"></i>
-                    <span class="sr-only">Précédent</span>
-                </a>
-                <a class="right carousel-control" href="#carousel-{{ i }}" role="button" data-slide="next">
-                    <i class="icon-next fa fa-chevron-right" aria-hidden="true"></i>
-                    <span class="sr-only">Suivant</span>
-                </a>
+                </div>
             </div>
         </div>
-        <div class="{{ classRight }}">
-            <h2 class="modal-title">
-                <a title="Accéder aux événements de {{ site.nom }}" 
-                    href="{{ path('tbn_agenda_index', {'subdomain': site.subdomain }) }}">
-                    {{ site.nom }}
-                 </a>                
-            </h2>
-            {{ site.description|raw }}
-            <a title="Accéder aux événements de {{ site.nom }}" 
-               class="btn btn-primary btn-flat"
-               href="{{ path('tbn_agenda_index', {'subdomain': site.subdomain }) }}">
-                <i class="fa fa-chevron-right"></i> Accéder
-            </a>
-        </div>
+        {% if i is odd %}
         <div class="clearfix"></div>
-        <br />
-        <br />
-        <br />
+        {% endif %}
     {% endfor %}
     </div>
+</div>
 {% endblock %}

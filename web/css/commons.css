@@ -41,8 +41,8 @@ Then, run this script to get the list.
 */
 html body {
   /*    .img {
-        margin: 0 auto;
-    }*/
+          margin: 0 auto;
+      }*/
 }
 html body .modal-title a {
   font-weight: 100;
@@ -147,7 +147,7 @@ html body .no_margin {
   margin: 0;
 }
 html body .bg-white {
-  background-color: white!important;
+  background-color: white !important;
 }
 html body .required:after {
   content: '*';
@@ -164,10 +164,10 @@ html body .component {
 }
 html body .count {
   font-size: 1.8em;
-  font-weight: 300!important;
+  font-weight: 300 !important;
 }
 html body .thin {
-  font-weight: 400!important;
+  font-weight: 400 !important;
 }
 html body .overlay {
   margin: 5px;
