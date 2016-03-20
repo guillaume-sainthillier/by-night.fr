@@ -116,7 +116,7 @@ class DoctrineEventHandler
             $agenda->setFbParticipations($fbEvent['participations'])
                 ->setFbInterets($fbEvent['interets'])
                 ->setUrl($fbEvent['url']);
-            if ($downloadImage && $agenda->getUrl() !== null && $agenda->getUrl() !== $oldURL) {
+            if ($downloadImage && ($agenda->getPath() === null || ($agenda->getUrl() !== null && $agenda->getUrl() !== $oldURL))) {
                 Monitor::bench('downloadImage', function() use(&$agenda) {
                     $this->handler->downloadImage($agenda);
                 });
