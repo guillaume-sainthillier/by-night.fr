@@ -36,6 +36,8 @@ monolog:
             to_email:   guillaume.sainthillier@gmail.com
             subject:    Erreur sur By Night
             level:      error
+            excluded_404s:
+              - (.*)
         streamed:
             type:  stream
             path:  %kernel.logs_dir%/%kernel.environment%.log
