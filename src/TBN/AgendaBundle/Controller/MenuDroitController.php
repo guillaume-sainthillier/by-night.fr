@@ -155,6 +155,17 @@ class MenuDroitController extends Controller {
         ]);
     }
 
+    protected function getSoireesTendancesParticipations(Agenda $soiree) {
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        return $repo->findAllTendancesParticipations($soiree);
+    }
+    protected function getSoireesTendancesInterets(Agenda $soiree) {
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        return $repo->findAllTendancesInterets($soiree);
+    }
+
     /**
      * @Cache(expires="+8 hours", public=true)
      */
