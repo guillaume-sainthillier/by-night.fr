@@ -82,20 +82,7 @@ abstract class AgendaParser implements ParserInterface
     public function parse()
     {
         //Tableau des informations récoltées
-        $raw = json_decode(file_get_contents($file), true);
-        foreach ($raw as &$rawAgenda) {
-            if (isset($rawAgenda['fb_date_modification']['date'])) {
-                $rawAgenda['fb_date_modification'] = new DateTime($rawAgenda['fb_date_modification']['date']);
-            }
-            if (isset($rawAgenda['date_debut']['date'])) {
-                $rawAgenda['date_debut'] = new DateTime($rawAgenda['date_debut']['date']);
-            }
-            if (!$rawAgenda['date_fin']) {
-                $rawAgenda['date_fin'] = $rawAgenda['date_debut'];
-            } elseif(isset($rawAgenda['date_fin']['date'])) {
-                $rawAgenda['date_fin'] = new DateTime($rawAgenda['date_fin']['date']);
-            }
-        }
+        $raw = $this->getRawAgendas();
 
         return array_map([$this, 'arrayToAgenda'], $raw);
     }
