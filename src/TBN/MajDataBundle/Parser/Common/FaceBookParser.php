@@ -69,10 +69,6 @@ class FaceBookParser extends AgendaParser
         //Recherche d'événements de l'API en fonction de lieux déjà connus dans la BD
         $place_events = $this->getEventsFromPlaces($now);
 
-        //TODO: Supprimer ça
-//        $filtered_events = $this->filterEvents($place_events);
-//        return array_map([$this, 'getInfoAgenda'], $this->api->getEventsFromIds($filtered_events));
-
         //Calcul de l'ID FB des propriétaires des événements précédemment trouvés
         $event_users = array_map(function (GraphNode $event) {
             $owner = $event->getField('owner');

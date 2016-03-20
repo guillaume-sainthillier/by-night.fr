@@ -82,28 +82,18 @@ abstract class AgendaParser implements ParserInterface
     public function parse()
     {
         //Tableau des informations récoltées
-
-        $fs = new Filesystem();
-        $file = 'C:/wamp/www/ByNight/web/events.json';
-        if (true || !$fs->exists($file)) {
-//            $fs->touch($file);
-            $raw = $this->getRawAgendas();
-//            $fs->dumpFile($file, json_encode($raw));
-        }
-        else {
-            $raw = json_decode(file_get_contents($file), true);
-            foreach ($raw as &$rawAgenda) {
-                if (isset($rawAgenda['fb_date_modification']['date'])) {
-                    $rawAgenda['fb_date_modification'] = new DateTime($rawAgenda['fb_date_modification']['date']);
-                }
-                if (isset($rawAgenda['date_debut']['date'])) {
-                    $rawAgenda['date_debut'] = new DateTime($rawAgenda['date_debut']['date']);
-                }
-                if (!$rawAgenda['date_fin']) {
-                    $rawAgenda['date_fin'] = $rawAgenda['date_debut'];
-                } elseif(isset($rawAgenda['date_fin']['date'])) {
-                    $rawAgenda['date_fin'] = new DateTime($rawAgenda['date_fin']['date']);
-                }
+        $raw = json_decode(file_get_contents($file), true);
+        foreach ($raw as &$rawAgenda) {
+            if (isset($rawAgenda['fb_date_modification']['date'])) {
+                $rawAgenda['fb_date_modification'] = new DateTime($rawAgenda['fb_date_modification']['date']);
+            }
+            if (isset($rawAgenda['date_debut']['date'])) {
+                $rawAgenda['date_debut'] = new DateTime($rawAgenda['date_debut']['date']);
+            }
+            if (!$rawAgenda['date_fin']) {
+                $rawAgenda['date_fin'] = $rawAgenda['date_debut'];
+            } elseif(isset($rawAgenda['date_fin']['date'])) {
+                $rawAgenda['date_fin'] = new DateTime($rawAgenda['date_fin']['date']);
             }
         }
 
