@@ -40,10 +40,10 @@
                 <i class="fa fa-calendar pull-left"></i>
                 <span>
                     {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}                        
-                        Le <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
+                        Le <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ dateDebut }}</time>
                     {% else %}
-                        Du <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ dateDebut }}</time>
-                        au <time class="number text-primary" itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\TH:i:sO') }}">{{ dateFin }}</time>
+                        Du <time class="number text-primary" itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ dateDebut }}</time>
+                        au <time class="number text-primary" itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ dateFin }}</time>
                     {% endif %}
                     {% if soiree.horaires != "" %}
                         - {{ soiree.horaires }}

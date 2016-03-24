@@ -8,7 +8,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <![endif]-->        
         <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
-        <meta name="keywords" content="{% spaceless %}{% block meta_keywords %}{% endblock %}",ce,soir,soiree,sortie,concert,spectable,musique,discoteque,boite,de,nuit{% endspaceless %}">
+        <meta name="keywords" content="{% spaceless %}{% block meta_keywords %}{% endblock %}, ce, soir, soiree, sortie, concert, spectable, musique, discotheque, boite, de, nuit{% endspaceless %}">
         <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
         
         <!-- OpenGraph -->
@@ -49,7 +49,7 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
         
         <!-- CSS -->
-        <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400|Roboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400%7CRoboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{{ asset('prod/main/css/style.min.css') }}" type="text/css" >
         {% block css %}{% endblock %}
         <link rel="stylesheet" href="{{ asset('prod/css/print.min.css') }}" type="text/css" media="print"> 

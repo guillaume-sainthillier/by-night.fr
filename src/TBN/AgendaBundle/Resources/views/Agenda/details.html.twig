@@ -86,10 +86,10 @@
             {% set dateFin = soiree.dateFin|date('d/m/Y') %}
 
             {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}
-                Le <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
+                Le <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
             {% else %}
-                Du <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\TH:i:sO') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
-                au <time itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\TH:i:sO') }}">{{ soiree.dateFin|localizeddate('full', 'none') }}</time>
+                Du <time itemprop="startDate" datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
+                au <time itemprop="endDate" datetime="{{ soiree.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ soiree.dateFin|localizeddate('full', 'none') }}</time>
             {% endif %}
 
             {% if soiree.horaires %}
