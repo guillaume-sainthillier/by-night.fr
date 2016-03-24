@@ -182,12 +182,24 @@ class EventController extends Controller
         ]);
     }
 
-    public function listAction(Request $request, $page, $type, $tag, $ville, $slug)
+    public function listAction(Request $request, $page, $type, $tag, $ville, $slug, $paginateRoute = 'tbn_agenda_pagination')
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
         $isPost = $request->isMethod('POST');
         $isUserPostSearch = $isPost && !$isAjax;
+
+        $routeParams = ['page' => $page + 1];
+        if($paginateRoute === 'tbn_agenda_sortir_pagination') {
+            $routeParams['type'] = $type;
+        }elseif($paginateRoute === 'tbn_agenda_tags_pagination') {
+            $routeParams['tag'] = $tag;
+        }elseif($paginateRoute === 'tbn_agenda_place_pagination') {
+            $routeParams['slug'] = $slug;
+        }elseif($paginateRoute === 'tbn_agenda_ville_pagination') {
+            $routeParams['ville'] = $ville;
+        }
+        $paginateURL = $this->generateUrl($paginateRoute, $routeParams);
 
         //Pagination
         $nbSoireeParPage = 15;
@@ -249,6 +261,8 @@ class EventController extends Controller
             'page' => $page,
             'search' => $search,
             'isPost' => $isPost,
+            'isAjax' => $isAjax,
+            'paginateURL' => $paginateURL,
             'form' => $form->createView()
         ]);
     }

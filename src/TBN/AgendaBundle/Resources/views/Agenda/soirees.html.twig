@@ -2,7 +2,7 @@
 
 {% block soirees %}
 {% if soirees|length > 0 %}
-{% if page > 1 %}
+{% if isAjax and page > 1 %}
     <hr />
 {% endif %}
 {% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" with({'events': soirees, 'page': page}) %}
@@ -10,7 +10,7 @@
 <div>
     <a id="paginate"
        class="btn btn-primary btn-lg btn-flat btn-block paginate"
-       href="{{ path('tbn_agenda_pagination', {'page': (page + 1)}) }}" 
+       href="{{ paginateURL }}"
        data-next="{{ (page + 1) }}">
         <i class="fa fa-chevron-down"></i> Plus d'événements
     </a>
@@ -20,7 +20,6 @@
 {% endblock %}
 
 {% block title_agenda %}
-    {% if page > 1 %}Page {{page}} - {% endif %}
 {% if villeName is not null %}Sortir à {{ villeName|capitalize }}
 {% elseif placeName is not null %}Sortir à {{ placeName|capitalize }}
 {% elseif tag is not null %}{{ tag|capitalize }}
@@ -30,4 +29,5 @@
 {% elseif type == 'spectacle' %}Spectacles
 {% elseif type == 'etudiant' %}Soirées étudiantes
 {% else %}Agenda des événements{% endif %}
+{% if page > 1 %} (Page {{page}}){% endif %}
 {% endblock %}

@@ -558,7 +558,7 @@ class Agenda
     
     public function getDistinctTags() {
         $tags = $this->getCategorieManifestation().','.$this->getTypeManifestation().','.$this->getThemeManifestation();
-        return array_map('trim', array_map('ucfirst', array_unique(array_filter(explode(',', $tags)))));
+        return array_unique(array_map('trim', array_map('ucfirst', array_filter(explode(',', $tags)))));
     }
 
     public function addRejectReason($reason) {

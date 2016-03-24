@@ -1,12 +1,6 @@
 {% for i, soiree in events %}
 <div itemscope itemtype="http://schema.org/Event">
     <div class="row event">
-        {% if soiree.modificationDerniereMinute %}
-            <div class="alert alert-warning">
-                <i class="fa fa-warning"></i>
-                <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
-            </div>
-        {% endif %}
         <div class="col-xs-3 image_soiree">
             {% if soiree.webPath %}
                 {% set original =  absolute_url(asset('/' ~ soiree.webPath)) %}
@@ -29,6 +23,12 @@
             </div>
         </div>
         <div class="col-xs-9 description_evenement" >
+            {% if soiree.modificationDerniereMinute %}
+                <div class="alert alert-warning">
+                    <i class="fa fa-warning"></i>
+                    <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
+                </div>
+            {% endif %}
             <h3 class="modal-title nom_soiree">
                 <a title="Tous les détails de {{ soiree.nom }} " href="{{ path('tbn_agenda_details', {'slug': soiree.slug})}}" itemprop="url" >
                     <span itemprop="name">{{ soiree.nom }}</span>

@@ -8,34 +8,62 @@ tbn_agenda_agenda:
     
 tbn_agenda_sortir:
     path: /agenda/sortir/{type}
-    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, tag: null, ville: null, slug: null}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, tag: null, ville: null, slug: null, paginateRoute: "tbn_agenda_sortir_pagination"}
     requirements:
         type: concert|spectacle|etudiant|famille|exposition
-        
+
+tbn_agenda_sortir_pagination:
+    path: /agenda/sortir/{type}/page/{page}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, tag: null, ville: null, slug: null, paginateRoute: "tbn_agenda_sortir_pagination"}
+    requirements:
+        type: concert|spectacle|etudiant|famille|exposition
+        page: \d+
+
+tbn_agenda_tags_pagination:
+    path: /agenda/tag/{tag}/page/{page}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, ville: null, slug: null, paginateRoute: "tbn_agenda_tags_pagination"}
+    requirements:
+        tag: (.+)
+        page: (\d+)
+
 tbn_agenda_tags:
     path: /agenda/tag/{tag}
-    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, ville: null, slug: null}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, ville: null, slug: null, paginateRoute: "tbn_agenda_tags_pagination"}
     requirements:
         tag: (.+)
-        
+
+tbn_agenda_place_pagination:
+    path: /agenda/sortir-a/{slug}/page/{page}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, ville: null, tag: null, paginateRoute: "tbn_agenda_place_pagination"}
+    requirements:
+        tag: (.+)
+        page: (\d+)
+
 tbn_agenda_place:
     path: /agenda/sortir-a/{slug}
-    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, ville: null, tag: null}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, ville: null, tag: null, paginateRoute: "tbn_agenda_place_pagination"}
     requirements:
         tag: (.+)
         
+tbn_agenda_ville_pagination:
+    path: /agenda/sortir-dans/{ville}/page/{page}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, slug: null, tag: null, paginateRoute: "tbn_agenda_ville_pagination"}
+    requirements:
+        tag: (.+)
+        page: (\d+)
+
 tbn_agenda_ville:
     path: /agenda/sortir-dans/{ville}
-    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, slug: null, tag: null}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, slug: null, tag: null, paginateRoute: "tbn_agenda_ville_pagination"}
     requirements:
         tag: (.+)
 
 tbn_agenda_pagination:
     path: /agenda/page/{page}
-    defaults: { _controller: TBNAgendaBundle:Event:list}
+    defaults: { _controller: TBNAgendaBundle:Event:list, page: 1, type: null, tag: null, ville: null, slug: null}
     methods: [GET]
     requirements:
-        page: \d+
+        page: (\d+)
         
 tbn_agenda_mention_legales:
     path: /mentions-legales.html
