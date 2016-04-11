@@ -279,7 +279,7 @@ class EventController extends Controller
             foreach ($soirees_type_manifestation as $soiree) {//
                 $types_manifestation = preg_split('/,/', $soiree->getCategorieManifestation());
                 foreach ($types_manifestation as $type) {
-                    $type = trim($type);
+                    $type = array_map('trim', explode('//', $type))[0];
                     if (!in_array($type, $type_manifestation) && $type != '') {
                         $type_manifestation[$type] = $type;
                     }

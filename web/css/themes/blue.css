@@ -3148,6 +3148,9 @@ h6,
 .navbar .navbar-brand {
   padding: 5px 20px;
 }
+.navbar .navbar-brand img {
+  margin-top: 5px;
+}
 .navbar .navbar-nav > li > a strong,
 .navbar .navbar-header a strong {
   font-weight: 400;

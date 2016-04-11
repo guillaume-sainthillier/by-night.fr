@@ -92,6 +92,7 @@ Then, run this script to get the list.
   padding: 20px 0;
 }
 .full_wrapper .wrapper .search_container {
+  z-index: 2;
   border-radius: 2px;
   top: 150%;
   padding: 20px;
@@ -101,5 +102,12 @@ Then, run this script to get the list.
 @media (max-width: 991px) {
   .full_wrapper .wrapper .search_container .form-control {
     margin-bottom: 10px;
+  }
+}
+@media (max-width: 480px) {
+  .full_wrapper .wrapper .search_container {
+    padding: 10px;
+    width: 95%;
+    left: 2.5%;
   }
 }

@@ -2,13 +2,16 @@
 
 namespace TBN\AgendaBundle\Form\Type;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\FormEvents;
 
 class SearchType extends AbstractType
 {
@@ -22,6 +25,17 @@ class SearchType extends AbstractType
         $this->types_manifesation = $types_manifesation;
         $this->lieux = $lieux;
         $this->commune = $commune;
+
+    }
+
+    public function onPreSubmit(FormEvent $event) {
+        $data = $event->getData();
+
+        if(isset($data['du']) && !$data['du']) {
+            $data['du'] = date('d/m/Y');
+        }
+
+        $event->setData($data);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -78,7 +92,11 @@ class SearchType extends AbstractType
                 "attr" => [
                     "class" => "btn btn-raised btn-lg btn-primary btn-block"
                 ]
-            ]);
+            ])
+            ->addEventListener(
+                FormEvents::PRE_SUBMIT,
+                array($this, 'onPreSubmit')
+            );;
     }
 
     public function configureOptions(OptionsResolver $resolver)

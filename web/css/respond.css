@@ -43,19 +43,32 @@ Then, run this script to get the list.
   html body .nav > li > a {
     font-size: 16px;
   }
+  html body .navbar .navbar-brand img {
+    margin-top: 5px;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  html body .navbar .navbar-brand img {
+    margin-top: -5px;
+  }
 }
 @media (min-width: 768px) and (max-width: 1199px) {
   html body h1.titrebloc {
     font-size: 50px;
   }
   html body .navbar .navbar-brand {
+    height: 60px;
     padding: 15px 10px;
+  }
+  html body .navbar .navbar-form {
+    margin-top: 16px;
   }
   html body .navbar .navbar-brand,
   html body .navbar .nav > li > a {
     line-height: 30px;
   }
-  html body #widgets {
+  html body #widgets,
+  html body #widgets > div {
     padding-left: 0;
     padding-right: 0;
   }
@@ -72,6 +85,9 @@ Then, run this script to get the list.
     padding-left: 10px;
     padding-right: 10px;
   }
+  html body .navbar .navbar-brand img {
+    margin-top: -5px;
+  }
   html body .navbar .container,
   html body #bread .container {
     width: 100%;
@@ -85,6 +101,9 @@ Then, run this script to get the list.
     margin-top: 20px;
     margin-bottom: 30px;
   }
+  html body .navbar .navbar-brand img {
+    margin-top: 0px;
+  }
   html body h1.titrebloc {
     font-size: 40px;
   }
@@ -96,6 +115,12 @@ Then, run this script to get the list.
   }
   html body #bread #fil-ariane li {
     padding: 0;
+  }
+  html body #container-fluid,
+  html body #content,
+  html body #widgets {
+    padding-left: 0;
+    padding-right: 0;
   }
 }
 @media (max-width: 480px) {
@@ -145,10 +170,6 @@ Then, run this script to get the list.
   html body #widgets h4.modal-title {
     font-size: 16px;
   }
-  html body #widgets > div {
-    padding-left: 0;
-    padding-right: 0;
-  }
   html body .number {
     font-size: 1.1em;
   }
@@ -160,11 +181,6 @@ Then, run this script to get the list.
   }
   html body .sm-margin-bottom {
     margin-bottom: 10px;
-  }
-  html body #container-fluid,
-  html body #content {
-    padding-left: 0;
-    padding-right: 0;
   }
 }
 .reset-padding {
