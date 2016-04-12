@@ -135,7 +135,7 @@ class UpdateCommand extends EventCommand
                     $agenda->getPlace()->setSite($site);
                 }
 
-                $doctrineHandler->handleEvent($agenda, $env !== 'prod');
+                $doctrineHandler->handleEvent($agenda, $env === 'prod');
                 if (($i % $batchSize) === $batchSize - 1) {
                     $doctrineHandler->flush();
                     $progress->advance();
@@ -165,45 +165,5 @@ class UpdateCommand extends EventCommand
             $this->writeln($output, $e->getTraceAsString());
             throw new \Exception('Erreur dans le traitement', 0, $e);
         }
-    }
-
-    /**
-     * Loads the ContainerBuilder from the cache.
-     *
-     * @return ContainerBuilder
-     *
-     * @throws \LogicException
-     */
-    protected function getContainerBuilder()
-    {
-        if ($this->containerBuilder) {
-            return $this->containerBuilder;
-        }
-
-        if (!is_file($cachedFile = $this->getContainer()->getParameter('debug.container.dump'))) {
-            throw new \LogicException(sprintf('Debug information about the container could not be found. Please clear the cache and try again.'));
-        }
-
-        $container = new ContainerBuilder();
-
-        $loader = new XmlFileLoader($container, new FileLocator());
-        $loader->load($cachedFile);
-
-        return $this->containerBuilder = $container;
-    }
-
-    private function findServiceIdsContaining(ContainerBuilder $builder, $name)
-    {
-        $serviceIds = $builder->getServiceIds();
-        $foundServiceIds = array();
-        $name = strtolower($name);
-        foreach ($serviceIds as $serviceId) {
-            if (false === strpos($serviceId, $name)) {
-                continue;
-            }
-            $foundServiceIds[] = $serviceId;
-        }
-
-        return $foundServiceIds;
     }
 }

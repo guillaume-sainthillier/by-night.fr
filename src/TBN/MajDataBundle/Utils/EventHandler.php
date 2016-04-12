@@ -48,19 +48,23 @@ class EventHandler
             $image = file_get_contents($url);
         } catch (\Exception $ex) {
             echo $ex->getMessage();
-            $image = false;
+            $image = null;
         }
 
-        if ($image !== false) {
+        if ($image) {
+            $agenda->setUrl($url);
+
             //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = preg_replace("/\?(.+)/", "", pathinfo($url, PATHINFO_EXTENSION));
+            $ext = preg_replace("/(\?|_)(.*)$/", "", pathinfo($url, PATHINFO_EXTENSION));
 
             $filename = sha1(uniqid(mt_rand(), true)) . "." . $ext;
             $pathname = $agenda->getUploadRootDir() . "/" . $filename;
             $octets = file_put_contents($pathname, $image);
 
-            if ($octets !== false) {
-                $agenda->setPath($filename)->setUrl($url);
+            if ($octets > 0) {
+                $agenda->setPath($filename);
+            }elseif(file_exists($pathname)) {
+                unlink($pathname);
             }
         }
     }

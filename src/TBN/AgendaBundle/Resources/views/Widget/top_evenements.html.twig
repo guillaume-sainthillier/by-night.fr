@@ -3,5 +3,5 @@
 {% block titre %}À la une cette semaine{% endblock %}
 {% block icone %}fa-star{% endblock %}
 {% block body %}
-    {{ render_hinclude(url('tbn_agenda_top_soirees')) }}
+    {{ render_esi(url('tbn_agenda_top_soirees')) }}
 {% endblock %}
