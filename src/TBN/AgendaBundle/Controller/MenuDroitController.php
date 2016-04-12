@@ -140,6 +140,9 @@ class MenuDroitController extends Controller {
         ]);
     }
 
+    /**
+     * @Cache(expires="+4 hours", public=true)
+     */
     public function tendancesAction(Agenda $soiree) {
 
         $nbItems    = 30;
