@@ -4,7 +4,7 @@
 {% block widget_body_class %}scrollable scrollable-large{% endblock %}
 {% block icone %}fa-star{% endblock %}
 {% block body %}
-    {{ render_hinclude(url('tbn_agenda_soirees_similaires',{'slug': soiree.slug})) }}
+    {{ render_esi(url('tbn_agenda_soirees_similaires',{'slug': soiree.slug})) }}
 {% endblock %}
 
 {% block footer %}
