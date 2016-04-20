@@ -84,7 +84,7 @@ class ReplyController extends Controller
             $reponse->setUser($user);
             $reponse->setAgenda($comment->getAgenda());
 
-            $form->bind($request);
+            $form->handleRequest($request);
             if ($form->isValid()) {
                 $reponse->setParent($comment);
                 $comment->addReponse($reponse);
@@ -119,7 +119,7 @@ class ReplyController extends Controller
 
     protected function getCreateForm(Comment $reponse, Comment $comment)
     {
-        return $this->createForm(new CommentType(), $reponse, [
+        return $this->createForm(CommentType::class, $reponse, [
             'action' => $this->generateUrl('tbn_comment_reponse_new', ["id" => $comment->getId()]),
             'method' => 'POST'
         ])

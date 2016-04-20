@@ -9,7 +9,7 @@
 <div class="commentaires">
 {% for comment in comments %}
     {% block detail_commentaire %}
-        {% render(controller('TBNCommentBundle:Comment:details', {'comment': comment})) %}
+        {{ render(controller('TBNCommentBundle:Comment:details', {'comment': comment})) }}
     {% endblock %}
 {% endfor %}
 {% if nb_comments > ((page)*offset) %}

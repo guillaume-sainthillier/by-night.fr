@@ -1,10 +1,13 @@
 parameters:
-    router.class: TBN\MainBundle\Routing\Router
+#    router.class: TBN\MainBundle\Routing\Router
 #    tbn_city.example.class: TBN\CityBundle\Example
     #router.class: TBN\MainBundle\Routing\Router
 
     
 services:
+#    tbn.router:
+#        class: TBN\MainBundle\Routing\Router
+#        alias: router
     site_manager:
         class: TBN\MainBundle\Site\SiteManager
       
@@ -25,20 +28,20 @@ services:
     tbn.collections:
         class: TBN\MainBundle\Form\Extension\CollectionExtension
         tags:
-            - { name: form.type_extension, extended_type: collection }
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\CollectionType }
     
     #Surcouche globale des formulaires
     tbn.forms:
         class: TBN\MainBundle\Form\Extension\WidgetFormTypeExtension
         tags:
-            - { name: form.type_extension, extended_type: form }
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
     #Datepicker
     tbn.forms.datepicker:
         class: TBN\MainBundle\Form\Extension\DateTypeExtension
         tags:
-            - { name: form.type_extension, extended_type: date }
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\DateType }
     #Image
     tbn.image_type_extension:
         class: TBN\MainBundle\Form\Extension\ImageTypeExtension
         tags:
-            - { name: form.type_extension, extended_type: file }
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FileType }

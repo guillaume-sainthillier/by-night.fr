@@ -2,6 +2,7 @@
 
 namespace TBN\MainBundle\Form\Type;
 
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,7 +25,7 @@ class SiteType extends AbstractType
             ->add('adjectifPluriel', TextType::class, [
                 'label' => 'Adjectif pluriel'
             ])
-            ->add('description', 'textarea', [
+            ->add('description', TextAreaType::class, [
                 'label' => 'Description',
                 'attr' => [
                     'rows' => 6

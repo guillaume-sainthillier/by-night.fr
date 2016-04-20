@@ -3,7 +3,7 @@
 {% block poster_commentaire %}{% endblock %}
 
 {% block detail_commentaire %}
-    {% render(controller('TBNCommentBundle:Reply:details', {'comment': comment})) %}
+    {{ render(controller('TBNCommentBundle:Reply:details', {'comment': comment})) }}
 {% endblock %}
 
 {% block load_more %}

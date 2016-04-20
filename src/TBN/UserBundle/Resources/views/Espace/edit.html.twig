@@ -1,5 +1,9 @@
 {% extends "TBNUserBundle:Espace:new.html.twig" %}
 
+{% block title_espace %}
+    {{ agenda.nom }}
+{% endblock %}
+
 {% block titre_espace %}
     {{ agenda.nom }}
 {% endblock %}
@@ -13,7 +17,7 @@
 {% block body_form %}
     {{ parent() }}
     <div class="row">
-        <div class="col-md-offset-8 col-md-4">
+        <div class="col-md-4">
             {{ form(form_delete) }}
         </div>        
     </div>

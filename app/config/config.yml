@@ -95,12 +95,12 @@ fos_user:
     user_class: TBN\UserBundle\Entity\User
     profile:
         form:
-            type: tbn_user_profile
+            type: TBN\UserBundle\Form\Type\ProfileFormType
     
-ivory_google_map:
-    geocoder:
+#ivory_google_map:
+#    geocoder:
         # Enable the service
-        enabled: true
+#        enabled: true
     
 hwi_oauth:
     #this is my custom user provider, created from FOSUBUserProvider - will manage the 

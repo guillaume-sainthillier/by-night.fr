@@ -3,6 +3,7 @@
 namespace TBN\MainBundle\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -28,15 +29,14 @@ class ImageTypeExtension extends AbstractTypeExtension
             if (null !== $parentData) {
                 $accessor = PropertyAccess::createPropertyAccessor();
                 $imageUrl = $accessor->getValue($parentData, $options['image_path']);
-            }else
-	    {
-		$imageUrl = null;
-	    }
+            } else {
+                $imageUrl = null;
+            }
         }
 
         // set an "image_url" variable that will be available when rendering this field
-        $view->vars['image_url']    = $imageUrl;
-	$view->vars['image_filter'] = $options['image_filter'];
+        $view->vars['image_url'] = $imageUrl;
+        $view->vars['image_filter'] = $options['image_filter'];
     }
 
     /**
@@ -46,8 +46,8 @@ class ImageTypeExtension extends AbstractTypeExtension
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setOptional(array('image_path'))
-		->setRequired(array('image_filter'));
+        $resolver->setDefaults(array('image_path' => null))
+            ->setRequired(array('image_filter'));
     }
 
     /**
@@ -57,6 +57,6 @@ class ImageTypeExtension extends AbstractTypeExtension
      */
     public function getExtendedType()
     {
-        return 'file';
-    }   
+        return FileType::class;
+    }
 }

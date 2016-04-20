@@ -1,7 +1,13 @@
 <form action="{{ path('fos_user_profile_edit') }}" method="post" class="fos_user_profile_edit">
     {{ form_widget(form) }}
     <div>
-        <button class="btn btn-primary btn-raised" type="submit">Modifier</button>
-        <a class="btn btn-default pull-right" title="Retourner à mes infos" href="{{ path('fos_user_profile_show') }}">Retour</a>
+        <button class="btn btn-primary btn-raised" type="submit">
+            <i class="fa fa-save"></i>
+            Enregistrer
+        </button>
+        <a class="btn btn-raised btn-default pull-right" title="Retourner à mes infos" href="{{ path('fos_user_profile_show') }}">
+            <i class="fa fa-chevron-left" ></i>
+            Retour
+        </a>
     </div>
 </form>

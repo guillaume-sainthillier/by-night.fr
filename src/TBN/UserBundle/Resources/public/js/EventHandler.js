@@ -36,7 +36,7 @@ var EventHandler = {
     initWYSIWYG: function ()
     {
         //SummerNote
-        $("#tbn_agenda_descriptif").summernote({
+        $("#agenda_descriptif").summernote({
             lang: 'fr-FR',
             toolbar: [
                 ['heading', ['style']],
@@ -79,7 +79,7 @@ var EventHandler = {
                     }
                 });
                 
-                var $field = $('#tbn_agenda_adresse');
+                var $field = $('#agenda_adresse');
                 // Proxy inputs typeahead events to addressPicker
                 addressPicker.bindDefaultTypeaheadEvent($field);
                 $(addressPicker).on('addresspicker:selected', function (event, result) {
@@ -93,7 +93,7 @@ var EventHandler = {
                 });
                 
                 //Lieux
-                var $field = $('#tbn_agenda_place_nom');
+                var $field = $('#agenda_place_nom');
                 // instantiate the placePicker suggestion engine (based on bloodhound)
                 var placePicker = new AddressPicker({
                     autocompleteService: {
@@ -109,7 +109,7 @@ var EventHandler = {
 
                     if(typeof result.placeResult.formatted_address !== "undefined" && result.placeResult.formatted_address)
                     {
-                        $('#tbn_agenda_adresse').typeahead('val', result.placeResult.formatted_address);
+                        $('#agenda_adresse').typeahead('val', result.placeResult.formatted_address);
                         addressPicker.updateMap(event, result.placeResult);
                     }
 
@@ -131,13 +131,13 @@ var EventHandler = {
     },
     assignGMapInfo: function (event, result)
     {
-        $('#tbn_agenda_place_latitude').val(result.lat());
-        $('#tbn_agenda_place_longitude').val(result.lng());
-        $('#tbn_agenda_place_ville').val(result.nameForType('locality'));
-        $('#tbn_agenda_place_codePostal').val(result.nameForType('postal_code'));
+        $('#agenda_place_latitude').val(result.lat());
+        $('#agenda_place_longitude').val(result.lng());
+        $('#agenda_place_ville').val(result.nameForType('locality'));
+        $('#agenda_place_codePostal').val(result.nameForType('postal_code'));
 
         var rue = ((result.nameForType('street_number') ? result.nameForType('street_number') : '') + ' ' + (result.nameForType('route') || '')).trim();
-        $('#tbn_agenda_place_rue').val(rue);
+        $('#agenda_place_rue').val(rue);
     }
 };
 

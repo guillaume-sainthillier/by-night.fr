@@ -6,6 +6,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -15,18 +16,6 @@ use Symfony\Component\Form\FormEvents;
 
 class SearchType extends AbstractType
 {
-
-    protected $types_manifesation;
-    protected $lieux;
-    protected $commune;
-
-    public function __construct($types_manifesation, $lieux, $commune)
-    {
-        $this->types_manifesation = $types_manifesation;
-        $this->lieux = $lieux;
-        $this->commune = $commune;
-
-    }
 
     public function onPreSubmit(FormEvent $event) {
         $data = $event->getData();
@@ -41,7 +30,7 @@ class SearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('page', 'hidden')
+            ->add('page', HiddenType::class)
             ->add("du", DateType::class, [
                 "required" => true,
                 "label" => "Du",
@@ -59,7 +48,7 @@ class SearchType extends AbstractType
                 "attr" => ["data-date-format" => "dd/mm/yyyy"]
             ])
             ->add("type_manifestation", ChoiceType::class, [
-                "choices" => $this->types_manifesation,
+                "choices" => $options['types_manif'],
                 "label" => 'Quoi ?',
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "multiple" => true,
@@ -67,7 +56,7 @@ class SearchType extends AbstractType
                 "required" => false,
                 "attr" => ["title" => "Tous", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
             ->add("lieux", ChoiceType::class, [
-                "choices" => $this->lieux,
+                "choices" => $options['lieux'],
                 "label" => "Lieux",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "multiple" => true,
@@ -75,7 +64,7 @@ class SearchType extends AbstractType
                 "required" => false,
                 "attr" => ["title" => "Tous", "class" => "form-control", "data-style" => "btn-primary btn-flat", "data-live-search" => true]])
             ->add("commune", ChoiceType::class, [
-                "choices" => $this->commune,
+                "choices" => $options['communes'],
                 "label" => "Villes",
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
                 "multiple" => true,
@@ -102,6 +91,9 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'communes' => [],
+            'lieux' => [],
+            'types_manif' => [],
             'data_class' => 'TBN\AgendaBundle\Search\SearchAgenda',
             'csrf_protection' => false
         ]);

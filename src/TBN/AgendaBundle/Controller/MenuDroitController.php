@@ -18,14 +18,24 @@ class MenuDroitController extends Controller {
      * @Cache(expires="tomorrow", public=true)
      */
     public function programmeTVAction() {
-        
-        $parser = $this->get("tbn.programmetv");
+        $cache = $this->get('memory_cache');
 
-        $programmes     = array_map(function($programme) {
-            $css_chaine = $this->getCSSChaine($programme['chaine']);
-            $programme['css_chaine'] = $css_chaine ? 'icon-'.$css_chaine : null;
-            return $programme;
-        }, $parser->getProgrammesTV());
+        $key = 'tbn.programme_tele';
+        if(! $cache->contains($key)) {
+            $parser = $this->get("tbn.programmetv");
+            $programmes     = array_map(function($programme) {
+                $css_chaine = $this->getCSSChaine($programme['chaine']);
+                $programme['css_chaine'] = $css_chaine ? 'icon-'.$css_chaine : null;
+                return $programme;
+            }, $parser->getProgrammesTV());
+
+            $minuit = strtotime('tomorrow 00:00:00');
+            $today = time();
+            $cache->save($key, $programmes, $minuit - $today);
+        }
+
+        $programmes = $cache->fetch($key);
+
         
         return $this->render("TBNAgendaBundle:Hinclude:programme_tv.html.twig", [
             "programmes" => $programmes

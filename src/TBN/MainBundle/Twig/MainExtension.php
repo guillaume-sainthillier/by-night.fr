@@ -9,6 +9,7 @@
 namespace TBN\MainBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Description of TBNExtension
@@ -19,6 +20,9 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public static $LIFE_TIME_CACHE = 86400; // 3600*24
     private $router;
+    /**
+     * @var RequestStack
+     */
     private $requestStack;
     private $doctrine;
     private $cache;
@@ -61,41 +65,39 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     public function getGlobals()
     {
         $globals = [];
-        try {
-            $site = $this->siteManager->getCurrentSite();
-            if($site !== null && $this->requestStack->getParentRequest() === null)
+        $site = $this->siteManager->getCurrentSite();
+        if($site !== null && $this->requestStack->getParentRequest() === null)
+        {
+            $key = "sites.". $site->getSubdomain();
+            if(! $this->cache->contains($key))
             {
-                $key = "sites.". $site->getSubdomain();
+                $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
+                $sites = $repo->findRandom($site);
+                $nomSites = [];
+                foreach($sites as $site) {
+                    $nomSites[] = ['nom' => $site->getNom(), 'subdomain' => $site->getSubdomain()];
+                }
+                $this->cache->save($key, $nomSites);
+            }
+            $sites = $this->cache->fetch($key);
+
+            $globals = [
+                "site"      => $this->siteManager->getCurrentSite(),
+                "sites"     => $sites,
+                "siteInfo"  => $this->siteManager->getSiteInfo()
+            ];
+
+            foreach($this->socials as $name => $social)
+            {
+                $key = 'tbn.counts.'.$name;
                 if(! $this->cache->contains($key))
                 {
-                    $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
-                    $sites = $repo->findRandom($site);
-                    $nomSites = [];
-                    foreach($sites as $site) {
-                        $nomSites[] = ['nom' => $site->getNom(), 'subdomain' => $site->getSubdomain()];
-                    }
-                    $this->cache->save($key, $nomSites);
+                    $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
                 }
-                $sites = $this->cache->fetch($key);
-                
-                $globals = [
-                    "site"      => $this->siteManager->getCurrentSite(),
-                    "sites"     => $sites,
-                    "siteInfo"  => $this->siteManager->getSiteInfo()
-                ];
 
-                foreach($this->socials as $name => $social)
-                {
-                    $key = 'tbn.counts.'.$name;
-                    if(! $this->cache->contains($key))
-                    {
-                        $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
-                    }
-
-                    $globals['count_'.$name] = $this->cache->fetch($key);
-                }
+                $globals['count_'.$name] = $this->cache->fetch($key);
             }
-        }catch(\Exception $ex) {}
+        }
 	    return $globals;
     }
     

@@ -14,6 +14,7 @@ class AppKernel extends Kernel
             new Symfony\Bundle\MonologBundle\MonologBundle(),
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Presta\SitemapBundle\PrestaSitemapBundle(),
             new TBN\MainBundle\TBNMainBundle(),
@@ -29,8 +30,8 @@ class AppKernel extends Kernel
 
             new WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
-            new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
-	    new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),
+
+	        //new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
             new \FOS\ElasticaBundle\FOSElasticaBundle(),
@@ -45,7 +46,7 @@ class AppKernel extends Kernel
 
         return $bundles;
     }
-    /*
+
     public function getRootDir()
     {
         return __DIR__;
@@ -58,9 +59,8 @@ class AppKernel extends Kernel
     {
         return dirname(__DIR__).'/var/logs';
     }
-*/
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__.'/config/config_'.$this->getEnvironment().'.yml');
+        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
     }
 }

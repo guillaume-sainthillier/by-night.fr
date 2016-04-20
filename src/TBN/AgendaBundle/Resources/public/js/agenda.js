@@ -45,8 +45,8 @@ function init_pagination()
         var self        = $(this);
         var container   = self.parent();
         var page        = self.data('next');
-        var form        = $('form[name="tbn_search_agenda"]');
-        var pageInput   = $('#tbn_search_agenda_page');
+        var form        = $('form[name="search"]');
+        var pageInput   = $('#search_page');
         
         pageInput.val(page);
         $.post(form.attr('action'), form.serialize()).done(function(html)
@@ -118,8 +118,8 @@ function init_shorcut_date()
     $("select.shorcuts_date").unbind("change").change(function ()
     {
         var selected = $(this).find("option:selected");
-        $("#tbn_search_agenda_du").val(selected.data("date-debut") || "");
-        $("#tbn_search_agenda_au").val(selected.data("date-fin") || "");
+        $("#search_du").val(selected.data("date-debut") || "");
+        $("#search_au").val(selected.data("date-fin") || "");
     });
 }
 

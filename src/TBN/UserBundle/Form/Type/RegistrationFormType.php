@@ -2,6 +2,7 @@
 
 namespace TBN\UserBundle\Form\Type;
 
+use Doctrine\DBAL\Types\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use FOS\UserBundle\Form\Type\RegistrationFormType as BaseType;
 
@@ -19,8 +20,8 @@ class RegistrationFormType extends BaseType
         parent::buildUserForm($builder,$options);
 
         $builder
-            ->add('username', null, ['disabled' => true, 'label' => 'form.username', 'translation_domain' => 'FOSUserBundle'])
-            ->add('firstName', null, ['required' => false])
+            ->add('username', TextType::class, ['disabled' => true, 'label' => 'form.username', 'translation_domain' => 'FOSUserBundle'])
+            ->add('firstName', TextType::class, ['required' => false])
         ;
     }
 

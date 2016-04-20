@@ -190,13 +190,13 @@ class EventController extends Controller
         $isUserPostSearch = $isPost && !$isAjax;
 
         $routeParams = ['page' => $page + 1];
-        if($paginateRoute === 'tbn_agenda_sortir_pagination') {
+        if ($paginateRoute === 'tbn_agenda_sortir_pagination') {
             $routeParams['type'] = $type;
-        }elseif($paginateRoute === 'tbn_agenda_tags_pagination') {
+        } elseif ($paginateRoute === 'tbn_agenda_tags_pagination') {
             $routeParams['tag'] = $tag;
-        }elseif($paginateRoute === 'tbn_agenda_place_pagination') {
+        } elseif ($paginateRoute === 'tbn_agenda_place_pagination') {
             $routeParams['slug'] = $slug;
-        }elseif($paginateRoute === 'tbn_agenda_ville_pagination') {
+        } elseif ($paginateRoute === 'tbn_agenda_ville_pagination') {
             $routeParams['ville'] = $ville;
         }
         $paginateURL = $this->generateUrl($paginateRoute, $routeParams);
@@ -229,8 +229,11 @@ class EventController extends Controller
         $communes = $this->getVilles($repo, $site);
 
         //Création du formulaire
-        $form = $this->createForm(new SearchType($types_manif, $lieux, $communes), $search, [
-            'action' => $formAction
+        $form = $this->createForm(SearchType::class, $search, [
+            'action' => $formAction,
+            'lieux' => $lieux,
+            'types_manif' => $types_manif,
+            'communes' => $communes
         ]);
 
         //Bind du formulaire avec la requête courante

@@ -11,8 +11,11 @@
 
 namespace TBN\UserBundle\Form\Type;
 
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use FOS\UserBundle\Form\Type\ProfileFormType as BaseType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class ProfileFormType extends BaseType
 {
@@ -31,12 +34,13 @@ class ProfileFormType extends BaseType
     protected function buildUserForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('username', null, [
+            ->add('username', TextType::class, [
                 'label' => 'form.username',
                 'translation_domain' => 'FOSUserBundle'
             ])
-            ->add('email', 'email', ['label' => 'form.email', 'translation_domain' => 'FOSUserBundle'])
-            ->add('description', 'textarea', [
+            ->add('email', EmailType::class, ['label' => 'form.email', 'translation_domain' => 'FOSUserBundle'])
+            ->add('description', TextareaType::class, [
+                'required' => false,
                 'label' => 'Description',
                 "attr" => [
                     "placeholder" => "Ecrivez une courte description"

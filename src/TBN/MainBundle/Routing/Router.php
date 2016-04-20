@@ -28,7 +28,7 @@ class Router extends BaseRouter
 
         $this->subdomain = null;
         $this->siteManager = $container->get('site_manager');
-        $this->cache = $container->get('memory_cache');
+        $this->cache = $container->get('array_cache');
     }
 
     /**

@@ -2,12 +2,7 @@
 
 namespace TBN\MajDataBundle\Utils;
 
-use Ivory\GoogleMap\Services\Geocoding\Geocoder;
 use Doctrine\Common\Cache\Cache;
-use TBN\MajDataBundle\Utils\Firewall;
-use TBN\MajDataBundle\Utils\Cleaner;
-use TBN\MajDataBundle\Utils\Comparator;
-use TBN\MajDataBundle\Utils\Merger;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\MainBundle\Entity\Site;
@@ -20,18 +15,15 @@ use TBN\MainBundle\Entity\Site;
  */
 class EventHandler
 {
-
-    private $geocoder;
     private $firewall;
     private $cleaner;
     private $comparator;
     private $merger;
     private $cache;
 
-    public function __construct(Cache $cache, Geocoder $geocoder, Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger)
+    public function __construct(Cache $cache, Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger)
     {
         $this->cache = $cache;
-        $this->geocoder = $geocoder;
         $this->firewall = $firewall;
         $this->cleaner = $cleaner;
         $this->comparator = $comparator;

@@ -4,46 +4,24 @@ namespace TBN\UserBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use TBN\UserBundle\Entity\SiteInfo;
-use TBN\UserBundle\Entity\User;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 
 class AgendaType extends AbstractType
 {
 
-    /**
-     *
-     * @var SiteInfo
-     */
-    protected $siteInfo;
-
-    /**
-     *
-     * @var UserInfo
-     */
-    protected $userInfo;
-
-    /**
-     *
-     * @var User
-     */
-    protected $user;
-
-    protected $options;
-
-
-    public function __construct(SiteInfo $siteInfo, User $user, array $options)
-    {
-        $this->siteInfo = $siteInfo;
-        $this->user = $user;
-        $this->userInfo = $user->getInfo();
-        $this->options = $options;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $siteInfo = $options['site_info'];
+        $user = $options['user'];
+        $configs = $options['config'];
+
         $builder
             ->add('nom', TextType::class, [
                 "label" => "Titre",
@@ -51,14 +29,14 @@ class AgendaType extends AbstractType
                     "placeholder" => "Choisissez un titre accrocheur..."
                 ]
             ])
-            ->add('descriptif', 'textarea', [
+            ->add('descriptif', TextareaType::class, [
                 "label" => "Description",
                 "required" => false,
                 "attr" => [
                     "placeholder" => "Décrivez votre événement...",
                 ]
             ])
-            ->add('file', 'file', [
+            ->add('file',  FileType::class, [
                 "label" => "Affiche / Flyer",
                 "required" => false,
                 'image_path' => 'webPath',
@@ -90,7 +68,7 @@ class AgendaType extends AbstractType
                 ]
             ]);
 
-        foreach ($this->options as $service => $config) {
+        foreach ($configs as $service => $config) {
             $nomService = $config["nom"];
             $accessService = ucfirst($service);
             if ($nomService === '') {
@@ -98,7 +76,7 @@ class AgendaType extends AbstractType
             }
 
             $getter = "get" . $accessService . "AccessToken";
-            $is_api_ready = ($config["enabled"] && $this->siteInfo && $this->siteInfo->$getter());
+            $is_api_ready = ($config["enabled"] && $siteInfo && $siteInfo->$getter());
 
             if (!$is_api_ready) {
                 $message = "L'accès à " . $nomService . " est momentanément désactivé";
@@ -111,10 +89,10 @@ class AgendaType extends AbstractType
                     $role = "ROLE_" . strtoupper($service);
                 }
                 $post_disabled = false;
-                $post_checked = $this->user->hasRole($role);
+                $post_checked = $user->hasRole($role);
 
                 if ($post_checked) {
-                    $info = $this->user->getInfo();
+                    $info = $user->getInfo();
                     $getter = "get" . $accessService . "Nickname";
                     $message = "Connecté sous " . ($service === 'twitter' ? '@' : '') . $info->$getter();
                 } else {
@@ -122,7 +100,7 @@ class AgendaType extends AbstractType
                 }
             }
 
-            $builder->add('share_' . $service, 'checkbox', [
+            $builder->add('share_' . $service, CheckboxType::class, [
                 "label" => "Poster mon événement sur " . $nomService,
                 "required" => false,
                 "mapped" => false,
@@ -164,10 +142,10 @@ class AgendaType extends AbstractType
                     "placeholder" => "Tapez votre adresse ici pour remplir les champs ci-dessous"
                 ]
             ])
-            ->add('place', new PlaceType, [
+            ->add('place', PlaceType::class, [
                 "label" => false,
             ])
-            ->add('reservationInternet', 'url', [
+            ->add('reservationInternet', UrlType::class, [
                 "label" => "Réservation par internet",
                 "required" => false,
                 "attr" => [
@@ -181,7 +159,7 @@ class AgendaType extends AbstractType
                     "placeholder" => "Le numéro à appeler pour acheter un billet"
                 ]
             ])
-            ->add('reservationEmail', 'email', [
+            ->add('reservationEmail', EmailType::class, [
                 "label" => "Réservation par mail",
                 "required" => false,
                 "attr" => [
@@ -193,7 +171,10 @@ class AgendaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'TBN\AgendaBundle\Entity\Agenda'
+            'data_class' => 'TBN\AgendaBundle\Entity\Agenda',
+            'site_info' => null,
+            'user' => null,
+            'config' => []
         ]);
     }
 

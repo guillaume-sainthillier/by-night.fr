@@ -36,7 +36,7 @@ class SubDomainListener {
             $request = $event->getRequest();
             $currentHost = $request->getHttpHost();
 
-            $subdomain = \str_replace('.' . $this->baseHost, '', $currentHost);
+            $subdomain = \str_replace(['.' . $this->baseHost, 'www.' . $this->baseHost], '', $currentHost);
 
             if ($subdomain === $this->baseHost) {
                 return;

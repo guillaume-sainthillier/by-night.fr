@@ -31,6 +31,7 @@ class Comment
      *
      * @ORM\Column(name="commentaire", type="text")
      * @Assert\Length(min="3", minMessage="Le commentaire doit faire au moins {{ limit }} caractères")
+     * @Assert\NotBlank(message="Le commentaire ne peut pas être vide")
      */
     protected $commentaire;
 

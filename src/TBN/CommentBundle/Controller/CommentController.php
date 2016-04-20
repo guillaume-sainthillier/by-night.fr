@@ -67,7 +67,7 @@ class CommentController extends Controller
 
         $comment->setUser($user);
         $comment->setAgenda($soiree);
-        $form->bind($request);
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($comment);
@@ -98,7 +98,7 @@ class CommentController extends Controller
 
     protected function getCreateForm(Comment $comment, Agenda $soiree)
     {
-        return $this->createForm(new CommentType(), $comment, [
+        return $this->createForm(CommentType::class, $comment, [
             'action' => $this->generateUrl('tbn_comment_new', ["id" => $soiree->getId()]),
             'method' => 'POST'
         ])

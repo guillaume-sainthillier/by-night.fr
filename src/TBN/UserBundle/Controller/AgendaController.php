@@ -179,7 +179,7 @@ class AgendaController extends Controller
             ->add("supprimer", SubmitType::class, [
                 "label" => "Supprimer",
                 "attr" => [
-                    "class" => "btn btn-danger btn-lg btn-block"
+                    "class" => "btn btn-danger btn-raised btn-lg btn-block"
                 ]
             ])
             ->getForm();
@@ -187,12 +187,14 @@ class AgendaController extends Controller
 
     protected function createEditForm(Agenda $agenda)
     {
-        return $this->createForm($this->getAgendaForm(), $agenda, [
+        $options = array_merge($this->getAgendaOptions(), [
             'action' => $this->generateUrl('tbn_agenda_edit', [
                 "slug" => $agenda->getSlug()
             ]),
             'method' => 'POST'
-        ])
+        ]);
+
+        return $this->createForm(AgendaType::class, $agenda, $options)
             ->add("ajouter", SubmitType::class, [
                 "label" => "Enregistrer",
                 "attr" => [
@@ -201,22 +203,27 @@ class AgendaController extends Controller
             ]);
     }
 
-    protected function getAgendaForm()
+    protected function getAgendaOptions()
     {
         $user = $this->getUser();
-        $repo = $this->getDoctrine()->getManager()->getRepository("TBNUserBundle:SiteInfo");
-
+        $siteInfo = $this->get('site_manager')->getSiteInfo();
         $config = $this->container->getParameter('tbn_user.social');
 
-        return new AgendaType($repo->findOneBy([]), $user, $config);
+        return [
+            'site_info' => $siteInfo,
+            'user' => $user,
+            'config' => $config
+        ];
     }
 
     protected function createCreateForm(Agenda $agenda)
     {
-        return $this->createForm($this->getAgendaForm(), $agenda, [
+        $options = array_merge($this->getAgendaOptions(), [
             'action' => $this->generateUrl('tbn_agenda_new'),
             'method' => 'POST'
-        ])
+        ]);
+
+        return $this->createForm(AgendaType::class, $agenda, $options)
             ->add("ajouter", SubmitType::class, [
                 "label" => "Enregistrer",
                 "attr" => [

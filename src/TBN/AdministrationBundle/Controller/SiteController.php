@@ -24,7 +24,7 @@ class SiteController extends Controller
     {
         $site = new Site;
 
-        $form = $this->createForm(new SiteType(), $site, [
+        $form = $this->createForm(SiteType::class, $site, [
             'action' => $this->generateUrl('tbn_administration_site_new'),
             'method' => 'POST'
         ])
@@ -56,7 +56,7 @@ class SiteController extends Controller
 
     public function editAction(Request $request, Site $site)
     {
-        $form = $this->createForm(new SiteType(), $site, [
+        $form = $this->createForm(SiteType::class, $site, [
             'action' => $this->generateUrl('tbn_administration_site_edit', [
                 "id" => $site->getId()
             ]),

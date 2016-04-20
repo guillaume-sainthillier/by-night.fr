@@ -3,7 +3,7 @@ $(function ()
     init_soirees();
 });
 
-function init_soirees(selector)
+function init_soirees()
 {
     init_shorcut_date();
 }
@@ -17,7 +17,7 @@ function init_shorcut_date()
     $("select.shorcuts_date").unbind("change").change(function ()
     {
         var selected = $(this).find("option:selected");
-        $("#tbn_search_agenda_du").val(selected.data("date-debut") || "");
-        $("#tbn_search_agenda_au").val(selected.data("date-fin") || "");
+        $("#search_du").val(selected.data("date-debut") || "");
+        $("#search_au").val(selected.data("date-fin") || "");
     });
 }

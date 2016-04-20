@@ -2,12 +2,21 @@
 
 namespace TBN\MainBundle;
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use TBN\MainBundle\DependencyInjection\Compiler\OverrideServiceCompilerPass;
 
 class TBNMainBundle extends Bundle
-{   
+{
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new OverrideServiceCompilerPass());
+    }
+
     public function boot()
     {
         $router         = $this->container->get('router');

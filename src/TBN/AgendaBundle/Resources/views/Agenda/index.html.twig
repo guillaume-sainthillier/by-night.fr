@@ -15,9 +15,9 @@
                     <form name="tbn_search_agenda" role="search" action="{{ path('tbn_agenda_agenda') }}" method="POST">
                         <div class="row">
                             <div class="col-md-8">
-                                <input type="hidden" id="tbn_search_agenda_du" name="tbn_search_agenda[du]" value="" />
-                                <input type="hidden" id="tbn_search_agenda_au" name="tbn_search_agenda[au]" value="" />
-                                <input type="text" name="tbn_search_agenda[term]" value="" class="form-control input-lg" placeholder="Concert, bar, spectacle, enfant, soirée, ...">
+                                <input type="hidden" id="search_du" name="search[du]" value="" />
+                                <input type="hidden" id="search_au" name="search[au]" value="" />
+                                <input type="text" name="search[term]" value="" class="form-control input-lg" placeholder="Concert, bar, spectacle, enfant, soirée, ...">
                             </div>
                             <div class="col-md-4">
                                 <select name="shortcut" class="form-control input-lg shorcuts_date" placeholder="Raccourcis">

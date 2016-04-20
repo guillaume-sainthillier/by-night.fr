@@ -39,19 +39,16 @@
                         {% block button_submit %}
                             {{ form_row(form.ajouter) }}
                         {% endblock %}
+                        <a class="btn btn-default btn-raised bg-white" href="{{ path('tbn_agenda_list') }}"
+                           title="Retourner à mes soirées">
+                            <i class="fa fa-chevron-left"></i>
+                            Retour
+                        </a>
                     </div>
                 </div>
                 {{ form_rest(form) }}
                 {{ form_end(form) }}
             {% endblock %}
-            <br/>
-            <br/>
-            <br/>
-            <a class="btn btn-default btn-raised bg-white" href="{{ path('tbn_agenda_list') }}"
-               title="Retourner à mes soirées">
-                <i class="fa fa-chevron-left"></i>
-                Retour
-            </a>
         </div>
     {% endblock %}
 
