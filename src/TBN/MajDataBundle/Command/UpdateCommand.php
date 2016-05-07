@@ -5,14 +5,9 @@ namespace TBN\MajDataBundle\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Console\Helper\ProgressBar;
-use TBN\AgendaBundle\Entity\Agenda;
-
-use TBN\AgendaBundle\Entity\Place;
-use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Entity\HistoriqueMaj;
 use TBN\MajDataBundle\Utils\DoctrineEventHandler;
 use TBN\MajDataBundle\Utils\Monitor;
@@ -119,7 +114,6 @@ class UpdateCommand extends EventCommand
             $agendas = Monitor::bench('Récupération Parser', function() use(&$parserManager, &$output) {
                 return $parserManager->getAgendas($output);
             }, true);
-//            $agendas = array_slice($agendas, 0, 100);
 
             $batchSize = 50;
             $size = ceil(count($agendas) / $batchSize);
@@ -135,7 +129,7 @@ class UpdateCommand extends EventCommand
                     $agenda->getPlace()->setSite($site);
                 }
 
-                $doctrineHandler->handleEvent($agenda, $env === 'prod');
+                $doctrineHandler->handleEvent($agenda, $env !== 'prod');
                 if (($i % $batchSize) === $batchSize - 1) {
                     $doctrineHandler->flush();
                     $progress->advance();

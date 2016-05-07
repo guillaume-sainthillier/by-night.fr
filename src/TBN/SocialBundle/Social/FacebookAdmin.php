@@ -40,6 +40,7 @@ class FacebookAdmin extends FacebookEvents
     protected $parser;
 
     protected $cache;
+    protected $om;
 
     /**
      *
@@ -51,14 +52,21 @@ class FacebookAdmin extends FacebookEvents
     {
         parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack);
 
+        $this->om = $om;
         $this->siteInfo = $this->siteManager->getSiteInfo();
         $this->serializer = $serializer;
         $this->cache = [];
         $this->parser = null;
 
+        if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
+            $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+        }
+    }
+
+    public function init() {
         //CLI
         if ($this->isCLI()) {
-            $this->siteInfo = $om->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
+            $this->siteInfo = $this->om->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
         }
 
         if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
@@ -135,7 +143,7 @@ class FacebookAdmin extends FacebookEvents
                 }
 
                 //Exécution du batch
-                Monitor::bench('fb::getEventStatsFromIds', function () use (&$requests, &$finalEvents, $i, $nbBatchs) {
+                Monitor::bench('fb::getEventStatsFromIds', function () use (&$requests, &$finalEvents, $i) {
                     $responses = $this->client->sendBatchRequest($requests);
 
                     //Traitement des réponses
@@ -162,7 +170,7 @@ class FacebookAdmin extends FacebookEvents
         return $finalEvents;
     }
 
-    public function getEventStatsFromIds(&$ids_event, $idsPerRequest = 1, $limit = 1000)
+    public function getEventStatsFromIds(&$ids_event, $idsPerRequest = 1)
     {
         $requestPerBatch = 50;
         $idsPerBatch = $requestPerBatch * $idsPerRequest;
@@ -269,7 +277,6 @@ class FacebookAdmin extends FacebookEvents
         $finalEvents = [];
         $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
 
-        //$nbBatchs = min(2, $nbBatchs); // TODO: SUPPRIMER CA
         for ($i = 0; $i < $nbBatchs; $i++) {
             $requests = [];
             $batch_ids = array_slice($ids_event, $i * $idsPerBatch, $idsPerBatch);
@@ -345,7 +352,6 @@ class FacebookAdmin extends FacebookEvents
         $requestsParBatch = 50;
 
         $nbBatchs = ceil($nbKeywords / $requestsParBatch);
-        $nbBatchs = min(2, $nbBatchs); //TODO: SUPPRIMER CA
 
         //Récupération des events en fonction des mot-clés
         for ($i = 0; $i < $nbBatchs; $i++) {
@@ -354,14 +360,14 @@ class FacebookAdmin extends FacebookEvents
                 $current_keywords = array_slice($keywords, $i * $requestsParBatch, $requestsParBatch);
                 foreach ($current_keywords as $keyword) {
                     //Construction des requêtes du batch
-                    $request = $this->client->request('GET', '/search', [
+                    $keyword = '"'. $keyword . '"';
+                    $requests[] = $this->client->request('GET', '/search', [
                         'q' => $keyword,
                         'type' => 'event',
                         'since' => $since->format('Y-m-d'),
                         'fields' => self::$MIN_EVENT_FIELDS,
                         'limit' => $limit
                     ], $this->siteInfo->getFacebookAccessToken());
-                    $requests[] = $request;
                 }
 
                 //Exécution du batch
@@ -550,7 +556,6 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventsFromPlaces(& $places, \DateTime $since)
     {
-        //$places	    = array_slice($places, 0, min(10, count($places))); // TODO: SUPPRIMER CA
         $id_places = array_map(function (GraphNode $place) {
             return $place->getField('id');
         }, $places);
@@ -561,7 +566,7 @@ class FacebookAdmin extends FacebookEvents
     public function getPlacesFromGPS($latitude, $longitude, $distance, $limit = 1000)
     {
         return $this->handlePaginate($this->siteInfo->getFacebookAccessToken(), '/search', [
-            'q' => '*',
+            'q' => '',
             'type' => 'place',
             'center' => $latitude . ',' . $longitude,
             'distance' => $distance,

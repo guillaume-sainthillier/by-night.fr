@@ -5,7 +5,6 @@ namespace TBN\MajDataBundle\Parser\Common;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 
-use Symfony\Component\Filesystem\Filesystem;
 use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
@@ -121,9 +120,9 @@ class FaceBookParser extends AgendaParser
     {
         //Récupération des lieux existants en  base
         $places = $this->repoPlace->findBy(['site' => $this->getSite()->getId()]);
-        $nom_places = array_filter(array_map(function (Place $place) {
+        $nom_places = array_unique(array_filter(array_map(function (Place $place) {
             return $place->getNom();
-        }, $places));
+        }, $places)));
 
         //Récupération des lieux aux alentours de la ville courante
         $this->write("Recherche d'endroits vers [" . $this->getSite()->getLatitude() . "; " . $this->getSite()->getLongitude() . "]...");
@@ -134,6 +133,7 @@ class FaceBookParser extends AgendaParser
         $this->write("Recherche des événements associés aux endroits ...");
         $places_events = $this->api->getEventsFromPlaces($fb_places, $now);
         $this->writeln("<info>" . (count($places_events)) . "</info> événements trouvés");
+
 
         //Récupération des événements par mots-clés
         $this->writeln("Recherche d'événements associés aux mots clés...");
@@ -170,7 +170,7 @@ class FaceBookParser extends AgendaParser
                 }
             }
 
-            //Pas connu des services de police -> présumé innocent              
+            //Pas connu des services de police -> présumé innocent
             return true;
         });
 
