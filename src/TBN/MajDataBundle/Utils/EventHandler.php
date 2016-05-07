@@ -2,7 +2,6 @@
 
 namespace TBN\MajDataBundle\Utils;
 
-use Doctrine\Common\Cache\Cache;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\MainBundle\Entity\Site;
@@ -19,11 +18,9 @@ class EventHandler
     private $cleaner;
     private $comparator;
     private $merger;
-    private $cache;
 
-    public function __construct(Cache $cache, Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger)
+    public function __construct(Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger)
     {
-        $this->cache = $cache;
         $this->firewall = $firewall;
         $this->cleaner = $cleaner;
         $this->comparator = $comparator;

@@ -33,7 +33,7 @@ class FBCommand extends EventCommand
         $env = $input->getOption('env');
         Monitor::$output = $output;
         $doctrineHandler = $this->getContainer()->get('tbn.doctrine_event_handler');
-
+        $doctrineHandler->initAPI();
         $nbUpdates = $doctrineHandler->updateFBEventOfWeek($isFull, $env === 'prod');
 
         Monitor::displayStats();

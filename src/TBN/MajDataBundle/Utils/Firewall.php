@@ -7,7 +7,6 @@ use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Entity\Exploration;
 
-use Doctrine\Common\Cache\Cache;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 
 /**

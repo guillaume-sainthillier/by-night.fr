@@ -39,7 +39,6 @@
     "neitanod/forceutf8": "dev-master"
   },
   "require-dev": {
-    "sensio/generator-bundle": "^3.0",
     "symfony/phpunit-bridge": "^3.0"
   },
   "scripts": {

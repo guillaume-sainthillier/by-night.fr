@@ -47,7 +47,7 @@ class Comparator
 
     public function getBestPlace(array &$places, Place &$testedPlace = null)
     {
-        return $this->getBest('place', $places, 'getMatchingScorePlace', 'getStrictMatchingPlace', $testedPlace, 80);
+        return $this->getBest('place', $places, 'getMatchingScorePlace', $testedPlace, 80);
     }
 
     public function getMatchingScorePlace(Place &$a = null, Place &$b = null)
@@ -102,7 +102,7 @@ class Comparator
 
     public function getBestEvent(array &$events, Agenda &$testedEvent)
     {
-        return $this->getBest('agenda', $events, 'getMatchingScoreEvent', 'getStrictMatchingEvent', $testedEvent);
+        return $this->getBest('agenda', $events, 'getMatchingScoreEvent', $testedEvent);
     }
 
     protected function getMatchingScoreEvent(Agenda &$a, Agenda &$b)
@@ -130,7 +130,7 @@ class Comparator
         return 0;
     }
 
-    private function getBest($keyPrefix, array &$items, $machingFunction, $strictMachingFunction, &$testedItem = null, $minScore = 75)
+    private function getBest($keyPrefix, array &$items, $machingFunction,  &$testedItem = null, $minScore = 75)
     {
         if (null === $testedItem) {
             return null;
@@ -142,13 +142,6 @@ class Comparator
         } elseif ($testedItem->getId() === null && isset($items[$hashId])) {
             return $items[$hashId];
         }
-
-        //Traitement par anticipation
-//        foreach($items as $item) {
-//            if($this->$strictMachingFunction($testedItem, $item) === true) {
-//                return $item;
-//            }
-//        }
 
         $bestScore = 0;
         $bestItem = null;

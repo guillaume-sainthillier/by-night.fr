@@ -26,7 +26,8 @@ use TBN\AgendaBundle\Entity\Agenda;
  *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
  *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"}),
  *   @ORM\Index(name="agenda_fb_idx", columns={"facebook_event_id"}),
- *   @ORM\Index(name="agenda_search_idx", columns={"site_id", "date_fin", "date_debut"})
+ *   @ORM\Index(name="agenda_search_idx", columns={"site_id", "date_fin", "date_debut"}),
+ *   @ORM\Index(name="agenda_search2_idx", columns={"site_id", "date_debut"})
  * })
  * 
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")

@@ -11,7 +11,6 @@ use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 
 class FOSUBUserProvider extends BaseClass
 {
-    private $container;
     private $socials;
     private $doctrine;
     private $siteManager;

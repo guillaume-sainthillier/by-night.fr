@@ -5,11 +5,9 @@ namespace TBN\MajDataBundle\Parser;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use \DateTime;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Entity\Site;
 use TBN\UserBundle\Entity\SiteInfo;
-use Symfony\Component\Filesystem\Filesystem;
 
 /*
  * Classe abstraite représentant le parse des données d'un site Internet

@@ -142,10 +142,6 @@ class SoonNightParser extends LinksParser {
     protected function decodeNumCharacter($t)
     {
         return Encoding::UTF8FixWin1252Chars(Encoding::fixUTF8($t));
-        return Encoding::toUTF8($t);
-
-        $convmap = array(0x0, 0x2FFFF, 0, 0xFFFF);
-        return mb_decode_numericentity($t, $convmap, 'UTF-8');
     }
 
     protected function getNodeFromHeading(Crawler $heading)

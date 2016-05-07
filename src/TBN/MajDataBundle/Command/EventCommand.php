@@ -11,7 +11,6 @@ namespace TBN\MajDataBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Output\OutputInterface;
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Utils\DoctrineEventHandler;
 use TBN\MajDataBundle\Utils\Monitor;
 

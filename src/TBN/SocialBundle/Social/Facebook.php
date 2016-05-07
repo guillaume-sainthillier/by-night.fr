@@ -32,7 +32,7 @@ class Facebook extends Social {
         $this->client = new Client([
             'app_id' => $this->id,
             'app_secret' => $this->secret,
-            'default_graph_version' => 'v2.5',
+            'default_graph_version' => 'v2.6',
         ]);
     }
 

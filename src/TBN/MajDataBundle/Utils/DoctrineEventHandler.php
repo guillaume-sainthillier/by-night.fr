@@ -54,13 +54,19 @@ class DoctrineEventHandler
         $this->stats = [];
     }
 
+
     public function getStats()
     {
         return $this->stats;
     }
 
+    public function initAPI() {
+        $this->api->init();
+    }
+
     public function init(Site $site = null, $withExplorations = false)
     {
+        $this->initAPI();
         $this->withExplorations = $withExplorations;
         if ($site === null) {
             $sites = $this->repoSite->findAll();
