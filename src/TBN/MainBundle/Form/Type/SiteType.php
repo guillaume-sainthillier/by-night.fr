@@ -3,6 +3,8 @@
 namespace TBN\MainBundle\Form\Type;
 
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -31,10 +33,6 @@ class SiteType extends AbstractType
                     'rows' => 6
                 ]
             ])
-            ->add('images', 'collection', [
-                'type' => new ImageType,
-                'required' => false
-            ])
             ->add('facebookIdPage', TextType::class, [
                 'label' => 'N° Page FaceBook',
                 'required' => false
@@ -55,19 +53,19 @@ class SiteType extends AbstractType
                 'label' => 'ID du Widget Twitter',
                 'required' => false
             ])
-            ->add('distanceMax', 'number', [
+            ->add('distanceMax', NumberType::class, [
                 'label' => 'Distance Max',
                 'required' => false
             ])
-            ->add('latitude', 'number', [
+            ->add('latitude', NumberType::class, [
                 'label' => 'Latitude',
                 'required' => false
             ])
-            ->add('longitude', 'number', [
+            ->add('longitude', NumberType::class, [
                 'label' => 'Longitude',
                 'required' => false
             ])
-            ->add('isActif', 'checkbox', [
+            ->add('isActif', CheckboxType::class, [
                 'label' => 'Actif',
                 'required' => false
             ]);

@@ -9,6 +9,7 @@ namespace TBN\SocialBundle\Social;
  */
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use TBN\SocialBundle\Exception\SocialException;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
@@ -184,12 +185,12 @@ abstract class Social {
 
     protected function getLink(Agenda $agenda)
     {
-        return $this->router->generate("tbn_agenda_details", ["slug" => $agenda->getSlug()], true);
+        return $this->router->generate("tbn_agenda_details", ["slug" => $agenda->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     protected function getMembreLink(User $user)
     {
-        return $this->router->generate("tbn_user_details", ["username" => $user->getUsername()], true);
+        return $this->router->generate("tbn_user_details", ["username" => $user->getUsername()], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     public abstract function getNumberOfCount();

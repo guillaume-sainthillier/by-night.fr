@@ -2,6 +2,7 @@
 
 namespace TBN\AgendaBundle\Controller;
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Request;
@@ -105,7 +106,8 @@ class EventController extends Controller
         if (!$cache->contains($key)) {
             $link = $this->generateUrl('tbn_agenda_details', [
                 'slug' => $agenda->getSlug(),
-            ], true);
+            ], UrlGeneratorInterface::ABSOLUTE_URL);
+
 
             $page = new Page([
                 'url' => $link,

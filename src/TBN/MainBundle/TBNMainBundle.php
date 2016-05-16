@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use TBN\MainBundle\DependencyInjection\Compiler\OverrideServiceCompilerPass;
 
 class TBNMainBundle extends Bundle
@@ -54,7 +55,7 @@ class TBNMainBundle extends Bundle
                     
                     $agendas = $em->getRepository('TBNAgendaBundle:Agenda')->findBy(['site' => $site->getId()]);
                     foreach($agendas as $agenda) {
-                        $url = $router->generate('tbn_agenda_details', ['subdomain' => $site->getSubdomain(), 'slug' => $agenda->getSlug()], true);
+                        $url = $router->generate('tbn_agenda_details', ['subdomain' => $site->getSubdomain(), 'slug' => $agenda->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
                         $event->getGenerator()->addUrl(
                             new UrlConcrete(
                                 $url,
@@ -67,7 +68,7 @@ class TBNMainBundle extends Bundle
                     }
                 }                              
                 foreach($routes as $route) {
-                    $url = $router->generate($route, $params, true);
+                    $url = $router->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
                     
                     $event->getGenerator()->addUrl(
                         new UrlConcrete(

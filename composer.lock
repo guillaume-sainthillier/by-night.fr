@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e0d478bc08489aac31e972a678aff182",
-    "content-hash": "6b9ebd0c5b6799458fcddc811cb11c71",
+    "hash": "0090adcce60a956d18d79258aae6fe4a",
+    "content-hash": "6f178e900e5ae26f0f572b8c414b8b1f",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -815,16 +815,16 @@
         },
         {
             "name": "facebook/php-sdk-v4",
-            "version": "5.1.2",
+            "version": "5.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/facebook/facebook-php-sdk-v4.git",
-                "reference": "2c42fb3002953355f12d3c6e8003a9fd5af563d9"
+                "reference": "38fd7187a6704d3ab14ded2f3a534ac4ee6f3481"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/facebook/facebook-php-sdk-v4/zipball/2c42fb3002953355f12d3c6e8003a9fd5af563d9",
-                "reference": "2c42fb3002953355f12d3c6e8003a9fd5af563d9",
+                "url": "https://api.github.com/repos/facebook/facebook-php-sdk-v4/zipball/38fd7187a6704d3ab14ded2f3a534ac4ee6f3481",
+                "reference": "38fd7187a6704d3ab14ded2f3a534ac4ee6f3481",
                 "shasum": ""
             },
             "require": {
@@ -866,7 +866,7 @@
                 "facebook",
                 "sdk"
             ],
-            "time": "2015-11-19 21:07:36"
+            "time": "2016-05-13 17:28:30"
         },
         {
             "name": "firebase/php-jwt",
@@ -917,12 +917,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSElasticaBundle.git",
-                "reference": "fef1f2c6237616843e01ab55920d24bdef516805"
+                "reference": "3eb15457c397ab9a5116a3f6d506d97725306a6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSElasticaBundle/zipball/fef1f2c6237616843e01ab55920d24bdef516805",
-                "reference": "fef1f2c6237616843e01ab55920d24bdef516805",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSElasticaBundle/zipball/3eb15457c397ab9a5116a3f6d506d97725306a6e",
+                "reference": "3eb15457c397ab9a5116a3f6d506d97725306a6e",
                 "shasum": ""
             },
             "require": {
@@ -992,7 +992,7 @@
                 "propel",
                 "search"
             ],
-            "time": "2016-05-05 10:19:12"
+            "time": "2016-05-15 11:22:38"
         },
         {
             "name": "friendsofsymfony/user-bundle",
@@ -1000,12 +1000,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "def27463609e24af410b2606f0062de46fab5662"
+                "reference": "abb35b94ed8ec78a504c9e1a2cd803d85d3ffad9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/def27463609e24af410b2606f0062de46fab5662",
-                "reference": "def27463609e24af410b2606f0062de46fab5662",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/abb35b94ed8ec78a504c9e1a2cd803d85d3ffad9",
+                "reference": "abb35b94ed8ec78a504c9e1a2cd803d85d3ffad9",
                 "shasum": ""
             },
             "require": {
@@ -1061,7 +1061,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2016-04-28 10:51:07"
+            "time": "2016-05-13 11:27:34"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -3546,16 +3546,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "10c83b58fbb42be516377de54962a758695ad964"
+                "reference": "a821ed51b87f5ceda834140e5f0c06e9547a86d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/10c83b58fbb42be516377de54962a758695ad964",
-                "reference": "10c83b58fbb42be516377de54962a758695ad964",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/a821ed51b87f5ceda834140e5f0c06e9547a86d4",
+                "reference": "a821ed51b87f5ceda834140e5f0c06e9547a86d4",
                 "shasum": ""
             },
             "require": {
@@ -3672,7 +3672,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-05-03 05:58:56"
+            "time": "2016-05-09 22:13:31"
         },
         {
             "name": "twig/extensions",
@@ -3886,7 +3886,7 @@
     "packages-dev": [
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
