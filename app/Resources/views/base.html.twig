@@ -59,8 +59,14 @@
             <script src="//oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
             <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: "ca-pub-2072406985754187",
+                enable_page_level_ads: true
+            });
+        </script>
         {% block head_js %}{% endblock %}
-        
     </head>
     <body itemscope itemtype="http://schema.org/WebPage">
         <div id="wrap">
@@ -102,17 +108,11 @@
                 {% endfor %}
                 {% endif %}
                 {% block helper %}{% endblock %}
-                {% block body -%}{%- endblock %}
-                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <!-- Bannière Footer Responsive -->
-                <ins class="adsbygoogle" id="ad-footer"
-                     style="display:block"
-                     data-ad-client="ca-pub-2072406985754187"
-                     data-ad-slot="3892751912"
-                     data-ad-format="auto"></ins>
+                {% block ad %}{% include '::ad.html.twig' %}{% endblock %}
                 <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>                                
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            {% block body -%}{%- endblock %}
             {% block end_container -%}
             </div>                        
             {%- endblock %}

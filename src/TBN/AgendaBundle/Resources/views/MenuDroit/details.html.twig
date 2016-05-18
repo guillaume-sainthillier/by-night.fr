@@ -5,17 +5,17 @@
     <!-- ./Tendances -->
     {% endif %}
 
-    {% if site.facebookIdPage %}
-    <!-- Facebook -->
-    {% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
-    <!-- ./Facebook -->
-{% endif %}
+    {% include "TBNAgendaBundle:Widget:ads.html.twig" %}
 </div>
 
 <div class="col-sm-6 col-md-12">
+    {% if site.facebookIdPage %}
+        <!-- Facebook -->
+        {% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
+        <!-- ./Facebook -->
+    {% endif %}
+
     <!-- Événements similaires -->
     {% include "TBNAgendaBundle:Widget:evenements_similaires.html.twig" %}
     <!-- ./Événements similaires -->
-
-    {% include "TBNAgendaBundle:Widget:ads.html.twig" %}
 </div>

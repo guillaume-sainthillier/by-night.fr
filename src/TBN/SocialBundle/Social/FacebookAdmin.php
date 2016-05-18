@@ -116,8 +116,8 @@ class FacebookAdmin extends FacebookEvents
 
         if ($site !== null && $this->siteInfo !== null) {
             try {
-                $page = $this->getPageFromId($site->getFacebookIdPage(), ['fields' => 'likes']);
-                return $page->getField('likes');
+                $page = $this->getPageFromId($site->getFacebookIdPage(), ['fields' => 'fan_count']);
+                return $page->getField('fan_count');
             } catch (FacebookSDKException $ex) {
             }
         }

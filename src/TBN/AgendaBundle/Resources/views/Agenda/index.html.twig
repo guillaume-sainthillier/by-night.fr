@@ -56,8 +56,10 @@
             </a>
         </div>
     </section>
-    <section class="padding-tb-30">
+    <section>
         <div class="container">
+            {% include '::ad.html.twig' %}
+            <br />
             <div class="row">
                 {% set contents = [{
                     'title': 'Concert',
@@ -127,7 +129,8 @@
                                href="{{ content.link }}" 
                                title="{{ content.title_link }}">
                                 <i class="fa fa-chevron-right"></i> 
-                                {{ content.title_link }}</a>
+                                <strong>{{ content.title_link }}</strong>
+                            </a>
                         </div>                    
                     </div>                    
                 </div>
@@ -153,6 +156,7 @@
     </section>
 {% endblock %}
 
+{% block ad %}{% endblock %}
 {% block start_container -%}<div>{% endblock %}
 
 {% block css_agenda %}

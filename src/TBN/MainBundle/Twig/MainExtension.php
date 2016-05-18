@@ -90,7 +90,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             foreach($this->socials as $name => $social)
             {
                 $key = 'tbn.counts.'.$name;
-                if(! $this->cache->contains($key))
+                if(!$this->cache->contains($key))
                 {
                     $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
                 }

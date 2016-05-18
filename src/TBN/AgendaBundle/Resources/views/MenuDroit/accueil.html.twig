@@ -6,27 +6,25 @@
 <!-- ./Twitter -->
 {% endif %}
 
+{% include "TBNAgendaBundle:Widget:ads.html.twig" %}
+
 {% if site.facebookIdPage %}
 <!-- Facebook -->
     {% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
 <!-- ./Facebook -->
 {% endif %}
-
-<!-- Top Evénements -->
-    {% include "TBNAgendaBundle:Widget:top_evenements.html.twig" %}
-<!-- ./Top Evénements -->
 </div>
 
 <div class="col-sm-6 col-md-12">
+<!-- Top Evénements -->
+{% include "TBNAgendaBundle:Widget:top_evenements.html.twig" %}
+<!-- ./Top Evénements -->
 
 <!-- Top Membres -->
 {% include "TBNAgendaBundle:Widget:top_membres.html.twig" %}
 <!-- ./Top Membres -->
 
-
 <!-- Programme TV -->
 {% include "TBNAgendaBundle:Widget:programme_tv.html.twig" %}
 <!-- ./Programme TV -->
-
-{% include "TBNAgendaBundle:Widget:ads.html.twig" %}
 </div>

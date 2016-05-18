@@ -84,7 +84,9 @@
                 <div class="trait" >                        
                     <i class="fa fa-tag pull-left"></i> 
                     {% for tag in distinctTags %}
-                    <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag|trim}) }}">{{ tag }}</a>
+                    <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag|trim}) }}">
+                        <strong>{{ tag }}</strong>
+                    </a>
                     {% endfor %}
                 </div>
             {% endif %}
