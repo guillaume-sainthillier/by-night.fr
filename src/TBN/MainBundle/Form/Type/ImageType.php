@@ -11,13 +11,12 @@ class ImageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-	    ->add('file', 'file', [
-		'image_path' => 'webPath',
-		'image_filter' => 'thumb_evenement',
-		'data_class' => null,
-		'label' => false
-	    ])            
-        ;
+            ->add('file', 'file', [
+                'image_path' => 'webPath',
+                'image_filter' => 'thumb_evenement',
+                'data_class' => null,
+                'label' => false
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

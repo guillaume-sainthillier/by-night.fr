@@ -11,30 +11,32 @@ use Elastica\Query;
 use Elastica\Query\Filtered;
 use Elastica\Query\MultiMatch;
 
-class UserRepository extends Repository {
+class UserRepository extends Repository
+{
 
     /**
      * @param $searchText
      * @return \Pagerfanta\Pagerfanta
      */
-    public function findWithSearch(Site $site, $q) {
-	
-	//Filtres
-	$filter = new BoolFilter;
-	$filter->addMust(
+    public function findWithSearch(Site $site, $q)
+    {
+
+        //Filtres
+        $filter = new BoolFilter;
+        $filter->addMust(
             new Term(['site.id' => $site->getId()])
         );
 
-	//Query
-	$query = new MultiMatch;
-	$query->setQuery($q)
-		->setFields(['username', 'firstname', 'lastname'])
-		->setFuzziness(0.8)
-		->setMinimumShouldMatch('80%');
+        //Query
+        $query = new MultiMatch;
+        $query->setQuery($q)
+            ->setFields(['username', 'firstname', 'lastname'])
+            ->setFuzziness(0.8)
+            ->setMinimumShouldMatch('80%');
 
-	//Final Query
-	$filtered = new Filtered($query, $filter);
-	$finalQuery = Query::create($filtered);
+        //Final Query
+        $filtered = new Filtered($query, $filter);
+        $finalQuery = Query::create($filtered);
         return $this->findPaginated($finalQuery);
     }
 }

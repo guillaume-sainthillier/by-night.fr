@@ -2,12 +2,12 @@
 
 {% block title_search %}Recherche de membres{% endblock %}
 {% block titre_search %}Recherche de membres à {{ site.nom }}{% endblock %}
-{% block meta_description -%}Recherche de membres à {{ site.nom }}. {% if term %}{{ nbUsers}} membre{{ nbUsers > 1 ? "s" : "" }} trouvé{{ nbUsers > 1 ? "s" : "" }} pour la recherche '{{ term }}'.{% endif %}{% endblock %}
+{% block meta_description -%}Recherche de membres à {{ site.nom }}. {% if term %}{{ nbUsers }} membre{{ nbUsers > 1 ? "s" : "" }} trouvé{{ nbUsers > 1 ? "s" : "" }} pour la recherche '{{ term }}'.{% endif %}{% endblock %}
 
 {% block breadcrumb_search %}
-    {% set item = menu.addItem('Membres', path('tbn_search_query', {'type': 'membres'})) %}    
+    {% set item = menu.addItem('Membres', path('tbn_search_query', {'type': 'membres'})) %}
     {% if term %}
-    {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'membres'})) %}
+        {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'membres'})) %}
     {% endif %}
 {% endblock %}
 
@@ -17,16 +17,16 @@
 {% block body_search_results -%}
     {% if term %}
         <h2>
-            <strong class="count date">{{ nbUsers }}</strong> 
+            <strong class="count date">{{ nbUsers }}</strong>
             membre{{ nbUsers > 1 ? "s" : "" }} trouvé{{ nbUsers > 1 ? "s" : "" }}
             pour la recherche <strong>{{ term }}</strong>
         </h2>
         <hr>
-    {% endif %}    
+    {% endif %}
 {%- endblock %}
 
 {% block body_search_content -%}
     {% if term %}
         {% include "TBNMainBundle:Search:content_users.html.twig" %}
-    {% endif %}    
+    {% endif %}
 {%- endblock %}

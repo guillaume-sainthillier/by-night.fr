@@ -1,6 +1,6 @@
 {% extends "TBNAdministrationBundle::layout.html.twig" %}
 
-{% block breadcrumb_administration %}    
+{% block breadcrumb_administration %}
     {% set item = menu.addItem("Info", path('tbn_administration_info_index')) %}
     {% block breadcrumb_info %}{% endblock %}
 {% endblock %}
@@ -22,16 +22,16 @@
                 </div>
                 <div class="panel-body">
                     {% block body_info %}{% endblock %}
-                </div>                
+                </div>
             </div>
         </div>
     </div>
 {% endblock %}
 
 {% block css_administration %}
-<link rel="stylesheet" href="{{ asset('prod/admin/info/css/style.min.css') }}" type="text/css" >
+    <link rel="stylesheet" href="{{ asset('prod/admin/info/css/style.min.css') }}" type="text/css">
 {% endblock %}
 
 {% block js_administration %}
-<script src="{{ asset('prod/admin/info/js/login.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('prod/admin/info/js/login.min.js') }}" type="text/javascript"></script>
 {% endblock %}

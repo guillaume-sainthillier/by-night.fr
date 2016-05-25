@@ -9,7 +9,8 @@ use \Google_Client;
  *
  * @author guillaume
  */
-class Google extends Social {
+class Google extends Social
+{
 
     /**
      *
@@ -17,7 +18,8 @@ class Google extends Social {
      */
     protected $client;
 
-    public function constructClient() {
+    public function constructClient()
+    {
 
         $api_id = $this->id;
         $api_secret = $this->secret;
@@ -36,7 +38,8 @@ class Google extends Social {
         ]);
     }
 
-    public function getNumberOfCount() {
+    public function getNumberOfCount()
+    {
 
         $site = $this->siteManager->getCurrentSite();
         $router = $this->router;
@@ -66,17 +69,20 @@ class Google extends Social {
         return 0;
     }
 
-    protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
+    protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    {
 
         return; //Wait Google api fix
     }
 
-    protected function getName() {
+    protected function getName()
+    {
         return "Google";
     }
 
-    protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda) {
-        
+    protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    {
+
     }
 
 }

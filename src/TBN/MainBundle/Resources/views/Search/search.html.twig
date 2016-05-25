@@ -22,17 +22,17 @@
 
 {% if term %}{% set title = term %}{% endif %}
 
-{% block breadcrumb_agenda  %}
+{% block breadcrumb_agenda %}
     {% set item = menu.addItem('Recherche', path('tbn_search_query')) %}
-    
+
     {% if type %}
         {% set item = menu.addItem(nom, path('tbn_search_query', {'type': type})) %}
     {% endif %}
-    
+
     {% if term %}
-    {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': type})) %}
+        {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': type})) %}
     {% endif %}
-    
+
     {% if page > 1 %}
         {% set item = menu.addItem('Page ' ~ page, path('tbn_search_query', {'page': page, 'q': term, 'type': type})) %}
     {% endif %}
@@ -40,9 +40,8 @@
 
 {% set s = result.count > 1 ? 's': null %}
 {% if term %}
-    {% set description = description ~ '. ' ~ result.count ~ ' ' 
-        ~ result.label ~ s ~ ' trouvé' ~ s ~ ' pour la recherche "' ~ term ~ '"'
-    %}
+    {% set description = description ~ '. ' ~ result.count ~ ' '
+    ~ result.label ~ s ~ ' trouvé' ~ s ~ ' pour la recherche "' ~ term ~ '"' %}
 {% endif %}
 
 {% block title_agenda -%}{{ title }}{%- endblock %}
@@ -54,9 +53,9 @@
 {% endblock %}
 
 {% block js_agenda %}
-<script src="{{ asset('prod/search/js/search.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('prod/search/js/search.min.js') }}" type="text/javascript"></script>
 {% endblock %}
 
 {% block css_agenda %}
-<link rel="stylesheet" href="{{ asset('prod/search/css/search.min.css') }}" type="text/css" >
+    <link rel="stylesheet" href="{{ asset('prod/search/css/search.min.css') }}" type="text/css">
 {% endblock %}

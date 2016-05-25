@@ -12,10 +12,10 @@
     {% set item = menu.addItem("Nouveau", path('tbn_administration_site_new')) %}
 {% endblock %}
 
-{% block body_site %} 
+{% block body_site %}
     {{ form(form) }}
 {% endblock %}
 
 {% block js_site %}
-<script src="{{ asset('prod/admin/sites/js/site.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('prod/admin/sites/js/site.min.js') }}" type="text/javascript"></script>
 {% endblock %}

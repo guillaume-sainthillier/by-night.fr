@@ -16,7 +16,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *
  * @author guillaume
  */
-class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface {
+class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
+{
 
     public static $LIFE_TIME_CACHE = 86400; // 3600*24
     private $router;
@@ -31,20 +32,21 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function __construct(ContainerInterface $container)
     {
-        $this->router       = $container->get('router');
+        $this->router = $container->get('router');
         $this->requestStack = $container->get('request_stack');
-        $this->cache        = $container->get('memory_cache');
-        $this->doctrine     = $container->get('doctrine');
-        $this->siteManager  = $container->get('site_manager');
+        $this->cache = $container->get('memory_cache');
+        $this->doctrine = $container->get('doctrine');
+        $this->siteManager = $container->get('site_manager');
         $this->requestStack = $container->get('request_stack');
-        $this->socials	    = [
+        $this->socials = [
             'facebook' => $container->get('tbn.social.facebook_admin'),
             'twitter' => $container->get('tbn.social.twitter'),
             'google' => $container->get('tbn.social.google')
         ];
     }
 
-    public function getFunctions() {
+    public function getFunctions()
+    {
         return [
             new \Twig_SimpleFunction('tbn_oauth_authorization_site_url', [$this, 'getAuthorizationSiteUrl']),
             new \Twig_SimpleFunction('tbn_oauth_logout_site_url', [$this, 'getLogoutSiteUrl'])
@@ -61,20 +63,18 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             new \Twig_SimpleFilter('url_decode', [$this, 'urlDecode'])
         ];
     }
-    
+
     public function getGlobals()
     {
         $globals = [];
         $site = $this->siteManager->getCurrentSite();
-        if($site !== null && $this->requestStack->getParentRequest() === null)
-        {
-            $key = "sites.". $site->getSubdomain();
-            if(! $this->cache->contains($key))
-            {
+        if ($site !== null && $this->requestStack->getParentRequest() === null) {
+            $key = "sites." . $site->getSubdomain();
+            if (!$this->cache->contains($key)) {
                 $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
                 $sites = $repo->findRandom($site);
                 $nomSites = [];
-                foreach($sites as $site) {
+                foreach ($sites as $site) {
                     $nomSites[] = ['nom' => $site->getNom(), 'subdomain' => $site->getSubdomain()];
                 }
                 $this->cache->save($key, $nomSites);
@@ -82,67 +82,65 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $sites = $this->cache->fetch($key);
 
             $globals = [
-                "site"      => $this->siteManager->getCurrentSite(),
-                "sites"     => $sites,
-                "siteInfo"  => $this->siteManager->getSiteInfo()
+                "site" => $this->siteManager->getCurrentSite(),
+                "sites" => $sites,
+                "siteInfo" => $this->siteManager->getSiteInfo()
             ];
 
-            foreach($this->socials as $name => $social)
-            {
-                $key = 'tbn.counts.'.$name;
-                if(!$this->cache->contains($key))
-                {
+            foreach ($this->socials as $name => $social) {
+                $key = 'tbn.counts.' . $name;
+                if (!$this->cache->contains($key)) {
                     $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
                 }
 
-                $globals['count_'.$name] = $this->cache->fetch($key);
+                $globals['count_' . $name] = $this->cache->fetch($key);
             }
         }
-	    return $globals;
+        return $globals;
     }
-    
+
     public function parseTags($texte)
     {
         $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", "<a href=\"$2\" target=\"_blank\" rel=\"nofollow\">", $texte);
         $texte = preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", "\\1<a href=\"\\4\" target=\"_blank\" rel=\"nofollow\">\\4</a>", $texte);
-        
-        if(! preg_match("/<(.*)(script|style|link)/i", $texte)) {
+
+        if (!preg_match("/<(.*)(script|style|link)/i", $texte)) {
             return $texte;
         }
-        
-        return strip_tags($texte, "<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>");    
+
+        return strip_tags($texte, "<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>");
     }
-    
+
     public function diffDate(\DateTime $date)
     {
         $diff = $date->diff(new \DateTime);
 
 
-        if($diff->y > 0) //Années
+        if ($diff->y > 0) //Années
         {
-            $message = sprintf("Il y a %d %s",$diff->y, "an".($diff->y > 1 ? "s" : ""));
-        }else if($diff->m > 0) //Mois
+            $message = sprintf("Il y a %d %s", $diff->y, "an" . ($diff->y > 1 ? "s" : ""));
+        } else if ($diff->m > 0) //Mois
         {
-            $message = sprintf("Il y a %d mois",$diff->m);
-        }else if($diff->d > 0) //Jours
+            $message = sprintf("Il y a %d mois", $diff->m);
+        } else if ($diff->d > 0) //Jours
         {
-            $message = sprintf("Il y a %d jours",$diff->d);
-        }else if($diff->h > 0) //Heures
+            $message = sprintf("Il y a %d jours", $diff->d);
+        } else if ($diff->h > 0) //Heures
         {
-            $message = sprintf("Il y a %d %s",$diff->h, "heure".($diff->h > 1 ? "s" : ""));
-        }else if($diff->i > 0) //Minutes
+            $message = sprintf("Il y a %d %s", $diff->h, "heure" . ($diff->h > 1 ? "s" : ""));
+        } else if ($diff->i > 0) //Minutes
         {
-            $message = sprintf("Il y a %d %s",$diff->i, "minute".($diff->i > 1 ? "s" : ""));
-        }else if($diff->s > 30) //Secondes
+            $message = sprintf("Il y a %d %s", $diff->i, "minute" . ($diff->i > 1 ? "s" : ""));
+        } else if ($diff->s > 30) //Secondes
         {
-            $message = sprintf("Il y a %d secondes",$diff->s);
-        }else{
+            $message = sprintf("Il y a %d secondes", $diff->s);
+        } else {
             $message = "A l'instant";
         }
 
         return $message;
     }
-    
+
     public function getAuthorizationSiteUrl($name)
     {
         return $this->router->generate("tbn_administration_connect_site", ["service" => $name]);
@@ -161,7 +159,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function resume($texte)
     {
-        $replaced_text = str_replace("&#13;",'<br>', $texte);
+        $replaced_text = str_replace("&#13;", '<br>', $texte);
         $stripped_text = strip_tags($replaced_text);
         $shorted_text = substr($stripped_text, 0, 250);
 
@@ -180,29 +178,29 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function partialExtendsFilter($template, $suffix = ".partial")
     {
-	$request = $this->requestStack->getCurrentRequest();
-	if($request === null)
-	{
-	    return $template;
-	}
+        $request = $this->requestStack->getCurrentRequest();
+        if ($request === null) {
+            return $template;
+        }
 
-	$isPJAX = ($request->headers->has("X-PJAX") || $request->isXmlHttpRequest());
+        $isPJAX = ($request->headers->has("X-PJAX") || $request->isXmlHttpRequest());
 
-	if(! $isPJAX)
-	{
-	    $suffix = "";
-	}
+        if (!$isPJAX) {
+            $suffix = "";
+        }
 
-	return preg_replace("/\.html(\.twig)?/i", $suffix.".html.twig", $template);
+        return preg_replace("/\.html(\.twig)?/i", $suffix . ".html.twig", $template);
     }
 
-    protected function trimBr($string){
+    protected function trimBr($string)
+    {
         $string = preg_replace('/^\s*(?:<br\s*\/?>\s*)*/i', '', $string);
         $string = preg_replace('/\s*(?:<br\s*\/?>\s*)*$/i', '', $string);
-        return	$string;
+        return $string;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return "main_extension";
     }
 }

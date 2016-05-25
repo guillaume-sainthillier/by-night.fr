@@ -3,13 +3,14 @@
 <div class="togglebutton form-group bloc_config">
     <label class="full_width">
         {{ service|capitalize }}
-        <input type="checkbox" 
-               class="onoffswitch-checkbox" 
-               {{ isGranted ? "checked": "" }} 
-               data-href-disconnect="{% spaceless %}{% block url_disconnect %}{{ path('tbn_disconnect_service_confirm', { 'service': service}) }}{% endblock %}{% endspaceless %}" 
+        <input type="checkbox"
+               class="onoffswitch-checkbox"
+                {{ isGranted ? "checked": "" }}
+               data-href-disconnect="{% spaceless %}{% block url_disconnect %}{{ path('tbn_disconnect_service_confirm', { 'service': service}) }}{% endblock %}{% endspaceless %}"
                data-href-connect="{% spaceless %}{% block url_connect %}{{ hwi_oauth_login_url(service) }}{% endblock %}{% endspaceless %}">
     </label>
-    <span class="when_on {{ isGranted ? "" : "hidden"  }} help-block text-primary">
-        Connecté sous <span class="username">{{ service == 'twitter' ? '@': '' }}{{ attribute(info,service ~ "NickName") }}</span>                        
+    <span class="when_on {{ isGranted ? "" : "hidden" }} help-block text-primary">
+        Connecté sous <span
+                class="username">{{ service == 'twitter' ? '@': '' }}{{ attribute(info,service ~ "NickName") }}</span>
     </span>
 </div>

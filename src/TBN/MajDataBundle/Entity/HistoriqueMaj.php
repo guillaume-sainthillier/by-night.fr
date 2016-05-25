@@ -23,9 +23,9 @@ class HistoriqueMaj
     private $id;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"}, fetch="EAGER")
-    * @ORM\JoinColumn(nullable=true)
-    */
+     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"}, fetch="EAGER")
+     * @ORM\JoinColumn(nullable=true)
+     */
     protected $site;
 
     /**
@@ -115,7 +115,7 @@ class HistoriqueMaj
     public function setDateDebut($dateDebut)
     {
         $this->dateDebut = $dateDebut;
-    
+
         return $this;
     }
 
@@ -139,7 +139,7 @@ class HistoriqueMaj
     public function setFromData($fromData)
     {
         $this->fromData = $fromData;
-    
+
         return $this;
     }
 
@@ -163,7 +163,7 @@ class HistoriqueMaj
     public function setDateFin($dateFin)
     {
         $this->dateFin = $dateFin;
-    
+
         return $this;
     }
 
@@ -187,7 +187,7 @@ class HistoriqueMaj
     public function setNouvellesSoirees($nouvellesSoirees)
     {
         $this->nouvellesSoirees = $nouvellesSoirees;
-    
+
         return $this;
     }
 
@@ -211,7 +211,7 @@ class HistoriqueMaj
     public function setUpdateSoirees($updateSoirees)
     {
         $this->updateSoirees = $updateSoirees;
-    
+
         return $this;
     }
 
@@ -235,7 +235,7 @@ class HistoriqueMaj
     public function setExplorations($explorations)
     {
         $this->explorations = $explorations;
-    
+
         return $this;
     }
 
@@ -259,7 +259,7 @@ class HistoriqueMaj
     public function setSite(\TBN\MainBundle\Entity\Site $site = null)
     {
         $this->site = $site;
-    
+
         return $this;
     }
 

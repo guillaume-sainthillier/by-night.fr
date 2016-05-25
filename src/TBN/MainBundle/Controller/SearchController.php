@@ -27,7 +27,7 @@ class SearchController extends Controller
             $params["q"] = $term;
         }
 
-        if($page) {
+        if ($page) {
             $params['page'] = $page;
         }
 

@@ -13,7 +13,8 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use TBN\MainBundle\Site\SiteManager;
 
-class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface {
+class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
+{
 
     protected $translator;
     protected $router;
@@ -28,7 +29,8 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
         $this->site_manager = $site_manager;
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token) {
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token)
+    {
         if ($request->isXmlHttpRequest()) {
             $result = ['success' => true];
             return new JsonResponse($result);
@@ -47,8 +49,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
                     //remove the session key
                     $this->session->remove($key);
-                }else
-                {
+                } else {
                     $user = $token->getUser();
                     $subdomain = $user->getSite()->getSubdomain();
                     $url = $this->router->generate("tbn_agenda_index", ["subdomain" => $subdomain]);
@@ -59,7 +60,8 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
         }
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception) {
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
         if ($request->isXmlHttpRequest()) {
             $result = [
                 'success' => false,

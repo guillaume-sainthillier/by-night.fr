@@ -2,12 +2,12 @@
 
 {% block title_search %}Recherche d'événements{% endblock %}
 {% block titre_search %}Recherche d'événements à {{ site.nom }}{% endblock %}
-{% block meta_description -%}Recherche d'événements, concerts, spectacles à {{ site.nom }}. {% if term %}{{ nbSoirees}} événement{{ nbSoirees > 1 ? "s" : "" }} trouvé{{ nbSoirees > 1 ? "s" : "" }} pour la recherche '{{ term }}'.{% endif %}{% endblock %}
+{% block meta_description -%}Recherche d'événements, concerts, spectacles à {{ site.nom }}. {% if term %}{{ nbSoirees }} événement{{ nbSoirees > 1 ? "s" : "" }} trouvé{{ nbSoirees > 1 ? "s" : "" }} pour la recherche '{{ term }}'.{% endif %}{% endblock %}
 
 {% block breadcrumb_search %}
-    {% set item = menu.addItem('Événements', path('tbn_search_query', {'type': 'evenements'})) %}    
+    {% set item = menu.addItem('Événements', path('tbn_search_query', {'type': 'evenements'})) %}
     {% if term %}
-    {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'evenements'})) %}
+        {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': 'evenements'})) %}
     {% endif %}
 {% endblock %}
 
@@ -17,14 +17,14 @@
 {% block body_search_results -%}
     {% if term %}
         <h2>
-            <strong class="count date">{{ nbSoirees }}</strong> 
+            <strong class="count date">{{ nbSoirees }}</strong>
             événement{{ nbSoirees > 1 ? "s" : "" }} trouvé{{ nbSoirees > 1 ? "s" : "" }}
         </h2>
-    {% endif %}    
+    {% endif %}
 {%- endblock %}
 
 {% block body_search_content -%}
     {% if term %}
         {% include "TBNMainBundle:Search:content_events.html.twig" %}
-    {% endif %}    
+    {% endif %}
 {%- endblock %}

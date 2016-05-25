@@ -9,6 +9,8 @@
 
 {% block footer %}
     <div class="panel-footer">
-        <button class="btn btn-primary btn-block more-widget" data-href="{{ path('tbn_agenda_soirees_similaires', {'slug': soiree.slug }) }}" >Plus</button>
+        <button class="btn btn-primary btn-block more-widget"
+                data-href="{{ path('tbn_agenda_soirees_similaires', {'slug': soiree.slug }) }}">Plus
+        </button>
     </div>
 {% endblock %}

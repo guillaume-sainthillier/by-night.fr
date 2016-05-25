@@ -1,24 +1,24 @@
 {% if page == 1 %}
     {% block poster_commentaire %}
         {% include "TBNCommentBundle:Comment:header.html.twig" with({'nb_comments': nb_comments}) %}
-        <br />
+        <br/>
         {% include "TBNCommentBundle:Comment:post.html.twig" with({'form': form}) %}
     {% endblock %}
 {% endif %}
-        
+
 <div class="commentaires">
-{% for comment in comments %}
-    {% block detail_commentaire %}
-        {{ render(controller('TBNCommentBundle:Comment:details', {'comment': comment})) }}
-    {% endblock %}
-{% endfor %}
-{% if nb_comments > ((page)*offset) %}
-    {% block load_more %}
-        <div class="load_more" data-url="{{ path('tbn_comment_list',{'id': soiree.id ,'page': (page+1) }) }}">
-            <button type="button" class="btn btn-primary btn-lg btn-block btn-raised">
-                Plus de commentaires
-            </button>
-        </div>
-    {% endblock %}
-{% endif %}
+    {% for comment in comments %}
+        {% block detail_commentaire %}
+            {{ render(controller('TBNCommentBundle:Comment:details', {'comment': comment})) }}
+        {% endblock %}
+    {% endfor %}
+    {% if nb_comments > ((page)*offset) %}
+        {% block load_more %}
+            <div class="load_more" data-url="{{ path('tbn_comment_list',{'id': soiree.id ,'page': (page+1) }) }}">
+                <button type="button" class="btn btn-primary btn-lg btn-block btn-raised">
+                    Plus de commentaires
+                </button>
+            </div>
+        {% endblock %}
+    {% endif %}
 </div>

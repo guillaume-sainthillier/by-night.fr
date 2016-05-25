@@ -1,17 +1,17 @@
 {% extends "TBNAgendaBundle::layout.html.twig" %}
 
-{% block breadcrumb_agenda %}    
+{% block breadcrumb_agenda %}
     {% set item = menu.addItem("Administration", path('tbn_administration_index')) %}
     {% block breadcrumb_administration %}{% endblock %}
 {% endblock %}
 
 {% block title_agenda %}
-    Administration - 
+    Administration -
     {% block title_administration %}{% endblock %}
 {% endblock %}
     
 {% block titre_agenda %}
-    Administration - 
+    Administration -
     {% block titre_administration %}{% endblock %}
 {% endblock %}
     
@@ -23,6 +23,6 @@
     {% block css_administration %}{% endblock %}
 {% endblock %}
 
-{% block js_agenda %}    
+{% block js_agenda %}
     {% block js_administration %}{% endblock %}
 {% endblock %}

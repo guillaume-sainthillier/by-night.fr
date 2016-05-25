@@ -20,36 +20,37 @@ class UserRepository extends EntityRepository
             ->select('u', 'i')
             ->leftJoin('u.info', 'i')
             ->where("u.site = :site")
-            ->orderBy('u.lastLogin','DESC')
+            ->orderBy('u.lastLogin', 'DESC')
             ->setParameters([":site" => $site->getId()])
-            ->setFirstResult(($page-1) * $limit)
+            ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
     }
+
     public function getLastDateUser(Site $site)
     {
         return $this->_em
-        ->createQueryBuilder()
-        ->select('MAX(u.lastLogin)')
-        ->from('TBNUserBundle:User',"u")
-        ->where("u.site = :site")
-        ->setParameters([":site" => $site->getId()])
-        ->getQuery()
-        ->getSingleScalarResult();
+            ->createQueryBuilder()
+            ->select('MAX(u.lastLogin)')
+            ->from('TBNUserBundle:User', "u")
+            ->where("u.site = :site")
+            ->setParameters([":site" => $site->getId()])
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function search(Site $site, $term)
     {
         return $this->_em
-        ->createQueryBuilder()
-        ->select('u')
-        ->from('TBNUserBundle:User',"u")
-        ->where("u.site = :site")
-        ->andWhere("u.username LIKE :username")
-        ->orderBy("u.username")
-        ->setParameters([":site" => $site->getId(), ":username" => '%'.$term.'%'])
-        ->getQuery()
-        ->execute();
+            ->createQueryBuilder()
+            ->select('u')
+            ->from('TBNUserBundle:User', "u")
+            ->where("u.site = :site")
+            ->andWhere("u.username LIKE :username")
+            ->orderBy("u.username")
+            ->setParameters([":site" => $site->getId(), ":username" => '%' . $term . '%'])
+            ->getQuery()
+            ->execute();
     }
 }

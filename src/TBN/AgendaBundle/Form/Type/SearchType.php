@@ -17,10 +17,11 @@ use Symfony\Component\Form\FormEvents;
 class SearchType extends AbstractType
 {
 
-    public function onPreSubmit(FormEvent $event) {
+    public function onPreSubmit(FormEvent $event)
+    {
         $data = $event->getData();
 
-        if(isset($data['du']) && !$data['du']) {
+        if (isset($data['du']) && !$data['du']) {
             $data['du'] = date('d/m/Y');
         }
 

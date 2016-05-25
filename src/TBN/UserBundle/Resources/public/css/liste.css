@@ -1,1 +1,18 @@
-.recherche{margin-top:30px;margin-bottom:50px}.input-group-addon{color:#b0bcd4;background-color:#f2f4f8;border:1px solid #e1e6ef;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px}.input-group-addon i{width:14px;text-align:center}
+.recherche {
+    margin-top: 30px;
+    margin-bottom: 50px
+}
+
+.input-group-addon {
+    color: #b0bcd4;
+    background-color: #f2f4f8;
+    border: 1px solid #e1e6ef;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px
+}
+
+.input-group-addon i {
+    width: 14px;
+    text-align: center
+}

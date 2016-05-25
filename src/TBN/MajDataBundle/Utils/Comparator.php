@@ -86,18 +86,16 @@ class Comparator
 
     protected function getStrictMatchingEvent(Agenda &$a, Agenda &$b)
     {
-        return  ($a->getFacebookEventId() && $a->getFacebookEventId() == $b->getFacebookEventId()) ||
-                ($a->getId() && $a->getId() == $b->getId()) ||
-                $this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
-                $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75
-        ;
+        return ($a->getFacebookEventId() && $a->getFacebookEventId() == $b->getFacebookEventId()) ||
+        ($a->getId() && $a->getId() == $b->getId()) ||
+        $this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
+        $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75;
     }
 
     protected function getStrictMatchingPlace(Place &$a, Place &$b)
     {
-        return  ($a->getFacebookId() && $a->getFacebookId() == $b->getFacebookId()) ||
-                ($a->getId() && $a->getId() == $b->getId())
-        ;
+        return ($a->getFacebookId() && $a->getFacebookId() == $b->getFacebookId()) ||
+        ($a->getId() && $a->getId() == $b->getId());
     }
 
     public function getBestEvent(array &$events, Agenda &$testedEvent)
@@ -130,7 +128,7 @@ class Comparator
         return 0;
     }
 
-    private function getBest($keyPrefix, array &$items, $machingFunction,  &$testedItem = null, $minScore = 75)
+    private function getBest($keyPrefix, array &$items, $machingFunction, &$testedItem = null, $minScore = 75)
     {
         if (null === $testedItem) {
             return null;
@@ -303,9 +301,9 @@ class Comparator
 
     public function sanitize($string)
     {
-        return Monitor::bench('Sanitize', function() use($string) {
+        return Monitor::bench('Sanitize', function () use ($string) {
             $key = 'sanitize' . $string;
-            if(! $this->cache->contains($key)) {
+            if (!$this->cache->contains($key)) {
                 $step1 = $this->util->utf8LowerCase($string);
                 $step2 = $this->util->replaceAccents($step1);
                 $step3 = $this->util->replaceNonAlphanumericChars($step2);

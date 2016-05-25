@@ -20,11 +20,11 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class Info
 {
     /**
-    * @var integer 
-    * @ORM\Column(name="id", type="integer")
-    * @ORM\Id
-    * @ORM\GeneratedValue(strategy="AUTO")
-    */
+     * @var integer
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
     protected $id;
 
     /**
@@ -40,22 +40,22 @@ abstract class Info
      * @ORM\Column(name="has_see_asking_social", type="boolean")
      */
     protected $hasSeeAskingSocial;
-    
+
     /**
      * @ORM\Column(name="facebook_id", type="string", length=255, nullable=true)
      */
     protected $facebook_id;
- 
-    /** 
+
+    /**
      * @ORM\Column(name="facebook_access_token", type="string", length=255, nullable=true)
      */
     protected $facebook_access_token;
-    
+
     /**
      * @ORM\Column(name="facebook_token_secret", type="string", length=255, nullable=true)
      */
     protected $facebook_token_secret;
-    
+
     /**
      * @ORM\Column(name="facebook_refresh_token", type="string", length=255, nullable=true)
      */
@@ -64,43 +64,43 @@ abstract class Info
      * @ORM\Column(name="facebook_email", type="string", length=255, nullable=true)
      */
     protected $facebook_email;
-    
+
     /**
      * @ORM\Column(name="facebook_expires_in", type="string", length=255, nullable=true)
      */
     protected $facebook_expires_in;
-    
+
     /**
      * @ORM\Column(name="facebook_nickname", type="string", length=255, nullable=true)
      */
     protected $facebook_nickname;
-    
+
     /**
      * @ORM\Column(name="facebook_realname", type="string", length=255, nullable=true)
      */
     protected $facebook_realname;
-    
+
     /**
      * @ORM\Column(name="facebook_profile_picture", type="string", length=255, nullable=true)
      */
-    protected $facebook_profile_picture;    
-    
- 
-    /** 
+    protected $facebook_profile_picture;
+
+
+    /**
      * @ORM\Column(name="google_id", type="string", length=255, nullable=true)
      */
     protected $google_id;
- 
-    /** 
+
+    /**
      * @ORM\Column(name="google_access_token", type="string", length=255, nullable=true)
      */
     protected $google_access_token;
-    
+
     /**
      * @ORM\Column(name="google_token_secret", type="string", length=255, nullable=true)
      */
     protected $google_token_secret;
-    
+
     /**
      * @ORM\Column(name="google_refresh_token", type="string", length=255, nullable=true)
      */
@@ -109,84 +109,84 @@ abstract class Info
      * @ORM\Column(name="google_email", type="string", length=255, nullable=true)
      */
     protected $google_email;
-    
+
     /**
      * @ORM\Column(name="google_expires_in", type="string", length=255, nullable=true)
      */
     protected $google_expires_in;
-    
+
     /**
      * @ORM\Column(name="google_nickname", type="string", length=255, nullable=true)
      */
     protected $google_nickname;
-    
+
     /**
      * @ORM\Column(name="google_realname", type="string", length=255, nullable=true)
      */
     protected $google_realname;
-    
+
     /**
      * @ORM\Column(name="google_profile_picture", type="string", length=255, nullable=true)
      */
     protected $google_profile_picture;
-    
+
     /**
      * @ORM\Column(name="twitter_id", type="string", length=255, nullable=true)
      */
     protected $twitter_id;
- 
-    /** 
+
+    /**
      * @ORM\Column(name="twitter_access_token", type="string", length=255, nullable=true)
      */
     protected $twitter_access_token;
-    
-    
+
+
     /**
      * @ORM\Column(name="twitter_token_secret", type="string", length=255, nullable=true)
      */
     protected $twitter_token_secret;
-    
+
     /**
      * @ORM\Column(name="twitter_refresh_token", type="string", length=255, nullable=true)
      */
     protected $twitter_refresh_token;
-    
+
     /**
      * @ORM\Column(name="twitter_email", type="string", length=255, nullable=true)
      */
     protected $twitter_email;
-    
+
     /**
      * @ORM\Column(name="twitter_expires_in", type="string", length=255, nullable=true)
      */
     protected $twitter_expires_in;
-    
+
     /**
      * @ORM\Column(name="twitter_nickname", type="string", length=255, nullable=true)
      */
     protected $twitter_nickname;
-    
+
     /**
      * @ORM\Column(name="twitter_realname", type="string", length=255, nullable=true)
      */
     protected $twitter_realname;
-    
+
     /**
      * @ORM\Column(name="twitter_profile_picture", type="string", length=255, nullable=true)
      */
     protected $twitter_profile_picture;
-    
-    
+
+
     public function __construct()
     {
         $this->hasSeeTuto = false;
         $this->hasSeeAskingSocial = false;
-    }    
+    }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -209,7 +209,7 @@ abstract class Info
     /**
      * Get hasSeeTuto
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getHasSeeTuto()
     {
@@ -232,7 +232,7 @@ abstract class Info
     /**
      * Get hasSeeAskingSocial
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getHasSeeAskingSocial()
     {
@@ -255,7 +255,7 @@ abstract class Info
     /**
      * Get facebook_id
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookId()
     {
@@ -278,7 +278,7 @@ abstract class Info
     /**
      * Get facebook_access_token
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookAccessToken()
     {
@@ -301,7 +301,7 @@ abstract class Info
     /**
      * Get facebook_token_secret
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookTokenSecret()
     {
@@ -324,7 +324,7 @@ abstract class Info
     /**
      * Get facebook_email
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookEmail()
     {
@@ -347,7 +347,7 @@ abstract class Info
     /**
      * Get facebook_nickname
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookNickname()
     {
@@ -370,7 +370,7 @@ abstract class Info
     /**
      * Get facebook_realname
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookRealname()
     {
@@ -393,7 +393,7 @@ abstract class Info
     /**
      * Get facebook_profile_picture
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookProfilePicture()
     {
@@ -416,7 +416,7 @@ abstract class Info
     /**
      * Get google_id
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleId()
     {
@@ -439,7 +439,7 @@ abstract class Info
     /**
      * Get google_access_token
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleAccessToken()
     {
@@ -462,7 +462,7 @@ abstract class Info
     /**
      * Get google_token_secret
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleTokenSecret()
     {
@@ -485,7 +485,7 @@ abstract class Info
     /**
      * Get google_email
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleEmail()
     {
@@ -508,7 +508,7 @@ abstract class Info
     /**
      * Get google_nickname
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleNickname()
     {
@@ -531,7 +531,7 @@ abstract class Info
     /**
      * Get google_realname
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleRealname()
     {
@@ -554,7 +554,7 @@ abstract class Info
     /**
      * Get google_profile_picture
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleProfilePicture()
     {
@@ -577,7 +577,7 @@ abstract class Info
     /**
      * Get twitter_id
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterId()
     {
@@ -600,7 +600,7 @@ abstract class Info
     /**
      * Get twitter_access_token
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterAccessToken()
     {
@@ -623,7 +623,7 @@ abstract class Info
     /**
      * Get twitter_token_secret
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterTokenSecret()
     {
@@ -646,7 +646,7 @@ abstract class Info
     /**
      * Get twitter_email
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterEmail()
     {
@@ -669,7 +669,7 @@ abstract class Info
     /**
      * Get twitter_nickname
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterNickname()
     {
@@ -692,7 +692,7 @@ abstract class Info
     /**
      * Get twitter_realname
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterRealname()
     {
@@ -715,7 +715,7 @@ abstract class Info
     /**
      * Get twitter_profile_picture
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterProfilePicture()
     {
@@ -738,7 +738,7 @@ abstract class Info
     /**
      * Get facebook_expires_in
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookExpiresIn()
     {
@@ -761,7 +761,7 @@ abstract class Info
     /**
      * Get google_expires_in
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleExpiresIn()
     {
@@ -784,7 +784,7 @@ abstract class Info
     /**
      * Get twitter_expires_in
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterExpiresIn()
     {
@@ -807,7 +807,7 @@ abstract class Info
     /**
      * Get facebook_refresh_token
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookRefreshToken()
     {
@@ -830,7 +830,7 @@ abstract class Info
     /**
      * Get google_refresh_token
      *
-     * @return string 
+     * @return string
      */
     public function getGoogleRefreshToken()
     {
@@ -853,7 +853,7 @@ abstract class Info
     /**
      * Get twitter_refresh_token
      *
-     * @return string 
+     * @return string
      */
     public function getTwitterRefreshToken()
     {

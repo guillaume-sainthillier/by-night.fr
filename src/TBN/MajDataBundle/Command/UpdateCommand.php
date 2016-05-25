@@ -111,7 +111,7 @@ class UpdateCommand extends EventCommand
             }
 
             //Récupération des événements
-            $agendas = Monitor::bench('Récupération Parser', function() use(&$parserManager, &$output) {
+            $agendas = Monitor::bench('Récupération Parser', function () use (&$parserManager, &$output) {
                 return $parserManager->getAgendas($output);
             }, true);
 
@@ -122,10 +122,10 @@ class UpdateCommand extends EventCommand
             $progress = new ProgressBar($output, $size);
             $progress->start();
             foreach ($agendas as $i => $agenda) {
-                if(! $agenda->getSite()) {
+                if (!$agenda->getSite()) {
                     $agenda->setSite($site);
                 }
-                if($agenda->getPlace() && !$agenda->getPlace()->getSite()) {
+                if ($agenda->getPlace() && !$agenda->getPlace()->getSite()) {
                     $agenda->getPlace()->setSite($site);
                 }
 

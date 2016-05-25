@@ -4,7 +4,7 @@
     <div class="panel-heading bg-white">
         <h2 class="modal-title">
             <i class="pull-right fa text-primary fa-search"></i>
-            Trouvez une idée sortie 
+            Trouvez une idée sortie
         </h2>
     </div>
     <div class="panel-body">
@@ -13,23 +13,41 @@
                 <div class="form-group">
                     <label for="shorcuts_date" class="col-sm-4 control-label">Quand ?</label>
                     <div class="col-sm-8">
-                        <select name="shortcut" id="shorcuts_date" class="form-control shorcuts_date" placeholder="Raccourcis">
-                            <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today" {{ app.request.get('shortcut') == 'today' ? 'selected': '' }}>Aujourd'hui</option>
-                            <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow" {{ app.request.get('shortcut') == 'tomorrow' ? 'selected': '' }}>Demain</option>
-                            <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend" {{ app.request.get('shortcut') == 'weekend' ? 'selected': '' }}>Ce Week End</option>
-                            <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week" {{ app.request.get('shortcut') == 'week' ? 'selected': '' }}>Cette semaine</option>
-                            <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month" {{ app.request.get('shortcut') == 'month' ? 'selected': '' }}>Ce mois</option>
+                        <select name="shortcut" id="shorcuts_date" class="form-control shorcuts_date"
+                                placeholder="Raccourcis">
+                            <option data-date-debut="{{ "now"|date('d/m/Y') }}"
+                                    value="today" {{ app.request.get('shortcut') == 'today' ? 'selected': '' }}>
+                                Aujourd'hui
+                            </option>
+                            <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}"
+                                    value="tomorrow" {{ app.request.get('shortcut') == 'tomorrow' ? 'selected': '' }}>
+                                Demain
+                            </option>
+                            <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
+                                    data-date-fin="{{ "sunday this week"|date('d/m/Y') }}"
+                                    value="weekend" {{ app.request.get('shortcut') == 'weekend' ? 'selected': '' }}>Ce
+                                Week End
+                            </option>
+                            <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
+                                    data-date-fin="{{ "sunday this week"|date('d/m/Y') }}"
+                                    value="week" {{ app.request.get('shortcut') == 'week' ? 'selected': '' }}>Cette
+                                semaine
+                            </option>
+                            <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
+                                    data-date-fin="{{ "last day of this month"|date('d/m/Y') }}"
+                                    value="month" {{ app.request.get('shortcut') == 'month' ? 'selected': '' }}>Ce mois
+                            </option>
                         </select>
-                    </div>                    
-                </div>                
-            </div>                
+                    </div>
+                </div>
+            </div>
             <div class="col-md-5 col-xs-6">
                 <div class="form-group">
                     {{ form_label(form.type_manifestation) }}
                     <div class="col-sm-9">
                         {{ form_widget(form.type_manifestation) }}
                         {{ form_errors(form.type_manifestation) }}
-                    </div>                    
+                    </div>
                 </div>
             </div>
             <div class="col-md-3 col-xs-12">
@@ -39,17 +57,17 @@
         {% if isPost and (search.au or search.lieux or search.commune or search.term) %}
             {% set options = {hiddenClass: '', iconClass: 'fa-chevron-up'} %}
         {% else %}
-            {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}            
+            {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}
         {% endif %}
         <div class="row">
             <div class="col-xs-8">
                 <button type="button" class="btn_criteres btn btn-primary btn-flat">
-                    <i class="fa size-135 {{ options.iconClass }}"></i> 
+                    <i class="fa size-135 {{ options.iconClass }}"></i>
                     Recherche avancée
                 </button>
             </div>
-                           
-        </div>        
+
+        </div>
         <div class="{{ options.hiddenClass }} criteres">
             <div class="row">
                 <div class="col-xs-6">

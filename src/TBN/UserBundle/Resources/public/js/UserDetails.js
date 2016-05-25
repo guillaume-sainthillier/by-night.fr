@@ -1,19 +1,15 @@
 var UserDetails = {
-    init: function ()
-    {
-        $(function ()
-        {
+    init: function () {
+        $(function () {
             UserDetails.initCharts();
         });
     },
-    initCharts: function ()
-    {
+    initCharts: function () {
         $(".chart").css({'height': '350px', 'width': '100%'});
 
         $('.nav-tabs a:last').tab('show');
 
-        $('.nav-tabs a').click(function (e)
-        {
+        $('.nav-tabs a').click(function (e) {
             e.preventDefault();
             $(this).tab('show');
         });
@@ -21,31 +17,26 @@ var UserDetails = {
         UserDetails.initLieux();
         UserDetails.initActivite();
     },
-    initActivite: function ()
-    {
+    initActivite: function () {
         UserDetails.chartActivite("annee", ["#67C2EF"]);
         $('#chartMois').click(function () {
-            if (!$(this).hasClass("loaded"))
-            {
+            if (!$(this).hasClass("loaded")) {
                 $(this).addClass("loaded");
                 UserDetails.chartActivite("mois", ["#BDEA74"]);
             }
         });
 
         $('#chartSemaine').click(function () {
-            if (!$(this).hasClass("loaded"))
-            {
+            if (!$(this).hasClass("loaded")) {
                 $(this).addClass("loaded");
                 UserDetails.chartActivite("semaine", ["#fabb3d"]);
             }
         });
     },
-    initLieux: function ()
-    {
+    initLieux: function () {
         var morris_data = [];
 
-        $.each(window.datas, function (i, etablissement)
-        {
+        $.each(window.datas, function (i, etablissement) {
             morris_data.push({"label": etablissement.nom || "", "value": etablissement.nbEtablissements});
         });
 
@@ -64,8 +55,7 @@ var UserDetails = {
             return {y: item, myIndex: index};
         });
     },
-    prepareActivite: function (datas)
-    {
+    prepareActivite: function (datas) {
         return datas.data.map(function (events, index) {
             return {period: datas.categories[index], events: events, full_period: datas.full_categories[index]};
         });
@@ -74,8 +64,7 @@ var UserDetails = {
 
         var element = "chart-" + type;
         var chart = $("#" + element);
-        $.get(chart.data("url")).done(function (datas)
-        {
+        $.get(chart.data("url")).done(function (datas) {
             chart.children().remove();
             Morris.Area({
                 element: element,

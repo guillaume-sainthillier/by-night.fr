@@ -2,6 +2,7 @@
 
 
 namespace TBN\SocialBundle\Social;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -25,7 +26,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
  *
  * @author guillaume
  */
-abstract class Social {
+abstract class Social
+{
 
     /**
      *
@@ -69,49 +71,45 @@ abstract class Social {
      */
     protected $requestStack;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack) {
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack)
+    {
 
-        if(!isset($config["id"]))
-        {
+        if (!isset($config["id"])) {
             throw new SocialException("Le paramètre 'id' est absent");
         }
 
-        if(!isset($config["secret"]))
-        {
+        if (!isset($config["secret"])) {
             throw new SocialException("Le paramètre 'secret' est absent");
         }
 
-        $this->id		    = $config["id"];
-        $this->secret		= $config["secret"];
-        $this->siteManager	= $siteManager;
-        $this->tokenStorage	= $tokenStorage;
-        $this->router		= $router;
-        $this->session		= $session;
-        $this->requestStack     = $requestStack;
+        $this->id = $config["id"];
+        $this->secret = $config["secret"];
+        $this->siteManager = $siteManager;
+        $this->tokenStorage = $tokenStorage;
+        $this->router = $router;
+        $this->session = $session;
+        $this->requestStack = $requestStack;
 
         $this->constructClient();
     }
-
 
 
     public function disconnectUser(User $user)
     {
         $social_name = $this->getName();//On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->removeRole("ROLE_".  strtolower($social_name));//Suppression du role ROLE_TWITTER
+        $user->removeRole("ROLE_" . strtolower($social_name));//Suppression du role ROLE_TWITTER
         $this->disconnectInfo($user->getInfo());
     }
 
 
     protected function disconnectInfo(Info $info)
     {
-        if($info !== null)
-        {
+        if ($info !== null) {
             $social_name = $this->getName();//On récupère le nom du child (Twitter, Google, Facebook)
-            $methods = ["Id","AccessToken","RefreshToken","TokenSecret","Nickname","RealName","Email","ProfilePicture"];
-            foreach($methods as $methode)
-            {
-                $setter = 'set'.ucfirst($social_name).ucfirst($methode);
+            $methods = ["Id", "AccessToken", "RefreshToken", "TokenSecret", "Nickname", "RealName", "Email", "ProfilePicture"];
+            foreach ($methods as $methode) {
+                $setter = 'set' . ucfirst($social_name) . ucfirst($methode);
                 $info->$setter(null);
             }
         }
@@ -125,18 +123,16 @@ abstract class Social {
     protected function connectInfo(Info $info, UserResponseInterface $response)
     {
         $social_name = $this->getName();//On récupère le nom du child (Twitter, Google, Facebook)
-        if($info !== null)
-        {
-            $methods = ["AccessToken","RefreshToken", "TokenSecret","ExpiresIn", "Nickname","RealName","Email","ProfilePicture"];
-            foreach($methods as $methode)
-            {
-                $setter = 'set'.ucfirst($social_name).ucfirst($methode);// setSocialUsername
-                $getter = 'get'.ucfirst($methode); //getSocialUsername
+        if ($info !== null) {
+            $methods = ["AccessToken", "RefreshToken", "TokenSecret", "ExpiresIn", "Nickname", "RealName", "Email", "ProfilePicture"];
+            foreach ($methods as $methode) {
+                $setter = 'set' . ucfirst($social_name) . ucfirst($methode);// setSocialUsername
+                $getter = 'get' . ucfirst($methode); //getSocialUsername
 
                 $info->$setter($response->$getter());
             }
 
-            $setter_id = 'set'.ucfirst($social_name).'Id';
+            $setter_id = 'set' . ucfirst($social_name) . 'Id';
             $info->$setter_id($response->getUsername());
         }
     }
@@ -145,7 +141,7 @@ abstract class Social {
     {
         $social_name = $this->getName();//On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->addRole("ROLE_".  strtolower($social_name));//Ajout du role ROLE_TWITTER
+        $user->addRole("ROLE_" . strtolower($social_name));//Ajout du role ROLE_TWITTER
         $this->connectInfo($user->getInfo(), $response);
     }
 
@@ -160,12 +156,11 @@ abstract class Social {
 
         try {
             $this->post($user, $agenda);
-	    $this->afterPost($user, $agenda);
+            $this->afterPost($user, $agenda);
         } catch (\Exception $ex) {
 
             $type = "error";
-            if($ex instanceof SocialException)
-            {
+            if ($ex instanceof SocialException) {
                 $type = $ex->getType();
             }
             /**
@@ -180,7 +175,7 @@ abstract class Social {
 
     protected function getLinkPicture(Agenda $agenda)
     {
-        return $this->requestStack->getMasterRequest()->getUriForPath("/".$agenda->getWebPath());
+        return $this->requestStack->getMasterRequest()->getUriForPath("/" . $agenda->getWebPath());
     }
 
     protected function getLink(Agenda $agenda)
@@ -194,13 +189,17 @@ abstract class Social {
     }
 
     public abstract function getNumberOfCount();
+
     protected abstract function constructClient();
+
     protected abstract function getName();
+
     /**
      * @param Agenda $agenda La soirée concernée
      * @throws SocialException si une erreur est survenue
      */
     protected abstract function post(User $user, Agenda $agenda);
+
     protected abstract function afterPost(User $user, Agenda $agenda);
 
 }

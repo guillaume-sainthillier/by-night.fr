@@ -16,20 +16,20 @@
 
 
 {% block titre_agenda %}
-{% if villeName is not null %}Sortir à {{ villeName|capitalize }}
-{% elseif placeName is not null %}Sortir à {{ placeName|capitalize }}
-{% elseif tag is not null %}{{ tag|capitalize }}
-{% elseif type == 'exposition' %}Expositions
-{% elseif type == 'concert' %}Concerts
-{% elseif type == 'famille' %}Sorties familles
-{% elseif type == 'spectacle' %}Spectacles
-{% elseif type == 'etudiant' %}Soirées étudiantes
-{% else %}Agenda des <strong>événements</strong> {% endif %}
-{% if placeName is null and villeName is null%}à <strong>{{ site.nom }}</strong>{% endif %}
+    {% if villeName is not null %}Sortir à {{ villeName|capitalize }}
+    {% elseif placeName is not null %}Sortir à {{ placeName|capitalize }}
+    {% elseif tag is not null %}{{ tag|capitalize }}
+    {% elseif type == 'exposition' %}Expositions
+    {% elseif type == 'concert' %}Concerts
+    {% elseif type == 'famille' %}Sorties familles
+    {% elseif type == 'spectacle' %}Spectacles
+    {% elseif type == 'etudiant' %}Soirées étudiantes
+    {% else %}Agenda des <strong>événements</strong> {% endif %}
+    {% if placeName is null and villeName is null %}à <strong>{{ site.nom }}</strong>{% endif %}
 {% endblock %}
 
 {% block helper -%}
-    {% include "TBNAgendaBundle:Agenda:block_criteres.html.twig" %}    
+    {% include "TBNAgendaBundle:Agenda:block_criteres.html.twig" %}
 {%- endblock %}
 
 {% block body_agenda -%}
@@ -39,9 +39,10 @@
             Aucun événement trouvé
         </div>
     {% else %}
-        <h3 class="info"><span class="label label-info">{{ nbEvents }} événément{{ nbEvents > 1 ? 's' : '' }}</span></h3>
+        <h3 class="info"><span class="label label-info">{{ nbEvents }} événément{{ nbEvents > 1 ? 's' : '' }}</span>
+        </h3>
         <div class="panel panel-primary">
-            <div class="panel-body">                
+            <div class="panel-body">
                 {% block soirees -%}{%- endblock %}
             </div>
         </div>
@@ -51,9 +52,9 @@
 {% block widgets_agenda %}{% include "TBNAgendaBundle:MenuDroit:accueil.html.twig" %}{% endblock %}
 
 {% block css_agenda %}
-<link rel="stylesheet" href="{{ asset('prod/evenements/css/agenda.min.css') }}" type="text/css" >
+    <link rel="stylesheet" href="{{ asset('prod/evenements/css/agenda.min.css') }}" type="text/css">
 {% endblock %}
 
 {% block js_agenda %}
-<script src="{{ asset('prod/evenements/js/agenda.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('prod/evenements/js/agenda.min.js') }}" type="text/javascript"></script>
 {% endblock %}

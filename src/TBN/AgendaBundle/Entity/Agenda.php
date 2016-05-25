@@ -29,7 +29,7 @@ use TBN\AgendaBundle\Entity\Agenda;
  *   @ORM\Index(name="agenda_search_idx", columns={"site_id", "date_fin", "date_debut"}),
  *   @ORM\Index(name="agenda_search2_idx", columns={"site_id", "date_debut"})
  * })
- * 
+ *
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("all")
@@ -46,9 +46,9 @@ class Agenda
     protected $id;
 
     /**
-    * @Gedmo\Slug(fields={"nom"})
-    * @ORM\Column(length=128, unique=true)
-    */
+     * @Gedmo\Slug(fields={"nom"})
+     * @ORM\Column(length=128, unique=true)
+     */
     protected $slug;
 
     /**
@@ -75,7 +75,7 @@ class Agenda
      * @ORM\Column(name="date_modification", type="datetime", nullable=true)
      */
     protected $dateModification;
-    
+
     /**
      * @var \DateTime
      *
@@ -120,7 +120,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="ville", type="string", length=255, nullable=true)
-     * 
+     *
      */
     protected $ville;
 
@@ -164,7 +164,7 @@ class Agenda
      * @var string
      *
      * @ORM\Column(name="lieu_nom", type="string", length=255, nullable=true)
-     * 
+     *
      */
     protected $lieuNom;
 
@@ -345,15 +345,15 @@ class Agenda
     protected $googleSystemPostId;
 
     /**
-    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"remove"}, fetch="EXTRA_LAZY")
-    */
+     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"remove"}, fetch="EXTRA_LAZY")
+     */
     protected $calendriers;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
-    * @ORM\JoinColumn(nullable=false)
-    * @Expose
-    */
+     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
+     * @ORM\JoinColumn(nullable=false)
+     * @Expose
+     */
     protected $site;
 
     /**
@@ -410,7 +410,7 @@ class Agenda
      * @ORM\Column(name="source", type="string", length=256, nullable=true)
      */
     protected $source;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
@@ -423,18 +423,18 @@ class Agenda
 
     public function getAbsolutePath()
     {
-        return null === $this->path ? null : $this->getUploadRootDir().'/'.$this->path;
+        return null === $this->path ? null : $this->getUploadRootDir() . '/' . $this->path;
     }
 
     public function getWebPath()
     {
-        return null === $this->path ? null : $this->getUploadDir().'/'.$this->path;
+        return null === $this->path ? null : $this->getUploadDir() . '/' . $this->path;
     }
 
     public function getUploadRootDir()
     {
         // le chemin absolu du répertoire où les documents uploadés doivent être sauvegardés
-        return __DIR__.'/../../../../web/'.$this->getUploadDir();
+        return __DIR__ . '/../../../../web/' . $this->getUploadDir();
     }
 
     protected function getUploadDir()
@@ -477,6 +477,7 @@ class Agenda
             $this->setDateFin($this->getDateDebut());
         }
     }
+
     /**
      * @ORM\PrePersist
      * @ORM\PreUpdate
@@ -486,7 +487,7 @@ class Agenda
         if (null !== $this->getFile()) {
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
-            $this->path = $filename.'.'.$this->getFile()->guessExtension();
+            $this->path = $filename . '.' . $this->getFile()->guessExtension();
         }
     }
 
@@ -508,7 +509,7 @@ class Agenda
         // check if we have an old image
         if (isset($this->temp)) {
             // delete the old image
-            unlink($this->getUploadRootDir().'/'.$this->temp);
+            unlink($this->getUploadRootDir() . '/' . $this->temp);
             // clear the temp image path
             $this->temp = null;
         }
@@ -539,11 +540,10 @@ class Agenda
      */
     public function isDatesValid()
     {
-        if($this->dateFin === null)
-        {
+        if ($this->dateFin === null) {
             return true;
         }
-        
+
         return $this->dateFin >= $this->dateDebut;
     }
 
@@ -556,22 +556,25 @@ class Agenda
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
     }
-    
-    public function getDistinctTags() {
-        $tags = $this->getCategorieManifestation().','.$this->getTypeManifestation().','.$this->getThemeManifestation();
+
+    public function getDistinctTags()
+    {
+        $tags = $this->getCategorieManifestation() . ',' . $this->getTypeManifestation() . ',' . $this->getThemeManifestation();
         return array_unique(array_map('trim', array_map('ucfirst', array_filter(explode(',', $tags)))));
     }
 
-    public function addRejectReason($reason) {
+    public function addRejectReason($reason)
+    {
         $this->rejectReasons[] = $reason;
 
         return $this;
     }
 
-    public function getRejectReaons() {
+    public function getRejectReaons()
+    {
         return $this->rejectReasons;
     }
-    
+
     /**
      * Get id
      *
@@ -1669,14 +1672,14 @@ class Agenda
     public function setFacebookOwnerId($facebookOwnerId)
     {
         $this->facebookOwnerId = $facebookOwnerId;
-    
+
         return $this;
     }
 
     /**
      * Get facebookOwnerId
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookOwnerId()
     {
@@ -1692,14 +1695,14 @@ class Agenda
     public function setAdresse($adresse)
     {
         $this->adresse = $adresse;
-    
+
         return $this;
     }
 
     /**
      * Get adresse
      *
-     * @return string 
+     * @return string
      */
     public function getAdresse()
     {
@@ -1715,14 +1718,14 @@ class Agenda
     public function setSource($source)
     {
         $this->source = $source;
-    
+
         return $this;
     }
 
     /**
      * Get source
      *
-     * @return string 
+     * @return string
      */
     public function getSource()
     {
@@ -1736,7 +1739,7 @@ class Agenda
      * @return Agenda
      */
     public function setPlace(\TBN\AgendaBundle\Entity\Place $place = null)
-    {        
+    {
         $this->place = $place;
 
         return $this;
@@ -1745,7 +1748,7 @@ class Agenda
     /**
      * Get place
      *
-     * @return \TBN\AgendaBundle\Entity\Place 
+     * @return \TBN\AgendaBundle\Entity\Place
      */
     public function getPlace()
     {
@@ -1761,30 +1764,33 @@ class Agenda
     public function setMigrated($isMigrated)
     {
         $this->isMigrated = $isMigrated;
-    
+
         return $this;
     }
 
     /**
      * Get isMigrated
      *
-     * @return boolean 
+     * @return boolean
      */
     public function isMigrated()
     {
         return $this->isMigrated;
     }
 
-    public function isTrustedLocation() {
-	return $this->isTrustedLocation;
+    public function isTrustedLocation()
+    {
+        return $this->isTrustedLocation;
     }
 
-    public function setTrustedLocation($isTrustedLocation) {
-	$this->isTrustedLocation = $isTrustedLocation;
-	return $this;
+    public function setTrustedLocation($isTrustedLocation)
+    {
+        $this->isTrustedLocation = $isTrustedLocation;
+        return $this;
     }
-    
-    public function setId($id) {
+
+    public function setId($id)
+    {
         $this->id = $id;
         return $this;
     }
@@ -1793,8 +1799,9 @@ class Agenda
     {
         return json_encode($this->toArray());
     }
-    
-    public function toArray() {
+
+    public function toArray()
+    {
         return [
             'place' => $this->place ? $this->place->toArray() : null,
             'site' => $this->site ? $this->site->toArray() : null,
@@ -1821,7 +1828,7 @@ class Agenda
     /**
      * Get fbDateModification
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getFbDateModification()
     {

@@ -7,13 +7,16 @@ namespace TBN\MajDataBundle\Utils;
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
-class Util {
+class Util
+{
 
     protected $stopWords;
-    
+
     public function __construct()
     {
-        $this->stopWords = array_map(function($word) { return ' '.$word.' '; }, [
+        $this->stopWords = array_map(function ($word) {
+            return ' ' . $word . ' ';
+        }, [
             "alors", "au", "aucuns", "aussi", "autre", "avant", "avec", "avoir", "bon", "car", "ce", "cela", "ces",
             "ceux", "chaque", "ci", "comme", "comment", "dans", "des", "du", "dedans", "dehors", "depuis", "devrait", "doit",
             "donc", "dos", "début", "elle", "elles", "en", "encore", "essai", "est", "et", "eu", "fait", "faites", "fois",
@@ -52,12 +55,11 @@ class Util {
 
     public function deleteSpaceBetween($string, $delimiters = '-')
     {
-        if(is_string($delimiters) && isset($delimiters[0])) //Strlen > 0
+        if (is_string($delimiters) && isset($delimiters[0])) //Strlen > 0
         {
-            return preg_replace('/\s+('.preg_quote($delimiters).'\s+/u', '$1', $string);
-        }elseif(is_array($delimiters) && count($delimiters) > 0)
-        {
-            return preg_replace_callback('/\s+(['.implode('', (array)$delimiters).'])\s+/u', function($matches) {
+            return preg_replace('/\s+(' . preg_quote($delimiters) . '\s+/u', '$1', $string);
+        } elseif (is_array($delimiters) && count($delimiters) > 0) {
+            return preg_replace_callback('/\s+([' . implode('', (array)$delimiters) . '])\s+/u', function ($matches) {
                 return $matches[1];
             }, $string);
         }
@@ -69,7 +71,7 @@ class Util {
     {
         return str_replace($this->stopWords, ' ', $string);
     }
-    
+
     public function deleteMultipleSpaces($string)
     {
         while (strpos($string, '  ') !== false) {
@@ -87,8 +89,9 @@ class Util {
     {
         return mb_convert_case($string, MB_CASE_LOWER, 'UTF-8');
     }
-    
-    public function replaceAccents($string) {
+
+    public function replaceAccents($string)
+    {
         return str_replace(array('à', 'á', 'â', 'ã', 'ä', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ù', 'ú', 'û', 'ü', 'ý', 'ÿ', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ù', 'Ú', 'Û', 'Ü', 'Ý'), array('a', 'a', 'a', 'a', 'a', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'y', 'y', 'A', 'A', 'A', 'A', 'A', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'N', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y'), $string);
     }
 }

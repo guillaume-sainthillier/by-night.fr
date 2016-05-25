@@ -29,7 +29,7 @@ class ProfileFormType extends BaseType
      * Builds the embedded form representing the user.
      *
      * @param FormBuilderInterface $builder
-     * @param array                $options
+     * @param array $options
      */
     protected function buildUserForm(FormBuilderInterface $builder, array $options)
     {
@@ -45,7 +45,6 @@ class ProfileFormType extends BaseType
                 "attr" => [
                     "placeholder" => "Ecrivez une courte description"
                 ]
-            ])
-        ;
+            ]);
     }
 }

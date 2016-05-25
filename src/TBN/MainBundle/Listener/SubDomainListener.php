@@ -8,29 +8,32 @@ use Symfony\Component\Routing\RouterInterface;
 use TBN\MainBundle\Site\SiteManager;
 use Doctrine\ORM\EntityManager;
 
-class SubDomainListener {
+class SubDomainListener
+{
 
     private $siteManager;
     private $em;
     private $baseHost;
     private $router;
-    
-    public function __construct(SiteManager $siteManager, EntityManager $em, RouterInterface $router, $baseHost) {
+
+    public function __construct(SiteManager $siteManager, EntityManager $em, RouterInterface $router, $baseHost)
+    {
         $this->siteManager = $siteManager;
         $this->router = $router;
         $this->em = $em;
         $this->baseHost = $baseHost;
     }
 
-    public function onDomainParse(GetResponseEvent $event) {
-        if($this->siteManager->getSiteInfo() === null) {
+    public function onDomainParse(GetResponseEvent $event)
+    {
+        if ($this->siteManager->getSiteInfo() === null) {
             $siteInfo = $this->em
                 ->getRepository('TBNUserBundle:SiteInfo')
                 ->findOneBy([]);
-                
+
             $this->siteManager->setSiteInfo($siteInfo);
-        }        
-        
+        }
+
         //Chargement du site
         if ($this->siteManager->getCurrentSite() === null) {
             $request = $event->getRequest();
@@ -44,14 +47,14 @@ class SubDomainListener {
 
             $site = $this->em
                 ->getRepository('TBNMainBundle:Site')
-                ->findOneBy(['subdomain' => $subdomain]);                  
-                
+                ->findOneBy(['subdomain' => $subdomain]);
+
             if (!$site || !$site->isActif()) {
                 $response = new RedirectResponse($this->router->generate('tbn_main_index'));
                 $event->setResponse($response);
-            }else {
+            } else {
                 $this->siteManager->setCurrentSite($site);
             }
-        }            
+        }
     }
 }

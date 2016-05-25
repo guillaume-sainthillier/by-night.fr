@@ -5,13 +5,14 @@
                 {% if programme.css_chaine %}
                     <div class="chaine {{ programme.css_chaine }}"></div>
                 {% else %}
-                    <img height="30" width="70" class="img img-responsive" src="{{ programme.logo }}" title="{{ programme.chaine }}" />
-                {% endif %}                
+                    <img height="30" width="70" class="img img-responsive" src="{{ programme.logo }}"
+                         title="{{ programme.chaine }}"/>
+                {% endif %}
             </div>
             <div class="col-xs-9 col-md-10 preserve">
                 <h4 class="modal-title">
                     <a href="{{ programme.lien }}" rel="nofollow">{{ programme.nom }}</a>
-                </h4>            
+                </h4>
                 <span class="number text-primary">{{ programme.heure }}</span>
                 <div>{{ programme.type }}</div>
             </div>

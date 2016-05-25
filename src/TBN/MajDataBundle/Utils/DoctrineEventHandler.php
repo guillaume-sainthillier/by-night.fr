@@ -60,7 +60,8 @@ class DoctrineEventHandler
         return $this->stats;
     }
 
-    public function initAPI() {
+    public function initAPI()
+    {
         $this->api->init();
     }
 
@@ -99,43 +100,44 @@ class DoctrineEventHandler
         }
     }
 
-    public function updateFBEventOfWeek($fullMode, $downloadImage = false) {
+    public function updateFBEventOfWeek($fullMode, $downloadImage = false)
+    {
         $batchSize = 50;
         $agendas = [];
         $results = $this->repoAgenda->findAllOfWeek();
         $ids = [];
-        foreach($results as $result) {
+        foreach ($results as $result) {
             $ids[] = $result->getFacebookEventId();
             $agendas[$result->getFacebookEventId()] = $result;
         }
 
         $i = 0;
-        if($fullMode) {
+        if ($fullMode) {
             $fbEvents = $this->api->getEventFullStatsFromIds($ids);
-        }else {
+        } else {
             $fbEvents = $this->api->getEventStatsFromIds($ids);
         }
 
-        foreach($fbEvents as $id => $fbEvent) {
+        foreach ($fbEvents as $id => $fbEvent) {
             $agenda = $agendas[$id];
             $oldURL = $agenda->getUrl();
             $agenda->setFbParticipations($fbEvent['participations'])
                 ->setFbInterets($fbEvent['interets'])
                 ->setUrl($fbEvent['url']);
             if ($downloadImage && ($agenda->getPath() === null || ($agenda->getUrl() !== null && $agenda->getUrl() !== $oldURL))) {
-                Monitor::bench('downloadImage', function() use(&$agenda) {
+                Monitor::bench('downloadImage', function () use (&$agenda) {
                     $this->handler->downloadImage($agenda);
                 });
             }
             $agenda->preDateModification();
             $this->em->merge($agenda);
 
-            if($fullMode) {
-                $key = 'fb.stats.'. $id;
+            if ($fullMode) {
+                $key = 'fb.stats.' . $id;
                 $this->cache->save($key, $fbEvent["membres"]);
             }
 
-            if($i % $batchSize === ($batchSize - 1)) {
+            if ($i % $batchSize === ($batchSize - 1)) {
                 $this->flush();
             }
             $i++;
@@ -152,7 +154,7 @@ class DoctrineEventHandler
         if (!isset($this->agendas[$siteId][$key])) {
             $this->newAgendas[$siteId][$key] = [];
             $this->agendas[$siteId][$key] = [];
-            $agendas = Monitor::bench('findAllByDate', function() use(&$agenda) {
+            $agendas = Monitor::bench('findAllByDate', function () use (&$agenda) {
                 return $this->repoAgenda->findAllByDate($agenda);
             });
             foreach ($agendas as $currentAgenda) {
@@ -253,12 +255,12 @@ class DoctrineEventHandler
 //                var_dump('HANDLE EVENT', $agenda === null);
                 if ($agenda !== null) {
                     if ($downloadImage && $agenda->getPath() === null && $agenda->getUrl() !== null) {
-                        Monitor::bench('downloadImage', function() use(&$agenda) {
+                        Monitor::bench('downloadImage', function () use (&$agenda) {
                             $this->handler->downloadImage($agenda);
                         });
                     }
 
-                    $agenda = Monitor::bench('merge', function() use(&$agenda) {
+                    $agenda = Monitor::bench('merge', function () use (&$agenda) {
                         return $this->em->merge($agenda);
                     });
                     $this->postMerge($agenda);

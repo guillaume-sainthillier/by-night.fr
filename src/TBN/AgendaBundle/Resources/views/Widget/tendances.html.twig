@@ -6,29 +6,29 @@
 {% block body %}
     <div class="text-center">
         <div class="btn-group btn-group-justified" data-toggle="buttons">
-            <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#"}}" 
-               class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.participer ? "btn-primary" : "btn-default"}}" 
+            <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
+               class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.participer ? "btn-primary" : "btn-default" }}"
                data-href="{{ path('tbn_user_participer', {'id' : soiree.id }) }}">
-                <i class="fa fa-check check{{ stats.participer ? '' : ' hidden' }}" ></i>
-                <input type="radio" name="interet" /> J'y serai
+                <i class="fa fa-check check{{ stats.participer ? '' : ' hidden' }}"></i>
+                <input type="radio" name="interet"/> J'y serai
             </a>
-            <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#"}}" 
-               class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.interet ? "btn-primary" : "btn-default"}}" 
+            <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
+               class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.interet ? "btn-primary" : "btn-default" }}"
                data-href="{{ path('tbn_user_interesser', {'id' : soiree.id }) }}">
-                <i class="fa fa-check check{{ stats.interet ? '' : ' hidden' }}" ></i>
-                <input type="radio" name="interet" /> Ça m'interesse
+                <i class="fa fa-check check{{ stats.interet ? '' : ' hidden' }}"></i>
+                <input type="radio" name="interet"/> Ça m'interesse
             </a>
         </div>
-       
+
         <!-- Stats -->
         <div>
-            <strong class="number number-xbig">{{ stats.count_participer }}</strong> 
+            <strong class="number number-xbig">{{ stats.count_participer }}</strong>
             <span class="text-primary">participant{{ stats.count_participer > 1 ? "s" : "" }}</span>
-            <strong class="number number-xbig"> / {{ stats.count_interets }}</strong> 
+            <strong class="number number-xbig"> / {{ stats.count_interets }}</strong>
             <span class="text-primary">interessé{{ stats.count_interets > 1 ? "s" : "" }}</span>
         </div>
         <!-- ./Stats -->
-        <br />
+        <br/>
         <!-- Membres -->
         <div class="tendance">
             {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': stats.tendancesParticipations }) %}
@@ -46,7 +46,9 @@
 {% block footer %}
     {% if stats.membres|length == stats.maxItems %}
         <div class="panel-footer">
-            <button type="button" class="btn btn-primary btn-block more-widget" data-href="{{ path('tbn_agenda_soirees_membres', {'slug': soiree.slug }) }}" >Plus</button>
+            <button type="button" class="btn btn-primary btn-block more-widget"
+                    data-href="{{ path('tbn_agenda_soirees_membres', {'slug': soiree.slug }) }}">Plus
+            </button>
         </div>
     {% endif %}
 {% endblock %}

@@ -13,14 +13,14 @@ class Router extends BaseRouter
     private $cache;
     private $siteManager;
     private $subdomain;
-    
+
     /**
      * Constructor.
      *
      * @param ContainerInterface $container A ContainerInterface instance
-     * @param mixed              $resource  The main resource to load
-     * @param array              $options   An array of options
-     * @param RequestContext     $context   The context
+     * @param mixed $resource The main resource to load
+     * @param array $options An array of options
+     * @param RequestContext $context The context
      */
     public function __construct(ContainerInterface $container, $resource, array $options = array(), RequestContext $context = null)
     {
@@ -34,9 +34,9 @@ class Router extends BaseRouter
     /**
      * Generates a URL from the given parameters.
      *
-     * @param  string  $name       The name of the route
-     * @param  array   $parameters An array of parameters
-     * @param  Boolean $absolute   Whether to generate an absolute URL
+     * @param  string $name The name of the route
+     * @param  array $parameters An array of parameters
+     * @param  Boolean $absolute Whether to generate an absolute URL
      *
      * @return string The generated URL
      *
@@ -44,21 +44,19 @@ class Router extends BaseRouter
      */
     public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
     {
-        if(! $this->subdomain && $this->siteManager->getCurrentSite())
-        {
+        if (!$this->subdomain && $this->siteManager->getCurrentSite()) {
             $this->subdomain = $this->siteManager->getCurrentSite()->getSubdomain();
         }
-            
-        $key = 'routes.'.$name;
+
+        $key = 'routes.' . $name;
         try {
-            if($this->cache->contains($key) && !isset($parameters) && $this->subdomain) {
+            if ($this->cache->contains($key) && !isset($parameters) && $this->subdomain) {
                 $parameters['subdomain'] = $this->subdomain;
             }
             return parent::generate($name, $parameters, $referenceType);
         } catch (MissingMandatoryParametersException $e) {
             $this->cache->save($key, true);
-            if($this->subdomain)
-            {
+            if ($this->subdomain) {
                 $parameters["subdomain"] = $this->subdomain;
                 return parent::generate($name, $parameters, $referenceType);
             }

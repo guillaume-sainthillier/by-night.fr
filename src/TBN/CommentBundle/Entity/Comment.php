@@ -55,11 +55,11 @@ class Comment
      * @ORM\Column(name="date_modification", type="datetime")
      */
     protected $dateModification;
-    
+
     /**
      *
-     * @var User 
-     * 
+     * @var User
+     *
      * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -67,22 +67,22 @@ class Comment
 
     /**
      *
-     * @var Agenda 
-     * 
+     * @var Agenda
+     *
      * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Agenda", inversedBy="commentaires")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $agenda;
-    
+
     /**
      *
-     * @var Comment 
-     * 
+     * @var Comment
+     *
      * @ORM\ManyToOne(targetEntity="TBN\CommentBundle\Entity\Comment", inversedBy="reponses")
      * @ORM\JoinColumn(nullable=true)
      */
     protected $parent;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="parent",cascade={"persist", "remove"})
      * @ORM\OrderBy({"dateCreation" = "DESC"})
@@ -96,20 +96,20 @@ class Comment
         $this->setDateModification(new \DateTime());
 
         $this->setApprouve(true);
-    }    
+    }
 
     /**
      * @ORM\PreUpdate
      */
     public function setUpdateDate()
     {
-       $this->setDateModification(new \DateTime());
+        $this->setDateModification(new \DateTime());
     }
-    
+
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -126,14 +126,14 @@ class Comment
     public function setCommentaire($commentaire)
     {
         $this->commentaire = $commentaire;
-    
+
         return $this;
     }
 
     /**
      * Get commentaire
      *
-     * @return string 
+     * @return string
      */
     public function getCommentaire()
     {
@@ -150,14 +150,14 @@ class Comment
     public function setApprouve($isApprouve)
     {
         $this->isApprouve = $isApprouve;
-    
+
         return $this;
     }
 
     /**
      * Get isApprouve
      *
-     * @return boolean 
+     * @return boolean
      */
     public function isApprouve()
     {
@@ -174,14 +174,14 @@ class Comment
     public function setDateCreation($dateCreation)
     {
         $this->dateCreation = $dateCreation;
-    
+
         return $this;
     }
 
     /**
      * Get dateCreation
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateCreation()
     {
@@ -198,14 +198,14 @@ class Comment
     public function setDateModification($dateModification)
     {
         $this->dateModification = $dateModification;
-    
+
         return $this;
     }
 
     /**
      * Get dateModification
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateModification()
     {
@@ -223,7 +223,7 @@ class Comment
     public function setUser(\TBN\UserBundle\Entity\User $user)
     {
         $this->user = $user;
-    
+
         return $this;
     }
 
@@ -231,7 +231,7 @@ class Comment
     /**
      * Get user
      *
-     * @return \TBN\UserBundle\Entity\User 
+     * @return \TBN\UserBundle\Entity\User
      */
     public function getUser()
     {
@@ -248,14 +248,14 @@ class Comment
     public function setAgenda(\TBN\AgendaBundle\Entity\Agenda $agenda)
     {
         $this->agenda = $agenda;
-    
+
         return $this;
     }
 
     /**
      * Get agenda
      *
-     * @return \TBN\AgendaBundle\Entity\Agenda 
+     * @return \TBN\AgendaBundle\Entity\Agenda
      */
     public function getAgenda()
     {
@@ -272,14 +272,14 @@ class Comment
     public function setParent(\TBN\CommentBundle\Entity\Comment $parent)
     {
         $this->parent = $parent;
-    
+
         return $this;
     }
 
     /**
      * Get parent
      *
-     * @return \TBN\CommentBundle\Entity\Comment 
+     * @return \TBN\CommentBundle\Entity\Comment
      */
     public function getParent()
     {
@@ -296,7 +296,7 @@ class Comment
     public function addReponse(\TBN\CommentBundle\Entity\Comment $reponses)
     {
         $this->reponses[] = $reponses;
-    
+
         return $this;
     }
 
@@ -313,7 +313,7 @@ class Comment
     /**
      * Get reponses
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getReponses()
     {

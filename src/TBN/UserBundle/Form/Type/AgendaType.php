@@ -36,7 +36,7 @@ class AgendaType extends AbstractType
                     "placeholder" => "Décrivez votre événement...",
                 ]
             ])
-            ->add('file',  FileType::class, [
+            ->add('file', FileType::class, [
                 "label" => "Affiche / Flyer",
                 "required" => false,
                 'image_path' => 'webPath',

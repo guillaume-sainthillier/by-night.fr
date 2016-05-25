@@ -64,11 +64,9 @@ class RegistrationController extends BaseController
 
             $userManager->updateUser($user);
 
-            if($request->isXmlHttpRequest())
-            {
+            if ($request->isXmlHttpRequest()) {
                 $response = new JsonResponse(["success" => true]);
-            }else
-            {
+            } else {
                 $url = $this->container->get('router')->generate('fos_user_registration_confirmed');
                 $response = new RedirectResponse($url);
             }

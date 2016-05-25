@@ -1,72 +1,62 @@
 var countLoads = 0;
 var isLoading = false;
 
-$(function ()
-{
+$(function () {
     init_criteres();
     init_shorcut_date();
     load_infinite_scroll();
     init_soirees();
 });
 
-function init_soirees(selector)
-{
+function init_soirees(selector) {
     init_pagination();
 }
 
-function load_infinite_scroll()
-{
-    var marginScroll    = 250;
-    var countStep       = 2;
-    
-    $(window).scroll(function()
-    {
-        if(countLoads < countStep || isLoading)
-        {
+function load_infinite_scroll() {
+    var marginScroll = 250;
+    var countStep = 2;
+
+    $(window).scroll(function () {
+        if (countLoads < countStep || isLoading) {
             return;
         }
-        
-        if($(window).scrollTop() + $(window).height() > $('#paginate').offset().top - marginScroll)
-        {
+
+        if ($(window).scrollTop() + $(window).height() > $('#paginate').offset().top - marginScroll) {
             isLoading = true;
             $('#paginate').trigger('click');
         }
     });
 }
 
-function init_pagination()
-{
-    $('#paginate').click(function(e)
-    {
+function init_pagination() {
+    $('#paginate').click(function (e) {
         isLoading = true;
         countLoads++;
-        $(this).attr('disabled', true).html($('<i>').addClass('fa fa-spin fa-spinner'));        
-        
-        var self        = $(this);
-        var container   = self.parent();
-        var page        = self.data('next');
-        var form        = $('form[name="search"]');
-        var pageInput   = $('#search_page');
-        
+        $(this).attr('disabled', true).html($('<i>').addClass('fa fa-spin fa-spinner'));
+
+        var self = $(this);
+        var container = self.parent();
+        var page = self.data('next');
+        var form = $('form[name="search"]');
+        var pageInput = $('#search_page');
+
         pageInput.val(page);
-        $.post(form.attr('action'), form.serialize()).done(function(html)
-        {
+        $.post(form.attr('action'), form.serialize()).done(function (html) {
             isLoading = false;
             self.replaceWith(html);
             App.initComponents(container);
             init_soirees(container);
         });
-        
+
         e.preventDefault();
         return false;
     });
 }
 
 /**
- * 
+ *
  */
-function init_criteres()
-{
+function init_criteres() {
     var options = {
         "css_hidden": "cache",
         "css_initial_hidden": 'hidden',
@@ -78,34 +68,28 @@ function init_criteres()
         "selector_main_block": ".block_criteres",
         "duration": 300
     };
-    
+
     //Bon bloc indigeste :)
-    var block = $(options.selector_btn_criteres).click(function ()
-    {
-        if (block.hasClass(options.css_hidden))
-        {
-            $(this).find(options.selector_icon).removeClass(options.css_icon_class_open).addClass(options.css_icon_class_close);
-            block.show(options.duration, function ()
-            {
-                $(this).removeClass(options.css_hidden);
-            });
-        } else
-        {
-            $(this).find(options.selector_icon).removeClass(options.css_icon_class_close).addClass(options.css_icon_class_open);
-            block.hide(options.duration, function ()
-            {
-                $(this).addClass(options.css_hidden);
-            });
-        }
-    })
-    .closest(options.selector_main_block)
-    .find(options.selector_block_criteres);
-    
+    var block = $(options.selector_btn_criteres).click(function () {
+            if (block.hasClass(options.css_hidden)) {
+                $(this).find(options.selector_icon).removeClass(options.css_icon_class_open).addClass(options.css_icon_class_close);
+                block.show(options.duration, function () {
+                    $(this).removeClass(options.css_hidden);
+                });
+            } else {
+                $(this).find(options.selector_icon).removeClass(options.css_icon_class_close).addClass(options.css_icon_class_open);
+                block.hide(options.duration, function () {
+                    $(this).addClass(options.css_hidden);
+                });
+            }
+        })
+        .closest(options.selector_main_block)
+        .find(options.selector_block_criteres);
+
     //Pas de besoins d'ouvrir la recherche avancée
-    if(block.hasClass(options.css_hidden))
-    {
+    if (block.hasClass(options.css_hidden)) {
         block.hide()
-        .removeClass(options.css_initial_hidden);
+            .removeClass(options.css_initial_hidden);
     }
 }
 
@@ -113,10 +97,8 @@ function init_criteres()
  * Initialise les boutons WE, cette semaine et ce mois
  * @returns {undefined}
  */
-function init_shorcut_date()
-{
-    $("select.shorcuts_date").unbind("change").change(function ()
-    {
+function init_shorcut_date() {
+    $("select.shorcuts_date").unbind("change").change(function () {
         var selected = $(this).find("option:selected");
         $("#search_du").val(selected.data("date-debut") || "");
         $("#search_au").val(selected.data("date-fin") || "");

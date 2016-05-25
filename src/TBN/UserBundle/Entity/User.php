@@ -9,14 +9,14 @@ use JMS\Serializer\Annotation\Expose;
 
 /**
  * User
- * 
+ *
  * @ORM\Table(name="User", indexes={@ORM\Index(name="user_nom_idx", columns={"nom"})})
  * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\UserRepository")
  * @ExclusionPolicy("all")
  */
 class User extends BaseUser
 {
-     /**
+    /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -31,7 +31,7 @@ class User extends BaseUser
      * @Expose
      */
     protected $nom;
-    
+
     /**
      * @var string
      *
@@ -39,7 +39,7 @@ class User extends BaseUser
      * @Expose
      */
     protected $firstname;
- 
+
     /**
      * @var string
      *
@@ -47,7 +47,7 @@ class User extends BaseUser
      * @Expose
      */
     protected $lastname;
-    
+
     /**
      * @var string
      *
@@ -55,36 +55,36 @@ class User extends BaseUser
      * @Expose
      */
     protected $description;
-    
+
     /**
-    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Agenda", mappedBy="user")
-    * @ORM\OrderBy({"dateModification" = "DESC"})
-    */
+     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Agenda", mappedBy="user")
+     * @ORM\OrderBy({"dateModification" = "DESC"})
+     */
     protected $evenements;
- 
+
     /**
      * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\UserInfo", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     protected $info;
-    
+
     /**
-    * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda")
-    */
+     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda")
+     */
     protected $calendriers;
-    
+
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
-    * @ORM\JoinColumn(nullable=false)
-    * @Expose
-    */
+     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
+     * @ORM\JoinColumn(nullable=false)
+     * @Expose
+     */
     protected $site;
-    
+
     /**
      * @ORM\Column(name="from_login", type="boolean", nullable=true)
      */
     protected $from_login;
-    
+
     /**
      * @ORM\Column(name="date_creation", type="datetime", nullable=true)
      */
@@ -96,46 +96,42 @@ class User extends BaseUser
     public function __construct()
     {
         parent::__construct();
-        
+
         $this->setFromLogin(false);
         $this->date_creation = new \DateTime();
         $this->evenements = new \Doctrine\Common\Collections\ArrayCollection();
         $this->calendriers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->info = new UserInfo();
     }
-    
-      
+
+
     public function getProfileDefault()
-    {    
+    {
         $info = $this->getInfo();
 
-        if($info !== null)
-        {
-            if($info->getFacebookProfilePicture() !== null)
-            {
+        if ($info !== null) {
+            if ($info->getFacebookProfilePicture() !== null) {
                 return $info->getFacebookProfilePicture();
-            }elseif($info->getTwitterProfilePicture() !== null)
-            {
+            } elseif ($info->getTwitterProfilePicture() !== null) {
                 return $info->getTwitterProfilePicture();
-            }elseif($info->getGoogleProfilePicture() !== null)
-            {
+            } elseif ($info->getGoogleProfilePicture() !== null) {
                 return $info->getGoogleProfilePicture();
             }
-        }        
-        
+        }
+
         return null;
     }
-    
-    public function getUsername() {
+
+    public function getUsername()
+    {
         return ucfirst(parent::getUsername());
     }
 
-    
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -158,7 +154,7 @@ class User extends BaseUser
     /**
      * Get nom
      *
-     * @return string 
+     * @return string
      */
     public function getNom()
     {
@@ -181,7 +177,7 @@ class User extends BaseUser
     /**
      * Get firstname
      *
-     * @return string 
+     * @return string
      */
     public function getFirstname()
     {
@@ -204,7 +200,7 @@ class User extends BaseUser
     /**
      * Get lastname
      *
-     * @return string 
+     * @return string
      */
     public function getLastname()
     {
@@ -227,7 +223,7 @@ class User extends BaseUser
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -250,7 +246,7 @@ class User extends BaseUser
     /**
      * Get from_login
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getFromLogin()
     {
@@ -273,7 +269,7 @@ class User extends BaseUser
     /**
      * Get date_creation
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateCreation()
     {
@@ -306,7 +302,7 @@ class User extends BaseUser
     /**
      * Get evenements
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getEvenements()
     {
@@ -329,7 +325,7 @@ class User extends BaseUser
     /**
      * Get info
      *
-     * @return \TBN\UserBundle\Entity\UserInfo 
+     * @return \TBN\UserBundle\Entity\UserInfo
      */
     public function getInfo()
     {
@@ -362,7 +358,7 @@ class User extends BaseUser
     /**
      * Get calendriers
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getCalendriers()
     {
@@ -385,7 +381,7 @@ class User extends BaseUser
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site 
+     * @return \TBN\MainBundle\Entity\Site
      */
     public function getSite()
     {

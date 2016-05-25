@@ -1,19 +1,18 @@
-
 {% block hwi_oauth_content %}
     {% if error is defined and error %}
         <span>{{ error }}</span>
     {% endif %}
-    
+
     <div class="row text-center">
         <div class="col-md-6">
             <a class="social facebook" href="{{ hwi_oauth_login_url('facebook') }}">
-                <i class="fa fa-facebook"></i> 
+                <i class="fa fa-facebook"></i>
                 Connexion avec Facebook
             </a>
-        </div>            
+        </div>
         <div class="col-md-6">
             <a class="social google" href="{{ hwi_oauth_login_url('google') }}">
-                <i class="fa fa-google-plus"></i> 
+                <i class="fa fa-google-plus"></i>
                 Connexion avec Google+
             </a>
         </div>

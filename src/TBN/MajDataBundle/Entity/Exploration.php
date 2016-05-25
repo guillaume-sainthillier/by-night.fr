@@ -45,15 +45,15 @@ class Exploration
     private $blackListed;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
-    * @ORM\JoinColumn(nullable=false)
-    */
+     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
+     * @ORM\JoinColumn(nullable=false)
+     */
     protected $site;
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -70,7 +70,7 @@ class Exploration
     public function setFacebookId($facebookId)
     {
         $this->facebookId = $facebookId;
-    
+
         return $this;
     }
 
@@ -94,7 +94,7 @@ class Exploration
     public function setLastUpdated($lastUpdated)
     {
         $this->lastUpdated = $lastUpdated;
-    
+
         return $this;
     }
 
@@ -118,7 +118,7 @@ class Exploration
     public function setBlackListed($blackListed)
     {
         $this->blackListed = $blackListed;
-    
+
         return $this;
     }
 
@@ -142,7 +142,7 @@ class Exploration
     public function setReason($reason)
     {
         $this->reason = $reason;
-    
+
         return $this;
     }
 
@@ -166,7 +166,7 @@ class Exploration
     public function setSite(\TBN\MainBundle\Entity\Site $site)
     {
         $this->site = $site;
-    
+
         return $this;
     }
 

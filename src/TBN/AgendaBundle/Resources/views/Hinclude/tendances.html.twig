@@ -1,14 +1,14 @@
 <div class="widget_item">
-    <strong class="number number-xbig">{{ count_participer }}</strong> 
+    <strong class="number number-xbig">{{ count_participer }}</strong>
     <span class="text-primary">participant{{ count_participer > 1 ? "s" : "" }}</span>
-    <strong class="number number-xbig"> / {{ count_interets }}</strong> 
+    <strong class="number number-xbig"> / {{ count_interets }}</strong>
     <span class="text-primary">interessé{{ count_interets > 1 ? "s" : "" }}</span>
 </div>
 
 <div class="tendance">
     {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': tendancesParticipations }) %}
 </div>
-<br />
+<br/>
 <div class="tendance">
     {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': tendancesInterets }) %}
 </div>

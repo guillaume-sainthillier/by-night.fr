@@ -9,28 +9,29 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @author Guillaume S. <guillaume@sainthillier.fr>
  */
-class SearchAgenda {
-    
+class SearchAgenda
+{
+
     /**
-    *
-    * @var \DateTime
-    * @Assert\Date()
-    */
+     *
+     * @var \DateTime
+     * @Assert\Date()
+     */
     protected $du;
-    
+
     /**
      *
      * @var \DateTime
      * @Assert\Date()
      */
     protected $au;
-    
+
     /**
      *
      * @var array
      */
     protected $type_manifestation;
-    
+
     /**
      *
      * @var array
@@ -42,7 +43,7 @@ class SearchAgenda {
      * @var array
      */
     protected $commune;
-    
+
     /**
      *
      * @var string
@@ -54,11 +55,11 @@ class SearchAgenda {
      * @var integer
      */
     protected $page;
-    
-    
+
+
     public function __construct()
     {
-	$this->page = 1;
+        $this->page = 1;
         $this->du = new \DateTime;
     }
 
@@ -66,67 +67,81 @@ class SearchAgenda {
     {
         return array_unique(array_filter(explode(" ", $this->getTerm())));
     }
-    
-    public function getDu() {
+
+    public function getDu()
+    {
         return $this->du;
     }
 
-    public function getAu() {
+    public function getAu()
+    {
         return $this->au;
     }
 
-    public function getTypeManifestation() {
+    public function getTypeManifestation()
+    {
         return $this->type_manifestation;
     }
 
-    public function getLieux() {
+    public function getLieux()
+    {
         return $this->lieux;
     }
 
-    public function getTerm() {
+    public function getTerm()
+    {
         return $this->term;
     }
 
-    public function setDu(\DateTime $du = null) {
+    public function setDu(\DateTime $du = null)
+    {
         $this->du = $du;
         return $this;
     }
 
-    public function setAu(\DateTime $au = null) {
+    public function setAu(\DateTime $au = null)
+    {
         $this->au = $au;
         return $this;
     }
 
-    public function setTypeManifestation($type_manifestation) {
+    public function setTypeManifestation($type_manifestation)
+    {
         $this->type_manifestation = $type_manifestation;
         return $this;
     }
 
-    public function setLieux($lieux) {
+    public function setLieux($lieux)
+    {
         $this->lieux = $lieux;
         return $this;
     }
 
-    public function setTerm($term) {
+    public function setTerm($term)
+    {
         $this->term = $term;
         return $this;
     }
 
-    public function getCommune() {
+    public function getCommune()
+    {
         return $this->commune;
     }
 
-    public function setCommune($commune) {
+    public function setCommune($commune)
+    {
         $this->commune = $commune;
         return $this;
     }
 
-    public function getPage() {
-	return $this->page;
+    public function getPage()
+    {
+        return $this->page;
     }
 
-    public function setPage($page) {
-	$this->page = $page;
-	return $this;
+    public function setPage($page)
+    {
+        $this->page = $page;
+        return $this;
     }
 }

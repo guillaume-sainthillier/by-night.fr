@@ -15,13 +15,13 @@ class CalendrierRepository extends EntityRepository
 {
     public function getLastDateParticipation(Agenda $soiree)
     {
-	return $this->_em
-        ->createQueryBuilder()
-        ->select('MAX(c.lastDate)')
-        ->from('TBNAgendaBundle:Calendrier',"c")
-        ->where("c.agenda = :agenda")
-        ->setParameters([":agenda" => $soiree])
-        ->getQuery()
-        ->getSingleScalarResult();
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('MAX(c.lastDate)')
+            ->from('TBNAgendaBundle:Calendrier', "c")
+            ->where("c.agenda = :agenda")
+            ->setParameters([":agenda" => $soiree])
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

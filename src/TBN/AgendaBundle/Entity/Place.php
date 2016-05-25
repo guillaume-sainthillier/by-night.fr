@@ -82,46 +82,48 @@ class Place
      * @ORM\Column(name="url", type="string", length=255, nullable=true)
      */
     private $url;
-    
+
     /**
-    * @ORM\Column(name="ville", type="string", length=127, nullable=true)
-    * @Expose
-    */
+     * @ORM\Column(name="ville", type="string", length=127, nullable=true)
+     * @Expose
+     */
     protected $ville;
-    
+
     /**
-    * @ORM\Column(name="code_postal", type="string", length=7, nullable=true)
-    * @Expose
-    */
+     * @ORM\Column(name="code_postal", type="string", length=7, nullable=true)
+     * @Expose
+     */
     protected $codePostal;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
-    * @ORM\JoinColumn(nullable=false)
-    */
+     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
+     * @ORM\JoinColumn(nullable=false)
+     */
     protected $site;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="facebook_id", type="string", length=256, nullable=true)
      */
     protected $facebookId;
-    
-    
-    public function setId($id) {
+
+
+    public function setId($id)
+    {
         $this->id = $id;
         return $this;
     }
 
-        
+
     public function toJSON()
     {
         return json_encode($this->toArray());
     }
-    
-    public function toArray() {
-        
+
+    public function toArray()
+    {
+
         return [
             'nom' => $this->nom,
             'rue' => $this->rue,
@@ -134,7 +136,7 @@ class Place
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -157,7 +159,7 @@ class Place
     /**
      * Get rue
      *
-     * @return string 
+     * @return string
      */
     public function getRue()
     {
@@ -180,7 +182,7 @@ class Place
     /**
      * Get latitude
      *
-     * @return float 
+     * @return float
      */
     public function getLatitude()
     {
@@ -203,7 +205,7 @@ class Place
     /**
      * Get longitude
      *
-     * @return float 
+     * @return float
      */
     public function getLongitude()
     {
@@ -226,7 +228,7 @@ class Place
     /**
      * Get nom
      *
-     * @return string 
+     * @return string
      */
     public function getNom()
     {
@@ -249,7 +251,7 @@ class Place
     /**
      * Get slug
      *
-     * @return string 
+     * @return string
      */
     public function getSlug()
     {
@@ -272,7 +274,7 @@ class Place
     /**
      * Get path
      *
-     * @return string 
+     * @return string
      */
     public function getPath()
     {
@@ -295,7 +297,7 @@ class Place
     /**
      * Get url
      *
-     * @return string 
+     * @return string
      */
     public function getUrl()
     {
@@ -318,7 +320,7 @@ class Place
     /**
      * Get ville
      *
-     * @return string 
+     * @return string
      */
     public function getVille()
     {
@@ -341,7 +343,7 @@ class Place
     /**
      * Get codePostal
      *
-     * @return string 
+     * @return string
      */
     public function getCodePostal()
     {
@@ -364,7 +366,7 @@ class Place
     /**
      * Get facebookId
      *
-     * @return string 
+     * @return string
      */
     public function getFacebookId()
     {
@@ -387,7 +389,7 @@ class Place
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site 
+     * @return \TBN\MainBundle\Entity\Site
      */
     public function getSite()
     {

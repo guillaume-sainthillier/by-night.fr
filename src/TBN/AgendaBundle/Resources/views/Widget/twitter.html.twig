@@ -1,33 +1,33 @@
 {% extends "TBNAgendaBundle:Widget:template.html.twig" %}
 
-{% block titre %}Restez informé avec @{{ siteInfo.twitterNickname}}{% endblock %}
+{% block titre %}Restez informé avec @{{ siteInfo.twitterNickname }}{% endblock %}
 {% block icone %}fa-twitter{% endblock %}
 {% block widget_class %}panel-twitter{% endblock %}
 {% block widget_body_class %}no-padding padding-left-10{% endblock %}
 {% block body %}
-<script>window.twttr = (function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0],
-    t = window.twttr || {};
-  if (d.getElementById(id)) return t;
-  js = d.createElement(s);
-  js.id = id;
-  js.src = "https://platform.twitter.com/widgets.js";
-  fjs.parentNode.insertBefore(js, fjs);
- 
-  t._e = [];
-  t.ready = function(f) {
-    t._e.push(f);
-  };
- 
-  return t;
-}(document, "script", "twitter-wjs"));</script>
-<div class="text-center">
-    <a class="twitter-timeline" 
-        href="{{ site.twitterURLWidget }}" 
-        data-widget-id="{{ site.twitterIdWidget }}"
-        data-chrome="transparent noheader">
-        Restez informé 
-        <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
-    </a>
-</div>
+    <script>window.twttr = (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0],
+                    t = window.twttr || {};
+            if (d.getElementById(id)) return t;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "https://platform.twitter.com/widgets.js";
+            fjs.parentNode.insertBefore(js, fjs);
+
+            t._e = [];
+            t.ready = function (f) {
+                t._e.push(f);
+            };
+
+            return t;
+        }(document, "script", "twitter-wjs"));</script>
+    <div class="text-center">
+        <a class="twitter-timeline"
+           href="{{ site.twitterURLWidget }}"
+           data-widget-id="{{ site.twitterIdWidget }}"
+           data-chrome="transparent noheader">
+            Restez informé
+            <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
+        </a>
+    </div>
 {% endblock %}

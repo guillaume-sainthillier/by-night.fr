@@ -1,1 +1,429 @@
-.tt-hint,.tt-query,.typeahead{width:100%;-webkit-border-radius:8px;-moz-border-radius:8px;border-radius:8px;outline:0}.typeahead{background-color:#fff}.typeahead:focus{border:2px solid #0097cf}.tt-query{-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.075);-moz-box-shadow:inset 0 1px 1px rgba(0,0,0,.075);box-shadow:inset 0 1px 1px rgba(0,0,0,.075)}.tt-hint{color:#999}.tt-dropdown-menu{width:100%;margin-top:12px;padding:8px 0;background-color:#fff;border:1px solid #ccc;border:1px solid rgba(0,0,0,.2);-webkit-border-radius:8px;-moz-border-radius:8px;border-radius:8px;-webkit-box-shadow:0 5px 10px rgba(0,0,0,.2);-moz-box-shadow:0 5px 10px rgba(0,0,0,.2);box-shadow:0 5px 10px rgba(0,0,0,.2)}.tt-suggestion{padding:3px 20px;font-size:18px;line-height:24px}.tt-suggestion.tt-cursor{color:#fff;cursor:pointer}.tt-suggestion p{margin:0}.tab-content{padding:10px}.bloc_config{margin-top:40px}.no_margin{margin:0}.mon_evenement #map{min-height:300px}.mon_evenement h2{margin-bottom:40px}.mon_evenement h2 .label{margin-right:10px}.mon_evenement h2 .underline{border-bottom:1px dotted #337ab7}.note-editor .btn{display:inline-block;font-weight:400;text-align:center;vertical-align:middle;touch-action:manipulation;cursor:pointer;background-image:none;border:1px solid transparent;white-space:nowrap;padding:6px 12px;font-size:14px;line-height:1.42857143;border-radius:4px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.note-editor .btn.active.focus,.note-editor .btn.active:focus,.note-editor .btn.focus,.note-editor .btn:active.focus,.note-editor .btn:active:focus,.note-editor .btn:focus{outline:dotted thin;outline:-webkit-focus-ring-color auto 5px;outline-offset:-2px}.note-editor .btn.focus,.note-editor .btn:focus,.note-editor .btn:hover{color:#333;text-decoration:none}.note-editor .btn.active,.note-editor .btn:active{outline:0;background-image:none;-webkit-box-shadow:inset 0 3px 5px rgba(0,0,0,.125);box-shadow:inset 0 3px 5px rgba(0,0,0,.125)}.note-editor .btn.disabled,.note-editor .btn[disabled],fieldset[disabled] .note-editor .btn{cursor:not-allowed;opacity:.65;filter:alpha(opacity=65);-webkit-box-shadow:none;box-shadow:none}a.note-editor .btn.disabled,fieldset[disabled] a.note-editor .btn{pointer-events:none}.note-editor .btn-default{color:#333;background-color:#fff}.note-editor .btn-default.focus,.note-editor .btn-default:focus{color:#333;background-color:#e6e6e6;border-color:#8c8c8c}.note-editor .btn-default.active,.note-editor .btn-default:active,.note-editor .btn-default:hover,.open>.dropdown-toggle.note-editor .btn-default{color:#333;background-color:#e6e6e6;border-color:#adadad}.note-editor .btn-default.active.focus,.note-editor .btn-default.active:focus,.note-editor .btn-default.active:hover,.note-editor .btn-default:active.focus,.note-editor .btn-default:active:focus,.note-editor .btn-default:active:hover,.open>.dropdown-toggle.note-editor .btn-default.focus,.open>.dropdown-toggle.note-editor .btn-default:focus,.open>.dropdown-toggle.note-editor .btn-default:hover{color:#333;background-color:#d4d4d4;border-color:#8c8c8c}.note-editor .btn-default.active,.note-editor .btn-default:active,.open>.dropdown-toggle.note-editor .btn-default{background-image:none}.note-editor .btn-default.disabled,.note-editor .btn-default.disabled.active,.note-editor .btn-default.disabled.focus,.note-editor .btn-default.disabled:active,.note-editor .btn-default.disabled:focus,.note-editor .btn-default.disabled:hover,.note-editor .btn-default[disabled],.note-editor .btn-default[disabled].active,.note-editor .btn-default[disabled].focus,.note-editor .btn-default[disabled]:active,.note-editor .btn-default[disabled]:focus,.note-editor .btn-default[disabled]:hover,fieldset[disabled] .note-editor .btn-default,fieldset[disabled] .note-editor .btn-default.active,fieldset[disabled] .note-editor .btn-default.focus,fieldset[disabled] .note-editor .btn-default:active,fieldset[disabled] .note-editor .btn-default:focus,fieldset[disabled] .note-editor .btn-default:hover{background-color:#fff;border-color:#ccc}.note-editor .btn-default .badge{color:#fff;background-color:#333}.note-editor .btn-primary{color:#fff;background-color:#337ab7;border-color:#2e6da4}.note-editor .btn-primary.focus,.note-editor .btn-primary:focus{color:#fff;background-color:#286090;border-color:#122b40}.note-editor .btn-primary.active,.note-editor .btn-primary:active,.note-editor .btn-primary:hover,.open>.dropdown-toggle.note-editor .btn-primary{color:#fff;background-color:#286090;border-color:#204d74}.note-editor .btn-primary.active.focus,.note-editor .btn-primary.active:focus,.note-editor .btn-primary.active:hover,.note-editor .btn-primary:active.focus,.note-editor .btn-primary:active:focus,.note-editor .btn-primary:active:hover,.open>.dropdown-toggle.note-editor .btn-primary.focus,.open>.dropdown-toggle.note-editor .btn-primary:focus,.open>.dropdown-toggle.note-editor .btn-primary:hover{color:#fff;background-color:#204d74;border-color:#122b40}.note-editor .btn-primary.active,.note-editor .btn-primary:active,.open>.dropdown-toggle.note-editor .btn-primary{background-image:none}.note-editor .btn-primary.disabled,.note-editor .btn-primary.disabled.active,.note-editor .btn-primary.disabled.focus,.note-editor .btn-primary.disabled:active,.note-editor .btn-primary.disabled:focus,.note-editor .btn-primary.disabled:hover,.note-editor .btn-primary[disabled],.note-editor .btn-primary[disabled].active,.note-editor .btn-primary[disabled].focus,.note-editor .btn-primary[disabled]:active,.note-editor .btn-primary[disabled]:focus,.note-editor .btn-primary[disabled]:hover,fieldset[disabled] .note-editor .btn-primary,fieldset[disabled] .note-editor .btn-primary.active,fieldset[disabled] .note-editor .btn-primary.focus,fieldset[disabled] .note-editor .btn-primary:active,fieldset[disabled] .note-editor .btn-primary:focus,fieldset[disabled] .note-editor .btn-primary:hover{background-color:#337ab7;border-color:#2e6da4}.note-editor .btn-primary .badge{color:#337ab7;background-color:#fff}.note-editor .btn-success{color:#fff;background-color:#5cb85c;border-color:#4cae4c}.note-editor .btn-success.focus,.note-editor .btn-success:focus{color:#fff;background-color:#449d44;border-color:#255625}.note-editor .btn-success.active,.note-editor .btn-success:active,.note-editor .btn-success:hover,.open>.dropdown-toggle.note-editor .btn-success{color:#fff;background-color:#449d44;border-color:#398439}.note-editor .btn-success.active.focus,.note-editor .btn-success.active:focus,.note-editor .btn-success.active:hover,.note-editor .btn-success:active.focus,.note-editor .btn-success:active:focus,.note-editor .btn-success:active:hover,.open>.dropdown-toggle.note-editor .btn-success.focus,.open>.dropdown-toggle.note-editor .btn-success:focus,.open>.dropdown-toggle.note-editor .btn-success:hover{color:#fff;background-color:#398439;border-color:#255625}.note-editor .btn-success.active,.note-editor .btn-success:active,.open>.dropdown-toggle.note-editor .btn-success{background-image:none}.note-editor .btn-success.disabled,.note-editor .btn-success.disabled.active,.note-editor .btn-success.disabled.focus,.note-editor .btn-success.disabled:active,.note-editor .btn-success.disabled:focus,.note-editor .btn-success.disabled:hover,.note-editor .btn-success[disabled],.note-editor .btn-success[disabled].active,.note-editor .btn-success[disabled].focus,.note-editor .btn-success[disabled]:active,.note-editor .btn-success[disabled]:focus,.note-editor .btn-success[disabled]:hover,fieldset[disabled] .note-editor .btn-success,fieldset[disabled] .note-editor .btn-success.active,fieldset[disabled] .note-editor .btn-success.focus,fieldset[disabled] .note-editor .btn-success:active,fieldset[disabled] .note-editor .btn-success:focus,fieldset[disabled] .note-editor .btn-success:hover{background-color:#5cb85c;border-color:#4cae4c}.note-editor .btn-success .badge{color:#5cb85c;background-color:#fff}.note-editor .btn-info{color:#fff;background-color:#5bc0de;border-color:#46b8da}.note-editor .btn-info.focus,.note-editor .btn-info:focus{color:#fff;background-color:#31b0d5;border-color:#1b6d85}.note-editor .btn-info.active,.note-editor .btn-info:active,.note-editor .btn-info:hover,.open>.dropdown-toggle.note-editor .btn-info{color:#fff;background-color:#31b0d5;border-color:#269abc}.note-editor .btn-info.active.focus,.note-editor .btn-info.active:focus,.note-editor .btn-info.active:hover,.note-editor .btn-info:active.focus,.note-editor .btn-info:active:focus,.note-editor .btn-info:active:hover,.open>.dropdown-toggle.note-editor .btn-info.focus,.open>.dropdown-toggle.note-editor .btn-info:focus,.open>.dropdown-toggle.note-editor .btn-info:hover{color:#fff;background-color:#269abc;border-color:#1b6d85}.note-editor .btn-info.active,.note-editor .btn-info:active,.open>.dropdown-toggle.note-editor .btn-info{background-image:none}.note-editor .btn-info.disabled,.note-editor .btn-info.disabled.active,.note-editor .btn-info.disabled.focus,.note-editor .btn-info.disabled:active,.note-editor .btn-info.disabled:focus,.note-editor .btn-info.disabled:hover,.note-editor .btn-info[disabled],.note-editor .btn-info[disabled].active,.note-editor .btn-info[disabled].focus,.note-editor .btn-info[disabled]:active,.note-editor .btn-info[disabled]:focus,.note-editor .btn-info[disabled]:hover,fieldset[disabled] .note-editor .btn-info,fieldset[disabled] .note-editor .btn-info.active,fieldset[disabled] .note-editor .btn-info.focus,fieldset[disabled] .note-editor .btn-info:active,fieldset[disabled] .note-editor .btn-info:focus,fieldset[disabled] .note-editor .btn-info:hover{background-color:#5bc0de;border-color:#46b8da}.note-editor .btn-info .badge{color:#5bc0de;background-color:#fff}.note-editor .btn-warning{color:#fff;background-color:#f0ad4e;border-color:#eea236}.note-editor .btn-warning.focus,.note-editor .btn-warning:focus{color:#fff;background-color:#ec971f;border-color:#985f0d}.note-editor .btn-warning.active,.note-editor .btn-warning:active,.note-editor .btn-warning:hover,.open>.dropdown-toggle.note-editor .btn-warning{color:#fff;background-color:#ec971f;border-color:#d58512}.note-editor .btn-warning.active.focus,.note-editor .btn-warning.active:focus,.note-editor .btn-warning.active:hover,.note-editor .btn-warning:active.focus,.note-editor .btn-warning:active:focus,.note-editor .btn-warning:active:hover,.open>.dropdown-toggle.note-editor .btn-warning.focus,.open>.dropdown-toggle.note-editor .btn-warning:focus,.open>.dropdown-toggle.note-editor .btn-warning:hover{color:#fff;background-color:#d58512;border-color:#985f0d}.note-editor .btn-warning.active,.note-editor .btn-warning:active,.open>.dropdown-toggle.note-editor .btn-warning{background-image:none}.note-editor .btn-warning.disabled,.note-editor .btn-warning.disabled.active,.note-editor .btn-warning.disabled.focus,.note-editor .btn-warning.disabled:active,.note-editor .btn-warning.disabled:focus,.note-editor .btn-warning.disabled:hover,.note-editor .btn-warning[disabled],.note-editor .btn-warning[disabled].active,.note-editor .btn-warning[disabled].focus,.note-editor .btn-warning[disabled]:active,.note-editor .btn-warning[disabled]:focus,.note-editor .btn-warning[disabled]:hover,fieldset[disabled] .note-editor .btn-warning,fieldset[disabled] .note-editor .btn-warning.active,fieldset[disabled] .note-editor .btn-warning.focus,fieldset[disabled] .note-editor .btn-warning:active,fieldset[disabled] .note-editor .btn-warning:focus,fieldset[disabled] .note-editor .btn-warning:hover{background-color:#f0ad4e;border-color:#eea236}.note-editor .btn-warning .badge{color:#f0ad4e;background-color:#fff}.note-editor .btn-danger{color:#fff;background-color:#d9534f;border-color:#d43f3a}.note-editor .btn-danger.focus,.note-editor .btn-danger:focus{color:#fff;background-color:#c9302c;border-color:#761c19}.note-editor .btn-danger.active,.note-editor .btn-danger:active,.note-editor .btn-danger:hover,.open>.dropdown-toggle.note-editor .btn-danger{color:#fff;background-color:#c9302c;border-color:#ac2925}.note-editor .btn-danger.active.focus,.note-editor .btn-danger.active:focus,.note-editor .btn-danger.active:hover,.note-editor .btn-danger:active.focus,.note-editor .btn-danger:active:focus,.note-editor .btn-danger:active:hover,.open>.dropdown-toggle.note-editor .btn-danger.focus,.open>.dropdown-toggle.note-editor .btn-danger:focus,.open>.dropdown-toggle.note-editor .btn-danger:hover{color:#fff;background-color:#ac2925;border-color:#761c19}.note-editor .btn-danger.active,.note-editor .btn-danger:active,.open>.dropdown-toggle.note-editor .btn-danger{background-image:none}.note-editor .btn-danger.disabled,.note-editor .btn-danger.disabled.active,.note-editor .btn-danger.disabled.focus,.note-editor .btn-danger.disabled:active,.note-editor .btn-danger.disabled:focus,.note-editor .btn-danger.disabled:hover,.note-editor .btn-danger[disabled],.note-editor .btn-danger[disabled].active,.note-editor .btn-danger[disabled].focus,.note-editor .btn-danger[disabled]:active,.note-editor .btn-danger[disabled]:focus,.note-editor .btn-danger[disabled]:hover,fieldset[disabled] .note-editor .btn-danger,fieldset[disabled] .note-editor .btn-danger.active,fieldset[disabled] .note-editor .btn-danger.focus,fieldset[disabled] .note-editor .btn-danger:active,fieldset[disabled] .note-editor .btn-danger:focus,fieldset[disabled] .note-editor .btn-danger:hover{background-color:#d9534f;border-color:#d43f3a}.note-editor .btn-danger .badge{color:#d9534f;background-color:#fff}.note-editor .btn-link{color:#337ab7;font-weight:400;border-radius:0}.note-editor .btn-link,.note-editor .btn-link.active,.note-editor .btn-link:active,.note-editor .btn-link[disabled],fieldset[disabled] .note-editor .btn-link{background-color:transparent;-webkit-box-shadow:none;box-shadow:none}.note-editor .btn-link,.note-editor .btn-link:active,.note-editor .btn-link:focus,.note-editor .btn-link:hover{border-color:transparent}.note-editor .btn-link:focus,.note-editor .btn-link:hover{color:#23527c;text-decoration:underline;background-color:transparent}.note-editor .btn-link[disabled]:focus,.note-editor .btn-link[disabled]:hover,fieldset[disabled] .note-editor .btn-link:focus,fieldset[disabled] .note-editor .btn-link:hover{color:#777;text-decoration:none}.note-editor .btn-lg{padding:10px 16px;font-size:18px;line-height:1.3333333;border-radius:6px}.note-editor .btn-sm{padding:5px 10px;font-size:12px;line-height:1.5;border-radius:3px}.note-editor .btn-xs{padding:1px 5px;font-size:12px;line-height:1.5;border-radius:3px}.note-editor .btn-block{display:block;width:100%}.note-editor .btn-block+.btn-block{margin-top:5px}.note-editor input[type=submit].btn-block,.note-editor input[type=reset].btn-block,.note-editor input[type=button].btn-block{width:100%}.note-editor .btn{margin:0}.note-editor .btn-default{border-color:#CCC}
+.tt-hint, .tt-query, .typeahead {
+    width: 100%;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    outline: 0
+}
+
+.typeahead {
+    background-color: #fff
+}
+
+.typeahead:focus {
+    border: 2px solid #0097cf
+}
+
+.tt-query {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075)
+}
+
+.tt-hint {
+    color: #999
+}
+
+.tt-dropdown-menu {
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, .2);
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2)
+}
+
+.tt-suggestion {
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px
+}
+
+.tt-suggestion.tt-cursor {
+    color: #fff;
+    cursor: pointer
+}
+
+.tt-suggestion p {
+    margin: 0
+}
+
+.tab-content {
+    padding: 10px
+}
+
+.bloc_config {
+    margin-top: 40px
+}
+
+.no_margin {
+    margin: 0
+}
+
+.mon_evenement #map {
+    min-height: 300px
+}
+
+.mon_evenement h2 {
+    margin-bottom: 40px
+}
+
+.mon_evenement h2 .label {
+    margin-right: 10px
+}
+
+.mon_evenement h2 .underline {
+    border-bottom: 1px dotted #337ab7
+}
+
+.note-editor .btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none
+}
+
+.note-editor .btn.active.focus, .note-editor .btn.active:focus, .note-editor .btn.focus, .note-editor .btn:active.focus, .note-editor .btn:active:focus, .note-editor .btn:focus {
+    outline: dotted thin;
+    outline: -webkit-focus-ring-color auto 5px;
+    outline-offset: -2px
+}
+
+.note-editor .btn.focus, .note-editor .btn:focus, .note-editor .btn:hover {
+    color: #333;
+    text-decoration: none
+}
+
+.note-editor .btn.active, .note-editor .btn:active {
+    outline: 0;
+    background-image: none;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125)
+}
+
+.note-editor .btn.disabled, .note-editor .btn[disabled], fieldset[disabled] .note-editor .btn {
+    cursor: not-allowed;
+    opacity: .65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none
+}
+
+a.note-editor .btn.disabled, fieldset[disabled] a.note-editor .btn {
+    pointer-events: none
+}
+
+.note-editor .btn-default {
+    color: #333;
+    background-color: #fff
+}
+
+.note-editor .btn-default.focus, .note-editor .btn-default:focus {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #8c8c8c
+}
+
+.note-editor .btn-default.active, .note-editor .btn-default:active, .note-editor .btn-default:hover, .open > .dropdown-toggle.note-editor .btn-default {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad
+}
+
+.note-editor .btn-default.active.focus, .note-editor .btn-default.active:focus, .note-editor .btn-default.active:hover, .note-editor .btn-default:active.focus, .note-editor .btn-default:active:focus, .note-editor .btn-default:active:hover, .open > .dropdown-toggle.note-editor .btn-default.focus, .open > .dropdown-toggle.note-editor .btn-default:focus, .open > .dropdown-toggle.note-editor .btn-default:hover {
+    color: #333;
+    background-color: #d4d4d4;
+    border-color: #8c8c8c
+}
+
+.note-editor .btn-default.active, .note-editor .btn-default:active, .open > .dropdown-toggle.note-editor .btn-default {
+    background-image: none
+}
+
+.note-editor .btn-default.disabled, .note-editor .btn-default.disabled.active, .note-editor .btn-default.disabled.focus, .note-editor .btn-default.disabled:active, .note-editor .btn-default.disabled:focus, .note-editor .btn-default.disabled:hover, .note-editor .btn-default[disabled], .note-editor .btn-default[disabled].active, .note-editor .btn-default[disabled].focus, .note-editor .btn-default[disabled]:active, .note-editor .btn-default[disabled]:focus, .note-editor .btn-default[disabled]:hover, fieldset[disabled] .note-editor .btn-default, fieldset[disabled] .note-editor .btn-default.active, fieldset[disabled] .note-editor .btn-default.focus, fieldset[disabled] .note-editor .btn-default:active, fieldset[disabled] .note-editor .btn-default:focus, fieldset[disabled] .note-editor .btn-default:hover {
+    background-color: #fff;
+    border-color: #ccc
+}
+
+.note-editor .btn-default .badge {
+    color: #fff;
+    background-color: #333
+}
+
+.note-editor .btn-primary {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4
+}
+
+.note-editor .btn-primary.focus, .note-editor .btn-primary:focus {
+    color: #fff;
+    background-color: #286090;
+    border-color: #122b40
+}
+
+.note-editor .btn-primary.active, .note-editor .btn-primary:active, .note-editor .btn-primary:hover, .open > .dropdown-toggle.note-editor .btn-primary {
+    color: #fff;
+    background-color: #286090;
+    border-color: #204d74
+}
+
+.note-editor .btn-primary.active.focus, .note-editor .btn-primary.active:focus, .note-editor .btn-primary.active:hover, .note-editor .btn-primary:active.focus, .note-editor .btn-primary:active:focus, .note-editor .btn-primary:active:hover, .open > .dropdown-toggle.note-editor .btn-primary.focus, .open > .dropdown-toggle.note-editor .btn-primary:focus, .open > .dropdown-toggle.note-editor .btn-primary:hover {
+    color: #fff;
+    background-color: #204d74;
+    border-color: #122b40
+}
+
+.note-editor .btn-primary.active, .note-editor .btn-primary:active, .open > .dropdown-toggle.note-editor .btn-primary {
+    background-image: none
+}
+
+.note-editor .btn-primary.disabled, .note-editor .btn-primary.disabled.active, .note-editor .btn-primary.disabled.focus, .note-editor .btn-primary.disabled:active, .note-editor .btn-primary.disabled:focus, .note-editor .btn-primary.disabled:hover, .note-editor .btn-primary[disabled], .note-editor .btn-primary[disabled].active, .note-editor .btn-primary[disabled].focus, .note-editor .btn-primary[disabled]:active, .note-editor .btn-primary[disabled]:focus, .note-editor .btn-primary[disabled]:hover, fieldset[disabled] .note-editor .btn-primary, fieldset[disabled] .note-editor .btn-primary.active, fieldset[disabled] .note-editor .btn-primary.focus, fieldset[disabled] .note-editor .btn-primary:active, fieldset[disabled] .note-editor .btn-primary:focus, fieldset[disabled] .note-editor .btn-primary:hover {
+    background-color: #337ab7;
+    border-color: #2e6da4
+}
+
+.note-editor .btn-primary .badge {
+    color: #337ab7;
+    background-color: #fff
+}
+
+.note-editor .btn-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c
+}
+
+.note-editor .btn-success.focus, .note-editor .btn-success:focus {
+    color: #fff;
+    background-color: #449d44;
+    border-color: #255625
+}
+
+.note-editor .btn-success.active, .note-editor .btn-success:active, .note-editor .btn-success:hover, .open > .dropdown-toggle.note-editor .btn-success {
+    color: #fff;
+    background-color: #449d44;
+    border-color: #398439
+}
+
+.note-editor .btn-success.active.focus, .note-editor .btn-success.active:focus, .note-editor .btn-success.active:hover, .note-editor .btn-success:active.focus, .note-editor .btn-success:active:focus, .note-editor .btn-success:active:hover, .open > .dropdown-toggle.note-editor .btn-success.focus, .open > .dropdown-toggle.note-editor .btn-success:focus, .open > .dropdown-toggle.note-editor .btn-success:hover {
+    color: #fff;
+    background-color: #398439;
+    border-color: #255625
+}
+
+.note-editor .btn-success.active, .note-editor .btn-success:active, .open > .dropdown-toggle.note-editor .btn-success {
+    background-image: none
+}
+
+.note-editor .btn-success.disabled, .note-editor .btn-success.disabled.active, .note-editor .btn-success.disabled.focus, .note-editor .btn-success.disabled:active, .note-editor .btn-success.disabled:focus, .note-editor .btn-success.disabled:hover, .note-editor .btn-success[disabled], .note-editor .btn-success[disabled].active, .note-editor .btn-success[disabled].focus, .note-editor .btn-success[disabled]:active, .note-editor .btn-success[disabled]:focus, .note-editor .btn-success[disabled]:hover, fieldset[disabled] .note-editor .btn-success, fieldset[disabled] .note-editor .btn-success.active, fieldset[disabled] .note-editor .btn-success.focus, fieldset[disabled] .note-editor .btn-success:active, fieldset[disabled] .note-editor .btn-success:focus, fieldset[disabled] .note-editor .btn-success:hover {
+    background-color: #5cb85c;
+    border-color: #4cae4c
+}
+
+.note-editor .btn-success .badge {
+    color: #5cb85c;
+    background-color: #fff
+}
+
+.note-editor .btn-info {
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da
+}
+
+.note-editor .btn-info.focus, .note-editor .btn-info:focus {
+    color: #fff;
+    background-color: #31b0d5;
+    border-color: #1b6d85
+}
+
+.note-editor .btn-info.active, .note-editor .btn-info:active, .note-editor .btn-info:hover, .open > .dropdown-toggle.note-editor .btn-info {
+    color: #fff;
+    background-color: #31b0d5;
+    border-color: #269abc
+}
+
+.note-editor .btn-info.active.focus, .note-editor .btn-info.active:focus, .note-editor .btn-info.active:hover, .note-editor .btn-info:active.focus, .note-editor .btn-info:active:focus, .note-editor .btn-info:active:hover, .open > .dropdown-toggle.note-editor .btn-info.focus, .open > .dropdown-toggle.note-editor .btn-info:focus, .open > .dropdown-toggle.note-editor .btn-info:hover {
+    color: #fff;
+    background-color: #269abc;
+    border-color: #1b6d85
+}
+
+.note-editor .btn-info.active, .note-editor .btn-info:active, .open > .dropdown-toggle.note-editor .btn-info {
+    background-image: none
+}
+
+.note-editor .btn-info.disabled, .note-editor .btn-info.disabled.active, .note-editor .btn-info.disabled.focus, .note-editor .btn-info.disabled:active, .note-editor .btn-info.disabled:focus, .note-editor .btn-info.disabled:hover, .note-editor .btn-info[disabled], .note-editor .btn-info[disabled].active, .note-editor .btn-info[disabled].focus, .note-editor .btn-info[disabled]:active, .note-editor .btn-info[disabled]:focus, .note-editor .btn-info[disabled]:hover, fieldset[disabled] .note-editor .btn-info, fieldset[disabled] .note-editor .btn-info.active, fieldset[disabled] .note-editor .btn-info.focus, fieldset[disabled] .note-editor .btn-info:active, fieldset[disabled] .note-editor .btn-info:focus, fieldset[disabled] .note-editor .btn-info:hover {
+    background-color: #5bc0de;
+    border-color: #46b8da
+}
+
+.note-editor .btn-info .badge {
+    color: #5bc0de;
+    background-color: #fff
+}
+
+.note-editor .btn-warning {
+    color: #fff;
+    background-color: #f0ad4e;
+    border-color: #eea236
+}
+
+.note-editor .btn-warning.focus, .note-editor .btn-warning:focus {
+    color: #fff;
+    background-color: #ec971f;
+    border-color: #985f0d
+}
+
+.note-editor .btn-warning.active, .note-editor .btn-warning:active, .note-editor .btn-warning:hover, .open > .dropdown-toggle.note-editor .btn-warning {
+    color: #fff;
+    background-color: #ec971f;
+    border-color: #d58512
+}
+
+.note-editor .btn-warning.active.focus, .note-editor .btn-warning.active:focus, .note-editor .btn-warning.active:hover, .note-editor .btn-warning:active.focus, .note-editor .btn-warning:active:focus, .note-editor .btn-warning:active:hover, .open > .dropdown-toggle.note-editor .btn-warning.focus, .open > .dropdown-toggle.note-editor .btn-warning:focus, .open > .dropdown-toggle.note-editor .btn-warning:hover {
+    color: #fff;
+    background-color: #d58512;
+    border-color: #985f0d
+}
+
+.note-editor .btn-warning.active, .note-editor .btn-warning:active, .open > .dropdown-toggle.note-editor .btn-warning {
+    background-image: none
+}
+
+.note-editor .btn-warning.disabled, .note-editor .btn-warning.disabled.active, .note-editor .btn-warning.disabled.focus, .note-editor .btn-warning.disabled:active, .note-editor .btn-warning.disabled:focus, .note-editor .btn-warning.disabled:hover, .note-editor .btn-warning[disabled], .note-editor .btn-warning[disabled].active, .note-editor .btn-warning[disabled].focus, .note-editor .btn-warning[disabled]:active, .note-editor .btn-warning[disabled]:focus, .note-editor .btn-warning[disabled]:hover, fieldset[disabled] .note-editor .btn-warning, fieldset[disabled] .note-editor .btn-warning.active, fieldset[disabled] .note-editor .btn-warning.focus, fieldset[disabled] .note-editor .btn-warning:active, fieldset[disabled] .note-editor .btn-warning:focus, fieldset[disabled] .note-editor .btn-warning:hover {
+    background-color: #f0ad4e;
+    border-color: #eea236
+}
+
+.note-editor .btn-warning .badge {
+    color: #f0ad4e;
+    background-color: #fff
+}
+
+.note-editor .btn-danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a
+}
+
+.note-editor .btn-danger.focus, .note-editor .btn-danger:focus {
+    color: #fff;
+    background-color: #c9302c;
+    border-color: #761c19
+}
+
+.note-editor .btn-danger.active, .note-editor .btn-danger:active, .note-editor .btn-danger:hover, .open > .dropdown-toggle.note-editor .btn-danger {
+    color: #fff;
+    background-color: #c9302c;
+    border-color: #ac2925
+}
+
+.note-editor .btn-danger.active.focus, .note-editor .btn-danger.active:focus, .note-editor .btn-danger.active:hover, .note-editor .btn-danger:active.focus, .note-editor .btn-danger:active:focus, .note-editor .btn-danger:active:hover, .open > .dropdown-toggle.note-editor .btn-danger.focus, .open > .dropdown-toggle.note-editor .btn-danger:focus, .open > .dropdown-toggle.note-editor .btn-danger:hover {
+    color: #fff;
+    background-color: #ac2925;
+    border-color: #761c19
+}
+
+.note-editor .btn-danger.active, .note-editor .btn-danger:active, .open > .dropdown-toggle.note-editor .btn-danger {
+    background-image: none
+}
+
+.note-editor .btn-danger.disabled, .note-editor .btn-danger.disabled.active, .note-editor .btn-danger.disabled.focus, .note-editor .btn-danger.disabled:active, .note-editor .btn-danger.disabled:focus, .note-editor .btn-danger.disabled:hover, .note-editor .btn-danger[disabled], .note-editor .btn-danger[disabled].active, .note-editor .btn-danger[disabled].focus, .note-editor .btn-danger[disabled]:active, .note-editor .btn-danger[disabled]:focus, .note-editor .btn-danger[disabled]:hover, fieldset[disabled] .note-editor .btn-danger, fieldset[disabled] .note-editor .btn-danger.active, fieldset[disabled] .note-editor .btn-danger.focus, fieldset[disabled] .note-editor .btn-danger:active, fieldset[disabled] .note-editor .btn-danger:focus, fieldset[disabled] .note-editor .btn-danger:hover {
+    background-color: #d9534f;
+    border-color: #d43f3a
+}
+
+.note-editor .btn-danger .badge {
+    color: #d9534f;
+    background-color: #fff
+}
+
+.note-editor .btn-link {
+    color: #337ab7;
+    font-weight: 400;
+    border-radius: 0
+}
+
+.note-editor .btn-link, .note-editor .btn-link.active, .note-editor .btn-link:active, .note-editor .btn-link[disabled], fieldset[disabled] .note-editor .btn-link {
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    box-shadow: none
+}
+
+.note-editor .btn-link, .note-editor .btn-link:active, .note-editor .btn-link:focus, .note-editor .btn-link:hover {
+    border-color: transparent
+}
+
+.note-editor .btn-link:focus, .note-editor .btn-link:hover {
+    color: #23527c;
+    text-decoration: underline;
+    background-color: transparent
+}
+
+.note-editor .btn-link[disabled]:focus, .note-editor .btn-link[disabled]:hover, fieldset[disabled] .note-editor .btn-link:focus, fieldset[disabled] .note-editor .btn-link:hover {
+    color: #777;
+    text-decoration: none
+}
+
+.note-editor .btn-lg {
+    padding: 10px 16px;
+    font-size: 18px;
+    line-height: 1.3333333;
+    border-radius: 6px
+}
+
+.note-editor .btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px
+}
+
+.note-editor .btn-xs {
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px
+}
+
+.note-editor .btn-block {
+    display: block;
+    width: 100%
+}
+
+.note-editor .btn-block + .btn-block {
+    margin-top: 5px
+}
+
+.note-editor input[type=submit].btn-block, .note-editor input[type=reset].btn-block, .note-editor input[type=button].btn-block {
+    width: 100%
+}
+
+.note-editor .btn {
+    margin: 0
+}
+
+.note-editor .btn-default {
+    border-color: #CCC
+}

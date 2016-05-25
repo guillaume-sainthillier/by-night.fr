@@ -19,6 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
  * ConnectController
  *
@@ -31,7 +32,7 @@ class ConnectController extends BaseController
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
      * @param Request $request The active request.
-     * @param string  $service Name of the resource owner to connect to.
+     * @param string $service Name of the resource owner to connect to.
      *
      * @throws \Exception
      *
@@ -65,9 +66,9 @@ class ConnectController extends BaseController
             );
 
             // save in session
-            $session->set('_hwi_oauth.connect_confirmation.'.$key, $accessToken);
+            $session->set('_hwi_oauth.connect_confirmation.' . $key, $accessToken);
         } else {
-            $accessToken = $session->get('_hwi_oauth.connect_confirmation.'.$key);
+            $accessToken = $session->get('_hwi_oauth.connect_confirmation.' . $key);
         }
 
         $userInformation = $resourceOwner->getUserInformation($accessToken);
@@ -90,7 +91,7 @@ class ConnectController extends BaseController
                 show_confirmation_page:
 
                 $session = $this->container->get('session');
-                if($session->has('connect_site')) // On veut connecter le site et non l'utilisateur
+                if ($session->has('connect_site')) // On veut connecter le site et non l'utilisateur
                 {
                     $session->remove('connect_site');
                     $siteManager = $this->container->get("site_manager");
@@ -104,21 +105,20 @@ class ConnectController extends BaseController
                     $em->flush();
 
                     $cache = $this->container->get("memory_cache");
-		    $key = $currentSite->getSubdomain();
-		    if($cache->contains($key))
-		    {
-			$cache->delete($key);
-		    }
-		    $cache->save($key, $currentSite);
+                    $key = $currentSite->getSubdomain();
+                    if ($cache->contains($key)) {
+                        $cache->delete($key);
+                    }
+                    $cache->save($key, $currentSite);
 
-                }else // On connecte normalement l'utilisateur*/
+                } else // On connecte normalement l'utilisateur*/
                 {
                     /** @var $currentToken OAuthToken */
                     $currentToken = $this->container->get('security.token_storage')->getToken();
-                    $currentUser  = $currentToken->getUser();
+                    $currentUser = $currentToken->getUser();
 
                     $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
-                    
+
                     if ($currentToken instanceof OAuthToken) {
                         // Update user token with new details
                         $this->authenticateUser($request, $currentUser, $service, $currentToken->getRawToken(), false);
@@ -128,7 +128,7 @@ class ConnectController extends BaseController
                         'userInformation' => $userInformation,
                         'service' => $service,
                     ));
-                    
+
                     /*
                     if ($currentToken instanceof OAuthToken) {
                         // Update user token with new details
@@ -146,9 +146,9 @@ class ConnectController extends BaseController
         }
 
         return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_confirm.html.' . $this->getTemplatingEngine(), [
-            'key'             => $key,
-            'service'         => $service,
-            'form'            => $form->createView(),
+            'key' => $key,
+            'service' => $service,
+            'form' => $form->createView(),
             'userInformation' => $userInformation,
         ]);
     }
@@ -158,9 +158,9 @@ class ConnectController extends BaseController
      * Authenticate a user with Symfony Security
      *
      * @param UserInterface $user
-     * @param string        $resourceOwnerName
-     * @param string        $accessToken
-     * @param boolean       $fakeLogin
+     * @param string $resourceOwnerName
+     * @param string $accessToken
+     * @param boolean $fakeLogin
      */
     protected function authenticateBasicUser(UserInterface $user)
     {

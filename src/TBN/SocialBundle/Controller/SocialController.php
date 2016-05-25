@@ -18,7 +18,7 @@ class SocialController extends BaseController
     public function disconnectSiteAction($service)
     {
         /** @var social Social */
-        $social = $this->container->get("tbn.social.".strtolower($service === "facebook" ? "facebook_events" : $service));
+        $social = $this->container->get("tbn.social." . strtolower($service === "facebook" ? "facebook_events" : $service));
         $siteManager = $this->container->get("site_manager");
         $currentSite = $siteManager->getCurrentSite();
         $social->disconnectSite($currentSite);//On enlève le profil social du site
@@ -34,10 +34,10 @@ class SocialController extends BaseController
     {
         $user = $this->getUserWithService($request, $service);
         /** @var social Social */
-        $social = $this->container->get("tbn.social.".strtolower($service === "facebook" ? "facebook_events" : $service));
+        $social = $this->container->get("tbn.social." . strtolower($service === "facebook" ? "facebook_events" : $service));
         $social->disconnectUser($user);
         $this->authenticateBasicUser($user);
-       
+
         return new JsonResponse(["success" => true]);
     }
 
@@ -45,7 +45,7 @@ class SocialController extends BaseController
     {
         $this->getUserWithService($request, $service);
 
-        return $this->render('TBNSocialBundle:Social:confirm_disconnect_'.($from_site ? "site_" : "").$service.'.html.twig', [
+        return $this->render('TBNSocialBundle:Social:confirm_disconnect_' . ($from_site ? "site_" : "") . $service . '.html.twig', [
             "service" => $service
         ]);
     }
@@ -59,8 +59,7 @@ class SocialController extends BaseController
      */
     protected function getUserWithService(Request $request, $service)
     {
-        if (!$request->isXmlHttpRequest())
-        {
+        if (!$request->isXmlHttpRequest()) {
             throw $this->createNotFoundException('La page demandée est introuvable');
         }
 
@@ -73,9 +72,9 @@ class SocialController extends BaseController
      * Authenticate a user with Symfony Security
      *
      * @param UserInterface $user
-     * @param string        $resourceOwnerName
-     * @param string        $accessToken
-     * @param boolean       $fakeLogin
+     * @param string $resourceOwnerName
+     * @param string $accessToken
+     * @param boolean $fakeLogin
      */
     protected function authenticateBasicUser(UserInterface $user)
     {

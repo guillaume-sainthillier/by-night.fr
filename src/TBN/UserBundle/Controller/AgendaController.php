@@ -112,21 +112,29 @@ class AgendaController extends Controller
             $siteManager = $this->get('site_manager');
             $site = $siteManager->getCurrentSite();
 
-            $agenda->setTrustedLocation(false)->setSite($site);
+            $user = $this->getUser();
+            $agenda->setUser($user)
+                ->setParticipations(1)
+                ->setTrustedLocation(false)
+                ->setSite($site);
             $agenda = $this->handleEvent($agenda);
-
             if ($agenda !== null) {
-                $user = $this->getUser();
-                $agenda->setUser($user)
-                    ->setParticipations(1);
+                $found = false;
                 $calendriers = $agenda->getCalendriers();
-                $calendrier = (new Calendrier)->setAgenda($agenda)->setUser($user)->setParticipe(1);
-                $calendriers->add($calendrier);
+                foreach ($calendriers as $calendrier) {
+                    if ($calendrier->getUser()->getId() === $user->getId()) {
+                        $found = true;
+                    }
+                }
 
-                $em->merge($calendrier);
-                $em->flush();
+                if (!$found) {
+                    $calendrier = (new Calendrier)->setAgenda($agenda)->setUser($user)->setParticipe(1);
+                    $em->merge($calendrier);
+                    $em->flush();
+                }
 
                 $this->postSocial($agenda, $form);
+                $em->merge($agenda);
                 $em->flush();
 
                 $this->get('session')->getFlashBag()->add(
@@ -156,9 +164,6 @@ class AgendaController extends Controller
         $eventHandler->init($tmpAgenda->getSite());
 
         $agenda = $eventHandler->handleEvent($tmpAgenda);
-        if($agenda) {
-            $eventHandler->flush();
-        }
 
         return $agenda;
     }

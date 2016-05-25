@@ -14,24 +14,28 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  * and open the template in the editor.
  */
 
-class RegistrationConfirmListener implements EventSubscriberInterface {
+class RegistrationConfirmListener implements EventSubscriberInterface
+{
 
     private $router;
 
-    public function __construct(UrlGeneratorInterface $router) {
+    public function __construct(UrlGeneratorInterface $router)
+    {
         $this->router = $router;
     }
 
     /**
      * {@inheritDoc}
      */
-    public static function getSubscribedEvents() {
+    public static function getSubscribedEvents()
+    {
         return [
             FOSUserEvents::REGISTRATION_CONFIRM => 'onRegistrationConfirm'
         ];
     }
 
-    public function onRegistrationConfirm(GetResponseUserEvent $event) {
+    public function onRegistrationConfirm(GetResponseUserEvent $event)
+    {
         $url = $this->router->generate('rsWelcomeBundle_check_full_register');
 
         $event->setResponse(new RedirectResponse($url));

@@ -10,8 +10,8 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 /**
- * 
- * 
+ *
+ *
  * @author Guillaume Sainthillier
  */
 class CollectionExtension extends AbstractTypeExtension
@@ -19,20 +19,22 @@ class CollectionExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public function buildView(FormView $view, FormInterface $form, array $options) {
+    public function buildView(FormView $view, FormInterface $form, array $options)
+    {
         if ($form->getConfig()->hasAttribute('prototype')) {
             $view->vars['prototype'] = $form->getConfig()->getAttribute('prototype')->createView($view);
         }
 
-	$view->vars['group_class']              = $options['group_class'];
-        $view->vars['base_class']               = $options['base_class'];
-        $view->vars['widget_class']             = $options['widget_class'];
+        $view->vars['group_class'] = $options['group_class'];
+        $view->vars['base_class'] = $options['base_class'];
+        $view->vars['widget_class'] = $options['widget_class'];
     }
 
     /**
      * {@inheritDoc}
      */
-    public function configureOptions(OptionsResolver $resolver) {
+    public function configureOptions(OptionsResolver $resolver)
+    {
 
         $resolver->setDefaults(array(
             'allow_add' => true,

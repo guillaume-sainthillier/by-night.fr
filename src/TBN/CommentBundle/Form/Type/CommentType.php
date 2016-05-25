@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CommentType extends AbstractType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -22,8 +22,7 @@ class CommentType extends AbstractType
                     "placeholder" => "Laissez un message",
                     "rows" => 4
                 ]
-            ])
-        ;
+            ]);
     }
 
     /**

@@ -7,7 +7,8 @@ namespace TBN\MajDataBundle\Parser;
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
-interface ParserInterface {
+interface ParserInterface
+{
 
     /**
      * @return Agenda[] un tableau d'Agenda parsé

@@ -13,16 +13,15 @@ class RegistrationFormType extends BaseType
      * Builds the embedded form representing the user.
      *
      * @param FormBuilderInterface $builder
-     * @param array                $options
+     * @param array $options
      */
     protected function buildUserForm(FormBuilderInterface $builder, array $options)
     {
-        parent::buildUserForm($builder,$options);
+        parent::buildUserForm($builder, $options);
 
         $builder
             ->add('username', TextType::class, ['disabled' => true, 'label' => 'form.username', 'translation_domain' => 'FOSUserBundle'])
-            ->add('firstName', TextType::class, ['required' => false])
-        ;
+            ->add('firstName', TextType::class, ['required' => false]);
     }
 
     public function getName()

@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-7">
-        <div class="row">                
+        <div class="row">
             <div class="col-xs-6 footer_border">
                 <h3 class="modal-title color-second">{{ site.nom }} By Night</h3>
                 <ul class="fa-ul">
@@ -10,13 +10,15 @@
                     </li>
                     <li>
                         <i class="fa fa-li fa-angle-right"></i>
-                        <a title="En savoir plus sur la création d'événements" href="{{ path('tbn_agenda_plus') }}">En savoir plus</a>
+                        <a title="En savoir plus sur la création d'événements" href="{{ path('tbn_agenda_plus') }}">En
+                            savoir plus</a>
                     </li>
                     <li>
                         <i class="fa fa-li fa-angle-right"></i>
-                        <a title="Accéder aux mentions légales" href="{{ path('tbn_agenda_mention_legales') }}">Mentions légales</a>
+                        <a title="Accéder aux mentions légales" href="{{ path('tbn_agenda_mention_legales') }}">Mentions
+                            légales</a>
                     </li>
-                </ul>    
+                </ul>
             </div>
             <div class="col-xs-6 sites footer_border">
                 <h3 class="modal-title color-second">Recherche par ville</h3>
@@ -24,37 +26,40 @@
                     {% for site in sites %}
                         <li>
                             <i class="fa fa-li fa-angle-right"></i>
-                            <a title="Découvrir les événements sur {{ site.nom }}" href="{{ path('tbn_agenda_index', {'subdomain' : site.subdomain}) }}">
+                            <a title="Découvrir les événements sur {{ site.nom }}"
+                               href="{{ path('tbn_agenda_index', {'subdomain' : site.subdomain}) }}">
                                 {{ site.nom }}
                             </a>
                         </li>
                     {% endfor %}
-                    
-                </ul>                    
+
+                </ul>
             </div>
         </div>
     </div>
     <div class="col-md-5 text-center">
         <div class="row counts">
             <div class="col-xs-4 preserve">
-            {% if site.facebookIdPage %}
-                <a class="social" title="By Night sur Facebook" href="https://www.facebook.com/{{ site.facebookIdPage }}">
-                    <i class="fa fa-facebook fa-3x"></i>
-                    <span class="number number-xbig">{{ count_facebook|default(null) }}</span>
-                </a>
-            {% endif %}
+                {% if site.facebookIdPage %}
+                    <a class="social" title="By Night sur Facebook"
+                       href="https://www.facebook.com/{{ site.facebookIdPage }}">
+                        <i class="fa fa-facebook fa-3x"></i>
+                        <span class="number number-xbig">{{ count_facebook|default(null) }}</span>
+                    </a>
+                {% endif %}
             </div>
             <div class="col-xs-4 preserve">
                 {% if site.twitterIdPage %}
                     <a class="social" title="By Night sur Twitter" href="https://twitter.com/{{ site.twitterIdPage }}">
                         <i class="fa fa-twitter fa-3x"></i>
                         <span class="number number-xbig">{{ count_twitter|default(null) }}</span>
-                    </a>                    
+                    </a>
                 {% endif %}
             </div>
             <div class="col-xs-4 preserve">
                 {% if site.googleIdPage %}
-                    <a class="social" title="By Night sur Google+" href="https://plus.google.com/{{ site.googleIdPage }}" rel="publisher">
+                    <a class="social" title="By Night sur Google+"
+                       href="https://plus.google.com/{{ site.googleIdPage }}" rel="publisher">
                         <i class="fa fa-google-plus fa-3x"></i>
                         <span class="number number-xbig">{{ count_google|default(null) }}</span>
                     </a>
@@ -62,5 +67,5 @@
             </div>
         </div>
     </div>
-</div>    
-<hr />
+</div>
+<hr/>

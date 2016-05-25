@@ -20,14 +20,12 @@ options = {
     "animation_duration": 400
 };
 
-$(function ()
-{
+$(function () {
     init_list_comments();
 });
 
 
-function init_list_comments()
-{
+function init_list_comments() {
     $(options.css_main_block_comments).each(function () //On parcours les div comments (1 par page normalement)
     {
         var div_comments = $(this);
@@ -43,15 +41,12 @@ function init_list_comments()
     });
 }
 
-function init_load_more_comments(commentaires)
-{
-    commentaires.find(options.css_load_more_comments).unbind("click").click(function ()
-    {
+function init_load_more_comments(commentaires) {
+    commentaires.find(options.css_load_more_comments).unbind("click").click(function () {
         var load_more = $(this);
 
         load_more.find(".btn-block").html("<i class='fa fa-2x " + options.css_spinner + "'></i>");
-        load_more.load(load_more.data("url"), function ()
-        {
+        load_more.load(load_more.data("url"), function () {
             var block_list_commentaire = load_more.find(options.css_block_commentaires);
             init_load_new_reponse(load_more); //On bind le lien de réponse des commentaires
             init_list_reponses(load_more); //On bind le bouton de liste des réponses
@@ -68,20 +63,16 @@ function init_load_more_comments(commentaires)
     });
 }
 
-function init_maj_nb_reponses(commentaires)
-{
-    commentaires.find(options.css_nb_reponses).each(function ()
-    {
+function init_maj_nb_reponses(commentaires) {
+    commentaires.find(options.css_nb_reponses).each(function () {
         maj_nb_reponses($(this).closest(options.css_main_block_reponse), $(this).html());
     });
 }
 
-function init_list_reponses(commentaire)
-{
-    commentaire.find(options.css_btn_list).unbind("click").click(function ()
-    {
+function init_list_reponses(commentaire) {
+    commentaire.find(options.css_btn_list).unbind("click").click(function () {
         var main_block_reponse = $(this)
-                .closest(options.css_main_block_reponse);
+            .closest(options.css_main_block_reponse);
 
         var block_reponse = main_block_reponse.find(options.css_block_reponses);
         var icon_list = main_block_reponse.find(options.css_icon_list);
@@ -89,65 +80,57 @@ function init_list_reponses(commentaire)
         if (!block_reponse.hasClass(options.css_has_loaded_reponse)) //Les réponses ne sont pas encore chargées
         {
             block_reponse //On masque les liste de réponses et on ajoute la classe css_has_loaded_reponse au block des listes
-                    .addClass(options.css_has_loaded_reponse);
+                .addClass(options.css_has_loaded_reponse);
 
             icon_list
-                    .removeClass(options.css_up)
-                    .addClass(options.css_spinner);
+                .removeClass(options.css_up)
+                .addClass(options.css_spinner);
 
-            block_reponse.load($(this).data("url"), function ()
-            {
+            block_reponse.load($(this).data("url"), function () {
                 init_load_more_comments(block_reponse);
-                $(this).show(options.animation_duration, function ()
-                {
+                $(this).show(options.animation_duration, function () {
                     $(this).addClass(options.css_has_showed_reponses);
                 });
 
                 icon_list
-                        .removeClass(options.css_spinner)
-                        .removeClass(options.css_up)
-                        .addClass(options.css_down);
+                    .removeClass(options.css_spinner)
+                    .removeClass(options.css_up)
+                    .addClass(options.css_down);
             });
 
         } else //Les réponses sont chargées
         {
             if (!block_reponse.hasClass(options.css_has_showed_reponses)) //Les réponses ne sont pas affichées, on les affiche donc
             {
-                block_reponse.show(options.animation_duration, function ()
-                {
+                block_reponse.show(options.animation_duration, function () {
                     $(this).addClass(options.css_has_showed_reponses);
                     icon_list
-                            .removeClass(options.css_up)
-                            .addClass(options.css_down);
+                        .removeClass(options.css_up)
+                        .addClass(options.css_down);
                 });
-            } else
-            {
-                block_reponse.hide(options.animation_duration, function ()
-                {
+            } else {
+                block_reponse.hide(options.animation_duration, function () {
                     $(this).removeClass(options.css_has_showed_reponses);
                     icon_list
-                            .removeClass(options.css_down)
-                            .addClass(options.css_up);
+                        .removeClass(options.css_down)
+                        .addClass(options.css_up);
                 });
             }
         }
     });
 }
 
-function init_load_new_reponse(commentaires)
-{
+function init_load_new_reponse(commentaires) {
     commentaires.find(options.css_link_repondre).unbind("click").click(function () //Pour tous les liens répondre
     {
         var link = $(this);
 
         link.data("text", link.text()).html("<i class='fa " + options.css_spinner + "'></i>");
         var block_post_reponse = link.closest(options.css_main_block_reponse).find(options.css_block_post_reponse); // On cherche le block du post
-        block_post_reponse.hide().load(link.data("url"), function ()
-        {
+        block_post_reponse.hide().load(link.data("url"), function () {
             App.initComponents(block_post_reponse); //On bind les liens connexion/inscription
             init_new_reponse(block_post_reponse); //On bind le formulaire d'envoi d'une nouvelle réponse
-            $(this).show(options.animation_duration, function ()
-            {
+            $(this).show(options.animation_duration, function () {
                 link.text(link.data("text"));
             });
         });
@@ -155,25 +138,21 @@ function init_load_new_reponse(commentaires)
     });
 }
 
-function maj_nb_reponses(main_block_reponses, nb_reponses)
-{
+function maj_nb_reponses(main_block_reponses, nb_reponses) {
     main_block_reponses.find(options.css_btn_list).prop("disabled", (nb_reponses === "0"));
     main_block_reponses.find(options.css_nb_reponses).html(nb_reponses);
 }
 
-function init_new_reponse(block_post_reponse)
-{
-    $(block_post_reponse).find("form").unbind("submit").submit(function ()
-    {
+function init_new_reponse(block_post_reponse) {
+    $(block_post_reponse).find("form").unbind("submit").submit(function () {
         App.loadingButtons(form);
         var form = $(this);
         var main_block_reponses = block_post_reponse.closest(options.css_main_block_reponse);
 
         $.post(
-                $(this).attr("action"),
-                $(this).serialize()
-                ).done(function (retour)
-        {
+            $(this).attr("action"),
+            $(this).serialize()
+        ).done(function (retour) {
             var block_reponses = main_block_reponses.find(options.css_block_reponses);
             if (retour.success) //La réponse est envoyée
             {
@@ -198,19 +177,16 @@ function init_new_reponse(block_post_reponse)
     });
 }
 
-function init_new_comment(commentaire)
-{
-    $(commentaire).find("form").each(function ()
-    {
+function init_new_comment(commentaire) {
+    $(commentaire).find("form").each(function () {
         var form = $(this);
-        $(this).unbind("submit").submit(function ()
-        {
+        $(this).unbind("submit").submit(function () {
             App.loadingButtons(commentaire); //On bloque le bouton submit le temps du chargement
 
             $.post(
-                    $(this).attr("action"),
-                    $(this).serialize()
-                    ).done(function (retour) {  //On poste le commentaire 
+                $(this).attr("action"),
+                $(this).serialize()
+            ).done(function (retour) {  //On poste le commentaire
 
                 var main_block_commentaire = form.closest(options.css_main_block_comments);
                 var block_commentaires = main_block_commentaire.find(options.css_block_commentaires);
@@ -234,8 +210,7 @@ function init_new_comment(commentaire)
                     App.initComponents(block_poster_commentaire);
                     init_new_comment(block_poster_commentaire);
                 }
-            }).always(function ()
-            {
+            }).always(function () {
                 App.resetButtons(commentaire);
             });
 

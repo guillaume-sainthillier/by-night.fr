@@ -83,9 +83,9 @@ class ToulouseTourismeParser extends LinksParser
 
         foreach ($infos_resa as $info_resa) {
             $info_resa = trim($info_resa);
-            if(strpos($info_resa, '@') !== false) {
+            if (strpos($info_resa, '@') !== false) {
                 $resa_email[] = preg_replace('#https?:://#i', '', $info_resa);
-            }elseif (filter_var('http://' . $info_resa, FILTER_VALIDATE_URL)) {
+            } elseif (filter_var('http://' . $info_resa, FILTER_VALIDATE_URL)) {
                 $resa_internet[] = $info_resa;
             } else {
                 $resa_telephone[] = $info_resa;
@@ -101,7 +101,7 @@ class ToulouseTourismeParser extends LinksParser
         $rue = null;
         $lieu = null;
 
-        if($lieux->count() > 0) {
+        if ($lieux->count() > 0) {
             $lieu = $lieux->eq(0)->text();
         }
         if ($lieux->count() === 5) //La Rue est renseignée

@@ -50,9 +50,9 @@ class ResettingController extends BaseController
             $tokenGenerator = $this->get('fos_user.util.token_generator');
             $user->setConfirmationToken($tokenGenerator->generateToken());
         }
-        
+
         $siteManager = $this->container->get("site_manager");
-        $nomSite = $siteManager->getCurrentSite()->getNom()." By Night";
+        $nomSite = $siteManager->getCurrentSite()->getNom() . " By Night";
 
         $this->container->get('fos_user.mailer')->sendResettingEmailMessage($user, $nomSite);
         $this->get('fos_user.mailer')->sendResettingEmailMessage($user);

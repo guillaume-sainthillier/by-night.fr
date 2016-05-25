@@ -12,16 +12,17 @@ namespace TBN\SocialBundle\Exception;
  *
  * @author guillaume
  */
-class SocialException extends \Exception{
-    
+class SocialException extends \Exception
+{
+
     protected $type;
-    
+
     public function __construct($message, $type = "warning", $code = 500, \Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->type = $type;
     }
-    
+
     public function getType()
     {
         return $this->type;

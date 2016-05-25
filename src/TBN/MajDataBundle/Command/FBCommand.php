@@ -23,8 +23,7 @@ class FBCommand extends EventCommand
         $this
             ->setName('events:fb')
             ->setDescription('Mettre à jour les événements facebook')
-            ->addOption('full', InputOption::VALUE_OPTIONAL)
-        ;
+            ->addOption('full', InputOption::VALUE_OPTIONAL);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

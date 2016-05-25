@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Calendrier
- * 
+ *
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\CalendrierRepository")
  * @ORM\Table(name="Calendrier",
  *      uniqueConstraints={
@@ -38,20 +38,20 @@ class Calendrier
      * @ORM\Column(name="interet", type="boolean")
      */
     protected $interet;
-    
+
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User")
-    * @ORM\JoinColumn(nullable=false)
-    */
+     * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
     protected $user;
-    
+
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Agenda", inversedBy="calendriers")
-    * @ORM\JoinColumn(nullable=false)
-    */
+     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Agenda", inversedBy="calendriers")
+     * @ORM\JoinColumn(nullable=false)
+     */
     protected $agenda;
-    
-     /**
+
+    /**
      * @var datetime
      *
      * @ORM\Column(name="last_date", type="datetime")
@@ -67,7 +67,7 @@ class Calendrier
         $this->participe = false;
         $this->interet = false;
     }
-    
+
     /**
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
@@ -76,11 +76,11 @@ class Calendrier
     {
         $this->lastDate = new \DateTime;
     }
-        
+
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -98,14 +98,14 @@ class Calendrier
     public function setParticipe($participe)
     {
         $this->participe = $participe;
-    
+
         return $this;
     }
 
     /**
      * Get participe
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getParticipe()
     {
@@ -122,14 +122,14 @@ class Calendrier
     public function setInteret($interet)
     {
         $this->interet = $interet;
-    
+
         return $this;
     }
 
     /**
      * Get interet
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getInteret()
     {
@@ -147,14 +147,14 @@ class Calendrier
     public function setUser(\TBN\UserBundle\Entity\User $user)
     {
         $this->user = $user;
-    
+
         return $this;
     }
 
     /**
      * Get user
      *
-     * @return \TBN\UserBundle\Entity\User 
+     * @return \TBN\UserBundle\Entity\User
      */
     public function getUser()
     {
@@ -171,14 +171,14 @@ class Calendrier
     public function setAgenda(\TBN\AgendaBundle\Entity\Agenda $agenda)
     {
         $this->agenda = $agenda;
-    
+
         return $this;
     }
 
     /**
      * Get agenda
      *
-     * @return \TBN\AgendaBundle\Entity\Agenda 
+     * @return \TBN\AgendaBundle\Entity\Agenda
      */
     public function getAgenda()
     {
@@ -194,14 +194,14 @@ class Calendrier
     public function setLastDate($lastDate)
     {
         $this->lastDate = $lastDate;
-    
+
         return $this;
     }
 
     /**
      * Get lastDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastDate()
     {

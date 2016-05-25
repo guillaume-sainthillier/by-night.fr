@@ -9,36 +9,37 @@
 
 {% block meta_description %}Sortir à {{ site.nom }}. Agenda des concerts, spectacles, cafés, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.{% endblock %}
     
-{% block body %}<div id="fb-root"></div>{% block body_agenda %}{% endblock %}{% endblock %}
+{% block body %}
+    <div id="fb-root"></div>{% block body_agenda %}{% endblock %}{% endblock %}
 {% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
 
-{% block breadcrumb %}    
+{% block breadcrumb %}
     <div id="bread" class="bg-white">
         <div class="container">
-            {% set item = menu.addItem('Sortir', path('tbn_main_index')) %}    
-            {% set item = menu.addItem(site.nom, path('tbn_agenda_index')) %}    
+            {% set item = menu.addItem('Sortir', path('tbn_main_index')) %}
+            {% set item = menu.addItem(site.nom, path('tbn_agenda_index')) %}
             {% block breadcrumb_agenda %}{% endblock %}
             {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
         </div>
-    </div>   
+    </div>
 {% endblock %}
 
 {% block twitter %}
-    {% if site.twitterIdPage %}               
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:site" content="@{{ site.twitterIdPage }}" />
+    {% if site.twitterIdPage %}
+        <meta name="twitter:card" content="summary"/>
+        <meta name="twitter:site" content="@{{ site.twitterIdPage }}"/>
     {% endif %}
 {% endblock %}
 
 {% block google %}
     {% if site.googleIdPage %}
-        <link rel="author" href="https://plus.google.com/u/{{ site.googleIdPage }}" />
+        <link rel="author" href="https://plus.google.com/u/{{ site.googleIdPage }}"/>
     {% endif %}
 {% endblock %}
 
 {% block facebook %}
     {% if site.facebookIdPage %}
-        <meta property="fb:page_id" content="{{ site.facebookIdPage }}" />
+        <meta property="fb:page_id" content="{{ site.facebookIdPage }}"/>
     {% endif %}
 {% endblock %}
 
@@ -50,7 +51,7 @@
     {% block js_template %}{% block js_agenda %}{% endblock %}{% endblock %}
 {% endblock %}
     
-{% block css %}    
+{% block css %}
     {% block css_agenda %}{% endblock %}
 {% endblock %}
     
@@ -67,6 +68,7 @@
             }
         }
     
+
     </script>
     <script type="text/javascript">
         var ville = "{{ site.nom }}";

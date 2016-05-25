@@ -69,16 +69,16 @@ class Ville
     private $url;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
-    * @ORM\JoinColumn(nullable=false)
-    */
+     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
+     * @ORM\JoinColumn(nullable=false)
+     */
     protected $site;
 
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -94,14 +94,14 @@ class Ville
     public function setNom($nom)
     {
         $this->nom = $nom;
-    
+
         return $this;
     }
 
     /**
      * Get nom
      *
-     * @return string 
+     * @return string
      */
     public function getNom()
     {
@@ -117,14 +117,14 @@ class Ville
     public function setCodePostal($codePostal)
     {
         $this->codePostal = $codePostal;
-    
+
         return $this;
     }
 
     /**
      * Get codePostal
      *
-     * @return string 
+     * @return string
      */
     public function getCodePostal()
     {
@@ -140,14 +140,14 @@ class Ville
     public function setSlug($slug)
     {
         $this->slug = $slug;
-    
+
         return $this;
     }
 
     /**
      * Get slug
      *
-     * @return string 
+     * @return string
      */
     public function getSlug()
     {
@@ -163,14 +163,14 @@ class Ville
     public function setPath($path)
     {
         $this->path = $path;
-    
+
         return $this;
     }
 
     /**
      * Get path
      *
-     * @return string 
+     * @return string
      */
     public function getPath()
     {
@@ -186,14 +186,14 @@ class Ville
     public function setUrl($url)
     {
         $this->url = $url;
-    
+
         return $this;
     }
 
     /**
      * Get url
      *
-     * @return string 
+     * @return string
      */
     public function getUrl()
     {
@@ -209,31 +209,33 @@ class Ville
     public function setSite(\TBN\MainBundle\Entity\Site $site)
     {
         $this->site = $site;
-    
+
         return $this;
     }
 
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site 
+     * @return \TBN\MainBundle\Entity\Site
      */
     public function getSite()
     {
         return $this->site;
     }
-    
-    public function setId($id) {
+
+    public function setId($id)
+    {
         $this->id = $id;
         return $this;
     }
-    
+
     public function toJSON()
     {
         return json_encode($this->toArray());
     }
-    
-    public function toArray() {
+
+    public function toArray()
+    {
         return [
             'nom' => $this->nom,
             'codePostal' => $this->codePostal,

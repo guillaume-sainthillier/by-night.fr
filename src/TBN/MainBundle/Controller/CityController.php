@@ -10,14 +10,13 @@ class CityController extends Controller
 {
     public function indexAction()
     {
-        $doctrine   = $this->getDoctrine();
-        $repo       = $doctrine->getRepository("TBNMainBundle:Site");
-        $sites      = $repo->findBy([], [ "nom" => "ASC"] );
-        $villes     = array_map(function(Site $site)
-        {
+        $doctrine = $this->getDoctrine();
+        $repo = $doctrine->getRepository("TBNMainBundle:Site");
+        $sites = $repo->findBy([], ["nom" => "ASC"]);
+        $villes = array_map(function (Site $site) {
             return $site->getNom();
         }, $sites);
-        
-	return $this->render('TBNMainBundle:Ville:list.html.twig', ["sites" => $sites, "villes" => $villes]);
+
+        return $this->render('TBNMainBundle:Ville:list.html.twig', ["sites" => $sites, "villes" => $villes]);
     }
 }

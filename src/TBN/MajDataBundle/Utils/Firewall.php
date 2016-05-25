@@ -131,7 +131,7 @@ class Firewall
         $codePostal = $this->comparator->sanitizeNumber($place->getCodePostal());
 
         return $this->checkMinLengthValidity($place->getNom(), 2) &&
-        ($this->checkMinLengthValidity($place->getVille(), 2) || ($place->getLatitude() && $place->getLongitude()))&&
+        ($this->checkMinLengthValidity($place->getVille(), 2) || ($place->getLatitude() && $place->getLongitude())) &&
         ($this->checkLengthValidity($codePostal, 0) ||
             $this->checkLengthValidity($codePostal, 5));
     }

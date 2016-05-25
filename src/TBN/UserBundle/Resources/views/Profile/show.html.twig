@@ -2,24 +2,24 @@
 
 {% block start_container -%}
 <div class="container" id="container">
-{%- endblock %}
+    {%- endblock %}
 
-{% block titre_espace %}
-    Mon compte
-{% endblock %}
-    
-{% block breadcrumb_espace %}
-    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-{% endblock %}
+    {% block titre_espace %}
+        Mon compte
+    {% endblock %}
 
-{% block body_espace %}
-    {% include "FOSUserBundle:Profile:show_content.html.twig" %}
-{% endblock body_espace %}
+    {% block breadcrumb_espace %}
+        {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
+    {% endblock %}
 
-{% block css_espace %}
-<link rel="stylesheet" href="{{ asset('prod/espace-perso/login/css/login.min.css') }}" type="text/css" >
-{% endblock %}
+    {% block body_espace %}
+        {% include "FOSUserBundle:Profile:show_content.html.twig" %}
+    {% endblock body_espace %}
 
-{% block js_espace %}
-<script src="{{ asset('prod/espace-perso/login/js/login.min.js') }}" type="text/javascript"></script>
-{% endblock %}
+    {% block css_espace %}
+        <link rel="stylesheet" href="{{ asset('prod/espace-perso/login/css/login.min.css') }}" type="text/css">
+    {% endblock %}
+
+    {% block js_espace %}
+        <script src="{{ asset('prod/espace-perso/login/js/login.min.js') }}" type="text/javascript"></script>
+    {% endblock %}

@@ -34,18 +34,18 @@ class Monitor
 
     private static function convertMemory($size)
     {
-        if($size == 0) {
+        if ($size == 0) {
             return '0 b';
         }
-        $unit=array('b','kb','mb','gb','tb','pb');
-        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+        $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
+        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
     }
 
     private static function getTime($stat)
     {
         $nbItems = count($stat['time']);
 
-        if($nbItems === 0) {
+        if ($nbItems === 0) {
             return [
                 'avg' => 0,
                 'min' => 0,
@@ -73,14 +73,16 @@ class Monitor
         ];
     }
 
-    public static function write($message = null) {
-        if(self::$output) {
+    public static function write($message = null)
+    {
+        if (self::$output) {
             self::$output->write($message);
         }
     }
 
-    public static function writeln($message = null) {
-        if(self::$output) {
+    public static function writeln($message = null)
+    {
+        if (self::$output) {
             self::$output->writeln($message);
         }
     }

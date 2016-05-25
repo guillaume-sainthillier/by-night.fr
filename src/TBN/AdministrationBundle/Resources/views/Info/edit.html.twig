@@ -12,10 +12,10 @@
     {% set item = menu.addItem(info.id, path('tbn_administration_info_edit', {'id': info.id})) %}
 {% endblock %}
 
-{% block body_info %} 
+{% block body_info %}
     {% for service in ['facebook','google','twitter'] %}
         <div class="bloc_config">
             {% include "TBNSocialBundle:Social:social_info.html.twig" with { 'info': info, 'service': service } %}
-        </div>    
+        </div>
     {% endfor %}
 {% endblock %}

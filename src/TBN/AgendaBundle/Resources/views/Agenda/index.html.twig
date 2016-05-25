@@ -1,8 +1,9 @@
 {% extends "TBNAgendaBundle::layout.html.twig" %}
 
-{% block titre_agenda %}<strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong>, <strong>soirées</strong> à <strong>{{ site.nom }}</strong>{% endblock %}
+{% block titre_agenda %}<strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong>, <strong>soirées</strong> à
+    <strong>{{ site.nom }}</strong>{% endblock %}
 
-{% block title_agenda %}{{ block('titre_agenda')|striptags  }}{% endblock %}
+{% block title_agenda %}{{ block('titre_agenda')|striptags }}{% endblock %}
 
 {% block container_titre %}{% endblock %}
 {% block helper_top %}
@@ -15,43 +16,65 @@
                     <form name="tbn_search_agenda" role="search" action="{{ path('tbn_agenda_agenda') }}" method="POST">
                         <div class="row">
                             <div class="col-md-8">
-                                <input type="hidden" id="search_du" name="search[du]" value="" />
-                                <input type="hidden" id="search_au" name="search[au]" value="" />
-                                <input type="text" name="search[term]" value="" class="form-control input-lg" placeholder="Concert, bar, spectacle, enfant, soirée, ...">
+                                <input type="hidden" id="search_du" name="search[du]" value=""/>
+                                <input type="hidden" id="search_au" name="search[au]" value=""/>
+                                <input type="text" name="search[term]" value="" class="form-control input-lg"
+                                       placeholder="Concert, bar, spectacle, enfant, soirée, ...">
                             </div>
                             <div class="col-md-4">
-                                <select name="shortcut" class="form-control input-lg shorcuts_date" placeholder="Raccourcis">
+                                <select name="shortcut" class="form-control input-lg shorcuts_date"
+                                        placeholder="Raccourcis">
                                     <option value="">Quand ?</option>
-                                    <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">Aujourd'hui</option>
-                                    <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow">Demain</option>
-                                    <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">Ce Week End</option>
-                                    <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}" data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">Cette semaine</option>
-                                    <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}" data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">Ce mois</option>
+                                    <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">Aujourd'hui
+                                    </option>
+                                    <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow">Demain
+                                    </option>
+                                    <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
+                                            data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">Ce
+                                        Week End
+                                    </option>
+                                    <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
+                                            data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">Cette
+                                        semaine
+                                    </option>
+                                    <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
+                                            data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">
+                                        Ce mois
+                                    </option>
                                 </select>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-raised btn-block btn-lg btn-warning search"><i class="fa fa-search"></i> Chercher</button>
+                        <button type="submit" class="btn btn-raised btn-block btn-lg btn-warning search"><i
+                                    class="fa fa-search"></i> Chercher
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
         <div class="footer_wrapper">
-            <h2 class="text-primary number number-xbig">{{ nbEvents }} événements & bons plans culturels à {{ site.nom }}</h2>
+            <h2 class="text-primary number number-xbig">{{ nbEvents }} événements & bons plans culturels
+                à {{ site.nom }}</h2>
         </div>
     </section>
     <section class="bg-white padding-tb-30">
         <div class="container">
             <h2 class="text-primary">Envie de sortir à {{ site.nom }} ?</h2>
-            <p>Si vous cherchez <strong>que faire à {{ site.nom }}</strong>, trouvez facilement un <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>, <strong>café</strong> ou <strong>sortie</strong> dans votre ville préférée. 
-                Il y en a pour tous les goûts, pour toutes les couleurs et pour tous les âges ! De la <strong>visite de parcs en famille</strong> aux <strong>soirées étudiantes</strong> les plus branchées dans les <strong>discothèques</strong> de {{ site.nom }}, trouvez l'événement qui vous correspond !
+            <p>Si vous cherchez <strong>que faire à {{ site.nom }}</strong>, trouvez facilement un
+                <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>, <strong>café</strong> ou
+                <strong>sortie</strong> dans votre ville préférée.
+                Il y en a pour tous les goûts, pour toutes les couleurs et pour tous les âges ! De la <strong>visite de
+                    parcs en famille</strong> aux <strong>soirées étudiantes</strong> les plus branchées dans les
+                <strong>discothèques</strong> de {{ site.nom }}, trouvez l'événement qui vous correspond !
             </p>
-            <p>{{ site.nom }} By Night est une solution alternative pour chercher et trouver facilement des <strong>événements & bons plans culturels</strong> sur la ville de {{ site.nom }} et ses environs.
-                Notre but est avant tout de centraliser les <strong>choses à faire à {{ site.nom }}</strong> et vous offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
-            </p>    
-            <br />
-            <a href="{{ path('tbn_agenda_agenda') }}" 
+            <p>{{ site.nom }} By Night est une solution alternative pour chercher et trouver facilement des <strong>événements
+                    & bons plans culturels</strong> sur la ville de {{ site.nom }} et ses environs.
+                Notre but est avant tout de centraliser les <strong>choses à faire à {{ site.nom }}</strong> et vous
+                offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
+            </p>
+            <br/>
+            <a href="{{ path('tbn_agenda_agenda') }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
-                <i class="fa fa-chevron-right"></i> 
+                <i class="fa fa-chevron-right"></i>
                 Agenda des événéments<span class="hidden-xs hidden-sm">, concerts, spectacles à {{ site.nom }}</span>
             </a>
         </div>
@@ -59,85 +82,86 @@
     <section>
         <div class="container">
             {% include '::ad.html.twig' %}
-            <br />
+            <br/>
             <div class="row">
                 {% set contents = [{
-                    'title': 'Concert',
-                    'icon': 'flaticon-microphone47',
-                    'color': 'red',
-                    'link': path('tbn_agenda_sortir', {'type': 'concert'}),
-                    'title_link': 'Concerts à ' ~ site.nom,
-                    'text': "Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples à 
+                'title': 'Concert',
+                'icon': 'flaticon-microphone47',
+                'color': 'red',
+                'link': path('tbn_agenda_sortir', {'type': 'concert'}),
+                'title_link': 'Concerts à ' ~ site.nom,
+                'text': "Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples à
                             " ~ site.nom ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et 
                             soirées et pour <strong>sortir se détendre</strong> à " ~ site.nom ~ "."
                 }, {
-                    'title': 'Etudiant',
-                    'icon': 'flaticon-students17',
-                    'color': 'orange',
-                    'link': path('tbn_agenda_sortir', {'type': 'etudiant'}),
-                    'title_link': 'Soirées étudiantes à ' ~ site.nom,
-                    'text': "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>, 
+                'title': 'Etudiant',
+                'icon': 'flaticon-students17',
+                'color': 'orange',
+                'link': path('tbn_agenda_sortir', {'type': 'etudiant'}),
+                'title_link': 'Soirées étudiantes à ' ~ site.nom,
+                'text': "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>,
                             d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en 
                             <strong>discothèque</strong> ce soir ? " ~ site.nom ~ " By Night regroupe 
                             <strong>l'agenda des soirées</strong> rien que pour vous !"
                 }, {
-                    'title': 'Famille',
-                    'icon': 'flaticon-father16',
-                    'color': 'green',
-                    'link': path('tbn_agenda_sortir', {'type': 'famille'}),
-                    'title_link': 'Sorties familles à ' ~ site.nom,
-                    'text': "Trouvez des idées pour <strong>sortir en famille</strong> à " ~ site.nom ~ " avec tous les 
+                'title': 'Famille',
+                'icon': 'flaticon-father16',
+                'color': 'green',
+                'link': path('tbn_agenda_sortir', {'type': 'famille'}),
+                'title_link': 'Sorties familles à ' ~ site.nom,
+                'text': "Trouvez des idées pour <strong>sortir en famille</strong> à " ~ site.nom ~ " avec tous les
                             <strong>spectacles enfants</strong>. Découvrez de nouveaux <strong>spectacles jeune public</strong>,
                              des <strong>parcs </strong> ou de jolies <strong>balades</strong> près de " ~ site.nom ~ " !"
                 }, {
-                    'title': 'Spectacle',
-                    'icon': 'flaticon-tickets',
-                    'color': 'blue',
-                    'link': path('tbn_agenda_sortir', {'type': 'spectacle'}),
-                    'title_link': 'Spectacles à ' ~ site.nom,
-                    'text': site.nom ~ " regorge de <strong>spectacles en " ~ "now"|date('Y') ~ "</strong> ! Divertissement & culture,
+                'title': 'Spectacle',
+                'icon': 'flaticon-tickets',
+                'color': 'blue',
+                'link': path('tbn_agenda_sortir', {'type': 'spectacle'}),
+                'title_link': 'Spectacles à ' ~ site.nom,
+                'text': site.nom ~ " regorge de <strong>spectacles en " ~ "now"|date('Y') ~ "</strong> ! Divertissement & culture,
                             trouvez votre spectacle préféré ou votre animation favorie grâce à 
                             <strong>l'agenda des spectacles à  " ~ site.nom ~ "</strong>."
                 }, {
-                    'title': 'Exposition',
-                    'icon': 'flaticon-theater1',
-                    'color': 'darkblue',
-                    'link': path('tbn_agenda_sortir', {'type': 'exposition'}),
-                    'title_link': 'Les expos à ' ~ site.nom,
-                    'text': "Les <strong>expos à " ~ site.nom ~ "</strong> sont nombreuses ! Envie d'aller visiter les 
+                'title': 'Exposition',
+                'icon': 'flaticon-theater1',
+                'color': 'darkblue',
+                'link': path('tbn_agenda_sortir', {'type': 'exposition'}),
+                'title_link': 'Les expos à ' ~ site.nom,
+                'text': "Les <strong>expos à " ~ site.nom ~ "</strong> sont nombreuses ! Envie d'aller visiter les
                     <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir 
                     les <strong>expos à voir à " ~ site.nom ~ "</strong> ? C'est par ici !"
                 }, {
-                    'title': 'Organisateur',
-                    'icon': 'flaticon-calendar60',
-                    'color': 'purple',
-                    'link': path('tbn_agenda_new'),
-                    'title_link': 'Créer un événément',
-                    'text': "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence 
+                'title': 'Organisateur',
+                'icon': 'flaticon-calendar60',
+                'color': 'purple',
+                'link': path('tbn_agenda_new'),
+                'title_link': 'Créer un événément',
+                'text': "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence
                             de communication</strong> à " ~ site.nom ~ " ? <strong>Publiez facilement</strong> 
                             votre événement sur notre plateforme et donnez lui un maximum de <strong>visibilité</strong> !"
                 }] %}
-                
+
                 {% for i, content in contents %}
-                <div class="col-sm-6 col-md-4">
-                    <div class="panel panel-primary">
-                        <div class="panel-body text-center">
-                            <span class="icon big-icon icon-{{ content.color }}"><span class="{{ content.icon }}"></span></span>
-                            <h3 class="text-primary">{{ content.title }}</h3>
-                            <p>{{ content.text|raw }}</p>
-                            <a class="btn btn-flat btn-block btn-info" 
-                               href="{{ content.link }}" 
-                               title="{{ content.title_link }}">
-                                <i class="fa fa-chevron-right"></i> 
-                                <strong>{{ content.title_link }}</strong>
-                            </a>
-                        </div>                    
-                    </div>                    
-                </div>
-                {% if (i+1) is divisible by(2) %}
-                <div class="clearfix visible-sm-block"></div>
-                {% endif %}
-                {% endfor %} 
+                    <div class="col-sm-6 col-md-4">
+                        <div class="panel panel-primary">
+                            <div class="panel-body text-center">
+                                <span class="icon big-icon icon-{{ content.color }}"><span
+                                            class="{{ content.icon }}"></span></span>
+                                <h3 class="text-primary">{{ content.title }}</h3>
+                                <p>{{ content.text|raw }}</p>
+                                <a class="btn btn-flat btn-block btn-info"
+                                   href="{{ content.link }}"
+                                   title="{{ content.title_link }}">
+                                    <i class="fa fa-chevron-right"></i>
+                                    <strong>{{ content.title_link }}</strong>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% if (i+1) is divisible by(2) %}
+                        <div class="clearfix visible-sm-block"></div>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -145,11 +169,11 @@
         <div class="container">
             <h2 class="text-primary">Les concerts, spectacles & sorties de la semaine</h2>
             {% include 'TBNAgendaBundle:Agenda:block_preview_soiree.html.twig' with({'events': topEvents, 'page': 1}) %}
-            <br />
-            <br />
-            <a href="{{ path('tbn_agenda_agenda') }}" 
+            <br/>
+            <br/>
+            <a href="{{ path('tbn_agenda_agenda') }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
-                <i class="fa fa-chevron-right"></i> 
+                <i class="fa fa-chevron-right"></i>
                 Tous les événéments<span class="hidden-xs hidden-sm">, concerts, spectacles à {{ site.nom }}</span>
             </a>
         </div>
@@ -157,12 +181,13 @@
 {% endblock %}
 
 {% block ad %}{% endblock %}
-{% block start_container -%}<div>{% endblock %}
+{% block start_container -%}
+<div>{% endblock %}
 
-{% block css_agenda %}
-<link rel="stylesheet" href="{{ asset('prod/evenements/css/index.min.css') }}" type="text/css" >
-{% endblock %}
+    {% block css_agenda %}
+        <link rel="stylesheet" href="{{ asset('prod/evenements/css/index.min.css') }}" type="text/css">
+    {% endblock %}
 
-{% block js_agenda %}
-<script src="{{ asset('prod/evenements/js/index.min.js') }}" type="text/javascript"></script>
-{% endblock %}
+    {% block js_agenda %}
+        <script src="{{ asset('prod/evenements/js/index.min.js') }}" type="text/javascript"></script>
+    {% endblock %}

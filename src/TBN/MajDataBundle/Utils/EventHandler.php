@@ -52,7 +52,7 @@ class EventHandler
 
             if ($octets > 0) {
                 $agenda->setPath($filename);
-            }elseif(file_exists($pathname)) {
+            } elseif (file_exists($pathname)) {
                 unlink($pathname);
             }
         }

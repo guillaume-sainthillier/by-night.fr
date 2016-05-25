@@ -16,7 +16,7 @@
         {% set targetUrl = app.session.get('_security.' ~ app.security.token.providerKey ~ '.target_path') %}
         {% if targetUrl is not empty %}<p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>{% endif %}
     {% endif %}
-    <br />
+    <br/>
     <p>
         <i class="fa fa-spin fa-spinner"></i> Vous allez être redirigé vers la page d'accueil ...
     </p>

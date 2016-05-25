@@ -12,20 +12,22 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
  *
  * @author guillaume
  */
-class MenuDroitController extends Controller {
+class MenuDroitController extends Controller
+{
 
     /**
      * @Cache(expires="tomorrow", public=true)
      */
-    public function programmeTVAction() {
+    public function programmeTVAction()
+    {
         $cache = $this->get('memory_cache');
 
         $key = 'tbn.programme_tele';
-        if(! $cache->contains($key)) {
+        if (!$cache->contains($key)) {
             $parser = $this->get("tbn.programmetv");
-            $programmes     = array_map(function($programme) {
+            $programmes = array_map(function ($programme) {
                 $css_chaine = $this->getCSSChaine($programme['chaine']);
-                $programme['css_chaine'] = $css_chaine ? 'icon-'.$css_chaine : null;
+                $programme['css_chaine'] = $css_chaine ? 'icon-' . $css_chaine : null;
                 return $programme;
             }, $parser->getProgrammesTV());
 
@@ -36,14 +38,15 @@ class MenuDroitController extends Controller {
 
         $programmes = $cache->fetch($key);
 
-        
+
         return $this->render("TBNAgendaBundle:Hinclude:programme_tv.html.twig", [
             "programmes" => $programmes
         ]);
     }
-    
-    protected function getCSSChaine($chaine) {
-        switch($chaine) {
+
+    protected function getCSSChaine($chaine)
+    {
+        switch ($chaine) {
             case 'TF1':
                 return 'tf1';
             case 'France 2':
@@ -117,16 +120,16 @@ class MenuDroitController extends Controller {
             case 'Nat Geo Wild':
                 return 'nat_geo';
         }
-        
+
         return null;
     }
 
     /**
      * @Cache(expires="tomorrow", public=true)
      */
-    public function soireesSimilairesAction(Agenda $soiree, $page) {
-        if($page <= 0)
-        {
+    public function soireesSimilairesAction(Agenda $soiree, $page)
+    {
+        if ($page <= 0) {
             $page = 1;
         }
 
@@ -141,7 +144,8 @@ class MenuDroitController extends Controller {
     /**
      * @Cache(expires="tomorrow", public=true)
      */
-    public function topSoireesAction() {
+    public function topSoireesAction()
+    {
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
 
@@ -153,10 +157,11 @@ class MenuDroitController extends Controller {
     /**
      * @Cache(expires="+4 hours", public=true)
      */
-    public function tendancesAction(Agenda $soiree) {
+    public function tendancesAction(Agenda $soiree)
+    {
 
-        $nbItems    = 30;
-        $membres    = $this->getFBMembres($soiree, 1, $nbItems);
+        $nbItems = 30;
+        $membres = $this->getFBMembres($soiree, 1, $nbItems);
 
         return $this->render("TBNAgendaBundle:Hinclude:tendances.html.twig", [
             "tendancesParticipations" => $this->getSoireesTendancesParticipations($soiree),
@@ -168,12 +173,15 @@ class MenuDroitController extends Controller {
         ]);
     }
 
-    protected function getSoireesTendancesParticipations(Agenda $soiree) {
+    protected function getSoireesTendancesParticipations(Agenda $soiree)
+    {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         return $repo->findAllTendancesParticipations($soiree);
     }
-    protected function getSoireesTendancesInterets(Agenda $soiree) {
+
+    protected function getSoireesTendancesInterets(Agenda $soiree)
+    {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         return $repo->findAllTendancesInterets($soiree);
@@ -184,13 +192,12 @@ class MenuDroitController extends Controller {
      */
     public function fbMembresAction(Agenda $soiree, $page)
     {
-        if($page <= 1)
-        {
+        if ($page <= 1) {
             $page = 2;
         }
-        
-        $nbItems    = 50;
-        $membres    = $this->getFBMembres($soiree, $page, $nbItems);
+
+        $nbItems = 50;
+        $membres = $this->getFBMembres($soiree, $page, $nbItems);
 
         return $this->render("TBNAgendaBundle:Hinclude:fb_membres.html.twig", [
             "membres" => $membres,
@@ -201,29 +208,33 @@ class MenuDroitController extends Controller {
     /**
      * @Cache(expires="+6 hours", public=true)
      */
-    public function topMembresAction() {
+    public function topMembresAction()
+    {
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
-        
+
         return $this->render("TBNAgendaBundle:Hinclude:membres.html.twig", [
             "membres" => $this->getTopMembres($site)
         ]);
     }
 
-    protected function getTopSoirees(Site $site) {
-        $em	    = $this->getDoctrine()->getManager();
-        $repo	    = $em->getRepository('TBNAgendaBundle:Agenda');
-        
+    protected function getTopSoirees(Site $site)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
+
         return $repo->findTopSoiree($site);
     }
 
-    protected function getTopMembres(Site $site) {
+    protected function getTopMembres(Site $site)
+    {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNUserBundle:User");
         return $repo->findTopMembres($site);
     }
 
-    protected function getSoireesSimilaires(Agenda $soiree, $page, $offset) {
+    protected function getSoireesSimilaires(Agenda $soiree, $page, $offset)
+    {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         return $repo->findAllSimilaires($soiree, $page, $offset);

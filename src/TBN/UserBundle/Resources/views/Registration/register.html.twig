@@ -20,27 +20,31 @@
 {% block meta_description_espace %}Inscrivez-vous sur {{ block('nom_site') }}, créez vos propres événements et partagez les automatiquement avec vos amis sur les réseaux sociaux !{% endblock %}
     
 {% block fos_user_content %}
-    <br />
-    <br />
+    <br/>
+    <br/>
     <div class="row text-center">
         <div class="col-xs-4 preserve">
-            <a class="social-facebook big-social tbn_tooltip" title="Inscrivez-vous avec Facebook" href="{{ hwi_oauth_login_url('facebook') }}" data-toggle="tooltip" data-placement="bottom"></a>
+            <a class="social-facebook big-social tbn_tooltip" title="Inscrivez-vous avec Facebook"
+               href="{{ hwi_oauth_login_url('facebook') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
         <div class="col-xs-4 preserve">
-            <a class="social-twitter big-social tbn_tooltip" title="Inscrivez-vous avec Twitter" href="{{ hwi_oauth_login_url('twitter') }}" data-toggle="tooltip" data-placement="bottom"></a>
+            <a class="social-twitter big-social tbn_tooltip" title="Inscrivez-vous avec Twitter"
+               href="{{ hwi_oauth_login_url('twitter') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
         <div class="col-xs-4 preserve">
-            <a class="social-googleplus big-social tbn_tooltip" title="Inscrivez-vous avec Google+" href="{{ hwi_oauth_login_url('google') }}" data-toggle="tooltip" data-placement="bottom"></a>
+            <a class="social-googleplus big-social tbn_tooltip" title="Inscrivez-vous avec Google+"
+               href="{{ hwi_oauth_login_url('google') }}" data-toggle="tooltip" data-placement="bottom"></a>
         </div>
     </div>
-    <br />
-    <br />
+    <br/>
+    <br/>
 
     <div class="no-margin-form">
-        <form action="{{ path('fos_user_registration_register') }}" method="post" class="fos_user_registration_register">
+        <form action="{{ path('fos_user_registration_register') }}" method="post"
+              class="fos_user_registration_register">
             {% if error is defined and error %}
                 <div class="alert alert-danger">
-                    <i class="fa fa-warning"></i> 
+                    <i class="fa fa-warning"></i>
                     {{ error }}
                 </div>
             {% endif %}
@@ -76,10 +80,11 @@
 
             {{ form_rest(form) }}
 
-            <br />
+            <br/>
             <p>
-                Vous avez déjà un compte? 
-                <a class="connexion" href="{{ path('fos_user_security_login') }}" title="Connectez-vous sur {{ site.nom }} By Night">
+                Vous avez déjà un compte?
+                <a class="connexion" href="{{ path('fos_user_security_login') }}"
+                   title="Connectez-vous sur {{ site.nom }} By Night">
                     Connectez-vous!
                 </a>
             </p>

@@ -2,23 +2,23 @@
 
 {% block title_search %}{% if term %}{{ term }}{% else %}Recherche{% endif %}{% endblock %}
 {% block titre_search %}Recherche d'événements, lieux et membres{% endblock %}
-{% block meta_description -%}{% if term %}{{ nbItems}} résultat{{ nbItems > 1 ? "s" : "" }} trouvé{{ nbItems > 1 ? "s" : "" }} pour la recherche '{{ term }}'. {% endif %}{{ parent() }}{% endblock %}
+{% block meta_description -%}{% if term %}{{ nbItems }} résultat{{ nbItems > 1 ? "s" : "" }} trouvé{{ nbItems > 1 ? "s" : "" }} pour la recherche '{{ term }}'. {% endif %}{{ parent() }}{% endblock %}
 
-{% block breadcrumb_search -%}   
+{% block breadcrumb_search -%}
     {% if term %}
-    {% set item = menu.addItem(term, path('tbn_search_query',{'q': term})) %}
+        {% set item = menu.addItem(term, path('tbn_search_query',{'q': term})) %}
     {% endif %}
 {%- endblock %}
 
 {% block body_search_results -%}
     {% if term %}
         <h2>
-            <span class="number">{{ nbItems }}</span> 
+            <span class="number">{{ nbItems }}</span>
             résultat{{ nbItems > 1 ? "s" : "" }} trouvé{{ nbItems > 1 ? "s" : "" }}
             pour la recherche <strong>{{ term }}</strong>
         </h2>
-        <hr />
-    {% endif %}    
+        <hr/>
+    {% endif %}
 {%- endblock %}
 
 {% block body_search_content -%}

@@ -1,30 +1,30 @@
 <div class="col-sm-6 col-md-12">
-    
-{% if site.twitterIdWidget and site.twitterURLWidget  %}
-<!-- Twitter -->
-{% include "TBNAgendaBundle:Widget:twitter.html.twig" %}
-<!-- ./Twitter -->
-{% endif %}
 
-{% include "TBNAgendaBundle:Widget:ads.html.twig" %}
+    {% if site.twitterIdWidget and site.twitterURLWidget %}
+        <!-- Twitter -->
+        {% include "TBNAgendaBundle:Widget:twitter.html.twig" %}
+        <!-- ./Twitter -->
+    {% endif %}
 
-{% if site.facebookIdPage %}
-<!-- Facebook -->
-    {% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
-<!-- ./Facebook -->
-{% endif %}
+    {% include "TBNAgendaBundle:Widget:ads.html.twig" %}
+
+    {% if site.facebookIdPage %}
+        <!-- Facebook -->
+        {% include "TBNAgendaBundle:Widget:facebook.html.twig" %}
+        <!-- ./Facebook -->
+    {% endif %}
 </div>
 
 <div class="col-sm-6 col-md-12">
-<!-- Top Evénements -->
-{% include "TBNAgendaBundle:Widget:top_evenements.html.twig" %}
-<!-- ./Top Evénements -->
+    <!-- Top Evénements -->
+    {% include "TBNAgendaBundle:Widget:top_evenements.html.twig" %}
+    <!-- ./Top Evénements -->
 
-<!-- Top Membres -->
-{% include "TBNAgendaBundle:Widget:top_membres.html.twig" %}
-<!-- ./Top Membres -->
+    <!-- Top Membres -->
+    {% include "TBNAgendaBundle:Widget:top_membres.html.twig" %}
+    <!-- ./Top Membres -->
 
-<!-- Programme TV -->
-{% include "TBNAgendaBundle:Widget:programme_tv.html.twig" %}
-<!-- ./Programme TV -->
+    <!-- Programme TV -->
+    {% include "TBNAgendaBundle:Widget:programme_tv.html.twig" %}
+    <!-- ./Programme TV -->
 </div>

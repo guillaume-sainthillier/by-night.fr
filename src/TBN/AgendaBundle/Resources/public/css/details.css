@@ -4,7 +4,7 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
 /* 
-    Created on : 21 mars 2014, 14:12:15
+    Created on : 21 mars 2014, 15:31:24
     Author     : guillaume
 */
 /*
@@ -44,6 +44,24 @@ Then, run this script to get the list.
 
 
 */
+.comments {
+  margin-top: 40px;
+}
+.comments .comment {
+  margin-bottom: 30px;
+}
+.comments .comment .infos {
+  margin-bottom: 10px;
+}
+.comments .comment .infos span {
+  margin-left: 10px;
+}
+.comments .block_reponses .comment {
+  margin-bottom: 10px;
+}
+.comments .block_post {
+  margin-top: 10px;
+}
 /*
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
@@ -95,29 +113,21 @@ html body #widgets .trait small {
 html body #widgets .trait .user_profil_picture {
   padding-right: 0;
 }
-/*
-Created on : 21 mars 2014, 16:48:10
-Author     : guillaume
-*/
-.block_criteres {
-  margin-bottom: 20px;
+.details_evenement {
+  font-size: 120%;
 }
-.block_criteres select[multiple].form-control {
-  display: none;
+.details_evenement .block_infos {
+  overflow: hidden;
 }
-.block_criteres .main_criteres .form-group {
-  margin-top: 15px;
+.details_evenement .block_infos .fa-ul li {
+  margin-bottom: 10px;
 }
-.block_criteres .btn_shorcuts .btn {
-  margin-top: 0;
-  margin-bottom: 0;
+.details_evenement .block_infos .tags .label {
+  margin-right: 5px;
 }
-.block_criteres .btn_criteres {
-  margin-bottom: 0;
+#loadMap {
+  margin-bottom: 5px;
 }
-.criteres {
-  margin-top: 10px;
-}
-.size-135 {
-  font-size: 1.35em;
+.preview .img-responsive {
+  max-height: 250px;
 }

@@ -8,24 +8,24 @@
     Historique des MAJ
 {% endblock %}
 
-{% block breadcrumb_administration %}    
-{% set item = menu.addItem("Historique", path('tbn_administration_historique_index')) %}
+{% block breadcrumb_administration %}
+    {% set item = menu.addItem("Historique", path('tbn_administration_historique_index')) %}
 {% endblock %}
     
 {% block body_administration %}
-    
+
     <table class="table table-striped">
         <thead>
-            <tr>
-                <th>#</th>
-                <th>Date Début</th>
-                <th>Site</th>
-                <th>Parser</th>
-                <th>Durée</th>
-                <th>Nouvelles Soirées</th>
-                <th>Mise à jour</th>
-                <th>Black Lists</th>
-            </tr>
+        <tr>
+            <th>#</th>
+            <th>Date Début</th>
+            <th>Site</th>
+            <th>Parser</th>
+            <th>Durée</th>
+            <th>Nouvelles Soirées</th>
+            <th>Mise à jour</th>
+            <th>Black Lists</th>
+        </tr>
         </thead>
         <tbody>
         {% for historique in historiques %}

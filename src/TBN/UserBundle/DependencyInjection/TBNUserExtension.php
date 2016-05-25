@@ -24,8 +24,8 @@ class TBNUserExtension extends Extension
 
         $container->setParameter('tbn_user.social', $config['socials']);
 
-        
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
     }
 }

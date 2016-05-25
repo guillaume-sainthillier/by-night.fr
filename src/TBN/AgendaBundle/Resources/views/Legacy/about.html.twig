@@ -1,7 +1,7 @@
 {% extends "TBNAgendaBundle::layout.html.twig" %}
 
-{% block breadcrumb_agenda %}        
-    {% set item = menu.addItem("A propos", url('tbn_agenda_about')) %}    
+{% block breadcrumb_agenda %}
+    {% set item = menu.addItem("A propos", url('tbn_agenda_about')) %}
 {% endblock %}
 
 {% block title_agenda %}
@@ -12,48 +12,48 @@
     A propos de nous
 {% endblock %}
 
-{% block body_agenda %}    
+{% block body_agenda %}
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             {% set nomSite = site.nom ~ ' By Night' %}
             <h3>{{ site.nom }} By Quoi ?</h3>
-            <br />
+            <br/>
             <p>
-                <strong>{{ nomSite }}</strong> est une nouvelle solution 
+                <strong>{{ nomSite }}</strong> est une nouvelle solution
                 de création d'événements en ligne sur-mesure et self service.
-            </p> 
+            </p>
             <p>
                 Las de ne pas trouver une solution simple et abordable pour organiser
-                nos événements, la team {{ nomSite }} a décidé de créer son propre service 
+                nos événements, la team {{ nomSite }} a décidé de créer son propre service
                 et de vous en faire profiter !
-            </p> 
+            </p>
             <p>
                 C’est comme ça que {{ nomSite }} est né !
             </p>
-            <br />
+            <br/>
             <p>
                 Notre volonté : vous aider à organiser des événements réussis et vous
                 faire atteindre le plus grand nombre d'auditeurs potentiels.
             </p>
-            <br />
+            <br/>
             <p>
                 {{ nomSite }} permet à tous les organisateurs d’événements de créer facilement
                 et d’une façon très abordable un ecosystème de communication en s'appuyant
-                sur les réseaux sociaux. Que vous soyez un particulier ou un 
+                sur les réseaux sociaux. Que vous soyez un particulier ou un
                 professionnel, que vous organisiez une petite soirée entre amis ou le concert
                 d'Eminem, le service proposé par {{ nomSite }} s’adapte à tous
                 vos besoins ! Les mots d’ordre : gain de temps, simplicité et popularité !
-            </p> 
-            <br />
+            </p>
+            <br/>
             <p>
-                Notre souhait : vous proposer tous les événements qui vont combler 
+                Notre souhait : vous proposer tous les événements qui vont combler
                 vos envies de sortie !</p>
-            <br />
+            <br/>
             <p>
-                En rassemblant et classant le maximum d’événements proche de chez vous, 
+                En rassemblant et classant le maximum d’événements proche de chez vous,
                 la plateforme {{ nomSite }} souhaite devenir un guide pertinent pour vos soirées.
                 Une envie de jazz à Toulouse ce soir ? Un concert de rap à Bordeaux ou un
-                match de foot à Lyon ? L'équipe By Night vous donne accès aux événements qui 
+                match de foot à Lyon ? L'équipe By Night vous donne accès aux événements qui
                 répondent au mieux à vos attentes !
             </p>
         </div>

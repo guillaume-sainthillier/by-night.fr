@@ -63,7 +63,8 @@ class FacebookAdmin extends FacebookEvents
         }
     }
 
-    public function init() {
+    public function init()
+    {
         //CLI
         if ($this->isCLI()) {
             $this->siteInfo = $this->om->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
@@ -360,7 +361,7 @@ class FacebookAdmin extends FacebookEvents
                 $current_keywords = array_slice($keywords, $i * $requestsParBatch, $requestsParBatch);
                 foreach ($current_keywords as $keyword) {
                     //Construction des requêtes du batch
-                    $keyword = '"'. $keyword . '"';
+                    $keyword = '"' . $keyword . '"';
                     $requests[] = $this->client->request('GET', '/search', [
                         'q' => $keyword,
                         'type' => 'event',
