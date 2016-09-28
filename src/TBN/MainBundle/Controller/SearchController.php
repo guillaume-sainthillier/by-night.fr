@@ -5,7 +5,7 @@ namespace TBN\MainBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use FOS\ElasticaBundle\Manager\RepositoryManager;
+use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Pagerfanta\Pagerfanta;
 
 use TBN\MainBundle\Entity\Site;

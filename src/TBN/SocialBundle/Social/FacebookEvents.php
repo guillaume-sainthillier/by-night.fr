@@ -41,8 +41,8 @@ class FacebookEvents extends Facebook
                 ])
             ]);
 
-            $post = $request->getGraphObject();
-            $agenda->setFbPostId($post->getProperty("id"));
+            $post = $request->getGraphNode();
+            $agenda->setFbPostId($post->getField("id"));
         }
     }
 

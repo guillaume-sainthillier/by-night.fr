@@ -56,7 +56,7 @@ class TBNMainBundle extends Bundle
                     $agendas = $em->getRepository('TBNAgendaBundle:Agenda')->findBy(['site' => $site->getId()]);
                     foreach ($agendas as $agenda) {
                         $url = $router->generate('tbn_agenda_details', ['subdomain' => $site->getSubdomain(), 'slug' => $agenda->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
-                        $event->getGenerator()->addUrl(
+                        $event->getUrlContainer()->addUrl(
                             new UrlConcrete(
                                 $url,
                                 $agenda->getDateModification(),
@@ -70,7 +70,7 @@ class TBNMainBundle extends Bundle
                 foreach ($routes as $route) {
                     $url = $router->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
 
-                    $event->getGenerator()->addUrl(
+                    $event->getUrlContainer()->addUrl(
                         new UrlConcrete(
                             $url,
                             new \DateTime(),
