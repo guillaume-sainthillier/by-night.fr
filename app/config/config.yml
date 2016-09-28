@@ -48,6 +48,7 @@ twig:
     debug:            %kernel.debug%
     strict_variables: %kernel.debug%
     form_themes:
+            - 'VichUploaderBundle:Form:fields.html.twig'
             - ':Form:fields.html.twig'
     globals:
         menu: "@white_october_breadcrumbs"
@@ -84,6 +85,23 @@ swiftmailer:
     sender_address: %mailer_user%
     spool:     { type: memory }
 
+vich_uploader:
+    db_driver: orm
+
+    mappings:
+        user_image:
+            uri_prefix:         /uploads/users
+            upload_destination: %kernel.root_dir%/../web/uploads/users
+            inject_on_load:     false
+            delete_on_update:   true
+            delete_on_remove:   true
+        event_image:
+            uri_prefix:         /uploads/documents
+            upload_destination: %kernel.root_dir%/../web/uploads/documents
+            inject_on_load:     false
+            delete_on_update:   true
+            delete_on_remove:   true
+
 stof_doctrine_extensions:
     orm:
         default:
@@ -101,7 +119,20 @@ fos_user:
 #    geocoder:
         # Enable the service
 #        enabled: true
-    
+
+easy_admin:
+    entities:
+        - TBN\AgendaBundle\Entity\Agenda
+        - TBN\UserBundle\Entity\User
+        - TBN\MainBundle\Entity\Site
+        - TBN\AgendaBundle\Entity\Place
+        - TBN\AgendaBundle\Entity\Calendrier
+        - TBN\CommentBundle\Entity\Comment
+        - TBN\MajDataBundle\Entity\Exploration
+        - TBN\MajDataBundle\Entity\HistoriqueMaj
+        - TBN\UserBundle\Entity\SiteInfo
+        - TBN\UserBundle\Entity\UserInfo
+
 hwi_oauth:
     #this is my custom user provider, created from FOSUBUserProvider - will manage the 
     #automatic user registration on your site, with data from the provider (facebook. google, etc.)
@@ -276,8 +307,8 @@ fos_elastica:
             types:
                 event:
                     mappings:
-                        nom: { boost: 5, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        descriptif: { index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        nom: { boost: 5, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        descriptif: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         dateDebut: { type: date, format: Y-m-d }
                         dateFin: { type: date, format: Y-m-d }
                         commune: ~
@@ -285,10 +316,10 @@ fos_elastica:
                         place:
                             type: "object"
                             properties:
-                                nom: { boost: 3, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                                rue: { index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                                nom: { boost: 3, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                                rue: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                                 codePostal: ~
-                                ville: { boost: 2, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                                ville: { boost: 2, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         site:
                             type: "object"
                             properties:
@@ -302,9 +333,9 @@ fos_elastica:
                         finder: ~
                 user:
                     mappings:
-                        username: { boost: 5, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        firstname: { boost: 1, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        lastname: { boost: 1, index_analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        username: { boost: 5, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        firstname: { boost: 1, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        lastname: { boost: 1, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         site:
                             type: "object"
                             properties:

@@ -19,9 +19,9 @@
     {% set nomSoiree = '[' ~ soiree.modificationDerniereMinute ~ '] ' ~ soiree.nom %}
 {% endif %}
 {% set descriptionSoiree =  soiree.descriptif|parse_tags|raw %}
-{% if soiree.webPath %}
-    {% set original = absolute_url(asset('/' ~ soiree.webPath)) %}
-    {% set thumb = soiree.webPath|imagine_filter('thumbs_evenement') %}
+{% if soiree.path %}
+    {% set original =  absolute_url(vich_uploader_asset(soiree, 'file')) %}
+    {% set thumb = vich_uploader_asset(soiree, 'file')|imagine_filter('thumbs_evenement') %}
 {% elseif soiree.url %}
     {% set original = soiree.url %}
     {% set thumb = original %}
@@ -35,7 +35,7 @@
 {% set place = soiree.place %}
 
 {% block titre_agenda %}
-    {% if is_granted('ROLE_ADMIN') or soiree.user == app.user %}<a
+    {% if is_granted('ROLE_ADMIN') or (soiree.user and soiree.user == app.user) %}<a
         href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>{% endif %}
     {{ block('title') }}
 {% endblock %}

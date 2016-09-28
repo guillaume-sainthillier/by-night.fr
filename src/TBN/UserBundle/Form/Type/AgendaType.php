@@ -12,6 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class AgendaType extends AbstractType
 {
@@ -36,10 +37,9 @@ class AgendaType extends AbstractType
                     "placeholder" => "Décrivez votre événement...",
                 ]
             ])
-            ->add('file', FileType::class, [
+            ->add('file', VichImageType::class, [
                 "label" => "Affiche / Flyer",
                 "required" => false,
-                'image_path' => 'webPath',
                 'image_filter' => 'thumb_evenement'
             ])
             ->add('dateDebut', DateType::class, [

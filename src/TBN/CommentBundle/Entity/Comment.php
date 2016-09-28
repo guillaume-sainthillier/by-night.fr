@@ -319,4 +319,9 @@ class Comment
     {
         return $this->reponses;
     }
+
+    public function __toString()
+    {
+        return sprintf("#%s", $this->id ?: '?');
+    }
 }

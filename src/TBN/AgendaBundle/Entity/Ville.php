@@ -28,7 +28,7 @@ class Ville
      * @ORM\GeneratedValue(strategy="AUTO")
      * @Expose
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
@@ -241,5 +241,10 @@ class Ville
             'codePostal' => $this->codePostal,
             'site' => $this->getSite() ? $this->getSite()->toArray() : null
         ];
+    }
+
+    public function __toString()
+    {
+        return "#".$this->id ?: '?';
     }
 }

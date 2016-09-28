@@ -47,8 +47,7 @@ class CollectionExtension extends AbstractTypeExtension
             'by_reference' => false, //GARANTIE D'APPEL de addXXX sur l'objet parent de la collection
         ));
 
-        $resolver->setNormalizer('options', function (Options $options, $value) {
-            $value['block_name'] = 'entry';
+        $resolver->setNormalizer('block_name', function (Options $options, $value) {
             return $value;
         });
     }

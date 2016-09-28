@@ -10,6 +10,9 @@ namespace TBN\MainBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use TBN\MainBundle\Site\SiteManager;
+use TBN\SocialBundle\Social\Facebook;
+use TBN\SocialBundle\Social\FacebookAdmin;
 
 /**
  * Description of TBNExtension
@@ -30,13 +33,13 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     private $siteManager;
     private $socials;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(SiteManager $manager, ContainerInterface $container)
     {
         $this->router = $container->get('router');
         $this->requestStack = $container->get('request_stack');
         $this->cache = $container->get('memory_cache');
         $this->doctrine = $container->get('doctrine');
-        $this->siteManager = $container->get('site_manager');
+        $this->siteManager = $manager;
         $this->requestStack = $container->get('request_stack');
         $this->socials = [
             'facebook' => $container->get('tbn.social.facebook_admin'),
@@ -90,6 +93,9 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             foreach ($this->socials as $name => $social) {
                 $key = 'tbn.counts.' . $name;
                 if (!$this->cache->contains($key)) {
+                    if($social instanceof FacebookAdmin) {
+                        $social->init();
+                    }
                     $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
                 }
 

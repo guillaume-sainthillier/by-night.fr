@@ -36,5 +36,8 @@
         "typeahead-addresspicker": "latest",
         "typeahead.js": "latest",
         "jquery.cookiebar": "latest"
+    },
+    "resolutions": {
+      "jquery": "2.*"
     }
 }

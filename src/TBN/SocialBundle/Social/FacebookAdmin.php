@@ -65,6 +65,8 @@ class FacebookAdmin extends FacebookEvents
 
     public function init()
     {
+        $this->siteInfo = $this->siteManager->getSiteInfo();
+
         //CLI
         if ($this->isCLI()) {
             $this->siteInfo = $this->om->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
@@ -119,8 +121,7 @@ class FacebookAdmin extends FacebookEvents
             try {
                 $page = $this->getPageFromId($site->getFacebookIdPage(), ['fields' => 'fan_count']);
                 return $page->getField('fan_count');
-            } catch (FacebookSDKException $ex) {
-            }
+            } catch (FacebookSDKException $ex) {}
         }
 
         return 0;

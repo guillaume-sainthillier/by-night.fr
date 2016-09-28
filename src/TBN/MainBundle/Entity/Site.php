@@ -66,11 +66,6 @@ class Site
     protected $description;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\MainBundle\Entity\Image", mappedBy="site", cascade={"persist", "remove"})
-     */
-    protected $images;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="facebook_id_page", type="string", length=127, nullable=true)
@@ -477,38 +472,6 @@ class Site
         return $this->longitude;
     }
 
-    /**
-     * Add images
-     *
-     * @param \TBN\MainBundle\Entity\Image $images
-     * @return Site
-     */
-    public function addImage(\TBN\MainBundle\Entity\Image $images)
-    {
-        $this->images[] = $images->setSite($this);
-
-        return $this;
-    }
-
-    /**
-     * Remove images
-     *
-     * @param \TBN\MainBundle\Entity\Image $images
-     */
-    public function removeImage(\TBN\MainBundle\Entity\Image $images)
-    {
-        $this->images->removeElement($images);
-    }
-
-    /**
-     * Get images
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getImages()
-    {
-        return $this->images;
-    }
 
     public function toJSON()
     {
@@ -520,5 +483,10 @@ class Site
         return [
             'subdomain' => $this->subdomain
         ];
+    }
+
+    public function __toString()
+    {
+        return sprintf("#%s (%s)", $this->id ?: '?', $this->getNom());
     }
 }

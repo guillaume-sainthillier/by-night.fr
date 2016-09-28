@@ -9,13 +9,13 @@ class SiteManager
 {
     /**
      *
-     * @var TBN\MainBundle\Entity\Site
+     * @var Site
      */
     protected $currentSite;
 
     /**
      *
-     * @var TBN\UserBundle\Entity\SiteInfo
+     * @var SiteInfo
      */
     protected $siteInfo;
 
@@ -27,7 +27,7 @@ class SiteManager
 
     /**
      *
-     * @return TBN\UserBundle\Entity\SiteInfo
+     * @return SiteInfo
      */
     public function getSiteInfo()
     {
@@ -36,7 +36,7 @@ class SiteManager
 
     /**
      *
-     * @param TBN\UserBundle\Entity\SiteInfo $siteInfo
+     * @param SiteInfo $siteInfo
      */
     public function setSiteInfo(SiteInfo $siteInfo = null)
     {
@@ -47,7 +47,7 @@ class SiteManager
 
     /**
      *
-     * @return TBN\MainBundle\Entity\Site
+     * @return Site
      */
     public function getCurrentSite()
     {
@@ -56,7 +56,7 @@ class SiteManager
 
     /**
      *
-     * @param \TBN\MainBundle\Entity\Site $currentSite
+     * @param Site $currentSite
      */
     public function setCurrentSite(Site $currentSite = null)
     {

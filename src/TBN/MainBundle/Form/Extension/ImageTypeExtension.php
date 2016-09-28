@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ImageTypeExtension extends AbstractTypeExtension
 {
@@ -21,21 +22,6 @@ class ImageTypeExtension extends AbstractTypeExtension
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $imageUrl = null;
-
-        if (array_key_exists('image_path', $options)) {
-            $parentData = $form->getParent()->getData();
-
-            if (null !== $parentData) {
-                $accessor = PropertyAccess::createPropertyAccessor();
-                $imageUrl = $accessor->getValue($parentData, $options['image_path']);
-            } else {
-                $imageUrl = null;
-            }
-        }
-
-        // set an "image_url" variable that will be available when rendering this field
-        $view->vars['image_url'] = $imageUrl;
         $view->vars['image_filter'] = $options['image_filter'];
     }
 
@@ -46,8 +32,7 @@ class ImageTypeExtension extends AbstractTypeExtension
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array('image_path' => null))
-            ->setRequired(array('image_filter'));
+        $resolver->setRequired(array('image_filter'));
     }
 
     /**
@@ -57,6 +42,6 @@ class ImageTypeExtension extends AbstractTypeExtension
      */
     public function getExtendedType()
     {
-        return FileType::class;
+        return VichImageType::class;
     }
 }

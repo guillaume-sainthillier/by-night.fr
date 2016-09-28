@@ -47,8 +47,7 @@ class Twitter extends Social
                     return $page['followers_count'];
                 }
             }
-        } catch (\Exception $e) {
-        }
+        } catch (\Exception $e) {}
 
         return 0;
     }

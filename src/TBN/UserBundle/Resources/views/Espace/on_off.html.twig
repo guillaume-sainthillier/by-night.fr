@@ -4,7 +4,7 @@
         {% set attr = elem.vars.attr|default([])|merge({'data-href-connect': hwi_oauth_login_url(service)}) %}
         {{ form_widget(elem, {'attr': attr}) }}
     </label>
-    <span class="when_on help-block text-primary">
+    <span class="when_on show help-block text-primary">
         {{ elem.vars.attr['data-message']|default('') }}
     </span>
 </div>

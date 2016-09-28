@@ -19,7 +19,7 @@ services:
            
     tbn.twig.main_extension:
         class: TBN\MainBundle\Twig\MainExtension
-        arguments : ["@service_container"]
+        arguments : ["@site_manager", "@service_container"]
         tags:
             - { name: twig.extension }
            
@@ -44,4 +44,4 @@ services:
     tbn.image_type_extension:
         class: TBN\MainBundle\Form\Extension\ImageTypeExtension
         tags:
-            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FileType }
+            - { name: form.type_extension, extended_type: Vich\UploaderBundle\Form\Type\VichImageType }

@@ -16,8 +16,7 @@
 {% block breadcrumb %}
     <div id="bread" class="bg-white">
         <div class="container">
-            {% set item = menu.addItem('Sortir', path('tbn_main_index')) %}
-            {% set item = menu.addItem(site.nom, path('tbn_agenda_index')) %}
+            {% set item = menu.addItem('Sortir à ' ~ site.nom, path('tbn_agenda_index')) %}
             {% block breadcrumb_agenda %}{% endblock %}
             {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
         </div>

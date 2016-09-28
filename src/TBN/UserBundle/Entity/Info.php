@@ -859,4 +859,9 @@ abstract class Info
     {
         return $this->twitter_refresh_token;
     }
+
+    public function __toString()
+    {
+        return "#".$this->id ?: '?';
+    }
 }

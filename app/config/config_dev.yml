@@ -45,6 +45,8 @@ monolog:
                 VERBOSITY_VERBOSE: NOTICE
                 VERBOSITY_VERY_VERBOSE: NOTICE
                 VERBOSITY_DEBUG: DEBUG
-            channels: ["doctrine"]    
+            channels: ["doctrine"]
+
+
 #swiftmailer:
 #    delivery_address: me@example.com

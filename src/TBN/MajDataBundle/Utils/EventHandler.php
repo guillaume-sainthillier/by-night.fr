@@ -31,7 +31,13 @@ class EventHandler
     {
         //$url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
         $url = $agenda->getUrl();
+        $path = $agenda->setPath();
         $agenda->setUrl(null)->setPath(null);
+
+        if(! $url) {
+            $agenda->setPath($path);
+            return;
+        }
 
         try {
             $image = file_get_contents($url);

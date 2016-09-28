@@ -341,6 +341,13 @@ module.exports = function (grunt) {
                 ],
                 dest: 'web/prod/espace-perso/login/css/login.css'
             },
+            espacePersoProfileJs: {
+                src: [
+                    'web/bundles/tbnsocial/js/SocialLogin.js',
+                    'web/bundles/tbnuser/js/Profile.js'
+                ],
+                dest: 'web/prod/espace-perso/profile/js/edit.js'
+            },
             enSavoirPlusCss: {
                 src: [
                     'web/bundles/tbnagenda/css/plus.css'
@@ -364,6 +371,7 @@ module.exports = function (grunt) {
                     'web/prod/main/js/scripts.min.js': ['web/prod/main/js/scripts.js'],
                     'web/prod/evenements/js/index.min.js': ['web/prod/evenements/js/index.js'],
                     'web/prod/espace-perso/login/js/login.min.js': ['web/prod/espace-perso/login/js/login.js'],
+                    'web/prod/espace-perso/profile/js/edit.min.js': ['web/prod/espace-perso/profile/js/edit.js'],
                     'web/prod/membres/js/detail.min.js': ['web/prod/membres/js/detail.js'],
                     'web/prod/espace-perso/evenements/js/liste.min.js': ['web/prod/espace-perso/evenements/js/liste.js'],
                     'web/prod/espace-perso/evenements/js/manager.min.js': ['web/prod/espace-perso/evenements/js/manager.js'],

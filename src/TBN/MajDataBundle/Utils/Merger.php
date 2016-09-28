@@ -50,7 +50,8 @@ class Merger
             'google_system_post_id',
             'source',
             'fb_date_modification',
-            'place'
+            'place',
+            'user'
         ]);
     }
 

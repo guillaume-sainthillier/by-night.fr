@@ -29,7 +29,7 @@ class Place
      * @ORM\GeneratedValue(strategy="AUTO")
      * @Expose
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
@@ -394,5 +394,10 @@ class Place
     public function getSite()
     {
         return $this->site;
+    }
+
+    public function __toString()
+    {
+        return sprintf("#%s (%s)", $this->id ?: '?', $this->getNom());
     }
 }

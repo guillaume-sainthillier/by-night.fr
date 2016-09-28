@@ -1,12 +1,39 @@
 {% extends "form_div_layout.html.twig" %}
 
+{% block vich_image_widget %}
+{% spaceless %}
+    {% if form.delete is defined %}
+        <div class="checkbox no-padding pull-right">
+            {{ form_errors(form.delete) }}
+            {{ form_label(form.delete) }}
+            <label style="padding-left: 5px;">{{ form_widget(form.delete) }}</label>
+        </div>
+
+    {% endif %}
+
+    {% if show_download_link and download_uri is defined and download_uri%}
+        <a class="pull-left" href="{{ download_uri }}">{{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
+    {% endif %}
+
+    {% if download_uri is defined and download_uri %}
+        <a href="{{ download_uri }}">
+        {% if image_filter is not null %}
+        <img class="img-responsive display_inline_block margin_right_15" src="{{ download_uri|imagine_filter(image_filter) }}" alt="" />
+        {% endif %}
+        </a>
+    {% endif %}
+
+    {{ form_widget(form.file) }}
+{% endspaceless %}
+{% endblock %}
+
+
 {# Images #}
 {% block file_widget %}{%- spaceless -%}
-    {% if image_url is not null %}
-        <img src="{{ image_url|imagine_filter(image_filter) }}" class="img-responsive display_inline_block margin_right_15" />
-    {% endif %}
-    <input type="text" readonly class="form-control" placeholder="Télécharger..." />
+    <div class="form-group no_margin">
     {{ block('form_widget') }}
+    <input type="text" readonly class="form-control" placeholder="Nouvelle image..." />
+    </div>
 {%- endspaceless -%}{% endblock %}
 
 {% block form_row %}{% spaceless %}

@@ -3,6 +3,7 @@
 namespace TBN\SocialBundle\Social;
 
 use \Google_Client;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**
  * Description of Twitter
@@ -11,6 +12,7 @@ use \Google_Client;
  */
 class Google extends Social
 {
+    protected $key;
 
     /**
      *
@@ -20,14 +22,14 @@ class Google extends Social
 
     public function constructClient()
     {
-
         $api_id = $this->id;
         $api_secret = $this->secret;
+        $this->key = $this->config['key'];
 
         $this->client = $client = new Google_Client();
         $this->client->setClientId($api_id);
         $this->client->setClientSecret($api_secret);
-        $this->client->setDeveloperKey("AIzaSyBETAmun16QLnNnOtEPL4-_n-O3ApO9BEI");
+        $this->client->setDeveloperKey($this->key);
         $this->client->setScopes([
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',
@@ -40,15 +42,14 @@ class Google extends Social
 
     public function getNumberOfCount()
     {
-
         $site = $this->siteManager->getCurrentSite();
         $router = $this->router;
 
         if ($site !== null) {
             try {
-                $url = $router->generate("tbn_main_index", [], true);
+                $url = $router->generate("tbn_main_index", [], UrlGenerator::ABSOLUTE_URL);
                 $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, "https://clients6.google.com/rpc?key=AIzaSyCKSbrvQasunBoV16zDH9R33D88CeLr9gQ");
+                curl_setopt($ch, CURLOPT_URL, "https://clients6.google.com/rpc");
                 curl_setopt($ch, CURLOPT_POST, 1);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, '[{"method":"pos.plusones.get","id":"p",
@@ -58,6 +59,7 @@ class Google extends Social
                 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
 
                 $result = curl_exec($ch);
+
                 curl_close($ch);
                 $json = json_decode($result, true);
 

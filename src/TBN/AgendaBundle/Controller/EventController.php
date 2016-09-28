@@ -108,12 +108,15 @@ class EventController extends Controller
                 'slug' => $agenda->getSlug(),
             ], UrlGeneratorInterface::ABSOLUTE_URL);
 
+            $helper = $this->get('vich_uploader.templating.helper.uploader_helper');
+            $path = $helper->asset($agenda, 'file');
+
 
             $page = new Page([
                 'url' => $link,
                 'title' => $agenda->getNom(),
                 'text' => $agenda->getDescriptif(),
-                'image' => $request->getUriForPath("/" . $agenda->getWebPath()),
+                'image' => $request->getUriForPath($path),
             ]);
             $page->shareCount(['twitter', 'facebook', 'plus']);
             $cache->save($key, [
@@ -324,7 +327,7 @@ class EventController extends Controller
             $places = $repo->getAgendaPlaces($site);
             $lieux = array();
             foreach ($places as $place) {
-                $lieux[$place->getId()] = $place->getNom();
+                $lieux[$place->getNom()] = $place->getId();
             }
 
             $cache->save($key, $lieux, 24 * 60 * 60);

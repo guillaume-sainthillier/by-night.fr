@@ -29,6 +29,12 @@ tbn_membres:
     prefix:   /membres
     host:   "{subdomain}.%base_host%"
 
+easy_admin_bundle:
+    resource: "@EasyAdminBundle/Controller/"
+    type:     annotation
+    prefix:   /_administration2
+    host:   "{subdomain}.%base_host%"
+
 #MainBundle, pas de ville définie ici
 tbn_city:
     resource: "@TBNMainBundle/Resources/config/routing.yml"

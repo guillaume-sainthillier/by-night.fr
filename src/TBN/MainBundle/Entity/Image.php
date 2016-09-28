@@ -7,9 +7,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * Site
+ * Image
  *
  * @ORM\Table(name="Image")
  * @ORM\Entity()
@@ -29,14 +30,16 @@ class Image
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", inversedBy="images")
-     * @ORM\JoinColumn(nullable=true)
      *
+     * @Vich\UploadableField(mapping="user_image", fileNameProperty="imageName")
+     *
+     * @var File
      */
-    protected $site;
+    private $imageFile;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Expose
      */
     private $path;
 
@@ -127,7 +130,7 @@ class Image
     {
         // on se débarrasse de « __DIR__ » afin de ne pas avoir de problème lorsqu'on affiche
         // le document/image dans la vue.
-        return 'uploads/sites';
+        return 'uploads/images';
     }
 
     public function getAbsolutePath()
@@ -173,26 +176,8 @@ class Image
         return $this->path;
     }
 
-    /**
-     * Set site
-     *
-     * @param \TBN\MainBundle\Entity\Site $site
-     * @return Image
-     */
-    public function setSite(\TBN\MainBundle\Entity\Site $site = null)
+    public function __toString()
     {
-        $this->site = $site;
-
-        return $this;
-    }
-
-    /**
-     * Get site
-     *
-     * @return \TBN\MainBundle\Entity\Site
-     */
-    public function getSite()
-    {
-        return $this->site;
+        return "#".$this->id ?: '?';
     }
 }

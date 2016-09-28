@@ -37,6 +37,12 @@ abstract class Social
 
     /**
      *
+     * @var array $config
+     */
+    protected $config;
+
+    /**
+     *
      * @var string $secret
      */
     protected $secret;
@@ -84,6 +90,7 @@ abstract class Social
 
         $this->id = $config["id"];
         $this->secret = $config["secret"];
+        $this->config = $config;
         $this->siteManager = $siteManager;
         $this->tokenStorage = $tokenStorage;
         $this->router = $router;

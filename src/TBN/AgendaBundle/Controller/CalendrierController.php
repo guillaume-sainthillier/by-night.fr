@@ -35,7 +35,7 @@ class CalendrierController extends Controller
     public function participerAction(Agenda $agenda, $participer, $interet)
     {
         /**
-         * @var TBNUserBundle:User Description
+         * @var \TBN\UserBundle\Entity\User Description
          */
         $user = $this->get('security.token_storage')->getToken()->getUser();
 

@@ -5,6 +5,7 @@ namespace TBN\AgendaBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use \Doctrine\Common\Collections\ArrayCollection;
 
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -13,8 +14,8 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
 
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Agenda;
+
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Agenda
@@ -33,6 +34,7 @@ use TBN\AgendaBundle\Entity\Agenda;
  * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("all")
+ * @Vich\Uploadable
  */
 class Agenda
 {
@@ -252,7 +254,7 @@ class Agenda
     protected $fromData;
 
     /**
-     * @Assert\File(maxSize="6000000")
+     * @Vich\UploadableField(mapping="event_image", fileNameProperty="path")
      * @Assert\Valid()
      */
     protected $file;
@@ -421,47 +423,33 @@ class Agenda
 
     protected $rejectReasons;
 
-    public function getAbsolutePath()
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     *
+     * @return User
+     */
+    public function setFile(File $image = null)
     {
-        return null === $this->path ? null : $this->getUploadRootDir() . '/' . $this->path;
-    }
+        $this->file = $image;
 
-    public function getWebPath()
-    {
-        return null === $this->path ? null : $this->getUploadDir() . '/' . $this->path;
-    }
+        if ($image) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->dateModification = new \DateTime();
+        }
 
-    public function getUploadRootDir()
-    {
-        // le chemin absolu du répertoire où les documents uploadés doivent être sauvegardés
-        return __DIR__ . '/../../../../web/' . $this->getUploadDir();
-    }
-
-    protected function getUploadDir()
-    {
-        // on se débarrasse de « __DIR__ » afin de ne pas avoir de problème lorsqu'on affiche
-        // le document/image dans la vue.
-        return 'uploads/documents';
+        return $this;
     }
 
     /**
-     * Sets file.
-     *
-     * @param UploadedFile $file
+     * @return File
      */
-    public function setFile(UploadedFile $file = null)
-    {
-        $this->file = $file;
-        // check if we have an old image path
-        if (isset($this->path)) {
-            // store the old name to delete after the update
-            $this->temp = $this->path;
-            $this->path = null;
-        } else {
-            $this->path = 'initial';
-        }
-    }
-
     public function getFile()
     {
         return $this->file;
@@ -475,54 +463,6 @@ class Agenda
     {
         if (null === $this->getDateFin()) {
             $this->setDateFin($this->getDateDebut());
-        }
-    }
-
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function preUpload()
-    {
-        if (null !== $this->getFile()) {
-            // do whatever you want to generate a unique name
-            $filename = sha1(uniqid(mt_rand(), true));
-            $this->path = $filename . '.' . $this->getFile()->guessExtension();
-        }
-    }
-
-    /**
-     * @ORM\PostPersist
-     * @ORM\PostUpdate
-     */
-    public function upload()
-    {
-        if (null === $this->getFile()) {
-            return;
-        }
-
-        // if there is an error when moving the file, an exception will
-        // be automatically thrown by move(). This will properly prevent
-        // the entity from being persisted to the database on error
-        $this->getFile()->move($this->getUploadRootDir(), $this->path);
-
-        // check if we have an old image
-        if (isset($this->temp)) {
-            // delete the old image
-            unlink($this->getUploadRootDir() . '/' . $this->temp);
-            // clear the temp image path
-            $this->temp = null;
-        }
-        $this->file = null;
-    }
-
-    /**
-     * @ORM\PostRemove
-     */
-    public function removeUpload()
-    {
-        if (($file = $this->getAbsolutePath())) {
-            unlink($file);
         }
     }
 
@@ -1289,6 +1229,19 @@ class Agenda
     }
 
     /**
+     * Set isBrouillon
+     *
+     * @param boolean $isBrouillon
+     * @return Agenda
+     */
+    public function setIsBrouillon($isBrouillon)
+    {
+        $this->isBrouillon = $isBrouillon;
+
+        return $this;
+    }
+
+    /**
      * Get isBrouillon
      *
      * @return boolean
@@ -1769,6 +1722,19 @@ class Agenda
     }
 
     /**
+     * Set isMigrated
+     *
+     * @param boolean $isMigrated
+     * @return Agenda
+     */
+    public function setIsMigrated($isMigrated)
+    {
+        $this->isMigrated = $isMigrated;
+
+        return $this;
+    }
+
+    /**
      * Get isMigrated
      *
      * @return boolean
@@ -1833,5 +1799,10 @@ class Agenda
     public function getFbDateModification()
     {
         return $this->fbDateModification;
+    }
+
+    public function __toString()
+    {
+        return "#".$this->id ?: '?';
     }
 }

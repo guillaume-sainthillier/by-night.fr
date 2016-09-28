@@ -12,8 +12,8 @@
                     <a title="Tous les détails de {{ nomSoiree }}"
                        href="{{ path('tbn_agenda_details', {'slug' : soiree.slug}) }}">{{ nomSoiree }}</a>
                 </h4>
-                <span class="text-primary"
-                      title="{{ soiree.place and soiree.place.ville ? soiree.place.ville : '' }}">{{ soiree.place ? soiree.place.nom : '' }}</span>
+                <strong class="text-primary" style="font-weight: normal"
+                      title="{{ soiree.place and soiree.place.ville ? soiree.place.ville : '' }}">{{ soiree.place ? soiree.place.nom : '' }}</strong>
                 {% set distinctTags = soiree.distinctTags %}
                 {% if distinctTags|length %}
                     <br/>

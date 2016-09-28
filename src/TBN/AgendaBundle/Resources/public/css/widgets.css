@@ -40,73 +40,58 @@ Then, run this script to get the list.
     Author     : Guillaume S. <guillaume@sainthillier.fr>
 */
 #widgets h4.modal-title {
-    font-size: 17px;
+  font-size: 17px;
 }
-
 #widgets h3.modal-title {
-    font-size: 21px;
+  font-size: 21px;
 }
-
 #widgets .widget {
-    margin-bottom: 40px;
+  margin-bottom: 40px;
 }
-
 #widgets .widget .widget_item {
-    padding: 10px 0;
-    border-bottom: 1px solid white;
-    border-top: 1px solid #CCC;
+  padding: 10px 0;
+  border-bottom: 1px solid white;
+  border-top: 1px solid #CCC;
 }
-
 #widgets .widget .widget_item .item_title {
-    margin-top: 2px;
-    font-size: 14px;
+  margin-top: 2px;
+  font-size: 14px;
 }
-
 #widgets .widget .widget_item:first-child {
-    padding-top: 0;
-    border-top: none;
+  padding-top: 0;
+  border-top: none;
 }
-
 #widgets .widget .widget_item .min_membre {
-    padding-right: 0;
+  padding-right: 0;
 }
-
 #widgets .widget .widget_item .min_membre img {
-    max-height: 50px;
+  max-height: 50px;
 }
-
 #widgets .widget .widget_item .min_membre .month {
-    font-size: 1.3em;
+  font-size: 1.3em;
 }
-
 #widgets .widget .widget_item .min_membre span {
-    display: block;
+  display: block;
 }
-
 #widgets .widget .widget_item .count {
-    font-size: 2em;
-    font-weight: 300;
+  font-size: 2em;
+  font-weight: 300;
 }
-
 #widgets .widget .scrollable {
-    max-height: 500px;
-    overflow-y: auto;
-    position: relative;
+  max-height: 500px;
+  overflow-y: auto;
+  position: relative;
 }
-
 #widgets .widget .scrollable.scrollable-large {
-    max-height: 600px;
+  max-height: 600px;
 }
-
 #widgets .widget .membres {
-    max-height: 300px;
+  max-height: 300px;
 }
-
 #widgets .widget .membres .fb_membres a {
-    display: block;
-    float: left;
+  display: block;
+  float: left;
 }
-
 #widgets .panel-default .panel-heading {
-    background-color: white;
+  background-color: white;
 }

@@ -2,9 +2,9 @@
     <div itemscope itemtype="http://schema.org/Event">
         <div class="row event">
             <div class="col-xs-3 image_soiree">
-                {% if soiree.webPath %}
-                    {% set original =  absolute_url(asset('/' ~ soiree.webPath)) %}
-                    {% set thumb = soiree.webPath|imagine_filter('thumbs_evenement') %}
+                {% if soiree.path %}
+                    {% set original =  absolute_url(vich_uploader_asset(soiree, 'file')) %}
+                    {% set thumb = vich_uploader_asset(soiree, 'file')|imagine_filter('thumbs_evenement') %}
                 {% elseif soiree.url %}
                     {% set original = soiree.url %}
                     {% set thumb = original %}

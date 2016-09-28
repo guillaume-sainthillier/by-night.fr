@@ -40,7 +40,7 @@ class Calendrier
     protected $interet;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $user;
@@ -206,5 +206,10 @@ class Calendrier
     public function getLastDate()
     {
         return $this->lastDate;
+    }
+
+    public function __toString()
+    {
+        return "#".$this->id ?: '?';
     }
 }

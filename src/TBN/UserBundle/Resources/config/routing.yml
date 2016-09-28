@@ -1,3 +1,9 @@
+tbn_user_delete:
+    path: /supprimer
+    defaults: { _controller: TBNUserBundle:Profile:delete }
+    requirements:
+        method: POST
+
 tbn_user_participer:
     path: /participer/{id}
     defaults: { _controller: TBNAgendaBundle:Calendrier:participer, participer: true, interet: false }

@@ -11,6 +11,7 @@
             if (d.getElementById(id)) return t;
             js = d.createElement(s);
             js.id = id;
+            js.async = true;
             js.src = "https://platform.twitter.com/widgets.js";
             fjs.parentNode.insertBefore(js, fjs);
 
@@ -20,7 +21,8 @@
             };
 
             return t;
-        }(document, "script", "twitter-wjs"));</script>
+        }(document, "script", "twitter-wjs"));
+    </script>
     <div class="text-center">
         <a class="twitter-timeline"
            href="{{ site.twitterURLWidget }}"

@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use FOS\UserBundle\Controller\RegistrationController as BaseController;
+use TBN\MainBundle\Site\SiteManager;
 
 /**
  * Controller managing the registration
@@ -39,11 +40,12 @@ class RegistrationController extends BaseController
         /** @var $dispatcher \Symfony\Component\EventDispatcher\EventDispatcherInterface */
         $dispatcher = $this->get('event_dispatcher');
 
-        /** @var $siteManager TBN\MainBundle\Site\SiteManager */
-        $siteManager = $this->container->get('site_manager');
-
         $user = $userManager->createUser();
         $user->setEnabled(true);
+
+
+        /** @var $siteManager SiteManager */
+        $siteManager = $this->container->get('site_manager');
         $user->setSite($siteManager->getCurrentSite());
 
         $event = new GetResponseUserEvent($user, $request);
@@ -64,10 +66,8 @@ class RegistrationController extends BaseController
 
             $userManager->updateUser($user);
 
-            if ($request->isXmlHttpRequest()) {
-                $response = new JsonResponse(["success" => true]);
-            } else {
-                $url = $this->container->get('router')->generate('fos_user_registration_confirmed');
+            if (null === $response = $event->getResponse()) {
+                $url = $this->generateUrl('fos_user_registration_confirmed');
                 $response = new RedirectResponse($url);
             }
 
@@ -77,7 +77,7 @@ class RegistrationController extends BaseController
         }
 
         return $this->render('FOSUserBundle:Registration:register.html.twig', array(
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ));
     }
 }
