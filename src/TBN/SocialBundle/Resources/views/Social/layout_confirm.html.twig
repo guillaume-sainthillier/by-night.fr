@@ -13,16 +13,6 @@
             En vous deconnectant de {{ service|capitalize }}, vous ne pourrez poster vos événements sur le réseau social.
         {% endblock %}
     </p>
-    <label>
-        {% block texte_input %}
-            Supprimer tous les posts de {{ site.nom }} By Night
-        {% endblock %}
-        <input type="checkbox" value=""/>
-    </label>
-    <div class="hidden no_margin alert alert-danger">
-        <i class="fa fa-warning"></i>
-        Cette action est irréversible!
-    </div>
 {% endblock %}
 
 {% block modal_buttons_espace %}
