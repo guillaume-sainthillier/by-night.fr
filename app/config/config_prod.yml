@@ -26,7 +26,6 @@ monolog:
         grouped:
             type:    group
             members: [streamed, buffered]
-            members: [streamed]
         buffered:
             type:    buffer
             handler: swift
