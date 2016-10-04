@@ -1,7 +1,9 @@
 {% set info = user.info %}
 
 {% if info and (info.facebookAccessToken or info.twitterNickname or info.googleAccessToken) %}
-    <hr/>{% endif %}
+    <hr/>
+{% endif %}
+
 {% if info.facebookAccessToken %}
     <a class="social-facebook social" href="https://www.facebook.com/{{ info.facebookId }}"
        title="{{ info.facebookRealname }} sur Facebook">
