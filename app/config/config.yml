@@ -253,6 +253,18 @@ liip_imagine:
             quality: 75
             filters:
                 thumbnail: { size: [200, 200], mode: outbound }
+        thumb_user_menu:
+            quality: 75
+            filters:
+                thumbnail: { size: [30, 30], mode: outbound }
+        thumb_user_50:
+            quality: 75
+            filters:
+                thumbnail: { size: [50, 50], mode: outbound }
+        thumb_user_115:
+            quality: 75
+            filters:
+                thumbnail: { size: [115, 115], mode: outbound }
 
 tbn_user:
     socials:

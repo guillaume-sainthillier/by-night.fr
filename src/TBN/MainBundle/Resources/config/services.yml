@@ -5,9 +5,10 @@ parameters:
 
     
 services:
-#    tbn.router:
-#        class: TBN\MainBundle\Routing\Router
-#        alias: router
+    tbn.profile_picture.user:
+        class: TBN\MainBundle\Picture\UserProfilePicture
+        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper" ]
+
     site_manager:
         class: TBN\MainBundle\Site\SiteManager
       

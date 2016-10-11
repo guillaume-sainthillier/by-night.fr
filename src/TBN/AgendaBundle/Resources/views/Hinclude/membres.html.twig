@@ -1,5 +1,5 @@
 {% for user in membres %}
-    {% set imageURL = user.profileDefault ? user.profileDefault : 'img/empty_user.png'|imagine_filter('thumb_user') %}
+    {% set imageURL = userProfilePicture.getProfilePicture(app.user, 'thumb_user_50') %}
     <div class="widget_item">
         <div class="row">
             <div class="col-xs-3 col-md-2 preserve min_membre">

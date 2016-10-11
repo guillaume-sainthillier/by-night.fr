@@ -46,7 +46,7 @@
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                     <li class="dropdown profile">
                         <a href="#" title="{{ app.user.username }} " class="dropdown-toggle" data-toggle="dropdown">
-                            {% set imageURL = app.user.profileDefault ? app.user.profileDefault : 'img/empty_user.png'|imagine_filter('thumb_user') %}
+                            {% set imageURL = userProfilePicture.getProfilePicture(app.user, 'thumb_user_menu') %}
                             <img class="img-circle" height="30" width="30" src="{{ imageURL }}" alt="Mon profil" /> 
                             <b class="caret"></b>
                         </a>

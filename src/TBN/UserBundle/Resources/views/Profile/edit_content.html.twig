@@ -35,7 +35,7 @@
                         {{ form_label(form.imageFile, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
                         <div class="col-md-8">
                             {% if not user.path %}
-                                {% set imageURL = user.profileDefault ? user.profileDefault : 'img/empty_user.png'|imagine_filter('thumb_user') %}
+                                {% set imageURL = userProfilePicture.getProfilePicture(app.user) %}
                                 <img class="img img-responsive" src="{{ imageURL }}" style="max-height: 200px;" />
                             {% endif %}
                             {{ form_errors(form.imageFile) }}

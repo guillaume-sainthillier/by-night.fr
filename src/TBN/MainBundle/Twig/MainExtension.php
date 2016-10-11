@@ -32,6 +32,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     private $cache;
     private $siteManager;
     private $socials;
+    private $userProfilePicture;
 
     public function __construct(SiteManager $manager, ContainerInterface $container)
     {
@@ -41,6 +42,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
         $this->doctrine = $container->get('doctrine');
         $this->siteManager = $manager;
         $this->requestStack = $container->get('request_stack');
+        $this->userProfilePicture = $container->get('tbn.profile_picture.user');
         $this->socials = [
             'facebook' => $container->get('tbn.social.facebook_admin'),
             'twitter' => $container->get('tbn.social.twitter'),
@@ -87,6 +89,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $globals = [
                 "site" => $this->siteManager->getCurrentSite(),
                 "sites" => $sites,
+                "userProfilePicture" => $this->userProfilePicture,
                 "siteInfo" => $this->siteManager->getSiteInfo()
             ];
 
@@ -102,6 +105,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
                 $globals['count_' . $name] = $this->cache->fetch($key);
             }
         }
+
         return $globals;
     }
 

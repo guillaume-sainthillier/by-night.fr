@@ -25,7 +25,7 @@
 
 
     {% block body_membre %}
-        {% set imageURL = user.profileDefault ? user.profileDefault : 'img/empty_user.png'|imagine_filter('thumb_user') %}
+        {% set imageURL = userProfilePicture.getProfilePicture(app.user) %}
         <div class="row">
             <div class="col-md-3">
                 <div class="panel panel-default fiche_profil text-center">
