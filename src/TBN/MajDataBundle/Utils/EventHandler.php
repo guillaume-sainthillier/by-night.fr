@@ -31,7 +31,7 @@ class EventHandler
     {
         //$url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
         $url = $agenda->getUrl();
-        $path = $agenda->setPath();
+        $path = $agenda->getPath();
         $agenda->setUrl(null)->setPath(null);
 
         if(! $url) {
