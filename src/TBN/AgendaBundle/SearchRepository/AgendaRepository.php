@@ -8,12 +8,11 @@ use TBN\MainBundle\Entity\Site;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query;
-use Elastica\Query\BoolQuery as QueryBool;
-use Elastica\Query\NumericRange;
+use Elastica\Query\BoolQuery;
 use Elastica\Query\Match;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\MatchAll;
-use Elastica\Query\Filtered;
+use Elastica\Query\Range;
 
 class AgendaRepository extends Repository
 {
@@ -27,16 +26,16 @@ class AgendaRepository extends Repository
     {
 
         //Filters
-        $filter = new QueryBool;
+        $filter = new BoolQuery;
         $filter->addMust(
             new Term(['site.id' => $site->getId()])
         );
 
         if ($search->getDu()) {
             if (!$search->getAu()) {
-                $filter->addMust(new NumericRange('date_fin', [
-                        'gte' => $search->getDu()->format("Y-m-d")])
-                );
+                $filter->addMust(new Range('date_fin', [
+                    'gte' => $search->getDu()->format("Y-m-d"),
+                ]));
             } else {
                 /*
                  * 4 cas :
@@ -45,36 +44,36 @@ class AgendaRepository extends Repository
                  * - 3) deb € [debForm; finForm]
                  * - 4) fin € [debForm; finForm]                 *
                  */
-                $cas = new QueryBool;
+                $cas = new BoolQuery;
 
                 //Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
-                $cas1 = new QueryBool;
-                $cas1->addMust(new NumericRange('date_debut', [
+                $cas1 = new BoolQuery;
+                $cas1->addMust(new Range('date_debut', [
                         'lte' => $search->getDu()->format("Y-m-d")
                     ])
-                )->addMust(new NumericRange('date_fin', [
+                )->addMust(new Range('date_fin', [
                     'gte' => $search->getAu()->format("Y-m-d"),
                 ]));
 
                 //Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
-                $cas2 = new QueryBool;
-                $cas2->addMust(new NumericRange('date_debut', [
+                $cas2 = new BoolQuery;
+                $cas2->addMust(new Range('date_debut', [
                         'gte' => $search->getDu()->format("Y-m-d")
                     ])
-                )->addMust(new NumericRange('date_fin', [
+                )->addMust(new Range('date_fin', [
                     'lte' => $search->getAu()->format("Y-m-d"),
                 ]));
 
                 //Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
-                $cas3 = new QueryBool;
-                $cas3->addMust(new NumericRange('date_debut', [
+                $cas3 = new BoolQuery;
+                $cas3->addMust(new Range('date_debut', [
                     'gte' => $search->getDu()->format("Y-m-d"),
                     'lte' => $search->getAu()->format("Y-m-d")
                 ]));
 
                 //Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
-                $cas4 = new QueryBool;
-                $cas4->addMust(new NumericRange('date_fin', [
+                $cas4 = new BoolQuery;
+                $cas4->addMust(new Range('date_fin', [
                     'gte' => $search->getDu()->format("Y-m-d"),
                     'lte' => $search->getAu()->format("Y-m-d")
                 ]));
@@ -89,7 +88,7 @@ class AgendaRepository extends Repository
         }
 
         //Query
-        $queries = new QueryBool;
+        $queries = new BoolQuery;
         if ($search->getTerm()) {
             $query = new MultiMatch;
             $query->setQuery($search->getTerm())
@@ -123,8 +122,13 @@ class AgendaRepository extends Repository
         }
 
         //Construction de la requête finale
-        $filtered = new Filtered($queries, $filter);
-        $finalQuery = Query::create($filtered)
+        $query = (new BoolQuery())
+            ->addMust($queries)
+            ->addFilter($filter)
+            ;
+//        $filtered = new Filtered($queries, $filter);
+
+        $finalQuery = Query::create($query)
             ->addSort(['date_fin' => 'asc'])
 //            ->addSort(['date_debut' => 'desc'])
             ->addSort(['fb_participations' => ['order' => 'desc', 'unmapped_type' => 'integer']]);
