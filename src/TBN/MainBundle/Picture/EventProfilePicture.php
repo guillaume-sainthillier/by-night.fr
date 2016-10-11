@@ -28,27 +28,21 @@ class EventProfilePicture
      */
     private $helper;
 
-    /** @var Router $router
-     */
-    private $router;
-
     /** @var Packages $packages
      */
     private $packages;
 
-    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages, RouterInterface $router)
+    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages)
     {
         $this->cacheManager = $cacheManager;
         $this->helper = $helper;
-        $this->router = $router;
         $this->packages = $packages;
     }
 
     public function getOriginalPicture(Agenda $agenda) {
         if($agenda->getPath()) {
-            return $this->router->generate(
-                $this->helper->asset($agenda, 'file'),
-                UrlGenerator::ABSOLUTE_URL
+            return $this->packages->getUrl(
+                $this->helper->asset($agenda, 'file')
             );
         }
 
@@ -56,10 +50,7 @@ class EventProfilePicture
             return $agenda->getUrl();
         }
 
-        return $this->router->generate(
-            $this->packages->getUrl('/img/empty_event.png'),
-            UrlGenerator::ABSOLUTE_URL
-        );
+        return $this->packages->getUrl('/img/empty_event.png');
     }
 
     public function getPicture(Agenda $agenda, $thumb = 'thumbs_evenement') {
