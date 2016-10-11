@@ -1,6 +1,6 @@
 <div class="overlay pull-left">
     {% set imageURL = userProfilePicture.getProfilePicture(app.user, 'thumb_user_115') %}
-    <img class="pull-left loading component" height="115" width="115" src="{{ asset('img/empty_user.png') }}"
+    <img class="pull-left loading component" height="115" width="115" src="{{ asset('img/empty_user.png')|imagine_filter('thumb_user_115') }}"
          data-src="{{ imageURL }}"/>
     <h3><a class="thin" href="{{ path('tbn_user_details', {'username' : user.username}) }}">{{ user.username[:22] }}</a>
     </h3>
