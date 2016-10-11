@@ -33,6 +33,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     private $siteManager;
     private $socials;
     private $userProfilePicture;
+    private $eventProfilePicture;
 
     public function __construct(SiteManager $manager, ContainerInterface $container)
     {
@@ -43,6 +44,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
         $this->siteManager = $manager;
         $this->requestStack = $container->get('request_stack');
         $this->userProfilePicture = $container->get('tbn.profile_picture.user');
+        $this->eventProfilePicture = $container->get('tbn.profile_picture.event');
         $this->socials = [
             'facebook' => $container->get('tbn.social.facebook_admin'),
             'twitter' => $container->get('tbn.social.twitter'),
@@ -90,6 +92,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
                 "site" => $this->siteManager->getCurrentSite(),
                 "sites" => $sites,
                 "userProfilePicture" => $this->userProfilePicture,
+                "eventProfilePicture" => $this->eventProfilePicture,
                 "siteInfo" => $this->siteManager->getSiteInfo()
             ];
 

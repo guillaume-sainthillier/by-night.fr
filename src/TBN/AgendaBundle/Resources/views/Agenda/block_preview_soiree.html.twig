@@ -2,16 +2,8 @@
     <div itemscope itemtype="http://schema.org/Event">
         <div class="row event">
             <div class="col-xs-3 image_soiree">
-                {% if soiree.path %}
-                    {% set original =  absolute_url(vich_uploader_asset(soiree, 'file')) %}
-                    {% set thumb = vich_uploader_asset(soiree, 'file')|imagine_filter('thumbs_evenement') %}
-                {% elseif soiree.url %}
-                    {% set original = soiree.url %}
-                    {% set thumb = original %}
-                {% else %}
-                    {% set original = absolute_url(asset('/img/empty_event.png')) %}
-                    {% set thumb = 'img/empty_event.png'|imagine_filter('thumbs_evenement') %}
-                {% endif %}
+                {% set original = eventProfilePicture.getOriginalPicture(soiree) %}
+                {% set thumb = eventProfilePicture.getPicture(soiree) %}
                 <meta itemprop="image" content="{{ original }}"/>
                 <div class="image-container">
                     {% if soiree.fbParticipations %}
