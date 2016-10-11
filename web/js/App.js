@@ -74,6 +74,7 @@ var App = {
             container.load($(this).attr("href"), function ()
             {
                 App.initMore(container);
+                App.initComponents(container);
             });
 
             e.preventDefault();
