@@ -14,18 +14,7 @@
 {% endblock %}
     
 {% block body_administration %}
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="panel panel-default">
-                <div class="panel-heading bg-white">
-                    <h2 class="modal-title">Réseau sociaux</h2>
-                </div>
-                <div class="panel-body">
-                    {% block body_info %}{% endblock %}
-                </div>
-            </div>
-        </div>
-    </div>
+    {% block body_info %}{% endblock %}
 {% endblock %}
 
 {% block css_administration %}
