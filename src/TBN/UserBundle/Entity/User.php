@@ -190,24 +190,7 @@ class User extends BaseUser
         return $this->credentialsExpireAt;
     }
 
-    public function getProfileDefault()
-    {
-        $info = $this->getInfo();
-
-        if ($info !== null) {
-            if ($info->getFacebookProfilePicture() !== null) {
-                return $info->getFacebookProfilePicture();
-            } elseif ($info->getTwitterProfilePicture() !== null) {
-                return $info->getTwitterProfilePicture();
-            } elseif ($info->getGoogleProfilePicture() !== null) {
-                return $info->getGoogleProfilePicture();
-            }
-        }
-
-        return null;
-    }
-
-    public function getUsername()
+        public function getUsername()
     {
         return ucfirst(parent::getUsername());
     }
