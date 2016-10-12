@@ -70,6 +70,7 @@ class ProfileFormType extends BaseType
             ])
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
+                'label' => 'Photo de profil',
                 'image_filter' => 'thumb_evenement',
             ])
             ;
