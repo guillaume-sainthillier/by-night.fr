@@ -19,8 +19,6 @@ class SoonNightParser extends LinksParser
         parent::__construct();
 
         $this->setBaseUrl('http://www.soonnight.com');
-
-        return $this;
     }
 
     /**
@@ -32,8 +30,8 @@ class SoonNightParser extends LinksParser
         $tab_retour = [];
 
         //Date & Nom
-        $date_lieu = preg_split("/-/", $this->parser->filter(".titre h2")->text());
-        $nom = preg_replace("/\&(\d+);/i", "&#$1;", $this->parser->filter(".titre h1")->text()) . " @ " . $date_lieu[1];
+        $date_lieu = preg_split("/-/", $this->parser->filter(".soiree_fiche h2.sous_titre")->text());
+        $nom = preg_replace("/\&(\d+);/i", "&#$1;", $this->parser->filter("h1.titre_principal")->text()) . " @ " . $date_lieu[1];
         $tab_retour['nom'] = $this->decodeNumCharacter($nom);
         $date = $this->parseDate($date_lieu[0]);
 
@@ -43,37 +41,39 @@ class SoonNightParser extends LinksParser
         $rue = null;
         $code_postal = null;
         $lieu = null;
+        $lat = null;
+        $long = null;
         $ville = null;
-        $lieux = $this->getNodeFromHeading($this->parser->filter('.lieu'));
-        if ($lieux) {
-            $node_rue = $lieux->filter("span[property='v:street-address']");
-            $node_code_postal = $lieux->filter("span[property='v:postal-code']");
-            $node_ville = $lieux->filter("span[property='v:locality']");
-            $node_lieu = $lieux->filter("span[property='v:name']");
+        $lieux = $this->parser->filter('.adresse');
+        if ($lieux->count()) {
+            $infosGPS = array_map('trim', explode(',', $lieux->attr('longlat')));
+            $lat = $infosGPS[0];
+            $long = $infosGPS[1];
 
-            $rue = $node_rue->count() ? trim($node_rue->text()) : null;
-            $code_postal = $node_code_postal->count() ? trim($node_code_postal->text()) : null;
-            $ville = $node_ville->count() ? trim($node_ville->text()) : null;
+            $adresse = $lieux->text();
+            $infos = array_map('trim', explode(',', $adresse));
+
+            $rue = $infos[0];
+            $infosVille = array_map('trim', explode(' ', $infos[1]));
+            $code_postal = $infosVille[0];
+            $ville = $infosVille[1];
+            $node_lieu = $this->parser->filter('.titre.nom_lieu');
             $lieu = $node_lieu->count() ? trim($node_lieu->text()) : null;
         }
+        $tab_retour['place.latitude'] = $lat;
+        $tab_retour['place.longitude'] = $long;
         $tab_retour['place.nom'] = $lieu;
         $tab_retour['place.rue'] = $rue;
         $tab_retour['place.code_postal'] = $code_postal;
         $tab_retour['place.ville'] = $ville;
 
-        //Téléphone & Tarifs
-        $telephone = null;
-        $infoline = $this->getNodeFromHeading($this->parser->filter('.infoline'));
-        if ($infoline) {
-            $telephone = $infoline->text();
-        }
-        $tab_retour['reservation_telephone'] = $telephone;
 
-        $tarifs = $this->getNodeFromHeading($this->parser->filter('.prix'));
-        $tab_retour['tarif'] = $tarifs ? trim($tarifs->text()) : null;
+        //Tarifs
+        $node_tarif = $this->getSibling($this->parser->filter('.row_bloc .icon-euro'), '.texte');
+        $tab_retour['tarif'] = $node_tarif ? trim($node_tarif->text()) : null;
 
         //Description
-        $descriptif_long = $this->parser->filter("#bloc_texte span[property='v:description']");
+        $descriptif_long = $this->parser->filter(".description_soiree");
         $descriptif = null;
 
         //Suppression des foutues pubs
@@ -89,23 +89,25 @@ class SoonNightParser extends LinksParser
             "Toute l'équipe répond à vos questions au ",
             "Réservation et complément d'information au ",
             "réservation simple et rapide au ",
+            "Appelez le   *",
+            "Mise en relation",
             "Afficher le numéro du service de mise en relation"
         ];
         $clean_descriptif = $this->decodeNumCharacter(str_replace($black_list, "", $descriptif));
         $tab_retour['descriptif'] = $clean_descriptif;
 
         //Catégorie & Thème
-        $node_categorie = $this->getNodeFromHeading($this->parser->filter('.genre'));
+        $node_categorie = $this->getNodeFromHeading($this->parser->filter('.fiche_soiree_top .info .type'));
         $tab_retour['categorie_manifestation'] = $node_categorie ? trim($node_categorie->text()) : null;
         $tab_retour['categorie_manifestation'] = strstr($tab_retour['categorie_manifestation'], 'After Work') !== false ? 'After Work' : $tab_retour['categorie_manifestation'];
 
-        $node_musique = $this->getNodeFromHeading($this->parser->filter('.musique'));
+        $node_musique = $this->getSibling($this->parser->filter('.icon-music'), '.texte');
         $tab_retour['theme_manifestation'] = $node_musique ? trim($node_musique->text()) : null;
         $tab_retour['type_manifestation'] = 'Soirée';
 
         //Image
-        $image = $this->parser->filter('.case_visuel img');
-        $tab_retour['url'] = $image->count() ? $image->attr('src') : null;
+        $image = $this->parser->filter('.fiche_soiree_top .image');
+        $tab_retour['url'] = $image->count() ? $image->attr('data-src') : null;
         $tab_retour['source'] = $this->url;
 
         return $tab_retour;
@@ -114,7 +116,7 @@ class SoonNightParser extends LinksParser
     public function getLinks()
     {
         $this->parseContent('HTML');
-        return $this->parser->filter('div.affichage_liste_1 a.titre')->each(function (Crawler $item) {
+        return $this->parser->filter('div.soiree_liste .col_left a.titre')->each(function (Crawler $item) {
 
             return $this->base_url . $item->attr('href');
         });
@@ -138,6 +140,20 @@ class SoonNightParser extends LinksParser
     protected function decodeNumCharacter($t)
     {
         return Encoding::UTF8FixWin1252Chars(Encoding::fixUTF8($t));
+    }
+
+    protected function getSibling(Crawler $node, $filter) {
+        if($node->count()) {
+            $parents = $node->parents();
+            if($parents->count()) {
+                $sibling = $parents->filter($filter);
+                if($sibling->count()) {
+                    return $sibling->eq(0);
+                }
+            }
+        }
+
+        return null;
     }
 
     protected function getNodeFromHeading(Crawler $heading)

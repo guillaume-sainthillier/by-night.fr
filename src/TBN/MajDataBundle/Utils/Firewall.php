@@ -53,8 +53,6 @@ class Firewall
         $isGoodEvent = $this->checkEvent($agenda);
         $site = $agenda->getSite();
 
-//        var_dump('$isGoodEvent', $isGoodEvent);
-
         //Vérification supplémentaire de la validité géographique du lieux déclaré de l'event
         if ($agenda->isTrustedLocation() === false && $isGoodEvent) {
             $place = $agenda->getPlace();
