@@ -300,7 +300,7 @@ module.exports = function (grunt) {
                     'web/bower/summernote/lang/summernote-fr-FR.js',
                     'web/bower/typeahead.js/dist/typeahead.bundle.min.js',
                     'web/bower/typeahead-addresspicker/dist/typeahead-addresspicker.min.js',
-                    'web/tbnsocial/js/SocialLogin.js',
+                    'web/bundles/tbnsocial/js/SocialLogin.js',
                     'web/bundles/tbnuser/js/EventHandler.js'
                 ],
                 dest: 'web/prod/espace-perso/evenements/js/manager.js'
