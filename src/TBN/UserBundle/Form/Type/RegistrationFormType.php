@@ -15,17 +15,13 @@ class RegistrationFormType extends BaseType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    protected function buildUserForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        parent::buildUserForm($builder, $options);
+        parent::buildForm($builder, $options);
 
         $builder
-            ->add('username', TextType::class, ['disabled' => true, 'label' => 'form.username', 'translation_domain' => 'FOSUserBundle'])
-            ->add('firstName', TextType::class, ['required' => false]);
+            ->add('recaptcha', ReCaptchaType::class)
+        ;
     }
 
-    public function getName()
-    {
-        return 'tbn_user_registration';
-    }
 }

@@ -73,6 +73,39 @@
                 {{ form_widget(form.plainPassword.second, { 'attr': { 'placeholder': 'Saisissez à nouveau votre mot de passe'} } ) }}
             </div>
 
+            {{ form_label(form.recaptcha) }}
+            {{ form_errors(form.recaptcha) }}
+            {{ form_widget(form.recaptcha) }}
+
+            <script>
+                if(document.getElementById('google-recaptcha')) {
+                    onCaptchaReady();
+                }
+                window.grecaptcha = (function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0],
+                            t = window.grecaptcha || {};
+                    if (d.getElementById(id)) return t;
+                    js = d.createElement(s);
+                    js.id = id;
+                    js.async = true;
+                    js.defer = true;
+                    js.src = "//www.google.com/recaptcha/api.js?onload=onCaptchaReady&render=explicit";
+                    fjs.parentNode.insertBefore(js, fjs);
+
+                    t._e = [];
+                    t.ready = function (f) {
+                        t._e.push(f);
+                    };
+
+                    return t;
+                }(document, "script", "google-recaptcha"));
+                function onCaptchaReady() {
+                    grecaptcha.render('{{ form.recaptcha.vars.id }}', {
+                        'sitekey' : document.getElementById('{{ form.recaptcha.vars.id }}').dataset.sitekey
+                    });
+                }
+            </script>
+
 
             {% if not partial %}
                 {% include "TBNUserBundle:Registration:block_buttons.html.twig" %}

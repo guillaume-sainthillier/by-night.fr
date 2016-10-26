@@ -24,4 +24,5 @@ parameters:
     google_map_key:         %secret%
     twitter_app_id:         %secret%
     twitter_app_secret:     %secret%
+    google_recaptcha_secret:~
     base_host:              ~

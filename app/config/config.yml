@@ -114,6 +114,9 @@ fos_user:
     profile:
         form:
             type: TBN\UserBundle\Form\Type\ProfileFormType
+    registration:
+        form:
+            type: TBN\UserBundle\Form\Type\RegistrationFormType
     
 #ivory_google_map:
 #    geocoder:

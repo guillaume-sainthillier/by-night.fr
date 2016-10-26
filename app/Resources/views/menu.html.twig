@@ -59,16 +59,21 @@
                         </ul>
                     </li>                  
                 {% else %}
+                    {% set route = app.request.attributes.get('_route') %}
+                    {% if route != "fos_user_registration_register" %}
                     <li>
                         <a class="register" title="Inscrivez-vous sur {{ site.nom }} By Night" href="{{ path('fos_user_registration_register') }}" >
                             Rejoignez-nous
                         </a>
                     </li>
+                    {% endif %}
+                    {% if route != "fos_user_security_login" %}
                     <li>
                         <a class="connexion" title="Connectez-vous sur {{ site.nom }} By Night" href="{{ path('fos_user_security_login') }}" >
                             Connexion
                         </a>
                     </li>
+                    {% endif %}
                 {% endif %}
             </ul>            
         </div>        

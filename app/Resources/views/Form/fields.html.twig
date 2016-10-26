@@ -1,5 +1,11 @@
 {% extends "form_div_layout.html.twig" %}
 
+{% block recaptcha_widget %}
+{% spaceless %}
+    <div {{ block('widget_attributes') }}></div>
+{% endspaceless %}
+{% endblock %}
+
 {% block vich_image_widget %}
 {% spaceless %}
     {% if download_uri is defined and download_uri %}

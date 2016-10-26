@@ -9,6 +9,22 @@ parameters:
     consumer_secret: "%twitter_app_secret%"
  
 services:
+    tbn.captcha_listener:
+        class: TBN\UserBundle\EventListener\ReCaptchaListener
+        arguments: ["fos_user_registration_form", "recaptcha"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: "onKernelController" }
+
+    tbn.captcha_wrapper:
+        class: TBN\UserBundle\Captcha\CaptchaWrapper
+        arguments: ["@request_stack", "%google_recaptcha_secret%"]
+
+    tbn.validation.response_validator:
+        class: TBN\UserBundle\Validator\Constraints\ReCaptchaResponseValidator
+        arguments: ["@tbn.captcha_wrapper"]
+        tags:
+          - { name: validator.constraint_validator, alias: recaptcha_response_validator }
+
     my_user_provider:
         class: "%my_user_provider.class%"
         #this is the place where the properties are passed to the UserProvider - see config.yml
@@ -19,6 +35,13 @@ services:
         arguments: ["%fos_user.model.user.class%"]
         tags:
             - { name: form.type, alias: tbn_user_registration }
+
+    tbn.form.type.recaptcha:
+            class: TBN\UserBundle\Form\Type\ReCaptchaType
+            arguments:
+                - '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
+            tags:
+                - { name: form.type, alias: recaptcha}
 
     tbn.profile.form.type:
         class: TBN\UserBundle\Form\Type\ProfileFormType
