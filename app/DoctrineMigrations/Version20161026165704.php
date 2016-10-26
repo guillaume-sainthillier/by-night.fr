@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20160704181513 extends AbstractMigration
+class Version20161026165704 extends AbstractMigration
 {
     /**
      * @param Schema $schema
@@ -18,7 +18,7 @@ class Version20160704181513 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE User CHANGE path path VARCHAR(255) DEFAULT NULL');
+        $this->addSql("UPDATE Site SET twitter_id_widget = NULL, twitter_url_widget = NULL WHERE subdomain NOT IN ('toulouse', 'paris')");
     }
 
     /**
@@ -27,8 +27,6 @@ class Version20160704181513 extends AbstractMigration
     public function down(Schema $schema)
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE User CHANGE path path VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci');
     }
 }
