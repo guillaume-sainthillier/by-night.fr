@@ -32,7 +32,7 @@ tbn_membres:
 easy_admin_bundle:
     resource: "@EasyAdminBundle/Controller/"
     type:     annotation
-    prefix:   /_administration2
+    prefix:   /_administration
     host:   "{subdomain}.%base_host%"
 
 #MainBundle, pas de ville définie ici

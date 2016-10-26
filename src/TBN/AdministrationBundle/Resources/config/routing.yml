@@ -1,7 +1,3 @@
-tbn_administration_index:
-    path:  /
-    defaults: { _controller: TBNAdministrationBundle:Site:list }
-
 tbn_administration_info_index:
     path:  /info
     defaults: { _controller: TBNAdministrationBundle:Info:list }
