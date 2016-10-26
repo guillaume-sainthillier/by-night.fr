@@ -34,9 +34,11 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     private $socials;
     private $userProfilePicture;
     private $eventProfilePicture;
+    private $api_facebook_id;
 
     public function __construct(SiteManager $manager, ContainerInterface $container)
     {
+        $this->api_facebook_id = $container->getParameter('api_facebook_id');
         $this->router = $container->get('router');
         $this->requestStack = $container->get('request_stack');
         $this->cache = $container->get('memory_cache');
@@ -89,6 +91,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $sites = $this->cache->fetch($key);
 
             $globals = [
+                "api_facebook_id" => $this->api_facebook_id,
                 "site" => $this->siteManager->getCurrentSite(),
                 "sites" => $sites,
                 "userProfilePicture" => $this->userProfilePicture,
