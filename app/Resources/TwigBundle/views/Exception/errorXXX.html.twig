@@ -1,3 +1,4 @@
+{% spaceless %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -20,7 +21,7 @@
                     <h2>{{ message }}</h2>
                     <p>{{ description }}</p>
                      
-                    {% if site.currentSite != null %}
+                    {% if site.currentSite %}
                         <form method="POST" action="{{ path('tbn_search_query') }}">
                             <div class="input-prepend input-group">                        
                                 <span class="input-group-addon clear"><i class="fa fa-search"></i></span>
@@ -36,3 +37,4 @@
         </div>
     </body>
 </html>
+{% endspaceless %}

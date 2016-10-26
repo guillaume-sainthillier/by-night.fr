@@ -1,0 +1,49 @@
+{% spaceless %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>By Night est en cours de maintenance</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" type="image/png"  href="{{ asset('favicon.png') }}" >
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" >
+
+    <style type="text/css">
+        body { text-align: center; padding: 5% 10%; font: 20px Helvetica, sans-serif; color: #333; }
+        h1 { font-size: 40px; margin: 0; }
+        article { display: block; text-align: left; max-width: 850px; margin: 0 auto; }
+        a { color: #dc8100; text-decoration: none; }
+        a:hover { color: #333; text-decoration: none; }
+        @media only screen and (max-width : 480px) {
+            h1 { font-size: 30px; }
+            body {padding: 1% 2%; font: 15px Helvetica, sans-serif; }
+        }
+
+        .signature {
+            font-size: 80%;
+            line-height: 1.42857143;
+            color: #777;
+        }
+
+        img {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <article>
+        <h1>By Night est temporairement inaccessible.</h1>
+        <p>Une opération de maintenance est actuellement en cours.</p>
+        <p>Nous sommes désolé pour la gêne occasionnée, merci de revenir d'ici quelques minutes !</p>
+        <img src="{{ asset('img/maintenance.png') }}" alt="En maintenance" />
+        <p class="signature">-- L'équipe By Night</p>
+    </article>
+</body>
+</html>
+{% endspaceless %}

@@ -40,7 +40,8 @@
     "neitanod/forceutf8": "dev-master",
     "doctrine/doctrine-migrations-bundle": "^1.0",
     "javiereguiluz/easyadmin-bundle": "^1.14",
-    "vich/uploader-bundle": "^1.1"
+    "vich/uploader-bundle": "^1.1",
+    "lexik/maintenance-bundle": "dev-master"
   },
   "require-dev": {
     "symfony/phpunit-bridge": "^3.0"

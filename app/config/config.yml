@@ -371,6 +371,13 @@ jms_serializer:
 presta_sitemap:
     route_annotation_listener: false
 
+lexik_maintenance:
+    authorized:
+        query: { debug: 1 }
+    driver:
+        class: '\Lexik\Bundle\MaintenanceBundle\Drivers\FileDriver'
+        options: {file_path: "%kernel.cache_dir%/lock"}
+
 services:
     fos_user.doctrine_registry:
         alias: doctrine
