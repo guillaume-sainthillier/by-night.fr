@@ -1,6 +1,8 @@
-{% extends app.request.xmlHttpRequest ? "TBNUserBundle::layout.json.twig" : "TBNUserBundle::layout.html.twig" %}
-
+{% set no_ads = true %}
 {% set partial = app.request.xmlHttpRequest %}
+
+{% extends partial ? "TBNUserBundle::layout.json.twig" : "TBNUserBundle::layout.html.twig" %}
+
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block title_espace %}
