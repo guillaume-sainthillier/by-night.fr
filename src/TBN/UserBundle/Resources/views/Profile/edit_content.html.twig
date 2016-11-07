@@ -29,13 +29,12 @@
                 <h2 class="modal-title">Profil</h2>
             </div>
             <div class="panel-body">
-                {#{{ form_start(form, {'attr': {'action': path('fos_user_profile_edit'), 'class' : 'form-horizontal'}}) }}#}
                 <form action="{{ path('fos_user_profile_edit') }}" enctype="multipart/form-data" method="post" class="form-horizontal">
                     <div class="form-group">
                         {{ form_label(form.imageFile, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
                         <div class="col-md-8">
                             {% if not user.path %}
-                                {% set imageURL = userProfilePicture.getProfilePicture(app.user) %}
+                                {% set imageURL = userProfilePicture.getProfilePicture(user) %}
                                 <img class="img img-responsive" src="{{ imageURL }}" style="max-height: 200px;" />
                             {% endif %}
                             {{ form_errors(form.imageFile) }}
