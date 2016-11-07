@@ -33,8 +33,8 @@ framework:
 doctrine_cache:
     providers:
         memcache:
-#            type: file_system
-            type: memcache
+            type: file_system
+#            type: memcache
 
             namespace: memory_cache_ns
             aliases:
