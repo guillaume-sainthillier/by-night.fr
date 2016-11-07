@@ -26,3 +26,5 @@ parameters:
     twitter_app_secret:     %secret%
     google_recaptcha_secret: %secret%
     base_host:              ~
+
+    data_root: %kernel.root_dir%/../web/

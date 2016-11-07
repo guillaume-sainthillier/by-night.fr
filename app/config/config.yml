@@ -220,6 +220,10 @@ liip_imagine:
     resolvers:
         default:
             web_path: ~
+    loaders:
+        default:
+            filesystem:
+                data_root: %data_root%
 
     filter_sets:
         cache: ~
