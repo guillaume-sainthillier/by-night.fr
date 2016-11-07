@@ -256,6 +256,8 @@ class Agenda
     /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="path")
      * @Assert\Valid()
+     * @Assert\File(maxSize = "6M")
+     * @Assert\Image()
      */
     protected $file;
 

@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation\Expose;
 use Doctrine\Common\Collections\ArrayCollection;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
@@ -110,7 +111,9 @@ class User extends BaseUser
     /**
      *
      * @Vich\UploadableField(mapping="user_image", fileNameProperty="path")
-     *
+     * @Assert\Valid()
+     * @Assert\File(maxSize = "6M")
+     * @Assert\Image()
      * @var File
      */
     private $imageFile;
