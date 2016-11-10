@@ -5,6 +5,7 @@ namespace TBN\MajDataBundle\Utils;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\MainBundle\Entity\Site;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
 /**
@@ -42,7 +43,6 @@ class EventHandler
         try {
             $image = file_get_contents($url);
         } catch (\Exception $ex) {
-            echo $ex->getMessage();
             $image = null;
         }
 
@@ -53,13 +53,14 @@ class EventHandler
             $ext = preg_replace("/(\?|_)(.*)$/", "", pathinfo($url, PATHINFO_EXTENSION));
 
             $filename = sha1(uniqid(mt_rand(), true)) . "." . $ext;
-            $pathname = $agenda->getUploadRootDir() . "/" . $filename;
-            $octets = file_put_contents($pathname, $image);
+
+            $tempPath = sys_get_temp_dir().'/'.$filename;
+            $octets = file_put_contents($tempPath, $image);
+            $file = new UploadedFile($tempPath, $filename, null, null, false, true);
+            $agenda->setFile($file);
 
             if ($octets > 0) {
                 $agenda->setPath($filename);
-            } elseif (file_exists($pathname)) {
-                unlink($pathname);
             }
         }
     }
