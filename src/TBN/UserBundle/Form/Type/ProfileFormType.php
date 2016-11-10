@@ -12,14 +12,12 @@
 namespace TBN\UserBundle\Form\Type;
 
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use FOS\UserBundle\Form\Type\ProfileFormType as BaseType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use TBN\MainBundle\Form\Type\ImageType;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ProfileFormType extends BaseType
