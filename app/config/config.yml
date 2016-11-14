@@ -283,9 +283,6 @@ tbn_user:
         twitter: 
             enabled: true
             nom: Twitter
-        google: 
-            enabled: false
-            nom: Google+
 
 
 fos_elastica:
