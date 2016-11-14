@@ -19,13 +19,15 @@ class EventHandler
     private $cleaner;
     private $comparator;
     private $merger;
+    private $tempPath;
 
-    public function __construct(Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger)
+    public function __construct(Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger, $tempPath)
     {
         $this->firewall = $firewall;
         $this->cleaner = $cleaner;
         $this->comparator = $comparator;
         $this->merger = $merger;
+        $this->tempPath = $tempPath;
     }
 
     public function updateImage(Agenda $agenda, $newURL) {
@@ -61,7 +63,7 @@ class EventHandler
 
             $filename = sha1(uniqid(mt_rand(), true)) . "." . $ext;
 
-            $tempPath = sys_get_temp_dir().'/'.$filename;
+            $tempPath = $this->tempPath.'/'.$filename;
             $octets = file_put_contents($tempPath, $image);
 
             if ($octets > 0) {
