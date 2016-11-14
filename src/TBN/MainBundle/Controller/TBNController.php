@@ -28,7 +28,7 @@ class TBNController extends Controller
                 try {
                     $this->get('tbn.event_handler')->updateImage($soiree, $retour['image']);
                 }catch(Exception $e) {
-                    $this->get('logger')->error($e);
+                    $this->get('logger')->critical($e);
                 }
 
                 $em = $this->getDoctrine()->getManager();
