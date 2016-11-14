@@ -50,7 +50,10 @@ class ProfileController extends BaseController
             $em = $this->get('doctrine.orm.entity_manager');
 
             $deleteEvents = $form->get('delete_events')->getData();
-            $events = $user->getEvenements();
+            $events = $this->getDoctrine()->getRepository('TBNAgendaBundle:Agenda')->findBy([
+                'user' => $user
+            ]);
+
             foreach($events as $event) {
                 if(! $deleteEvents) {
                     $event->setUser(null);

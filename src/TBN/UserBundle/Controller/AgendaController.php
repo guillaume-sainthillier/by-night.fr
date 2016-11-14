@@ -47,7 +47,9 @@ class AgendaController extends Controller
     public function listAction()
     {
         $user = $this->getUser();
-        $soirees = $user->getEvenements();
+        $soirees = $this->getRepo('TBNAgendaBundle:Agenda')->findBy([
+            'user' => $user
+        ], ['dateModification' => "DESC"]);
 
         return $this->render('TBNUserBundle:Espace:liste.html.twig', [
             "soirees" => $soirees

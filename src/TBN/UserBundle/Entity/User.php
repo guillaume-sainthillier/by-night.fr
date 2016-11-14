@@ -62,12 +62,6 @@ class User extends BaseUser
     protected $description;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Agenda", mappedBy="user")
-     * @ORM\OrderBy({"dateModification" = "DESC"})
-     */
-    protected $evenements;
-
-    /**
      * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\UserInfo", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
@@ -146,7 +140,6 @@ class User extends BaseUser
         $this->setFromLogin(false);
         $this->setShowSocials(true);
         $this->date_creation = new \DateTime();
-        $this->evenements = new ArrayCollection();
         $this->calendriers = new ArrayCollection();
         $this->info = new UserInfo();
     }
@@ -345,39 +338,6 @@ class User extends BaseUser
     public function getDateCreation()
     {
         return $this->date_creation;
-    }
-
-    /**
-     * Add evenements
-     *
-     * @param \TBN\AgendaBundle\Entity\Agenda $evenements
-     * @return User
-     */
-    public function addEvenement(\TBN\AgendaBundle\Entity\Agenda $evenements)
-    {
-        $this->evenements[] = $evenements;
-
-        return $this;
-    }
-
-    /**
-     * Remove evenements
-     *
-     * @param \TBN\AgendaBundle\Entity\Agenda $evenements
-     */
-    public function removeEvenement(\TBN\AgendaBundle\Entity\Agenda $evenements)
-    {
-        $this->evenements->removeElement($evenements);
-    }
-
-    /**
-     * Get evenements
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getEvenements()
-    {
-        return $this->evenements;
     }
 
     /**

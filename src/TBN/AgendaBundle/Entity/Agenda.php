@@ -278,7 +278,7 @@ class Agenda
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User", inversedBy="evenements")
+     * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User")
      * @ORM\JoinColumn(nullable=true)
      */
     protected $user;
