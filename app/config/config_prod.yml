@@ -18,6 +18,7 @@ doctrine:
             id: memory_cache
 
 monolog:
+    use_microseconds: false
     handlers:
         main:
             type:         fingers_crossed
