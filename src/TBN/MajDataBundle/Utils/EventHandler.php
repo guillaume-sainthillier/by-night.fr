@@ -28,6 +28,13 @@ class EventHandler
         $this->merger = $merger;
     }
 
+    public function updateImage(Agenda $agenda, $newURL) {
+        if(true || $agenda->getPath() === null || ($newURL !== null && $agenda->getUrl() !== $newURL)) {
+            $agenda->setUrl($newURL);
+            $this->downloadImage($agenda);
+        }
+    }
+
     public function downloadImage(Agenda &$agenda)
     {
         //$url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
@@ -56,11 +63,10 @@ class EventHandler
 
             $tempPath = sys_get_temp_dir().'/'.$filename;
             $octets = file_put_contents($tempPath, $image);
-            $file = new UploadedFile($tempPath, $filename, null, null, false, true);
-            $agenda->setFile($file);
 
             if ($octets > 0) {
-                $agenda->setPath($filename);
+                $file = new UploadedFile($tempPath, $filename, null, null, false, true);
+                $agenda->setFile($file);
             }
         }
     }

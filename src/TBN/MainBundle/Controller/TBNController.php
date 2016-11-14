@@ -3,6 +3,7 @@
 namespace TBN\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use TBN\AgendaBundle\Entity\Agenda;
 
 class TBNController extends Controller
@@ -23,6 +24,12 @@ class TBNController extends Controller
                 $cache->save($key, $retour["membres"], self::$CACHE_TTL);
                 $soiree->setFbInterets($retour["nbInterets"]);
                 $soiree->setFbParticipations($retour["nbParticipations"]);
+
+                try {
+                    $this->get('tbn.event_handler')->updateImage($soiree, $retour['image']);
+                }catch(Exception $e) {
+                    $this->get('logger')->error($e);
+                }
 
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($soiree);

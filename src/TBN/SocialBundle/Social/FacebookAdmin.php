@@ -462,6 +462,7 @@ class FacebookAdmin extends FacebookEvents
             ]);
             $graph = $request->getGraphPage();
 
+            $image = $this->getPagePictureURL($graph);
             $nbParticipations = $graph->getField('attending_count');
             $nbInterets = $graph->getField('maybe_count');
             $participations = $this->findPaginated($graph->getField('attending'));
@@ -471,6 +472,7 @@ class FacebookAdmin extends FacebookEvents
         }
 
         return [
+            'image' => $image,
             'nbParticipations' => $nbParticipations,
             'nbInterets' => $nbInterets,
             'membres' => array_merge($participations, $interets)
