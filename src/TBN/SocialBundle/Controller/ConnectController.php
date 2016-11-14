@@ -172,7 +172,7 @@ class ConnectController extends BaseController
         }
         $userManager = $this->container->get('fos_user.user_manager');
         $userManager->updateUser($user);
-        $userManager->refreshUser($user);
+        $userManager->reloadUser($user);
         $this->container->get('security.context')->getToken()->setAuthenticated(false);
     }
 }

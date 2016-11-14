@@ -87,6 +87,6 @@ class SocialController extends BaseController
 
         $userManager = $this->container->get('fos_user.user_manager');
         $userManager->updateUser($user);
-        $userManager->refreshUser($user);
+        $userManager->reloadUser($user);
     }
 }
