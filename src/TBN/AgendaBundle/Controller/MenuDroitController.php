@@ -61,8 +61,8 @@ class MenuDroitController extends Controller
                 return 'm6';
             case 'France 5':
                 return 'france5';
-            case 'D8':
-                return 'direct8';
+            case 'C8':
+                return 'canal8';
             case 'W9':
                 return 'w9';
             case 'TMC':
@@ -71,8 +71,10 @@ class MenuDroitController extends Controller
                 return 'nt1';
             case 'NRJ 12':
                 return 'nrj';
-            case 'LCP-AN / Public Sénat':
+            case 'LCP - Public Sénat':
                 return 'lcp';
+            case 'CStar':
+                return 'cstar';
             case 'France 4':
                 return 'france4';
             case 'BFM TV':
@@ -87,8 +89,13 @@ class MenuDroitController extends Controller
                 return 'franceo';
             case 'HD1':
                 return 'hd1';
-            case "L'Equipe 21":
+            case "L'Equipe":
                 return 'lequipe';
+            case "Franceinfo":
+                return 'franceinfo';
+            case "LCI":
+            case "LCI - La Chaîne Info":
+                return 'lci';
             case '6ter':
                 return '6ter';
             case 'Numéro 23':
@@ -108,6 +115,7 @@ class MenuDroitController extends Controller
             case 'Plug RTL':
                 return 'plug_rtl';
             case 'TV5 Monde':
+            case 'TV5MONDE':
                 return 'tv5_monde';
             case '13e rue':
                 return '13_rue';
