@@ -31,7 +31,7 @@ class EventHandler
     }
 
     public function updateImage(Agenda $agenda, $newURL) {
-        if(true || $agenda->getPath() === null || ($newURL !== null && $agenda->getUrl() !== $newURL)) {
+        if($agenda->getPath() === null || ($newURL !== null && $agenda->getUrl() !== $newURL)) {
             $agenda->setUrl($newURL);
             $this->downloadImage($agenda);
         }
@@ -68,6 +68,7 @@ class EventHandler
 
             if ($octets > 0) {
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);
+                $agenda->setPath($filename);
                 $agenda->setFile($file);
             }
         }
