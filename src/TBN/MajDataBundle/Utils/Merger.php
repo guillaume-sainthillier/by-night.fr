@@ -51,7 +51,8 @@ class Merger
             'source',
             'fb_date_modification',
             'place',
-            'user'
+            'user',
+            'file'
         ]);
     }
 
@@ -71,11 +72,12 @@ class Merger
 
     /**
      * Merge les champs de b dans a s'ils sont jugés plus pertinents
-     * @param type $a
-     * @param type $b
-     * @param type $fields
+     * @param \stdClass $a
+     * @param \stdClass $b
+     * @param array $fields
+     * @return \stdClass
      */
-    private function merge($a, $b, $fields)
+    private function merge($a, $b, array $fields)
     {
         //Un ou les deux est nul, pas la peine de merger
         if ($a === null || $b === null) {

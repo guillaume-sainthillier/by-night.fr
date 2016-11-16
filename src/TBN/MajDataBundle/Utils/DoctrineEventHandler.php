@@ -247,12 +247,11 @@ class DoctrineEventHandler
             $fullPlaces = array_merge($persistedPlaces, $newPlaces);
 
             $retour = null;
+
             $agenda = $this->handler->handle($fullPlaces, $site, $agenda);
-//            var_dump('HANDLE', $agenda === null);
             if ($agenda !== null && $agenda->getDateDebut() instanceof \DateTime && $agenda->getDateFin() instanceof \DateTime) {
                 $fullEvents = $this->preHandleEvent($agenda);
                 $agenda = $this->handler->handleEvent($fullEvents, $agenda);
-//                var_dump('HANDLE EVENT', $agenda === null);
                 if ($agenda !== null) {
                     if ($downloadImage && $agenda->getPath() === null && $agenda->getUrl() !== null) {
                         Monitor::bench('downloadImage', function () use (&$agenda) {
@@ -265,6 +264,7 @@ class DoctrineEventHandler
                     });
                     $this->postMerge($agenda);
                     $this->postHandleEvent($agenda);
+
 
                     if ($this->firewall->isPersisted($agenda)) {
                         $this->stats['nbUpdates']++;

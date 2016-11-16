@@ -10,6 +10,9 @@ use TBN\AgendaBundle\Entity\Calendrier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Vich\UploaderBundle\Mapping\PropertyMapping;
+
 
 class AgendaController extends Controller
 {
@@ -51,8 +54,11 @@ class AgendaController extends Controller
             'user' => $user
         ], ['dateModification' => "DESC"]);
 
+        $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
+
         return $this->render('TBNUserBundle:Espace:liste.html.twig', [
-            "soirees" => $soirees
+            "soirees" => $soirees,
+            "canSynchro" => $canSynchro
         ]);
     }
 
@@ -101,6 +107,98 @@ class AgendaController extends Controller
             "agenda" => $agenda,
             "form_delete" => $formDelete->createView()
         ]);
+    }
+
+    /**
+     * @Security("has_role('ROLE_FACEBOOK_LIST_EVENTS')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function importAction() {
+        $importer = $this->get('tbn.social.facebook_list_events');
+        $parser = $this->get('tbn.parser.abstracts.facebook');
+        $handler = $this->get('tbn.doctrine_event_handler');
+        $siteManager = $this->get('site_manager');
+
+        $user = $this->getUser();
+        $fb_events = $importer->getUserEvents($user);
+
+        $handler->init($siteManager->getCurrentSite());
+
+        $events = [];
+        foreach($fb_events as $fb_event) {
+            $array_event = $parser->getInfoAgenda($fb_event);
+            $event = $parser->arrayToAgenda($array_event);
+
+            $event
+                ->setUser($user)
+                ->setSite($siteManager->getCurrentSite())
+                ->setTrustedLocation(false);
+            $handler->handleEvent($event, false);
+        }
+        $handler->flush();
+
+        $stats = $handler->getStats();
+        $this->addImportMessage($stats);
+
+        return $this->redirectToRoute('tbn_agenda_list');
+    }
+
+    protected function addImportMessage(array $stats) {
+        if($stats['nbInserts'] > 0 || $stats['nbUpdates'] > 0) {
+            $plurielInsert = $stats['nbInserts'] > 1 ? "s" : "";
+            $plurielUpdate = $stats['nbUpdates'] > 1 ? "s" : "";
+            $indicatifInsert = $stats['nbInserts'] == 1 ? "a": "ont";
+            $indicatifUpdate = $stats['nbUpdates'] == 1 ? "a": "ont";
+
+            if($stats['nbInserts'] > 0 && $stats['nbUpdates'] > 0) {
+                $message = sprintf(
+                    "<strong>%d</strong> événément%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !",
+                    $stats['nbInserts'],
+                    $plurielInsert,
+                    $indicatifInsert,
+                    $plurielInsert,
+                    $stats['nbUpdates'],
+                    $indicatifUpdate
+                );
+            }elseif($stats['nbInserts'] > 0) {
+                $message = sprintf(
+                    "<strong>%d</strong> événément%s %s été ajouté%s sur By Night !",
+                    $stats['nbInserts'],
+                    $plurielInsert,
+                    $indicatifInsert,
+                    $plurielInsert
+                );
+            }elseif($stats['nbUpdates'] > 0) {
+                $message = sprintf(
+                    "<strong>%d</strong> événément%s %s été mis à jour sur By Night !",
+                    $stats['nbUpdates'],
+                    $plurielUpdate,
+                    $indicatifUpdate
+                );
+            }
+
+            $this->addFlash('success', $message);
+        }elseif($stats['nbBlacklists'] > 0) {
+            $plurielBlacklist = $stats['nbBlacklists'] > 1 ? "s" : "";
+            $indicatifBlacklist = $stats['nbBlacklists'] == 1 ? "a": "ont";
+            $conjugaisonBlacklist = $stats['nbBlacklists'] == 1 ? "e": "ent";
+
+            $message = sprintf(
+                "<strong>%d</strong> événément%s n'%s pas été ajouté%s sur By Night car il%s ne vérifi%s pas nos critères de validation.",
+                $stats['nbBlacklists'],
+                $plurielBlacklist,
+                $indicatifBlacklist,
+                $plurielBlacklist,
+                $plurielBlacklist,
+                $conjugaisonBlacklist
+            );
+
+            $this->addFlash('error', $message);
+        }else {
+            $message = "Aucun événément n'a été retrouvé sur votre compte.";
+
+            $this->addFlash('info', $message);
+        }
     }
 
     public function newAction(Request $request)

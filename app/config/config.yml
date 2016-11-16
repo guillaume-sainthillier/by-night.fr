@@ -189,6 +189,18 @@ hwi_oauth:
                 profilepicture: picture.data.url
             options:
                 display: popup #dialog is optimized for popup window
+        facebook_list_events:
+            type:                facebook
+            client_id:           %api_facebook_id%
+            client_secret:       %api_facebook_secret%
+            scope:               email, user_events
+            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
+            paths:
+                email:          email
+                profilepicture: picture.data.url
+            options:
+                display: popup #dialog is optimized for popup window
         facebook:
             type:                facebook
             client_id:           %api_facebook_id%

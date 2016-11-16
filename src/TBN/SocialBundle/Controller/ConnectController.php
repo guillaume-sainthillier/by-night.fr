@@ -19,6 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * ConnectController
@@ -48,7 +49,7 @@ class ConnectController extends BaseController
             throw new NotFoundHttpException();
         }
 
-        $hasUser = $this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
+        $hasUser = $this->isGranted('IS_AUTHENTICATED_REMEMBERED');
         if (!$hasUser) {
             throw new AccessDeniedException('Cannot connect an account.');
         }
@@ -71,6 +72,11 @@ class ConnectController extends BaseController
             $accessToken = $session->get('_hwi_oauth.connect_confirmation.' . $key);
         }
 
+        // Redirect to the login path if the token is empty (Eg. User cancelled auth)
+        if (null === $accessToken) {
+            return $this->redirectToRoute($this->container->getParameter('hwi_oauth.failed_auth_path'));
+        }
+
         $userInformation = $resourceOwner->getUserInformation($accessToken);
 
         // Show confirmation page?
@@ -78,71 +84,69 @@ class ConnectController extends BaseController
             goto show_confirmation_page;
         }
 
-        // Handle the form
+        // Symfony <3.0 BC
         /** @var $form FormInterface */
-        $form = $this->container->get('form.factory')
-            ->createBuilder('form')
-            ->getForm();
+        $form = method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
+            ? $this->createForm('Symfony\Component\Form\Extension\Core\Type\FormType')
+            : $this->createForm('form');
+        // Handle the form
+        $form->handleRequest($request);
 
-        if ($request->isMethod('POST')) {
-            $form->bind($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            show_confirmation_page:
 
-            if ($form->isValid()) {
-                show_confirmation_page:
+            $session = $this->container->get('session');
+            if ($session->has('connect_site')) // On veut connecter le site et non l'utilisateur
+            {
+                $session->remove('connect_site');
+                $siteManager = $this->container->get("site_manager");
+                $currentSite = $siteManager->getCurrentSite();
 
-                $session = $this->container->get('session');
-                if ($session->has('connect_site')) // On veut connecter le site et non l'utilisateur
-                {
-                    $session->remove('connect_site');
-                    $siteManager = $this->container->get("site_manager");
-                    $currentSite = $siteManager->getCurrentSite();
+                $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
 
-                    $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
+                $em = $this->container->get("doctrine.orm.entity_manager");
 
-                    $em = $this->container->get("doctrine.orm.entity_manager");
+                $em->persist($currentSite);
+                $em->flush();
 
-                    $em->persist($currentSite);
-                    $em->flush();
+                $cache = $this->container->get("memory_cache");
+                $key = $currentSite->getSubdomain();
+                if ($cache->contains($key)) {
+                    $cache->delete($key);
+                }
+                $cache->save($key, $currentSite);
 
-                    $cache = $this->container->get("memory_cache");
-                    $key = $currentSite->getSubdomain();
-                    if ($cache->contains($key)) {
-                        $cache->delete($key);
-                    }
-                    $cache->save($key, $currentSite);
+            } else // On connecte normalement l'utilisateur*/
+            {
+                /** @var $currentToken OAuthToken */
+                $currentToken = $this->getToken();
+                $currentUser = $currentToken->getUser();
 
-                } else // On connecte normalement l'utilisateur*/
-                {
-                    /** @var $currentToken OAuthToken */
-                    $currentToken = $this->container->get('security.token_storage')->getToken();
-                    $currentUser = $currentToken->getUser();
+                $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
 
-                    $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
+                if ($currentToken instanceof OAuthToken) {
+                    // Update user token with new details
+                    $newToken =
+                        is_array($accessToken) &&
+                        (isset($accessToken['access_token']) || isset($accessToken['oauth_token'])) ?
+                            $accessToken : $currentToken->getRawToken();
 
-                    if ($currentToken instanceof OAuthToken) {
-                        // Update user token with new details
-                        $this->authenticateUser($request, $currentUser, $service, $currentToken->getRawToken(), false);
-                    }
-
-                    return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), array(
-                        'userInformation' => $userInformation,
-                        'service' => $service,
-                    ));
-
-                    /*
-                    if ($currentToken instanceof OAuthToken) {
-                        // Update user token with new details
-                        $this->authenticateUser($request, $currentUser, $service, $currentToken->getRawToken(), false);
-                    }else if ($currentToken instanceof UsernamePasswordToken) {
-                        // Update user token with new details
-                        $this->authenticateBasicUser($currentUser);
-                    }*/
+                    $this->authenticateUser($request, $currentUser, $service, $newToken, false);
                 }
 
-                return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), [
+                if ($targetPath = $this->getTargetPath($session)) {
+                    return $this->redirect($targetPath);
+                }
+
+                return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), array(
                     'userInformation' => $userInformation,
-                ]);
+                    'service' => $service,
+                ));
             }
+
+            return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), [
+                'userInformation' => $userInformation,
+            ]);
         }
 
         return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_confirm.html.' . $this->getTemplatingEngine(), [
@@ -151,6 +155,23 @@ class ConnectController extends BaseController
             'form' => $form->createView(),
             'userInformation' => $userInformation,
         ]);
+    }
+
+    /**
+     * @param SessionInterface $session
+     *
+     * @return string|null
+     */
+    private function getTargetPath(SessionInterface $session)
+    {
+        foreach ($this->container->getParameter('hwi_oauth.firewall_names') as $providerKey) {
+            $sessionKey = '_security.'.$providerKey.'.target_path';
+            if ($session->has($sessionKey)) {
+                return $session->get($sessionKey);
+            }
+        }
+
+        return null;
     }
 
 

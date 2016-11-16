@@ -85,7 +85,7 @@ abstract class AgendaParser implements ParserInterface
         return array_map([$this, 'arrayToAgenda'], $raw);
     }
 
-    protected function arrayToAgenda($infos)
+    public function arrayToAgenda($infos)
     {
         $agenda = new Agenda;
 

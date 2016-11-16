@@ -37,7 +37,7 @@ class EventHandler
         }
     }
 
-    public function downloadImage(Agenda &$agenda)
+    public function downloadImage(Agenda $agenda)
     {
         //$url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
         $url = $agenda->getUrl();
@@ -70,6 +70,7 @@ class EventHandler
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);
                 $agenda->setPath($filename);
                 $agenda->setFile($file);
+
             }
         }
     }
@@ -88,6 +89,7 @@ class EventHandler
         $tmpPlace = $agenda->getPlace();
         if ($tmpPlace !== null) //Analyse de la place
         {
+
             //Anticipation par traitement du blacklistage de la place;
             if ($tmpPlace->getFacebookId()) {
                 $exploration = $this->firewall->getExploration($tmpPlace->getFacebookId(), $site);
@@ -96,11 +98,13 @@ class EventHandler
                 }
             }
 
+
             //Recherche d'une meilleure place déjà existante
             $tmpPlace->setSite($site);
             $tmpPlace = Monitor::bench('Clean Place', function () use (&$tmpPlace) {
                 return $this->cleaner->getCleanedPlace($tmpPlace);
             });
+
 
             $place = Monitor::bench('Handle Place', function () use (&$tmpPlace, &$persistedPlaces, &$agenda) {
                 return $this->handlePlace($persistedPlaces, $tmpPlace);
@@ -118,6 +122,7 @@ class EventHandler
     public function handleEvent(array $persistedEvents, Agenda $testedAgenda = null)
     {
         if (null !== $testedAgenda && $this->firewall->isGoodEvent($testedAgenda)) {
+
             //Evenement persisté
             $bestEvent = Monitor::bench('getBestEvent', function () use (&$persistedEvents, &$testedAgenda) {
                 return $this->comparator->getBestEvent($persistedEvents, $testedAgenda);

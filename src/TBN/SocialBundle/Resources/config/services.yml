@@ -11,6 +11,9 @@ services:
     tbn.social.facebook_events:
         class:        TBN\SocialBundle\Social\FacebookEvents
         arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}  ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack"]
+    tbn.social.facebook_list_events:
+        class:        TBN\SocialBundle\Social\FacebookListEvents
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}  ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack"]
     tbn.social.facebook_admin:
         class:        TBN\SocialBundle\Social\FacebookAdmin
         arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}  ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack",  "@doctrine.orm.entity_manager",  "@jms_serializer"]

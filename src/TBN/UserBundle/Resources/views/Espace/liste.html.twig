@@ -15,8 +15,21 @@
 
     {% block body_espace -%}
         <div class="text-center">
-            <a class="btn btn-success btn-raised" href="{{ path('tbn_agenda_new') }}"><i class="fa fa-plus"></i> Nouvel
-                événement</a>
+            <a class="btn btn-success btn-raised" href="{{ path('tbn_agenda_new') }}">
+                <i class="fa fa-plus"></i>
+                Nouvel événement
+            </a>
+            {% if canSynchro %}
+            <a class="btn btn-info btn-raised" href="{{ path('tbn_agenda_import_events') }}">
+                <i class="fa fa-refresh"></i>
+                Synchroniser mes événements Facebook
+            </a>
+            {% else %}
+            <a id="connect-fb" class="btn btn-info btn-raised" href="{{ hwi_oauth_login_url('facebook_list_events') }}" data-href="{{ path('tbn_agenda_import_events') }}">
+                <i class="fa fa-facebook"></i>
+                Me connecter à Facebook pour synchroniser mes événéments
+            </a>
+            {% endif %}
         </div>
         <br/>
         <br/>

@@ -400,51 +400,6 @@ class FacebookAdmin extends FacebookEvents
         return $events;
     }
 
-    protected function findPaginated(GraphEdge $graph = null, $maxItems = 5000)
-    {
-        $datas = [];
-
-        while ($graph !== null && $graph->count() > 0 && count($datas) < $maxItems) {
-            try {
-                if ($graph->getField('error_code')) {
-                    Monitor::writeln(sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
-                    $graph = null;
-                } else {
-                    $currentData = $graph->all();
-                    $datas = array_merge($datas, $currentData);
-                    $graph = $this->client->next($graph);
-                }
-            } catch (FacebookSDKException $ex) {
-                $graph = null;
-                Monitor::writeln(sprintf('<error>Erreur dans findPaginated : %s</error>', $ex->getMessage()));
-            }
-        }
-        return $datas;
-    }
-
-    protected function findAssociativeEvents(FacebookResponse $response)
-    {
-        $graph = $response->getGraphNode();
-        $indexes = $graph->getFieldNames();
-
-        return array_map(function ($index) use ($graph) {
-            return $graph->getField($index);
-
-        }, $indexes);
-    }
-
-    protected function findAssociativePaginated(FacebookResponse $response)
-    {
-        $datas = [];
-        $graph = $response->getGraphNode();
-        $indexes = $graph->getFieldNames();
-        foreach ($indexes as $index) {
-            $subGraph = $graph->getField($index);
-            $datas = array_merge($datas, $this->findPaginated($subGraph));
-        }
-
-        return $datas;
-    }
 
     public function getEventStats($id_event)
     {
@@ -606,7 +561,6 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventsFromUsers(& $users, \DateTime $since)
     {
-        $this->debug = true;
         return $this->handleEventsEdge($users, $since);
     }
 

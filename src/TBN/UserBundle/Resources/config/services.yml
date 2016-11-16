@@ -28,7 +28,7 @@ services:
     my_user_provider:
         class: "%my_user_provider.class%"
         #this is the place where the properties are passed to the UserProvider - see config.yml
-        arguments: ["@fos_user.user_manager", {facebook: facebook_id, google: google_id, twitter: twitter_id}, "@site_manager", "@doctrine", {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook: "@tbn.social.facebook"}]
+        arguments: ["@fos_user.user_manager", {facebook: facebook_id, google: google_id, twitter: twitter_id}, "@site_manager", "@doctrine", {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook_list_events: "@tbn.social.facebook_list_events", facebook: "@tbn.social.facebook"}]
 
     tbn.registration.form.type:
         class: TBN\UserBundle\Form\Type\RegistrationFormType
