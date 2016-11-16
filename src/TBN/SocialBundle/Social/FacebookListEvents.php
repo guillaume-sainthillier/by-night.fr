@@ -16,8 +16,11 @@ class FacebookListEvents extends Facebook
     public function getUserEvents(User $user, $limit = 5000) {
         $userInfo = $user->getInfo();
 
-        if(! $userInfo) {
-            throw new \RuntimeException("Unable to find user social infos");
+        if(! $userInfo || !$userInfo->getFacebookAccessToken()) {
+            throw new \RuntimeException(sprintf(
+                "Unable to find user social infos for user '%d'",
+                $user->getId()
+            ));
         }
 
         $this->client->setDefaultAccessToken($userInfo->getFacebookAccessToken());

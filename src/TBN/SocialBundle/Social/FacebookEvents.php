@@ -3,6 +3,7 @@
 namespace TBN\SocialBundle\Social;
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
+use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
 
 /**
@@ -10,10 +11,10 @@ use TBN\UserBundle\Entity\User;
  *
  * @author guillaume
  */
-class FacebookEvents extends Facebook
+class FacebookEvents extends FacebookListEvents
 {
 
-    protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    protected function post(User $user, Agenda $agenda)
     {
         $info = $user->getInfo();
         if ($agenda->getFbPostId() === null && $info !== null && $info->getFacebookAccessToken() !== null) {

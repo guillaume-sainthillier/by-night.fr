@@ -11,10 +11,15 @@ use TBN\UserBundle\Entity\User;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class SocialController extends BaseController
 {
-
+    /**
+     * @Security("has_role('ROLE_ADMIN')")
+     * @param string $service
+     * @return JsonResponse
+     */
     public function disconnectSiteAction($service)
     {
         /** @var social Social */
@@ -32,7 +37,7 @@ class SocialController extends BaseController
 
     public function disconnectAction(Request $request, $service)
     {
-        $user = $this->getUserWithService($request, $service);
+        $user = $this->getUserWithService($request);
         /** @var social Social */
         $social = $this->container->get("tbn.social." . strtolower($service === "facebook" ? "facebook_events" : $service));
         $social->disconnectUser($user);
@@ -43,7 +48,7 @@ class SocialController extends BaseController
 
     public function disconnectConfirmAction(Request $request, $service, $from_site = false)
     {
-        $this->getUserWithService($request, $service);
+        $this->getUserWithService($request);
 
         return $this->render('TBNSocialBundle:Social:confirm_disconnect_' . ($from_site ? "site_" : "") . $service . '.html.twig', [
             "service" => $service
@@ -52,12 +57,11 @@ class SocialController extends BaseController
 
     /**
      *
-     * @param type $service
-     * @return User xxx
-     * @throws type
+     * @param Request $request
+     * @return User
      * @throws AccessDeniedException
      */
-    protected function getUserWithService(Request $request, $service)
+    protected function getUserWithService(Request $request)
     {
         if (!$request->isXmlHttpRequest()) {
             throw $this->createNotFoundException('La page demandée est introuvable');
@@ -72,9 +76,6 @@ class SocialController extends BaseController
      * Authenticate a user with Symfony Security
      *
      * @param UserInterface $user
-     * @param string $resourceOwnerName
-     * @param string $accessToken
-     * @param boolean $fakeLogin
      */
     protected function authenticateBasicUser(UserInterface $user)
     {
