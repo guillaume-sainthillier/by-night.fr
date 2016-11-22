@@ -5,6 +5,8 @@ namespace TBN\SocialBundle\Social;
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphEdge;
 use TBN\SocialBundle\Exception\SocialException;
+use Facebook\Exceptions\FacebookSDKException;
+use TBN\MajDataBundle\Utils\Monitor;
 
 use Facebook\GraphNodes\GraphNode;
 use Facebook\Facebook as Client;
