@@ -46,7 +46,7 @@ class SearchController extends Controller
         $repoSearch = $rm->getRepository("TBNAgendaBundle:Agenda");
         $search = (new SearchAgenda())->setTerm($q);
 
-        return $repoSearch->findWithSearch($site, $search); //100ms
+        return $repoSearch->findWithSearch($site, $search);
     }
 
     /**
@@ -77,6 +77,10 @@ class SearchController extends Controller
             $page = 1;
         }
 
+        if($type && ! in_array($type, ['evenements', 'membres'])) {
+            $type = null;
+        }
+
         $nbSoirees = 0;
         $soirees = [];
         $nbUsers = 0;
@@ -85,11 +89,13 @@ class SearchController extends Controller
         if ($q) {
             if (!$type || $type === 'evenements') //Recherche d'événements
             {
-                $results = $this->searchEvents($rm, $site, $q);
-                $results->setMaxPerPage($maxItems)->setCurrentPage($page);
+                $query = $this->searchEvents($rm, $site, $q);
+                $query->setMaxPerPage($maxItems)->setCurrentPage($page);
 
-                $soirees = $results->getCurrentPageResults();
-                $nbSoirees = $results->getNbResults();
+
+                $soirees = $query->getCurrentPageResults();
+                $nbSoirees = $query->getNbResults();
+
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('TBNMainBundle:Search:content_events.html.twig', [
@@ -106,7 +112,6 @@ class SearchController extends Controller
             {
                 $results = $this->searchUsers($rm, $site, $q);
                 $results->setMaxPerPage($maxItems)->setCurrentPage($page);
-
                 $users = $results->getCurrentPageResults();
                 $nbUsers = $results->getNbResults();
 

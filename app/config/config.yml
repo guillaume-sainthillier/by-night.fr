@@ -6,9 +6,9 @@ imports:
 framework:
     esi: { enabled: true }
     translator:
-        fallback:   %locale%
+        fallback:   "%locale%"
         logging:    false
-    secret:         %secret%
+    secret:         "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
@@ -47,8 +47,8 @@ doctrine_cache:
         
 # Twig Configuration
 twig:
-    debug:            %kernel.debug%
-    strict_variables: %kernel.debug%
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
     form_themes:
             - 'VichUploaderBundle:Form:fields.html.twig'
             - ':Form:fields.html.twig'
@@ -58,33 +58,33 @@ twig:
         twitter: "@tbn.social.twitter"
         facebook: "@tbn.social.facebook"
         google: "@tbn.social.google"
-        googleMapKey: %google_map_key%
+        googleMapKey: "%google_map_key%"
 
 # Doctrine Configuration
 doctrine:
     dbal:
         server_version: 5.7
-        driver:   %database_driver%
-        host:     %database_host%
-        port:     %database_port%
-        dbname:   %database_name%
-        user:     %database_user%
-        password: %database_password%
+        driver:   "%database_driver%"
+        host:     "%database_host%"
+        port:     "%database_port%"
+        dbname:   "%database_name%"
+        user:     "%database_user%"
+        password: "%database_password%"
         charset:  UTF8
 
     orm:
-        auto_generate_proxy_classes: %kernel.debug%
+        auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport: %mailer_transport%
-    host:      %mailer_host%
-    username:  %mailer_user%
-    password:  %mailer_password%
-    port:      %mailer_port%
-    sender_address: %mailer_user%
+    transport: "%mailer_transport%"
+    host:      "%mailer_host%"
+    username:  "%mailer_user%"
+    password:  "%mailer_password%"
+    port:      "%mailer_port%"
+    sender_address: "%mailer_user%"
     spool:     { type: memory }
 
 vich_uploader:
@@ -93,13 +93,13 @@ vich_uploader:
     mappings:
         user_image:
             uri_prefix:         /uploads/users
-            upload_destination: %kernel.root_dir%/../web/uploads/users
+            upload_destination: "%kernel.root_dir%/../web/uploads/users"
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
         event_image:
             uri_prefix:         /uploads/documents
-            upload_destination: %kernel.root_dir%/../web/uploads/documents
+            upload_destination: "%kernel.root_dir%/../web/uploads/documents"
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
@@ -163,12 +163,12 @@ hwi_oauth:
     resource_owners:
         twitter:
             type:               twitter
-            client_id:          %twitter_app_id%
-            client_secret:      %twitter_app_secret%
+            client_id:          "%twitter_app_id%"
+            client_secret:      "%twitter_app_secret%"
         facebook_admin:
             type:                facebook
-            client_id:           %api_facebook_id%
-            client_secret:       %api_facebook_secret%
+            client_id:           "%api_facebook_id%"
+            client_secret:       "%api_facebook_secret%"
             scope:               email, publish_actions, manage_pages
             authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
@@ -179,8 +179,8 @@ hwi_oauth:
                 display: popup #dialog is optimized for popup window
         facebook_events:
             type:                facebook
-            client_id:           %api_facebook_id%
-            client_secret:       %api_facebook_secret%
+            client_id:           "%api_facebook_id%"
+            client_secret:       "%api_facebook_secret%"
             scope:               email, user_posts
             authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
@@ -191,8 +191,8 @@ hwi_oauth:
                 display: popup #dialog is optimized for popup window
         facebook_list_events:
             type:                facebook
-            client_id:           %api_facebook_id%
-            client_secret:       %api_facebook_secret%
+            client_id:           "%api_facebook_id%"
+            client_secret:       "%api_facebook_secret%"
             scope:               email, user_events
             authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
@@ -203,8 +203,8 @@ hwi_oauth:
                 display: popup #dialog is optimized for popup window
         facebook:
             type:                facebook
-            client_id:           %api_facebook_id%
-            client_secret:       %api_facebook_secret%
+            client_id:           "%api_facebook_id%"
+            client_secret:       "%api_facebook_secret%"
             scope:               email, rsvp_event
             authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
@@ -215,8 +215,8 @@ hwi_oauth:
                 display: popup #dialog is optimized for popup window
         google:
             type:                google
-            client_id:           %google_app_id%
-            client_secret:       %google_app_secret%
+            client_id:           "%google_app_id%"
+            client_secret:       "%google_app_secret%"
             scope:               https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.stream.read https://www.googleapis.com/auth/plus.stream.write
             options:
                 access_type:         offline
@@ -235,7 +235,7 @@ liip_imagine:
     loaders:
         default:
             filesystem:
-                data_root: %data_root%
+                data_root: "%data_root%"
 
     filter_sets:
         cache: ~
@@ -302,7 +302,8 @@ fos_elastica:
         default: { host: localhost, port: 9200 }
     serializer: ~
     indexes:
-        tbn:
+        by-night:
+            index_name: "by-night"
             client: default
             settings:
                 index:
@@ -319,7 +320,7 @@ fos_elastica:
                         tokenizer:
                             nGram:
                                 type:     nGram
-                                min_gram: 2
+                                min_gram: 3
                                 max_gram: 20
                         filter:
                             snowball:
@@ -337,46 +338,29 @@ fos_elastica:
             types:
                 event:
                     mappings:
-                        nom: { boost: 5, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        nom: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer  }
                         descriptif: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        dateDebut: { type: date, format: Y-m-d }
-                        dateFin: { type: date, format: Y-m-d }
-                        commune: ~
-                        typeManifestation: ~
+                        date_debut: { type: date, format: Y-m-d }
+                        date_fin: { type: date, format: Y-m-d }
                         place:
                             type: "object"
                             properties:
                                 nom: { boost: 3, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                                 rue: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                                codePostal: ~
                                 ville: { boost: 2, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        site:
-                            type: "object"
-                            properties:
-                                id: ~                        
                     persistence:
                         driver: orm # orm, mongodb, propel are available
                         model:  TBN\AgendaBundle\Entity\Agenda
                         repository: TBN\AgendaBundle\SearchRepository\AgendaRepository
-                        provider: ~
-                        listener: ~ # by default, listens to "insert", "update" and "delete"
-                        finder: ~
                 user:
                     mappings:
                         username: { boost: 5, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         firstname: { boost: 1, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         lastname: { boost: 1, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        site:
-                            type: "object"
-                            properties:
-                                id: ~
                     persistence:
                         driver: orm
                         model:  TBN\UserBundle\Entity\User
                         repository: TBN\UserBundle\SearchRepository\UserRepository
-                        provider: ~
-                        listener: ~ # by default, listens to "insert", "update" and "delete"
-                        finder: ~
 
 jms_serializer:
     metadata:

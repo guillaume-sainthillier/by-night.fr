@@ -130,7 +130,6 @@ class AgendaRepository extends Repository
 
         $finalQuery = Query::create($query)
             ->addSort(['date_fin' => 'asc'])
-//            ->addSort(['date_debut' => 'desc'])
             ->addSort(['fb_participations' => ['order' => 'desc', 'unmapped_type' => 'integer']]);
 
         return $this->findPaginated($finalQuery);

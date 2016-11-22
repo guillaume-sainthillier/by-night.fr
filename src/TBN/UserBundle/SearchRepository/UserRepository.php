@@ -4,39 +4,34 @@ namespace TBN\UserBundle\SearchRepository;
 
 use FOS\ElasticaBundle\Repository;
 use TBN\MainBundle\Entity\Site;
-use Elastica\Filter\Term;
-use Elastica\Filter\BoolFilter;
-use Elastica\Query;
-
-use Elastica\Query\Filtered;
+use Elastica\Query\Term;
+use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
 
 class UserRepository extends Repository
 {
 
     /**
-     * @param $searchText
+     * @param Site $site
+     * @param string $q
      * @return \Pagerfanta\Pagerfanta
      */
     public function findWithSearch(Site $site, $q)
     {
-
-        //Filtres
-        $filter = new BoolFilter;
-        $filter->addMust(
+        $query = new BoolQuery;
+        $query->addFilter(
             new Term(['site.id' => $site->getId()])
         );
 
-        //Query
-        $query = new MultiMatch;
-        $query->setQuery($q)
+        $match = new MultiMatch;
+        $match->setQuery($q)
             ->setFields(['username', 'firstname', 'lastname'])
             ->setFuzziness(0.8)
             ->setMinimumShouldMatch('80%');
 
+        $query->addFilter($match);
+
         //Final Query
-        $filtered = new Filtered($query, $filter);
-        $finalQuery = Query::create($filtered);
-        return $this->findPaginated($finalQuery);
+        return $this->findPaginated($query);
     }
 }
