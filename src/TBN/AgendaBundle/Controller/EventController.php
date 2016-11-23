@@ -253,9 +253,11 @@ class EventController extends Controller
         $repositoryManager = $this->get('fos_elastica.manager');
         $repository = $repositoryManager->getRepository('TBNAgendaBundle:Agenda');
         $results = $repository->findWithSearch($site, $search); //100ms
-        $results->setCurrentPage($page)->setMaxPerPage($nbSoireeParPage);
-        $soirees = $results->getCurrentPageResults();
-        $nbSoireesTotales = $results->getNbResults();
+
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate($results, $page, $nbSoireeParPage);
+        $nbSoireesTotales = $pagination->getTotalItemCount();
+        $soirees = $pagination;
 
         return $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
             'villeName' => $ville,

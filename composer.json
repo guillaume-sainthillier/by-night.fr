@@ -42,7 +42,8 @@
     "javiereguiluz/easyadmin-bundle": "^1.14",
     "vich/uploader-bundle": "^1.1",
     "lexik/maintenance-bundle": "dev-master",
-    "google/recaptcha": "~1.1"
+    "google/recaptcha": "~1.1",
+    "knplabs/knp-paginator-bundle": "^2.5"
   },
   "require-dev": {
     "symfony/phpunit-bridge": "^3.0"

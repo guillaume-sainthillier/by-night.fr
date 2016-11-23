@@ -32,6 +32,6 @@ class UserRepository extends Repository
         $query->addFilter($match);
 
         //Final Query
-        return $this->findPaginated($query);
+        return $this->createPaginatorAdapter($query);
     }
 }

@@ -132,6 +132,6 @@ class AgendaRepository extends Repository
             ->addSort(['date_fin' => 'asc'])
             ->addSort(['fb_participations' => ['order' => 'desc', 'unmapped_type' => 'integer']]);
 
-        return $this->findPaginated($finalQuery);
+        return $this->createPaginatorAdapter($finalQuery);
     }
 }

@@ -90,11 +90,10 @@ class SearchController extends Controller
             if (!$type || $type === 'evenements') //Recherche d'événements
             {
                 $query = $this->searchEvents($rm, $site, $q);
-                $query->setMaxPerPage($maxItems)->setCurrentPage($page);
-
-
-                $soirees = $query->getCurrentPageResults();
-                $nbSoirees = $query->getNbResults();
+                $paginator = $this->get('knp_paginator');
+                $pagination = $paginator->paginate($query, $page, $maxItems);
+                $nbSoirees = $pagination->getTotalItemCount();
+                $soirees = $pagination;
 
 
                 if ($request->isXmlHttpRequest()) {
@@ -110,10 +109,11 @@ class SearchController extends Controller
 
             if (!$type || $type === 'membres') //Recherche de membres
             {
-                $results = $this->searchUsers($rm, $site, $q);
-                $results->setMaxPerPage($maxItems)->setCurrentPage($page);
-                $users = $results->getCurrentPageResults();
-                $nbUsers = $results->getNbResults();
+                $query = $this->searchUsers($rm, $site, $q);
+                $paginator = $this->get('knp_paginator');
+                $pagination = $paginator->paginate($query, $page, $maxItems);
+                $nbUsers = $pagination->getTotalItemCount();
+                $users = $pagination;
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('TBNMainBundle:Search:content_users.html.twig', [
@@ -121,7 +121,7 @@ class SearchController extends Controller
                         'term' => $q,
                         'maxItems' => $maxItems,
                         'page' => $page,
-                        'users' => $soirees
+                        'users' => $users
                     ]);
                 }
             }
