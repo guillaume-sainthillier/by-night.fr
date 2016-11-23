@@ -123,7 +123,7 @@ class FacebookAdmin extends FacebookEvents
                 $page = $this->getPageFromId($site->getFacebookIdPage(), ['fields' => 'fan_count']);
                 return $page->getField('fan_count');
             } catch (FacebookSDKException $ex) {
-                $this->logger->critical($ex);
+                $this->logger->error($ex);
             }
         }
 
@@ -231,7 +231,7 @@ class FacebookAdmin extends FacebookEvents
             $this->client->sendRequest('POST', $url, [], $userAccessToken);
             return true;
         } catch (FacebookSDKException $ex) {
-            $this->logger->critical($ex);
+            $this->logger->error($ex);
         }
 
         return false;
@@ -256,7 +256,7 @@ class FacebookAdmin extends FacebookEvents
                 }
             }
         } catch (FacebookSDKException $ex) {
-            $this->logger->critical($ex);
+            $this->logger->error($ex);
         }
 
         return $stats;
@@ -430,7 +430,7 @@ class FacebookAdmin extends FacebookEvents
             $interets = $this->findPaginated($graph->getField('maybe'));
 
         } catch (FacebookSDKException $ex) {
-            $this->logger->critical($ex);
+            $this->logger->error($ex);
         }
 
         return [
