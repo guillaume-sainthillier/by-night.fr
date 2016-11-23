@@ -128,3 +128,8 @@ services:
     tbn.merger:
         class: TBN\MajDataBundle\Utils\Merger
         arguments: ["@tbn.comparator"]
+
+    #Cleaner
+    tbn.image_cleaner:
+        class: TBN\MajDataBundle\Cleaner\ImageCleaner
+        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "@filesystem", "%kernel.root_dir%/../web"]
