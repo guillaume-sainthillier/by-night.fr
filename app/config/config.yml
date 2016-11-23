@@ -345,18 +345,18 @@ fos_elastica:
                         place:
                             type: "object"
                             properties:
-                                nom: { boost: 3, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                                nom: { boost: 3, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                                 rue: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                                ville: { boost: 2, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                                ville: { boost: 2, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                     persistence:
                         driver: orm # orm, mongodb, propel are available
                         model:  TBN\AgendaBundle\Entity\Agenda
                         repository: TBN\AgendaBundle\SearchRepository\AgendaRepository
                 user:
                     mappings:
-                        username: { boost: 5, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        firstname: { boost: 1, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        lastname: { boost: 1, analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        username: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        firstname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        lastname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                     persistence:
                         driver: orm
                         model:  TBN\UserBundle\Entity\User
