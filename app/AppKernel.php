@@ -39,6 +39,7 @@ class AppKernel extends Kernel
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Lexik\Bundle\MaintenanceBundle\LexikMaintenanceBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+            new Shivas\VersioningBundle\ShivasVersioningBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

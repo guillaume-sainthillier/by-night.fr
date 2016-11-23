@@ -43,7 +43,8 @@
     "vich/uploader-bundle": "^1.1",
     "lexik/maintenance-bundle": "dev-master",
     "google/recaptcha": "~1.1",
-    "knplabs/knp-paginator-bundle": "^2.5"
+    "knplabs/knp-paginator-bundle": "^2.5",
+    "shivas/versioning-bundle": "^1.3"
   },
   "require-dev": {
     "symfony/phpunit-bridge": "^3.0"
@@ -52,6 +53,7 @@
     "post-install-cmd": [
       "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Shivas\\VersioningBundle\\Composer\\ScriptHandler::bumpVersion",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",

@@ -2,6 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: "@TBNMainBundle/Resources/config/services.yml" }
+    - { resource: sem_var.yml, ignore_errors: true }
 
 framework:
     esi: { enabled: true }
@@ -59,6 +60,7 @@ twig:
         facebook: "@tbn.social.facebook"
         google: "@tbn.social.google"
         googleMapKey: "%google_map_key%"
+        app_version: v%application_version%
 
 # Doctrine Configuration
 doctrine:
@@ -377,6 +379,9 @@ lexik_maintenance:
     driver:
         class: '\Lexik\Bundle\MaintenanceBundle\Drivers\FileDriver'
         options: {file_path: "%kernel.cache_dir%/lock"}
+
+shivas_versioning:
+    version_file:  sem_var.yml
 
 services:
     fos_user.doctrine_registry:
