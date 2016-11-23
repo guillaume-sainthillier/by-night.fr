@@ -21,6 +21,12 @@ services:
         arguments: ["@site_manager", "@doctrine.orm.entity_manager", "@router", "%base_host%"]
         tags:
            - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}
+
+    image_listener:
+        class: TBN\MainBundle\Listener\ImageListener
+        arguments: ["@request_stack", "@liip_imagine.cache.manager"]
+        tags:
+           - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
            
     tbn.twig.main_extension:
         class: TBN\MainBundle\Twig\MainExtension

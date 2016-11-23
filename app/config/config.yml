@@ -94,12 +94,14 @@ vich_uploader:
         user_image:
             uri_prefix:         /uploads/users
             upload_destination: "%kernel.root_dir%/../web/uploads/users"
+            namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
         event_image:
             uri_prefix:         /uploads/documents
             upload_destination: "%kernel.root_dir%/../web/uploads/documents"
+            namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
@@ -250,26 +252,22 @@ liip_imagine:
             quality: 100
             filters:
                 relative_resize: { heighten: 350 }
-        thumb_site:
-            quality: 100
-            filters:
-                relative_resize: { heighten: 350 }
         thumbs_evenement:
             quality: 75
             filters:
-#                relative_resize: { widen: 200 }
                 relative_resize: { heighten: 200 }
-#                thumbnail: { size: [200, 200], mode: outbound }
         thumb_evenement:
             quality: 100
             filters:
                 relative_resize: { heighten: 250 }
-#                thumbnail: { size: [250, 250], mode: outbound }
         thumb_user_evenement:
             quality: 75
             filters:
                 relative_resize: { heighten: 128 }
-#                thumbnail: { size: [128, 128], mode: outbound }
+        thumb_user_large:
+            quality: 75
+            filters:
+                relative_resize: { heighten: 200 }
         thumb_user:
             quality: 75
             filters:
