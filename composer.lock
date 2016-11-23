@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "871fe1112ec41fbda4b7f6314f2d493a",
+    "hash": "9a265c13b89599de790ab0f904b16b4c",
     "content-hash": "28bee0fb4503f19b79363fcb6f82052b",
     "packages": [
         {
@@ -1056,12 +1056,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSElasticaBundle.git",
-                "reference": "4fcc691e39ce2ecdb7045eb2bccc43fad95a1933"
+                "reference": "e882cde5ca624f9091a4db9534fc04b2de7f5901"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSElasticaBundle/zipball/4fcc691e39ce2ecdb7045eb2bccc43fad95a1933",
-                "reference": "4fcc691e39ce2ecdb7045eb2bccc43fad95a1933",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSElasticaBundle/zipball/e882cde5ca624f9091a4db9534fc04b2de7f5901",
+                "reference": "e882cde5ca624f9091a4db9534fc04b2de7f5901",
                 "shasum": ""
             },
             "require": {
@@ -1134,7 +1134,7 @@
                 "propel",
                 "search"
             ],
-            "time": "2016-11-22 15:50:23"
+            "time": "2016-11-23 08:40:54"
         },
         {
             "name": "friendsofsymfony/user-bundle",
@@ -1702,12 +1702,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/hwi/HWIOAuthBundle.git",
-                "reference": "429ae3fe1641a54ea0934bb06dac355affc41f8d"
+                "reference": "ebcbbda941c38b020838e4abd3e87fd9f0a0ce91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hwi/HWIOAuthBundle/zipball/429ae3fe1641a54ea0934bb06dac355affc41f8d",
-                "reference": "429ae3fe1641a54ea0934bb06dac355affc41f8d",
+                "url": "https://api.github.com/repos/hwi/HWIOAuthBundle/zipball/ebcbbda941c38b020838e4abd3e87fd9f0a0ce91",
+                "reference": "ebcbbda941c38b020838e4abd3e87fd9f0a0ce91",
                 "shasum": ""
             },
             "require": {
@@ -1843,7 +1843,7 @@
                 "yandex",
                 "youtube"
             ],
-            "time": "2016-10-03 14:27:17"
+            "time": "2016-11-23 07:18:24"
         },
         {
             "name": "imagine/imagine",
@@ -1955,16 +1955,16 @@
         },
         {
             "name": "javiereguiluz/easyadmin-bundle",
-            "version": "v1.16.1",
+            "version": "v1.16.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/javiereguiluz/EasyAdminBundle.git",
-                "reference": "d377ac83a15c191f26a8fb63376562862f81fb4c"
+                "reference": "539743820a0c3e5613e3ccf3b7181f920b6d96b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/javiereguiluz/EasyAdminBundle/zipball/d377ac83a15c191f26a8fb63376562862f81fb4c",
-                "reference": "d377ac83a15c191f26a8fb63376562862f81fb4c",
+                "url": "https://api.github.com/repos/javiereguiluz/EasyAdminBundle/zipball/539743820a0c3e5613e3ccf3b7181f920b6d96b0",
+                "reference": "539743820a0c3e5613e3ccf3b7181f920b6d96b0",
                 "shasum": ""
             },
             "require": {
@@ -2034,7 +2034,7 @@
                 "backend",
                 "generator"
             ],
-            "time": "2016-11-15 19:24:54"
+            "time": "2016-11-23 18:55:02"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -4547,16 +4547,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.28.1",
+            "version": "v1.28.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "fff80c4a7ae1d47a81dfec10c76cbcb939170b45"
+                "reference": "b22ce0eb070e41f7cba65d78fe216de29726459c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/fff80c4a7ae1d47a81dfec10c76cbcb939170b45",
-                "reference": "fff80c4a7ae1d47a81dfec10c76cbcb939170b45",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/b22ce0eb070e41f7cba65d78fe216de29726459c",
+                "reference": "b22ce0eb070e41f7cba65d78fe216de29726459c",
                 "shasum": ""
             },
             "require": {
@@ -4564,7 +4564,7 @@
             },
             "require-dev": {
                 "symfony/debug": "~2.7",
-                "symfony/phpunit-bridge": "~2.7"
+                "symfony/phpunit-bridge": "~3.2@dev"
             },
             "type": "library",
             "extra": {
@@ -4604,7 +4604,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-11-19 05:52:49"
+            "time": "2016-11-23 18:41:40"
         },
         {
             "name": "vich/uploader-bundle",
