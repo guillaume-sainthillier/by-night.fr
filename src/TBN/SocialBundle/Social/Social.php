@@ -10,6 +10,7 @@ namespace TBN\SocialBundle\Social;
  */
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use TBN\SocialBundle\Exception\SocialException;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -77,9 +78,14 @@ abstract class Social
      */
     protected $requestStack;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack)
-    {
+    /**
+     *
+     * @var LoggerInterface $logger
+     */
+    protected $logger;
 
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger)
+    {
         if (!isset($config["id"])) {
             throw new SocialException("Le paramètre 'id' est absent");
         }
@@ -96,6 +102,7 @@ abstract class Social
         $this->router = $router;
         $this->session = $session;
         $this->requestStack = $requestStack;
+        $this->logger = $logger;
 
         $this->constructClient();
     }

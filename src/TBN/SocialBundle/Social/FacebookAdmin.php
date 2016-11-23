@@ -3,20 +3,21 @@
 namespace TBN\SocialBundle\Social;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use JMS\Serializer\SerializerInterface;
 
+use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Utils\Monitor;
 use TBN\UserBundle\Entity\SiteInfo;
 use TBN\MajDataBundle\Parser\AgendaParser;
 use TBN\MainBundle\Site\SiteManager;
+use TBN\UserBundle\Entity\User;
 
 use Facebook\GraphNodes\GraphNode;
-use Facebook\GraphNodes\GraphEdge;
-use Facebook\FacebookResponse;
 use Facebook\Exceptions\FacebookSDKException;
 
 /**
@@ -48,9 +49,9 @@ class FacebookAdmin extends FacebookEvents
      */
     protected $serializer;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, ObjectManager $om, SerializerInterface $serializer)
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, ObjectManager $om, SerializerInterface $serializer)
     {
-        parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack);
+        parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack, $logger);
 
         $this->om = $om;
         $this->siteInfo = $this->siteManager->getSiteInfo();
@@ -82,7 +83,7 @@ class FacebookAdmin extends FacebookEvents
         return php_sapi_name() === 'cli';
     }
 
-    protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    protected function afterPost(User $user, Agenda $agenda)
     {
         if ($agenda->getFbPostSystemId() === null && $this->siteInfo !== null && $this->siteInfo->getFacebookAccessToken() !== null) {
             $site = $this->siteManager->getCurrentSite();
@@ -121,7 +122,9 @@ class FacebookAdmin extends FacebookEvents
             try {
                 $page = $this->getPageFromId($site->getFacebookIdPage(), ['fields' => 'fan_count']);
                 return $page->getField('fan_count');
-            } catch (FacebookSDKException $ex) {}
+            } catch (FacebookSDKException $ex) {
+                $this->logger->critical($ex);
+            }
         }
 
         return 0;
@@ -228,6 +231,7 @@ class FacebookAdmin extends FacebookEvents
             $this->client->sendRequest('POST', $url, [], $userAccessToken);
             return true;
         } catch (FacebookSDKException $ex) {
+            $this->logger->critical($ex);
         }
 
         return false;
@@ -252,6 +256,7 @@ class FacebookAdmin extends FacebookEvents
                 }
             }
         } catch (FacebookSDKException $ex) {
+            $this->logger->critical($ex);
         }
 
         return $stats;
@@ -407,6 +412,7 @@ class FacebookAdmin extends FacebookEvents
         $nbInterets = 0;
         $participations = [];
         $interets = [];
+        $image = null;
 
         try {
             $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
@@ -424,6 +430,7 @@ class FacebookAdmin extends FacebookEvents
             $interets = $this->findPaginated($graph->getField('maybe'));
 
         } catch (FacebookSDKException $ex) {
+            $this->logger->critical($ex);
         }
 
         return [
@@ -539,7 +546,6 @@ class FacebookAdmin extends FacebookEvents
      * @param string $endPoint
      * @param array $params
      * @param int $limit
-     * @param int $page
      * @param string $requestMethod
      * @return array
      */

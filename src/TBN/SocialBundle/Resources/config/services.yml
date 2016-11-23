@@ -4,19 +4,19 @@ parameters:
 services:
     tbn.social.twitter:
         class:        TBN\SocialBundle\Social\Twitter
-        arguments:    [{ id: "%twitter_app_id%", secret: "%twitter_app_secret%"}    ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack"]
+        arguments:    [{ id: "%twitter_app_id%", secret: "%twitter_app_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger"]
     tbn.social.facebook:
         class:        TBN\SocialBundle\Social\Facebook
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}  ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger"]
     tbn.social.facebook_events:
         class:        TBN\SocialBundle\Social\FacebookEvents
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}  ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger"]
     tbn.social.facebook_list_events:
         class:        TBN\SocialBundle\Social\FacebookListEvents
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}  ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger"]
     tbn.social.facebook_admin:
         class:        TBN\SocialBundle\Social\FacebookAdmin
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}  ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack",  "@doctrine.orm.entity_manager",  "@jms_serializer"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@doctrine.orm.entity_manager", "@jms_serializer"]
     tbn.social.google:
         class:        TBN\SocialBundle\Social\Google
-        arguments:    [{ id: "%google_app_id%", secret: "%google_app_secret%", key: "%google_map_key%"}      ,  "@site_manager",  "@security.token_storage",  "@router",  "@session",  "@request_stack"]
+        arguments:    [{ id: "%google_app_id%", secret: "%google_app_secret%", key: "%google_map_key%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger"]
