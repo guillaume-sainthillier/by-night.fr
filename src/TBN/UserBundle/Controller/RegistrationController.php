@@ -59,13 +59,11 @@ class RegistrationController extends BaseController
         $form->setData($user);
 
         $form->handleRequest($request);
-
         if ($form->isValid()) {
             $event = new FormEvent($form, $request);
             $dispatcher->dispatch(FOSUserEvents::REGISTRATION_SUCCESS, $event);
 
             $userManager->updateUser($user);
-
 
             if (null === $response = $event->getResponse()) {
                 if ($request->isXmlHttpRequest()) {

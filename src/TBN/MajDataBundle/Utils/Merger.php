@@ -13,12 +13,13 @@ use TBN\MajDataBundle\Utils\Comparator;
  */
 class Merger
 {
-    const MERGE_LEFT = 'merge_left';
-    const MERGE_RIGHT = 'merge_right';
-    const MERGE_MAX = 'merge_max';
-    const MERGE_RIGHT_IF_DIFFERENT = 'merge_right_if_different';
-    const FORCE_MERGE_LEFT = 'force_merge_left';
-    const FORCE_MERGE_RIGHT = 'force_merge_right';
+    const MERGE_LEFT = 'do_merge_left';
+    const MERGE_RIGHT = 'do_merge_right';
+    const MERGE_MAX = 'do_merge_max';
+    const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
+    const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
+    const FORCE_MERGE_LEFT = 'do_force_merge_left';
+    const FORCE_MERGE_RIGHT = 'do_force_merge_right';
     const DEFAULT_MERGE = self::MERGE_RIGHT;
 
     /**
@@ -35,10 +36,10 @@ class Merger
     {
         return $this->merge($a, $b, [
             'id' => self::FORCE_MERGE_LEFT,
+            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
-            'date_modification' => self::MERGE_RIGHT_IF_DIFFERENT,
-            'date_debut' => self::MERGE_RIGHT_IF_DIFFERENT,
-            'date_fin' => self::MERGE_RIGHT_IF_DIFFERENT,
+            'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
+            'date_fin' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
             'descriptif',
             'horaires',
             'modification_derniere_minute',
@@ -64,9 +65,9 @@ class Merger
             'source',
             'fb_date_modification' => self::MERGE_RIGHT_IF_DIFFERENT,
             'place',
-            'user' => self::MERGE_LEFT,
+            'user' => self::FORCE_MERGE_LEFT,
             'path',
-            'file',
+            'file' => self::MERGE_LEFT,
             'reject'
         ]);
     }
@@ -75,6 +76,7 @@ class Merger
     {
         return $this->merge($a, $b, [
             'id' => self::FORCE_MERGE_LEFT,
+            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'latitude',
             'longitude',
@@ -105,8 +107,9 @@ class Merger
             if(is_numeric($type)) {
                 $type = self::DEFAULT_MERGE;
             }else {
+                $oldField = $field;
                 $field = $type;
-                $type = $field;
+                $type = $oldField;
             }
 
             $getter = 'get' . $this->skakeToCamel($field);
@@ -139,6 +142,11 @@ class Merger
                 return $valueB;
             case self::MERGE_RIGHT_IF_DIFFERENT:
                 return $valueA != $valueB ? $valueB : $valueA;
+            case self::MERGE_RIGHT_IF_DATE_DIFFERENT:
+                if($valueA && $valueB) {
+                    return $valueA->format('Y-m-d') != $valueB->format("Y-m-d") ? $valueB : $valueA;
+                }
+                return $this->getBestContent($valueA, $valueB, self::MERGE_RIGHT_IF_DIFFERENT);
             case self::MERGE_MAX:
                 return max($valueA, $valueB);
         }

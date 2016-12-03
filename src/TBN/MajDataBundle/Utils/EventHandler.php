@@ -87,22 +87,24 @@ class EventHandler
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Agenda $event)
     {
-        Monitor::bench('Clean Place', function () use ($event) {
-            $this->cleaner->cleanPlace($event->getPlace());
-        });
-
         $place = Monitor::bench('Handle Place', function () use ($persistedPlaces, $event) {
             return  $this->handlePlace($persistedPlaces, $event->getPlace());
         });
         $event->setPlace($place);
 
+        Monitor::bench('Clean Place', function () use ($event) {
+            $this->cleaner->cleanPlace($event->getPlace());
+        });
+
+        $event = Monitor::bench('Handle Event', function () use ($persistedEvents, $event) {
+            return $this->handleEvent($persistedEvents, $event);
+        });
+
         Monitor::bench('Clean Event', function () use ($event) {
             $this->cleaner->cleanEvent($event);
         });
 
-        return Monitor::bench('Handle Event', function () use ($persistedEvents, $event) {
-            return $this->handleEvent($persistedEvents, $event);
-        });
+        return $event;
     }
 
     public function handleEvent(array $persistedEvents, Agenda $notPersistedEvent)

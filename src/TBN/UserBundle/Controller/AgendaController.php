@@ -3,8 +3,10 @@
 namespace TBN\UserBundle\Controller;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Validator\ConstraintViolation;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\MajDataBundle\Utils\ExplorationHandler;
 use TBN\UserBundle\Form\Type\AgendaType;
 use TBN\AgendaBundle\Entity\Calendrier;
 use Symfony\Component\HttpFoundation\Request;
@@ -78,28 +80,26 @@ class AgendaController extends Controller
 
     public function editAction(Request $request, Agenda $agenda)
     {
+        $em = $this->getDoctrine()->getManager();
+        $em->detach($agenda);
+
+
         $this->checkIfOwner($agenda);
         $form = $this->createEditForm($agenda);
         $formDelete = $this->createDeleteForm($agenda);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $agenda->setTrustedLocation(false);
-            $agenda = $this->handleEvent($agenda);
 
-            if ($agenda !== null) {
-                $this->postSocial($agenda, $form);
-                $em->merge($agenda);
-                $em->flush();
+            $this->postSocial($agenda, $form);
+            $em->merge($agenda);
+            $em->flush();
 
-                $this->get('session')->getFlashBag()->add(
-                    'success',
-                    'Votre événement a bien été modifié'
-                );
-                return $this->redirect($this->generateUrl('tbn_agenda_list'));
-            }
-
+            $this->get('session')->getFlashBag()->add(
+                'success',
+                'Votre événement a bien été modifié'
+            );
+            return $this->redirect($this->generateUrl('tbn_agenda_list'));
         }
 
         return $this->render('TBNUserBundle:Espace:edit.html.twig', [
@@ -117,84 +117,87 @@ class AgendaController extends Controller
         $importer = $this->get('tbn.social.facebook_list_events');
         $parser = $this->get('tbn.parser.abstracts.facebook');
         $handler = $this->get('tbn.doctrine_event_handler');
-        $siteManager = $this->get('site_manager');
 
         $user = $this->getUser();
         $fb_events = $importer->getUserEvents($user);
 
-        $handler->init($siteManager->getCurrentSite());
 
         $events = [];
         foreach($fb_events as $fb_event) {
             $array_event = $parser->getInfoAgenda($fb_event);
             $event = $parser->arrayToAgenda($array_event);
 
-            $event
-                ->setUser($user)
-                ->setSite($siteManager->getCurrentSite())
-                ->setTrustedLocation(false);
-            $handler->handleEvent($event, false);
+            $events[] = $event->setUser($user);
         }
-        $handler->flush();
 
-        $stats = $handler->getStats();
-        $this->addImportMessage($stats);
+        $events = $handler->handleMany($events);
+        
+        $this->addImportMessage($handler->getExplorationHandler());
+        $validator = $this->get('validator');
+        foreach($events as $event) {
+            /**
+             * @var Agenda $event
+             */
+            $errors = $validator->validate($event);
+            if($errors->count() > 0) {
+                $errorsString = [];
+                foreach($errors as $error) {
+                    /**
+                     * @var ConstraintViolation $error;
+                     */
+                    $errorsString[] = sprintf(
+                        "<li>%s</li>",
+                        $error->getMessage()
+                    );
+                }
+                $this->addFlash('info', sprintf(
+                    "Informations sur l'événément <a href='https://facebook.com/events/%s/'>%s</a> : <ul>%s</ul>",
+                    $event->getFacebookEventId(),
+                    $event->getNom(),
+                    implode("", $errorsString)
+                ));
+            }
+        }
 
         return $this->redirectToRoute('tbn_agenda_list');
     }
 
-    protected function addImportMessage(array $stats) {
-        if($stats['nbInserts'] > 0 || $stats['nbUpdates'] > 0) {
-            $plurielInsert = $stats['nbInserts'] > 1 ? "s" : "";
-            $plurielUpdate = $stats['nbUpdates'] > 1 ? "s" : "";
-            $indicatifInsert = $stats['nbInserts'] == 1 ? "a": "ont";
-            $indicatifUpdate = $stats['nbUpdates'] == 1 ? "a": "ont";
+    protected function addImportMessage(ExplorationHandler $explorationHandler) {
+        if($explorationHandler->getNbInserts() > 0 || $explorationHandler->getNbUpdates() > 0) {
+            $plurielInsert = $explorationHandler->getNbInserts() > 1 ? "s" : "";
+            $plurielUpdate = $explorationHandler->getNbUpdates() > 1 ? "s" : "";
+            $indicatifInsert = $explorationHandler->getNbInserts() == 1 ? "a": "ont";
+            $indicatifUpdate = $explorationHandler->getNbUpdates() == 1 ? "a": "ont";
 
-            if($stats['nbInserts'] > 0 && $stats['nbUpdates'] > 0) {
+            if($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
                 $message = sprintf(
                     "<strong>%d</strong> événément%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !",
-                    $stats['nbInserts'],
+                    $explorationHandler->getNbInserts(),
                     $plurielInsert,
                     $indicatifInsert,
                     $plurielInsert,
-                    $stats['nbUpdates'],
+                    $explorationHandler->getNbUpdates(),
                     $indicatifUpdate
                 );
-            }elseif($stats['nbInserts'] > 0) {
+            }elseif($explorationHandler->getNbInserts() > 0) {
                 $message = sprintf(
                     "<strong>%d</strong> événément%s %s été ajouté%s sur By Night !",
-                    $stats['nbInserts'],
+                    $explorationHandler->getNbInserts(),
                     $plurielInsert,
                     $indicatifInsert,
                     $plurielInsert
                 );
-            }elseif($stats['nbUpdates'] > 0) {
+            }elseif($explorationHandler->getNbUpdates() > 0) {
                 $message = sprintf(
                     "<strong>%d</strong> événément%s %s été mis à jour sur By Night !",
-                    $stats['nbUpdates'],
+                    $explorationHandler->getNbUpdates(),
                     $plurielUpdate,
                     $indicatifUpdate
                 );
             }
 
             $this->addFlash('success', $message);
-        }elseif($stats['nbBlacklists'] > 0) {
-            $plurielBlacklist = $stats['nbBlacklists'] > 1 ? "s" : "";
-            $indicatifBlacklist = $stats['nbBlacklists'] == 1 ? "a": "ont";
-            $conjugaisonBlacklist = $stats['nbBlacklists'] == 1 ? "e": "ent";
-
-            $message = sprintf(
-                "<strong>%d</strong> événément%s n'%s pas été ajouté%s sur By Night car il%s ne vérifi%s pas nos critères de validation.",
-                $stats['nbBlacklists'],
-                $plurielBlacklist,
-                $indicatifBlacklist,
-                $plurielBlacklist,
-                $plurielBlacklist,
-                $conjugaisonBlacklist
-            );
-
-            $this->addFlash('error', $message);
-        }else {
+        }elseif($explorationHandler->getNbBlackLists() === 0) {
             $message = "Aucun événément n'a été retrouvé sur votre compte.";
 
             $this->addFlash('info', $message);
@@ -203,69 +206,61 @@ class AgendaController extends Controller
 
     public function newAction(Request $request)
     {
-        $agenda = new Agenda;
+        $user = $this->getUser();
+        $agenda = (new Agenda)
+            ->setUser($user)
+            ->setParticipations(1);
+
         $form = $this->createCreateForm($agenda);
 
         $form->handleRequest($request);
+        /**
+         * @var Agenda $agenda
+         */
+
+        $agenda = $form->getData();
+        $isNewAgenda = $agenda->getId() !== null;
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $siteManager = $this->get('site_manager');
-            $site = $siteManager->getCurrentSite();
 
-            $user = $this->getUser();
-            $agenda->setUser($user)
-                ->setParticipations(1)
-                ->setTrustedLocation(false)
-                ->setSite($site);
-            $agenda = $this->handleEvent($agenda);
-            if ($agenda !== null) {
-                $found = false;
-                $calendriers = $agenda->getCalendriers();
-                foreach ($calendriers as $calendrier) {
-                    if ($calendrier->getUser()->getId() === $user->getId()) {
-                        $found = true;
-                    }
+            $agenda = $em->merge($agenda);
+
+            $found = false;
+            $calendriers = $agenda->getCalendriers();
+            foreach ($calendriers as $calendrier) {
+                if ($calendrier->getUser()->getId() === $user->getId()) {
+                    $found = true;
                 }
+            }
 
-                if (!$found) {
-                    $calendrier = (new Calendrier)->setAgenda($agenda)->setUser($user)->setParticipe(1);
-                    $em->merge($calendrier);
-                    $em->flush();
-                }
+            if (!$found) {
+                $calendrier = (new Calendrier)->setAgenda($agenda)->setUser($user)->setParticipe(1);
+                $em->merge($calendrier);
+            }
 
-                $this->postSocial($agenda, $form);
-                $em->merge($agenda);
-                $em->flush();
 
+            $this->postSocial($agenda, $form);
+            $em->flush();
+
+            if($isNewAgenda) {
+                $this->get('session')->getFlashBag()->add(
+                    'success',
+                    'Votre événement a bien été mis à jour'
+                );
+            }else {
                 $this->get('session')->getFlashBag()->add(
                     'success',
                     'Votre événement a bien été créé. Merci !'
                 );
-
-                return $this->redirect($this->generateUrl('tbn_agenda_list'));
-            } else {
-                $this->get('session')->getFlashBag()->add(
-                    'danger',
-                    "Nous n'avons pas été en mesure de créer votre événement car il ne répond pas aux critères de validation établis par notre plateforme."
-                );
             }
-        }
 
+            return $this->redirect($this->generateUrl('tbn_agenda_list'));
+        }
 
         return $this->render('TBNUserBundle:Espace:new.html.twig', [
             "form" => $form->createView(),
             "agenda" => $agenda
         ]);
-    }
-
-    private function handleEvent(Agenda &$tmpAgenda)
-    {
-        $eventHandler = $this->get('tbn.doctrine_event_handler');
-        $eventHandler->init($tmpAgenda->getSite());
-
-        $agenda = $eventHandler->handleEvent($tmpAgenda);
-
-        return $agenda;
     }
 
     protected function getServiceByName($service)

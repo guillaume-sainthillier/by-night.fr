@@ -3,10 +3,14 @@
 namespace TBN\UserBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use TBN\AgendaBundle\Entity\Place;
 
 class PlaceType extends AbstractType
 {
@@ -35,13 +39,32 @@ class PlaceType extends AbstractType
             ])
             ->add('codePostal', TextType::class, [
                 "required" => false,
-            ]);
+            ])
+        ;
+
+        $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
+            function ($latitude) {
+                return floatval($latitude) ?: null;
+            },
+            function ($latitude) {
+                return floatval($latitude) ?: null;
+            }
+        ));
+
+        $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
+            function ($latitude) {
+                return floatval($latitude) ?: null;
+            },
+            function ($latitude) {
+                return floatval($latitude) ?: null;
+            }
+        ));
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'TBN\AgendaBundle\Entity\Place'
+            'data_class' => Place::class
         ]);
     }
 

@@ -69,9 +69,12 @@ class DoctrineEventHandler
         $this->stats = [];
     }
 
-    public function getStats()
+    /**
+     * @return ExplorationHandler
+     */
+    public function getExplorationHandler()
     {
-        return $this->stats;
+        return $this->explorationHandler;
     }
 
     /**
@@ -91,7 +94,6 @@ class DoctrineEventHandler
     public function handleManyCLI(array $events, ParserInterface $parser, OutputInterface $output) {
         $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
         $this->output = $output;
-        $this->explorationHandler->start();
 
         $events =  $this->handleMany($events);
         if($parser instanceof FaceBookParser) {
@@ -119,6 +121,11 @@ class DoctrineEventHandler
      * @return array
      */
     public function handleMany(array $events) {
+        $this->explorationHandler->start();
+
+        if(! count($events)) {
+            return [];
+        }
         $this->loadSites();
         $this->loadVilles();
         $this->loadExplorations($events);
@@ -255,17 +262,22 @@ class DoctrineEventHandler
                     $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event->getPlace());
                     $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
 
+                    $oldUser = $event->getUser();
                     $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
-                    $this->advanceProgressBar($progress);
-                    $this->em->persist($event);
-                    $events[$i] = $event;
-
-                    if ($this->firewall->isPersisted($event)) {
-                        $this->explorationHandler->addUpdate();
-                    } else {
-                        $this->explorationHandler->addInsert();
+                    $this->firewall->filterEventIntegrity($event, $oldUser);
+                    if(! $this->firewall->isValid($event)) {
+                        $this->explorationHandler->addBlackList();
+                    }else {
+                        $this->advanceProgressBar($progress);
+                        $this->echantillonHandler->addNewEvent($event);
+                        $event = $this->em->merge($event);
+                        if ($this->firewall->isPersisted($event)) {
+                            $this->explorationHandler->addUpdate();
+                        } else {
+                            $this->explorationHandler->addInsert();
+                        }
                     }
-                    $this->echantillonHandler->addNewEvent($event);
+                    $events[$i] = $event;
                 }
                 $this->flushEvents();
             }
@@ -307,7 +319,10 @@ class DoctrineEventHandler
 
     protected function loadExplorations(array $events) {
         $fb_ids = $this->getExplorationsFBIds($events);
-        $this->firewall->loadExplorations($fb_ids);
+
+        if(count($fb_ids)) {
+            $this->firewall->loadExplorations($fb_ids);
+        }
     }
 
     protected function flushExplorations() {
@@ -340,6 +355,10 @@ class DoctrineEventHandler
 
             if($event->getPlace()) {
                 $event->getPlace()->setReject(new Reject);
+            }
+
+            if (! $event->getDateFin() instanceof \DateTime) {
+                $event->setDateFin($event->getDateDebut());
             }
 
             if($event->getFacebookEventId()) {

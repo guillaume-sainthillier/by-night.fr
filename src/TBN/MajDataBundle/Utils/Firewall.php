@@ -11,6 +11,7 @@ use TBN\MajDataBundle\Entity\Exploration;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use TBN\MajDataBundle\Reject\Reject;
+use TBN\UserBundle\Entity\User;
 
 /**
  * Description of Firewall
@@ -84,6 +85,17 @@ class Firewall
     public function isPersisted($object)
     {
         return ($object !== null && $object->getId() !== null);
+    }
+
+    public function filterEventIntegrity(Agenda $event, User $oldEventUser = null) {
+        if(! $oldEventUser) {
+            return;
+        }
+
+        if(null === $event->getUser() ||
+            ($event->getUser()->getId() !== $oldEventUser->getId())) {
+            $event->getReject()->addReason(Reject::BAD_USER);
+        }
     }
 
     public function filterEvent(Agenda $event) {
@@ -177,9 +189,11 @@ class Firewall
         }
 
         if(! $event->getDateDebut() instanceof \DateTime ||
-            (! $event->getDateFin() || ! $event->getDateFin() instanceof \DateTime)
+            ($event->getDateFin() && ! $event->getDateFin() instanceof \DateTime)
         ) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DATE);
+        }elseif($event->getDateFin() && $event->getDateFin() < $event->getDateDebut()) {
+            $event->getReject()->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
         }
 
         if(! $event->getPlace()) {

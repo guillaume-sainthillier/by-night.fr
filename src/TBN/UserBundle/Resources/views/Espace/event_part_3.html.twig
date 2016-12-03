@@ -3,12 +3,13 @@
 {% block titre %}Lieux{% endblock %}
 {% block icone %}fa-map-marker{% endblock %}
 {% block body %}
+    {{ form_errors(form.place) }}
     {{ form_row(form.place.nom) }}
     {{ form_row(form.adresse) }}
 
-    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place ? form.place.rue : '') }) %}
-    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place ? form.place.codePostal : '') }) %}
-    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place ? form.place.ville : '') }) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place.rue) }) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place.codePostal) }) %}
+    {% include "TBNUserBundle:Espace:inline-block.html.twig" with({'elem' : (form.place.ville) }) %}
 
     <br/>
     <br/>

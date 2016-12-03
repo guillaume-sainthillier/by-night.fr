@@ -84,7 +84,7 @@
 {% spaceless %}
     {% for error in errors %}
         <div class="alert alert-danger">
-            <i class="fa fa-warning" ></i> {{ error.message }}
+            <i class="fa fa-warning" ></i> {{ error.message |raw }}
         </div>
     {% endfor %}
 {% endspaceless %}

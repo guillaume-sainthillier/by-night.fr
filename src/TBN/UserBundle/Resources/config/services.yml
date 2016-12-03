@@ -9,6 +9,12 @@ parameters:
     consumer_secret: "%twitter_app_secret%"
  
 services:
+    tbn.event_validator:
+        class: TBN\UserBundle\Validator\Constraints\EventConstraintValidator
+        arguments: ["@tbn.doctrine_event_handler", "@router"]
+        tags:
+            - { name: validator.constraint_validator, alias: EventContraintValidator }
+
     tbn.captcha_listener:
         class: TBN\UserBundle\EventListener\ReCaptchaListener
         arguments: ["fos_user_registration_form", "recaptcha"]
@@ -29,6 +35,12 @@ services:
         class: "%my_user_provider.class%"
         #this is the place where the properties are passed to the UserProvider - see config.yml
         arguments: ["@fos_user.user_manager", {facebook: facebook_id, google: google_id, twitter: twitter_id}, "@site_manager", "@doctrine", {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook_list_events: "@tbn.social.facebook_list_events", facebook: "@tbn.social.facebook"}]
+
+    tbn.form.type.task:
+        class: TBN\UserBundle\Form\Type\AgendaType
+        arguments: ['@tbn.doctrine_event_handler']
+        tags:
+            - { name: form.type }
 
     tbn.registration.form.type:
         class: TBN\UserBundle\Form\Type\RegistrationFormType

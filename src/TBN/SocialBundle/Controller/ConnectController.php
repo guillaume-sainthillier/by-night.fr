@@ -132,6 +132,8 @@ class ConnectController extends BaseController
                             $accessToken : $currentToken->getRawToken();
 
                     $this->authenticateUser($request, $currentUser, $service, $newToken, false);
+                }else {
+                    $this->refreshUser($currentUser);
                 }
 
                 if ($targetPath = $this->getTargetPath($session)) {
@@ -174,26 +176,10 @@ class ConnectController extends BaseController
         return null;
     }
 
-
-    /**
-     * Authenticate a user with Symfony Security
-     *
-     * @param UserInterface $user
-     * @param string $resourceOwnerName
-     * @param string $accessToken
-     * @param boolean $fakeLogin
-     */
-    protected function authenticateBasicUser(UserInterface $user)
-    {
-        try {
-            $this->container->get('hwi_oauth.user_checker')->checkPostAuth($user);
-        } catch (AccountStatusException $e) {
-            // Don't authenticate locked, disabled or expired users
-            return;
-        }
+    protected function refreshUser(UserInterface $user) {
         $userManager = $this->container->get('fos_user.user_manager');
-        $userManager->updateUser($user);
         $userManager->reloadUser($user);
-        $this->container->get('security.context')->getToken()->setAuthenticated(false);
+        $this->container->get('security.token_storage')->getToken()->setAuthenticated(false);
     }
+
 }

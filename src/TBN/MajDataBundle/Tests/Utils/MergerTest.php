@@ -21,15 +21,6 @@ class MergerTest extends KernelTestCase
         self::bootKernel();
 
         $this->merger = static::$kernel->getContainer()->get('tbn.merger');
-        Monitor::$output = new ConsoleOutput();
-    }
-
-
-    protected function tearDown()
-    {
-        Monitor::writeln("Merger");
-        Monitor::displayStats();
-        parent::tearDown();
     }
 
     public function testPlaceMerge() {

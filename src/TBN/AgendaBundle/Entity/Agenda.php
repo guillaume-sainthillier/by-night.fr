@@ -13,7 +13,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
-
+use TBN\UserBundle\Validator\Constraints\EventConstraint;
 
 use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
 use TBN\CommentBundle\Entity\Comment;
@@ -40,6 +40,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
+ * @EventConstraint
  */
 class Agenda implements GeolocalizeInterface
 {
@@ -354,7 +355,7 @@ class Agenda implements GeolocalizeInterface
     protected $googleSystemPostId;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      */
     protected $calendriers;
 
@@ -366,7 +367,7 @@ class Agenda implements GeolocalizeInterface
     protected $site;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="agenda", cascade={"remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $commentaires;
@@ -495,22 +496,9 @@ class Agenda implements GeolocalizeInterface
         $this->dateModification = new \DateTime;
     }
 
-    /**
-     * @Assert\IsTrue(message = "La date de fin de l'événement doit être supérieure à la date de début")
-     */
-    public function isDatesValid()
-    {
-        if ($this->dateFin === null) {
-            return true;
-        }
-
-        return $this->dateFin >= $this->dateDebut;
-    }
-
-
     public function __construct()
     {
-        $this->dateDebut = new \DateTime;
+        $this->setDateDebut(new \DateTime);
         $this->place = new Place;
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();

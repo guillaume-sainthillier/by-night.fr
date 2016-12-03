@@ -23,15 +23,6 @@ class Cleaner
 
     public function cleanEvent(Agenda $agenda)
     {
-        if (!$agenda->getDateFin() instanceof \DateTime) {
-            $agenda->setDateFin($agenda->getDateDebut());
-        }
-
-        if ($agenda->getDateFin() < $agenda->getDateDebut()) {
-            $lastDate = $agenda->getDateDebut();
-            $agenda->setDateDebut($agenda->getDateFin())->setDateFin($lastDate);
-        }
-
         $agenda->setNom($this->clean($agenda->getNom()) ?: null)
             ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
             ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127)  ?: null)
@@ -41,7 +32,7 @@ class Cleaner
             ->setCategorieManifestation(substr($agenda->getCategorieManifestation(), 0, 128) ?: null)
             ->setThemeManifestation(substr($agenda->getThemeManifestation(), 0, 128) ?: null)
             ->setTypeManifestation(substr($agenda->getTypeManifestation(), 0, 128) ?: null)
-            ->setHoraires(substr($agenda->getHoraires(), 0, 255));
+            ->setHoraires(substr($agenda->getHoraires(), 0, 255)  ?: null);
     }
 
     public function getCleanedPlace(Place $place)
@@ -58,8 +49,8 @@ class Cleaner
     {
         $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
             ->setRue($this->cleanNormalString($place->getRue()) ?: null)
-            ->setLatitude(((double)floatval($this->util->replaceNonNumericChars($place->getLatitude()))) ?: null)
-            ->setLongitude(((double)floatval($this->util->replaceNonNumericChars($place->getLongitude()))) ?: null)
+            ->setLatitude(floatval($this->util->replaceNonNumericChars($place->getLatitude())) ?: null)
+            ->setLongitude(floatval($this->util->replaceNonNumericChars($place->getLongitude())) ?: null)
             ->setVille($this->cleanPostalString($place->getVille()) ?: null)
             ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
     }

@@ -26,11 +26,6 @@ class FirewallTest extends KernelTestCase
         $this->firewall = static::$kernel->getContainer()->get('tbn.firewall');
     }
 
-    protected function tearDown()
-    {
-        parent::tearDown();
-    }
-
     public function testExplorations() {
         $noNeedToUpdateReject = (new Reject())->addReason(Reject::NO_NEED_TO_UPDATE);
         $badReject = (new Reject())->addReason(Reject::BAD_PLACE_LOCATION);

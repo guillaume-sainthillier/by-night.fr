@@ -22,7 +22,7 @@ class Comparator
         $this->cache = $cache;
     }
 
-    public function getMatchingScoreVille(Place &$a = null, Place &$b = null)
+    public function getMatchingScoreVille(Place $a = null, Place $b = null)
     {
         $pourcentage = 0;
         if ($a !== null && $b !== null) {
@@ -45,9 +45,9 @@ class Comparator
         return $pourcentage;
     }
 
-    public function getBestPlace(array &$places, Place &$testedPlace = null)
+    public function getBestPlace(array $places, Place $testedPlace = null)
     {
-        return $this->getBest('place', $places, 'getMatchingScorePlace', $testedPlace, 80);
+        return $this->getBest($places, [$this, 'getMatchingScorePlace'], $testedPlace, 80);
     }
 
     public function getMatchingScorePlace(Place $a = null, Place $b = null)
@@ -57,13 +57,10 @@ class Comparator
                 return 100;
             }
 
-            if ($this->getMatchingScoreVille($a, $b) >= 80) {
+            if ($this->getMatchingScoreVille($a, $b) >= 75) {
 
                 //~ Même ville et même rue
-                $hasRueNumberA = preg_match("#^(\d+)#", $a->getRue());
-                $hasRueNumberB = preg_match("#^(\d+)#", $b->getRue());
-                $hasSameComparison = ($hasRueNumberA && $hasRueNumberB) || (! $hasRueNumberA && ! $hasRueNumberB);
-                if ($hasSameComparison && $this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100) {
+                if ($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100) {
                     if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80) {
                         return 100;
                     }
@@ -82,84 +79,59 @@ class Comparator
         return 0;
     }
 
-    protected function getStrictMatchingEvent(Agenda &$a, Agenda &$b)
+    protected function getStrictMatchingEvent(Agenda $a, Agenda $b)
     {
+        return ($a->getFacebookEventId() && $a->getFacebookEventId() == $b->getFacebookEventId());
         return ($a->getFacebookEventId() && $a->getFacebookEventId() == $b->getFacebookEventId()) ||
-        ($a->getId() && $a->getId() == $b->getId()) ||
-        $this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
-        $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75;
+        ($a->getId() && $a->getId() == $b->getId());
     }
 
-    protected function getStrictMatchingPlace(Place &$a, Place &$b)
+    protected function getStrictMatchingPlace(Place $a, Place $b)
     {
+        return ($a->getFacebookId() && $a->getFacebookId() == $b->getFacebookId());
         return ($a->getFacebookId() && $a->getFacebookId() == $b->getFacebookId()) ||
         ($a->getId() && $a->getId() == $b->getId());
     }
 
     public function getBestEvent(array $events, Agenda $testedEvent)
     {
-        return $this->getBest('agenda', $events, 'getMatchingScoreEvent', $testedEvent);
+        return $this->getBest($events, [$this, 'getMatchingScoreEvent'], $testedEvent);
     }
 
     protected function getMatchingScoreEvent(Agenda $a, Agenda $b)
     {
-//        if ($this->isSameMoment($a, $b)) {
-            //Fort taux de ressemblance du nom ou descriptif ou égalité de l'id FB
-            if (($a->getFacebookEventId() !== null && $a->getFacebookEventId() == $b->getFacebookEventId()) ||
-                $this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
-                $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75
-            ) {
-                return 100;
+        //Fort taux de ressemblance du nom ou descriptif ou égalité de l'id FB
+        if ($this->getStrictMatchingEvent($a, $b)) {
+            return 100;
+        }
+
+        $placeA = $a->getPlace();
+        $placeB = $b->getPlace();
+        if ($this->getMatchingScorePlace($placeA, $placeB) >= 80) {
+            if($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
+                $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75) {
+                return 90;
             }
 
             if ($this->isSubInSub($a->getNom(), $b->getNom())) {
                 return 85;
             }
-
-            $placeA = $a->getPlace();
-            $placeB = $b->getPlace();
-            if ($this->getMatchingScorePlace($placeA, $placeB) >= 75) {
-                return 80;
-            }
-//        }
+        }
 
         return 0;
     }
 
-    private function getBest($keyPrefix, array $items, $machingFunction, $testedItem = null, $minScore = 75)
+    private function getBest(array $items, callable $machingFunction, $testedItem = null, $minScore = 75)
     {
         if (null === $testedItem) {
             return null;
         }
-//
-//        $hashId = spl_object_hash($testedItem);
-//        if ($testedItem->getId() !== null && isset($items[$testedItem->getId()])) {
-//            return $items[$testedItem->getId()];
-//        } elseif ($testedItem->getId() === null && isset($items[$hashId])) {
-//            return $items[$hashId];
-//        }
 
         $bestScore = 0;
         $bestItem = null;
 
-//        $hashA = md5(json_encode($testedItem->toArray()));
         foreach ($items as $item) {
-//            $score = null;
-
-//            $hashB = md5(json_encode($item->toArray()));
-//            $keys = ['getBest.' . $keyPrefix . '.' . $hashA . '.' . $hashB, 'getBest.' . $keyPrefix . '.' . $hashB . '.' . $hashA];
-//            foreach ($keys as $key) {
-//                if ($this->cache->contains($key)) {
-//                    $score = $this->cache->fetch($key);
-//                    break;
-//                }
-//            }
-
-//            if (null === $score) {
-                $score = $this->$machingFunction($item, $testedItem);
-//                $this->cache->save($keys[0], $score);
-//                $this->cache->save($keys[1], $score);
-//            }
+            $score = call_user_func($machingFunction, $item, $testedItem);
 
             if ($score >= 100) {
                 return $item;
@@ -254,7 +226,7 @@ class Comparator
         return preg_replace('/\D/', '', $string);
     }
 
-    public function isSameMoment(Agenda &$a, Agenda &$b)
+    public function isSameMoment(Agenda $a, Agenda $b)
     {
         $dateDebutA = $a->getDateDebut();
         $dateDebutB = $b->getDateDebut();

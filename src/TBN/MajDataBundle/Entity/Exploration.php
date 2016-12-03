@@ -8,9 +8,7 @@ use TBN\MajDataBundle\Reject\Reject;
 /**
  * Exploration
  *
- * @ORM\Table(name="Exploration", indexes={
- *      @ORM\Index(name="exploration_facebook_id_site_idx", columns={"facebook_id"})
- * })
+ * @ORM\Table(name="Exploration")
  * @ORM\Entity
  * @ORM\Entity(repositoryClass="TBN\MajDataBundle\Repository\ExplorationRepository")
  */
@@ -28,7 +26,7 @@ class Exploration
     /**
      * @var string
      *
-     * @ORM\Column(name="facebook_id", type="string", length=255)
+     * @ORM\Column(name="facebook_id", type="string", length=255, unique=true)
      */
     private $facebookId;
 

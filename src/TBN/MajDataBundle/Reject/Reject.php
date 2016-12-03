@@ -23,6 +23,7 @@ class Reject
     const BAD_PLACE_LOCATION = 1024;
     const BAD_PLACE_CITY_NAME = 2048;
     const BAD_PLACE_CITY_POSTAL_CODE = 4096;
+    const BAD_USER = 8192;
 
     protected $reason;
 
@@ -50,6 +51,8 @@ class Reject
 
     public function setValid() {
         $this->reason = self::VALID;
+
+        return $this;
     }
 
     public function addReason($reason) {
@@ -60,6 +63,10 @@ class Reject
 
     public function isValid() {
         return $this->reason === self::VALID;
+    }
+
+    public function isBadUser() {
+        return self::BAD_USER === (self::BAD_USER & $this->reason);
     }
 
     public function hasNoPlaceLocationProvided() {
