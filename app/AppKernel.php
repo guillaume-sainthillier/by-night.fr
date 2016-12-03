@@ -14,8 +14,9 @@ class AppKernel extends Kernel
             new Symfony\Bundle\MonologBundle\MonologBundle(),
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new \Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+
+            new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Presta\SitemapBundle\PrestaSitemapBundle(),
             new TBN\MainBundle\TBNMainBundle(),
             new FOS\UserBundle\FOSUserBundle(),
@@ -56,14 +57,17 @@ class AppKernel extends Kernel
     {
         return __DIR__;
     }
+
     public function getCacheDir()
     {
         return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
     }
+
     public function getLogDir()
     {
         return dirname(__DIR__).'/var/logs';
     }
+
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
