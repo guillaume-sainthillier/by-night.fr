@@ -191,6 +191,10 @@ class Place implements GeolocalizeInterface
      */
     public function setLatitude($latitude)
     {
+        if(! isset($this->i)) {
+            $this->i = 0;
+        }
+
         $this->latitude = $latitude;
 
         return $this;

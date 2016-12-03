@@ -92,7 +92,7 @@ class DoctrineEventHandler
      * @return array
      */
     public function handleManyCLI(array $events, ParserInterface $parser, OutputInterface $output) {
-        $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
+//        $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
         $this->output = $output;
 
         $events =  $this->handleMany($events);
@@ -279,7 +279,6 @@ class DoctrineEventHandler
                     }
                     $events[$i] = $event;
                 }
-                $this->flushEvents();
             }
             $this->flushPlaces();
         }
@@ -357,9 +356,7 @@ class DoctrineEventHandler
                 $event->getPlace()->setReject(new Reject);
             }
 
-            if (! $event->getDateFin() instanceof \DateTime) {
-                $event->setDateFin($event->getDateDebut());
-            }
+            $this->handler->cleanEvent($event);
 
             if($event->getFacebookEventId()) {
                 $exploration = $this->firewall->getExploration($event->getFacebookEventId());

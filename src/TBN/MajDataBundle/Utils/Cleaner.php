@@ -23,6 +23,10 @@ class Cleaner
 
     public function cleanEvent(Agenda $agenda)
     {
+        if (! $agenda->getDateFin() instanceof \DateTime) {
+            $agenda->setDateFin($agenda->getDateDebut());
+        }
+
         $agenda->setNom($this->clean($agenda->getNom()) ?: null)
             ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
             ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127)  ?: null)
@@ -33,16 +37,6 @@ class Cleaner
             ->setThemeManifestation(substr($agenda->getThemeManifestation(), 0, 128) ?: null)
             ->setTypeManifestation(substr($agenda->getTypeManifestation(), 0, 128) ?: null)
             ->setHoraires(substr($agenda->getHoraires(), 0, 255)  ?: null);
-    }
-
-    public function getCleanedPlace(Place $place)
-    {
-        return $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
-            ->setRue($this->cleanNormalString($place->getRue()) ?: null)
-            ->setLatitude($this->util->replaceNonNumericChars($place->getLatitude()) ?: null)
-            ->setLongitude($this->util->replaceNonNumericChars($place->getLongitude()) ?: null)
-            ->setVille($this->cleanPostalString($place->getVille()) ?: null)
-            ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
     }
 
     public function cleanPlace(Place $place)

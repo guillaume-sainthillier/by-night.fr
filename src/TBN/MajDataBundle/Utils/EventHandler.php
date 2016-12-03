@@ -79,6 +79,13 @@ class EventHandler
         $this->cleaner->cleanPlace($place);
     }
 
+    public function cleanEvent(Agenda $event) {
+        $this->cleaner->cleanEvent($event);
+        if($event->getPlace()) {
+            $this->cleaner->cleanPlace($event->getPlace());
+        }
+    }
+
     /**
      * @param array $persistedEvents
      * @param array $persistedPlaces
@@ -92,16 +99,8 @@ class EventHandler
         });
         $event->setPlace($place);
 
-        Monitor::bench('Clean Place', function () use ($event) {
-            $this->cleaner->cleanPlace($event->getPlace());
-        });
-
         $event = Monitor::bench('Handle Event', function () use ($persistedEvents, $event) {
             return $this->handleEvent($persistedEvents, $event);
-        });
-
-        Monitor::bench('Clean Event', function () use ($event) {
-            $this->cleaner->cleanEvent($event);
         });
 
         return $event;
