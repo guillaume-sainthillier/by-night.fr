@@ -25,7 +25,7 @@ class Comparator
     public function getMatchingScoreVille(Place &$a = null, Place &$b = null)
     {
         $pourcentage = 0;
-        if ($a !== null && $b !== null && $b->getSite() !== null && $a->getSite()->getId() === $b->getSite()->getId()) {
+        if ($a !== null && $b !== null) {
             $isMatchingCP = ($a->getCodePostal() && $b->getCodePostal()) ? $this->isSameText($a->getCodePostal(), $b->getCodePostal()) : false;
             //Même CP -> fortement identiques
             if ($isMatchingCP) {
@@ -50,17 +50,23 @@ class Comparator
         return $this->getBest('place', $places, 'getMatchingScorePlace', $testedPlace, 80);
     }
 
-    public function getMatchingScorePlace(Place &$a = null, Place &$b = null)
+    public function getMatchingScorePlace(Place $a = null, Place $b = null)
     {
-        if ($a !== null && $b !== null && $a->getSite() !== null && $b->getSite() !== null && $a->getSite()->getId() === $b->getSite()->getId()) {
-            if ($a->getFacebookId() !== null && $a->getFacebookId() === $b->getFacebookId()) {
+        if ($a !== null && $b !== null) {
+            if($this->getStrictMatchingPlace($a, $b)) {
                 return 100;
             }
 
             if ($this->getMatchingScoreVille($a, $b) >= 80) {
+
                 //~ Même ville et même rue
-                if ($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100) {
-                    return 100;
+                $hasRueNumberA = preg_match("#^(\d+)#", $a->getRue());
+                $hasRueNumberB = preg_match("#^(\d+)#", $b->getRue());
+                $hasSameComparison = ($hasRueNumberA && $hasRueNumberB) || (! $hasRueNumberA && ! $hasRueNumberB);
+                if ($hasSameComparison && $this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100) {
+                    if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80) {
+                        return 100;
+                    }
                 }
 
                 if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80) {
@@ -69,14 +75,6 @@ class Comparator
 
                 if ($this->isSubInSub($a->getNom(), $b->getNom())) {
                     return 85;
-                }
-
-                if ($a->getLatitude() !== null &&
-                    $a->getLongitude() !== null &&
-                    $a->getLatitude() === $b->getLatitude() &&
-                    $a->getLongitude() === $b->getLongitude()
-                ) {
-                    return 75;
                 }
             }
         }
@@ -98,14 +96,14 @@ class Comparator
         ($a->getId() && $a->getId() == $b->getId());
     }
 
-    public function getBestEvent(array &$events, Agenda &$testedEvent)
+    public function getBestEvent(array $events, Agenda $testedEvent)
     {
         return $this->getBest('agenda', $events, 'getMatchingScoreEvent', $testedEvent);
     }
 
-    protected function getMatchingScoreEvent(Agenda &$a, Agenda &$b)
+    protected function getMatchingScoreEvent(Agenda $a, Agenda $b)
     {
-        if ($this->isSameMoment($a, $b)) {
+//        if ($this->isSameMoment($a, $b)) {
             //Fort taux de ressemblance du nom ou descriptif ou égalité de l'id FB
             if (($a->getFacebookEventId() !== null && $a->getFacebookEventId() == $b->getFacebookEventId()) ||
                 $this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
@@ -123,45 +121,45 @@ class Comparator
             if ($this->getMatchingScorePlace($placeA, $placeB) >= 75) {
                 return 80;
             }
-        }
+//        }
 
         return 0;
     }
 
-    private function getBest($keyPrefix, array &$items, $machingFunction, &$testedItem = null, $minScore = 75)
+    private function getBest($keyPrefix, array $items, $machingFunction, $testedItem = null, $minScore = 75)
     {
         if (null === $testedItem) {
             return null;
         }
-
-        $hashId = spl_object_hash($testedItem);
-        if ($testedItem->getId() !== null && isset($items[$testedItem->getId()])) {
-            return $items[$testedItem->getId()];
-        } elseif ($testedItem->getId() === null && isset($items[$hashId])) {
-            return $items[$hashId];
-        }
+//
+//        $hashId = spl_object_hash($testedItem);
+//        if ($testedItem->getId() !== null && isset($items[$testedItem->getId()])) {
+//            return $items[$testedItem->getId()];
+//        } elseif ($testedItem->getId() === null && isset($items[$hashId])) {
+//            return $items[$hashId];
+//        }
 
         $bestScore = 0;
         $bestItem = null;
 
-        $hashA = md5(json_encode($testedItem->toArray()));
+//        $hashA = md5(json_encode($testedItem->toArray()));
         foreach ($items as $item) {
-            $score = null;
+//            $score = null;
 
-            $hashB = md5(json_encode($item->toArray()));
-            $keys = ['getBest.' . $keyPrefix . '.' . $hashA . '.' . $hashB, 'getBest.' . $keyPrefix . '.' . $hashB . '.' . $hashA];
-            foreach ($keys as $key) {
-                if ($this->cache->contains($key)) {
-                    $score = $this->cache->fetch($key);
-                    break;
-                }
-            }
+//            $hashB = md5(json_encode($item->toArray()));
+//            $keys = ['getBest.' . $keyPrefix . '.' . $hashA . '.' . $hashB, 'getBest.' . $keyPrefix . '.' . $hashB . '.' . $hashA];
+//            foreach ($keys as $key) {
+//                if ($this->cache->contains($key)) {
+//                    $score = $this->cache->fetch($key);
+//                    break;
+//                }
+//            }
 
-            if (null === $score) {
+//            if (null === $score) {
                 $score = $this->$machingFunction($item, $testedItem);
-                $this->cache->save($keys[0], $score);
-                $this->cache->save($keys[1], $score);
-            }
+//                $this->cache->save($keys[0], $score);
+//                $this->cache->save($keys[1], $score);
+//            }
 
             if ($score >= 100) {
                 return $item;
@@ -251,20 +249,6 @@ class Comparator
         return $this->getMatchingScore($trimedA, $trimedB);
     }
 
-    public function getBestContent($valueA, $valueB)
-    {
-        if (is_bool($valueA)) {
-            return $valueA;
-        }
-
-        if (is_object($valueA) || is_object($valueB)) {
-            return $valueA ?: $valueB;
-        }
-
-        $compareA = $this->sanitize($valueA);
-        return isset($compareA[0]) ? ($valueA ?: null) : ($valueB ?: null);
-    }
-
     public function sanitizeNumber($string)
     {
         return preg_replace('/\D/', '', $string);
@@ -297,6 +281,11 @@ class Comparator
     public function sanitizeHTML($string)
     {
         return $this->sanitize(strip_tags($string));
+    }
+
+    public function sanitizeVille($string) {
+        $string = preg_replace("#-(\s*)st(\s*)-#i", "saint", $string);
+        return $this->sanitize($string);
     }
 
     public function sanitize($string)

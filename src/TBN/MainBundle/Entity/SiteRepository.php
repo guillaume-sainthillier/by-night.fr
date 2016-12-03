@@ -24,4 +24,17 @@ class SiteRepository extends EntityRepository
         shuffle($results);
         return array_slice($results, 0, $limit);
     }
+
+    public function findLocations()
+    {
+        $results = $this->createQueryBuilder('s')
+            ->select('s.latitude, s.longitude, s.distanceMax')
+            ->where('s.latitude IS NOT NULL')
+            ->andWhere('s.longitude IS NOT NULL')
+            ->andWhere('s.distanceMax IS NOT NULL')
+            ->getQuery()
+            ->getScalarResult();
+
+       return $results;
+    }
 }

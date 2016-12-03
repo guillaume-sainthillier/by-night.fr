@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use TBN\AgendaBundle\Geolocalize\BoundaryInterface;
 
 /**
  * Site
@@ -18,7 +19,7 @@ use JMS\Serializer\Annotation\Expose;
  * @ORM\Entity(repositoryClass="TBN\MainBundle\Entity\SiteRepository")
  * @ExclusionPolicy("all")
  */
-class Site
+class Site implements BoundaryInterface
 {
     /**
      * @var integer

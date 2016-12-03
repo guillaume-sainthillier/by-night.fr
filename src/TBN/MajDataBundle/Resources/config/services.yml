@@ -12,6 +12,10 @@ parameters:
     url_opendata_toulouse: https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true
 
 services:
+    tbn.event_fetcher:
+        class: TBN\MajDataBundle\Fetcher\EventFetcher
+        arguments:
+          - "@doctrine.orm.default_entity_manager"
     #Parsers
     tbn.parser.abstract:
         class: TBN\MajDataBundle\Parser\AgendaParser
@@ -110,9 +114,12 @@ services:
     #Utils
     tbn.util:
         class: TBN\MajDataBundle\Utils\Util
+    tbn.echantillon_handler:
+        class: TBN\MajDataBundle\Utils\EchantillonHandler
+        arguments: ["@doctrine.orm.entity_manager"]
     tbn.doctrine_event_handler:
         class: TBN\MajDataBundle\Utils\DoctrineEventHandler
-        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.social.facebook_admin", "@memory_cache"]
+        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler"]
     tbn.event_handler:
         class: TBN\MajDataBundle\Utils\EventHandler
         arguments: ["@tbn.firewall", "@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.root_dir%/../web/uploads/temp"]

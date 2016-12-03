@@ -75,83 +75,58 @@ class EventHandler
         }
     }
 
+    public function cleanPlace(Place $place) {
+        $this->cleaner->cleanPlace($place);
+    }
+
     /**
+     * @param array $persistedEvents
      * @param array $persistedPlaces
-     * @param Site $site
-     * @param Agenda $agenda
-     * @return Agenda|null
+     * @param Agenda $event
+     * @return mixed|null
      */
-    public function handle(array &$persistedPlaces, Site &$site, Agenda &$agenda)
+    public function handle(array $persistedEvents, array $persistedPlaces, Agenda $event)
     {
-        //Assignation du site
-        $agenda->setSite($site);
+        Monitor::bench('Clean Place', function () use ($event) {
+            $this->cleaner->cleanPlace($event->getPlace());
+        });
 
-        $tmpPlace = $agenda->getPlace();
-        if ($tmpPlace !== null) //Analyse de la place
-        {
+        $place = Monitor::bench('Handle Place', function () use ($persistedPlaces, $event) {
+            return  $this->handlePlace($persistedPlaces, $event->getPlace());
+        });
+        $event->setPlace($place);
 
-            //Anticipation par traitement du blacklistage de la place;
-            if ($tmpPlace->getFacebookId()) {
-                $exploration = $this->firewall->getExploration($tmpPlace->getFacebookId(), $site);
-                if (null !== $exploration && $exploration->getBlackListed() === true) {
-                    return null;
-                }
-            }
+        Monitor::bench('Clean Event', function () use ($event) {
+            $this->cleaner->cleanEvent($event);
+        });
 
-
-            //Recherche d'une meilleure place déjà existante
-            $tmpPlace->setSite($site);
-            $tmpPlace = Monitor::bench('Clean Place', function () use (&$tmpPlace) {
-                return $this->cleaner->getCleanedPlace($tmpPlace);
-            });
-
-
-            $place = Monitor::bench('Handle Place', function () use (&$tmpPlace, &$persistedPlaces, &$agenda) {
-                return $this->handlePlace($persistedPlaces, $tmpPlace);
-            });
-
-            $agenda->setPlace($place);
-        }
-
-        //Nettoyage de l'événement
-        return Monitor::bench('Clean Event', function () use (&$agenda) {
-            return $this->cleaner->cleanEvent($agenda);
+        return Monitor::bench('Handle Event', function () use ($persistedEvents, $event) {
+            return $this->handleEvent($persistedEvents, $event);
         });
     }
 
-    public function handleEvent(array $persistedEvents, Agenda $testedAgenda = null)
+    public function handleEvent(array $persistedEvents, Agenda $notPersistedEvent)
     {
-        if (null !== $testedAgenda && $this->firewall->isGoodEvent($testedAgenda)) {
-
-            //Evenement persisté
-            $bestEvent = Monitor::bench('getBestEvent', function () use (&$persistedEvents, &$testedAgenda) {
-                return $this->comparator->getBestEvent($persistedEvents, $testedAgenda);
-            });
-
-            //On fusionne l'event existant avec celui découvert (même si NULL)
-            return Monitor::bench('mergeEvent', function () use (&$bestEvent, &$testedAgenda) {
-                return $this->merger->mergeEvent($bestEvent, $testedAgenda);
-            });
-        }
-        return null;
-    }
-
-    public function handlePlace(array &$persistedPlaces, Place &$testedPlace = null)
-    {
-        $isGoodPlace = Monitor::bench('isGoodPlace', function () use (&$testedPlace) {
-            return $this->firewall->isGoodPlace($testedPlace);
+        //Evenement persisté
+        $bestEvent = Monitor::bench('getBestEvent', function () use ($persistedEvents, $notPersistedEvent) {
+            return $this->comparator->getBestEvent($persistedEvents, $notPersistedEvent);
         });
 
-        if ($isGoodPlace) {
-            $bestPlace = Monitor::bench('getBestPlace', function () use (&$persistedPlaces, &$testedPlace) {
-                return $this->comparator->getBestPlace($persistedPlaces, $testedPlace);
-            });
+        //On fusionne l'event existant avec celui découvert (même si NULL)
+        return Monitor::bench('mergeEvent', function () use ($bestEvent, $notPersistedEvent) {
+            return $this->merger->mergeEvent($bestEvent, $notPersistedEvent);
+        });
+    }
 
-            return Monitor::bench('mergePlace', function () use (&$bestPlace, &$testedPlace) {
-                return $this->merger->mergePlace($bestPlace, $testedPlace);
-            });
-        }
+    public function handlePlace(array $persistedPlaces, Place $notPersistedPlace)
+    {
+        $bestPlace = Monitor::bench('getBestPlace', function () use ($persistedPlaces, $notPersistedPlace) {
+            return $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace);
+        });
 
-        return null;
+        //On fusionne la place existant avec celle découverte (même si NULL)
+        return Monitor::bench('mergePlace', function () use ($bestPlace, $notPersistedPlace) {
+            return $this->merger->mergePlace($bestPlace, $notPersistedPlace);
+        });
     }
 }

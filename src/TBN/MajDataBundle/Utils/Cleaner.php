@@ -32,11 +32,15 @@ class Cleaner
             $agenda->setDateDebut($agenda->getDateFin())->setDateFin($lastDate);
         }
 
-        return $agenda->setNom($this->clean($agenda->getNom()) ?: null)
+        $agenda->setNom($this->clean($agenda->getNom()) ?: null)
             ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
-            ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127))
-            ->setReservationTelephone(substr($agenda->getReservationTelephone(), 0, 127))
-            ->setReservationInternet(substr($agenda->getReservationInternet(), 0, 511))
+            ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127)  ?: null)
+            ->setReservationTelephone(substr($agenda->getReservationTelephone(), 0, 127)  ?: null)
+            ->setReservationInternet(substr($agenda->getReservationInternet(), 0, 511) ?: null)
+            ->setAdresse(substr($agenda->getAdresse(), 0, 255) ?: null)
+            ->setCategorieManifestation(substr($agenda->getCategorieManifestation(), 0, 128) ?: null)
+            ->setThemeManifestation(substr($agenda->getThemeManifestation(), 0, 128) ?: null)
+            ->setTypeManifestation(substr($agenda->getTypeManifestation(), 0, 128) ?: null)
             ->setHoraires(substr($agenda->getHoraires(), 0, 255));
     }
 
@@ -46,6 +50,16 @@ class Cleaner
             ->setRue($this->cleanNormalString($place->getRue()) ?: null)
             ->setLatitude($this->util->replaceNonNumericChars($place->getLatitude()) ?: null)
             ->setLongitude($this->util->replaceNonNumericChars($place->getLongitude()) ?: null)
+            ->setVille($this->cleanPostalString($place->getVille()) ?: null)
+            ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
+    }
+
+    public function cleanPlace(Place $place)
+    {
+        $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
+            ->setRue($this->cleanNormalString($place->getRue()) ?: null)
+            ->setLatitude(((double)floatval($this->util->replaceNonNumericChars($place->getLatitude()))) ?: null)
+            ->setLongitude(((double)floatval($this->util->replaceNonNumericChars($place->getLongitude()))) ?: null)
             ->setVille($this->cleanPostalString($place->getVille()) ?: null)
             ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
     }

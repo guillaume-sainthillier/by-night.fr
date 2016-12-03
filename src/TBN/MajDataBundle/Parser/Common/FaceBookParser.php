@@ -5,13 +5,13 @@ namespace TBN\MajDataBundle\Parser\Common;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 
+use Symfony\Component\ExpressionLanguage\Tests\Node\Obj;
 use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\MajDataBundle\Parser\AgendaParser;
 use TBN\MajDataBundle\Utils\Firewall;
 use TBN\AgendaBundle\Repository\AgendaRepository;
-use TBN\AgendaBundle\Entity\PlaceRepository;
 
 /**
  * Classe de parsing des événéments FB
@@ -25,17 +25,19 @@ class FaceBookParser extends AgendaParser
      */
     protected $api;
 
-    /**
-     *
-     * @var AgendaRepository
-     */
-    protected $repoEvent;
 
     /**
      *
-     * @var PlaceRepository
+     * @var ObjectManager
      */
-    protected $repoPlace;
+    protected $om;
+
+
+    /**
+     *
+     * @var SiteRepository
+     */
+    protected $repoSite;
 
     /**
      *
@@ -50,24 +52,127 @@ class FaceBookParser extends AgendaParser
 
         $this->firewall = $firewall;
         $this->api = $api;
-        $this->repoEvent = $om->getRepository('TBNAgendaBundle:Agenda');
-        $this->repoPlace = $om->getRepository('TBNAgendaBundle:Place');
+        $this->om = $om;
     }
 
+    protected function getPlaces() {
+        $places =  $this->om->getRepository('TBNAgendaBundle:Place')->findAllFBIds();
+
+        return $places;
+    }
+
+    protected function getUsers() {
+        $users =  $this->om->getRepository('TBNAgendaBundle:Agenda')->findAllFBOwnerIds();
+
+        return $users;
+    }
+
+    protected function getCities() {
+        return $this->om->getRepository('TBNAgendaBundle:Place')->findAllCities();
+    }
+
+    protected function getSiteLocations() {
+        return $this->om->getRepository('TBNMainBundle:Site')->findLocations();
+    }
+
+    protected function getEventsFromUsers(array $additional_users, \DateTime $now)
+    {
+        $users = $this->getUsers();
+        $users = array_unique(array_merge($users, $additional_users));
+
+        //Récupération des événements depuis les lieux trouvés
+        $this->writeln("Recherche des événements associés aux users ...");
+        $events = $this->api->getEventsFromUsers($users, $now);
+        $this->writeln(sprintf(
+            "<info>%d</info> événements trouvés",
+            count($events)
+        ));
+
+        return $events;
+    }
+
+    protected function getEventsFromPlaces(\DateTime $now)
+    {
+        $places = $this->getPlaces();
+
+        //Récupération des places depuis les GPS
+        $locations = $this->getSiteLocations();
+        $this->writeln("Recherche des places associés aux sites ...");
+        $gps_places = $this->api->getPlacesFromGPS($locations);
+        $this->writeln(sprintf(
+            "<info>%d</info> places trouvées",
+            count($gps_places)
+        ));
+
+        $gps_places = array_map(function(GraphNode $node) {
+            return $node->getField('id');
+        }, $gps_places);
+
+        $places = array_unique(array_filter(array_merge($places, $gps_places)));
+
+//        Récupération des événements depuis les lieux trouvés
+        $this->writeln("Recherche des événements associés aux places ...");
+        $events = $this->api->getEventsFromPlaces($places, $now);
+        $this->writeln(sprintf(
+            "<info>%d</info> événements trouvés",
+            count($events)
+        ));
+
+        return $events;
+    }
+
+    protected function getEventFromCities(\DateTime $now) {
+        //Récupération des événements par mots-clés
+        $this->writeln("Recherche d'événements associés aux mots clés...");
+        $cities = $this->getCities();
+        shuffle($cities);
+        $cities = array_slice($cities, 0, 100);
+        $events = $this->api->getEventsFromKeywords($cities, $now);
+        $this->writeln("<info>" . (count($events)) . "</info> événements trouvés");
+
+        return $events;
+    }
+
+    protected function getOwners(array $nodes) {
+        return array_filter(array_map(function (GraphNode $node) {
+            $owner = $node->getField('owner');
+            return $owner ? $owner->getField('id') : null;
+        }, $nodes));
+    }
 
     public function getRawAgendas()
     {
-//        $event = $this->api->getEventFromId('533304963496877');
-//        return array_map([$this, 'getInfoAgenda'], [$event]);
-
+//        $this->api->setSiteInfo($this->getSiteInfo());
+//        $ids = ['1262918800387307', '1026345610827202'];
+//        $event = $this->api->getEventsFromIds($ids);
+//        $events =  array_map([$this, 'getInfoAgenda'], $event);
+//        return array_merge($events, $events);
+//
         $this->api->setSiteInfo($this->getSiteInfo());
-        $this->api->setParser($this);
-
         $now = new \DateTime;
 
-        //Recherche d'événements de l'API en fonction de lieux déjà connus dans la BD
+        //Recherche d'événements de l'API en fonction des lieux
         $place_events = $this->getEventsFromPlaces($now);
+        $place_users = $this->getOwners($place_events);
 
+        //Recherche d'événements de l'API en fonction des users
+        $user_events = $this->getEventsFromUsers($place_users, $now);
+
+        //Recherche d'événéments de l'API en fonction des villes
+        $cities_events = $this->getEventFromCities($now);
+
+        $events = $this->getUniqueEvents(array_merge($place_events, $user_events, $cities_events));
+        $this->writeln(sprintf(
+            '<info>%d</info> événément(s) à traiter au total',
+            count($events)
+        ));
+
+        //Appel au GC
+        unset($place_events, $user_events, $cities_events);
+
+        return array_map([$this, 'getInfoAgenda'], $events);
+
+        /*
         //Calcul de l'ID FB des propriétaires des événements précédemment trouvés
         $event_users = array_map(function (GraphNode $event) {
             $owner = $event->getField('owner');
@@ -114,35 +219,23 @@ class FaceBookParser extends AgendaParser
 
         //Récupération des événements par Batch
         return array_map([$this, 'getInfoAgenda'], $this->api->getEventsFromIds($filtered_events));
+
+        */
     }
 
-    protected function getEventsFromPlaces(\DateTime $now)
-    {
-        //Récupération des lieux existants en  base
-        $places = $this->repoPlace->findBy(['site' => $this->getSite()->getId()]);
-        $nom_places = array_unique(array_filter(array_map(function (Place $place) {
-            return $place->getNom();
-        }, $places)));
-
-        //Récupération des lieux aux alentours de la ville courante
-        $this->write("Recherche d'endroits vers [" . $this->getSite()->getLatitude() . "; " . $this->getSite()->getLongitude() . "]...");
-        $fb_places = $this->api->getPlacesFromGPS($this->getSite()->getLatitude(), $this->getSite()->getLongitude(), $this->getSite()->getDistanceMax() * 10000);
-        $this->writeln(" <info>" . (count($fb_places)) . "</info> places trouvées");
-
-        //Récupération des événements depuis les lieux trouvés
-        $this->write("Recherche des événements associés aux endroits ...");
-        $places_events = $this->api->getEventsFromPlaces($fb_places, $now);
-        $this->writeln("<info>" . (count($places_events)) . "</info> événements trouvés");
-
-
-        //Récupération des événements par mots-clés
-        $this->writeln("Recherche d'événements associés aux mots clés...");
-        $keywords_events = $this->api->searchEvents($nom_places, $now);
-        $events = array_merge($keywords_events, $places_events);
-        $this->writeln("<info>" . (count($events)) . "</info> événements trouvés");
-
-        return $events;
+    public function getIdsToMigrate() {
+        return $this->api->getIdsToMigrate();
     }
+
+    protected function getUniqueEvents(array $events) {
+        $uniqueEvents = [];
+        foreach($events as $event) {
+            $uniqueEvents[$event->getField('id')] = $event;
+        }
+
+        return $uniqueEvents;
+    }
+
 
     protected function filterEvents(& $events)
     {

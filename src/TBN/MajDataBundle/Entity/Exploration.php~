@@ -3,12 +3,16 @@
 namespace TBN\MajDataBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use TBN\MajDataBundle\Reject\Reject;
 
 /**
  * Exploration
  *
- * @ORM\Table
+ * @ORM\Table(name="Exploration", indexes={
+ *      @ORM\Index(name="exploration_facebook_id_site_idx", columns={"facebook_id"})
+ * })
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="TBN\MajDataBundle\Repository\ExplorationRepository")
  */
 class Exploration
 {
@@ -19,7 +23,7 @@ class Exploration
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
@@ -36,33 +40,113 @@ class Exploration
     private $lastUpdated;
 
     /**
-     * @var \DateTime
+     * @var boolean
      *
-     * @ORM\Column(name="black_listed", type="boolean", nullable=true)
+     * @ORM\Column(name="reason", type="integer", nullable=false)
      */
-    private $blackListed;
+    private $reason;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="reason", type="string", length=255)
+     * @ORM\Column(name="firewall_version", type="string", length=7)
      */
-    private $reason;
-
+    private $firewallVersion;
 
     /**
-    * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
-    * @ORM\JoinColumn(nullable=false)
-    */
-    protected $site;
+     * @var Reject
+     */
+    private $reject;
+
+    public function setReject(Reject $reject) {
+        $this->reject = $reject;
+
+        return $this;
+    }
+
+    public function getReject() {
+        return $this->reject;
+    }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set facebookId
+     *
+     * @param string $facebookId
+     *
+     * @return Exploration
+     */
+    public function setFacebookId($facebookId)
+    {
+        $this->facebookId = $facebookId;
+
+        return $this;
+    }
+
+    /**
+     * Get facebookId
+     *
+     * @return string
+     */
+    public function getFacebookId()
+    {
+        return $this->facebookId;
+    }
+
+    /**
+     * Set lastUpdated
+     *
+     * @param \DateTime $lastUpdated
+     *
+     * @return Exploration
+     */
+    public function setLastUpdated($lastUpdated = null)
+    {
+        $this->lastUpdated = $lastUpdated;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdated
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdated()
+    {
+        return $this->lastUpdated;
+    }
+
+    /**
+     * Set reason
+     *
+     * @param integer $reason
+     *
+     * @return Exploration
+     */
+    public function setReason($reason)
+    {
+        $this->reason = $reason;
+
+        return $this;
+    }
+
+    /**
+     * Get reason
+     *
+     * @return integer
+     */
+    public function getReason()
+    {
+        return $this->reason;
     }
 }

@@ -3,14 +3,16 @@
 namespace TBN\MajDataBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use TBN\MajDataBundle\Reject\Reject;
 
 /**
  * Exploration
  *
  * @ORM\Table(name="Exploration", indexes={
- *   @ORM\Index(name="exploration_facebook_id_site_idx", columns={"facebook_id", "site_id"})
+ *      @ORM\Index(name="exploration_facebook_id_site_idx", columns={"facebook_id"})
  * })
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="TBN\MajDataBundle\Repository\ExplorationRepository")
  */
 class Exploration
 {
@@ -38,17 +40,33 @@ class Exploration
     private $lastUpdated;
 
     /**
-     * @var \DateTime
+     * @var boolean
      *
-     * @ORM\Column(name="black_listed", type="boolean", nullable=true)
+     * @ORM\Column(name="reason", type="integer", nullable=false)
      */
-    private $blackListed;
+    private $reason;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
-     * @ORM\JoinColumn(nullable=false)
+     * @var string
+     *
+     * @ORM\Column(name="firewall_version", type="string", length=7)
      */
-    protected $site;
+    private $firewallVersion;
+
+    /**
+     * @var Reject
+     */
+    private $reject;
+
+    public function setReject(Reject $reject) {
+        $this->reject = $reject;
+
+        return $this;
+    }
+
+    public function getReject() {
+        return $this->reject;
+    }
 
     /**
      * Get id
@@ -91,7 +109,7 @@ class Exploration
      *
      * @return Exploration
      */
-    public function setLastUpdated($lastUpdated)
+    public function setLastUpdated($lastUpdated = null)
     {
         $this->lastUpdated = $lastUpdated;
 
@@ -109,33 +127,9 @@ class Exploration
     }
 
     /**
-     * Set blackListed
-     *
-     * @param boolean $blackListed
-     *
-     * @return Exploration
-     */
-    public function setBlackListed($blackListed)
-    {
-        $this->blackListed = $blackListed;
-
-        return $this;
-    }
-
-    /**
-     * Get blackListed
-     *
-     * @return boolean
-     */
-    public function getBlackListed()
-    {
-        return $this->blackListed;
-    }
-
-    /**
      * Set reason
      *
-     * @param string $reason
+     * @param integer $reason
      *
      * @return Exploration
      */
@@ -149,7 +143,7 @@ class Exploration
     /**
      * Get reason
      *
-     * @return string
+     * @return integer
      */
     public function getReason()
     {
@@ -157,26 +151,26 @@ class Exploration
     }
 
     /**
-     * Set site
+     * Set firewallVersion
      *
-     * @param \TBN\MainBundle\Entity\Site $site
+     * @param string $firewallVersion
      *
      * @return Exploration
      */
-    public function setSite(\TBN\MainBundle\Entity\Site $site)
+    public function setFirewallVersion($firewallVersion)
     {
-        $this->site = $site;
+        $this->firewallVersion = $firewallVersion;
 
         return $this;
     }
 
     /**
-     * Get site
+     * Get firewallVersion
      *
-     * @return \TBN\MainBundle\Entity\Site
+     * @return string
      */
-    public function getSite()
+    public function getFirewallVersion()
     {
-        return $this->site;
+        return $this->firewallVersion;
     }
 }

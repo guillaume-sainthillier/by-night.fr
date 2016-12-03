@@ -67,7 +67,6 @@ class ToulouseParser extends AgendaParser
                     'reservation_telephone' => $tab[22],
                     'reservation_email' => $tab[23],
                     'reservation_internet' => $tab[24],
-                    'manifestation_gratuite' => $tab[25],
                     'tarif' => $tab[26],
                     'source' => 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/export/'
                 ];

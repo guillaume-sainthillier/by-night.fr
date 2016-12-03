@@ -15,6 +15,11 @@ use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
 
 
+use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
+use TBN\CommentBundle\Entity\Comment;
+use TBN\MainBundle\Entity\Site;
+use TBN\MajDataBundle\Reject\Reject;
+use TBN\UserBundle\Entity\User;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -36,7 +41,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
  */
-class Agenda
+class Agenda implements GeolocalizeInterface
 {
 
     /**
@@ -423,7 +428,20 @@ class Agenda
      */
     protected $place;
 
-    protected $rejectReasons;
+    /**
+     * @var Reject
+     */
+    protected $reject;
+
+    public function setReject(Reject $reject = null) {
+        $this->reject = $reject;
+
+        return $this;
+    }
+
+    public function getReject() {
+        return $this->reject;
+    }
 
     /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
@@ -434,7 +452,7 @@ class Agenda
      *
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
      *
-     * @return User
+     * @return Agenda
      */
     public function setFile(File $image = null)
     {
@@ -492,7 +510,6 @@ class Agenda
 
     public function __construct()
     {
-        $this->rejectReasons = [];
         $this->dateDebut = new \DateTime;
         $this->place = new Place;
         $this->calendriers = new ArrayCollection();
@@ -503,18 +520,6 @@ class Agenda
     {
         $tags = $this->getCategorieManifestation() . ',' . $this->getTypeManifestation() . ',' . $this->getThemeManifestation();
         return array_unique(array_map('trim', array_map('ucfirst', array_filter(explode(',', $tags)))));
-    }
-
-    public function addRejectReason($reason)
-    {
-        $this->rejectReasons[] = $reason;
-
-        return $this;
-    }
-
-    public function getRejectReaons()
-    {
-        return $this->rejectReasons;
     }
 
     /**
@@ -594,29 +599,6 @@ class Agenda
     public function getDescriptif()
     {
         return $this->descriptif;
-    }
-
-    /**
-     * Set dateCreation
-     *
-     * @param \DateTime $dateCreation
-     * @return Agenda
-     */
-    public function setDateCreation($dateCreation)
-    {
-        $this->dateCreation = $dateCreation;
-
-        return $this;
-    }
-
-    /**
-     * Get dateCreation
-     *
-     * @return \DateTime
-     */
-    public function getDateCreation()
-    {
-        return $this->dateCreation;
     }
 
     /**
@@ -1057,29 +1039,6 @@ class Agenda
     }
 
     /**
-     * Set manifestationGratuite
-     *
-     * @param string $manifestationGratuite
-     * @return Agenda
-     */
-    public function setManifestationGratuite($manifestationGratuite)
-    {
-        $this->manifestationGratuite = $manifestationGratuite;
-
-        return $this;
-    }
-
-    /**
-     * Get manifestationGratuite
-     *
-     * @return string
-     */
-    public function getManifestationGratuite()
-    {
-        return $this->manifestationGratuite;
-    }
-
-    /**
      * Set tarif
      *
      * @param string $tarif
@@ -1418,10 +1377,10 @@ class Agenda
     /**
      * Set user
      *
-     * @param \TBN\UserBundle\Entity\User $user
+     * @param User $user
      * @return Agenda
      */
-    public function setUser(\TBN\UserBundle\Entity\User $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -1441,10 +1400,10 @@ class Agenda
     /**
      * Add calendriers
      *
-     * @param \TBN\AgendaBundle\Entity\Calendrier $calendriers
+     * @param Calendrier $calendriers
      * @return Agenda
      */
-    public function addCalendrier(\TBN\AgendaBundle\Entity\Calendrier $calendriers)
+    public function addCalendrier(Calendrier $calendriers)
     {
         $this->calendriers[] = $calendriers;
 
@@ -1454,9 +1413,9 @@ class Agenda
     /**
      * Remove calendriers
      *
-     * @param \TBN\AgendaBundle\Entity\Calendrier $calendriers
+     * @param Calendrier $calendriers
      */
-    public function removeCalendrier(\TBN\AgendaBundle\Entity\Calendrier $calendriers)
+    public function removeCalendrier(Calendrier $calendriers)
     {
         $this->calendriers->removeElement($calendriers);
     }
@@ -1474,10 +1433,10 @@ class Agenda
     /**
      * Set site
      *
-     * @param \TBN\MainBundle\Entity\Site $site
+     * @param Site $site
      * @return Agenda
      */
-    public function setSite(\TBN\MainBundle\Entity\Site $site)
+    public function setSite(Site $site)
     {
         $this->site = $site;
 
@@ -1497,10 +1456,10 @@ class Agenda
     /**
      * Add commentaires
      *
-     * @param \TBN\CommentBundle\Entity\Comment $commentaires
+     * @param Comment $commentaires
      * @return Agenda
      */
-    public function addCommentaire(\TBN\CommentBundle\Entity\Comment $commentaires)
+    public function addCommentaire(Comment $commentaires)
     {
         $this->commentaires[] = $commentaires;
 
@@ -1510,9 +1469,9 @@ class Agenda
     /**
      * Remove commentaires
      *
-     * @param \TBN\CommentBundle\Entity\Comment $commentaires
+     * @param Comment $commentaires
      */
-    public function removeCommentaire(\TBN\CommentBundle\Entity\Comment $commentaires)
+    public function removeCommentaire(Comment $commentaires)
     {
         $this->commentaires->removeElement($commentaires);
     }
@@ -1691,10 +1650,10 @@ class Agenda
     /**
      * Set place
      *
-     * @param \TBN\AgendaBundle\Entity\Place $place
+     * @param Place $place
      * @return Agenda
      */
-    public function setPlace(\TBN\AgendaBundle\Entity\Place $place = null)
+    public function setPlace(Place $place = null)
     {
         $this->place = $place;
 
@@ -1704,7 +1663,7 @@ class Agenda
     /**
      * Get place
      *
-     * @return \TBN\AgendaBundle\Entity\Place
+     * @return Place
      */
     public function getPlace()
     {

@@ -3,6 +3,8 @@
 namespace TBN\SocialBundle\Social;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Facebook\Exceptions\FacebookResponseException;
+use Facebook\FacebookResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -34,14 +36,9 @@ class FacebookAdmin extends FacebookEvents
      */
     protected $siteInfo;
 
-    /**
-     *
-     * @var AgendaParser
-     */
-    protected $parser;
-
     protected $cache;
     protected $om;
+    protected $oldIds;
 
     /**
      *
@@ -57,7 +54,7 @@ class FacebookAdmin extends FacebookEvents
         $this->siteInfo = $this->siteManager->getSiteInfo();
         $this->serializer = $serializer;
         $this->cache = [];
-        $this->parser = null;
+        $this->oldIds = [];
 
         if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
             $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
@@ -350,60 +347,7 @@ class FacebookAdmin extends FacebookEvents
         return $this->cache[$key];
     }
 
-    public function searchEvents(array &$keywords, \DateTime $since, $limit = 1000)
-    {
-        $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
-        $events = [];
-        $keywords = array_unique($keywords);
-        $nbKeywords = count($keywords);
-        $requestsParBatch = 50;
 
-        $nbBatchs = ceil($nbKeywords / $requestsParBatch);
-
-        //Récupération des events en fonction des mot-clés
-        for ($i = 0; $i < $nbBatchs; $i++) {
-            try {
-                $requests = [];
-                $current_keywords = array_slice($keywords, $i * $requestsParBatch, $requestsParBatch);
-                foreach ($current_keywords as $keyword) {
-                    //Construction des requêtes du batch
-                    $keyword = '"' . $keyword . '"';
-                    $requests[] = $this->client->request('GET', '/search', [
-                        'q' => $keyword,
-                        'type' => 'event',
-                        'since' => $since->format('Y-m-d'),
-                        'fields' => self::$MIN_EVENT_FIELDS,
-                        'limit' => $limit
-                    ], $this->siteInfo->getFacebookAccessToken());
-                }
-
-                //Exécution du batch
-                Monitor::bench('fb::searchEvents', function () use (&$requests, &$events, $i, $nbBatchs, $current_keywords) {
-                    $responses = $this->client->sendBatchRequest($requests);
-
-                    //Traitement des réponses
-                    $fetchedEvents = 0;
-                    foreach ($responses as $response) {
-                        if ($response->isError()) {
-                            $e = $response->getThrownException();
-                            Monitor::writeln('<error>Erreur dans le batch de la recherche par mot-clés : ' . ($e ? $e->getMessage() : 'Erreur Inconnue') . '</error>');
-                        } else {
-                            $datas = $this->findPaginated($response->getGraphEdge());
-                            $fetchedEvents += count($datas);
-                            $events = array_merge($events, $datas);
-                        }
-                    }
-
-                    Monitor::writeln(sprintf('%d / %d: <info>%d</info> événement(s) trouvé(s) pour %d mots-clés',
-                        $i + 1, $nbBatchs, $fetchedEvents, count($current_keywords)));
-                });
-            } catch (FacebookSDKException $e) {
-                Monitor::writeln('<error>Erreur dans la recherche par mot-clé : ' . $e->getMessage() . '</error>');
-            }
-        }
-
-        return $events;
-    }
 
 
     public function getEventStats($id_event)
@@ -454,6 +398,79 @@ class FacebookAdmin extends FacebookEvents
             'interets' => $graph->getField('maybe_count')
         ];
     }
+
+    public function getIdsToMigrate() {
+        return $this->oldIds;
+    }
+
+    private function handleResponseException(FacebookResponseException $e) {
+        if(preg_match("#ID (\d+) was migrated to \w+ ID (\d+)#i", $e->getMessage(), $matches)) {
+            $this->oldIds[$matches[1]] = $matches[2];
+        }
+    }
+
+
+    private function handleEdge(array $datas, $edge, callable $getParams, callable $responseToDatas, $idsPerRequest = 10, $requestsPerBatch = 50) {
+        $idsPerBatch = $requestsPerBatch * $idsPerRequest;
+        $nbBatchs = ceil(count($datas) / $idsPerBatch);
+        $finalNodes = [];
+
+
+        for ($i = 0; $i < $nbBatchs; $i++) {
+            $requests = [];
+            $batch_datas = array_slice($datas, $i * $idsPerBatch, $idsPerBatch);
+            $nbIterations = ceil(count($batch_datas) / $idsPerRequest);
+
+            for ($j = 0; $j < $nbIterations; $j++) {
+                $current_datas = array_slice($batch_datas, $j * $idsPerRequest, $idsPerRequest);
+                $params = call_user_func($getParams, $current_datas);
+                $requests[] = $this->client->request('GET', $edge, $params);
+            }
+
+            //Exécution du batch
+            $currentNodes = Monitor::bench(sprintf('fb::handleEdge (%s)', $edge), function () use ($requests, $responseToDatas, $edge, $i, $nbBatchs) {
+                $responses = $this->client->sendBatchRequest($requests, $this->siteInfo->getFacebookAccessToken());
+
+                $currentNodes = [];
+                //Traitement des réponses
+                $fetchedNodes = 0;
+                foreach ($responses as $response) {
+                    /**
+                     * @var FacebookResponse $response
+                     */
+                    if ($response->isError()) {
+                        $e = $response->getThrownException();
+                        Monitor::writeln(sprintf(
+                            "<error>Erreur dans le parcours de l'edge %s : %s</error>",
+                            $edge,
+                            $e ? $e->getMessage() : 'Erreur Inconnue'
+                        ));
+
+                        if($e instanceof FacebookResponseException) {
+                            $this->handleResponseException($e);
+                        }
+                    } else {
+                        $datas = call_user_func($responseToDatas, $response);
+                        $fetchedNodes += count($datas);
+                        $currentNodes = array_merge($currentNodes, $datas);
+                    }
+                }
+                Monitor::writeln(sprintf(
+                    '%d / %d : Récupération de <info>%d</info> node(s)',
+                    $i + 1,
+                    $nbBatchs,
+                    $fetchedNodes
+                ));
+
+                return $currentNodes;
+            });
+
+            $finalNodes = array_merge($finalNodes, $currentNodes);
+        }
+
+        return $finalNodes;
+    }
+
 
     private function handleEventsEdge(& $ids, \DateTime $since, $idsPerRequest = 49, $limit = 1000)
     {
@@ -520,41 +537,78 @@ class FacebookAdmin extends FacebookEvents
         return array_unique($finalEvents);
     }
 
-    public function getEventsFromPlaces(& $places, \DateTime $since)
+    public function getEventsFromUsers(array $id_users, \DateTime $since)
     {
-        $id_places = array_map(function (GraphNode $place) {
-            return $place->getField('id');
-        }, $places);
-
-        return $this->handleEventsEdge($id_places, $since, 40);
+        return $this->handleEdge($id_users, '/events', function(array $current_ids) use($since) {
+            return [
+                'ids' => implode(',', $current_ids),
+                'since' => $since->format('Y-m-d'),
+                'fields' => self::$FIELDS,
+                'limit' => 1000
+            ];
+        }, function(FacebookResponse $response) {
+            return $this->findPaginatedNodes($response);
+        });
     }
 
-    public function getPlacesFromGPS($latitude, $longitude, $distance, $limit = 1000)
+    public function getEventsFromPlaces(array $id_places, \DateTime $since)
     {
-        return $this->handlePaginate($this->siteInfo->getFacebookAccessToken(), '/search', [
-            'q' => '',
-            'type' => 'place',
-            'center' => $latitude . ',' . $longitude,
-            'distance' => $distance,
-            'fields' => 'id'
-        ], $limit);
+        return $this->handleEdge($id_places, '/events', function(array $current_ids) use($since) {
+            return [
+                'ids' => implode(',', $current_ids),
+                'since' => $since->format('Y-m-d'),
+                'fields' => self::$FIELDS,
+                'limit' => 1000
+            ];
+        }, function(FacebookResponse $response) {
+            return $this->findPaginatedNodes($response);
+        });
+    }
+
+    public function getEventsFromKeywords(array $keywords, \DateTime $since) {
+        return $this->handleEdge($keywords, '/search', function(array $keywords) {
+            $keyword = $keywords[0];
+            return [
+                'q' => sprintf('"%s"', $keyword),
+                'type' => 'event',
+                'fields' => self::$FIELDS,
+                'limit' => 1000
+            ];
+        }, function(FacebookResponse $response) {
+            return $this->findPaginated($response->getGraphEdge());
+        }, 1);
+    }
+
+    public function getPlacesFromGPS(array $coordonnees)
+    {
+        return $this->handleEdge($coordonnees, '/search', function(array $coordonnees) {
+            $coordonnee = $coordonnees[0];
+            return [
+                'q' => '',
+                'type' => 'place',
+                'center' => sprintf("%s,%s", $coordonnee["latitude"], $coordonnee["longitude"]),
+                'distance' => $coordonnee['distanceMax'] * 1000,
+                'fields' => 'id',
+                'limit' => 1000
+            ];
+        }, function(FacebookResponse $response) {
+            return $this->findPaginated($response->getGraphEdge());
+        }, 1);
     }
 
     /**
-     * Fonction simple et récursive de bogoss
      * @param string $accessToken
      * @param string $endPoint
      * @param array $params
      * @param int $limit
-     * @param string $requestMethod
      * @return array
      */
-    protected function handlePaginate($accessToken, $endPoint, $params, $limit = 1000, $requestMethod = 'GET')
+    protected function handlePaginate($accessToken, $endPoint, $params, $limit = 1000)
     {
         try {
             //Construction de la requête
             $params['limit'] = $limit;
-            $response = $this->client->sendRequest($requestMethod, $endPoint, $params, $accessToken);
+            $response = $this->client->sendRequest('GET', $endPoint, $params, $accessToken);
 
             //Récupération des données
             return $this->findPaginated($response->getGraphEdge());
@@ -563,16 +617,6 @@ class FacebookAdmin extends FacebookEvents
         }
 
         return [];
-    }
-
-    public function getEventsFromUsers(& $users, \DateTime $since)
-    {
-        return $this->handleEventsEdge($users, $since);
-    }
-
-    public function setParser(AgendaParser $parser)
-    {
-        $this->parser = $parser;
     }
 
     public function setSiteInfo(SiteInfo $siteInfo)

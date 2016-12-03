@@ -7,6 +7,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
+use TBN\MajDataBundle\Reject\Reject;
 
 /**
  * Place
@@ -18,8 +20,9 @@ use JMS\Serializer\Annotation\Expose;
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")
+ * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\PlaceRepository")
  */
-class Place
+class Place implements GeolocalizeInterface
 {
     /**
      * @var integer
@@ -108,6 +111,21 @@ class Place
      */
     protected $facebookId;
 
+    /**
+     * @var Reject
+     */
+    protected $reject;
+
+    public function setReject(Reject $reject = null) {
+        $this->reject = $reject;
+
+        return $this;
+    }
+
+    public function getReject() {
+        return $this->reject;
+    }
+
 
     public function setId($id)
     {
@@ -123,7 +141,6 @@ class Place
 
     public function toArray()
     {
-
         return [
             'nom' => $this->nom,
             'rue' => $this->rue,

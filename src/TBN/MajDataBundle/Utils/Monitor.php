@@ -12,6 +12,7 @@ namespace TBN\MajDataBundle\Utils;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class Monitor
 {
@@ -61,15 +62,15 @@ class Monitor
         $somme = array_sum($stat['time']);
         $sommeMemory = array_sum($stat['memory']);
         return [
-            'avg' => sprintf('%01.2f ms', ($somme / $nbItems) * 1000),
-            'min' => sprintf('%01.2f ms', min($stat['time']) * 1000),
-            'max' => sprintf('%01.2f ms', max($stat['time']) * 1000),
+            'avg' => sprintf('%01.2f ms', ($somme / $nbItems)),
+            'min' => sprintf('%01.2f ms', min($stat['time'])),
+            'max' => sprintf('%01.2f ms', max($stat['time'])),
             'nb' => $nbItems,
             'memory' => self::convertMemory($sommeMemory),
             'avg_memory' => self::convertMemory($sommeMemory / $nbItems),
             'min_memory' => self::convertMemory(min($stat['memory'])),
             'max_memory' => self::convertMemory(max($stat['memory'])),
-            'total' => sprintf('%01.2f ms', $somme * 1000)
+            'total' => sprintf('%01.2f ms', $somme)
         ];
     }
 
@@ -87,12 +88,22 @@ class Monitor
         }
     }
 
+    public static function displayTable(array $datas) {
+        $datas = isset($datas[0]) ? $datas[0] : [$datas];
+        $headers = array_keys($datas[0]);
+
+        (new Table(self::$output))
+            ->setHeaders($headers)
+            ->setRows($datas)
+            ->render();
+    }
+
     public static function displayStats()
     {
         $table = new Table(self::$output);
         $table
             ->setHeaders(array(
-                array(new TableCell('Statistiques détaillées', array('colspan' => 6))),
+                array(new TableCell('Statistiques détaillées', array('colspan' => 10))),
                 array('Nom', 'Nombre', 'Tps Total', 'Tps Moyen', 'Tps Min', 'Tps Max', 'Memory Total', 'Memory Moyen', 'Memory Min', 'Memory Max')
             ));
 
@@ -112,23 +123,13 @@ class Monitor
                 'memory' => []
             ];
         }
-        $start = microtime(true);
-        $memoryStart = memory_get_usage();
+        $stopwatch = new Stopwatch();
+        $stopwatch->start($message);
         $retour = call_user_func($function);
-        $memoryEnd = memory_get_usage();
-        $end = microtime(true);
-        $time = ($end - $start);
-        $memory = ($memoryEnd - $memoryStart);
-        $memory = is_nan($memory) ? 0 : $memory;
-        if (($display === true || self::$log === true) && self::$output) {
-            self::$output->writeln(sprintf('%s : <info>%01.2f ms</info>',
-                $message,
-                $time * 1000.0
-            ));
-        }
+        $event = $stopwatch->stop($message);
 
-        self::$stats[$message]['time'][] = $time;
-        self::$stats[$message]['memory'][] = $memoryEnd - $memoryStart;
+        self::$stats[$message]['time'][] = $event->getDuration();
+        self::$stats[$message]['memory'][] = $event->getMemory();
 
         return $retour;
     }

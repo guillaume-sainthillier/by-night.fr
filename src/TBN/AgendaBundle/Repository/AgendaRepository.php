@@ -2,6 +2,7 @@
 namespace TBN\AgendaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
@@ -19,6 +20,19 @@ class AgendaRepository extends EntityRepository
             ->leftJoin($alias . '.place', 'p');
 
         return $qb;
+    }
+
+    public function findAllFBOwnerIds()
+    {
+        $places = $this->_em
+            ->createQueryBuilder()
+            ->select('a.facebookOwnerId')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where('a.facebookOwnerId IS NOT NULL')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_unique(array_filter(array_column($places, 'facebookOwnerId')));
     }
 
     public function findAllOfWeek()
@@ -324,21 +338,25 @@ class AgendaRepository extends EntityRepository
     }
 
     //Appelé par DoctrineEventParser
-    public function findAllByDate(Agenda $agenda)
+    public function findAllByDates(array $events)
     {
-        $params = [
-            'date_debut' => $agenda->getDateDebut()->format("Y-m-d"),
-            'date_fin' => $agenda->getDateFin()->format("Y-m-d"),
-            'site' => $agenda->getSite()->getId()
-        ];
+        if(! count($events)) {
+            return [];
+        }
 
-        $query = $this
-            ->createQueryBuilder('a')
-            ->where("a.dateDebut = :date_debut AND a.dateFin = :date_fin AND a.site = :site");
+        $params = [];
+        $query = $this->createQueryBuilder('a');
 
-        if ($agenda->getFacebookEventId()) {
-            $query = $query->orWhere("a.facebookEventId = :fb_event_id");
-            $params['fb_event_id'] = $agenda->getFacebookEventId();
+        $i = 0;
+        foreach($events as $event) {
+            $i++;
+            /**
+             * @var Agenda $event
+             */
+            $query->orWhere("a.dateDebut = :date_debut_$i AND a.dateFin = :date_fin_$i AND a.site = :site_$i");
+            $params["date_debut_$i"] = $event->getDateDebut()->format('Y-m-d');
+            $params["date_fin_$i"] = $event->getDateFin()->format('Y-m-d');
+            $params["site_$i"] = $event->getSite()->getId();
         }
 
         return $query
@@ -355,7 +373,7 @@ class AgendaRepository extends EntityRepository
             ->where("p.nom = :nom")
             ->andWhere("a.dateDebut = :date_debut")
             ->andWhere("a.dateFin = :date_fin")
-            ->setParameters([":nom" => $lieuNom, "date_debut" => $dateDebut->format("Y-m-d"), "date_fin" => $dateDebut->format("Y-m-d")])
+            ->setParameters([":nom" => $lieuNom, "date_debut" => $dateDebut->format("Y-m-d"), "date_fin" => $dateFin->format("Y-m-d")])
             ->getQuery()
             ->setMaxResults(1);
 

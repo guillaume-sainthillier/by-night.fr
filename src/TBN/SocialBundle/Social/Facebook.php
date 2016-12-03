@@ -2,6 +2,7 @@
 
 namespace TBN\SocialBundle\Social;
 
+use Facebook\Exceptions\FacebookResponseException;
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphEdge;
 use TBN\SocialBundle\Exception\SocialException;
@@ -31,7 +32,8 @@ class Facebook extends Social
     protected static $STATS_FIELDS = "id,picture.type(large).redirect(false),cover,attending_count,maybe_count";
     protected static $FULL_STATS_FIELDS = "id,picture.type(large).redirect(false),cover,attending_count,maybe_count,attending.limit(500){name,picture.type(square).redirect(false)},maybe.limit(500){name,picture.type(square).redirect(false)}";
     protected static $ATTENDING_FIELDS = "id,name,picture.type(square).redirect(false)";
-    protected static $MIN_EVENT_FIELDS = "id,updated_time,owner{id},place{id}";
+    protected static $MIN_EVENT_FIELDS = "id,updated_time,owner{id}";
+//    protected static $PLACE_EVENT_EDGE_FIELDS = "id,updated_time,owner{id}";
 
     protected function constructClient()
     {
@@ -73,6 +75,42 @@ class Facebook extends Social
             return $graph->getField($index);
 
         }, $indexes);
+    }
+
+    protected function findPaginatedNodes(FacebookResponse $response) {
+        $datas = [];
+        $graph = $response->getGraphNode();
+        $indexes = $graph->getFieldNames();
+        foreach ($indexes as $index) {
+            $subGraph = $graph->getField($index);
+            $datas = array_merge($datas, $this->next($subGraph));
+        }
+
+        return $datas;
+    }
+
+    protected function next(GraphEdge $graph = null) {
+        if(! $graph) {
+            return [];
+        }
+
+        $datas = $graph->all();
+        $nextRequest = $graph->getNextPageRequest();
+
+        if(! $nextRequest) {
+            return $datas;
+        }
+
+        try {
+            $response = $this->client->getClient()->sendRequest($nextRequest);
+            $nodes = $response->getGraphNode();
+            foreach($nodes as $node) {
+                $datas = array_merge($datas, $this->next($node));
+            }
+        }catch(FacebookSDKException $ex) {
+            Monitor::writeln(sprintf('<error>Erreur dans next : %s</error>', $ex->getMessage()));
+        }
+        return $datas;
     }
 
     protected function findAssociativePaginated(FacebookResponse $response)

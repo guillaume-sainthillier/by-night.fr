@@ -10,31 +10,48 @@ namespace TBN\MajDataBundle\Utils;
 
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\OutputInterface;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\AgendaBundle\Entity\Place;
 use TBN\MainBundle\Entity\Site;
+use TBN\MajDataBundle\Entity\Exploration;
+use TBN\MajDataBundle\Entity\HistoriqueMaj;
+use TBN\MajDataBundle\Parser\Common\FaceBookParser;
+use TBN\MajDataBundle\Parser\ParserInterface;
+use TBN\MajDataBundle\Reject\Reject;
 use TBN\SocialBundle\Social\FacebookAdmin;
 
 class DoctrineEventHandler
 {
+    const BATCH_SIZE = 50;
+
     private $em;
     private $repoAgenda;
     private $repoSite;
     private $repoPlace;
     private $handler;
     private $firewall;
-    private $api;
-    private $cache;
 
-    private $places;
-    private $newPlaces;
     private $sites;
-    private $newAgendas;
-    private $agendas;
-    private $withExplorations;
+    private $villes;
 
-    private $stats;
+    /**
+     * @var EchantillonHandler
+     */
+    private $echantillonHandler;
 
-    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, FacebookAdmin $api, Cache $cache)
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
+     * @var ExplorationHandler
+     */
+    private $explorationHandler;
+
+    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler)
     {
         $this->em = $em;
         $this->repoAgenda = $em->getRepository('TBNAgendaBundle:Agenda');
@@ -42,62 +59,366 @@ class DoctrineEventHandler
         $this->repoSite = $em->getRepository('TBNMainBundle:Site');
         $this->handler = $handler;
         $this->firewall = $firewall;
-        $this->cache = $cache;
-        $this->api = $api;
+        $this->echantillonHandler = $echantillonHandler;
+        $this->explorationHandler = new ExplorationHandler();
 
-        $this->withExplorations = false;
+        $this->output = null;
+
+        $this->villes = [];
         $this->sites = [];
-        $this->places = [];
-        $this->newPlaces = [];
-        $this->agendas = [];
-        $this->newAgendas = [];
         $this->stats = [];
     }
-
 
     public function getStats()
     {
         return $this->stats;
     }
 
-    public function initAPI()
-    {
-        $this->api->init();
+    /**
+     * @param Agenda $event
+     * @return Agenda
+     */
+    public function handleOne(Agenda $event) {
+        return $this->handleMany([$event])[0];
     }
 
-    public function init(Site $site = null, $withExplorations = false)
-    {
-        $this->initAPI();
-        $this->withExplorations = $withExplorations;
-        if ($site === null) {
-            $sites = $this->repoSite->findAll();
-        } else {
-            $sites = [$site];
+    /**
+     * @param array $events
+     * @param ParserInterface $parser
+     * @param OutputInterface $output
+     * @return array
+     */
+    public function handleManyCLI(array $events, ParserInterface $parser, OutputInterface $output) {
+        $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
+        $this->output = $output;
+        $this->explorationHandler->start();
+
+        $events =  $this->handleMany($events);
+        if($parser instanceof FaceBookParser) {
+            $this->handleIdsToMigrate($parser);
         }
 
-        $this->stats = [
-            'nbBlacklists' => 0,
-            'nbInserts' => 0,
-            'nbUpdates' => 0,
-            'nbExplorations' => 0
-        ];
+        $historique = $this->explorationHandler->stop($parser->getNomData());
+        $this->em->persist($historique);
+        $this->em->flush();
 
-        foreach ($sites as $currentSite) {
-            $this->sites[$currentSite->getId()] = $currentSite;
-            $this->places[$currentSite->getId()] = [];
-            $this->newPlaces[$currentSite->getId()] = [];
-            $this->agendas[$currentSite->getId()] = [];
-            $this->explorations[$currentSite->getId()] = [];
-            $this->newExplorations[$currentSite->getId()] = [];
-            $places = $this->repoPlace->findBy(['site' => $currentSite->getId()]);
-            foreach ($places as $place) {
-                $this->places[$currentSite->getId()][$place->getId()] = $place;
+        Monitor::writeln("");
+        Monitor::displayStats();
+        Monitor::displayTable([
+            'NEWS' => $this->explorationHandler->getNbInserts(),
+            'UPDATES' => $this->explorationHandler->getNbUpdates(),
+            'BLACKLISTS' => $this->explorationHandler->getNbBlackLists(),
+            'EXPLORATIONS' => $this->explorationHandler->getNbExplorations(),
+        ]);
+
+        return $events;
+    }
+
+    /**
+     * @param array $events
+     * @return array
+     */
+    public function handleMany(array $events) {
+        $this->loadSites();
+        $this->loadVilles();
+        $this->loadExplorations($events);
+        $this->doFilter($events);
+        $this->flushExplorations();
+
+        $allowedEvents = $this->getAllowedEvents($events);
+        $notAllowedEvents = $this->getNotAllowedEvents($events);
+        unset($events);
+
+        foreach(range(0, count($notAllowedEvents)) as $i) {
+            $this->explorationHandler->addBlackList();
+        }
+        return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
+    }
+
+    protected function handleIdsToMigrate(FaceBookParser $parser) {
+        $ids = $parser->getIdsToMigrate();
+
+        if(! count($ids)) {
+            return;
+        }
+
+        $eventOwners = $this->repoAgenda->findBy([
+            'facebookOwnerId' => array_keys($ids),
+        ]);
+
+        $events = $this->repoAgenda->findBy([
+            'facebookEventId' => array_keys($ids),
+        ]);
+
+        $events = array_merge($events, $eventOwners);
+        foreach($events as $event) {
+            if(isset($ids[$event->getFacebookEventId()])) {
+                $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
             }
 
-            if ($withExplorations === true) {
-                $this->firewall->loadExplorations($site);
+            if(isset($ids[$event->getFacebookOwnerId()])) {
+                $event->setFacebookOwnerId($ids[$event->getFacebookOwnerId()]);
+            }
+            $this->em->persist($event);
+        }
+
+        $places = $this->repoPlace->findBy([
+           'facebookId' => array_keys($ids)
+        ]);
+
+        foreach($places as $place) {
+            if(isset($ids[$place->getFacebookId()])) {
+                $place->setFacebookId($ids[$place->getFacebookId()]);
+            }
+            $this->em->persist($place);
+        }
+
+        $this->em->flush();
+    }
+
+    protected function getAllowedEvents(array $events) {
+        $events = array_filter($events, [$this->firewall, 'isValid']);
+        usort($events, function(Agenda $a, Agenda $b) {
+            if($a->getSite() == $b->getSite()) {
+                return 0;
+            }
+
+            return $a->getSite()->getId() - $b->getSite()->getId();
+        });
+
+        return $events;
+    }
+
+    protected function getNotAllowedEvents(array $events) {
+        return array_filter($events, function($event) {
+            return ! $this->firewall->isValid($event);
+        });
+    }
+
+    protected function createProgressBar($nbBatches) {
+        if($this->output) {
+            return new ProgressBar($this->output, $nbBatches);
+        }
+
+        return null;
+    }
+
+    protected function advanceProgressBar(ProgressBar $progress = null) {
+        if($progress) {
+            $progress->advance();
+        }
+    }
+
+    protected function finishProgressBar(ProgressBar $progress = null) {
+        if($progress) {
+            $progress->finish();
+        }
+    }
+
+    protected function getChunks(array $events) {
+        $chunks = [];
+        foreach($events as $i => $event) {
+            $chunks[$event->getSite()->getId()][$i] = $event;
+        }
+
+        foreach($chunks as $i => $chunk) {
+            $chunks[$i] = array_chunk($chunk, self::BATCH_SIZE, true);
+        }
+
+        return $chunks;
+    }
+
+    protected function unChunk(array $chunks) {
+        $flat = [];
+        foreach($chunks as $chunk) {
+            $flat = array_merge($flat, $chunk);
+        }
+
+        return $flat;
+    }
+
+    protected function mergeWithDatabase(array $events) {
+        $progress = $this->createProgressBar(count($events));
+
+        $chunks = $this->getChunks($events);
+        foreach($chunks as $chunk) {
+            //Par site
+            $this->echantillonHandler->prefetchPlaceEchantillons($this->unChunk($chunk));
+
+            //Par n éléments
+            foreach($chunk as $currentEvents) {
+                $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
+                foreach ($currentEvents as $i => $event) {
+                    /**
+                     * @var Agenda $event
+                     */
+                    $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event->getPlace());
+                    $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
+
+                    $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
+                    $this->advanceProgressBar($progress);
+                    $this->em->persist($event);
+                    $events[$i] = $event;
+
+                    if ($this->firewall->isPersisted($event)) {
+                        $this->explorationHandler->addUpdate();
+                    } else {
+                        $this->explorationHandler->addInsert();
+                    }
+                    $this->echantillonHandler->addNewEvent($event);
+                }
+                $this->flushEvents();
+            }
+            $this->flushPlaces();
+        }
+        $this->finishProgressBar($progress);
+
+        return $events;
+    }
+
+    protected function flushPlaces() {
+        $this->em->clear(Place::class);
+
+        $this->echantillonHandler->flushPlaces();
+    }
+
+    protected function flushEvents() {
+        $this->em->flush();
+        $this->em->clear(Agenda::class);
+
+        $this->echantillonHandler->flushEvents();
+    }
+
+    protected function loadVilles() {
+        $villes = $this->em->getRepository('TBNAgendaBundle:Place')->findAllVilles();
+        foreach($villes as $ville) {
+            $key = $this->firewall->getVilleHash($ville['ville']);
+            $this->villes[$key] = $ville['id'];
+        }
+    }
+
+    protected function loadSites() {
+        $sites = $this->em->getRepository('TBNMainBundle:Site')->findAll();
+        foreach($sites as $site) {
+            $key = $this->firewall->getVilleHash($site->getNom());
+            $this->sites[$key] = $site;
+        }
+    }
+
+    protected function loadExplorations(array $events) {
+        $fb_ids = $this->getExplorationsFBIds($events);
+        $this->firewall->loadExplorations($fb_ids);
+    }
+
+    protected function flushExplorations() {
+        $explorations = $this->firewall->getExplorations();
+
+        $batchSize = 100;
+        $nbBatches = ceil(count($explorations) / $batchSize);
+
+        for($i = 0; $i < $nbBatches; $i++) {
+            $currentExplorations = array_slice($explorations, $i * $batchSize, $batchSize);
+            foreach($currentExplorations as $exploration) {
+                $exploration->setReason($exploration->getReject()->getReason());
+                $this->explorationHandler->addExploration();
+                $this->em->persist($exploration);
+            }
+            $this->em->flush();
+            $this->em->clear(Exploration::class);
+        }
+
+        $this->firewall->flushExplorations();
+    }
+
+
+    protected function doFilter(array $events) {
+        foreach($events as $event) {
+            /**
+             * @var Agenda $event
+             */
+            $event->setReject(new Reject);
+
+            if($event->getPlace()) {
+                $event->getPlace()->setReject(new Reject);
+            }
+
+            if($event->getFacebookEventId()) {
+                $exploration = $this->firewall->getExploration($event->getFacebookEventId());
+
+                //Une exploration a déjà eu lieu
+                if($exploration) {
+                    $this->firewall->filterEventExploration($exploration, $event);
+                    $reject = $exploration->getReject();
+
+                    //Celle-ci a déjà conduit à l'élimination de l'événement
+                    if(! $reject->isValid()) {
+                        $event->getReject()->setReason($reject->getReason());
+                        continue;
+                    }
+                }
+            }
+
+            //Même algorithme pour le lieu
+            if($event->getPlace() && $event->getPlace()->getFacebookId()) {
+                $exploration = $this->firewall->getExploration($event->getPlace()->getFacebookId());
+
+                if($exploration && ! $this->firewall->hasPlaceToBeUpdated($exploration) && ! $exploration->getReject()->isValid()) {
+                    $event->getReject()->addReason($exploration->getReject()->getReason());
+                    $event->getPlace()->getReject()->setReason($exploration->getReject()->getReason());
+                    continue;
+                }
+            }
+
+            $this->firewall->filterEvent($event);
+            if($this->firewall->isValid($event)) {
+                $this->guessEventSite($event);
+                $this->firewall->filterEventSite($event);
             }
         }
+    }
+
+    protected function guessEventSite(Agenda $event) {
+        $key = $this->firewall->getVilleHash($event->getPlace()->getVille());
+
+        $site = null;
+        if(isset($this->sites[$key])) {
+            $site = $this->em->getReference(Site::class, $this->sites[$key]->getId());
+        }elseif(isset($this->villes[$key])) {
+            $site = $this->em->getReference(Site::class, $this->villes[$key]);
+        }else {
+            foreach($this->sites as $testSite) {
+                if($this->firewall->isLocationBounded($event->getPlace(), $testSite)) {
+                    $site = $this->em->getReference(Site::class, $testSite->getId());
+                    break;
+                }elseif($this->firewall->isLocationBounded($event, $testSite)) {
+                    $site = $this->em->getReference(Site::class, $testSite->getId());
+                    break;
+                }
+            }
+        }
+
+        if($site) {
+            $event->setSite($site);
+            $event->getPlace()->setSite($site);
+        }
+    }
+
+    protected function getExplorationsFBIds(array $events) {
+        $fbIds = [];
+        foreach($events as $event) {
+            /**
+             * @var Agenda $event
+             */
+            if($event->getFacebookEventId()) {
+                $fbIds[$event->getFacebookEventId()] = true;
+            }
+
+            if($event->getPlace() && $event->getPlace()->getFacebookId()) {
+                $fbIds[$event->getPlace()->getFacebookId()] = true;
+            }
+        }
+
+        return array_keys($fbIds);
     }
 
     public function updateFBEventOfWeek($fullMode, $downloadImage = false)
@@ -129,7 +450,6 @@ class DoctrineEventHandler
                     $this->handler->downloadImage($agenda);
                 });
             }
-            $agenda->preDateModification();
             $this->em->merge($agenda);
 
             if ($fullMode) {
@@ -144,170 +464,5 @@ class DoctrineEventHandler
         }
 
         return $i;
-    }
-
-    protected function preHandleEvent(Agenda &$agenda)
-    {
-        $siteId = $agenda->getSite()->getId();
-        $key = $this->getAgendaCacheKey($agenda);
-
-        if (!isset($this->agendas[$siteId][$key])) {
-            $this->newAgendas[$siteId][$key] = [];
-            $this->agendas[$siteId][$key] = [];
-            $agendas = Monitor::bench('findAllByDate', function () use (&$agenda) {
-                return $this->repoAgenda->findAllByDate($agenda);
-            });
-            foreach ($agendas as $currentAgenda) {
-                $this->agendas[$siteId][$key][$currentAgenda->getId()] = $currentAgenda;
-            }
-        }
-
-        return array_merge($this->agendas[$siteId][$key], $this->newAgendas[$siteId][$key]);
-    }
-
-    protected function postHandleEvent(Agenda &$agenda)
-    {
-        $siteId = $agenda->getSite()->getId();
-        $key = $this->getAgendaCacheKey($agenda);
-
-        if ($agenda->getId()) {
-            $this->agendas[$siteId][$key][$agenda->getId()] = $agenda;
-        } else {
-            $hashId = spl_object_hash($agenda);
-            $this->newAgendas[$siteId][$key][$hashId] = $agenda;
-        }
-    }
-
-    protected function postMerge(Agenda &$agenda)
-    {
-        $place = $agenda->getPlace();
-        $siteId = $agenda->getSite()->getId();
-
-        if ($place !== null) {
-            if ($place->getId()) {
-                $this->places[$siteId][$place->getId()] = $place;
-            } else {
-                $hashId = spl_object_hash($place);
-                $this->newPlaces[$siteId][$hashId] = $place;
-            }
-        }
-    }
-
-    protected function postFlush()
-    {
-        foreach ($this->newPlaces as $siteId => $newPlaces) {
-            foreach ($newPlaces as $newPlace) {
-                $this->places[$siteId][$newPlace->getId()] = $newPlace;
-            }
-            $this->newPlaces[$siteId] = [];
-        }
-
-        foreach ($this->newAgendas as $siteId => $newAgendas) {
-            foreach ($newAgendas as $key => $newDateAgendas) {
-                foreach ($newDateAgendas as $newAgenda) {
-                    $this->agendas[$siteId][$key][$newAgenda->getId()] = $newAgenda;
-                }
-                $this->newAgendas[$siteId][$key] = [];
-            }
-        }
-    }
-
-    public function flush()
-    {
-        return Monitor::bench('flush', function () {
-            if ($this->withExplorations === true) {
-//                Gestion des explorations + historique de la maj
-                $explorations = $this->firewall->getExplorationsToSave();
-                $this->stats['nbExplorations'] += count($explorations);
-                foreach ($explorations as $exploration) {
-                    $this->em->merge($exploration);
-                }
-                $this->firewall->flushNewExplorations();
-            }
-
-            $this->em->flush();
-            $this->em->clear();
-            $this->postFlush();
-        });
-    }
-
-    private function getAgendaCacheKey(Agenda $agenda)
-    {
-        return $agenda->getDateDebut()->format('Y-m-d') . '.' . $agenda->getDateFin()->format('Y-m-d');
-    }
-
-    public function handleEvent(Agenda &$agenda, $downloadImage = true)
-    {
-        return Monitor::bench('handle', function () use (&$agenda, $downloadImage) {
-            $site = $agenda->getSite();
-            $siteId = $site->getId();
-
-            $persistedPlaces = $this->places[$siteId];
-            $newPlaces = $this->newPlaces[$siteId];
-            $fullPlaces = array_merge($persistedPlaces, $newPlaces);
-
-            $retour = null;
-
-            $agenda = $this->handler->handle($fullPlaces, $site, $agenda);
-            if ($agenda !== null && $agenda->getDateDebut() instanceof \DateTime && $agenda->getDateFin() instanceof \DateTime) {
-                $fullEvents = $this->preHandleEvent($agenda);
-                $agenda = $this->handler->handleEvent($fullEvents, $agenda);
-                if ($agenda !== null) {
-                    if ($downloadImage && $agenda->getPath() === null && $agenda->getUrl() !== null) {
-                        Monitor::bench('downloadImage', function () use (&$agenda) {
-                            $this->handler->downloadImage($agenda);
-                        });
-                    }
-
-                    $agenda = Monitor::bench('merge', function () use (&$agenda) {
-                        return $this->em->merge($agenda);
-                    });
-                    $this->postMerge($agenda);
-                    $this->postHandleEvent($agenda);
-
-
-                    if ($this->firewall->isPersisted($agenda)) {
-                        $this->stats['nbUpdates']++;
-                    } else {
-                        $this->stats['nbInserts']++;
-                    }
-                    $retour = $agenda;
-                }
-            }
-
-            if (null === $retour) {
-                $this->stats['nbBlacklists']++;
-            }
-            return $retour;
-        });
-    }
-
-    public function handle(Agenda &$agenda)
-    {
-        return Monitor::bench('handle', function () use (&$agenda) {
-            $site = $agenda->getSite();
-            $siteId = $site->getId();
-
-            $persistedPlaces = $this->places[$siteId];
-            $newPlaces = $this->newPlaces[$siteId];
-
-            $fullPlaces = array_merge($persistedPlaces, $newPlaces);
-
-            $agenda = $this->handler->handle($fullPlaces, $site, $agenda);
-            if ($agenda !== null) {
-                $agenda->preDateModification();
-                $agenda = $this->em->merge($agenda);
-                $this->postMerge($agenda);
-                if ($this->firewall->isPersisted($agenda)) {
-                    $this->stats['nbUpdates']++;
-                } else {
-                    $this->stats['nbInserts']++;
-                }
-            } else {
-                $this->stats['nbBlacklists']++;
-            }
-
-            return $agenda;
-        });
     }
 }

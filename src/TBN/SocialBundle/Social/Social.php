@@ -189,6 +189,7 @@ abstract class Social
 
     protected function getLinkPicture(Agenda $agenda)
     {
+        //TODO: corriger le bug
         return $this->requestStack->getMasterRequest()->getUriForPath("/" . $agenda->getWebPath());
     }
 

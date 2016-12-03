@@ -13,7 +13,17 @@ use TBN\MajDataBundle\Utils\Comparator;
  */
 class Merger
 {
+    const MERGE_LEFT = 'merge_left';
+    const MERGE_RIGHT = 'merge_right';
+    const MERGE_MAX = 'merge_max';
+    const MERGE_RIGHT_IF_DIFFERENT = 'merge_right_if_different';
+    const FORCE_MERGE_LEFT = 'force_merge_left';
+    const FORCE_MERGE_RIGHT = 'force_merge_right';
+    const DEFAULT_MERGE = self::MERGE_RIGHT;
 
+    /**
+     * @var Comparator
+     */
     private $comparator;
 
     public function __construct(Comparator $comparator)
@@ -21,11 +31,14 @@ class Merger
         $this->comparator = $comparator;
     }
 
-    public function mergeEvent(Agenda &$a = null, Agenda &$b = null)
+    public function mergeEvent(Agenda $a = null, Agenda $b = null)
     {
         return $this->merge($a, $b, [
-            'id',
+            'id' => self::FORCE_MERGE_LEFT,
             'nom',
+            'date_modification' => self::MERGE_RIGHT_IF_DIFFERENT,
+            'date_debut' => self::MERGE_RIGHT_IF_DIFFERENT,
+            'date_fin' => self::MERGE_RIGHT_IF_DIFFERENT,
             'descriptif',
             'horaires',
             'modification_derniere_minute',
@@ -40,8 +53,8 @@ class Merger
             'url',
             'facebook_event_id',
             'facebook_owner_id',
-            'fb_participations',
-            'fb_interets',
+            'fb_participations' => self::MERGE_MAX,
+            'fb_interets' => self::MERGE_MAX,
             'fb_post_id',
             'fb_post_system_id',
             'tweet_post_id',
@@ -49,24 +62,28 @@ class Merger
             'google_post_id',
             'google_system_post_id',
             'source',
-            'fb_date_modification',
+            'fb_date_modification' => self::MERGE_RIGHT_IF_DIFFERENT,
             'place',
-            'user',
-            'file'
+            'user' => self::MERGE_LEFT,
+            'path',
+            'file',
+            'reject'
         ]);
     }
 
-    public function mergePlace(Place &$a = null, Place &$b = null)
+    public function mergePlace(Place $a = null, Place $b = null)
     {
         return $this->merge($a, $b, [
-            'id',
+            'id' => self::FORCE_MERGE_LEFT,
+            'nom',
             'latitude',
             'longitude',
             'rue',
             'url',
             'ville',
             'codePostal',
-            'facebook_id'
+            'facebook_id',
+            'reject'
         ]);
     }
 
@@ -77,25 +94,65 @@ class Merger
      * @param array $fields
      * @return \stdClass
      */
-    private function merge($a, $b, array $fields)
+    private function merge($a = null, $b = null, array $fields)
     {
         //Un ou les deux est nul, pas la peine de merger
         if ($a === null || $b === null) {
             return ($a ?: $b); //Retourne l'objet non nul s'il existe
         }
 
-        foreach ($fields as $field) {
+        foreach ($fields as $type => $field) {
+            if(is_numeric($type)) {
+                $type = self::DEFAULT_MERGE;
+            }else {
+                $field = $type;
+                $type = $field;
+            }
+
             $getter = 'get' . $this->skakeToCamel($field);
             $setter = 'set' . $this->skakeToCamel($field);
 
             $valueA = $a->$getter();
             $valueB = $b->$getter();
-            $value = $this->comparator->getBestContent($valueA, $valueB);
+            $value = $this->getBestContent($valueA, $valueB, $type);
 
             $a->$setter($value);
         }
 
         return $a;
+    }
+
+    protected function getBestContent($valueA, $valueB, $mergeType)
+    {
+        if(is_callable($mergeType)) {
+            return call_user_func($mergeType, $valueA, $valueB);
+        }
+
+        switch($mergeType) {
+            case self::MERGE_RIGHT:
+                return $valueB ?: $valueA;
+            case self::MERGE_LEFT:
+                return $valueA ?: $valueB;
+            case self::FORCE_MERGE_LEFT:
+                return $valueA;
+            case self::FORCE_MERGE_RIGHT:
+                return $valueB;
+            case self::MERGE_RIGHT_IF_DIFFERENT:
+                return $valueA != $valueB ? $valueB : $valueA;
+            case self::MERGE_MAX:
+                return max($valueA, $valueB);
+        }
+
+        if (is_bool($valueA)) {
+            return $valueA;
+        }
+
+        if (is_object($valueA) || is_object($valueB)) {
+            return $valueA ?: $valueB;
+        }
+
+        $compareA = $this->comparator->sanitize($valueA);
+        return isset($compareA[0]) ? ($valueA ?: null) : ($valueB ?: null);
     }
 
     private function skakeToCamel($str)
