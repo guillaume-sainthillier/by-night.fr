@@ -242,7 +242,7 @@ class AgendaRepository extends EntityRepository
 
     public function findTopSoiree(Site $site, $page = 1, $limit = 7)
     {
-        $du = new \DateTime('monday this week');
+        $du = new \DateTime();
         $au = new \DateTime('sunday this week');
 
         $soirees = $this
