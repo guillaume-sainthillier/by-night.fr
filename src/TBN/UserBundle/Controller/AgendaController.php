@@ -52,9 +52,7 @@ class AgendaController extends Controller
     public function listAction()
     {
         $user = $this->getUser();
-        $soirees = $this->getRepo('TBNAgendaBundle:Agenda')->findBy([
-            'user' => $user
-        ], ['dateModification' => "DESC"]);
+        $soirees = $this->getRepo('TBNAgendaBundle:Agenda')->findAllByUser($user);
 
         $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
 

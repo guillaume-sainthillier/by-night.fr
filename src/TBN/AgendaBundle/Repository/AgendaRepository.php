@@ -2,6 +2,7 @@
 namespace TBN\AgendaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Security\Core\User\UserInterface;
 use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -20,6 +21,16 @@ class AgendaRepository extends EntityRepository
             ->leftJoin($alias . '.place', 'p');
 
         return $qb;
+    }
+
+    public function findAllByUser(UserInterface $user) {
+        return $this
+            ->createQueryBuilder('a')
+            ->where('a.user = :user')
+            ->setParameters(['user' => $user])
+            ->orderBy('a.dateModification', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     public function findAllFBOwnerIds()
