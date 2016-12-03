@@ -22,6 +22,7 @@ class EventConstraint extends Constraint
     public $badPlaceCityName = "unused";
     public $badPlacePostalCode = "Le code postal du lieu est incorrect";
     public $badUser = "Un [link]événément[/link] similaire au vôtre a déjà été créé sur la plateforme";
+    public $eventDeleted = "L'événement facebook a été supprimé par son créateur. Il ne peut plus être mis à jour sur la plateforme";
 
     public function getTargets()
     {

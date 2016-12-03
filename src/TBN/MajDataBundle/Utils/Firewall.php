@@ -115,6 +115,11 @@ class Firewall
     public function filterEventExploration(Exploration $exploration, Agenda $event) {
         $reject = $exploration->getReject();
 
+        //Aucune action sur un événement supprimé sur la plateforme par son créateur
+        if($reject->isEventDeleted()) {
+            return;
+        }
+
         $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration);
         $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
 

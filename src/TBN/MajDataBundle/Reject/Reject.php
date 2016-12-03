@@ -24,6 +24,7 @@ class Reject
     const BAD_PLACE_CITY_NAME = 2048;
     const BAD_PLACE_CITY_POSTAL_CODE = 4096;
     const BAD_USER = 8192;
+    const EVENT_DELETED = 16384;
 
     protected $reason;
 
@@ -63,6 +64,10 @@ class Reject
 
     public function isValid() {
         return $this->reason === self::VALID;
+    }
+
+    public function isEventDeleted() {
+        return self::EVENT_DELETED === (self::EVENT_DELETED & $this->reason);
     }
 
     public function isBadUser() {

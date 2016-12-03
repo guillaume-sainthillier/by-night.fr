@@ -47,6 +47,11 @@ class EventConstraintValidator extends ConstraintValidator
             return;
         }
 
+        if($reject->isEventDeleted()) {
+            $this->context->buildViolation($constraint->eventDeleted)->addViolation();
+            return;
+        }
+
         if($reject->isBadEventName()) {
             $this->context->buildViolation($constraint->badEventName)->atPath('nom')->addViolation();
         }

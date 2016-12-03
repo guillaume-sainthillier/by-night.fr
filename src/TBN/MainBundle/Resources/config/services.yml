@@ -5,6 +5,10 @@ parameters:
 
     
 services:
+    tbn.event_listener:
+        class: TBN\MainBundle\Listener\EventListener
+        tags:
+          - { name: doctrine.event_listener, event: preRemove }
     tbn.profile_picture.event:
         class: TBN\MainBundle\Picture\EventProfilePicture
         arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper", "@assets.packages"]
