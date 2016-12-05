@@ -2,6 +2,7 @@
 
 namespace TBN\MajDataBundle\Utils;
 
+use Doctrine\Common\Cache\ArrayCache;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use Doctrine\Common\Cache\Cache;
@@ -13,13 +14,24 @@ use Doctrine\Common\Cache\Cache;
 class Comparator
 {
 
+    /**
+     * @var ArrayCache
+     */
     private $cache;
+
+    /**
+     * @var Util
+     */
     private $util;
 
     public function __construct(Util $util, Cache $cache)
     {
         $this->util = $util;
         $this->cache = $cache;
+    }
+
+    public function deleteCache() {
+        $this->cache->deleteAll();
     }
 
     public function getMatchingScoreVille(Place $a = null, Place $b = null)
@@ -81,14 +93,12 @@ class Comparator
 
     protected function getStrictMatchingEvent(Agenda $a, Agenda $b)
     {
-        return ($a->getFacebookEventId() && $a->getFacebookEventId() == $b->getFacebookEventId());
         return ($a->getFacebookEventId() && $a->getFacebookEventId() == $b->getFacebookEventId()) ||
         ($a->getId() && $a->getId() == $b->getId());
     }
 
     protected function getStrictMatchingPlace(Place $a, Place $b)
     {
-        return ($a->getFacebookId() && $a->getFacebookId() == $b->getFacebookId());
         return ($a->getFacebookId() && $a->getFacebookId() == $b->getFacebookId()) ||
         ($a->getId() && $a->getId() == $b->getId());
     }

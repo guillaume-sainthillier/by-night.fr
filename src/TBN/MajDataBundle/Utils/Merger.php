@@ -36,7 +36,7 @@ class Merger
     {
         return $this->merge($a, $b, [
             'id' => self::FORCE_MERGE_LEFT,
-            'slug' => self::FORCE_MERGE_LEFT,
+//            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
             'date_fin' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
@@ -76,15 +76,15 @@ class Merger
     {
         return $this->merge($a, $b, [
             'id' => self::FORCE_MERGE_LEFT,
-            'slug' => self::FORCE_MERGE_LEFT,
+//            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
-            'latitude',
-            'longitude',
-            'rue',
+            'latitude' => self::MERGE_LEFT,
+            'longitude' => self::MERGE_LEFT,
+            'rue' => self::MERGE_LEFT,
             'url',
-            'ville',
-            'codePostal',
-            'facebook_id',
+            'ville' => self::MERGE_LEFT,
+            'codePostal' => self::MERGE_LEFT,
+            'facebook_id' => self::MERGE_LEFT,
             'reject'
         ]);
     }
@@ -101,6 +101,10 @@ class Merger
         //Un ou les deux est nul, pas la peine de merger
         if ($a === null || $b === null) {
             return ($a ?: $b); //Retourne l'objet non nul s'il existe
+        }
+
+        if($a === $b) {
+            return $a;
         }
 
         foreach ($fields as $type => $field) {

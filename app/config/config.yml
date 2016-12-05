@@ -45,6 +45,11 @@ doctrine_cache:
             namespace: array_cache_ns
             aliases:
                 - array_cache
+        comparator:
+            type: array
+            namespace: comparator_cache_ns
+            aliases:
+                - comparator_cache
         
 # Twig Configuration
 twig:

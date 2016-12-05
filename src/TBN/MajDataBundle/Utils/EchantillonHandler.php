@@ -174,7 +174,7 @@ class EchantillonHandler
         if(! isset($this->agendas[$key])) {
             $this->agendas[$key] = [];
         }
-        $this->agendas[$key][] = $event;
+        $this->agendas[$key][$event->getId()] = $event;
     }
 
     protected function getEvents(Agenda $event) {
@@ -193,12 +193,16 @@ class EchantillonHandler
         }
 
         $key = $this->getAgendaCacheKey($event);
-        if(! isset($this->newAgendas[$key])) {
-            $this->newAgendas[$key] = [];
-        }
+        if($event->getId()) {
+            $this->agendas[$key][$event->getId()] = $event;
+        }else {
+            if(! isset($this->newAgendas[$key])) {
+                $this->newAgendas[$key] = [];
+            }
 
-        $id = spl_object_hash($event);
-        $this->newAgendas[$key][$id] = $event;
+            $id = spl_object_hash($event);
+            $this->newAgendas[$key][$id] = $event;
+        }
 
         $this->addNewPlace($event->getPlace());
     }
@@ -221,7 +225,7 @@ class EchantillonHandler
         if(! isset($this->places[$key])) {
             $this->places[$key] = [];
         }
-        $this->places[$key][] = $place;
+        $this->places[$key][$place->getId()] = $place;
     }
 
     protected function getPlaces(Place $place) {
@@ -239,12 +243,16 @@ class EchantillonHandler
         }
 
         $key = $place->getSite()->getId();
-        if(! isset($this->newPlaces[$key])) {
-            $this->newPlaces[$key] = [];
-        }
+        if($place->getId()) {
+            $this->places[$place->getId()] = $place;
+        }else {
+            if(! isset($this->newPlaces[$key])) {
+                $this->newPlaces[$key] = [];
+            }
 
-        $id = spl_object_hash($place);
-        $this->newPlaces[$key][$id] = $place;
+            $id = spl_object_hash($place);
+            $this->newPlaces[$key][$id] = $place;
+        }
     }
 
     protected function getNewPlaces(Place $place) {

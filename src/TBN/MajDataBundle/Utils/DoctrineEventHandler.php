@@ -8,7 +8,6 @@
 
 namespace TBN\MajDataBundle\Utils;
 
-use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,11 +15,9 @@ use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Entity\Exploration;
-use TBN\MajDataBundle\Entity\HistoriqueMaj;
 use TBN\MajDataBundle\Parser\Common\FaceBookParser;
 use TBN\MajDataBundle\Parser\ParserInterface;
 use TBN\MajDataBundle\Reject\Reject;
-use TBN\SocialBundle\Social\FacebookAdmin;
 
 class DoctrineEventHandler
 {
@@ -128,15 +125,16 @@ class DoctrineEventHandler
         }
         $this->loadSites();
         $this->loadVilles();
-        $this->loadExplorations($events);
+//        $this->loadExplorations($events);
         $this->doFilter($events);
-        $this->flushExplorations();
+//        $this->flushExplorations();
 
         $allowedEvents = $this->getAllowedEvents($events);
         $notAllowedEvents = $this->getNotAllowedEvents($events);
         unset($events);
 
-        foreach(range(0, count($notAllowedEvents)) as $i) {
+        $nbNotAllowedEvents = count($notAllowedEvents);
+        for($i = 0; $i < $nbNotAllowedEvents; $i++) {
             $this->explorationHandler->addBlackList();
         }
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
@@ -245,6 +243,10 @@ class DoctrineEventHandler
     }
 
     protected function mergeWithDatabase(array $events) {
+        if(! count($events)) {
+            return $events;
+        }
+
         $progress = $this->createProgressBar(count($events));
 
         $chunks = $this->getChunks($events);
@@ -269,8 +271,8 @@ class DoctrineEventHandler
                         $this->explorationHandler->addBlackList();
                     }else {
                         $this->advanceProgressBar($progress);
-                        $this->echantillonHandler->addNewEvent($event);
                         $event = $this->em->merge($event);
+                        $this->echantillonHandler->addNewEvent($event);
                         if ($this->firewall->isPersisted($event)) {
                             $this->explorationHandler->addUpdate();
                         } else {
@@ -279,6 +281,8 @@ class DoctrineEventHandler
                     }
                     $events[$i] = $event;
                 }
+                $this->flushEvents();
+                $this->firewall->deleteCache();
             }
             $this->flushPlaces();
         }
@@ -294,7 +298,15 @@ class DoctrineEventHandler
     }
 
     protected function flushEvents() {
-        $this->em->flush();
+        try {
+            $this->em->flush();
+        } catch(\Exception $e) {
+            Monitor::writeln(sprintf(
+                "<error>%s</error>",
+                $e->getMessage()
+            ));
+        }
+
         $this->em->clear(Agenda::class);
 
         $this->echantillonHandler->flushEvents();
@@ -335,6 +347,7 @@ class DoctrineEventHandler
             foreach($currentExplorations as $exploration) {
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->explorationHandler->addExploration();
+                dump($exploration);
                 $this->em->persist($exploration);
             }
             $this->em->flush();
@@ -355,8 +368,6 @@ class DoctrineEventHandler
             if($event->getPlace()) {
                 $event->getPlace()->setReject(new Reject);
             }
-
-            $this->handler->cleanEvent($event);
 
             if($event->getFacebookEventId()) {
                 $exploration = $this->firewall->getExploration($event->getFacebookEventId());
@@ -389,6 +400,7 @@ class DoctrineEventHandler
             if($this->firewall->isValid($event)) {
                 $this->guessEventSite($event);
                 $this->firewall->filterEventSite($event);
+                $this->handler->cleanEvent($event);
             }
         }
     }
