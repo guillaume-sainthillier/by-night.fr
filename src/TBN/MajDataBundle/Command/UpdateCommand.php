@@ -64,7 +64,6 @@ class UpdateCommand extends EventCommand
             $siteInfo = $repoSiteInfo->findOneBy([]);
 
             Monitor::$output = $output;
-            Monitor::$log = false;
 
             if ($site === null) {
                 throw new RuntimeException(sprintf('<error>Le site %s demandé est introuvable en base</error>', $subdomainSite));

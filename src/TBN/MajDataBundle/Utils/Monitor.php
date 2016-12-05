@@ -20,7 +20,6 @@ class Monitor
      * @var OutputInterface
      */
     public static $output;
-    public static $log;
     private static $stats = [];
 
     public static function getStats()
