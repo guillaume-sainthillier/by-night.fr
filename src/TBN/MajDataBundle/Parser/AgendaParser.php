@@ -26,6 +26,11 @@ abstract class AgendaParser implements ParserInterface
     protected $url;
 
     /**
+     * Urls du site à parser
+     */
+    protected $urls;
+
+    /**
      *
      * @var OutputInterface
      */
@@ -59,6 +64,16 @@ abstract class AgendaParser implements ParserInterface
     }
 
     public abstract function getRawAgendas();
+
+    public function addUrl($url) {
+        $this->urls[] = $url;
+
+        return $this;
+    }
+
+    public function getUrls() {
+        return $this->urls;
+    }
 
     public function setURL($url)
     {
