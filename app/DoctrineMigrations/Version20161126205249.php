@@ -18,9 +18,7 @@ class Version20161126205249 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP TABLE Image');
-        $this->addSql('ALTER TABLE Exploration DROP FOREIGN KEY FK_AC0F0AB3F6BD1646');
-        $this->addSql('DROP INDEX IDX_2A938564F6BD1646 ON Exploration');
+        $this->addSql('DROP TABLE IF EXISTS Image');
         $this->addSql('DROP INDEX exploration_facebook_id_site_idx ON Exploration');
         $this->addSql('ALTER TABLE Exploration DROP site_id');
         $this->addSql('CREATE INDEX exploration_facebook_id_site_idx ON Exploration (facebook_id)');
