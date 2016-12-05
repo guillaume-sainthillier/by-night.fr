@@ -322,13 +322,11 @@ class DoctrineEventHandler
             foreach($currentExplorations as $exploration) {
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->explorationHandler->addExploration();
-                dump($exploration);
                 $this->em->persist($exploration);
             }
             $this->em->flush();
-            $this->em->clear(Exploration::class);
         }
-
+        $this->em->clear(Exploration::class);
         $this->firewall->flushExplorations();
     }
 
