@@ -83,8 +83,10 @@ class Monitor
 
     public static function writeException(\Exception $e) {
         self::writeln(sprintf(
-            "<error>%s</error> <info>%s</info>",
+            "<error>%s at %s(%d)</error> <info>%s</info>",
             $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
             $e->getTraceAsString()
         ));
     }

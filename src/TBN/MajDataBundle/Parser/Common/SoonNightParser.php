@@ -51,12 +51,8 @@ class SoonNightParser extends LinksParser
             $long = $infosGPS[1];
 
             $adresse = $lieux->text();
-            $infos = array_map('trim', explode(',', $adresse));
+            list($rue, $code_postal, $ville) = $this->normalizeAddress($adresse);
 
-            $rue = $infos[0];
-            $infosVille = array_map('trim', explode(' ', $infos[1]));
-            $code_postal = $infosVille[0];
-            $ville = $infosVille[1];
             $node_lieu = $this->parser->filter('.titre.nom_lieu');
             $lieu = $node_lieu->count() ? trim($node_lieu->text()) : null;
         }
@@ -113,13 +109,61 @@ class SoonNightParser extends LinksParser
         return $tab_retour;
     }
 
+    public function normalizeAddress($adresse) {
+        $infos = array_values(array_filter(array_map('trim', explode(',', $adresse))));
+
+        $rue = null;
+        $code_postal = null;
+        $ville = null;
+
+        /*
+         * 46 rue des lombards, 75001 Paris
+         * 46, rue des lombards, 75001 Paris
+         * Canal de l'Ourcq - Parc de la Villette, 59 Boulevard Macdonald, 75019 Paris
+         * Escale de Passy, parking Passy face à la maison de la radio, 75016 Paris
+         */
+        if(count($infos) > 2) {
+            if(is_numeric($infos[0])) {
+                $infos[0] = sprintf(
+                    "%s %s",
+                    $infos[0],
+                    $infos[1]
+                );
+                $infos[1] = $infos[2];
+            }elseif(! preg_match("#^\d{5} #", $infos[1])) {
+                $infos[0] = $infos[1];
+                $infos[1] = $infos[2];
+            }
+            unset($infos[2]);
+        }
+
+        $infosRue = array_values(array_filter(array_map('trim', explode('-', $infos[0]))));
+        $rue = $infosRue[count($infosRue) - 1];
+        if(count($infos) > 1) {
+            $infosVille = array_map('trim', explode(' ', $infos[1]));
+            $code_postal = $infosVille[0];
+            if(count($infosVille) > 0) {
+                $ville = implode(' ', array_slice($infosVille, 1, count($infosVille)));
+            }
+        }
+
+        return [$rue, $code_postal, $ville];
+    }
+
     public function getLinks()
     {
-        $this->parseContent('HTML');
-        return $this->parser->filter('div.soiree_liste .col_left a.titre')->each(function (Crawler $item) {
+        $urls = [];
+        foreach($this->urls as $url) {
+            $this->setURL($url);
+            $this->parseContent('HTML');
+            $currentUrls = $this->parser->filter('div.soiree_liste .col_left a.titre')->each(function (Crawler $item) {
+                return $this->base_url . $item->attr('href');
+            });
 
-            return $this->base_url . $item->attr('href');
-        });
+            $urls = array_merge($urls, $currentUrls);
+        }
+
+        return $urls;
     }
 
     public function getNomData()
