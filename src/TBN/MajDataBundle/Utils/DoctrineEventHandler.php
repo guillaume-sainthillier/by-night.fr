@@ -89,7 +89,6 @@ class DoctrineEventHandler
      * @return array
      */
     public function handleManyCLI(array $events, ParserInterface $parser, OutputInterface $output) {
-//        $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
         $this->output = $output;
 
         $events =  $this->handleMany($events);
@@ -125,9 +124,9 @@ class DoctrineEventHandler
         }
         $this->loadSites();
         $this->loadVilles();
-//        $this->loadExplorations($events);
+        $this->loadExplorations($events);
         $this->doFilter($events);
-//        $this->flushExplorations();
+        $this->flushExplorations();
 
         $allowedEvents = $this->getAllowedEvents($events);
         $notAllowedEvents = $this->getNotAllowedEvents($events);
