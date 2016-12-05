@@ -158,6 +158,7 @@ class Agenda implements GeolocalizeInterface
      * @var float
      *
      * @ORM\Column(name="longitude", type="float", nullable=true)
+     * @Expose
      */
     protected $longitude;
 

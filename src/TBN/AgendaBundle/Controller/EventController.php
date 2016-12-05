@@ -140,7 +140,8 @@ class EventController extends Controller
             $search->setLieux([$place->getId()]);
             $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug()]);
         } elseif ($tag !== null) {
-            $term = $tag;
+            $term = null;
+            $search->setTag($tag);
             $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag]);
         } elseif ($type !== null) {
             $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type]);
@@ -163,7 +164,7 @@ class EventController extends Controller
             }
         } else {
             $formAction = $this->generateUrl('tbn_agenda_agenda');
-            $term = '';
+            $term = null;
         }
 
         $search->setTerm($term);
@@ -221,10 +222,7 @@ class EventController extends Controller
         $search = new SearchAgenda();
         $place = null;
         if ($slug !== null) {
-            $places = $em->getRepository('TBNAgendaBundle:Place')->findBy(['slug' => $slug]);
-            if (isset($places[0])) {
-                $place = $places[0];
-            }
+            $place = $em->getRepository('TBNAgendaBundle:Place')->findOneBy(['slug' => $slug]);
         }
         $formAction = $this->handleSearch($search, $type, $tag, $ville, $place);
 

@@ -46,6 +46,7 @@ class Place implements GeolocalizeInterface
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", nullable=true)
+     * @Expose
      */
     private $latitude;
 
@@ -53,6 +54,7 @@ class Place implements GeolocalizeInterface
      * @var float
      *
      * @ORM\Column(name="longitude", type="float", nullable=true)
+     * @Expose
      */
     private $longitude;
 

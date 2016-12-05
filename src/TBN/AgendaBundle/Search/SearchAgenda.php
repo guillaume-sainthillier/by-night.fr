@@ -28,6 +28,12 @@ class SearchAgenda
 
     /**
      *
+     * @var string
+     */
+    protected $tag;
+
+    /**
+     *
      * @var array
      */
     protected $type_manifestation;
@@ -66,6 +72,16 @@ class SearchAgenda
     public function getTerms()
     {
         return array_unique(array_filter(explode(" ", $this->getTerm())));
+    }
+
+    public function setTag($tag) {
+        $this->tag = $tag;
+
+        return $this;
+    }
+
+    public function getTag() {
+        return $this->tag;
     }
 
     public function getDu()

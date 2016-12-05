@@ -24,27 +24,28 @@ class AgendaRepository extends Repository
      */
     public function findWithSearch(Site $site, SearchAgenda $search)
     {
+        $mainQuery = new BoolQuery();
+
 
         //Filters
-        $filter = new BoolQuery;
-        $filter->addMust(
+        $mainQuery->addMust(
             new Term(['site.id' => $site->getId()])
         );
 
         if ($search->getDu()) {
             if (!$search->getAu()) {
-                $filter->addMust(new Range('date_fin', [
+                $mainQuery->addMust(new Range('date_fin', [
                     'gte' => $search->getDu()->format("Y-m-d"),
                 ]));
             } else {
+                $filterDate = new BoolQuery();
                 /*
                  * 4 cas :
-                 * - 1) [debForm; finForm] € [deb; fin]
-                 * - 2) [deb; fin] € [debForm; finForm]
-                 * - 3) deb € [debForm; finForm]
-                 * - 4) fin € [debForm; finForm]                 *
-                 */
-                $cas = new BoolQuery;
+                 * 1) [debForm; finForm] € [deb; fin]
+                 * 2) [deb; fin] € [debForm; finForm]
+                 * 3) deb € [debForm; finForm]
+                 * 4) fin € [debForm; finForm]
+                */
 
                 //Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
                 $cas1 = new BoolQuery;
@@ -65,30 +66,29 @@ class AgendaRepository extends Repository
                 ]));
 
                 //Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
-                $cas3 = new BoolQuery;
-                $cas3->addMust(new Range('date_debut', [
+                $cas3 = new Range('date_debut', [
                     'gte' => $search->getDu()->format("Y-m-d"),
                     'lte' => $search->getAu()->format("Y-m-d")
-                ]));
+                ]);
 
                 //Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
-                $cas4 = new BoolQuery;
-                $cas4->addMust(new Range('date_fin', [
+                $cas4 = new Range('date_fin', [
                     'gte' => $search->getDu()->format("Y-m-d"),
                     'lte' => $search->getAu()->format("Y-m-d")
-                ]));
+                ]);
 
-                $cas->addShould($cas1)
+                $filterDate
+                    ->addShould($cas1)
                     ->addShould($cas2)
                     ->addShould($cas3)
-                    ->addShould($cas4);
+                    ->addShould($cas4)
+                ;
 
-                $filter->addMust($cas);
+                $mainQuery->addMust($filterDate);
             }
         }
 
         //Query
-        $queries = new BoolQuery;
         if ($search->getTerm()) {
             $query = new MultiMatch;
             $query->setQuery($search->getTerm())
@@ -100,35 +100,35 @@ class AgendaRepository extends Repository
                 ->setOperator(false !== strstr($search->getTerm(), ',') ? 'or' : 'and')
                 ->setFuzziness(0.8)
                 ->setMinimumShouldMatch('80%');
-        } else {
-            $query = new MatchAll;
+            $mainQuery->addMust($query);
         }
-        $queries->addMust($query);
 
         if ($search->getLieux()) {
             $placeQuery = new Terms('place.id', $search->getLieux());
-            $filter->addMust($placeQuery);
+            $mainQuery->addMust($placeQuery);
         }
 
         if ($search->getCommune()) {
-            $communeQuery = new Terms('place.ville', $search->getCommune());
-            $filter->addMust($communeQuery);
+            $query = (new Match)->setField('place.ville', implode(',', $search->getCommune()));
+            $mainQuery->addMust($query);
+        }
+
+        if ($search->getTag()) {
+            $query = new MultiMatch;
+            $query->setQuery($search->getTag())
+                ->setFields(['type_manifestation', 'theme_manifestation', 'categorie_manifestation'])
+            ;
+            $mainQuery->addMust($query);
         }
 
         if ($search->getTypeManifestation()) {
             $communeTypeManifestationQuery = new Match;
             $communeTypeManifestationQuery->setField('type_manifestation', implode(' ', $search->getTypeManifestation()));
-            $queries->addMust($communeTypeManifestationQuery);
+            $mainQuery->addMust($communeTypeManifestationQuery);
         }
 
         //Construction de la requête finale
-        $query = (new BoolQuery())
-            ->addMust($queries)
-            ->addFilter($filter)
-            ;
-//        $filtered = new Filtered($queries, $filter);
-
-        $finalQuery = Query::create($query)
+        $finalQuery = Query::create($mainQuery)
             ->addSort(['date_fin' => 'asc'])
             ->addSort(['fb_participations' => ['order' => 'desc', 'unmapped_type' => 'integer']]);
 
