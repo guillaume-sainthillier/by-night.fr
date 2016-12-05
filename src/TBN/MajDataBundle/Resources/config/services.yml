@@ -49,8 +49,6 @@ services:
     tbn.parser.toulouse.facebook:
         parent: tbn.parser.abstracts.facebook
     #Paris
-    tbn.parser.paris.tourisme:
-        class: TBN\MajDataBundle\Parser\Paris\ParisTourismeParser
     tbn.parser.paris.facebook:
         parent: tbn.parser.abstracts.facebook
     #Marseille
@@ -89,8 +87,6 @@ services:
         alias: tbn.parser.toulouse.bikini
     tbn.toulouse_tourisme_parser:
         alias: tbn.parser.toulouse.tourisme
-    tbn.paris_tourisme_parser:
-        alias: tbn.parser.paris.tourisme
 
     #Manager
     tbn.parser_manager:
