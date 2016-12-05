@@ -148,10 +148,10 @@ class Firewall
             $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
         }
 
-        if(! $this->checkMinLengthValidity($place->getVille(), 2) ||
+        if(! $this->checkMinLengthValidity($place->getVille(), 2) && (
             ! $place->getLatitude() ||
             ! $place->getLongitude()
-        ) {
+        )) {
             $place->getReject()->addReason(Reject::NO_PLACE_LOCATION_PROVIDED);
         }
 
