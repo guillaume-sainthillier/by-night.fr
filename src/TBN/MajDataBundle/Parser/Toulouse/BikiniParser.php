@@ -47,9 +47,9 @@ class BikiniParser extends LinksParser
         $tab_retour['type_manifestation'] = 'Concert, Musique';
 
         /*
-	 *  Rond point Madame de Mondonville Boulevard Netwiller
-	    TOULOUSE
-	 */
+         *  Rond point Madame de Mondonville Boulevard Netwiller
+            TOULOUSE
+         */
         $full_adresse = preg_split('/<br\/?>/i', $adresse);
         $ville = $full_adresse[1];
         if (preg_match('/\d/i', $ville)) {
@@ -57,7 +57,7 @@ class BikiniParser extends LinksParser
             $ville = preg_replace('/\d/i', '', $ville);
         }
 
-        $tab_retour['place.rue'] = $full_adresse[0];
+        $tab_retour['place.rue'] = preg_replace("#^(\d+), #", "$1 ", $full_adresse[0]);
         $tab_retour['place.code_postal'] = isset($this->cache[$this->url]) ? $this->cache[$this->url] : null;
         $tab_retour['place.ville'] = $ville;
 
