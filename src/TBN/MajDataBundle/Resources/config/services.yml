@@ -33,8 +33,6 @@ services:
             - ['setUrl', ["%url_opendata_toulouse%"]]
     tbn.parser.toulouse.tourisme:
         class: TBN\MajDataBundle\Parser\Toulouse\ToulouseTourismeParser
-    tbn.parser.toulouse.dynamo:
-        class: TBN\MajDataBundle\Parser\Toulouse\DynamoParser
     tbn.parser.toulouse.soonnight:
         parent: tbn.parser.abstracts.soonnight
         calls:
@@ -106,7 +104,19 @@ services:
       parent: tbn.parser.abstracts.soonnight
       calls:
         - ['setUrl', ["%url_soonnight_montpellier%"]]
-        
+
+    #Alises
+    tbn.facebook_parser:
+        alias: tbn.parser.abstracts.facebook
+    tbn.soonnight_parser:
+        alias: tbn.parser.abstracts.soonnight
+    tbn.toulouse_parser:
+        alias: tbn.parser.toulouse.toulouse
+    tbn.bikini_parser:
+        alias: tbn.parser.toulouse.bikini
+    tbn.toulouse_tourisme_parser:
+        alias: tbn.parser.toulouse.tourisme
+
     #Manager
     parser_manager:
         class: TBN\MajDataBundle\Parser\Manager\ParserManager
@@ -125,7 +135,7 @@ services:
         arguments: ["@tbn.firewall", "@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.root_dir%/../web/uploads/temp"]
     tbn.comparator:
         class: TBN\MajDataBundle\Utils\Comparator
-        arguments: ["@tbn.util", "@array_cache"]
+        arguments: ["@tbn.util", "@comparator_cache"]
     tbn.cleaner:
         class: TBN\MajDataBundle\Utils\Cleaner
         arguments: ["@tbn.util"]
