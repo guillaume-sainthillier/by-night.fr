@@ -220,12 +220,6 @@ class FaceBookParser extends AgendaParser
         }, $filtered);
     }
 
-    public function isTrustedLocation()
-    {
-        return false; //On ne connait pas ici le lieu réel de l'événement qui peut se situer n'importe où dans le monde
-    }
-
-
     private function isMoreRecent(\DateTime $date1 = null, \DateTime $date2 = null)
     {
         if (!$date1 || !$date2) //Non permissif

@@ -60,11 +60,6 @@ abstract class AgendaParser implements ParserInterface
 
     public abstract function getRawAgendas();
 
-    public function isTrustedLocation()
-    {
-        return true;
-    }
-
     public function setURL($url)
     {
         $this->url = $url;

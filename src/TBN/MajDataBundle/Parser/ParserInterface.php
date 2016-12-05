@@ -15,11 +15,6 @@ interface ParserInterface
      */
     public function parse();
 
-    /**
-     * @return boolean vrai si la place n'a pas besoin d'être vérifiée géographiquement, false sinon
-     */
-    public function isTrustedLocation();
-
     /*
      * @return string le nom de la classe
      */

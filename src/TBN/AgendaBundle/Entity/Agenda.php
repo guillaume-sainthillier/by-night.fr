@@ -410,11 +410,6 @@ class Agenda implements GeolocalizeInterface
     protected $interets;
 
     /**
-     * @var boolean
-     */
-    protected $isTrustedLocation;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="source", type="string", length=256, nullable=true)
@@ -1692,17 +1687,6 @@ class Agenda implements GeolocalizeInterface
     public function isMigrated()
     {
         return $this->isMigrated;
-    }
-
-    public function isTrustedLocation()
-    {
-        return $this->isTrustedLocation;
-    }
-
-    public function setTrustedLocation($isTrustedLocation)
-    {
-        $this->isTrustedLocation = $isTrustedLocation;
-        return $this;
     }
 
     public function setId($id)

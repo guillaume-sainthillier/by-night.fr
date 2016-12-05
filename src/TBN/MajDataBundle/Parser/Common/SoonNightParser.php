@@ -172,9 +172,4 @@ class SoonNightParser extends LinksParser
 
         return $node;
     }
-
-    public function isTrustedLocation()
-    {
-        return false;
-    }
 }
