@@ -5,13 +5,11 @@ namespace TBN\MajDataBundle\Parser\Common;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 
-use Symfony\Component\ExpressionLanguage\Tests\Node\Obj;
 use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\MajDataBundle\Parser\AgendaParser;
 use TBN\MajDataBundle\Utils\Firewall;
-use TBN\AgendaBundle\Repository\AgendaRepository;
 
 /**
  * Classe de parsing des événéments FB
@@ -147,7 +145,7 @@ class FaceBookParser extends AgendaParser
 //        $event = $this->api->getEventsFromIds($ids);
 //        $events =  array_map([$this, 'getInfoAgenda'], $event);
 //        return array_merge($events, $events);
-//
+
         $this->api->setSiteInfo($this->getSiteInfo());
         $now = new \DateTime;
 
@@ -171,56 +169,6 @@ class FaceBookParser extends AgendaParser
         unset($place_events, $user_events, $cities_events);
 
         return array_map([$this, 'getInfoAgenda'], $events);
-
-        /*
-        //Calcul de l'ID FB des propriétaires des événements précédemment trouvés
-        $event_users = array_map(function (GraphNode $event) {
-            $owner = $event->getField('owner');
-            return $owner ? $owner->getField('id') : null;
-        }, $place_events);
-
-        //On ne garde que les événements dont le propriétaire est renseigné
-        $real_event_users = array_filter($event_users);
-
-        //Récupération en base des différents ID des utilisateurs FB
-        $this->write('Recherche des propriétaires FB existants...');
-        $fb_events = $this->repoEvent->getEventsWithFBOwner($this->getSite()); //Les events sont groupés par ID FB, pas de doublon donc
-        $fb_users = array_map(function (Agenda $agenda) {
-            return $agenda->getFacebookOwnerId();
-        }, $fb_events);
-
-        //Fusion et tri de tous les propriétaires d'événement trouvés
-        $full_users = array_unique(array_filter(array_merge($fb_users, $real_event_users)));
-        $this->writeln('<info>' . count($full_users) . '</info> propriétaires trouvés');
-
-        //Récupération de tous les événements depuis les propriétaires
-        $this->writeln('Recherche d\'événements associés aux propriétaires...');
-        $user_events = $this->api->getEventsFromUsers($full_users, $now);
-        $this->writeln(sprintf('<info>%d</info> événement(s) trouvé(s)', count($user_events)));
-
-        //Construction de tous les événements
-        $events = array_merge($place_events, $user_events);
-
-        //Filtrage des événements
-        $this->writeln(sprintf('Pré-filtrage de <info>%d</info> événement(s)...', count($events)));
-        $filtered_events = $this->filterEvents($events);
-        $nbFilteredEvents = count($filtered_events);
-        $this->writeln(sprintf('<info>%d</info> événéments retenus, récupération des infos', $nbFilteredEvents));
-
-        //Libération de la RAM
-        unset($place_events);
-        unset($event_users);
-        unset($fb_events);
-        unset($real_event_users);
-        unset($user_events);
-        unset($full_users);
-        unset($fb_users);
-        unset($events);
-
-        //Récupération des événements par Batch
-        return array_map([$this, 'getInfoAgenda'], $this->api->getEventsFromIds($filtered_events));
-
-        */
     }
 
     public function getIdsToMigrate() {
