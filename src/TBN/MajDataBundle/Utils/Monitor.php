@@ -81,6 +81,14 @@ class Monitor
         }
     }
 
+    public static function writeException(\Exception $e) {
+        self::writeln(sprintf(
+            "<error>%s : %s",
+            $e->getMessage(),
+            $e->getTraceAsString()
+        ));
+    }
+
     public static function writeln($message = null)
     {
         if (self::$output) {

@@ -3,6 +3,7 @@
 namespace TBN\MajDataBundle\Parser;
 
 use Symfony\Component\DomCrawler\Crawler;
+use TBN\MajDataBundle\Utils\Monitor;
 
 /**
  *
@@ -33,7 +34,12 @@ abstract class LinksParser extends AgendaParser
     public function parseContent($type = "HTML")
     {
         $this->parser->clear();
-        $this->parser->addContent(\file_get_contents($this->url), $type);
+
+        try {
+            $this->parser->addContent(\file_get_contents($this->url), $type);
+        }catch(\Exception $e) {
+            Monitor::writeException($e);
+        }
 
         return $this;
     }
@@ -48,13 +54,17 @@ abstract class LinksParser extends AgendaParser
             $this->setUrl($link);
             $this->parseContent(); //Positionne le parser sur chaque lien
 
-            $infosAgenda = $this->getInfosAgenda();
+            try {
+                $infosAgenda = $this->getInfosAgenda();
 
-            if (!$this->isMultiArray($infosAgenda)) {
-                $infosAgenda = [$infosAgenda];
+                if (!$this->isMultiArray($infosAgenda)) {
+                    $infosAgenda = [$infosAgenda];
+                }
+
+                $agendas = array_merge($agendas, $infosAgenda);
+            }catch(\Exception $e) {
+                Monitor::writeException($e);
             }
-
-            $agendas = array_merge($agendas, $infosAgenda);
         }
 
         return $agendas;

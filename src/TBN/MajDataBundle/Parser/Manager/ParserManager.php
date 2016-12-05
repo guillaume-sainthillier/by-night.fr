@@ -44,8 +44,7 @@ class ParserManager
             }
 
             foreach ($agendas as $agenda) {
-                $agenda
-                    ->setFromData($parser->getNomData());
+                $agenda->setFromData($parser->getNomData());
             }
 
             $full_agendas = array_merge($full_agendas, $agendas);
