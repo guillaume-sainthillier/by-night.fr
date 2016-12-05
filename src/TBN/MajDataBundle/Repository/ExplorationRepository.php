@@ -11,7 +11,7 @@ class ExplorationRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('e')
             ->from('TBNMajDataBundle:Exploration', 'e')
-            ->where('e.facebookId IN(:ids)')
+            ->where('e.id IN(:ids)')
             ->setParameter('ids', $fb_ids)
             ->getQuery()
             ->getResult();

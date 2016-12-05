@@ -45,8 +45,7 @@ class ParserManager
 
             foreach ($agendas as $agenda) {
                 $agenda
-                    ->setFromData($parser->getNomData())
-                    ->setTrustedLocation($parser->isTrustedLocation());
+                    ->setFromData($parser->getNomData());
             }
 
             $full_agendas = array_merge($full_agendas, $agendas);

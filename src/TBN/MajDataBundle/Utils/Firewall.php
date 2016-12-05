@@ -6,11 +6,11 @@ use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Geolocalize\BoundaryInterface;
 use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
-use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Entity\Exploration;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use TBN\MajDataBundle\Reject\Reject;
+use TBN\MajDataBundle\Repository\ExplorationRepository;
 use TBN\UserBundle\Entity\User;
 
 /**
@@ -29,7 +29,7 @@ class Firewall
     protected $om;
 
     /**
-     * @var TBN\MajDataBundle\Repository\ExplorationRepository
+     * @var ExplorationRepository
      */
     protected $repoExploration;
 
@@ -165,7 +165,7 @@ class Firewall
             $exploration = $this->getExploration($place->getFacebookId());
             if(! $exploration) {
                 $exploration = (new Exploration)
-                    ->setFacebookId($place->getFacebookId())
+                    ->setId($place->getFacebookId())
                     ->setReject($place->getReject())
                     ->setReason($place->getReject()->getReason())
                     ->setFirewallVersion(self::VERSION)
@@ -210,7 +210,7 @@ class Firewall
             $exploration = $this->getExploration($event->getFacebookEventId());
             if(! $exploration) {
                 $exploration = (new Exploration)
-                    ->setFacebookId($event->getFacebookEventId())
+                    ->setId($event->getFacebookEventId())
                     ->setLastUpdated($event->getFbDateModification())
                     ->setReject($event->getReject())
                     ->setReason($event->getReject()->getReason())
@@ -245,10 +245,14 @@ class Firewall
         abs($entity->getLongitude() - $boundary->getLongitude()) <= $boundary->getDistanceMax();
     }
 
+    public function deleteCache() {
+        $this->comparator->deleteCache();
+    }
+
     /**
      *
      * @param int $fbId
-     * @return Exploration
+     * @return Exploration|null
      */
     public function getExploration($fbId)
     {
@@ -295,7 +299,7 @@ class Firewall
         $reject = new Reject();
         $reject->setReason($exploration->getReason());
 
-        $this->explorations[$exploration->getFacebookId()] = $exploration->setReject($reject);
+        $this->explorations[$exploration->getId()] = $exploration->setReject($reject);
     }
 
     public function getExplorations()

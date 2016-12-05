@@ -17,18 +17,10 @@ class Exploration
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="string", length=31)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="facebook_id", type="string", length=255, unique=true)
-     */
-    private $facebookId;
 
     /**
      * @var \DateTime
@@ -66,6 +58,12 @@ class Exploration
         return $this->reject;
     }
 
+    public function setId($id) {
+        $this->id = $id;
+
+        return $this;
+    }
+
     /**
      * Get id
      *
@@ -74,30 +72,6 @@ class Exploration
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set facebookId
-     *
-     * @param string $facebookId
-     *
-     * @return Exploration
-     */
-    public function setFacebookId($facebookId)
-    {
-        $this->facebookId = $facebookId;
-
-        return $this;
-    }
-
-    /**
-     * Get facebookId
-     *
-     * @return string
-     */
-    public function getFacebookId()
-    {
-        return $this->facebookId;
     }
 
     /**

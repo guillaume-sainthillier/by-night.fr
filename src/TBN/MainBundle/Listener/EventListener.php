@@ -32,11 +32,11 @@ class EventListener
 
         $entityManager = $args->getEntityManager();
         $exploration = $entityManager->getRepository('TBNMajDataBundle:Exploration')->findOneBy([
-           'facebookId' => $entity->getFacebookEventId()
+           'id' => $entity->getFacebookEventId()
         ]);
 
         if(! $exploration) {
-            $exploration = (new Exploration)->setFacebookId($entity->getFacebookEventId());
+            $exploration = (new Exploration)->setId($entity->getFacebookEventId());
         }
 
         $exploration
