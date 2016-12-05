@@ -9,6 +9,7 @@
 namespace TBN\MajDataBundle\Utils;
 
 
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,7 +21,31 @@ class Monitor
      * @var OutputInterface
      */
     public static $output;
+
+    /**
+     * @var ProgressBar
+     */
+    private static $progressBar;
+
     private static $stats = [];
+
+    public static function createProgressBar($nbSteps) {
+        if( self::$output) {
+            static::$progressBar = new ProgressBar(self::$output, $nbSteps);
+        }
+    }
+
+    public static function advanceProgressBar($step = 1) {
+        if(static::$progressBar) {
+            static::$progressBar->advance($step);
+        }
+    }
+
+    public static function finishProgressBar() {
+        if(static::$progressBar) {
+            static::$progressBar->finish();
+        }
+    }
 
     public static function getStats()
     {

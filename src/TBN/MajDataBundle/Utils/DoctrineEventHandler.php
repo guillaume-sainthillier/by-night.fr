@@ -199,26 +199,6 @@ class DoctrineEventHandler
         });
     }
 
-    protected function createProgressBar($nbBatches) {
-        if($this->output) {
-            return new ProgressBar($this->output, $nbBatches);
-        }
-
-        return null;
-    }
-
-    protected function advanceProgressBar(ProgressBar $progress = null) {
-        if($progress) {
-            $progress->advance();
-        }
-    }
-
-    protected function finishProgressBar(ProgressBar $progress = null) {
-        if($progress) {
-            $progress->finish();
-        }
-    }
-
     protected function getChunks(array $events) {
         $chunks = [];
         foreach($events as $i => $event) {
@@ -242,11 +222,7 @@ class DoctrineEventHandler
     }
 
     protected function mergeWithDatabase(array $events) {
-        if(! count($events)) {
-            return $events;
-        }
-
-        $progress = $this->createProgressBar(count($events));
+        Monitor::createProgressBar(count($events));
 
         $chunks = $this->getChunks($events);
         foreach($chunks as $chunk) {
@@ -269,7 +245,7 @@ class DoctrineEventHandler
                     if(! $this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
                     }else {
-                        $this->advanceProgressBar($progress);
+                        Monitor::advanceProgressBar();
                         $event = $this->em->merge($event);
                         $this->echantillonHandler->addNewEvent($event);
                         if ($this->firewall->isPersisted($event)) {
@@ -285,7 +261,7 @@ class DoctrineEventHandler
             }
             $this->flushPlaces();
         }
-        $this->finishProgressBar($progress);
+        Monitor::finishProgressBar();
 
         return $events;
     }

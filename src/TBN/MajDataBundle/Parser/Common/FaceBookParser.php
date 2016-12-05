@@ -5,6 +5,7 @@ namespace TBN\MajDataBundle\Parser\Common;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 
+use TBN\MajDataBundle\Utils\Monitor;
 use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
@@ -79,9 +80,9 @@ class FaceBookParser extends AgendaParser
         $users = array_unique(array_merge($users, $additional_users));
 
         //Récupération des événements depuis les lieux trouvés
-        $this->writeln("Recherche des événements associés aux users ...");
+        Monitor::writeln("Recherche des événements associés aux users ...");
         $events = $this->api->getEventsFromUsers($users, $now);
-        $this->writeln(sprintf(
+        Monitor::writeln(sprintf(
             "<info>%d</info> événements trouvés",
             count($events)
         ));
@@ -95,9 +96,9 @@ class FaceBookParser extends AgendaParser
 
         //Récupération des places depuis les GPS
         $locations = $this->getSiteLocations();
-        $this->writeln("Recherche des places associés aux sites ...");
+        Monitor::writeln("Recherche des places associés aux sites ...");
         $gps_places = $this->api->getPlacesFromGPS($locations);
-        $this->writeln(sprintf(
+        Monitor::writeln(sprintf(
             "<info>%d</info> places trouvées",
             count($gps_places)
         ));
@@ -109,9 +110,9 @@ class FaceBookParser extends AgendaParser
         $places = array_unique(array_filter(array_merge($places, $gps_places)));
 
 //        Récupération des événements depuis les lieux trouvés
-        $this->writeln("Recherche des événements associés aux places ...");
+        Monitor::writeln("Recherche des événements associés aux places ...");
         $events = $this->api->getEventsFromPlaces($places, $now);
-        $this->writeln(sprintf(
+        Monitor::writeln(sprintf(
             "<info>%d</info> événements trouvés",
             count($events)
         ));
@@ -121,12 +122,15 @@ class FaceBookParser extends AgendaParser
 
     protected function getEventFromCities(\DateTime $now) {
         //Récupération des événements par mots-clés
-        $this->writeln("Recherche d'événements associés aux mots clés...");
+        Monitor::writeln("Recherche d'événements associés aux mots clés...");
         $cities = $this->getCities();
         shuffle($cities);
         $cities = array_slice($cities, 0, 100);
         $events = $this->api->getEventsFromKeywords($cities, $now);
-        $this->writeln("<info>" . (count($events)) . "</info> événements trouvés");
+        Monitor::writeln(sprintf(
+            "<info>%d</info> événements trouvés",
+            count($events)
+        ));
 
         return $events;
     }
@@ -160,7 +164,7 @@ class FaceBookParser extends AgendaParser
         $cities_events = $this->getEventFromCities($now);
 
         $events = $this->getUniqueEvents(array_merge($place_events, $user_events, $cities_events));
-        $this->writeln(sprintf(
+        Monitor::writeln(sprintf(
             '<info>%d</info> événément(s) à traiter au total',
             count($events)
         ));

@@ -96,7 +96,7 @@ class UpdateCommand extends EventCommand
                 'brest' => ['soonnight', 'facebook'],
             ];
 
-            $this->writeln($output, sprintf('<info>[%s]</info> Mise à jour de <info>%s By Night</info>...', $env, $site->getNom()));
+            Monitor::writeln(sprintf('<info>[%s]</info> Mise à jour de <info>%s By Night</info>...', $env, $site->getNom()));
 
             //Récupération des parsers
             foreach ($parsers[$subdomainSite] as $serviceName) {
@@ -104,7 +104,7 @@ class UpdateCommand extends EventCommand
                     $parser = $this->container->get('tbn.parser.' . $subdomainSite . '.' . $serviceName);
 
                     //Dépendances dynamiques liées aux différents parsers
-                    $parser->setOutput($output)->setSite($site)->setSiteInfo($siteInfo);
+                    $parser->setSite($site)->setSiteInfo($siteInfo);
                     $parserManager->add($parser);
                 }
             }
@@ -136,7 +136,7 @@ class UpdateCommand extends EventCommand
             }
             $doctrineHandler->flush();
             $progress->finish();
-            $this->writeln($output, '');
+            Monitor::writeln('');
 
             $stats = $this->displayStats($output, $doctrineHandler);
             $nbExplorations = $stats['nbExplorations'];
@@ -155,7 +155,7 @@ class UpdateCommand extends EventCommand
             $em->flush();
 
         } catch (\Exception $e) {
-            $this->writeln($output, $e->getTraceAsString());
+            Monitor::writeException($e);
             throw new \Exception('Erreur dans le traitement', 0, $e);
         }
     }

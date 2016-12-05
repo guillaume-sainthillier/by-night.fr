@@ -31,12 +31,6 @@ abstract class AgendaParser implements ParserInterface
     protected $urls;
 
     /**
-     *
-     * @var OutputInterface
-     */
-    protected $output;
-
-    /**
      * @var Site
      */
     protected $site;
@@ -115,31 +109,6 @@ abstract class AgendaParser implements ParserInterface
             function ($items) use ($tabMois) {
                 return $items[4] . "-" . (array_search($items[3], $tabMois) + 1) . "-" . $items[2];
             }, $date);
-    }
-
-    public function write($text)
-    {
-        if ($this->output !== null) {
-            $this->output->write($text);
-        } else {
-            echo $text;
-        }
-    }
-
-    public function writeln($text)
-    {
-        $this->write($text . "\n");
-    }
-
-    public function getOutput()
-    {
-        return $this->output;
-    }
-
-    public function setOutput(OutputInterface $output)
-    {
-        $this->output = $output;
-        return $this;
     }
 
     public function getSite()

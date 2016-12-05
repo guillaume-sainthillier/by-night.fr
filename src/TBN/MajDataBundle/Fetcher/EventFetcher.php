@@ -3,6 +3,7 @@
 namespace TBN\MajDataBundle\Fetcher;
 use Doctrine\ORM\EntityManager;
 use TBN\MajDataBundle\Parser\Common\FaceBookParser;
+use TBN\MajDataBundle\Parser\Manager\ParserManager;
 use TBN\MajDataBundle\Parser\ParserInterface;
 
 /**
@@ -18,7 +19,13 @@ class EventFetcher
      */
     protected $entityManager;
 
-    public function __construct(EntityManager $entityManager) {
+    /**
+     * @var ParserManager
+     */
+    protected $parserManager;
+
+    public function __construct(ParserManager $parserManager, EntityManager $entityManager) {
+        $this->parserManager = $parserManager;
         $this->entityManager = $entityManager;
     }
 
@@ -28,7 +35,9 @@ class EventFetcher
             $parser->setSiteInfo($siteInfo);
         }
 
-        return $parser->parse();
+        $this->parserManager->add($parser);
+
+        return $this->parserManager->getAgendas();
     }
 
     protected function getSiteInfo() {

@@ -36,7 +36,6 @@ class FBCommand extends EventCommand
         $nbUpdates = $doctrineHandler->updateFBEventOfWeek($isFull, $env === 'prod');
 
         Monitor::displayStats();
-
-        $output->writeln(sprintf('<info>%d</info> événement(s) mis à jour', $nbUpdates));
+        Monitor::writeln(sprintf('<info>%d</info> événement(s) mis à jour', $nbUpdates));
     }
 }

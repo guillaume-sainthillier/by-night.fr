@@ -9,6 +9,7 @@ namespace TBN\MajDataBundle\Parser\Manager;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use TBN\MajDataBundle\Parser\ParserInterface;
+use TBN\MajDataBundle\Utils\Monitor;
 
 /**
  *
@@ -31,16 +32,23 @@ class ParserManager
         return $this;
     }
 
-    public function getAgendas(OutputInterface $output)
+    public function getAgendas()
     {
         $full_agendas = [];
 
         foreach ($this->parsers as $parser) {
-            $this->writeln($output, "Lancement de <info>" . $parser->getNomData() . "</info>...");
-            $agendas = $parser->setOutput($output)->parse();
+            Monitor::writeln(sprintf(
+                "Lancement de <info>%s</info>",
+                $parser->getNomData()
+            ));
+            $agendas = $parser->parse();
 
             if (count($this->parsers) > 1) {
-                $this->writeln($output, "<info>" . count($agendas) . "</info> événements à traiter pour " . $parser->getNomData());
+                Monitor::writeln(sprintf(
+                    "<info>%d</info> événements à traiter pour <info>%s</info>",
+                    count($agendas),
+                    $parser->getNomData()
+                ));
             }
 
             foreach ($agendas as $agenda) {
@@ -50,17 +58,10 @@ class ParserManager
             $full_agendas = array_merge($full_agendas, $agendas);
         }
 
-        $this->writeln($output, "<info>" . count($full_agendas) . "</info> événements à traiter au total");
+        Monitor::writeln(sprintf(
+            "<info>%d</info> événements à traiter au total",
+            count($full_agendas)
+        ));
         return $full_agendas;
-    }
-
-    protected function writeln(OutputInterface $output, $text)
-    {
-        $output->writeln($text);
-    }
-
-    protected function write(OutputInterface $output, $text)
-    {
-        $output->write($text);
     }
 }

@@ -15,6 +15,7 @@ services:
     tbn.event_fetcher:
         class: TBN\MajDataBundle\Fetcher\EventFetcher
         arguments:
+          - "@tbn.parser_manager"
           - "@doctrine.orm.default_entity_manager"
     #Parsers
     tbn.parser.abstract:
@@ -92,7 +93,7 @@ services:
         alias: tbn.parser.paris.tourisme
 
     #Manager
-    parser_manager:
+    tbn.parser_manager:
         class: TBN\MajDataBundle\Parser\Manager\ParserManager
         
     #Utils

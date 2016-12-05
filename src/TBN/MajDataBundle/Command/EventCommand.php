@@ -32,9 +32,9 @@ abstract class EventCommand extends ContainerAwareCommand
 
         Monitor::displayStats();
 
-        $this->writeln($output, sprintf('NEW: <info>%d</info>', $nbInsert));
-        $this->writeln($output, sprintf('UPDATES: <info>%d</info>', $nbUpdate));
-        $this->writeln($output, sprintf('BLACKLIST: <info>%d / %d</info>', $nbBlackList, $nbExplorations));
+        Monitor::writeln(sprintf('NEW: <info>%d</info>', $nbInsert));
+        Monitor::writeln(sprintf('UPDATES: <info>%d</info>', $nbUpdate));
+        Monitor::writeln(sprintf('BLACKLIST: <info>%d / %d</info>', $nbBlackList, $nbExplorations));
 
         return $stats;
     }
@@ -128,15 +128,5 @@ abstract class EventCommand extends ContainerAwareCommand
     protected function getData($url)
     {
         return file_get_contents($url);
-    }
-
-    protected function writeln(OutputInterface $output, $text)
-    {
-        $output->writeln($text);
-    }
-
-    protected function write(OutputInterface $output, $text)
-    {
-        $output->write($text);
     }
 }
