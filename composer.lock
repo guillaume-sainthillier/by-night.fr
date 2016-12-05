@@ -2090,23 +2090,24 @@
         },
         {
             "name": "jms/metadata",
-            "version": "1.5.1",
+            "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/metadata.git",
-                "reference": "22b72455559a25777cfd28c4ffda81ff7639f353"
+                "reference": "6a06970a10e0a532fb52d3959547123b84a3b3ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/metadata/zipball/22b72455559a25777cfd28c4ffda81ff7639f353",
-                "reference": "22b72455559a25777cfd28c4ffda81ff7639f353",
+                "url": "https://api.github.com/repos/schmittjoh/metadata/zipball/6a06970a10e0a532fb52d3959547123b84a3b3ab",
+                "reference": "6a06970a10e0a532fb52d3959547123b84a3b3ab",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "doctrine/cache": "~1.0"
+                "doctrine/cache": "~1.0",
+                "symfony/cache": "~3.1"
             },
             "type": "library",
             "extra": {
@@ -2121,14 +2122,12 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache"
+                "Apache-2.0"
             ],
             "authors": [
                 {
-                    "name": "Johannes Schmitt",
-                    "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
-                    "role": "Developer of wrapped JMSSerializerBundle"
+                    "name": "Johannes M. Schmitt",
+                    "email": "schmittjoh@gmail.com"
                 }
             ],
             "description": "Class/method/property metadata management in PHP",
@@ -2138,7 +2137,7 @@
                 "xml",
                 "yaml"
             ],
-            "time": "2014-07-12 07:13:19"
+            "time": "2016-12-05 10:18:33"
         },
         {
             "name": "jms/parser-lib",
@@ -3595,24 +3594,24 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioGeneratorBundle.git",
-                "reference": "0d3c9c4864142dc6a368fa0d952a8b83215e8740"
+                "reference": "ec278c0bd530edf155c4a00900577b5cb80f559e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/0d3c9c4864142dc6a368fa0d952a8b83215e8740",
-                "reference": "0d3c9c4864142dc6a368fa0d952a8b83215e8740",
+                "url": "https://api.github.com/repos/sensiolabs/SensioGeneratorBundle/zipball/ec278c0bd530edf155c4a00900577b5cb80f559e",
+                "reference": "ec278c0bd530edf155c4a00900577b5cb80f559e",
                 "shasum": ""
             },
             "require": {
                 "symfony/console": "~2.7|~3.0",
                 "symfony/framework-bundle": "~2.7|~3.0",
                 "symfony/process": "~2.7|~3.0",
-                "symfony/yaml": "~2.7|~3.0"
+                "symfony/yaml": "~2.7|~3.0",
+                "twig/twig": "^1.28.2|^2.0"
             },
             "require-dev": {
                 "doctrine/orm": "~2.4",
-                "symfony/doctrine-bridge": "~2.7|~3.0",
-                "twig/twig": "~1.18"
+                "symfony/doctrine-bridge": "~2.7|~3.0"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -3639,7 +3638,7 @@
                 }
             ],
             "description": "This bundle generates code for you",
-            "time": "2016-11-07 19:48:31"
+            "time": "2016-12-05 16:01:19"
         },
         {
             "name": "sensiolabs/security-checker",
