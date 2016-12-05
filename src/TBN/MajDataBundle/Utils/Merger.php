@@ -68,6 +68,7 @@ class Merger
             'user' => self::FORCE_MERGE_LEFT,
             'path',
             'file' => self::MERGE_LEFT,
+            'from_data',
             'reject'
         ]);
     }
