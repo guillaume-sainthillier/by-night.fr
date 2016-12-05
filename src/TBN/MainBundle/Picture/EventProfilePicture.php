@@ -10,10 +10,8 @@ namespace TBN\MainBundle\Picture;
 
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Symfony\Bundle\FrameworkBundle\Templating\Helper\AssetsHelper;
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\Routing\Generator\UrlGenerator;
-use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Routing\Router;
 use TBN\AgendaBundle\Entity\Agenda;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -32,11 +30,34 @@ class EventProfilePicture
      */
     private $packages;
 
-    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages)
+    /** @var Router
+     */
+    private $router;
+
+    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages, Router $router)
     {
         $this->cacheManager = $cacheManager;
         $this->helper = $helper;
         $this->packages = $packages;
+        $this->router = $router;
+    }
+
+    private function getAppUrl() {
+        return rtrim($this->router->generate('tbn_agenda_index', [], Router::ABSOLUTE_URL), '/');
+    }
+
+    public function getOriginalPictureUrl(Agenda $agenda) {
+        if($agenda->getPath()) {
+            return $this->getAppUrl() . $this->packages->getUrl(
+                $this->helper->asset($agenda, 'file')
+            );
+        }
+
+        if($agenda->getUrl()) {
+            return $agenda->getUrl();
+        }
+
+        return $this->getAppUrl() . $this->packages->getUrl('/img/empty_event.png');
     }
 
     public function getOriginalPicture(Agenda $agenda) {

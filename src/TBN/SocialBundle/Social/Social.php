@@ -12,6 +12,7 @@ namespace TBN\SocialBundle\Social;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use TBN\MainBundle\Picture\EventProfilePicture;
 use TBN\SocialBundle\Exception\SocialException;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
@@ -84,7 +85,13 @@ abstract class Social
      */
     protected $logger;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger)
+    /**
+     *
+     * @var EventProfilePicture $eventProfilePicture
+     */
+    protected $eventProfilePicture;
+
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture)
     {
         if (!isset($config["id"])) {
             throw new SocialException("Le paramètre 'id' est absent");
@@ -103,6 +110,7 @@ abstract class Social
         $this->session = $session;
         $this->requestStack = $requestStack;
         $this->logger = $logger;
+        $this->eventProfilePicture = $eventProfilePicture;
 
         $this->constructClient();
     }
@@ -189,8 +197,7 @@ abstract class Social
 
     protected function getLinkPicture(Agenda $agenda)
     {
-        //TODO: corriger le bug
-        return $this->requestStack->getMasterRequest()->getUriForPath("/" . $agenda->getWebPath());
+        return $this->eventProfilePicture->getOriginalPictureUrl($agenda);
     }
 
     protected function getLink(Agenda $agenda)

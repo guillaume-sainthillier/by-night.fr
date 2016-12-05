@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use JMS\Serializer\SerializerInterface;
 
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\MainBundle\Picture\EventProfilePicture;
 use TBN\MajDataBundle\Utils\Monitor;
 use TBN\UserBundle\Entity\SiteInfo;
 use TBN\MajDataBundle\Parser\AgendaParser;
@@ -46,9 +47,9 @@ class FacebookAdmin extends FacebookEvents
      */
     protected $serializer;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, ObjectManager $om, SerializerInterface $serializer)
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, ObjectManager $om, SerializerInterface $serializer)
     {
-        parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack, $logger);
+        parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack, $logger, $eventProfilePicture);
 
         $this->om = $om;
         $this->siteInfo = $this->siteManager->getSiteInfo();

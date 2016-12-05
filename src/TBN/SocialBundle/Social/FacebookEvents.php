@@ -26,7 +26,6 @@ class FacebookEvents extends FacebookListEvents
             $place = $agenda->getPlace();
 
             //Authentification
-            $this->client->setDefaultAccessToken($user->getInfo()->getFacebookAccessToken());
             $request = $this->client->post('/me/feed', [
                 'link' => $this->getLink($agenda),
                 'picture' => $this->getLinkPicture($agenda),
@@ -36,11 +35,11 @@ class FacebookEvents extends FacebookListEvents
                 //'privacy' => json_encode(['value' => 'SELF']),
                 'actions' => json_encode([
                     [
-                        "name" => $user->getUsername() . " sur " . $user->getSite()->getNom() . " By Night",
+                        "name" => $user->getUsername() . " sur " . $agenda->getSite()->getNom() . " By Night",
                         "link" => $this->getMembreLink($user)
                     ]
                 ])
-            ]);
+            ], $user->getInfo()->getFacebookAccessToken());
 
             $post = $request->getGraphNode();
             $agenda->setFbPostId($post->getField("id"));
