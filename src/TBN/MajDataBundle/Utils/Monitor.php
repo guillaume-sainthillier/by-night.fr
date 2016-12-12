@@ -166,13 +166,13 @@ class Monitor
             }
 
             $stopwatch = new Stopwatch();
-            self::$stopwatch->start($message);
+            $stopwatch->start($message);
         }
 
         $retour = call_user_func($function);
 
         if(self::$enableMonitoring) {
-            $event = self::$stopwatch->stop($message);
+            $event = $stopwatch->stop($message);
 
             self::$stats[$message]['time'][] = $event->getDuration();
             self::$stats[$message]['memory'][] = $event->getMemory();
