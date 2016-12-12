@@ -24,6 +24,7 @@ class FetchCommand extends EventCommand
             ->setName('tbn:events:fetch')
             ->setDescription('Récupérer des nouveaux sur By Night')
             ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer')
+            ->addOption('monitor', 'm', InputOption::VALUE_NONE)
          ;
     }
 
@@ -45,6 +46,7 @@ class FetchCommand extends EventCommand
             ));
         }
 
+        Monitor::enableMonitoring($input->getOption('monitor'));
         Monitor::$output = $output;
         $fetcher = $this->getContainer()->get('tbn.event_fetcher');
 
