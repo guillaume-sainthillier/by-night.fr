@@ -50,7 +50,6 @@ abstract class AgendaParser implements ParserInterface
     public function __construct()
     {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $this->output = null;
         $this->site = null;
         $this->siteInfo = null;
 

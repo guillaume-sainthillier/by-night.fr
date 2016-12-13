@@ -3,6 +3,7 @@ namespace TBN\AgendaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\DateTime;
 use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -12,6 +13,28 @@ use Doctrine\ORM\QueryBuilder;
 
 class AgendaRepository extends EntityRepository
 {
+
+    public function updateOlds(\DateTime $since) {
+        return $this->_em
+            ->createQuery("UPDATE TBNAgendaBundle:Agenda a
+            SET a.isArchive = TRUE
+            WHERE a.dateFin <= :date_fin")
+            ->setParameters(["date_fin" => $since->format('Y-m-d')])
+            ->execute()
+        ;
+    }
+
+    public function findOlds(\DateTime $since) {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('a')
+            ->from('TBNAgendaBundle:Agenda', "a")
+            ->where('a.isArchive IS NULL OR a.isArchive = :archive')
+            ->andWhere("a.dateFin <= :date_fin")
+            ->setParameters(["archive" => false, ":date_fin" => $since->format('Y-m-d')])
+            ->getQuery()
+            ->getResult();
+    }
 
     public function createQueryBuilder($alias, $indexBy = null)
     {

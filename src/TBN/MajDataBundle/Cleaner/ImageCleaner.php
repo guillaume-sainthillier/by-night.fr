@@ -35,7 +35,8 @@ class ImageCleaner
         $this->entityManager = $entityManager;
         $this->webDir = $webDir;
         $this->filesystem = $filesystem;
-        $this->cacheManager = $cacheManager;    }
+        $this->cacheManager = $cacheManager;
+    }
 
     public function clean() {
         $result = $this

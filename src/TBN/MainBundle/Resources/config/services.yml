@@ -5,6 +5,10 @@ parameters:
 
     
 services:
+    tbn.event_archivator:
+        class: TBN\MainBundle\Archive\EventArchivator
+        arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.by_night.event"]
+
     tbn.event_listener:
         class: TBN\MainBundle\Listener\EventListener
         tags:

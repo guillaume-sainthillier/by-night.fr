@@ -299,14 +299,6 @@ class Agenda implements GeolocalizeInterface
     protected $isBrouillon;
 
     /**
-     *
-     * @var boolean $isMigrated
-     *
-     * @ORM\Column(name="isMigrated", type="boolean", nullable=true)
-     */
-    protected $isMigrated;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="tweet_post_id", type="string", length=256, nullable=true)
@@ -430,6 +422,14 @@ class Agenda implements GeolocalizeInterface
      */
     protected $reject;
 
+    /**
+     *
+     * @var boolean $isArchive
+     *
+     * @ORM\Column(name="is_archive", type="boolean", nullable=true)
+     */
+    protected $isArchive;
+
     public function setReject(Reject $reject = null) {
         $this->reject = $reject;
 
@@ -498,6 +498,7 @@ class Agenda implements GeolocalizeInterface
         $this->place = new Place;
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
+        $this->isArchive = false;
     }
 
     public function getDistinctTags()
@@ -1654,41 +1655,6 @@ class Agenda implements GeolocalizeInterface
         return $this->place;
     }
 
-    /**
-     * Set isMigrated
-     *
-     * @param boolean $isMigrated
-     * @return Agenda
-     */
-    public function setMigrated($isMigrated)
-    {
-        $this->isMigrated = $isMigrated;
-
-        return $this;
-    }
-
-    /**
-     * Set isMigrated
-     *
-     * @param boolean $isMigrated
-     * @return Agenda
-     */
-    public function setIsMigrated($isMigrated)
-    {
-        $this->isMigrated = $isMigrated;
-
-        return $this;
-    }
-
-    /**
-     * Get isMigrated
-     *
-     * @return boolean
-     */
-    public function isMigrated()
-    {
-        return $this->isMigrated;
-    }
 
     public function setId($id)
     {
@@ -1739,5 +1705,39 @@ class Agenda implements GeolocalizeInterface
     public function __toString()
     {
         return "#".$this->id ?: '?';
+    }
+
+    /**
+     * Get isBrouillon
+     *
+     * @return boolean
+     */
+    public function getIsBrouillon()
+    {
+        return $this->isBrouillon;
+    }
+
+    /**
+     * Set isArchive
+     *
+     * @param boolean $isArchive
+     *
+     * @return Agenda
+     */
+    public function setIsArchive($isArchive)
+    {
+        $this->isArchive = $isArchive;
+
+        return $this;
+    }
+
+    /**
+     * Get isArchive
+     *
+     * @return boolean
+     */
+    public function getIsArchive()
+    {
+        return $this->isArchive;
     }
 }

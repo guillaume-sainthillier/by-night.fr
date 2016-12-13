@@ -15,9 +15,8 @@ use TBN\MajDataBundle\Utils\Monitor;
  *
  * @author guillaume
  */
-class FetchCommand extends EventCommand
+class FetchCommand  extends AppCommand
 {
-
     protected function configure()
     {
         $this
