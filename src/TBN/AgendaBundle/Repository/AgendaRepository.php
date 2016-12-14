@@ -25,10 +25,8 @@ class AgendaRepository extends EntityRepository
     }
 
     public function findOlds(\DateTime $since) {
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('a')
-            ->from('TBNAgendaBundle:Agenda', "a")
+        return $this
+            ->createQueryBuilder('a')
             ->where('a.isArchive IS NULL OR a.isArchive = :archive')
             ->andWhere("a.dateFin <= :date_fin")
             ->setParameters(["archive" => false, ":date_fin" => $since->format('Y-m-d')])
