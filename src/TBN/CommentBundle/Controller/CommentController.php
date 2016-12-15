@@ -6,6 +6,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\CommentBundle\Form\Type\CommentType;
@@ -111,6 +112,12 @@ class CommentController extends Controller
             ]);
     }
 
+    /**
+     * @param Agenda $soiree
+     * @param $page
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @Cache(smaxage="3600")
+     */
     public function listAction(Agenda $soiree, $page)
     {
         $offset = 10;

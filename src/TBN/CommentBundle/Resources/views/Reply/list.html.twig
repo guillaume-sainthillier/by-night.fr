@@ -1,15 +1,14 @@
 {% extends "TBNCommentBundle:Comment:list.html.twig" %}
 
-{% block poster_commentaire %}{% endblock %}
 
-{% block detail_commentaire %}
-    {{ render(controller('TBNCommentBundle:Reply:details', {'comment': comment})) }}
-{% endblock %}
+{#{% block detail_commentaire %}#}
+    {#{{ render(controller('TBNCommentBundle:Reply:details', {'comment': comment})) }}#}
+{#{% endblock %}#}
 
 {% block load_more %}
     <div class="load_more" data-url="{{ path('tbn_comment_reponse_list',{'id': main_comment.id ,'page': (page+1) }) }}">
-        <button type="button" class="btn btn-primary btn-lg btn-block">
-            Plus de réponses
+        <button type="button" class="btn btn-primary btn-raised btn-lg btn-block">
+            Plus
         </button>
     </div>
 {% endblock %}

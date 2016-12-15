@@ -3,5 +3,5 @@
 {% block titre %}Les supers membres{% endblock %}
 {% block icone %}fa-users{% endblock %}
 {% block body %}
-    {{ render_esi(url('tbn_agenda_top_membres')) }}
+    {{ render_esi(controller('TBNAgendaBundle:MenuDroit:topMembres')) }}
 {% endblock %}

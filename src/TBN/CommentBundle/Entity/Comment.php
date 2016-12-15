@@ -84,7 +84,7 @@ class Comment
     protected $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="parent",cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $reponses;

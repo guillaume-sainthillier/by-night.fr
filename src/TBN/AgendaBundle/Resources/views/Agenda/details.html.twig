@@ -268,8 +268,19 @@
                     {% endfor %}
                 </div>
 
-                <div class="comments" data-url="{{ path('tbn_comment_list',{'id': soiree.id }) }}">
-                    <i class="fa fa-spinner fa-spin fa-2x"></i>
+                <div class="comments">
+                    <h4 class="heading">
+                        {{ nb_comments }} Commentaire{{ nb_comments > 1 ? "s" : "" }}
+                        {% if nb_comments == 0 %}
+                            |
+                            <small>Soyez le premier à réagir</small>
+                        {% endif %}
+                    </h4>
+                    <br/>
+                    {% include "TBNCommentBundle:Comment:post.html.twig" %}
+                    {% if nb_comments > 0 %}
+                        {{ render_esi(url('tbn_comment_list', {'id': soiree.id})) }}
+                    {% endif %}
                 </div>
             </div>
         </div>

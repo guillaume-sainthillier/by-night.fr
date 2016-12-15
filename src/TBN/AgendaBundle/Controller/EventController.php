@@ -2,7 +2,10 @@
 
 namespace TBN\AgendaBundle\Controller;
 
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use TBN\CommentBundle\Entity\Comment;
+use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +22,21 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class EventController extends Controller
 {
 
+    protected function getCreateCommentForm(Comment $comment, Agenda $soiree)
+    {
+        return $this->createForm(CommentType::class, $comment, [
+            'action' => $this->generateUrl('tbn_comment_new', ["id" => $soiree->getId()]),
+            'method' => 'POST'
+        ])
+            ->add("poster", SubmitType::class, [
+                "label" => "Poster",
+                "attr" => [
+                    "class" => "btn btn-primary btn-submit btn-raised",
+                    "data-loading-text" => "En cours..."
+                ]
+            ]);
+    }
+
     public function detailsAction(Request $request, Agenda $agenda)
     {
         $siteManager = $this->container->get('site_manager');
@@ -32,8 +50,14 @@ class EventController extends Controller
             ]));
         }
 
+        $comment = new Comment();
+        $form = $this->getCreateCommentForm($comment, $agenda);
+        $nbComments = $agenda->getCommentaires()->count();
+
         return $this->render('TBNAgendaBundle:Agenda:details.html.twig', [
             'soiree' => $agenda,
+            'form' => $form->createView(),
+            'nb_comments' => $nbComments,
             'stats' => $this->getAgendaStats($agenda, $request)
         ]);
     }

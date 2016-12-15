@@ -10,6 +10,11 @@ class TBNController extends Controller
 {
     private static $CACHE_TTL = 43200; //12 * 3600
 
+    protected function getSecondsUntilTomorrow() {
+        $minuit = strtotime('tomorrow 00:00:00');
+
+        return $minuit - time();
+    }
     protected function getFBStatsEvent(Agenda $soiree)
     {
         $stats = [];

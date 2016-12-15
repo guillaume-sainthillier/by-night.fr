@@ -1474,7 +1474,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set fbParticipations
      *
-     * @param string $fbParticipations
+     * @param int $fbParticipations
      * @return Agenda
      */
     public function setFbParticipations($fbParticipations)
@@ -1487,7 +1487,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get fbParticipations
      *
-     * @return string
+     * @return int
      */
     public function getFbParticipations()
     {
@@ -1497,7 +1497,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set fbInterets
      *
-     * @param string $fbInterets
+     * @param int $fbInterets
      * @return Agenda
      */
     public function setFbInterets($fbInterets)
@@ -1510,7 +1510,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get fbInterets
      *
-     * @return string
+     * @return int
      */
     public function getFbInterets()
     {
@@ -1520,7 +1520,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set participations
      *
-     * @param string $participations
+     * @param int $participations
      * @return Agenda
      */
     public function setParticipations($participations)
@@ -1533,7 +1533,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get participations
      *
-     * @return string
+     * @return int
      */
     public function getParticipations()
     {
@@ -1543,7 +1543,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set interets
      *
-     * @param string $interets
+     * @param int $interets
      * @return Agenda
      */
     public function setInterets($interets)
@@ -1556,7 +1556,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get interets
      *
-     * @return string
+     * @return int
      */
     public function getInterets()
     {
