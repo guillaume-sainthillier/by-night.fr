@@ -6,17 +6,20 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use FOS\HttpCacheBundle\Configuration\InvalidateRoute;
 
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\CommentBundle\Entity\Comment;
+use TBN\CommentBundle\Repository\CommentRepository;
 
 class CommentController extends Controller
 {
     /**
      *
-     * @return TBN\CommentBundle\Repository\CommentRepository
+     * @return CommentRepository
      */
     protected function getCommentRepo()
     {
@@ -52,6 +55,9 @@ class CommentController extends Controller
         ]);
     }
 
+    /**
+     * @InvalidateRoute("tbn_comment_list", params={"id" = {"expression"="soiree.getId()"}})
+     */
     public function newAction(Request $request, Agenda $soiree)
     {
         $comment = new Comment();

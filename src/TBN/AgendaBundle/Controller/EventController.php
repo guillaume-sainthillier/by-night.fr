@@ -3,6 +3,7 @@
 namespace TBN\AgendaBundle\Controller;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use TBN\CommentBundle\Entity\Comment;
 use TBN\CommentBundle\Form\Type\CommentType;
@@ -37,7 +38,7 @@ class EventController extends Controller
             ]);
     }
 
-    public function detailsAction(Request $request, Agenda $agenda)
+    public function detailsAction(Agenda $agenda)
     {
         $siteManager = $this->container->get('site_manager');
         $site = $siteManager->getCurrentSite();
@@ -58,11 +59,41 @@ class EventController extends Controller
             'soiree' => $agenda,
             'form' => $form->createView(),
             'nb_comments' => $nbComments,
-            'stats' => $this->getAgendaStats($agenda, $request)
+            'stats' => $this->getAgendaStats($agenda)
         ]);
     }
 
-    protected function getAgendaStats(Agenda $agenda, Request $request)
+    /**
+     * @param Agenda $agenda
+     * @Cache(expires="+2 hours", smaxage="7200")
+     * @return Response
+     */
+    public function shareAction(Agenda $agenda) {
+        $link = $this->generateUrl('tbn_agenda_details', [
+            'slug' => $agenda->getSlug(),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $eventProfile = $this->get('tbn.profile_picture.event')->getOriginalPictureUrl($agenda);
+
+        $page = new Page([
+            'url' => $link,
+            'title' => $agenda->getNom(),
+            'text' => $agenda->getDescriptif(),
+            'image' => $eventProfile,
+        ]);
+
+        $page->shareCount(['twitter', 'facebook', 'plus']);
+
+        return $this->render("@TBNAgenda/Hinclude/shares.html.twig", [
+            "shares" => [
+                'facebook' => $page->facebook,
+                'twitter' => $page->twitter,
+                'google-plus' => $page->plus
+            ]
+        ]);
+    }
+
+    protected function getAgendaStats(Agenda $agenda)
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
@@ -108,11 +139,11 @@ class EventController extends Controller
                 }
             }
         }
+
         $maxItems = 50;
         $membres = $this->getFBMembres($agenda, 1, $maxItems);
 
         return [
-            'socials' => $this->getSocialStats($agenda, $request),
             "tendancesParticipations" => $repo->findAllTendancesParticipations($agenda),
             "tendancesInterets" => $repo->findAllTendancesInterets($agenda),
             "count_participer" => $agenda->getParticipations() + $agenda->getFbParticipations(),
@@ -122,36 +153,6 @@ class EventController extends Controller
             'participer' => $participer,
             'interet' => $interet
         ];
-    }
-
-    protected function getSocialStats(Agenda $agenda, Request $request)
-    {
-        $key = 'agenda.stats.' . $agenda->getId();
-        $cache = $this->get('memory_cache');
-        if (!$cache->contains($key)) {
-            $link = $this->generateUrl('tbn_agenda_details', [
-                'slug' => $agenda->getSlug(),
-            ], UrlGeneratorInterface::ABSOLUTE_URL);
-
-            $helper = $this->get('vich_uploader.templating.helper.uploader_helper');
-            $path = $helper->asset($agenda, 'file');
-
-
-            $page = new Page([
-                'url' => $link,
-                'title' => $agenda->getNom(),
-                'text' => $agenda->getDescriptif(),
-                'image' => $request->getUriForPath($path),
-            ]);
-            $page->shareCount(['twitter', 'facebook', 'plus']);
-            $cache->save($key, [
-                'facebook' => $page->facebook,
-                'twitter' => $page->twitter,
-                'google-plus' => $page->plus,
-            ], 24 * 3600);
-        }
-
-        return $cache->fetch($key);
     }
 
     protected function handleSearch(SearchAgenda $search, $type, $tag, $ville, Place $place = null)

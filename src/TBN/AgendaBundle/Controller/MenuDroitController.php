@@ -14,6 +14,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
  */
 class MenuDroitController extends Controller
 {
+    const FB_MEMBERS_LIMIT = 50;
+
     public function programmeTVAction()
     {
         $parser = $this->get("tbn.programmetv");
@@ -160,7 +162,7 @@ class MenuDroitController extends Controller
     }
 
     /**
-     * @Cache(expires="+4 hours", public=true)
+     * TODO: Delete this action
      */
     public function tendancesAction(Agenda $soiree)
     {
@@ -181,17 +183,47 @@ class MenuDroitController extends Controller
 
     public function fbMembresAction(Agenda $soiree, $page)
     {
-        if ($page <= 1) {
-            $page = 2;
+        if(! $soiree->getFacebookEventId()) {
+            return $this->redirectToRoute('tbn_agenda_details', ['slug' => $soiree->getSlug()]);
         }
 
-        $nbItems = 50;
-        $membres = $this->getFBMembres($soiree, $page, $nbItems);
+        if ($page <= 1) {
+            $page = 1;
+        }
 
-        return $this->render("TBNAgendaBundle:Hinclude:fb_membres.html.twig", [
+        $api = $this->get("tbn.social.facebook_admin");
+        $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
+
+        $membres = array_merge($retour['participations'], $retour['interets']);
+        if(count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations'])) {
+            $maxItems = count($membres);
+        }else {
+            $maxItems = 0;
+        }
+
+        $response = $this->render("TBNAgendaBundle:Hinclude:fb_membres.html.twig", [
             "membres" => $membres,
-            "maxItems" => $nbItems
+            "maxItems" => $maxItems
         ]);
+
+        try {
+            $now = new \DateTime();
+            if ($soiree->getDateFin() < $now) {
+                $now->modify("+1 year");
+                $response
+                    ->setExpires($now)
+                    ->setSharedMaxAge(31536000);
+            } else {
+                list($expires, $next2hours) = $this->getSecondsUntil(2);
+                $response
+                    ->setExpires($expires)
+                    ->setSharedMaxAge($next2hours);
+            }
+        }catch(\Exception $e) {
+            $this->get('logger')->critical($e);
+        }
+
+        return $response->setPublic();
     }
 
     public function topMembresAction()

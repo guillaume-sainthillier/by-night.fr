@@ -256,17 +256,7 @@
             </div>
             <div class="panel-body">
                 <br/>
-                <div class="row">
-                    {% for name, social in stats.socials %}
-                        <div class="col-xs-4">
-                            <a href="{{ social.shareUrl }}" class="popup share {{ name }}">
-                                <i class="fa fa-2x fa-{{ name }}"></i>
-                                <span class="number number-xbig">{{ social.shareCount }}
-                                    partage{{ social.shareCount > 1 ? 's': '' }}</span>
-                            </a>
-                        </div>
-                    {% endfor %}
-                </div>
+                {{ render_esi(controller('TBNAgendaBundle:Event:share', {'slug': soiree.slug })) }}
 
                 <div class="comments">
                     <h4 class="heading">

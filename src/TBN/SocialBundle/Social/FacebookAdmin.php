@@ -348,8 +348,37 @@ class FacebookAdmin extends FacebookEvents
         return $this->cache[$key];
     }
 
+    public function getEventMembres($id_event, $offset, $limit)
+    {
+        $participations = [];
+        $interets = [];
 
+        try {
+            $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
 
+            $fields = str_replace(
+                ["%offset%", "%limit%"],
+                [$offset, $limit],
+                self::$MEMBERS_FIELDS
+            );
+
+            $request = $this->client->sendRequest('GET', '/' . $id_event, [
+                'fields' => $fields
+            ]);
+            $graph = $request->getGraphPage();
+
+            $participations = $this->findPaginated($graph->getField('attending'), $limit);
+            $interets = $this->findPaginated($graph->getField('maybe'), $limit);
+
+        } catch (FacebookSDKException $ex) {
+            $this->logger->error($ex);
+        }
+
+        return [
+            'interets' => $interets,
+            'participations' => $participations
+        ];
+    }
 
     public function getEventStats($id_event)
     {

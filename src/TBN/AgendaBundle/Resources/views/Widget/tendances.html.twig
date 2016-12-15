@@ -39,7 +39,10 @@
         <!-- ./Membres -->
         <br/>
         <!-- FB Membres -->
-        {% include "TBNAgendaBundle:Hinclude:fb_membres.html.twig" with({'membres': stats.membres, 'maxItems': stats.maxItems }) %}
+        {% if soiree.facebookEventId %}
+        {{ render_esi(url('tbn_agenda_soirees_membres', {'slug': soiree.slug})) }}
+        {% endif %}
+        {#{% include "TBNAgendaBundle:Hinclude:fb_membres.html.twig" with({'membres': stats.membres, 'maxItems': stats.maxItems }) %}#}
         <!-- ./FB Membres -->
     </div>
 {% endblock %}

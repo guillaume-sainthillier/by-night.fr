@@ -15,6 +15,28 @@ class TBNController extends Controller
 
         return $minuit - time();
     }
+
+    protected function getSecondsUntil($hours) {
+        $time = time();
+        $now = new \DateTime();
+        $minutes = $now->format('i');
+        $secondes = $now->format('s');
+
+        $string = $hours == 1 ? "+1 hour" : sprintf("+%d hours", $hours);
+        $now->modify($string);
+
+        if ($minutes > 0) {
+            $now->modify('-'.$minutes.' minutes');
+        }
+
+        if ($secondes > 0) {
+            $now->modify('-'.$secondes.' seconds');
+        }
+
+        return [$now, $now->getTimestamp() - $time];
+    }
+
+
     protected function getFBStatsEvent(Agenda $soiree)
     {
         $stats = [];
@@ -33,7 +55,7 @@ class TBNController extends Controller
                 try {
                     $this->get('tbn.event_handler')->updateImage($soiree, $retour['image']);
                 }catch(Exception $e) {
-                    $this->get('logger')->critical($e);
+                    $this->get('logger')->error($e);
                 }
 
                 $em = $this->getDoctrine()->getManager();

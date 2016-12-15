@@ -1,0 +1,11 @@
+<div class="row">
+    {% for name, social in shares %}
+        <div class="col-xs-4">
+            <a href="{{ social.shareUrl }}" class="popup share {{ name }}">
+                <i class="fa fa-2x fa-{{ name }}"></i>
+                <span class="number number-xbig">{{ social.shareCount ?: '0' }}
+                    partage{{ social.shareCount > 1 ? 's': '' }}</span>
+            </a>
+        </div>
+    {% endfor %}
+</div>
