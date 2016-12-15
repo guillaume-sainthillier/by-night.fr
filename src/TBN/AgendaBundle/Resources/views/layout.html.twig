@@ -24,26 +24,26 @@
 {% endblock %}
 
 {% block twitter %}
-    {% if site.twitterIdPage %}
+    {% if app_manager.twitterIdPage %}
         <meta name="twitter:card" content="summary"/>
-        <meta name="twitter:site" content="@{{ site.twitterIdPage }}"/>
+        <meta name="twitter:site" content="@{{ app_manager.twitterIdPage }}"/>
     {% endif %}
 {% endblock %}
 
 {% block google %}
-    {% if site.googleIdPage %}
-        <link rel="author" href="https://plus.google.com/u/{{ site.googleIdPage }}"/>
+    {% if app_manager.googleIdPage %}
+        <link rel="author" href="https://plus.google.com/u/{{ app_manager.googleIdPage }}"/>
     {% endif %}
 {% endblock %}
 
 {% block facebook %}
-    {% if site.facebookIdPage %}
-        <meta property="fb:page_id" content="{{ site.facebookIdPage }}"/>
+    {% if app_manager.facebookIdPage %}
+        <meta property="fb:page_id" content="{{ app_manager.facebookIdPage }}"/>
     {% endif %}
 {% endblock %}
 
 {% block footer %}
-    {% include "TBNAgendaBundle::footer.html.twig" %}
+    {{ render_esi(controller('TBNMainBundle:Common:footer')) }}
 {% endblock %}
 
 {% block js %}

@@ -5,6 +5,9 @@ parameters:
 
     
 services:
+    tbn.app_manager:
+        class: TBN\MainBundle\App\AppManager
+        arguments: [ "@service_container"]
     tbn.event_archivator:
         class: TBN\MainBundle\Archive\EventArchivator
         arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.by_night.event"]

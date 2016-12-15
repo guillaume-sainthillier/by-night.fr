@@ -21,37 +21,24 @@ use TBN\SocialBundle\Social\FacebookAdmin;
  */
 class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
-
-    public static $LIFE_TIME_CACHE = 86400; // 3600*24
     private $router;
     /**
      * @var RequestStack
      */
     private $requestStack;
     private $doctrine;
-    private $cache;
+
+    /**
+     * @var SiteManager
+     */
     private $siteManager;
-    private $socials;
-    private $userProfilePicture;
-    private $eventProfilePicture;
-    private $api_facebook_id;
 
     public function __construct(SiteManager $manager, ContainerInterface $container)
     {
-        $this->api_facebook_id = $container->getParameter('api_facebook_id');
         $this->router = $container->get('router');
         $this->requestStack = $container->get('request_stack');
-        $this->cache = $container->get('memory_cache');
         $this->doctrine = $container->get('doctrine');
         $this->siteManager = $manager;
-        $this->requestStack = $container->get('request_stack');
-        $this->userProfilePicture = $container->get('tbn.profile_picture.user');
-        $this->eventProfilePicture = $container->get('tbn.profile_picture.event');
-        $this->socials = [
-            'facebook' => $container->get('tbn.social.facebook_admin'),
-            'twitter' => $container->get('tbn.social.twitter'),
-            'google' => $container->get('tbn.social.google')
-        ];
     }
 
     public function getFunctions()
@@ -75,44 +62,10 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function getGlobals()
     {
-        $globals = [];
-        $site = $this->siteManager->getCurrentSite();
-        if ($site !== null && $this->requestStack->getParentRequest() === null) {
-            $key = "sites." . $site->getSubdomain();
-            if (!$this->cache->contains($key)) {
-                $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
-                $sites = $repo->findRandom($site);
-                $nomSites = [];
-                foreach ($sites as $site) {
-                    $nomSites[] = ['nom' => $site->getNom(), 'subdomain' => $site->getSubdomain()];
-                }
-                $this->cache->save($key, $nomSites);
-            }
-            $sites = $this->cache->fetch($key);
-
-            $globals = [
-                "api_facebook_id" => $this->api_facebook_id,
-                "site" => $this->siteManager->getCurrentSite(),
-                "sites" => $sites,
-                "userProfilePicture" => $this->userProfilePicture,
-                "eventProfilePicture" => $this->eventProfilePicture,
-                "siteInfo" => $this->siteManager->getSiteInfo()
-            ];
-
-            foreach ($this->socials as $name => $social) {
-                $key = 'tbn.counts.' . $name;
-                if (!$this->cache->contains($key)) {
-                    if($social instanceof FacebookAdmin) {
-                        $social->init();
-                    }
-                    $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
-                }
-
-                $globals['count_' . $name] = $this->cache->fetch($key);
-            }
-        }
-
-        return $globals;
+        return [
+            "site" => $this->siteManager->getCurrentSite(),
+            "siteInfo" => $this->siteManager->getSiteInfo()
+        ];
     }
 
     public function parseTags($texte)
@@ -164,7 +117,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function getLogoutSiteUrl($name)
     {
-        return $this->router->generate("tbn_administration_disconnect_site", ["service" => $name]);
+        return $this->router->generate("tbn_administration_site_service", ["service" => $name]);
     }
 
 

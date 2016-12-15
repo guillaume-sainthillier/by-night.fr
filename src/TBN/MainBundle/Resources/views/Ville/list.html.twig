@@ -28,6 +28,9 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
         <p class="lead">
             Qu'attendez vous ? Choisissez votre ville et découvrez tous les événements !
         </p>
+        <p class="lead">
+            Inscrivez-vous et bénéficiez de fonctionnalités supplémentaires sur la plateforme !
+        </p>
     </div>
     <br />
 </section>
@@ -37,31 +40,29 @@ Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les évén
 <div class="container">
     <div class="row">
     {% for i, site in sites %}
-        <div class="col-md-6" >
-            <div class=" panel panel-default">
-                <div class="panel-body">
-                <img class="img-responsive img margin-auto loading" src="{{ asset('img/loading_site.png') }}"
-                     data-src="{{ ('img/sites/' ~ site.subdomain ~ '.jpg')|imagine_filter('thumb_site') }}" >
-                <div class="caption">
+        <div class="col-xs-6 col-md-4 col-lg-3">
+            <div class="panel panel-default">
+                <div class="panel-heading bg-white">
                     <h2 class="modal-title">
                         <a title="Accéder aux événements de {{ site.nom }}"
                            href="{{ path('tbn_agenda_index', {'subdomain': site.subdomain }) }}">
                             {{ site.nom }}
                         </a>
                     </h2>
-                    {{ site.description|raw }}
+                </div>
+                <div class="panel-body">
+                    <p><span class="number number-big text-primary">{{ site.count_events }}</span> événement{{ site.count_events > 1 ? 's' : '' }}</p>
+                    <p><span class="number number-big text-primary">{{ site.count_users }}</span> membre{{ site.count_users > 1 ? 's' : '' }}</p>
+                </div>
+                <div class="panel-footer bg-white text-right">
                     <a title="Accéder aux événements de {{ site.nom }}"
-                       class="btn btn-primary btn-flat"
+                       class="btn btn-primary btn-raised"
                        href="{{ path('tbn_agenda_index', {'subdomain': site.subdomain }) }}">
                         <i class="fa fa-chevron-right"></i> Accéder
                     </a>
                 </div>
-                </div>
             </div>
         </div>
-        {% if i is odd %}
-        <div class="clearfix"></div>
-        {% endif %}
     {% endfor %}
     </div>
 </div>

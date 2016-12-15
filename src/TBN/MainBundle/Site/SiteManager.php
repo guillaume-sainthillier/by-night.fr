@@ -37,6 +37,7 @@ class SiteManager
     /**
      *
      * @param SiteInfo $siteInfo
+     * @return SiteManager
      */
     public function setSiteInfo(SiteInfo $siteInfo = null)
     {
@@ -57,6 +58,7 @@ class SiteManager
     /**
      *
      * @param Site $currentSite
+     * @return SiteManager
      */
     public function setCurrentSite(Site $currentSite = null)
     {

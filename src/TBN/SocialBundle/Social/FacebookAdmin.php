@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use JMS\Serializer\SerializerInterface;
 
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\MainBundle\App\AppManager;
 use TBN\MainBundle\Picture\EventProfilePicture;
 use TBN\MajDataBundle\Utils\Monitor;
 use TBN\UserBundle\Entity\SiteInfo;
@@ -47,9 +48,9 @@ class FacebookAdmin extends FacebookEvents
      */
     protected $serializer;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, ObjectManager $om, SerializerInterface $serializer)
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, AppManager $appManager, ObjectManager $om, SerializerInterface $serializer)
     {
-        parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack, $logger, $eventProfilePicture);
+        parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack, $logger, $eventProfilePicture, $appManager);
 
         $this->om = $om;
         $this->siteInfo = $this->siteManager->getSiteInfo();
@@ -93,7 +94,7 @@ class FacebookAdmin extends FacebookEvents
 
 
             //Authentification
-            $request = $this->client->post('/' . $site->getFacebookIdPage() . '/feed', [
+            $request = $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed', [
                 'message' => $message,
                 'name' => $agenda->getNom(),
                 'link' => $this->getLink($agenda),
@@ -115,10 +116,9 @@ class FacebookAdmin extends FacebookEvents
     public function getNumberOfCount()
     {
         $site = $this->siteManager->getCurrentSite();
-
         if ($site !== null && $this->siteInfo !== null) {
             try {
-                $page = $this->getPageFromId($site->getFacebookIdPage(), ['fields' => 'fan_count']);
+                $page = $this->getPageFromId($this->appManager->getFacebookIdPage(), ['fields' => 'fan_count']);
                 return $page->getField('fan_count');
             } catch (FacebookSDKException $ex) {
                 $this->logger->error($ex);

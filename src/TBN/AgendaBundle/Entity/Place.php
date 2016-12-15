@@ -135,23 +135,6 @@ class Place implements GeolocalizeInterface
         return $this;
     }
 
-
-    public function toJSON()
-    {
-        return json_encode($this->toArray());
-    }
-
-    public function toArray()
-    {
-        return [
-            'nom' => $this->nom,
-            'rue' => $this->rue,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
-            'site' => $this->site ? $this->site->toArray() : null
-        ];
-    }
-
     /**
      * Get id
      *

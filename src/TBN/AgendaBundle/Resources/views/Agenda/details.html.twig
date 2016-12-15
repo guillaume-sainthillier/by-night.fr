@@ -49,7 +49,7 @@
     <link rel="thumbnail" href="{{ thumb }}"/>
     {% if soiree.dateModification %}
         <meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />{% endif %}
-    <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ site.facebookIdPage }}"/>
+    <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ app_manager.facebookIdPage }}"/>
     {% if soiree.user %}
         <meta property="article:author"
               content="{{ url('tbn_user_details', {'username': soiree.user.usernameCanonical}) }}"/>

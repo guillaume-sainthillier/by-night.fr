@@ -25,7 +25,6 @@ class Twitter extends Social
 
     public function constructClient()
     {
-
         $config = [
             'consumer_key' => $this->id,
             'consumer_secret' => $this->secret,
@@ -42,7 +41,7 @@ class Twitter extends Social
             $site = $this->siteManager->getCurrentSite();
 
             if ($site !== null) {
-                $page = $this->client->get('users/show', ['screen_name' => $site->getTwitterIdPage()]);
+                $page = $this->client->get('users/show', ['screen_name' => $this->appManager->getTwitterIdPage()]);
                 if (isset($page['followers_count'])) {
                     return $page['followers_count'];
                 }

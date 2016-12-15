@@ -1662,23 +1662,6 @@ class Agenda implements GeolocalizeInterface
         return $this;
     }
 
-    public function toJSON()
-    {
-        return json_encode($this->toArray());
-    }
-
-    public function toArray()
-    {
-        return [
-            'place' => $this->place ? $this->place->toArray() : null,
-            'site' => $this->site ? $this->site->toArray() : null,
-            'nom' => $this->nom,
-            'descriptif' => $this->descriptif,
-            'dateDebut' => $this->dateDebut,
-            'dateFin' => $this->dateFin
-        ];
-    }
-
     /**
      * Set fbDateModification
      *

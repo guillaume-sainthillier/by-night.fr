@@ -60,6 +60,10 @@ twig:
             - ':Form:fields.html.twig'
     globals:
         menu: "@white_october_breadcrumbs"
+        app_manager: "@tbn.app_manager"
+        site_manager: "@site_manager"
+        userProfilePicture: "@tbn.profile_picture.user"
+        eventProfilePicture: "@tbn.profile_picture.event"
         facebook_app_id: "%api_facebook_id%"
         twitter: "@tbn.social.twitter"
         facebook: "@tbn.social.facebook"

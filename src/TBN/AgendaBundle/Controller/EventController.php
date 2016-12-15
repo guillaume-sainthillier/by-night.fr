@@ -6,6 +6,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
@@ -172,6 +173,9 @@ class EventController extends Controller
         return $formAction;
     }
 
+    /**
+     * @Cache(expires="+4hours", maxage="14400")
+     */
     public function indexAction()
     {
         $siteManager = $this->get('site_manager');

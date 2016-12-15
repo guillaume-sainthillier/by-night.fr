@@ -71,11 +71,10 @@
         <div id="wrap">
             <header>
                 <!-- Menu -->
-                {% block menu -%}
-                    {% include "::menu.html.twig" %}
-                {%- endblock %}
-                <!-- ./Menu -->            
-
+                {% if site %}
+                {{ render_esi(controller('TBNMainBundle:Common:header')) }}
+                {% endif %}
+                <!-- ./Menu -->
                 {% block breadcrumb -%}{%- endblock %}
             </header>
             {% block container_titre %}

@@ -12,10 +12,7 @@ use TBN\AgendaBundle\Geolocalize\BoundaryInterface;
  * Site
  *
  * @ORM\Table(name="Site",
- *             indexes={@ORM\Index(
- *                  name="recherche_site_idx",
- *                  columns={"subdomain"}
- * )})
+ *      indexes={@ORM\Index(name="recherche_site_idx", columns={"subdomain"})})
  * @ORM\Entity(repositoryClass="TBN\MainBundle\Entity\SiteRepository")
  * @ExclusionPolicy("all")
  */
@@ -48,48 +45,6 @@ class Site implements BoundaryInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="adjectif_singulier", type="string", length=255)
-     */
-    protected $adjectifSingulier;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="adjectif_pluriel", type="string", length=255)
-     */
-    protected $adjectifPluriel;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="description", type="text")
-     */
-    protected $description;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="facebook_id_page", type="string", length=127, nullable=true)
-     */
-    protected $facebookIdPage;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="google_id_page", type="string", length=127, nullable=true)
-     */
-    protected $googleIdPage;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="twitter_id_page", type="string", length=127, nullable=true)
-     */
-    protected $twitterIdPage;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="twitter_id_widget", type="string", length=127, nullable=true)
      */
     protected $twitterIdWidget;
@@ -109,21 +64,21 @@ class Site implements BoundaryInterface
     protected $isActif;
 
     /**
-     * @var boolean
+     * @var float
      *
      * @ORM\Column(name="distance_max", type="float")
      */
     protected $distanceMax;
 
     /**
-     * @var boolean
+     * @var float
      *
      * @ORM\Column(name="latitude", type="float")
      */
     protected $latitude;
 
     /**
-     * @var boolean
+     * @var float
      *
      * @ORM\Column(name="longitude", type="float")
      */
@@ -131,10 +86,8 @@ class Site implements BoundaryInterface
 
     public function __construct()
     {
-        $this->isActif = false;
-        $this->images = new ArrayCollection;
+        $this->isActif = true;
     }
-
 
     /**
      * Get id
@@ -190,157 +143,6 @@ class Site implements BoundaryInterface
     public function getNom()
     {
         return $this->nom;
-    }
-
-    /**
-     * Set adjectifSingulier
-     *
-     * @param string $adjectifSingulier
-     * @return Site
-     */
-    public function setAdjectifSingulier($adjectifSingulier)
-    {
-        $this->adjectifSingulier = $adjectifSingulier;
-
-        return $this;
-    }
-
-    /**
-     * Get adjectifSingulier
-     *
-     * @return string
-     */
-    public function getAdjectifSingulier()
-    {
-        return $this->adjectifSingulier;
-    }
-
-    /**
-     * Set adjectifPluriel
-     *
-     * @param string $adjectifPluriel
-     * @return Site
-     */
-    public function setAdjectifPluriel($adjectifPluriel)
-    {
-        $this->adjectifPluriel = $adjectifPluriel;
-
-        return $this;
-    }
-
-    /**
-     * Get adjectifPluriel
-     *
-     * @return string
-     */
-    public function getAdjectifPluriel()
-    {
-        return $this->adjectifPluriel;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return Site
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * Set facebookIdPage
-     *
-     * @param string $facebookIdPage
-     * @return Site
-     */
-    public function setFacebookIdPage($facebookIdPage)
-    {
-        $this->facebookIdPage = $facebookIdPage;
-
-        return $this;
-    }
-
-    /**
-     * Get facebookIdPage
-     *
-     * @return string
-     */
-    public function getFacebookIdPage()
-    {
-        return $this->facebookIdPage;
-    }
-
-    /**
-     * Set googleIdPage
-     *
-     * @param string $googleIdPage
-     * @return Site
-     */
-    public function setGoogleIdPage($googleIdPage)
-    {
-        $this->googleIdPage = $googleIdPage;
-
-        return $this;
-    }
-
-    /**
-     * Get googleIdPage
-     *
-     * @return string
-     */
-    public function getGoogleIdPage()
-    {
-        return $this->googleIdPage;
-    }
-
-    /**
-     * Set twitterIdPage
-     *
-     * @param string $twitterIdPage
-     * @return Site
-     */
-    public function setTwitterIdPage($twitterIdPage)
-    {
-        $this->twitterIdPage = $twitterIdPage;
-
-        return $this;
-    }
-
-    /**
-     * Get twitterIdPage
-     *
-     * @return string
-     */
-    public function getTwitterIdPage()
-    {
-        return $this->twitterIdPage;
-    }
-
-    /**
-     * Set twitterIdWidget
-     *
-     * @param string $twitterIdWidget
-     * @return Site
-     */
-    public function setTwitterIdWidget($twitterIdWidget)
-    {
-        $this->twitterIdWidget = $twitterIdWidget;
-
-        return $this;
     }
 
     /**
@@ -471,19 +273,6 @@ class Site implements BoundaryInterface
     public function getLongitude()
     {
         return $this->longitude;
-    }
-
-
-    public function toJSON()
-    {
-        return json_encode($this->toArray());
-    }
-
-    public function toArray()
-    {
-        return [
-            'subdomain' => $this->subdomain
-        ];
     }
 
     public function __toString()
