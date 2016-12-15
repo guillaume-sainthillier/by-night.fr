@@ -29,6 +29,7 @@ class AppKernel extends Kernel
             new TBN\CommentBundle\TBNCommentBundle(),
             new TBN\AdministrationBundle\TBNAdministrationBundle(),
 
+            new FOS\HttpCacheBundle\FOSHttpCacheBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),

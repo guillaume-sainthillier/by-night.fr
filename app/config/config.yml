@@ -88,6 +88,17 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
 
+fos_http_cache:
+    proxy_client:
+        varnish:
+            servers:
+                - 127.0.0.1:8000
+            base_url: "%base_host%"
+        symfony:
+            servers:
+                - 127.0.0.1
+            base_url: "%base_host%"
+
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"
