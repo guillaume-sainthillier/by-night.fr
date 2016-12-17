@@ -161,7 +161,12 @@ class MenuDroitController extends Controller
                     ->setExpires($now)
                     ->setSharedMaxAge(31536000);
             } else {
-                list($expires, $next2hours) = $this->getSecondsUntil(2);
+                if($hasNextLink) {
+                    list($expires, $next2hours) = $this->getSecondsUntil(24);
+                }else {
+                    list($expires, $next2hours) = $this->getSecondsUntil(2);
+                }
+
                 $response
                     ->setExpires($expires)
                     ->setSharedMaxAge($next2hours);
@@ -173,21 +178,41 @@ class MenuDroitController extends Controller
         return $response->setPublic();
     }
 
-    public function topMembresAction()
+    public function topMembresAction($page = 1)
     {
+        if ($page <= 1) {
+            $page = 1;
+        }
+
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
 
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNUserBundle:User");
 
+        $count = $repo->findMembresCount($site);
+        $current = $page * self::WIDGET_ITEM_LIMIT;
+
+        if($current < $count) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_top_membres', [
+                'page' => $page + 1
+            ]);
+        }else {
+            $hasNextLink = null;
+        }
+
         $response = $this->render("TBNAgendaBundle:Hinclude:membres.html.twig", [
-            "membres" => $repo->findTopMembres($site)
+            "membres" => $repo->findTopMembres($site, $page, self::WIDGET_ITEM_LIMIT),
+            "hasNextLink" => $hasNextLink,
+            "current" => $current,
+            "count" => $count
         ]);
 
+        list($future, $seconds) = $this->getSecondsUntil(6);
+
         return $response
-            ->setExpires(new \DateTime('tomorrow'))
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
+            ->setExpires($future)
+            ->setSharedMaxAge($seconds)
             ->setPublic()
         ;
     }

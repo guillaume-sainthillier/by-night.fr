@@ -17,3 +17,6 @@
         </div>
     </div>
 {% endfor %}
+{% if hasNextLink is defined and hasNextLink %}
+    <a class="more-content btn btn-primary btn-raised btn-block" href="{{ hasNextLink }}">Plus ({{ current }} / {{ count }})</a>
+{% endif %}

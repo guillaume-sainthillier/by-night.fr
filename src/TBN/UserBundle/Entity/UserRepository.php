@@ -28,6 +28,18 @@ class UserRepository extends EntityRepository
             ->execute();
     }
 
+    public function findMembresCount(Site $site)
+    {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('count(u.id)')
+            ->from('TBNUserBundle:User', 'u')
+            ->where("u.site = :site")
+            ->setParameters([":site" => $site->getId()])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function getLastDateUser(Site $site)
     {
         return $this->_em

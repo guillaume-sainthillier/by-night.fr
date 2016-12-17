@@ -92,8 +92,10 @@ tbn_agenda_programme_tv:
     defaults: { _controller: TBNAgendaBundle:MenuDroit:programmeTV}
     
 tbn_agenda_top_membres:
-    path: /top/membres
+    path: /top/membres/{page}
     defaults: { _controller: TBNAgendaBundle:MenuDroit:topMembres}
+    requirements:
+        page: (\d+)
 
 tbn_agenda_details:
     path: /soiree/{slug}.html
