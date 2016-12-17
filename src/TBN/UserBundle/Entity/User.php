@@ -113,12 +113,28 @@ class User extends BaseUser
     private $imageFile;
 
     /**
+     *
+     * @Vich\UploadableField(mapping="user_system_image", fileNameProperty="systemPath")
+     * @Assert\Valid()
+     * @Assert\File(maxSize = "6M")
+     * @Assert\Image()
+     * @var File
+     */
+    private $imageSystemFile;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Expose
      *
      * @var string
      */
     private $path;
+
+    /**
+     * @ORM\Column(type="string", name="system_path", length=255, nullable=true)
+     *
+     * @var string
+     */
+    private $systemPath;
 
     /**
      * @ORM\Column(type="datetime")
@@ -172,6 +188,38 @@ class User extends BaseUser
      * @return File
      */
     public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     *
+     * @return User
+     */
+    public function setImageSystemFile(File $image = null)
+    {
+        $this->imageSystemFile = $image;
+
+        if ($image) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTime('now');
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return File
+     */
+    public function getImageSystemFile()
     {
         return $this->imageFile;
     }
@@ -518,5 +566,29 @@ class User extends BaseUser
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set systemPath
+     *
+     * @param string $systemPath
+     *
+     * @return User
+     */
+    public function setSystemPath($systemPath)
+    {
+        $this->systemPath = $systemPath;
+
+        return $this;
+    }
+
+    /**
+     * Get systemPath
+     *
+     * @return string
+     */
+    public function getSystemPath()
+    {
+        return $this->systemPath;
     }
 }

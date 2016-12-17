@@ -269,6 +269,14 @@ class Agenda implements GeolocalizeInterface
     protected $file;
 
     /**
+     * @Vich\UploadableField(mapping="event_system_image", fileNameProperty="systemPath")
+     * @Assert\Valid()
+     * @Assert\File(maxSize = "6M")
+     * @Assert\Image()
+     */
+    protected $systemFile;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $name;
@@ -277,6 +285,11 @@ class Agenda implements GeolocalizeInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $path;
+
+    /**
+     * @ORM\Column(type="string", name="system_path", length=255, nullable=true)
+     */
+    protected $systemPath;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -454,6 +467,38 @@ class Agenda implements GeolocalizeInterface
     public function setFile(File $image = null)
     {
         $this->file = $image;
+
+        if ($image) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->dateModification = new \DateTime();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return File
+     */
+    public function getSystemFile()
+    {
+        return $this->systemFile;
+    }
+
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     *
+     * @return Agenda
+     */
+    public function setSystemFile(File $image = null)
+    {
+        $this->systemFile = $image;
 
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
@@ -1722,5 +1767,29 @@ class Agenda implements GeolocalizeInterface
     public function getIsArchive()
     {
         return $this->isArchive;
+    }
+
+    /**
+     * Set systemPath
+     *
+     * @param string $systemPath
+     *
+     * @return Agenda
+     */
+    public function setSystemPath($systemPath)
+    {
+        $this->systemPath = $systemPath;
+
+        return $this;
+    }
+
+    /**
+     * Get systemPath
+     *
+     * @return string
+     */
+    public function getSystemPath()
+    {
+        return $this->systemPath;
     }
 }
