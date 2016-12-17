@@ -26,6 +26,7 @@ services:
 
     site_manager:
         class: TBN\MainBundle\Site\SiteManager
+        arguments: [ "@doctrine.orm.entity_manager"]
       
     ville_listener:
         class: TBN\MainBundle\Listener\SubDomainListener
