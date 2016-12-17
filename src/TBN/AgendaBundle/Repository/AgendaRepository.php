@@ -95,6 +95,42 @@ class AgendaRepository extends EntityRepository
             ->getSingleScalarResult();
     }
 
+    public function getNextEvents(\DateTime $since, $page, $offset) {
+        return $this
+            ->createQueryBuilder('a')
+            ->where("a.dateFin >= :since")
+            ->setParameters([":since" => $since->format('Y-m-d')])
+            ->setFirstResult($page * $offset)
+            ->setMaxResults($offset)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getNextEventsFbIds(\DateTime $since) {
+        $datas = $this->_em
+            ->createQueryBuilder()
+            ->select('DISTINCT(a.facebookEventId)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.dateFin >= :since")
+            ->setParameters([":since" => $since->format('Y-m-d')])
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_filter(array_map('current', $datas));
+    }
+
+    public function getNextEventsCount(\DateTime $since)
+    {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('count(a.id)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.dateFin >= :since")
+            ->setParameters([":since" => $since->format('Y-m-d')])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function getStatsUser(User $user, \DateTime $dateFin, $groupByDay = true)
     {
         return $this->_em

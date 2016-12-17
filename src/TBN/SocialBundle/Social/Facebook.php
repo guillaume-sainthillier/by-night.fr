@@ -26,15 +26,12 @@ class Facebook extends Social
      */
     protected $client;
 
-    //protected static $FIELDS = "id,name,venue,end_time,owner,cover,is_date_only,ticket_uri,description,location,picture.type(large).redirect(false)";
-    //protected static $FIELDS = "id,name,place,end_time,owner,cover,is_date_only,ticket_uri,description";
-    protected static $FIELDS = "id,name,updated_time,place,start_time,end_time,owner{category,website,phone,picture.type(large).redirect(false)},cover,ticket_uri,description,picture.type(large).redirect(false),attending_count,maybe_count";
-    protected static $STATS_FIELDS = "id,picture.type(large).redirect(false),cover,attending_count,maybe_count";
-    protected static $FULL_STATS_FIELDS = "id,picture.type(large).redirect(false),cover,attending_count,maybe_count,attending.limit(500){name,picture.type(square).redirect(false)},maybe.limit(500){name,picture.type(square).redirect(false)}";
-    protected static $MEMBERS_FIELDS = "id,attending.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)},maybe.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)}";
-    protected static $ATTENDING_FIELDS = "id,name,picture.type(square).redirect(false)";
-    protected static $MIN_EVENT_FIELDS = "id,updated_time,owner{id}";
-//    protected static $PLACE_EVENT_EDGE_FIELDS = "id,updated_time,owner{id}";
+    const FIELDS = "id,name,updated_time,place,start_time,end_time,owner{category,website,phone,picture.type(large).redirect(false)},cover,ticket_uri,description,picture.type(large).redirect(false),attending_count,maybe_count";
+    const STATS_FIELDS = "id,picture.type(large).redirect(false),cover,attending_count,maybe_count";
+    const FULL_STATS_FIELDS = "id,picture.type(large).redirect(false),cover,attending_count,maybe_count,attending.limit(500){name,picture.type(square).redirect(false)},maybe.limit(500){name,picture.type(square).redirect(false)}";
+    const MEMBERS_FIELDS = "id,attending.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)},maybe.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)}";
+    const ATTENDING_FIELDS = "id,name,picture.type(square).redirect(false)";
+    const MIN_EVENT_FIELDS = "id,updated_time,owner{id}";
 
     protected function constructClient()
     {

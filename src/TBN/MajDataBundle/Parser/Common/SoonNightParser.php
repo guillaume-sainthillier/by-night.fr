@@ -47,8 +47,10 @@ class SoonNightParser extends LinksParser
         $lieux = $this->parser->filter('.adresse');
         if ($lieux->count()) {
             $infosGPS = array_map('trim', explode(',', $lieux->attr('longlat')));
-            $lat = $infosGPS[0];
-            $long = $infosGPS[1];
+            if(count($infosGPS) > 1) {
+                $lat = $infosGPS[0];
+                $long = $infosGPS[1];
+            }
 
             $adresse = $lieux->text();
             list($rue, $code_postal, $ville) = $this->normalizeAddress($adresse);

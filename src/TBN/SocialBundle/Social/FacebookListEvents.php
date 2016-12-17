@@ -27,7 +27,7 @@ class FacebookListEvents extends Facebook
 
         $request = $this->client->sendRequest('GET', '/' . $userInfo->getFacebookId(). '/events', [
             'type' => "created",
-            'fields' => self::$FIELDS,
+            'fields' => self::FIELDS,
             'limit' => $limit
         ]);
 

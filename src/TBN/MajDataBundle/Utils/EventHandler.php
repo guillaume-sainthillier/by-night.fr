@@ -37,6 +37,35 @@ class EventHandler
         }
     }
 
+    public function hasToDownloadImage($newURL, Agenda $agenda) {
+        return $newURL && (
+            ! $agenda->getPath() ||
+            $agenda->getUrl() != $newURL
+        );
+    }
+
+    public function uploadFile(Agenda $agenda, $content) {
+        if(! $content) {
+            $agenda->setUrl(null);
+        }else {
+            //En cas d'url du type:  http://u.rl/image.png?params
+            $ext = preg_replace("/(\?|_)(.*)$/", "", pathinfo($agenda->getUrl(), PATHINFO_EXTENSION));
+
+            $filename = sha1(uniqid(mt_rand(), true)) . "." . $ext;
+
+            $tempPath = $this->tempPath.'/'.$filename;
+            $octets = file_put_contents($tempPath, $content);
+
+            if ($octets > 0) {
+                $file = new UploadedFile($tempPath, $filename, null, null, false, true);
+                $agenda->setPath($filename);
+                $agenda->setFile($file);
+            }else {
+                $agenda->setFile(null)->setPath(null);
+            }
+        }
+    }
+
     public function downloadImage(Agenda $agenda)
     {
         //$url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
@@ -55,24 +84,7 @@ class EventHandler
             $image = null;
         }
 
-        if ($image) {
-            $agenda->setUrl($url);
-
-            //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = preg_replace("/(\?|_)(.*)$/", "", pathinfo($url, PATHINFO_EXTENSION));
-
-            $filename = sha1(uniqid(mt_rand(), true)) . "." . $ext;
-
-            $tempPath = $this->tempPath.'/'.$filename;
-            $octets = file_put_contents($tempPath, $image);
-
-            if ($octets > 0) {
-                $file = new UploadedFile($tempPath, $filename, null, null, false, true);
-                $agenda->setPath($filename);
-                $agenda->setFile($file);
-
-            }
-        }
+        $this->uploadFile($agenda, $image);
     }
 
     public function cleanPlace(Place $place) {

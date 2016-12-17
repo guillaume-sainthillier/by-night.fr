@@ -12,6 +12,12 @@ parameters:
     url_opendata_toulouse: https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true
 
 services:
+    tbn.event_updater:
+        class: TBN\MajDataBundle\Utils\EventUpdater
+        arguments:
+          - "@doctrine.orm.default_entity_manager"
+          - "@tbn.event_handler"
+          - "@tbn.social.facebook_admin"
     tbn.event_fetcher:
         class: TBN\MajDataBundle\Fetcher\EventFetcher
         arguments:

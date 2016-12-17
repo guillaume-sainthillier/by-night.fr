@@ -65,7 +65,7 @@ class EventController extends Controller
 
     /**
      * @param Agenda $agenda
-     * @Cache(expires="+2 hours", smaxage="7200")
+     * @Cache(expires="+6 hours", smaxage="21600")
      * @return Response
      */
     public function shareAction(Agenda $agenda) {
@@ -110,13 +110,12 @@ class EventController extends Controller
                 $interet = $calendrier->getInteret();
             }
 
-            $userInfo = $user->getInfo();
-            if ($userInfo && $agenda->getFacebookEventId() && $userInfo->getFacebookId()) {
+            if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
                 $cache = $this->get('memory_cache');
                 $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
                 if (!$cache->contains($key)) {
                     $api = $this->get('tbn.social.facebook_admin');
-                    $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $userInfo->getFacebookId());
+                    $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId());
                     $cache->save($key, $stats);
                 }
                 $stats = $cache->fetch($key);
@@ -140,16 +139,11 @@ class EventController extends Controller
             }
         }
 
-        $maxItems = 50;
-        $membres = $this->getFBMembres($agenda, 1, $maxItems);
-
         return [
             "tendancesParticipations" => $repo->findAllTendancesParticipations($agenda),
             "tendancesInterets" => $repo->findAllTendancesInterets($agenda),
             "count_participer" => $agenda->getParticipations() + $agenda->getFbParticipations(),
             "count_interets" => $agenda->getInterets() + $agenda->getFbInterets(),
-            'maxItems' => $maxItems,
-            'membres' => $membres,
             'participer' => $participer,
             'interet' => $interet
         ];
