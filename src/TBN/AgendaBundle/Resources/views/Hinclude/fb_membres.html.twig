@@ -17,6 +17,6 @@
         </a>
     {% endif %}
 {%- endfor %}
-{% if membres|length == maxItems|default(0) %}
-    <div class="more-content"></div>
+{% if hasNextLink %}
+    <a class="more-content btn btn-primary btn-raised btn-block" href="{{ hasNextLink }}">Plus</a>
 {% endif %}

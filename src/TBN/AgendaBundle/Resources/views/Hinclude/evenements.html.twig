@@ -28,6 +28,7 @@
         </div>
     </div>
 {% endfor %}
-{% if soirees|length == maxItems|default(0) %}
-    <div class="more-content"></div>
+{% if hasNextLink %}
+    <a class="more-content btn btn-primary btn-raised btn-block" href="{{ hasNextLink }}">Plus ({{ current }} / {{ count }})</a>
 {% endif %}
+

@@ -81,8 +81,10 @@ tbn_agenda_plus:
     defaults: { _controller: TBNAgendaBundle:Legacy:plus}
 
 tbn_agenda_top_soirees:
-    path: /top/soirees
+    path: /top/soirees/{page}
     defaults: { _controller: TBNAgendaBundle:MenuDroit:topSoirees}
+    requirements:
+        page: (\d+)
 
 tbn_agenda_programme_tv: 
     path: /programme-tv

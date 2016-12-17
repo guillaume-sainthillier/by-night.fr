@@ -270,7 +270,7 @@ module.exports = function (grunt) {
             detailEventJs: {
                 src: [
                     'web/bundles/tbncomment/js/CommentApp.js',
-                    'web/bundles/tbnagenda//js/details.js'
+                    'web/bundles/tbnagenda/js/details.js'
                 ],
                 dest: 'web/prod/evenements/js/details.js'
             },

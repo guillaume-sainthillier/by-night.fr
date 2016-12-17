@@ -3,7 +3,6 @@
 namespace TBN\AgendaBundle\Controller;
 
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MainBundle\Entity\Site;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
@@ -15,15 +14,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 class MenuDroitController extends Controller
 {
     const FB_MEMBERS_LIMIT = 50;
+    const WIDGET_ITEM_LIMIT = 7;
 
     public function programmeTVAction()
     {
         $parser = $this->get("tbn.programmetv");
-        $programmes = array_map(function ($programme) {
-            $css_chaine = $this->getCSSChaine($programme['chaine']);
-            $programme['css_chaine'] = $css_chaine ? 'icon-' . $css_chaine : null;
-            return $programme;
-        }, $parser->getProgrammesTV());
+        $programmes = $parser->getProgrammesTV();
 
         $response = $this->render("TBNAgendaBundle:Hinclude:programme_tv.html.twig", [
             "programmes" => $programmes
@@ -36,107 +32,32 @@ class MenuDroitController extends Controller
         ;
     }
 
-    protected function getCSSChaine($chaine)
-    {
-        switch ($chaine) {
-            case 'TF1':
-                return 'tf1';
-            case 'France 2':
-                return 'france2';
-            case 'France 3':
-                return 'france3';
-            case 'Canal+':
-                return 'canal_plus';
-            case 'Arte':
-                return 'arte';
-            case 'M6':
-                return 'm6';
-            case 'France 5':
-                return 'france5';
-            case 'C8':
-                return 'canal8';
-            case 'W9':
-                return 'w9';
-            case 'TMC':
-                return 'tmc';
-            case 'NT1':
-                return 'nt1';
-            case 'NRJ 12':
-                return 'nrj';
-            case 'LCP - Public Sénat':
-                return 'lcp';
-            case 'CStar':
-                return 'cstar';
-            case 'France 4':
-                return 'france4';
-            case 'BFM TV':
-                return 'bfm_tv';
-            case 'i>Télé':
-                return 'itele';
-            case 'D17':
-                return 'd17';
-            case 'Gulli':
-                return 'gulli';
-            case 'France Ô':
-                return 'franceo';
-            case 'HD1':
-                return 'hd1';
-            case "L'Equipe":
-                return 'lequipe';
-            case "Franceinfo":
-                return 'franceinfo';
-            case "LCI":
-            case "LCI - La Chaîne Info":
-                return 'lci';
-            case '6ter':
-                return '6ter';
-            case 'Numéro 23':
-                return 'numero23';
-            case 'RMC Découverte':
-                return 'rmc';
-            case 'Chérie 25':
-                return 'cherie25';
-            case 'IDF1':
-                return 'idf';
-            case 'Canal partagé':
-                return 'canal_partage';
-            case 'RTL 9':
-                return 'rtl9';
-            case 'Paris Première':
-                return 'paris_premiere';
-            case 'Plug RTL':
-                return 'plug_rtl';
-            case 'TV5 Monde':
-            case 'TV5MONDE':
-                return 'tv5_monde';
-            case '13e rue':
-                return '13_rue';
-            case 'E ! Entertainment':
-                return 'e_entertainment';
-            case 'Syfy':
-                return 'syfy';
-            case 'Série club':
-                return 'serie_club';
-            case 'Nat Geo Wild':
-                return 'nat_geo';
-        }
-
-        return null;
-    }
-
     public function soireesSimilairesAction(Agenda $soiree, $page = 1)
     {
         if ($page <= 0) {
             $page = 1;
         }
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
 
-        $offset = 7;
+        $count = $repo->findAllSimilairesCount($soiree);
+        $current = $page * self::WIDGET_ITEM_LIMIT;
+
+        if($current < $count) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_soirees_similaires', [
+                'slug' => $soiree->getSlug(),
+                'page' => $page + 1
+            ]);
+        }else {
+            $hasNextLink = null;
+        }
 
         $response = $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-            "soirees" => $this->getSoireesSimilaires($soiree, $page, $offset),
-            "maxItems" => $offset
+            "soirees" => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            "current" => $current,
+            "count" => $count,
+            "hasNextLink" => $hasNextLink
         ]);
-
 
         return $response
             ->setExpires(new \DateTime('tomorrow'))
@@ -145,13 +66,34 @@ class MenuDroitController extends Controller
         ;
     }
 
-    public function topSoireesAction()
+    public function topSoireesAction($page = 1)
     {
+        if ($page <= 1) {
+            $page = 1;
+        }
+
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
 
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
+
+        $current = $page * self::WIDGET_ITEM_LIMIT;
+        $count = $repo->findTopSoireeCount($site);
+
+        if($current < $count) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_top_soirees', [
+                'page' => $page + 1
+            ]);
+        }else {
+            $hasNextLink = null;
+        }
+
         $response = $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-            "soirees" => $this->getTopSoirees($site)
+            "soirees" => $repo->findTopSoiree($site, $page, self::WIDGET_ITEM_LIMIT),
+            "hasNextLink" => $hasNextLink,
+            "current" => $current,
+            "count" => $count
         ]);
 
         return $response
@@ -195,15 +137,20 @@ class MenuDroitController extends Controller
         $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
         $membres = array_merge($retour['participations'], $retour['interets']);
-        if(count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations'])) {
-            $maxItems = count($membres);
+        if(count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
+                'slug' => $soiree->getSlug(),
+                'page' => $page + 1
+            ]);
         }else {
-            $maxItems = 0;
+            $hasNextLink = null;
         }
 
         $response = $this->render("TBNAgendaBundle:Hinclude:fb_membres.html.twig", [
+            "event" => $soiree,
+            "page" => $page,
             "membres" => $membres,
-            "maxItems" => $maxItems
+            "hasNextLink" => $hasNextLink
         ]);
 
         try {
@@ -231,8 +178,11 @@ class MenuDroitController extends Controller
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
 
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository("TBNUserBundle:User");
+
         $response = $this->render("TBNAgendaBundle:Hinclude:membres.html.twig", [
-            "membres" => $this->getTopMembres($site)
+            "membres" => $repo->findTopMembres($site)
         ]);
 
         return $response
@@ -240,27 +190,5 @@ class MenuDroitController extends Controller
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
             ->setPublic()
         ;
-    }
-
-    protected function getTopSoirees(Site $site)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
-
-        return $repo->findTopSoiree($site);
-    }
-
-    protected function getTopMembres(Site $site)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNUserBundle:User");
-        return $repo->findTopMembres($site);
-    }
-
-    protected function getSoireesSimilaires(Agenda $soiree, $page, $offset)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        return $repo->findAllSimilaires($soiree, $page, $offset);
     }
 }

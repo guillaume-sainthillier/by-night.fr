@@ -254,11 +254,39 @@ class AgendaRepository extends EntityRepository
             ->createQueryBuilder('a')
             ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
             ->orderBy('a.nom', 'ASC')
-            ->setParameters([":date_debut" => $soiree->getDateDebut(), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
+            ->setParameters([":date_debut" => $soiree->getDateDebut()->format('Y-m-d'), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
+    }
+
+    public function findAllSimilairesCount(Agenda $soiree)
+    {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('count(a.id)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
+            ->setParameters([":date_debut" => $soiree->getDateDebut()->format('Y-m-d'), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findTopSoireeCount(Site $site)
+    {
+        $du = new \DateTime();
+        $au = new \DateTime('sunday this week');
+
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('count(a.id)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.site = :site")
+            ->andWhere("a.dateFin BETWEEN :du AND :au")
+            ->setParameters([":site" => $site->getId(), "du" => $du->format("Y-m-d"), "au" => $au->format("Y-m-d")])
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function findTopSoiree(Site $site, $page = 1, $limit = 7)

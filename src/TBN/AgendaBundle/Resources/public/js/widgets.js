@@ -1,7 +1,7 @@
 var Widgets = {
     init: function (selecteur) {
         $(function () {
-            Widgets.initMoreWidgets(selecteur);
+            Widgets.initMoreWidgets($('.widget', selecteur || document));
             Widgets.initScrollable(selecteur);
         });
     },
@@ -17,28 +17,38 @@ var Widgets = {
         }
     },
     //Deps: ['scrollable']
-    initMoreWidgets: function (selecteur) {
-        $(".more-widget", selecteur || document).each(function () {
-            var that = $(this);
-            var page = 2;
-            $(this).click(function (e) {
-                var container = that.closest('.widget').find(".more-content");
-                that.attr("disabled", true).prepend("<i class='fa fa-spin fa-spinner'></i> ");
-                $.get(that.data("href") + '/' + page).done(function (content) {
-                    container.replaceWith(content);
-                    that.closest('.widget').find('.scrollable').mCustomScrollbar("scrollTo", "bottom");
+    initMoreWidgets: function (elems) {
+        elems.each(function () {
+            var container = $(this);
+            var containerActions = container.find('.panel-footer');
+            var moreContentLink = container.find('.more-content');
+            var containerBody = moreContentLink.parent();
 
-                    if (that.closest('.widget').find('.more-content').length) {
-                        that.attr("disabled", false).find(".fa").remove();
-                        page++;
-                    } else {
-                        that.closest('.panel-footer').remove();
+            if (!moreContentLink.length) {
+                containerActions.html('');
+            } else {
+                var newMoreContentLink = moreContentLink.clone();
+                containerActions.html(newMoreContentLink);
+                moreContentLink.remove();
+
+                newMoreContentLink.unbind('click').click(function (e) {
+                    var btn = $(this);
+                    if(btn.attr('disabled')) {
+                        return false;
                     }
-                });
+                    btn.attr("disabled", true).prepend("<i class='fa fa-spin fa-spinner'></i> ");
+                    $.get(btn.attr('href')).done(function (content) {
+                        btn.remove();
+                        console.log(containerBody);
+                        containerBody.append(content);
+                        container.find('.scrollable').mCustomScrollbar("scrollTo", "bottom");
+                        Widgets.initMoreWidgets(container);
+                    });
 
-                e.preventDefault();
-                return false;
-            });
+                    e.preventDefault();
+                    return false;
+                });
+            }
         });
     }
 };
