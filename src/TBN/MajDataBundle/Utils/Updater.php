@@ -12,6 +12,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 
+use Doctrine\ORM\EntityManager;
+use TBN\SocialBundle\Social\FacebookAdmin;
 
 abstract class Updater
 {
@@ -23,8 +25,27 @@ abstract class Updater
      */
     protected $client;
 
-    public function __construct()
+    /**
+     * @var EntityManager
+     */
+    protected $entityManager;
+
+    /**
+     * @var EventHandler
+     */
+    protected $eventHandler;
+
+    /**
+     * @var FacebookAdmin
+     */
+    protected $facebookAdmin;
+
+    public function __construct(EntityManager $entityManager, EventHandler $eventHandler, FacebookAdmin $facebookAdmin)
     {
+        $this->entityManager = $entityManager;
+        $this->eventHandler = $eventHandler;
+        $this->facebookAdmin = $facebookAdmin;
+
         $this->client = new Client([
             'verify' => false
         ]);

@@ -59,27 +59,6 @@ class EventHandler
         }
     }
 
-    public function downloadImage(Agenda $agenda)
-    {
-        //$url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
-        $url = $agenda->getUrl();
-        $path = $agenda->getPath();
-        $agenda->setUrl(null)->setSystemPath(null);
-
-        if(! $url) {
-            $agenda->setSystemPath($path);
-            return;
-        }
-
-        try {
-            $image = file_get_contents($url);
-        } catch (\Exception $ex) {
-            $image = null;
-        }
-
-        $this->uploadFile($agenda, $image);
-    }
-
     public function cleanPlace(Place $place) {
         $this->cleaner->cleanPlace($place);
     }
