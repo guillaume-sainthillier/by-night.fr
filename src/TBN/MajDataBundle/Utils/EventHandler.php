@@ -30,16 +30,9 @@ class EventHandler
         $this->tempPath = $tempPath;
     }
 
-    public function updateImage(Agenda $agenda, $newURL) {
-        if($agenda->getPath() === null || ($newURL !== null && $agenda->getUrl() !== $newURL)) {
-            $agenda->setUrl($newURL);
-            $this->downloadImage($agenda);
-        }
-    }
-
     public function hasToDownloadImage($newURL, Agenda $agenda) {
         return $newURL && (
-            ! $agenda->getPath() ||
+            ! $agenda->getSystemPath() ||
             $agenda->getUrl() != $newURL
         );
     }
@@ -58,10 +51,10 @@ class EventHandler
 
             if ($octets > 0) {
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);
-                $agenda->setPath($filename);
-                $agenda->setFile($file);
+                $agenda->setSystemPath($filename);
+                $agenda->setSystemFile($file);
             }else {
-                $agenda->setFile(null)->setPath(null);
+                $agenda->setSystemFile(null)->setSystemPath(null);
             }
         }
     }
@@ -71,10 +64,10 @@ class EventHandler
         //$url = preg_replace('/([^:])(\/{2,})/', '$1/', $agenda->getUrl());
         $url = $agenda->getUrl();
         $path = $agenda->getPath();
-        $agenda->setUrl(null)->setPath(null);
+        $agenda->setUrl(null)->setSystemPath(null);
 
         if(! $url) {
-            $agenda->setPath($path);
+            $agenda->setSystemPath($path);
             return;
         }
 

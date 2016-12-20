@@ -421,49 +421,4 @@ class DoctrineEventHandler
 
         return array_keys($fbIds);
     }
-
-    public function updateFBEventOfWeek($fullMode, $downloadImage = false)
-    {
-        $batchSize = 50;
-        $agendas = [];
-        $results = $this->repoAgenda->findAllOfWeek();
-        $ids = [];
-        foreach ($results as $result) {
-            $ids[] = $result->getFacebookEventId();
-            $agendas[$result->getFacebookEventId()] = $result;
-        }
-
-        $i = 0;
-        if ($fullMode) {
-            $fbEvents = $this->api->getEventFullStatsFromIds($ids);
-        } else {
-            $fbEvents = $this->api->getEventStatsFromIds($ids);
-        }
-
-        foreach ($fbEvents as $id => $fbEvent) {
-            $agenda = $agendas[$id];
-            $oldURL = $agenda->getUrl();
-            $agenda->setFbParticipations($fbEvent['participations'])
-                ->setFbInterets($fbEvent['interets'])
-                ->setUrl($fbEvent['url']);
-            if ($downloadImage && ($agenda->getPath() === null || ($agenda->getUrl() !== null && $agenda->getUrl() !== $oldURL))) {
-                Monitor::bench('downloadImage', function () use (&$agenda) {
-                    $this->handler->downloadImage($agenda);
-                });
-            }
-            $this->em->merge($agenda);
-
-            if ($fullMode) {
-                $key = 'fb.stats.' . $id;
-                $this->cache->save($key, $fbEvent["membres"]);
-            }
-
-            if ($i % $batchSize === ($batchSize - 1)) {
-                $this->flush();
-            }
-            $i++;
-        }
-
-        return $i;
-    }
 }
