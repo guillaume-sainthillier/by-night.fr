@@ -10,17 +10,11 @@ namespace TBN\MajDataBundle\Utils;
 
 
 use Doctrine\ORM\EntityManager;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\SocialBundle\Social\FacebookAdmin;
 
-class EventUpdater
+class EventUpdater extends Updater
 {
-    const PAGINATION_SIZE = 200;
-    const POOL_SIZE = 10;
-
     /**
      * @var EntityManager
      */
@@ -36,19 +30,12 @@ class EventUpdater
      */
     private $facebookAdmin;
 
-    /**
-     * @var Client
-     */
-    private $client;
-
     public function __construct(EntityManager $entityManager, EventHandler $eventHandler, FacebookAdmin $facebookAdmin)
     {
+        parent::__construct();
         $this->entityManager = $entityManager;
         $this->eventHandler = $eventHandler;
         $this->facebookAdmin = $facebookAdmin;
-        $this->client = new Client([
-            'verify' => false
-        ]);
     }
 
     public function update(\DateTime $since = null) {
@@ -103,28 +90,7 @@ class EventUpdater
         }
     }
 
-    protected function downloadUrls(array $urls) {
-        $requests = [];
-        foreach($urls as $i => $url) {
-            $requests[$i] = new Request('GET', $url);
-        }
 
-        $responses = [];
-        $pool = new Pool($this->client, $requests, [
-            'concurrency' => self::POOL_SIZE,
-            'fulfilled' => function ($response, $index) use(& $responses) {
-                $responses[$index] = (string)$response->getBody();
-            },
-            'rejected' => function ($reason, $index) use(& $responses) {
-                $responses[$index] = null;
-            },
-        ]);
-
-        $promise = $pool->promise();
-        $promise->wait();
-
-        return $responses;
-    }
 
     protected function doFlush() {
         $this->entityManager->flush();
