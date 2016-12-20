@@ -18,7 +18,7 @@ class CleanCommand extends AppCommand
     protected function configure()
     {
         $this
-            ->setName('clean:image')
+            ->setName('tbn:events:clean')
             ->setDescription('Mettre à jour les images sur le serveur')
         ;
     }
