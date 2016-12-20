@@ -10,11 +10,6 @@ namespace TBN\MajDataBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
-/**
- * Description of EventCommand
- *
- * @author guillaume
- */
 abstract class AppCommand extends ContainerAwareCommand
 {
 

@@ -10,11 +10,6 @@ use TBN\MajDataBundle\Parser\ParserInterface;
 use TBN\MajDataBundle\Utils\Monitor;
 
 
-/**
- * UpdateCommand gère la commande liée à l'aggregation d'événements
- *
- * @author guillaume
- */
 class FetchCommand  extends AppCommand
 {
     protected function configure()

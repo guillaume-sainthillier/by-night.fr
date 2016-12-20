@@ -10,11 +10,6 @@ use TBN\MajDataBundle\Parser\ParserInterface;
 use TBN\MajDataBundle\Utils\Monitor;
 
 
-/**
- * UpdateCommand gère la commande liée à la mise à jour des événements
- *
- * @author guillaume
- */
 class UpdateCommand  extends AppCommand
 {
     protected function configure()

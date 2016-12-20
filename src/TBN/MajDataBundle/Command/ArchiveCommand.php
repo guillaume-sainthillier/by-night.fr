@@ -7,11 +7,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TBN\MajDataBundle\Utils\Monitor;
 
 
-/**
- * UpdateCommand gère la commande liée à l'aggregation d'événements
- *
- * @author guillaume
- */
 class ArchiveCommand extends AppCommand
 {
 
