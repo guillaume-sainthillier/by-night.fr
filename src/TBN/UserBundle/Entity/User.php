@@ -221,7 +221,7 @@ class User extends BaseUser
      */
     public function getImageSystemFile()
     {
-        return $this->imageFile;
+        return $this->imageSystemFile;
     }
 
     public function getExpiresAt()

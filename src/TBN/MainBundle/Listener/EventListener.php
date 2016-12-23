@@ -7,7 +7,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Entity\Exploration;
 use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Utils\DoctrineEventHandler;
+use TBN\MajDataBundle\Handler\DoctrineEventHandler;
 use TBN\MajDataBundle\Utils\Firewall;
 
 class EventListener

@@ -16,7 +16,7 @@ class UpdateCommand  extends AppCommand
     {
         $this
             ->setName('tbn:events:update')
-            ->setDescription('Mettee à jour les événements sur By Night')
+            ->setDescription('Mettre à jour les événements sur By Night')
             ->addOption('monitor', 'm', InputOption::VALUE_NONE)
         ;
     }
@@ -26,7 +26,10 @@ class UpdateCommand  extends AppCommand
         Monitor::enableMonitoring($input->getOption('monitor'));
         Monitor::$output = $output;
 
-        $updater = $this->getContainer()->get('tbn.event_updater');
+        $updater = $this->getContainer()->get('tbn.user_updater');
         $updater->update();
+
+//        $updater = $this->getContainer()->get('tbn.event_updater');
+//        $updater->update();
     }
 }

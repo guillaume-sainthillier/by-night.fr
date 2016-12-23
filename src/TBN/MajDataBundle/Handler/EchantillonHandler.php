@@ -6,7 +6,7 @@
  * Time: 20:22
  */
 
-namespace TBN\MajDataBundle\Utils;
+namespace TBN\MajDataBundle\Handler;
 
 
 use Doctrine\ORM\EntityManagerInterface;

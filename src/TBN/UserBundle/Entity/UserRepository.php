@@ -13,6 +13,26 @@ use TBN\MainBundle\Entity\Site;
  */
 class UserRepository extends EntityRepository
 {
+    public function getUserFbIds() {
+        $datas = $this->createQueryBuilder('u')
+            ->select('DISTINCT(i.facebook_id)')
+            ->join('u.info', 'i')
+            ->where("i.facebook_id IS NOT NULL")
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_filter(array_map('current', $datas));
+    }
+
+    public function getUsersWithInfo($page, $limit) {
+        return $this->createQueryBuilder('u')
+            ->select('u', 'i')
+            ->join('u.info', 'i')
+            ->setFirstResult($page * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 
     public function findTopMembres(Site $site, $page = 1, $limit = 7)
     {

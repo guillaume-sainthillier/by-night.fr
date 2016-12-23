@@ -6,12 +6,27 @@
  * Time: 14:28
  */
 
-namespace TBN\MajDataBundle\Utils;
+namespace TBN\MajDataBundle\Updater;
 
+use Doctrine\ORM\EntityManager;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\MajDataBundle\Handler\EventHandler;
+use TBN\MajDataBundle\Utils\Monitor;
+use TBN\SocialBundle\Social\FacebookAdmin;
 
 class EventUpdater extends Updater
 {
+    /**
+     * @var EventHandler
+     */
+    protected $eventHandler;
+
+    public function __construct(EntityManager $entityManager, FacebookAdmin $facebookAdmin, EventHandler $eventHandler)
+    {
+        parent::__construct($entityManager, $facebookAdmin);
+        $this->eventHandler = $eventHandler;
+    }
+
     public function update(\DateTime $since = null) {
         if(! $since) {
             $since = new \DateTime();

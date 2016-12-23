@@ -13,11 +13,17 @@ parameters:
 
 services:
     tbn.event_updater:
-        class: TBN\MajDataBundle\Utils\EventUpdater
+        class: TBN\MajDataBundle\Updater\EventUpdater
         arguments:
           - "@doctrine.orm.default_entity_manager"
-          - "@tbn.event_handler"
           - "@tbn.social.facebook_admin"
+          - "@tbn.event_handler"
+    tbn.user_updater:
+        class: TBN\MajDataBundle\Updater\UserUpdater
+        arguments:
+          - "@doctrine.orm.default_entity_manager"
+          - "@tbn.social.facebook_admin"
+          - "@tbn.user_handler"
     tbn.event_fetcher:
         class: TBN\MajDataBundle\Fetcher\EventFetcher
         arguments:
@@ -102,14 +108,17 @@ services:
     tbn.util:
         class: TBN\MajDataBundle\Utils\Util
     tbn.echantillon_handler:
-        class: TBN\MajDataBundle\Utils\EchantillonHandler
+        class: TBN\MajDataBundle\Handler\EchantillonHandler
         arguments: ["@doctrine.orm.entity_manager"]
     tbn.doctrine_event_handler:
-        class: TBN\MajDataBundle\Utils\DoctrineEventHandler
+        class: TBN\MajDataBundle\Handler\DoctrineEventHandler
         arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler"]
     tbn.event_handler:
-        class: TBN\MajDataBundle\Utils\EventHandler
+        class: TBN\MajDataBundle\Handler\EventHandler
         arguments: ["@tbn.firewall", "@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.root_dir%/../web/uploads/temp"]
+    tbn.user_handler:
+        class: TBN\MajDataBundle\Handler\UserHandler
+        arguments: ["%kernel.root_dir%/../web/uploads/temp"]
     tbn.comparator:
         class: TBN\MajDataBundle\Utils\Comparator
         arguments: ["@tbn.util", "@comparator_cache"]

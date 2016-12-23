@@ -1,11 +1,15 @@
 <?php
 
-namespace TBN\MajDataBundle\Utils;
+namespace TBN\MajDataBundle\Handler;
 
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
-use TBN\MainBundle\Entity\Site;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use TBN\MajDataBundle\Utils\Cleaner;
+use TBN\MajDataBundle\Utils\Comparator;
+use TBN\MajDataBundle\Utils\Firewall;
+use TBN\MajDataBundle\Utils\Merger;
+use TBN\MajDataBundle\Utils\Monitor;
 
 
 /**

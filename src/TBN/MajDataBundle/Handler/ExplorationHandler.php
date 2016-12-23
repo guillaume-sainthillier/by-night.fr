@@ -6,7 +6,7 @@
  * Time: 20:32
  */
 
-namespace TBN\MajDataBundle\Utils;
+namespace TBN\MajDataBundle\Handler;
 
 
 use TBN\MajDataBundle\Entity\HistoriqueMaj;

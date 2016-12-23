@@ -6,7 +6,7 @@
  * Time: 18:55
  */
 
-namespace TBN\MajDataBundle\Utils;
+namespace TBN\MajDataBundle\Updater;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
@@ -31,19 +31,13 @@ abstract class Updater
     protected $entityManager;
 
     /**
-     * @var EventHandler
-     */
-    protected $eventHandler;
-
-    /**
      * @var FacebookAdmin
      */
     protected $facebookAdmin;
 
-    public function __construct(EntityManager $entityManager, EventHandler $eventHandler, FacebookAdmin $facebookAdmin)
+    public function __construct(EntityManager $entityManager, FacebookAdmin $facebookAdmin)
     {
         $this->entityManager = $entityManager;
-        $this->eventHandler = $eventHandler;
         $this->facebookAdmin = $facebookAdmin;
 
         $this->client = new Client([
@@ -64,6 +58,7 @@ abstract class Updater
                 $responses[$index] = (string)$response->getBody();
             },
             'rejected' => function ($reason, $index) use(& $responses) {
+                dump($reason);
                 $responses[$index] = null;
             },
         ]);

@@ -85,13 +85,11 @@ class FacebookAdmin extends FacebookEvents
     protected function afterPost(User $user, Agenda $agenda)
     {
         if ($agenda->getFbPostSystemId() === null && $this->siteInfo !== null && $this->siteInfo->getFacebookAccessToken() !== null) {
-            $site = $this->siteManager->getCurrentSite();
             $dateDebut = $this->getReadableDate($agenda->getDateDebut());
             $dateFin = $this->getReadableDate($agenda->getDateFin());
             $date = $this->getDuree($dateDebut, $dateFin);
             $place = $agenda->getPlace();
             $message = $user->getUsername() . ' présente : ' . $agenda->getNom() . ($place ? " @ " . $place->getNom() : '');
-
 
             //Authentification
             $request = $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed', [
@@ -128,98 +126,83 @@ class FacebookAdmin extends FacebookEvents
         return 0;
     }
 
-    public function getEventFullStatsFromIds(&$ids_event)
-    {
-        $idsPerRequest = 50;
-        $nbBatchs = ceil(count($ids_event) / $idsPerRequest);
-        $finalEvents = [];
-        $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
-
-        for ($i = 0; $i < $nbBatchs; $i++) {
-            $requests = [];
-            $batch_ids = array_slice($ids_event, $i * $idsPerRequest, $idsPerRequest);
-            try {
-                foreach ($batch_ids as $batch_id) {
-                    $requests[] = $this->client->request('GET', '/' . $batch_id, [
-                        'fields' => self::FULL_STATS_FIELDS
-                    ]);
-                }
-
-                //Exécution du batch
-                Monitor::bench('fb::getEventStatsFromIds', function () use (&$requests, &$finalEvents, $i) {
-                    $responses = $this->client->sendBatchRequest($requests);
-
-                    //Traitement des réponses
-                    foreach ($responses as $response) {
-                        if ($response->isError()) {
-                            $e = $response->getThrownException();
-                            Monitor::writeln('<error>Erreur dans le batch de la récupération des stats FB : ' . ($e ? $e->getMessage() : 'Erreur Inconnue') . '</error>');
-                        } else {
-                            $data = $response->getGraphPage();
-                            $finalEvents[$data->getField('id')] = [
-                                'participations' => $data->getField('attending_count'),
-                                'interets' => $data->getField('maybe_count'),
-                                'membres' => array_merge($this->findPaginated($data->getField('attending')), $this->findPaginated($data->getField('maybe'))),
-                                'url' => $this->getPagePictureURL($data)
-                            ];
-                        }
-                    }
-                });
-            } catch (FacebookSDKException $ex) {
-                Monitor::writeln('<error>Erreur dans la récupération détaillée des événements : ' . $ex->getMessage() . '</error>');
-            }
-        }
-
-        return $finalEvents;
-    }
-
-    public function getEventStatsFromIds(array $ids_event, $idsPerRequest = 50)
-    {
-        $requestPerBatch = 50;
+    private function getOjectsFromIds(array $ids, callable $requestFunction, callable $dataHandlerFunction, $idsPerRequest = 50, $requestPerBatch = 50) {
         $idsPerBatch = $requestPerBatch * $idsPerRequest;
-        $nbBatchs = ceil(count($ids_event) / $idsPerBatch);
-        $finalEvents = [];
+        $nbBatchs = ceil(count($ids) / $idsPerBatch);
+        $finalDatas = [];
         $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
         for ($i = 0; $i < $nbBatchs; $i++) {
             $requests = [];
-            $batch_ids = array_slice($ids_event, $i * $idsPerBatch, $idsPerBatch);
+            $batch_ids = array_slice($ids, $i * $idsPerBatch, $idsPerBatch);
             $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
             try {
                 for ($j = 0; $j < $nbIterations; $j++) {
                     $current_ids = array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
-                    $requests[] = $this->client->request('GET', '/', [
-                        'ids' => implode(',', $current_ids),
-                        'fields' => self::STATS_FIELDS
-                    ]);
+                    $requests[] = $requestFunction($current_ids);
                 }
 
                 //Exécution du batch
-                Monitor::bench('fb::getEventStatsFromIds', function () use (&$requests, &$finalEvents, $i, $nbBatchs) {
+                Monitor::bench('fb::getOjectsFromIds', function () use (&$requests, &$finalDatas, $dataHandlerFunction, $i, $nbBatchs) {
                     $responses = $this->client->sendBatchRequest($requests);
 
                     //Traitement des réponses
                     foreach ($responses as $response) {
                         if ($response->isError()) {
                             $e = $response->getThrownException();
-                            Monitor::writeln('<error>Erreur dans le batch de la récupération des stats FB : ' . ($e ? $e->getMessage() : 'Erreur Inconnue') . '</error>');
+                            Monitor::writeln('<error>Erreur dans le batch de la récupération des objets FB : ' . ($e ? $e->getMessage() : 'Erreur Inconnue') . '</error>');
                         } else {
                             $datas = $this->findAssociativeEvents($response);
                             foreach ($datas as $data) {
-                                $finalEvents[$data->getField('id')] = [
-                                    'participations' => $data->getField('attending_count'),
-                                    'interets' => $data->getField('maybe_count'),
-                                    'url' => $this->getPagePictureURL($data)
-                                ];
+                                $currentDatas = $dataHandlerFunction($data);
+                                foreach($currentDatas as $key => $currentData) {
+                                    $finalDatas[$key] = $currentData;
+                                }
                             }
                         }
                     }
                 });
             } catch (FacebookSDKException $ex) {
-                Monitor::writeln('<error>Erreur dans la récupération détaillée des événements : ' . $ex->getMessage() . '</error>');
+                Monitor::writeln('<error>Erreur dans la récupération détaillée des objets : ' . $ex->getMessage() . '</error>');
             }
         }
 
-        return $finalEvents;
+        return $finalDatas;
+    }
+
+    public function getUserStatsFromIds(array $ids_users, $idsPerRequest = 50)
+    {
+        $requestFunction = function(array $current_ids) {
+              return $this->client->request('GET', '/', [
+                  'ids' => implode(',', $current_ids),
+                  'fields' => self::USERS_FIELDS
+              ]);
+        };
+
+        $dataHandlerFunction = function($data) {
+            return [ $data->getField('id') => [
+                    'url' => $this->getPagePictureURL($data, false)
+            ]];
+        };
+        return $this->getOjectsFromIds($ids_users, $requestFunction, $dataHandlerFunction, $idsPerRequest);
+    }
+
+    public function getEventStatsFromIds(array $ids_event, $idsPerRequest = 50)
+    {
+        $requestFunction = function(array $current_ids) {
+              return $this->client->request('GET', '/', [
+                  'ids' => implode(',', $current_ids),
+                  'fields' => self::STATS_FIELDS
+              ]);
+        };
+
+        $dataHandlerFunction = function($data) {
+            return [ $data->getField('id') => [
+                    'participations' => $data->getField('attending_count'),
+                    'interets' => $data->getField('maybe_count'),
+                    'url' => $this->getPagePictureURL($data)
+            ]];
+        };
+        return $this->getOjectsFromIds($ids_event, $requestFunction, $dataHandlerFunction, $idsPerRequest);
     }
 
     public function updateEventStatut($id_event, $userAccessToken, $isParticiper)
@@ -377,41 +360,6 @@ class FacebookAdmin extends FacebookEvents
         return [
             'interets' => $interets,
             'participations' => $participations
-        ];
-    }
-
-    public function getEventStats($id_event)
-    {
-        $nbParticipations = 0;
-        $nbInterets = 0;
-        $participations = [];
-        $interets = [];
-        $image = null;
-
-        try {
-            $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
-
-            $request = $this->client->sendRequest('GET', '/' . $id_event . '', [
-                'fields' => self::FULL_STATS_FIELDS,
-                'limit' => 1000
-            ]);
-            $graph = $request->getGraphPage();
-
-            $image = $this->getPagePictureURL($graph);
-            $nbParticipations = $graph->getField('attending_count');
-            $nbInterets = $graph->getField('maybe_count');
-            $participations = $this->findPaginated($graph->getField('attending'));
-            $interets = $this->findPaginated($graph->getField('maybe'));
-
-        } catch (FacebookSDKException $ex) {
-            $this->logger->error($ex);
-        }
-
-        return [
-            'image' => $image,
-            'nbParticipations' => $nbParticipations,
-            'nbInterets' => $nbInterets,
-            'membres' => array_merge($participations, $interets)
         ];
     }
 

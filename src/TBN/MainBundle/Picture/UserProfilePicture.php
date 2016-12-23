@@ -35,6 +35,10 @@ class UserProfilePicture
             return $this->cacheManager->getBrowserPath($this->helper->asset($user, 'imageFile'), $thumb);
         }
 
+        if($user->getSystemPath()) {
+            return $this->cacheManager->getBrowserPath($this->helper->asset($user, 'imageSystemFile'), $thumb);
+        }
+
         $info = $user->getInfo();
         if($info) {
             if ($info->getFacebookProfilePicture() !== null) {

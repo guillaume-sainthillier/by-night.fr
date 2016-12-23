@@ -27,6 +27,7 @@ class Facebook extends Social
     protected $client;
 
     const FIELDS = "id,name,updated_time,place,start_time,end_time,owner{category,website,phone,picture.type(large).redirect(false)},cover,ticket_uri,description,picture.type(large).redirect(false),attending_count,maybe_count";
+    const USERS_FIELDS = "id,picture.type(large).redirect(false),cover";
     const STATS_FIELDS = "id,picture.type(large).redirect(false),cover,attending_count,maybe_count";
     const FULL_STATS_FIELDS = "id,picture.type(large).redirect(false),cover,attending_count,maybe_count,attending.limit(500){name,picture.type(square).redirect(false)},maybe.limit(500){name,picture.type(square).redirect(false)}";
     const MEMBERS_FIELDS = "id,attending.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)},maybe.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)}";

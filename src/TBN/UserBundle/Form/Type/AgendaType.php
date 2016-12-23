@@ -14,13 +14,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use TBN\MajDataBundle\Utils\DoctrineEventHandler;
+use TBN\MajDataBundle\Handler\DoctrineEventHandler;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class AgendaType extends AbstractType
 {
     /**
-     * @var DoctrineEventHandler
+     * @var \TBN\MajDataBundle\Handler\DoctrineEventHandler
      */
     private $doctrineEventHandler;
 
