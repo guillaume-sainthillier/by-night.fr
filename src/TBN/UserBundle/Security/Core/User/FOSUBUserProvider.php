@@ -154,7 +154,7 @@ class FOSUBUserProvider extends BaseClass
         }
 
         if ($user->getFirstname() === null && $user->getLastname() === null) {
-            $nom_prenoms = preg_split("/ /", $response->getRealname());
+            $nom_prenoms = preg_split("/ /", $response->getRealName());
             $user->setFirstname($nom_prenoms[0]);
             if (count($nom_prenoms) > 0) {
                 $user->setLastname(implode(" ", array_slice($nom_prenoms, 1)));

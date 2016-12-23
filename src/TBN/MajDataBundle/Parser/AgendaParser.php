@@ -2,7 +2,7 @@
 
 namespace TBN\MajDataBundle\Parser;
 
-use Symfony\Component\Console\Output\OutputInterface;
+
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use TBN\AgendaBundle\Entity\Agenda;

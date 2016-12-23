@@ -11,13 +11,14 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\CommentBundle\Entity\Comment;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\CommentBundle\Repository\CommentRepository;
 
 
 class ReplyController extends Controller
 {
     /**
      *
-     * @return TBN\CommentBundle\Repository\CommentRepository
+     * @return CommentRepository
      */
     protected function getCommentRepo()
     {

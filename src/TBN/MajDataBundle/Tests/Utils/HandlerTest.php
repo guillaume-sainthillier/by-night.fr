@@ -3,14 +3,11 @@
 namespace TBN\MajDataBundle\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Output\ConsoleOutput;
+
+
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MainBundle\Entity\Site;
-use TBN\MajDataBundle\Handler\EventHandler;
-use TBN\MajDataBundle\Utils\Merger;
-use TBN\MajDataBundle\Utils\Monitor;
+
 
 class HandlerTest extends KernelTestCase
 {

@@ -9,18 +9,18 @@
 namespace TBN\MajDataBundle\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Helper\ProgressBar;
+
 use Symfony\Component\Console\Output\OutputInterface;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Entity\Exploration;
-use TBN\MajDataBundle\Handler\EventHandler;
+
 use TBN\MajDataBundle\Parser\Common\FaceBookParser;
 use TBN\MajDataBundle\Parser\ParserInterface;
 use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Handler\EchantillonHandler;
-use TBN\MajDataBundle\Handler\ExplorationHandler;
+
+
 use TBN\MajDataBundle\Utils\Firewall;
 use TBN\MajDataBundle\Utils\Monitor;
 

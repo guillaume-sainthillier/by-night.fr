@@ -5,6 +5,7 @@ namespace TBN\MajDataBundle\Parser\Common;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 
+use TBN\MainBundle\Entity\SiteRepository;
 use TBN\MajDataBundle\Utils\Monitor;
 use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -186,42 +187,6 @@ class FaceBookParser extends AgendaParser
         }
 
         return $uniqueEvents;
-    }
-
-
-    protected function filterEvents(& $events)
-    {
-        $uniqs = array_unique($events);
-        $filtered = array_filter($uniqs, function (GraphNode $event) {
-            $lastUpdatedEventTime = $event->getField('updated_time');
-            $exploration = $this->firewall->getExploration($event->getField('id'), $this->getSite());
-
-            //Connu et (brigand ou non mis à jour) -> on ejecte
-            if (null !== $exploration &&
-                ($exploration->getBlackListed() === true ||
-                    //Plus grand = plus récent
-                    $this->isMoreRecent($lastUpdatedEventTime, $exploration->getLastUpdated()))
-            ) {
-                return false;
-            }
-
-            //Lieu déjà connu pour être moisi -> on ejecte
-            $place = $event->getField('place');
-            if ($place && $place->getField('id')) {
-                $placeId = $place->getField('id');
-                $explorationPlace = $this->firewall->getExploration($placeId, $this->getSite());
-                if (null !== $explorationPlace && $explorationPlace->getBlackListed() === true) {
-                    return false;
-                }
-            }
-
-            //Pas connu des services de police -> présumé innocent
-            return true;
-        });
-
-        return array_map(function (GraphNode $event) {
-            return $event->getField('id');
-        }, $filtered);
     }
 
     private function isMoreRecent(\DateTime $date1 = null, \DateTime $date2 = null)

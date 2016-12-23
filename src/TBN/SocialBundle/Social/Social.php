@@ -192,9 +192,7 @@ abstract class Social
             if ($ex instanceof SocialException) {
                 $type = $ex->getType();
             }
-            /**
-             * @var Session $session
-             */
+
             $this->session->getFlashBag()->add(
                 $type,
                 sprintf("Une erreur est survenue sur <b>%s</b> : %s", $this->getName(), $ex->getMessage())
@@ -224,6 +222,7 @@ abstract class Social
     protected abstract function getName();
 
     /**
+     * @param User $user
      * @param Agenda $agenda La soirée concernée
      * @throws SocialException si une erreur est survenue
      */

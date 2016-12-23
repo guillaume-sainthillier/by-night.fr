@@ -4,7 +4,7 @@ namespace TBN\MajDataBundle\Utils;
 
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MajDataBundle\Utils\Comparator;
+
 
 /**
  * Description of Merger

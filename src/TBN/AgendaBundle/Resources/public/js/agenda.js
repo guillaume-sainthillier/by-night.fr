@@ -8,7 +8,7 @@ $(function () {
     init_soirees();
 });
 
-function init_soirees(selector) {
+function init_soirees() {
     init_pagination();
 }
 

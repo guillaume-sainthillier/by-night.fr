@@ -11,7 +11,7 @@ Profile = {
                 var elem = $($(this).attr('href'));
                 $.scrollTo(elem.offset().top - Profile.settings.offsetTop, Profile.settings.scrollSpeed, {easing: Profile.settings.easingType});
                 return false;
-            })
+            });
             $("#btnDelete").click(function () {
                 $("#modalDelete").modal();
             });

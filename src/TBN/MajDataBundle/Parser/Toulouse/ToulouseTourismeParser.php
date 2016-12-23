@@ -17,7 +17,7 @@ class ToulouseTourismeParser extends LinksParser
     {
         parent::__construct();
 
-        $this->setUrl('http://www.toulouse-tourisme.com/offre/recherche/Sur-place/Agenda//~~~/page-1');
+        $this->setURL('http://www.toulouse-tourisme.com/offre/recherche/Sur-place/Agenda//~~~/page-1');
         $this->setBaseUrl('http://www.toulouse-tourisme.com/');
     }
 
@@ -155,7 +155,7 @@ class ToulouseTourismeParser extends LinksParser
 
             $next = $this->parser->filter("#pagenavigator .next a");
             if ($next->count() > 0) {
-                $this->setUrl($this->getBaseUrl() . $next->eq(0)->attr("href"));
+                $this->setURL($this->getBaseUrl() . $next->eq(0)->attr("href"));
                 $this->parseContent();
             } else {
                 $this->url = null;

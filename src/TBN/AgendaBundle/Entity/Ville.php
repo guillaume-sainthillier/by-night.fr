@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use TBN\MainBundle\Entity\Site;
 
 /**
  * Ville
@@ -203,10 +204,10 @@ class Ville
     /**
      * Set site
      *
-     * @param \TBN\MainBundle\Entity\Site $site
+     * @param Site $site
      * @return Ville
      */
-    public function setSite(\TBN\MainBundle\Entity\Site $site)
+    public function setSite(Site $site)
     {
         $this->site = $site;
 

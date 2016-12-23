@@ -17,11 +17,11 @@ use TBN\MainBundle\App\AppManager;
 use TBN\MainBundle\Picture\EventProfilePicture;
 use TBN\MajDataBundle\Utils\Monitor;
 use TBN\UserBundle\Entity\SiteInfo;
-use TBN\MajDataBundle\Parser\AgendaParser;
+
 use TBN\MainBundle\Site\SiteManager;
 use TBN\UserBundle\Entity\User;
 
-use Facebook\GraphNodes\GraphNode;
+
 use Facebook\Exceptions\FacebookSDKException;
 
 /**

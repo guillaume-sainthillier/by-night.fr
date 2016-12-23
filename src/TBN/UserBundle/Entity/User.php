@@ -7,6 +7,8 @@ use FOS\UserBundle\Model\User as BaseUser;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Doctrine\Common\Collections\ArrayCollection;
+use TBN\AgendaBundle\Entity\Calendrier;
+use TBN\MainBundle\Entity\Site;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -224,17 +226,7 @@ class User extends BaseUser
         return $this->imageSystemFile;
     }
 
-    public function getExpiresAt()
-    {
-        return $this->expiresAt;
-    }
-
-    public function getCredentialsExpireAt()
-    {
-        return $this->credentialsExpireAt;
-    }
-
-        public function getUsername()
+    public function getUsername()
     {
         return ucfirst(parent::getUsername());
     }
@@ -391,10 +383,10 @@ class User extends BaseUser
     /**
      * Set info
      *
-     * @param \TBN\UserBundle\Entity\UserInfo $info
+     * @param UserInfo $info
      * @return User
      */
-    public function setInfo(\TBN\UserBundle\Entity\UserInfo $info = null)
+    public function setInfo(UserInfo $info = null)
     {
         $this->info = $info;
 
@@ -414,10 +406,10 @@ class User extends BaseUser
     /**
      * Add calendriers
      *
-     * @param \TBN\AgendaBundle\Entity\Calendrier $calendriers
+     * @param Calendrier $calendriers
      * @return User
      */
-    public function addCalendrier(\TBN\AgendaBundle\Entity\Calendrier $calendriers)
+    public function addCalendrier(Calendrier $calendriers)
     {
         $this->calendriers[] = $calendriers;
 
@@ -427,9 +419,9 @@ class User extends BaseUser
     /**
      * Remove calendriers
      *
-     * @param \TBN\AgendaBundle\Entity\Calendrier $calendriers
+     * @param Calendrier $calendriers
      */
-    public function removeCalendrier(\TBN\AgendaBundle\Entity\Calendrier $calendriers)
+    public function removeCalendrier(Calendrier $calendriers)
     {
         $this->calendriers->removeElement($calendriers);
     }
@@ -447,10 +439,10 @@ class User extends BaseUser
     /**
      * Set site
      *
-     * @param \TBN\MainBundle\Entity\Site $site
+     * @param Site $site
      * @return User
      */
-    public function setSite(\TBN\MainBundle\Entity\Site $site)
+    public function setSite(Site $site)
     {
         $this->site = $site;
 

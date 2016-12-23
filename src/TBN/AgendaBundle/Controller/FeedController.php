@@ -9,7 +9,7 @@ class FeedController extends Controller
 {
     /**
      * Generate the article feed
-     *
+     * @param string $format
      * @return Response XML Feed
      */
     public function feedAction($format)

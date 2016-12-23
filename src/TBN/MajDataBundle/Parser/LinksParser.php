@@ -51,7 +51,7 @@ abstract class LinksParser extends AgendaParser
         $agendas = [];
 
         foreach ($links as $link) {
-            $this->setUrl($link);
+            $this->setURL($link);
             $this->parseContent(); //Positionne le parser sur chaque lien
 
             try {

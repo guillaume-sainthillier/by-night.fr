@@ -12,7 +12,7 @@ namespace TBN\MajDataBundle\Handler;
 use Doctrine\ORM\EntityManagerInterface;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
-use TBN\MainBundle\Entity\Site;
+
 
 class EchantillonHandler
 {

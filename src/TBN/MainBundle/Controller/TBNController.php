@@ -3,8 +3,7 @@
 namespace TBN\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use TBN\AgendaBundle\Entity\Agenda;
+
 
 class TBNController extends Controller
 {

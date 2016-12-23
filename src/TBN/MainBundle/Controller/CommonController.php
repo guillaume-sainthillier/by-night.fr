@@ -8,9 +8,7 @@
 
 namespace TBN\MainBundle\Controller;
 
-
 use TBN\SocialBundle\Social\FacebookAdmin;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 class CommonController extends TBNController
 {

@@ -42,7 +42,7 @@ services:
            
     tbn.twig.main_extension:
         class: TBN\MainBundle\Twig\MainExtension
-        arguments : ["@site_manager", "@service_container"]
+        arguments: ["@site_manager", "@service_container"]
         tags:
             - { name: twig.extension }
 #Forms

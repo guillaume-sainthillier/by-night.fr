@@ -3,6 +3,7 @@
 namespace TBN\AgendaBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use TBN\UserBundle\Entity\User;
 
 /**
  * Calendrier
@@ -52,7 +53,7 @@ class Calendrier
     protected $agenda;
 
     /**
-     * @var datetime
+     * @var \DateTime
      *
      * @ORM\Column(name="last_date", type="datetime")
      */
@@ -140,11 +141,11 @@ class Calendrier
     /**
      * Set user
      *
-     * @param \TBN\UserBundle\Entity\User $user
+     * @param User $user
      *
      * @return Calendrier
      */
-    public function setUser(\TBN\UserBundle\Entity\User $user)
+    public function setUser(User $user)
     {
         $this->user = $user;
 
@@ -164,11 +165,11 @@ class Calendrier
     /**
      * Set agenda
      *
-     * @param \TBN\AgendaBundle\Entity\Agenda $agenda
+     * @param Agenda $agenda
      *
      * @return Calendrier
      */
-    public function setAgenda(\TBN\AgendaBundle\Entity\Agenda $agenda)
+    public function setAgenda(Agenda $agenda)
     {
         $this->agenda = $agenda;
 

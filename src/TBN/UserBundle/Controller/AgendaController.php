@@ -6,14 +6,12 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Validator\ConstraintViolation;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MajDataBundle\Utils\ExplorationHandler;
+use TBN\MajDataBundle\Handler\ExplorationHandler;
 use TBN\UserBundle\Form\Type\AgendaType;
 use TBN\AgendaBundle\Entity\Calendrier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Vich\UploaderBundle\Mapping\PropertyMapping;
 
 
 class AgendaController extends Controller
@@ -166,7 +164,7 @@ class AgendaController extends Controller
             $plurielUpdate = $explorationHandler->getNbUpdates() > 1 ? "s" : "";
             $indicatifInsert = $explorationHandler->getNbInserts() == 1 ? "a": "ont";
             $indicatifUpdate = $explorationHandler->getNbUpdates() == 1 ? "a": "ont";
-
+            $message = null;
             if($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
                 $message = sprintf(
                     "<strong>%d</strong> événément%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !",

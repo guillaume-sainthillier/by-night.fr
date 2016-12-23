@@ -11,8 +11,7 @@ namespace TBN\MainBundle\Twig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use TBN\MainBundle\Site\SiteManager;
-use TBN\SocialBundle\Social\Facebook;
-use TBN\SocialBundle\Social\FacebookAdmin;
+
 
 /**
  * Description of TBNExtension

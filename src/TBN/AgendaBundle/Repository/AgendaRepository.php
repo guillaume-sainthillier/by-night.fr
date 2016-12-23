@@ -3,8 +3,8 @@ namespace TBN\AgendaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Validator\Constraints\DateTime;
-use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
+
+
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
@@ -475,7 +475,7 @@ class AgendaRepository extends EntityRepository
 
         try {
             $agenda = $query->getSingleResult();
-        } catch (\Doctrine\Orm\NoResultException $e) {
+        } catch (NoResultException $e) {
             $agenda = null;
         }
 

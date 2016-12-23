@@ -12,8 +12,10 @@
 namespace TBN\UserBundle\Controller;
 
 use FOS\UserBundle\Controller\ResettingController as BaseController;
+use FOS\UserBundle\Model\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller managing the resetting of the password
@@ -27,6 +29,8 @@ class ResettingController extends BaseController
 
     /**
      * Request reset user password: submit form and send email
+     * @param Request $request
+     * @return Response
      */
     public function sendEmailAction(Request $request)
     {

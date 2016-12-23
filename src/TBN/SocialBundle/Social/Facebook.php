@@ -2,15 +2,17 @@
 
 namespace TBN\SocialBundle\Social;
 
-use Facebook\Exceptions\FacebookResponseException;
+
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphEdge;
+use TBN\AgendaBundle\Entity\Agenda;
 use TBN\SocialBundle\Exception\SocialException;
 use Facebook\Exceptions\FacebookSDKException;
 use TBN\MajDataBundle\Utils\Monitor;
 
 use Facebook\GraphNodes\GraphNode;
 use Facebook\Facebook as Client;
+use TBN\UserBundle\Entity\User;
 
 /**
  * Description of Facebook
@@ -150,12 +152,12 @@ class Facebook extends Social
         throw new SocialException("Les droits de l'utilisateur sont insufisants pour récupérer des infos sur une page Facebook");
     }
 
-    protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    protected function post(User $user, Agenda $agenda)
     {
         throw new SocialException("Les droits de l'utilisateur sont insufisants pour poster sur Facebook");
     }
 
-    protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    protected function afterPost(User $user, Agenda $agenda)
     {
         throw new SocialException("Les droits du système sont insufisants pour poster sur une page Facebook");
     }

@@ -3,10 +3,10 @@
 namespace TBN\MainBundle\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
+
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\PropertyAccess\PropertyAccess;
+
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
@@ -28,7 +28,7 @@ class ImageTypeExtension extends AbstractTypeExtension
     /**
      * Add the image_path option
      *
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

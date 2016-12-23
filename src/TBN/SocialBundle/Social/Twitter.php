@@ -3,6 +3,8 @@
 
 namespace TBN\SocialBundle\Social;
 
+use TBN\AgendaBundle\Entity\Agenda;
+use TBN\UserBundle\Entity\User;
 use TwitterOAuth\Auth\SingleUserAuth;
 /**
  * Serializer Namespace
@@ -51,7 +53,7 @@ class Twitter extends Social
         return 0;
     }
 
-    protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    protected function post(User $user, Agenda $agenda)
     {
 
         $info = $user->getInfo();
@@ -79,7 +81,7 @@ class Twitter extends Social
         }
     }
 
-    protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    protected function afterPost(User $user, Agenda $agenda)
     {
 
         $info = $this->siteManager->getSiteInfo();
