@@ -39,7 +39,6 @@ var Widgets = {
                     btn.attr("disabled", true).prepend("<i class='fa fa-spin fa-spinner'></i> ");
                     $.get(btn.attr('href')).done(function (content) {
                         btn.remove();
-                        console.log(containerBody);
                         containerBody.append(content);
                         container.find('.scrollable').mCustomScrollbar("scrollTo", "bottom");
                         Widgets.initMoreWidgets(container);
