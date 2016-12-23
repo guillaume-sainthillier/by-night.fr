@@ -12,6 +12,7 @@ use TBN\AgendaBundle\Entity\Calendrier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 
 class AgendaController extends Controller
