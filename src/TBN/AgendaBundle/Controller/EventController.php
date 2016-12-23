@@ -151,6 +151,7 @@ class EventController extends Controller
 
     protected function handleSearch(SearchAgenda $search, $type, $tag, $ville, Place $place = null)
     {
+        $term = null;
         if ($ville !== null) {
             $term = null;
             $search->setCommune([$ville]);
@@ -184,7 +185,6 @@ class EventController extends Controller
             }
         } else {
             $formAction = $this->generateUrl('tbn_agenda_agenda');
-            $term = null;
         }
 
         $search->setTerm($term);

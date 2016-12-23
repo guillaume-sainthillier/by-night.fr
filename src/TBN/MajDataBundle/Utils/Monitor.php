@@ -157,6 +157,7 @@ class Monitor
 
     public static function bench($message, callable $function)
     {
+        $stopwatch = null;
         if(self::$enableMonitoring) {
             if (!isset(self::$stats[$message])) {
                 self::$stats[$message] = [

@@ -3,7 +3,6 @@
 namespace TBN\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use TBN\AgendaBundle\Geolocalize\BoundaryInterface;
