@@ -90,6 +90,13 @@ tbn_agenda_programme_tv:
     path: /programme-tv
     methods: [GET]
     defaults: { _controller: TBNAgendaBundle:MenuDroit:programmeTV}
+
+tbn_agenda_tweeter_feed:
+    path: /tweeter-feed/{max_id}
+    methods: [GET]
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:twitter, max_id: null}
+    requirements:
+        max_id: (\d+)
     
 tbn_agenda_top_membres:
     path: /top/membres/{page}

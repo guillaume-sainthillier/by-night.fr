@@ -52,10 +52,13 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     {
         return [
             new \Twig_SimpleFilter('diff_date', [$this, 'diffDate']),
+            new \Twig_SimpleFilter('stats_diff_date', [$this, 'statsDiffDate']),
             new \Twig_SimpleFilter('parse_tags', [$this, 'parseTags']),
             new \Twig_SimpleFilter('resume', [$this, 'resume']),
             new \Twig_SimpleFilter('partial_extends', [$this, 'partialExtendsFilter']),
-            new \Twig_SimpleFilter('url_decode', [$this, 'urlDecode'])
+            new \Twig_SimpleFilter('url_decode', [$this, 'urlDecode']),
+            new \Twig_SimpleFilter('tweet', [$this, 'tweet']),
+            new \Twig_SimpleFilter('datetime', [$this, 'getDateTime'])
         ];
     }
 
@@ -65,6 +68,32 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             "site" => $this->siteManager->getCurrentSite(),
             "siteInfo" => $this->siteManager->getSiteInfo()
         ];
+    }
+
+    public function getDateTime($string) {
+        return new \DateTime($string);
+    }
+
+    public function tweet($tweet) {
+        $linkified = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
+        $hashified = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
+        $mentionified = '/(^|[\n\s])@([^\s"\t\n\r<:]*)/is';
+
+        $prettyTweet = preg_replace(
+            array(
+                $linkified,
+                $hashified,
+                $mentionified
+            ),
+            array(
+                '<a href="$1" class="link-tweet" target="_blank">$1</a>',
+                '$1<a class="link-hashtag" href="https://twitter.com/search?q=%23$2&src=hash" target="_blank">#$2</a>',
+                '$1<a class="link-mention" href="http://twitter.com/$2" target="_blank">@$2</a>'
+            ),
+            $tweet
+        );
+
+        return $prettyTweet;
     }
 
     public function parseTags($texte)
@@ -81,32 +110,62 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function diffDate(\DateTime $date)
     {
-        $diff = $date->diff(new \DateTime);
+        return $this->statsDiffDate($date)['full'];
+    }
 
+    public function statsDiffDate(\DateTime $date)
+    {
+        $diff = $date->diff(new \DateTime);
 
         if ($diff->y > 0) //Années
         {
-            $message = sprintf("Il y a %d %s", $diff->y, "an" . ($diff->y > 1 ? "s" : ""));
+            return [
+                'short' => sprintf("%d an%s", $diff->y, $diff->y > 1 ? "s" : ""),
+                'long' => sprintf("%d an%s", $diff->y, $diff->y > 1 ? "s" : ""),
+                'full' => sprintf("Il y a %d %s", $diff->y, $diff->y > 1 ? "s" : "")
+            ];
         } else if ($diff->m > 0) //Mois
         {
-            $message = sprintf("Il y a %d mois", $diff->m);
+            return [
+                'short' => sprintf("%d mois", $diff->m),
+                'long' => sprintf("%d mois", $diff->m),
+                'full' => sprintf("Il y a %d mois", $diff->m)
+            ];
         } else if ($diff->d > 0) //Jours
         {
-            $message = sprintf("Il y a %d jours", $diff->d);
+            return [
+                'short' => sprintf("%d j", $diff->d),
+                'long' => sprintf("%d jours", $diff->d),
+                'full' => sprintf("Il y a %d jours", $diff->d)
+            ];
         } else if ($diff->h > 0) //Heures
         {
-            $message = sprintf("Il y a %d %s", $diff->h, "heure" . ($diff->h > 1 ? "s" : ""));
+            return [
+                'short' => sprintf("%d h", $diff->h),
+                'long' => sprintf("%d heure%s", $diff->h, $diff->h > 1 ? "s" : ""),
+                'full' => sprintf("Il y a %d heure%s", $diff->h, "heure" . $diff->h > 1 ? "s" : "")
+            ];
         } else if ($diff->i > 0) //Minutes
         {
-            $message = sprintf("Il y a %d %s", $diff->i, "minute" . ($diff->i > 1 ? "s" : ""));
+            return [
+                'short' => sprintf("%d min", $diff->i),
+                'long' => sprintf("%d minute%s", $diff->i, $diff->i > 1 ? "s" : ""),
+                'full' => sprintf("Il y a %d minute%s", $diff->i, $diff->i > 1 ? "s" : "")
+            ];
         } else if ($diff->s > 30) //Secondes
         {
-            $message = sprintf("Il y a %d secondes", $diff->s);
-        } else {
-            $message = "A l'instant";
+            return [
+                'short' => sprintf("%d s", $diff->s),
+                'long' => sprintf("%d seconde%s", $diff->s, $diff->s > 1 ? "s" : ""),
+                'full' => sprintf("Il y a %d seconde%s", $diff->s, $diff->s > 1 ? "s" : "")
+            ];
         }
 
-        return $message;
+        return [
+            'short' => sprintf("0 s"),
+            'long' => sprintf("à l'instant"),
+            'full' => sprintf("A l'instant")
+        ];
     }
 
     public function getAuthorizationSiteUrl($name)

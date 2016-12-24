@@ -2,6 +2,7 @@
 
 namespace TBN\AgendaBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -14,6 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 class MenuDroitController extends Controller
 {
     const FB_MEMBERS_LIMIT = 50;
+    const TWEET_LIMIT = 25;
     const WIDGET_ITEM_LIMIT = 7;
 
     public function programmeTVAction()
@@ -29,6 +31,39 @@ class MenuDroitController extends Controller
             ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
             ->setPublic()
+        ;
+    }
+
+    public function twitterAction($max_id = null) {
+        $results = $this->get('tbn.social.twitter')->getTimeline($max_id, self::TWEET_LIMIT);
+
+        $nextLink = null;
+        if(isset($results['search_metadata']['next_results'])) {
+            parse_str($results['search_metadata']['next_results'], $infos);
+
+            if(isset($infos['?max_id'])) {
+                $nextLink = $this->generateUrl('tbn_agenda_tweeter_feed', [
+                    'max_id' => $infos['?max_id']
+                ]);
+            }
+        }
+
+        $response =  $this->render('TBNAgendaBundle:Hinclude:tweets.html.twig', [
+            'tweets' => $results['statuses'],
+            'hasNextLink' => $nextLink
+        ]);
+
+        if(! $max_id || count($results['statuses']) !== self::TWEET_LIMIT) {
+            list($expire, $ttl) = $this->getSecondsUntil(1);
+        }else {
+            $expire = new \DateTime;
+            $expire->modify("+1 year");
+            $ttl = 31536000;;
+        }
+
+        return $response
+            ->setSharedMaxAge($ttl)
+            ->setExpires($expire)
         ;
     }
 
