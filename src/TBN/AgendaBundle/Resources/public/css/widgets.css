@@ -79,7 +79,7 @@ Then, run this script to get the list.
 }
 #widgets .widget .scrollable {
   max-height: 500px;
-  overflow-y: auto;
+  overflow-y: hidden;
   position: relative;
 }
 #widgets .widget .scrollable.scrollable-large {
@@ -91,6 +91,149 @@ Then, run this script to get the list.
 #widgets .widget .membres .fb_membres a {
   display: block;
   float: left;
+}
+#widgets .widget .tweet-list,
+#widgets .widget .timeline-Tweet-actions {
+  list-style: none;
+  padding: 0;
+}
+#widgets .widget .timeline-TweetList-tweet {
+  border-top: 1px solid rgba(15, 70, 100, 0.12);
+}
+#widgets .widget .Avatar {
+  max-width: 100%;
+  max-height: 100%;
+}
+#widgets .widget .timeline-Tweet {
+  padding: 10px;
+  margin-right: 10px;
+}
+#widgets .widget .timeline-Tweet-retweetCredit {
+  margin-bottom: 8px;
+  margin-left: 18px;
+  font-size: 80%;
+  color: #889ba6;
+}
+#widgets .widget .timeline-Tweet-retweetCreditIcon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  margin-right: 4px;
+  /*font-size: 80%;*/
+}
+#widgets .widget .timeline-Tweet-author {
+  position: relative;
+  margin-bottom: 2px;
+  padding-left: 40px;
+}
+#widgets .widget .timeline-Tweet-inReplyTo {
+  padding-left: 40px;
+  /*font-size: 80%;*/
+  font-weight: 300;
+  color: #8899a6;
+}
+#widgets .widget .timeline-Tweet-text {
+  margin-left: 40px;
+  margin-bottom: 12px;
+  /*font-size: 80%;*/
+  line-height: 18px;
+  font-weight: 400;
+  /*white-space: pre-wrap;*/
+  word-wrap: break-word;
+}
+#widgets .widget .timeline-Tweet-text[dir=ltr] {
+  text-align: left;
+  direction: ltr;
+}
+#widgets .widget .timeline-Tweet-text[dir=rtl] {
+  text-align: right;
+  direction: rtl;
+}
+#widgets .widget .timeline-Tweet-metadata {
+  float: right;
+  margin-top: 2px;
+}
+#widgets .widget .timeline-Tweet-timestamp {
+  /*font-size: 80%;*/
+  line-height: 18px;
+}
+#widgets .widget .timeline-Tweet-actions {
+  margin-left: 40px;
+}
+#widgets .widget .timeline-Tweet-action {
+  display: inline-block;
+  /*font-size: 120%;*/
+}
+#widgets .widget .timeline-Tweet-action + .timeline-Tweet-action {
+  margin-left: 20px;
+}
+#widgets .widget .timeline-Tweet--isRetweet {
+  padding-top: 7px;
+}
+#widgets .widget .timeline-Tweet:hover {
+  background-color: rgba(160, 200, 220, 0.12);
+}
+#widgets .widget .timeline-Tweet-timestamp,
+#widgets .widget .timeline-Tweet-action a {
+  color: #e1e8ed;
+}
+#widgets .widget .timeline-Tweet:hover .timeline-Tweet-timestamp,
+#widgets .widget .timeline-Tweet:hover .timeline-Tweet-action a {
+  color: #667580;
+}
+#widgets .widget .TweetAction:active,
+#widgets .widget .TweetAction:focus,
+#widgets .widget .TweetAction:hover {
+  text-decoration: none;
+}
+#widgets .widget .TweetAction--heart:active .Icon,
+#widgets .widget .TweetAction--heart:focus .Icon,
+#widgets .widget .TweetAction--heart:hover .Icon {
+  color: #ff5454;
+}
+#widgets .widget .TweetAction--share:active .Icon,
+#widgets .widget .TweetAction--share:focus .Icon,
+#widgets .widget .TweetAction--share:hover .Icon {
+  color: #36a9e1;
+}
+#widgets .widget .TweetAction--reply:active .Icon,
+#widgets .widget .TweetAction--reply:focus .Icon,
+#widgets .widget .TweetAction--reply:hover .Icon {
+  color: #bdea74;
+}
+#widgets .widget .TweetAuthor {
+  max-width: 100%;
+  overflow: hidden!important;
+  text-overflow: ellipsis!important;
+  white-space: nowrap!important;
+  word-wrap: normal !important;
+}
+#widgets .widget .TweetAuthor-avatar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+#widgets .widget .TweetAuthor-name {
+  /*font-size: 80%;*/
+  line-height: 18px;
+  font-weight: 700;
+}
+#widgets .widget .TweetAuthor-screenName {
+  /*font-size: 80%;*/
+  line-height: 18px;
+  font-weight: 300;
+  color: #8899A6;
+}
+#widgets .widget .SandboxRoot.env-bp-min .TweetAuthor-avatar {
+  position: static;
+  top: auto;
+  left: auto;
+  float: left;
+  margin-right: 8px;
 }
 #widgets .panel-default .panel-heading {
   background-color: white;
