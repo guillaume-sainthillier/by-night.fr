@@ -193,7 +193,7 @@ class EventController extends Controller
     }
 
     /**
-     * @Cache(expires="+4 hours", smaxage="14400")
+     * @Cache(expires="+2 hours", smaxage="7200")
      */
     public function indexAction()
     {
@@ -212,7 +212,7 @@ class EventController extends Controller
     }
 
     /**
-     * @Cache(expires="+5 minutes", smaxage="300")
+     * @Cache(expires="+30 minutes", smaxage="1800")
      */
     public function listAction(Request $request, $page, $type, $tag, $ville, $slug, $paginateRoute = 'tbn_agenda_pagination')
     {
