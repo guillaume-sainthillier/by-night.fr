@@ -19,7 +19,8 @@ framework:
     templating:
         engines: ['twig']
         hinclude_default_template: TBNAgendaBundle:Hinclude:template.html.twig
-#        assets_version: v1
+    assets:
+        version: v%application_version%
 #        assets_version_format: %%2$s/%%1$s
     default_locale:  "%locale%"
     trusted_proxies: ~
@@ -89,6 +90,8 @@ doctrine:
         auto_mapping: true
 
 fos_http_cache:
+    tags:
+        enabled: true
     proxy_client:
         varnish:
             servers:

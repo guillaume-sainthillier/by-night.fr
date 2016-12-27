@@ -1,9 +1,9 @@
 imports:
     - { resource: config.yml }
 
-fos_http_cache:
-    proxy_client:
-        default: symfony
+#fos_http_cache:
+#    proxy_client:
+#        default: symfony
 
 framework:
     router:

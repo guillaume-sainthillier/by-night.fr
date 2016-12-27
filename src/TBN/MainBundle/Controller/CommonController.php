@@ -19,7 +19,7 @@ class CommonController extends TBNController
     }
 
     public function footerAction() {
-        $cache = $this->get('memory_cache');
+//        $cache = $this->get('memory_cache');
         $siteManager = $this->get('site_manager');
         $currentSite = $siteManager->getCurrentSite();
 
@@ -31,20 +31,27 @@ class CommonController extends TBNController
 
         $params = [];
         foreach ($socials as $name => $social) {
-            $key = 'tbn.counts.' . $name;
-            if (!$cache->contains($key)) {
+//            $key = 'tbn.counts.' . $name;
+//            if (!$cache->contains($key)) {
                 if($social instanceof FacebookAdmin) {
                     $social->setSiteInfo($siteManager->getSiteInfo());
                 }
-                $cache->save($key, $social->getNumberOfCount(), self::LIFE_TIME_CACHE);
-            }
+//                $cache->save($key, $social->getNumberOfCount(), self::LIFE_TIME_CACHE);
+//            }
 
-            $params['count_' . $name] = $cache->fetch($key);
+//            $params['count_' . $name] = $cache->fetch($key);
+            $params['count_' . $name] = $social->getNumberOfCount();
         }
 
         $repo = $this->getDoctrine()->getRepository("TBNMainBundle:Site");
         $params['sites'] = $repo->findRandomNames($currentSite);
 
-        return $this->render('TBNAgendaBundle::footer.html.twig', $params);
+        $response = $this->render('TBNAgendaBundle::footer.html.twig', $params);
+
+        $tomorrow = new \DateTime("tomorrow");
+        return $response
+            ->setExpires($tomorrow)
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
+        ;
     }
 }
