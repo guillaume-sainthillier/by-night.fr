@@ -29,7 +29,7 @@ class UpdateCommand  extends AppCommand
         $updater = $this->getContainer()->get('tbn.user_updater');
         $updater->update();
 
-//        $updater = $this->getContainer()->get('tbn.event_updater');
-//        $updater->update();
+        $updater = $this->getContainer()->get('tbn.event_updater');
+        $updater->update();
     }
 }
