@@ -8,6 +8,6 @@
 
 {% block fos_user_content %}
     <div class="alert alert-success">
-        <i class="fa fa-check"></i> {{ 'resetting.check_email'|trans({'%email%': email})|raw }}
+        <i class="fa fa-check"></i> {{ 'resetting.check_email'|trans({'%tokenLifetime%': tokenLifetime})|nl2br }}
     </div>
 {% endblock %}
