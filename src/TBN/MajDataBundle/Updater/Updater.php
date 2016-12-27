@@ -58,7 +58,6 @@ abstract class Updater
                 $responses[$index] = (string)$response->getBody();
             },
             'rejected' => function ($reason, $index) use(& $responses) {
-                dump($reason);
                 $responses[$index] = null;
             },
         ]);
