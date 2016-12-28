@@ -10,7 +10,7 @@ $loader = require __DIR__.'/../app/autoload.php';
 Debug::enable();
 
 $kernel = new AppKernel('pre_prod', true);
-$kernel = new AppCache($kernel);
+//$kernel = new AppCache($kernel);
 
 
 $request = Request::createFromGlobals();
