@@ -3,9 +3,7 @@
 namespace TBN\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-
-
-use TBN\MainBundle\Entity\Site;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 class CityController extends Controller
 {
