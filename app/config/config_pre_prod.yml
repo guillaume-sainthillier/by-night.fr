@@ -1,0 +1,60 @@
+imports:
+    - { resource: config.yml }
+
+parameters:
+    base_host: beta.by-night.com
+
+fos_http_cache:
+    proxy_client:
+        default: varnish
+
+framework:
+    router:
+        resource: "%kernel.root_dir%/config/routing_dev.yml"
+        strict_requirements: true
+        http_port: 8081
+    profiler: { only_exceptions: false }
+
+web_profiler:
+    toolbar: true
+    intercept_redirects: false
+
+doctrine:
+    orm:
+        auto_mapping: true
+        metadata_cache_driver:
+            type: service
+            id: memory_cache
+        query_cache_driver:
+            type: service
+            id: memory_cache
+        result_cache_driver:
+            type: service
+            id: memory_cache
+
+monolog:
+    handlers:
+        main:
+            type:  stream
+            path:  %kernel.logs_dir%/%kernel.environment%.log
+            level: warning
+            channels: ["!event"]
+        console:
+            type:   console
+            bubble: false
+            verbosity_levels:
+                VERBOSITY_VERBOSE: INFO
+                VERBOSITY_VERY_VERBOSE: DEBUG
+            channels: ["!doctrine"]
+        console_very_verbose:
+            type:   console
+            bubble: false
+            verbosity_levels:
+                VERBOSITY_VERBOSE: NOTICE
+                VERBOSITY_VERY_VERBOSE: NOTICE
+                VERBOSITY_DEBUG: DEBUG
+            channels: ["doctrine"]
+
+
+#swiftmailer:
+#    delivery_address: me@example.com
