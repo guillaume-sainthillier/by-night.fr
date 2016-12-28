@@ -10,18 +10,31 @@ use Doctrine\ORM\EntityManager;
 
 class SubDomainListener
 {
-
+    /**
+     * @var SiteManager
+     */
     private $siteManager;
+
+    /**
+     * @var EntityManager
+     */
     private $em;
-    private $baseHost;
+
+    /**
+     * @var RouterInterface
+     */
     private $router;
 
-    public function __construct(SiteManager $siteManager, EntityManager $em, RouterInterface $router, $baseHost)
+    private $baseHost;
+    private $basePort;
+
+    public function __construct(SiteManager $siteManager, EntityManager $em, RouterInterface $router, $baseHost, $basePort)
     {
         $this->siteManager = $siteManager;
         $this->router = $router;
         $this->em = $em;
         $this->baseHost = $baseHost;
+        $this->basePort = $basePort;
     }
 
     public function onDomainParse(GetResponseEvent $event)
@@ -31,7 +44,13 @@ class SubDomainListener
             $request = $event->getRequest();
             $currentHost = $request->getHttpHost();
 
-            $subdomain = \str_replace(['.' . $this->baseHost, 'www.' . $this->baseHost], '', $currentHost);
+            $subdomain = \str_replace([
+                '.' . $this->baseHost . ':' . $this->basePort,
+                '.' . $this->baseHost . ':' . $this->basePort,
+                'www.' . $this->baseHost,
+                'www.' . $this->baseHost
+            ], '', $currentHost);
+
 
             if ($subdomain === $this->baseHost) {
                 return;

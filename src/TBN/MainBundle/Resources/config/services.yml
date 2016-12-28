@@ -30,7 +30,7 @@ services:
       
     ville_listener:
         class: TBN\MainBundle\Listener\SubDomainListener
-        arguments: ["@site_manager", "@doctrine.orm.entity_manager", "@router", "%base_host%"]
+        arguments: ["@site_manager", "@doctrine.orm.entity_manager", "@router", "%base_host%", "%request_listener.http_port%"]
         tags:
            - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}
 
