@@ -18,7 +18,7 @@ class Version20161213185911 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE agenda CHANGE ismigrated is_archive TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE Agenda CHANGE ismigrated is_archive TINYINT(1) DEFAULT NULL');
     }
 
     /**
