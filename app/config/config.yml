@@ -95,7 +95,7 @@ fos_http_cache:
     proxy_client:
         varnish:
             servers:
-                - 127.0.0.1:8000
+                - 127.0.0.1:80
             base_url: "%base_host%"
         symfony:
             servers:
@@ -336,7 +336,10 @@ tbn_user:
 
 fos_elastica:
     clients:
-        default: { host: localhost, port: 9200 }
+        default:
+          host: localhost
+          port: 9200
+          compression: true
     serializer: ~
     indexes:
         by-night:
