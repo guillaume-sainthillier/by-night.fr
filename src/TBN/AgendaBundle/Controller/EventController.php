@@ -11,6 +11,7 @@ use TBN\MainBundle\Controller\TBNController as Controller;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use FOS\HttpCacheBundle\Configuration\Tag;
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
@@ -38,6 +39,11 @@ class EventController extends Controller
             ]);
     }
 
+    /**
+     * @Tag("detail-event")
+     * @Tag(expression="'detail-event-'~agenda.getId()")
+     * @Cache(expires="tomorrow", smaxage="86400")
+     */
     public function detailsAction(Agenda $agenda)
     {
         $siteManager = $this->container->get('site_manager');
