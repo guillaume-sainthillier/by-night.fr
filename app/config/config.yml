@@ -88,7 +88,7 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
-
+#HTTP Cache
 fos_http_cache:
     tags:
         enabled: true
@@ -101,6 +101,17 @@ fos_http_cache:
             servers:
                 - 127.0.0.1
             base_url: "%base_host%"
+    cache_control:
+        defaults:
+            overwrite: false
+        rules:
+            # match everything to set defaults
+            -
+                match:
+                    path: ^/
+                headers:
+                    overwrite: true
+                    etag: true
 
 # Swiftmailer Configuration
 swiftmailer:
