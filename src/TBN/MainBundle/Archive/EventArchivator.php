@@ -29,7 +29,7 @@ class EventArchivator
 
     public function archive() {
         $now = new \DateTime();
-        $now->modify('-5 months');
+        $now->modify('-6 months');
         $events = $this->entityManager->getRepository('TBNAgendaBundle:Agenda')->findOlds($now);
 
         if($events) {

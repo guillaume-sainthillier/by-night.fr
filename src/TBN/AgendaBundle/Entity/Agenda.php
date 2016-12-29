@@ -453,6 +453,13 @@ class Agenda implements GeolocalizeInterface
         return $this->reject;
     }
 
+    public function isIndexable() {
+        $now = new \DateTime;
+        $now->modify('-6 months');
+
+        return $this->dateFin >= $now;
+    }
+
     /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
      * of 'UploadedFile' is injected into this setter to trigger the  update. If this

@@ -377,11 +377,12 @@ fos_elastica:
                                 type:      word_delimiter
             types:
                 event:
+                    indexable_callback: "isIndexable"
                     mappings:
                         nom: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer  }
                         descriptif: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        date_debut: { type: date, format: Y-m-d }
-                        date_fin: { type: date, format: Y-m-d }
+                        date_debut: { type: date, format: 'yyyy-MM-dd' }
+                        date_fin: { type: date, format: 'yyyy-MM-dd' }
                         place:
                             type: "object"
                             properties:
