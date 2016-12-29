@@ -46,11 +46,10 @@ class SubDomainListener
 
             $subdomain = \str_replace([
                 '.' . $this->baseHost . ':' . $this->basePort,
-                '.' . $this->baseHost . ':' . $this->basePort,
-                'www.' . $this->baseHost,
+                'www.' . $this->baseHost . ':' . $this->basePort,
+                '.' . $this->baseHost,
                 'www.' . $this->baseHost
             ], '', $currentHost);
-
 
             if ($subdomain === $this->baseHost) {
                 return;
