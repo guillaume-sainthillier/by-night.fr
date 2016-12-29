@@ -80,7 +80,6 @@ class AgendaController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->detach($agenda);
 
-
         $this->checkIfOwner($agenda);
         $form = $this->createEditForm($agenda);
         $formDelete = $this->createDeleteForm($agenda);
