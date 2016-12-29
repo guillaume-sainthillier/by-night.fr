@@ -7,25 +7,30 @@ parameters:
 services:
     tbn.event_listener.populate_listener:
         class: TBN\MainBundle\Listener\PopulateListener
-        arguments: ["@fos_elastica.index_manager"]
+        arguments: [ "@fos_elastica.index_manager" ]
         tags:
             - { name: kernel.event_listener, event: "elastica.index.index_pre_populate", method: preIndexPopulate}
             - { name: kernel.event_listener, event: "elastica.index.index_post_populate", method: postIndexPopulate}
 
+    tbn.event_http:invalidator:
+        class: TBN\MainBundle\Invalidator\EventInvalidator
+        arguments: [ "@fos_http_cache.handler.tag_handler" ]
     tbn.app_manager:
         class: TBN\MainBundle\App\AppManager
-        arguments: [ "@service_container"]
+        arguments: [ "@service_container" ]
     tbn.event_archivator:
         class: TBN\MainBundle\Archive\EventArchivator
-        arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.by_night.event"]
+        arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.by_night.event" ]
 
     tbn.event_listener:
         class: TBN\MainBundle\Listener\EventListener
+        arguments: [ "@tbn.event_http:invalidator" ]
         tags:
           - { name: doctrine.event_listener, event: preRemove }
+          - { name: doctrine.event_listener, event: postUpdate }
     tbn.profile_picture.event:
         class: TBN\MainBundle\Picture\EventProfilePicture
-        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper", "@assets.packages", "@router"]
+        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper", "@assets.packages", "@router" ]
 
     tbn.profile_picture.user:
         class: TBN\MainBundle\Picture\UserProfilePicture
@@ -33,23 +38,23 @@ services:
 
     site_manager:
         class: TBN\MainBundle\Site\SiteManager
-        arguments: [ "@doctrine.orm.entity_manager"]
-      
+        arguments: [ "@doctrine.orm.entity_manager" ]
+
     ville_listener:
         class: TBN\MainBundle\Listener\SubDomainListener
-        arguments: ["@site_manager", "@doctrine.orm.entity_manager", "@router", "%base_host%", "%request_listener.http_port%"]
+        arguments: [ "@site_manager", "@doctrine.orm.entity_manager", "@router", "%base_host%", "%request_listener.http_port%" ]
         tags:
            - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}
 
     image_listener:
         class: TBN\MainBundle\Listener\ImageListener
-        arguments: ["@request_stack", "@liip_imagine.cache.manager"]
+        arguments: [ "@request_stack", "@liip_imagine.cache.manager" ]
         tags:
            - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
-           
+
     tbn.twig.main_extension:
         class: TBN\MainBundle\Twig\MainExtension
-        arguments: ["@site_manager", "@service_container"]
+        arguments: [ "@site_manager", "@service_container" ]
         tags:
             - { name: twig.extension }
 #Forms
