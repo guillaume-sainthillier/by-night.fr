@@ -58,8 +58,12 @@ class MenuDroitController extends Controller
         }else {
             $expire = new \DateTime;
             $expire->modify("+1 year");
-            $ttl = 31536000;;
+            $ttl = 31536000;
         }
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
 
         return $response
             ->setSharedMaxAge($ttl)
@@ -92,6 +96,10 @@ class MenuDroitController extends Controller
             "current" => $current,
             "count" => $count,
             "hasNextLink" => $hasNextLink
+        ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
         ]);
 
         return $response
@@ -129,6 +137,10 @@ class MenuDroitController extends Controller
             "hasNextLink" => $hasNextLink,
             "current" => $current,
             "count" => $count
+        ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
         ]);
 
         return $response
@@ -210,6 +222,10 @@ class MenuDroitController extends Controller
             $this->get('logger')->critical($e);
         }
 
+        $response->headers->add([
+           'X-No-Browser-Cache' => '1'
+        ]);
+
         return $response->setPublic();
     }
 
@@ -244,6 +260,10 @@ class MenuDroitController extends Controller
         ]);
 
         list($future, $seconds) = $this->getSecondsUntil(6);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
 
         return $response
             ->setExpires($future)

@@ -61,12 +61,18 @@ class EventController extends Controller
         $form = $this->getCreateCommentForm($comment, $agenda);
         $nbComments = $agenda->getCommentaires()->count();
 
-        return $this->render('TBNAgendaBundle:Agenda:details.html.twig', [
+        $response = $this->render('TBNAgendaBundle:Agenda:details.html.twig', [
             'soiree' => $agenda,
             'form' => $form->createView(),
             'nb_comments' => $nbComments,
             'stats' => $this->getAgendaStats($agenda)
         ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response;
     }
 
     /**
