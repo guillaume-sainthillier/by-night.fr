@@ -20,6 +20,7 @@ use TBN\AgendaBundle\Entity\Calendrier;
 use TBN\AgendaBundle\Form\Type\SearchType;
 use TBN\AgendaBundle\Search\SearchAgenda;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use TBN\MainBundle\Invalidator\EventInvalidator;
 
 class EventController extends Controller
 {
@@ -41,7 +42,6 @@ class EventController extends Controller
 
     /**
      * @Tag("detail-event")
-     * @Tag(expression="'detail-event-'~agenda.getId()")
      * @Cache(expires="tomorrow", smaxage="86400")
      */
     public function detailsAction(Agenda $agenda)
@@ -70,6 +70,10 @@ class EventController extends Controller
 
         $response->headers->add([
             'X-No-Browser-Cache' => '1'
+        ]);
+
+        $this->get('fos_http_cache.handler.tag_handler')->addTags([
+           EventInvalidator::getEventDetailTag($agenda)
         ]);
 
         return $response;

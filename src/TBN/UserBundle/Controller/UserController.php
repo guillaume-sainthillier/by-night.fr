@@ -51,7 +51,6 @@ class UserController extends Controller
 
     public function statsAction(Request $request, User $user, $type)
     {
-
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         $str_date = $repo->getLastDateStatsUser($user);

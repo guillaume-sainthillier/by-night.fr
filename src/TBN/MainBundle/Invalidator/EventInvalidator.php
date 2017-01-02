@@ -20,11 +20,16 @@ class EventInvalidator
         $this->tagHandler = $tagHandler;
     }
 
-    public function invalidateEvent(Agenda $event) {
-        $idEvent = $event->getId();
+    public static function getEventDetailTag(Agenda $event) {
+        return sprintf(
+            'detail-event-%d',
+            $event->getId()
+        );
+    }
 
+    public function invalidateEvent(Agenda $event) {
         $tags = [
-            'detail-event-' . $idEvent,
+            self::getEventDetailTag($event)
         ];
 
         $this->tagHandler->invalidateTags($tags);
