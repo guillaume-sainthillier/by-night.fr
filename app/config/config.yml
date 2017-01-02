@@ -20,7 +20,10 @@ framework:
         engines: ['twig']
         hinclude_default_template: TBNAgendaBundle:Hinclude:template.html.twig
     assets:
-        version: v%application_version%
+        packages:
+            asset:
+                version: v%application_version%
+#        version: v%application_version%
 #        assets_version_format: %%2$s/%%1$s
     default_locale:  "%locale%"
     trusted_proxies: ~

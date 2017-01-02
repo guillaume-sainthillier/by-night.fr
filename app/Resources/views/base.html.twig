@@ -49,9 +49,9 @@
         
         <!-- CSS -->
         <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400%7CRoboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="{{ asset('prod/main/css/style.min.css') }}" type="text/css" >
+        <link rel="stylesheet" href="{{ asset('prod/main/css/style.min.css', 'asset') }}" type="text/css" >
         {% block css %}{% endblock %}
-        <link rel="stylesheet" href="{{ asset('prod/css/print.min.css') }}" type="text/css" media="print">
+        <link rel="stylesheet" href="{{ asset('prod/css/print.min.css', 'asset') }}" type="text/css" media="print">
         <!-- ./CSS -->
         
         <!--[if lt IE 9]>
@@ -92,9 +92,9 @@
             
             <!-- Main -->
             {% block helper_top %}{% endblock %}
-            {% block start_container -%}
+            {%- block start_container -%}
             <div class="container panel panel-primary" id="container">
-            {%- endblock %}
+            {%- endblock -%}
                 {% if app.request.hasPreviousSession %}
                 {% for key, messages in app.session.flashbag.all() %}
                     {% for message in messages %}
@@ -105,13 +105,13 @@
                     {% endfor %}
                 {% endfor %}
                 {% endif %}
-                {% block helper %}{% endblock %}
+                {%- block helper -%}{%- endblock -%}
                 {% block ad %}{% if no_ads is not defined %}{% include '::ad.html.twig' %}{% endif %}{% endblock %}
-                {% block body -%}{%- endblock %}
+                {%- block body -%}{%- endblock -%}
                 {% block ad2 %}{% if no_ads is not defined %}{% include '::ad2.html.twig' %}{% endif %}{% endblock %}
             {% block end_container -%}
             </div>
-            {%- endblock %}
+            {%- endblock -%}
             <!-- ./Main -->
         </div>
             
@@ -153,8 +153,8 @@
             ga('require', 'displayfeatures');
             ga('send', 'pageview');                
         </script>
-        <script type="text/javascript" src="{{ asset('prod/main/js/scripts.min.js') }}"></script>
-        {% block js -%}{%- endblock %}
+        <script type="text/javascript" src="{{ asset('prod/main/js/scripts.min.js', 'asset') }}"></script>
+        {%- block js -%}{%- endblock -%}
         <script type="text/javascript"> 
             $(document).ready(function(){
                 $.cookieBar({

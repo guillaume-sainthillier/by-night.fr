@@ -52,9 +52,9 @@
 {% block widgets_agenda %}{% include "TBNAgendaBundle:MenuDroit:accueil.html.twig" %}{% endblock %}
 
 {% block css_agenda %}
-    <link rel="stylesheet" href="{{ asset('prod/evenements/css/agenda.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('prod/evenements/css/agenda.min.css', 'asset') }}" type="text/css">
 {% endblock %}
 
 {% block js_agenda %}
-    <script src="{{ asset('prod/evenements/js/agenda.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('prod/evenements/js/agenda.min.js', 'asset') }}" type="text/javascript"></script>
 {% endblock %}
