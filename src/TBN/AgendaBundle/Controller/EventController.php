@@ -328,6 +328,8 @@ class EventController extends Controller
         $response->headers->add([
             'X-No-Browser-Cache' => '1'
         ]);
+
+        return $response;
     }
 
     protected function getTypesEvenements($repo, Site $site)
