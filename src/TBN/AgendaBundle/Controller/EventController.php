@@ -73,7 +73,7 @@ class EventController extends Controller
         ]);
 
         $tomorrow = $this->getSecondsUntilTomorrow();
-        $response->setSharedMaxAge($tomorrow),
+        $response->setSharedMaxAge($tomorrow);
 
         $this->get('fos_http_cache.handler.tag_handler')->addTags([
            EventInvalidator::getEventDetailTag($agenda)
