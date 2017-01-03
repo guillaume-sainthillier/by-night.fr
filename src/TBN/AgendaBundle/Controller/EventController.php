@@ -42,7 +42,7 @@ class EventController extends Controller
 
     /**
      * @Tag("detail-event")
-     * @Cache(expires="tomorrow", smaxage="86400")
+     * @Cache(expires="tomorrow")
      */
     public function detailsAction(Agenda $agenda)
     {
@@ -71,6 +71,9 @@ class EventController extends Controller
         $response->headers->add([
             'X-No-Browser-Cache' => '1'
         ]);
+
+        $tomorrow = $this->getSecondsUntilTomorrow();
+        $response->setSharedMaxAge($tomorrow),
 
         $this->get('fos_http_cache.handler.tag_handler')->addTags([
            EventInvalidator::getEventDetailTag($agenda)
@@ -221,10 +224,16 @@ class EventController extends Controller
         $search = (new SearchAgenda)->setDu(null);
         $topEvents = $repo->findTopSoiree($site, 1, 7);
 
-        return $this->render('TBNAgendaBundle:Agenda:index.html.twig', [
+        $response = $this->render('TBNAgendaBundle:Agenda:index.html.twig', [
             'topEvents' => $topEvents,
             'nbEvents' => $repo->findCountWithSearch($site, $search)
         ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response;
     }
 
     /**
