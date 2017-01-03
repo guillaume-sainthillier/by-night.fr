@@ -49,7 +49,7 @@
     <link rel="thumbnail" href="{{ thumb }}"/>
     {% if soiree.dateModification %}
         <meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />{% endif %}
-    <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ site.facebookIdPage }}"/>
+    <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ app_manager.facebookIdPage }}"/>
     {% if soiree.user %}
         <meta property="article:author"
               content="{{ url('tbn_user_details', {'username': soiree.user.usernameCanonical}) }}"/>
@@ -256,20 +256,21 @@
             </div>
             <div class="panel-body">
                 <br/>
-                <div class="row">
-                    {% for name, social in stats.socials %}
-                        <div class="col-xs-4">
-                            <a href="{{ social.shareUrl }}" class="popup share {{ name }}">
-                                <i class="fa fa-2x fa-{{ name }}"></i>
-                                <span class="number number-xbig">{{ social.shareCount }}
-                                    partage{{ social.shareCount > 1 ? 's': '' }}</span>
-                            </a>
-                        </div>
-                    {% endfor %}
-                </div>
+                {{ render_esi(controller('TBNAgendaBundle:Event:share', {'slug': soiree.slug })) }}
 
-                <div class="comments" data-url="{{ path('tbn_comment_list',{'id': soiree.id }) }}">
-                    <i class="fa fa-spinner fa-spin fa-2x"></i>
+                <div class="comments">
+                    <h4 class="heading">
+                        {{ nb_comments }} Commentaire{{ nb_comments > 1 ? "s" : "" }}
+                        {% if nb_comments == 0 %}
+                            |
+                            <small>Soyez le premier à réagir</small>
+                        {% endif %}
+                    </h4>
+                    <br/>
+                    {% include "TBNCommentBundle:Comment:post.html.twig" %}
+                    {% if nb_comments > 0 %}
+                        {{ render_esi(url('tbn_comment_list', {'id': soiree.id})) }}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -277,9 +278,9 @@
 {% endblock %}
 
 {% block css_agenda %}
-    <link rel="stylesheet" href="{{ asset('prod/evenements/css/details.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('prod/evenements/css/details.min.css', 'asset') }}" type="text/css">
 {% endblock %}
         
 {% block js_agenda %}
-    <script src="{{ asset('prod/evenements/js/details.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('prod/evenements/js/details.min.js', 'asset') }}" type="text/javascript"></script>
 {% endblock %}

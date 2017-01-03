@@ -3,11 +3,11 @@
 namespace TBN\MajDataBundle\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Output\ConsoleOutput;
+
 use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Utils\Merger;
-use TBN\MajDataBundle\Utils\Monitor;
+
 
 class MergerTest extends KernelTestCase
 {
@@ -40,12 +40,12 @@ class MergerTest extends KernelTestCase
         $oldEvent = (new Agenda)
             ->setId(1)
             ->setNom("Lorem Ipsum")
-            ->setDateDebut(\Datetime::createFromFormat("Y-m-d", "2016-29-11"))
+            ->setDateDebut(\DateTime::createFromFormat("Y-m-d", "2016-29-11"))
         ;
 
         $newEvent = (new Agenda)
             ->setNom("New Lorem Ipsum")
-            ->setDateDebut(\Datetime::createFromFormat("Y-m-d", "2016-29-11"))
+            ->setDateDebut(\DateTime::createFromFormat("Y-m-d", "2016-29-11"))
         ;
 
         $this->merger->mergeEvent($oldEvent, $newEvent);

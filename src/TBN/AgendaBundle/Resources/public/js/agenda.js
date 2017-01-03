@@ -8,7 +8,7 @@ $(function () {
     init_soirees();
 });
 
-function init_soirees(selector) {
+function init_soirees() {
     init_pagination();
 }
 
@@ -21,9 +21,10 @@ function load_infinite_scroll() {
             return;
         }
 
-        if ($(window).scrollTop() + $(window).height() > $('#paginate').offset().top - marginScroll) {
+        var paginate = $('#paginate');
+        if ($(window).scrollTop() + $(window).height() > paginate.offset().top - marginScroll) {
             isLoading = true;
-            $('#paginate').trigger('click');
+            paginate.trigger('click');
         }
     });
 }

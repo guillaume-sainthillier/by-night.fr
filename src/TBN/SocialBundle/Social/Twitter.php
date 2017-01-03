@@ -3,6 +3,8 @@
 
 namespace TBN\SocialBundle\Social;
 
+use TBN\AgendaBundle\Entity\Agenda;
+use TBN\UserBundle\Entity\User;
 use TwitterOAuth\Auth\SingleUserAuth;
 /**
  * Serializer Namespace
@@ -25,7 +27,6 @@ class Twitter extends Social
 
     public function constructClient()
     {
-
         $config = [
             'consumer_key' => $this->id,
             'consumer_secret' => $this->secret,
@@ -42,7 +43,7 @@ class Twitter extends Social
             $site = $this->siteManager->getCurrentSite();
 
             if ($site !== null) {
-                $page = $this->client->get('users/show', ['screen_name' => $site->getTwitterIdPage()]);
+                $page = $this->client->get('users/show', ['screen_name' => $this->appManager->getTwitterIdPage()]);
                 if (isset($page['followers_count'])) {
                     return $page['followers_count'];
                 }
@@ -52,7 +53,32 @@ class Twitter extends Social
         return 0;
     }
 
-    protected function post(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    public function getTimeline($max_id, $limit) {
+        try {
+            $site = $this->siteManager->getCurrentSite();
+
+            if ($site !== null) {
+                $params = [
+                    'q' => sprintf('#%s filter:safe', $site->getNom()),
+                    'lang' => 'fr',
+                    'result_type' => 'recent',
+                    'count' => $limit
+                ];
+
+                if($max_id) {
+                    $params['max_id'] = $max_id;
+                }
+
+                return $this->client->get('search/tweets', $params);
+            }
+        } catch (\Exception $e) {
+            $this->logger->error($e);
+        }
+
+        return [];
+    }
+
+    protected function post(User $user, Agenda $agenda)
     {
 
         $info = $user->getInfo();
@@ -80,7 +106,7 @@ class Twitter extends Social
         }
     }
 
-    protected function afterPost(\TBN\UserBundle\Entity\User $user, \TBN\AgendaBundle\Entity\Agenda $agenda)
+    protected function afterPost(User $user, Agenda $agenda)
     {
 
         $info = $this->siteManager->getSiteInfo();

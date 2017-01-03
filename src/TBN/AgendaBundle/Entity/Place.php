@@ -8,6 +8,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
+use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Reject\Reject;
 
 /**
@@ -133,23 +134,6 @@ class Place implements GeolocalizeInterface
     {
         $this->id = $id;
         return $this;
-    }
-
-
-    public function toJSON()
-    {
-        return json_encode($this->toArray());
-    }
-
-    public function toArray()
-    {
-        return [
-            'nom' => $this->nom,
-            'rue' => $this->rue,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
-            'site' => $this->site ? $this->site->toArray() : null
-        ];
     }
 
     /**
@@ -399,10 +383,10 @@ class Place implements GeolocalizeInterface
     /**
      * Set site
      *
-     * @param \TBN\MainBundle\Entity\Site $site
+     * @param Site $site
      * @return Place
      */
-    public function setSite(\TBN\MainBundle\Entity\Site $site)
+    public function setSite(Site $site)
     {
         $this->site = $site;
 

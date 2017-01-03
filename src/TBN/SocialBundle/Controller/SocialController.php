@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+use TBN\SocialBundle\Social\Social;
 use TBN\UserBundle\Entity\User;
 
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -22,7 +23,7 @@ class SocialController extends BaseController
      */
     public function disconnectSiteAction($service)
     {
-        /** @var social Social */
+        /** @var Social */
         $social = $this->container->get("tbn.social." . strtolower($service === "facebook" ? "facebook_events" : $service));
         $siteManager = $this->container->get("site_manager");
         $currentSite = $siteManager->getCurrentSite();
@@ -38,7 +39,7 @@ class SocialController extends BaseController
     public function disconnectAction(Request $request, $service)
     {
         $user = $this->getUserWithService($request);
-        /** @var social Social */
+        /** @var Social */
         $social = $this->container->get("tbn.social." . strtolower($service === "facebook" ? "facebook_events" : $service));
         $social->disconnectUser($user);
         $this->authenticateBasicUser($user);

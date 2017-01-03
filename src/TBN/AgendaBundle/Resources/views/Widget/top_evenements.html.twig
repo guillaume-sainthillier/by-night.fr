@@ -1,7 +1,10 @@
 {% extends "TBNAgendaBundle:Widget:template.html.twig" %}
 
 {% block titre %}À la une cette semaine{% endblock %}
+{% block widget_body_class %}scrollable{% endblock %}
 {% block icone %}fa-star{% endblock %}
 {% block body %}
-    {{ render_esi(url('tbn_agenda_top_soirees')) }}
+    <div>
+        {{ render_esi(controller('TBNAgendaBundle:MenuDroit:topSoirees')) }}
+    </div>
 {% endblock %}

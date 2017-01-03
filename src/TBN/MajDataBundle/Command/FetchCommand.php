@@ -10,20 +10,15 @@ use TBN\MajDataBundle\Parser\ParserInterface;
 use TBN\MajDataBundle\Utils\Monitor;
 
 
-/**
- * UpdateCommand gère la commande liée à l'aggregation d'événements
- *
- * @author guillaume
- */
-class FetchCommand extends EventCommand
+class FetchCommand  extends AppCommand
 {
-
     protected function configure()
     {
         $this
             ->setName('tbn:events:fetch')
             ->setDescription('Récupérer des nouveaux sur By Night')
             ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer')
+            ->addOption('monitor', 'm', InputOption::VALUE_NONE)
          ;
     }
 
@@ -45,6 +40,7 @@ class FetchCommand extends EventCommand
             ));
         }
 
+        Monitor::enableMonitoring($input->getOption('monitor'));
         Monitor::$output = $output;
         $fetcher = $this->getContainer()->get('tbn.event_fetcher');
 

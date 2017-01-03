@@ -4,5 +4,6 @@
 {% block titre %}Pas envie de sortir ?{% endblock %}
 {% block icone %}fa-coffee{% endblock %}
 {% block body %}
-    {{ render_esi(url('tbn_agenda_programme_tv')) }}
+    {{ render_esi(controller('TBNAgendaBundle:MenuDroit:programmeTV')) }}
 {% endblock %}
+{% block footer %}{% endblock %}

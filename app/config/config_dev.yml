@@ -10,19 +10,6 @@ framework:
 web_profiler:
     toolbar: true
     intercept_redirects: false
-
-doctrine:
-    orm:
-        auto_mapping: true
-        metadata_cache_driver: 
-            type: service
-            id: memory_cache
-        query_cache_driver: 
-            type: service
-            id: memory_cache
-        result_cache_driver: 
-            type: service
-            id: memory_cache
                 
 monolog:
     handlers:

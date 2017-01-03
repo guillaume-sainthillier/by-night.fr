@@ -3,6 +3,7 @@
 namespace TBN\MajDataBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use TBN\MainBundle\Entity\Site;
 
 /**
  * HistoriqueMaj
@@ -252,11 +253,11 @@ class HistoriqueMaj
     /**
      * Set site
      *
-     * @param \TBN\MainBundle\Entity\Site $site
+     * @param Site $site
      *
      * @return HistoriqueMaj
      */
-    public function setSite(\TBN\MainBundle\Entity\Site $site = null)
+    public function setSite(Site $site = null)
     {
         $this->site = $site;
 

@@ -2,7 +2,7 @@
 
 namespace TBN\MajDataBundle\Parser;
 
-use Symfony\Component\Console\Output\OutputInterface;
+
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -50,7 +50,6 @@ abstract class AgendaParser implements ParserInterface
     public function __construct()
     {
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $this->output = null;
         $this->site = null;
         $this->siteInfo = null;
 

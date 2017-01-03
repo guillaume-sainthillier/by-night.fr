@@ -26,5 +26,8 @@ parameters:
     twitter_app_secret:     %secret%
     google_recaptcha_secret: %secret%
     base_host:              ~
+    facebook_id_page:       "205292952998805"
+    google_id_page:         "113344346320536654292"
+    twitter_id_page:        "By__Night"
 
     data_root: %kernel.root_dir%/../web/

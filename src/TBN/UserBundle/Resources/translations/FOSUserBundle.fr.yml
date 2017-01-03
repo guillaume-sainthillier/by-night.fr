@@ -39,7 +39,6 @@ change_password:
 
 # Registration
 registration:
-    check_email: Un e-mail a été envoyé à l'adresse %email%. Il contient un lien d'activation sur lequel il vous faudra cliquer afin d'activer votre compte.
     confirmed: Félicitations %username%, votre compte est maintenant activé.
     back: Retour à la page d'origine.
     submit: Enregistrer
@@ -58,7 +57,6 @@ registration:
 # Password resetting
 resetting:
     password_already_requested: Un nouveau mot de passe a déjà été demandé pour cet utilisateur dans les dernières 24 heures.
-    check_email: Un e-mail a été envoyé à l'adresse <b>%email%</b>. Il contient un lien sur lequel il vous faudra cliquer afin de réinitialiser votre mot de passe.
     request:
         invalid_username: Le nom d'utilisateur ou l'adresse e-mail "%username%" n'existe pas.
         username: "Nom d'utilisateur ou adresse e-mail :"
@@ -72,10 +70,10 @@ resetting:
         message: |
             Bonjour %username% !
 
-            Pour réinitialiser ton mot de passe, merci de te rendre sur %confirmationUrl%
+            Pour réinitialiser votre mot de passe, merci de vous rendre sur %confirmationUrl%
 
             A bientôt,
-            %nom_site%.
+            L'équipe By Night.
 
 # Global strings
 layout:

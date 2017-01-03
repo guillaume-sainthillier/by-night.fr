@@ -29,6 +29,7 @@ class AppKernel extends Kernel
             new TBN\CommentBundle\TBNCommentBundle(),
             new TBN\AdministrationBundle\TBNAdministrationBundle(),
 
+            new FOS\HttpCacheBundle\FOSHttpCacheBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
@@ -43,7 +44,7 @@ class AppKernel extends Kernel
             new Shivas\VersioningBundle\ShivasVersioningBundle()
         );
 
-        if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+        if (in_array($this->getEnvironment(), array('dev', 'test', 'pre_prod'))) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();

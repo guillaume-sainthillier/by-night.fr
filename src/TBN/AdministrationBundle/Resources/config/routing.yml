@@ -3,11 +3,7 @@ tbn_administration_info_index:
     defaults: { _controller: TBNAdministrationBundle:Info:list }
     requirements:
         method: GET
-    
-tbn_administration_info_new:
-    path:  /info/new
-    defaults: { _controller: TBNAdministrationBundle:Info:new }
-    
+
 tbn_administration_info_edit:
     path:  /info/{id}
     defaults: { _controller: TBNAdministrationBundle:Info:edit }

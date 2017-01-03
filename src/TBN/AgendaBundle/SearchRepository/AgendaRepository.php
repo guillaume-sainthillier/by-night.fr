@@ -2,6 +2,7 @@
 
 namespace TBN\AgendaBundle\SearchRepository;
 
+use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
 use TBN\AgendaBundle\Search\SearchAgenda;
 use TBN\MainBundle\Entity\Site;
@@ -11,7 +12,7 @@ use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Match;
 use Elastica\Query\MultiMatch;
-use Elastica\Query\MatchAll;
+
 use Elastica\Query\Range;
 
 class AgendaRepository extends Repository
@@ -20,7 +21,7 @@ class AgendaRepository extends Repository
     /**
      * @param $site Site
      * @param $search SearchAgenda
-     * @return \Pagerfanta\Pagerfanta
+     * @return PaginatorAdapterInterface
      */
     public function findWithSearch(Site $site, SearchAgenda $search)
     {

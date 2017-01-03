@@ -27,7 +27,7 @@ class SiteType extends AbstractType
             ->add('adjectifPluriel', TextType::class, [
                 'label' => 'Adjectif pluriel'
             ])
-            ->add('description', TextAreaType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'attr' => [
                     'rows' => 6

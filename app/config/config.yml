@@ -19,7 +19,11 @@ framework:
     templating:
         engines: ['twig']
         hinclude_default_template: TBNAgendaBundle:Hinclude:template.html.twig
-#        assets_version: v1
+    assets:
+        packages:
+            asset:
+                version: v%application_version%
+#        version: v%application_version%
 #        assets_version_format: %%2$s/%%1$s
     default_locale:  "%locale%"
     trusted_proxies: ~
@@ -60,6 +64,10 @@ twig:
             - ':Form:fields.html.twig'
     globals:
         menu: "@white_october_breadcrumbs"
+        app_manager: "@tbn.app_manager"
+        site_manager: "@site_manager"
+        userProfilePicture: "@tbn.profile_picture.user"
+        eventProfilePicture: "@tbn.profile_picture.event"
         facebook_app_id: "%api_facebook_id%"
         twitter: "@tbn.social.twitter"
         facebook: "@tbn.social.facebook"
@@ -83,6 +91,39 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+        metadata_cache_driver:
+            type: service
+            id: memory_cache
+        query_cache_driver:
+            type: service
+            id: memory_cache
+        result_cache_driver:
+            type: service
+            id: memory_cache
+#HTTP Cache
+fos_http_cache:
+    tags:
+        enabled: true
+    proxy_client:
+        varnish:
+            servers:
+                - 127.0.0.1:80
+            base_url: "%base_host%"
+        symfony:
+            servers:
+                - 127.0.0.1
+            base_url: "%base_host%"
+    cache_control:
+        defaults:
+            overwrite: false
+        rules:
+            # match everything to set defaults
+            -
+                match:
+                    path: ^/
+                headers:
+                    overwrite: true
+                    etag: true
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -105,7 +146,21 @@ vich_uploader:
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
+        user_system_image:
+            uri_prefix:         /uploads/users
+            upload_destination: "%kernel.root_dir%/../web/uploads/users"
+            namer:              vich_uploader.namer_uniqid
+            inject_on_load:     false
+            delete_on_update:   true
+            delete_on_remove:   true
         event_image:
+            uri_prefix:         /uploads/documents
+            upload_destination: "%kernel.root_dir%/../web/uploads/documents"
+            namer:              vich_uploader.namer_uniqid
+            inject_on_load:     false
+            delete_on_update:   true
+            delete_on_remove:   true
+        event_system_image:
             uri_prefix:         /uploads/documents
             upload_destination: "%kernel.root_dir%/../web/uploads/documents"
             namer:              vich_uploader.namer_uniqid
@@ -304,7 +359,10 @@ tbn_user:
 
 fos_elastica:
     clients:
-        default: { host: localhost, port: 9200 }
+        default:
+          host: localhost
+          port: 9200
+          compression: true
     serializer: ~
     indexes:
         by-night:
@@ -342,11 +400,12 @@ fos_elastica:
                                 type:      word_delimiter
             types:
                 event:
+                    indexable_callback: "isIndexable"
                     mappings:
                         nom: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer  }
                         descriptif: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        date_debut: { type: date, format: Y-m-d }
-                        date_fin: { type: date, format: Y-m-d }
+                        date_debut: { type: date, format: 'yyyy-MM-dd' }
+                        date_fin: { type: date, format: 'yyyy-MM-dd' }
                         place:
                             type: "object"
                             properties:

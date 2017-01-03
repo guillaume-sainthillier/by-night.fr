@@ -3,7 +3,8 @@ namespace TBN\AgendaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
-use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
+
+
 use TBN\MainBundle\Entity\Site;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\UserBundle\Entity\User;
@@ -12,6 +13,26 @@ use Doctrine\ORM\QueryBuilder;
 
 class AgendaRepository extends EntityRepository
 {
+
+    public function updateOlds(\DateTime $since) {
+        return $this->_em
+            ->createQuery("UPDATE TBNAgendaBundle:Agenda a
+            SET a.isArchive = TRUE
+            WHERE a.dateFin <= :date_fin")
+            ->setParameters(["date_fin" => $since->format('Y-m-d')])
+            ->execute()
+        ;
+    }
+
+    public function findOlds(\DateTime $since) {
+        return $this
+            ->createQueryBuilder('a')
+            ->where('a.isArchive IS NULL OR a.isArchive = :archive')
+            ->andWhere("a.dateFin <= :date_fin")
+            ->setParameters(["archive" => false, ":date_fin" => $since->format('Y-m-d')])
+            ->getQuery()
+            ->getResult();
+    }
 
     public function createQueryBuilder($alias, $indexBy = null)
     {
@@ -70,6 +91,42 @@ class AgendaRepository extends EntityRepository
             ->leftJoin("TBNUserBundle:User", "u", "WITH", "u = c.user")
             ->where("c.user = :user")
             ->setParameters([":user" => $user->getId()])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getNextEvents(\DateTime $since, $page, $offset) {
+        return $this
+            ->createQueryBuilder('a')
+            ->where("a.dateFin >= :since")
+            ->setParameters([":since" => $since->format('Y-m-d')])
+            ->setFirstResult($page * $offset)
+            ->setMaxResults($offset)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getNextEventsFbIds(\DateTime $since) {
+        $datas = $this->_em
+            ->createQueryBuilder()
+            ->select('DISTINCT(a.facebookEventId)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.dateFin >= :since")
+            ->setParameters([":since" => $since->format('Y-m-d')])
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_filter(array_map('current', $datas));
+    }
+
+    public function getNextEventsCount(\DateTime $since)
+    {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('count(a.id)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.dateFin >= :since")
+            ->setParameters([":since" => $since->format('Y-m-d')])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -233,11 +290,39 @@ class AgendaRepository extends EntityRepository
             ->createQueryBuilder('a')
             ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
             ->orderBy('a.nom', 'ASC')
-            ->setParameters([":date_debut" => $soiree->getDateDebut(), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
+            ->setParameters([":date_debut" => $soiree->getDateDebut()->format('Y-m-d'), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
+    }
+
+    public function findAllSimilairesCount(Agenda $soiree)
+    {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('count(a.id)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
+            ->setParameters([":date_debut" => $soiree->getDateDebut()->format('Y-m-d'), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findTopSoireeCount(Site $site)
+    {
+        $du = new \DateTime();
+        $au = new \DateTime('sunday this week');
+
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('count(a.id)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.site = :site")
+            ->andWhere("a.dateFin BETWEEN :du AND :au")
+            ->setParameters([":site" => $site->getId(), "du" => $du->format("Y-m-d"), "au" => $au->format("Y-m-d")])
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function findTopSoiree(Site $site, $page = 1, $limit = 7)
@@ -390,7 +475,7 @@ class AgendaRepository extends EntityRepository
 
         try {
             $agenda = $query->getSingleResult();
-        } catch (\Doctrine\Orm\NoResultException $e) {
+        } catch (NoResultException $e) {
             $agenda = null;
         }
 

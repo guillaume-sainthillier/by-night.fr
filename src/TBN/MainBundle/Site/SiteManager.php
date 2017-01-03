@@ -2,6 +2,7 @@
 
 namespace TBN\MainBundle\Site;
 
+use Doctrine\ORM\EntityManager;
 use TBN\MainBundle\Entity\Site;
 use TBN\UserBundle\Entity\SiteInfo;
 
@@ -19,10 +20,30 @@ class SiteManager
      */
     protected $siteInfo;
 
-    public function __construct()
+    /**
+     * @var EntityManager
+     */
+    protected $entityManager;
+
+    protected $isInitialized;
+
+    public function __construct(EntityManager $entityManager)
     {
         $this->currentSite = null;
         $this->siteInfo = null;
+        $this->isInitialized = false;
+        $this->entityManager = $entityManager;
+    }
+
+    protected function init() {
+        if(! $this->isInitialized) {
+            $siteInfo = $this->entityManager
+                ->getRepository('TBNUserBundle:SiteInfo')
+                ->findOneBy([]);
+
+            $this->setSiteInfo($siteInfo);
+            $this->isInitialized = true;
+        }
     }
 
     /**
@@ -31,12 +52,14 @@ class SiteManager
      */
     public function getSiteInfo()
     {
+        $this->init();
         return $this->siteInfo;
     }
 
     /**
      *
      * @param SiteInfo $siteInfo
+     * @return SiteManager
      */
     public function setSiteInfo(SiteInfo $siteInfo = null)
     {
@@ -57,6 +80,7 @@ class SiteManager
     /**
      *
      * @param Site $currentSite
+     * @return SiteManager
      */
     public function setCurrentSite(Site $currentSite = null)
     {

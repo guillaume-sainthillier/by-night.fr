@@ -2,6 +2,7 @@
 
 namespace TBN\CommentBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -84,14 +85,14 @@ class Comment
     protected $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="parent",cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $reponses;
 
     public function __construct()
     {
-        $this->reponses = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->reponses = new ArrayCollection();
         $this->setDateCreation(new \DateTime());
         $this->setDateModification(new \DateTime());
 
@@ -216,11 +217,11 @@ class Comment
     /**
      * Set user
      *
-     * @param \TBN\UserBundle\Entity\User $user
+     * @param User $user
      *
      * @return Comment
      */
-    public function setUser(\TBN\UserBundle\Entity\User $user)
+    public function setUser(User $user)
     {
         $this->user = $user;
 
@@ -241,11 +242,11 @@ class Comment
     /**
      * Set agenda
      *
-     * @param \TBN\AgendaBundle\Entity\Agenda $agenda
+     * @param Agenda $agenda
      *
      * @return Comment
      */
-    public function setAgenda(\TBN\AgendaBundle\Entity\Agenda $agenda)
+    public function setAgenda(Agenda $agenda)
     {
         $this->agenda = $agenda;
 
@@ -265,11 +266,11 @@ class Comment
     /**
      * Set parent
      *
-     * @param \TBN\CommentBundle\Entity\Comment $parent
+     * @param Comment $parent
      *
      * @return Comment
      */
-    public function setParent(\TBN\CommentBundle\Entity\Comment $parent)
+    public function setParent(Comment $parent)
     {
         $this->parent = $parent;
 
@@ -289,11 +290,11 @@ class Comment
     /**
      * Add reponses
      *
-     * @param \TBN\CommentBundle\Entity\Comment $reponses
+     * @param Comment $reponses
      *
      * @return Comment
      */
-    public function addReponse(\TBN\CommentBundle\Entity\Comment $reponses)
+    public function addReponse(Comment $reponses)
     {
         $this->reponses[] = $reponses;
 
@@ -303,9 +304,9 @@ class Comment
     /**
      * Remove reponses
      *
-     * @param \TBN\CommentBundle\Entity\Comment $reponses
+     * @param Comment $reponses
      */
-    public function removeReponse(\TBN\CommentBundle\Entity\Comment $reponses)
+    public function removeReponse(Comment $reponses)
     {
         $this->reponses->removeElement($reponses);
     }

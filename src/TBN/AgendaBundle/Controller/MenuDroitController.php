@@ -2,8 +2,8 @@
 
 namespace TBN\AgendaBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
 use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MainBundle\Entity\Site;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
@@ -14,166 +14,155 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
  */
 class MenuDroitController extends Controller
 {
+    const FB_MEMBERS_LIMIT = 50;
+    const TWEET_LIMIT = 25;
+    const WIDGET_ITEM_LIMIT = 7;
 
-    /**
-     * @Cache(expires="tomorrow", public=true)
-     */
     public function programmeTVAction()
     {
-        $cache = $this->get('memory_cache');
+        $parser = $this->get("tbn.programmetv");
+        $programmes = $parser->getProgrammesTV();
 
-        $key = 'tbn.programme_tele';
-        if (!$cache->contains($key)) {
-            $parser = $this->get("tbn.programmetv");
-            $programmes = array_map(function ($programme) {
-                $css_chaine = $this->getCSSChaine($programme['chaine']);
-                $programme['css_chaine'] = $css_chaine ? 'icon-' . $css_chaine : null;
-                return $programme;
-            }, $parser->getProgrammesTV());
-
-            $minuit = strtotime('tomorrow 00:00:00');
-            $today = time();
-            $cache->save($key, $programmes, $minuit - $today);
-        }
-
-        $programmes = $cache->fetch($key);
-
-
-        return $this->render("TBNAgendaBundle:Hinclude:programme_tv.html.twig", [
+        $response = $this->render("TBNAgendaBundle:Hinclude:programme_tv.html.twig", [
             "programmes" => $programmes
         ]);
+
+        return $response
+            ->setExpires(new \DateTime('tomorrow'))
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
+            ->setPublic()
+        ;
     }
 
-    protected function getCSSChaine($chaine)
-    {
-        switch ($chaine) {
-            case 'TF1':
-                return 'tf1';
-            case 'France 2':
-                return 'france2';
-            case 'France 3':
-                return 'france3';
-            case 'Canal+':
-                return 'canal_plus';
-            case 'Arte':
-                return 'arte';
-            case 'M6':
-                return 'm6';
-            case 'France 5':
-                return 'france5';
-            case 'C8':
-                return 'canal8';
-            case 'W9':
-                return 'w9';
-            case 'TMC':
-                return 'tmc';
-            case 'NT1':
-                return 'nt1';
-            case 'NRJ 12':
-                return 'nrj';
-            case 'LCP - Public Sénat':
-                return 'lcp';
-            case 'CStar':
-                return 'cstar';
-            case 'France 4':
-                return 'france4';
-            case 'BFM TV':
-                return 'bfm_tv';
-            case 'i>Télé':
-                return 'itele';
-            case 'D17':
-                return 'd17';
-            case 'Gulli':
-                return 'gulli';
-            case 'France Ô':
-                return 'franceo';
-            case 'HD1':
-                return 'hd1';
-            case "L'Equipe":
-                return 'lequipe';
-            case "Franceinfo":
-                return 'franceinfo';
-            case "LCI":
-            case "LCI - La Chaîne Info":
-                return 'lci';
-            case '6ter':
-                return '6ter';
-            case 'Numéro 23':
-                return 'numero23';
-            case 'RMC Découverte':
-                return 'rmc';
-            case 'Chérie 25':
-                return 'cherie25';
-            case 'IDF1':
-                return 'idf';
-            case 'Canal partagé':
-                return 'canal_partage';
-            case 'RTL 9':
-                return 'rtl9';
-            case 'Paris Première':
-                return 'paris_premiere';
-            case 'Plug RTL':
-                return 'plug_rtl';
-            case 'TV5 Monde':
-            case 'TV5MONDE':
-                return 'tv5_monde';
-            case '13e rue':
-                return '13_rue';
-            case 'E ! Entertainment':
-                return 'e_entertainment';
-            case 'Syfy':
-                return 'syfy';
-            case 'Série club':
-                return 'serie_club';
-            case 'Nat Geo Wild':
-                return 'nat_geo';
+    public function twitterAction($max_id = null) {
+        $results = $this->get('tbn.social.twitter')->getTimeline($max_id, self::TWEET_LIMIT);
+
+        $nextLink = null;
+        if(isset($results['search_metadata']['next_results'])) {
+            parse_str($results['search_metadata']['next_results'], $infos);
+
+            if(isset($infos['?max_id'])) {
+                $nextLink = $this->generateUrl('tbn_agenda_tweeter_feed', [
+                    'max_id' => $infos['?max_id']
+                ]);
+            }
         }
 
-        return null;
+        $response =  $this->render('TBNAgendaBundle:Hinclude:tweets.html.twig', [
+            'tweets' => $results['statuses'],
+            'hasNextLink' => $nextLink
+        ]);
+
+        if(! $max_id || count($results['statuses']) !== self::TWEET_LIMIT) {
+            list($expire, $ttl) = $this->getSecondsUntil(1);
+        }else {
+            $expire = new \DateTime;
+            $expire->modify("+1 year");
+            $ttl = 31536000;
+        }
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response
+            ->setSharedMaxAge($ttl)
+            ->setExpires($expire)
+        ;
     }
 
-    /**
-     * @Cache(expires="tomorrow", public=true)
-     */
-    public function soireesSimilairesAction(Agenda $soiree, $page)
+    public function soireesSimilairesAction(Agenda $soiree, $page = 1)
     {
         if ($page <= 0) {
             $page = 1;
         }
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
 
-        $offset = 7;
+        $count = $repo->findAllSimilairesCount($soiree);
+        $current = $page * self::WIDGET_ITEM_LIMIT;
 
-        return $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-            "soirees" => $this->getSoireesSimilaires($soiree, $page, $offset),
-            "maxItems" => $offset
+        if($current < $count) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_soirees_similaires', [
+                'slug' => $soiree->getSlug(),
+                'page' => $page + 1
+            ]);
+        }else {
+            $hasNextLink = null;
+        }
+
+        $response = $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
+            "soirees" => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            "current" => $current,
+            "count" => $count,
+            "hasNextLink" => $hasNextLink
         ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response
+            ->setExpires(new \DateTime('tomorrow'))
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
+            ->setPublic()
+        ;
     }
 
-    /**
-     * @Cache(expires="tomorrow", public=true)
-     */
-    public function topSoireesAction()
+    public function topSoireesAction($page = 1)
     {
+        if ($page <= 1) {
+            $page = 1;
+        }
+
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
 
-        return $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-            "soirees" => $this->getTopSoirees($site)
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
+
+        $current = $page * self::WIDGET_ITEM_LIMIT;
+        $count = $repo->findTopSoireeCount($site);
+
+        if($current < $count) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_top_soirees', [
+                'page' => $page + 1
+            ]);
+        }else {
+            $hasNextLink = null;
+        }
+
+        $response = $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
+            "soirees" => $repo->findTopSoiree($site, $page, self::WIDGET_ITEM_LIMIT),
+            "hasNextLink" => $hasNextLink,
+            "current" => $current,
+            "count" => $count
         ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response
+            ->setExpires(new \DateTime('tomorrow'))
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
+            ->setPublic()
+        ;
     }
 
     /**
-     * @Cache(expires="+4 hours", public=true)
+     * TODO: Delete this action
      */
     public function tendancesAction(Agenda $soiree)
     {
-
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         $nbItems = 30;
         $membres = $this->getFBMembres($soiree, 1, $nbItems);
 
         return $this->render("TBNAgendaBundle:Hinclude:tendances.html.twig", [
-            "tendancesParticipations" => $this->getSoireesTendancesParticipations($soiree),
-            "tendancesInterets" => $this->getSoireesTendancesInterets($soiree),
+            "tendancesParticipations" => $repo->findAllTendancesParticipations($soiree),
+            "tendancesInterets" => $repo->findAllTendancesInterets($soiree),
             "count_participer" => $soiree->getParticipations() + $soiree->getFbParticipations(),
             "count_interets" => $soiree->getInterets() + $soiree->getFbInterets(),
             "membres" => $membres,
@@ -181,70 +170,105 @@ class MenuDroitController extends Controller
         ]);
     }
 
-    protected function getSoireesTendancesParticipations(Agenda $soiree)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        return $repo->findAllTendancesParticipations($soiree);
-    }
-
-    protected function getSoireesTendancesInterets(Agenda $soiree)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        return $repo->findAllTendancesInterets($soiree);
-    }
-
-    /**
-     * @Cache(expires="+8 hours", public=true)
-     */
     public function fbMembresAction(Agenda $soiree, $page)
     {
-        if ($page <= 1) {
-            $page = 2;
+        if(! $soiree->getFacebookEventId()) {
+            return $this->redirectToRoute('tbn_agenda_details', ['slug' => $soiree->getSlug()]);
         }
 
-        $nbItems = 50;
-        $membres = $this->getFBMembres($soiree, $page, $nbItems);
+        if ($page <= 1) {
+            $page = 1;
+        }
 
-        return $this->render("TBNAgendaBundle:Hinclude:fb_membres.html.twig", [
+        $api = $this->get("tbn.social.facebook_admin");
+        $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
+
+        $membres = array_merge($retour['participations'], $retour['interets']);
+        if(count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
+                'slug' => $soiree->getSlug(),
+                'page' => $page + 1
+            ]);
+        }else {
+            $hasNextLink = null;
+        }
+
+        $response = $this->render("TBNAgendaBundle:Hinclude:fb_membres.html.twig", [
+            "event" => $soiree,
+            "page" => $page,
             "membres" => $membres,
-            "maxItems" => $nbItems
+            "hasNextLink" => $hasNextLink
         ]);
+
+        try {
+            $now = new \DateTime();
+            if ($soiree->getDateFin() < $now) {
+                $now->modify("+1 year");
+                $response
+                    ->setExpires($now)
+                    ->setSharedMaxAge(31536000);
+            } else {
+                if($hasNextLink) {
+                    list($expires, $next2hours) = $this->getSecondsUntil(24);
+                }else {
+                    list($expires, $next2hours) = $this->getSecondsUntil(2);
+                }
+
+                $response
+                    ->setExpires($expires)
+                    ->setSharedMaxAge($next2hours);
+            }
+        }catch(\Exception $e) {
+            $this->get('logger')->critical($e);
+        }
+
+        $response->headers->add([
+           'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response->setPublic();
     }
 
-    /**
-     * @Cache(expires="+6 hours", public=true)
-     */
-    public function topMembresAction()
+    public function topMembresAction($page = 1)
     {
+        if ($page <= 1) {
+            $page = 1;
+        }
+
         $siteManager = $this->container->get("site_manager");
         $site = $siteManager->getCurrentSite();
 
-        return $this->render("TBNAgendaBundle:Hinclude:membres.html.twig", [
-            "membres" => $this->getTopMembres($site)
-        ]);
-    }
-
-    protected function getTopSoirees(Site $site)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
-
-        return $repo->findTopSoiree($site);
-    }
-
-    protected function getTopMembres(Site $site)
-    {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNUserBundle:User");
-        return $repo->findTopMembres($site);
-    }
 
-    protected function getSoireesSimilaires(Agenda $soiree, $page, $offset)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        return $repo->findAllSimilaires($soiree, $page, $offset);
+        $count = $repo->findMembresCount($site);
+        $current = $page * self::WIDGET_ITEM_LIMIT;
+
+        if($current < $count) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_top_membres', [
+                'page' => $page + 1
+            ]);
+        }else {
+            $hasNextLink = null;
+        }
+
+        $response = $this->render("TBNAgendaBundle:Hinclude:membres.html.twig", [
+            "membres" => $repo->findTopMembres($site, $page, self::WIDGET_ITEM_LIMIT),
+            "hasNextLink" => $hasNextLink,
+            "current" => $current,
+            "count" => $count
+        ]);
+
+        list($future, $seconds) = $this->getSecondsUntil(6);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response
+            ->setExpires($future)
+            ->setSharedMaxAge($seconds)
+            ->setPublic()
+        ;
     }
 }

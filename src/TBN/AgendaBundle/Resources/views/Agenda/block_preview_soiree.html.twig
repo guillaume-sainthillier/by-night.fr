@@ -1,4 +1,5 @@
 {% for i, soiree in events %}
+    {{ fos_httpcache_tag('detail-event-' ~ soiree.id ) }}
     <div itemscope itemtype="http://schema.org/Event">
         <div class="row event">
             <div class="col-xs-3 image_soiree">

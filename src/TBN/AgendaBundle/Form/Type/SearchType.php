@@ -2,7 +2,7 @@
 
 namespace TBN\AgendaBundle\Form\Type;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;

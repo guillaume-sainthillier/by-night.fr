@@ -5,28 +5,42 @@ namespace TBN\MainBundle\Listener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\MainBundle\Invalidator\EventInvalidator;
 use TBN\MajDataBundle\Entity\Exploration;
 use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Utils\DoctrineEventHandler;
+use TBN\MajDataBundle\Handler\DoctrineEventHandler;
 use TBN\MajDataBundle\Utils\Firewall;
 
 class EventListener
 {
-    /**
-     * @var
-     */
-    private $doctrineEventHandler;
+    private $eventInvalidator;
 
-    public function __construct(DoctrineEventHandler $doctrineEventHandler = null)
+    public function __construct(EventInvalidator $eventInvalidator)
     {
-        $this->doctrineEventHandler = $doctrineEventHandler;
+        $this->eventInvalidator = $eventInvalidator;
+    }
+
+    public function postUpdate(LifecycleEventArgs $args) {
+        $entity = $args->getEntity();
+
+        if (!$entity instanceof Agenda) {
+            return;
+        }
+
+        $this->eventInvalidator->invalidateEvent($entity);
     }
 
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
 
-        if (!$entity instanceof Agenda || !$entity->getFacebookEventId()) {
+        if (!$entity instanceof Agenda) {
+            return;
+        }
+
+        $this->eventInvalidator->invalidateEvent($entity);
+
+        if(!$entity->getFacebookEventId()) {
             return;
         }
 

@@ -9,16 +9,16 @@
 namespace TBN\MajDataBundle\Command;
 
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CleanCommand extends ContainerAwareCommand
+class CleanCommand extends AppCommand
 {
     protected function configure()
     {
         $this
-            ->setName('clean:image')
+            ->setName('tbn:events:clean')
             ->setDescription('Mettre à jour les images sur le serveur')
         ;
     }

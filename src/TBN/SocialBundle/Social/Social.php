@@ -12,6 +12,7 @@ namespace TBN\SocialBundle\Social;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use TBN\MainBundle\App\AppManager;
 use TBN\MainBundle\Picture\EventProfilePicture;
 use TBN\SocialBundle\Exception\SocialException;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -91,7 +92,12 @@ abstract class Social
      */
     protected $eventProfilePicture;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture)
+    /**
+     * @var AppManager
+     */
+    protected $appManager;
+
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, AppManager $appManager)
     {
         if (!isset($config["id"])) {
             throw new SocialException("Le paramètre 'id' est absent");
@@ -111,6 +117,7 @@ abstract class Social
         $this->requestStack = $requestStack;
         $this->logger = $logger;
         $this->eventProfilePicture = $eventProfilePicture;
+        $this->appManager = $appManager;
 
         $this->constructClient();
     }
@@ -185,9 +192,7 @@ abstract class Social
             if ($ex instanceof SocialException) {
                 $type = $ex->getType();
             }
-            /**
-             * @var Session $session
-             */
+
             $this->session->getFlashBag()->add(
                 $type,
                 sprintf("Une erreur est survenue sur <b>%s</b> : %s", $this->getName(), $ex->getMessage())
@@ -217,6 +222,7 @@ abstract class Social
     protected abstract function getName();
 
     /**
+     * @param User $user
      * @param Agenda $agenda La soirée concernée
      * @throws SocialException si une erreur est survenue
      */

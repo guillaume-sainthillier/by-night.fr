@@ -20,11 +20,11 @@
 {% endblock %}
 
 {% block css %}
-    <link rel="stylesheet" href="{{ asset('prod/widgets/css/widgets.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('prod/widgets/css/widgets.min.css', 'asset') }}" type="text/css">
     {% block css_agenda %}{% endblock %}
 {% endblock %}
 
 {% block js_template %}
-    <script src="{{ asset('prod/widgets/js/widgets.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('prod/widgets/js/widgets.min.js', 'asset') }}" type="text/javascript"></script>
     {% block js_agenda %}{% endblock %}
 {% endblock %}

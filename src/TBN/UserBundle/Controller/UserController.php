@@ -7,6 +7,7 @@ use TBN\UserBundle\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 class UserController extends Controller
 {
@@ -50,7 +51,6 @@ class UserController extends Controller
 
     public function statsAction(Request $request, User $user, $type)
     {
-
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         $str_date = $repo->getLastDateStatsUser($user);
@@ -65,16 +65,16 @@ class UserController extends Controller
             }
         }
 
-        $today = new \DateTime();
+        $datas = [];
         switch ($type) {
             case "semaine":
-                $datas = $this->getDataOfWeek($repo, $user, $today);
+                $datas = $this->getDataOfWeek($repo, $user);
                 break;
             case "mois":
-                $datas = $this->getDataOfMonth($repo, $user, $today);
+                $datas = $this->getDataOfMonth($repo, $user);
                 break;
             case "annee":
-                $datas = $this->getDataOfYear($repo, $user, $today);
+                $datas = $this->getDataOfYear($repo, $user);
                 break;
         }
 

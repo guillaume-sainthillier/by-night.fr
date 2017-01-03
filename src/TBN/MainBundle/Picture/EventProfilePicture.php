@@ -53,6 +53,12 @@ class EventProfilePicture
             );
         }
 
+        if($agenda->getSystemPath()) {
+            return $this->getAppUrl() . $this->packages->getUrl(
+                $this->helper->asset($agenda, 'systemFile')
+            );
+        }
+
         if($agenda->getUrl()) {
             return $agenda->getUrl();
         }
@@ -67,6 +73,12 @@ class EventProfilePicture
             );
         }
 
+        if($agenda->getSystemPath()) {
+            return $this->packages->getUrl(
+                $this->helper->asset($agenda, 'systemFile')
+            );
+        }
+
         if($agenda->getUrl()) {
             return $agenda->getUrl();
         }
@@ -77,6 +89,10 @@ class EventProfilePicture
     public function getPicture(Agenda $agenda, $thumb = 'thumbs_evenement') {
         if($agenda->getPath()) {
             return $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
+        }
+
+        if($agenda->getSystemPath()) {
+            return $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
         }
 
         if($agenda->getUrl()) {

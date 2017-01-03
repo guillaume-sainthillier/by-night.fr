@@ -6,7 +6,7 @@
 
 namespace TBN\MajDataBundle\Parser\Manager;
 
-use Symfony\Component\Console\Output\OutputInterface;
+
 
 use TBN\MajDataBundle\Parser\ParserInterface;
 use TBN\MajDataBundle\Utils\Monitor;

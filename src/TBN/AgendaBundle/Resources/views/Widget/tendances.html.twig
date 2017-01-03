@@ -27,28 +27,27 @@
             <strong class="number number-xbig"> / {{ stats.count_interets }}</strong>
             <span class="text-primary">interessé{{ stats.count_interets > 1 ? "s" : "" }}</span>
         </div>
-        <!-- ./Stats -->
-        <br/>
-        <!-- Membres -->
-        <div class="tendance">
-            {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': stats.tendancesParticipations }) %}
-        </div>
-        <div class="tendance">
-            {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': stats.tendancesInterets }) %}
-        </div>
-        <!-- ./Membres -->
-        <br/>
-        <!-- FB Membres -->
-        {% include "TBNAgendaBundle:Hinclude:fb_membres.html.twig" with({'membres': stats.membres, 'maxItems': stats.maxItems }) %}
-        <!-- ./FB Membres -->
     </div>
+
+    <!-- ./Stats -->
+    <br/>
+    <!-- Membres -->
+    <div class="tendance">
+        {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': stats.tendancesParticipations }) %}
+    </div>
+    <div class="tendance">
+        {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': stats.tendancesInterets }) %}
+    </div>
+    <!-- ./Membres -->
+    <br/>
+    <!-- FB Membres -->
+    {% if soiree.facebookEventId %}
+    <div>
+        {{ render_esi(url('tbn_agenda_soirees_membres', {'slug': soiree.slug})) }}
+    </div>
+    {% endif %}
+    <!-- ./FB Membres -->
 {% endblock %}
 {% block footer %}
-    {% if stats.membres|length == stats.maxItems %}
-        <div class="panel-footer">
-            <button type="button" class="btn btn-primary btn-block more-widget"
-                    data-href="{{ path('tbn_agenda_soirees_membres', {'slug': soiree.slug }) }}">Plus
-            </button>
-        </div>
-    {% endif %}
+<div class="panel-footer"></div>
 {% endblock %}

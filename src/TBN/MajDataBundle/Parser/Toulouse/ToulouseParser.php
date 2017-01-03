@@ -4,6 +4,7 @@ namespace TBN\MajDataBundle\Parser\Toulouse;
 
 use ForceUTF8\Encoding;
 use Symfony\Component\Filesystem\Filesystem;
+use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Parser\AgendaParser;
 
 /**

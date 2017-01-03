@@ -29,15 +29,12 @@ function init_list_comments() {
     $(options.css_main_block_comments).each(function () //On parcours les div comments (1 par page normalement)
     {
         var div_comments = $(this);
-        div_comments.load(div_comments.data("url"), function () // Les commentaires sont chargés
-        {
-            App.initComponents(div_comments); //On bind les liens connexion/inscription            
-            init_new_comment(div_comments); //On bind le formulaire d'envoi d'un nouveau commentaire
-            init_load_new_reponse(div_comments); //On bind le lien de réponse des commentaires
-            init_list_reponses(div_comments); //On bind le bouton de liste des réponses
-            init_maj_nb_reponses(div_comments); // On met à jour le boutton de liste en fonction du nombre de réponses
-            init_load_more_comments(div_comments);
-        });
+        App.initComponents(div_comments); //On bind les liens connexion/inscription
+        init_new_comment(div_comments); //On bind le formulaire d'envoi d'un nouveau commentaire
+        init_load_new_reponse(div_comments); //On bind le lien de réponse des commentaires
+        init_list_reponses(div_comments); //On bind le bouton de liste des réponses
+        init_maj_nb_reponses(div_comments); // On met à jour le boutton de liste en fonction du nombre de réponses
+        init_load_more_comments(div_comments);
     });
 }
 
@@ -145,7 +142,7 @@ function maj_nb_reponses(main_block_reponses, nb_reponses) {
 
 function init_new_reponse(block_post_reponse) {
     $(block_post_reponse).find("form").unbind("submit").submit(function () {
-        App.loadingButtons(form);
+        App.loadingButtons($(this));
         var form = $(this);
         var main_block_reponses = block_post_reponse.closest(options.css_main_block_reponse);
 
@@ -179,6 +176,7 @@ function init_new_reponse(block_post_reponse) {
 
 function init_new_comment(commentaire) {
     $(commentaire).find("form").each(function () {
+
         var form = $(this);
         $(this).unbind("submit").submit(function () {
             App.loadingButtons(commentaire); //On bloque le bouton submit le temps du chargement

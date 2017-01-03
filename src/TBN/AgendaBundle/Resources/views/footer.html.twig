@@ -40,26 +40,26 @@
     <div class="col-md-5 text-center">
         <div class="row counts">
             <div class="col-xs-4 preserve">
-                {% if site.facebookIdPage %}
+                {% if app_manager.facebookIdPage %}
                     <a class="social" title="By Night sur Facebook"
-                       href="https://www.facebook.com/{{ site.facebookIdPage }}">
+                       href="https://www.facebook.com/{{ app_manager.facebookIdPage }}">
                         <i class="fa fa-facebook fa-3x"></i>
                         <span class="number number-xbig">{{ count_facebook|default(null) }}</span>
                     </a>
                 {% endif %}
             </div>
             <div class="col-xs-4 preserve">
-                {% if site.twitterIdPage %}
-                    <a class="social" title="By Night sur Twitter" href="https://twitter.com/{{ site.twitterIdPage }}">
+                {% if app_manager.twitterIdPage %}
+                    <a class="social" title="By Night sur Twitter" href="https://twitter.com/{{ app_manager.twitterIdPage }}">
                         <i class="fa fa-twitter fa-3x"></i>
                         <span class="number number-xbig">{{ count_twitter|default(null) }}</span>
                     </a>
                 {% endif %}
             </div>
             <div class="col-xs-4 preserve">
-                {% if site.googleIdPage %}
+                {% if app_manager.googleIdPage %}
                     <a class="social" title="By Night sur Google+"
-                       href="https://plus.google.com/{{ site.googleIdPage }}" rel="publisher">
+                       href="https://plus.google.com/{{ app_manager.googleIdPage }}" rel="publisher">
                         <i class="fa fa-google-plus fa-3x"></i>
                         <span class="number number-xbig">{{ count_google|default(null) }}</span>
                     </a>

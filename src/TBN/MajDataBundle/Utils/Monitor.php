@@ -27,6 +27,8 @@ class Monitor
      */
     private static $progressBar;
 
+    private static $enableMonitoring;
+
     private static $stats = [];
 
     public static function createProgressBar($nbSteps) {
@@ -55,6 +57,10 @@ class Monitor
         }
 
         return $stats;
+    }
+
+    public static function enableMonitoring($enable) {
+        self::$enableMonitoring = $enable;
     }
 
     private static function convertMemory($size)
@@ -149,21 +155,29 @@ class Monitor
         $table->render();
     }
 
-    public static function bench($message, callable $function, $display = false)
+    public static function bench($message, callable $function)
     {
-        if (!isset(self::$stats[$message])) {
-            self::$stats[$message] = [
-                'time' => [],
-                'memory' => []
-            ];
-        }
-        $stopwatch = new Stopwatch();
-        $stopwatch->start($message);
-        $retour = call_user_func($function);
-        $event = $stopwatch->stop($message);
+        $stopwatch = null;
+        if(self::$enableMonitoring) {
+            if (!isset(self::$stats[$message])) {
+                self::$stats[$message] = [
+                    'time' => [],
+                    'memory' => []
+                ];
+            }
 
-        self::$stats[$message]['time'][] = $event->getDuration();
-        self::$stats[$message]['memory'][] = $event->getMemory();
+            $stopwatch = new Stopwatch();
+            $stopwatch->start($message);
+        }
+
+        $retour = call_user_func($function);
+
+        if(self::$enableMonitoring) {
+            $event = $stopwatch->stop($message);
+
+            self::$stats[$message]['time'][] = $event->getDuration();
+            self::$stats[$message]['memory'][] = $event->getMemory();
+        }
 
         return $retour;
     }

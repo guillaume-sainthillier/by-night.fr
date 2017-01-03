@@ -1,16 +1,10 @@
 {% extends "TBNAgendaBundle:Widget:template.html.twig" %}
 
 {% block titre %}Événements similaires{% endblock %}
-{% block widget_body_class %}scrollable scrollable-large{% endblock %}
+{% block widget_body_class %}scrollable{% endblock %}
 {% block icone %}fa-star{% endblock %}
 {% block body %}
-    {{ render_esi(url('tbn_agenda_soirees_similaires',{'slug': soiree.slug})) }}
-{% endblock %}
-
-{% block footer %}
-    <div class="panel-footer">
-        <button class="btn btn-primary btn-block more-widget"
-                data-href="{{ path('tbn_agenda_soirees_similaires', {'slug': soiree.slug }) }}">Plus
-        </button>
-    </div>
+<div>
+    {{ render_esi(controller('TBNAgendaBundle:MenuDroit:soireesSimilaires',{'slug': soiree.slug})) }}
+</div>
 {% endblock %}

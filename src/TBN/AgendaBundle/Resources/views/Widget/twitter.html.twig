@@ -2,8 +2,8 @@
 
 {% block titre %}Restez informé avec @{{ siteInfo.twitterNickname }}{% endblock %}
 {% block icone %}fa-twitter{% endblock %}
-{% block widget_class %}panel-twitter{% endblock %}
-{% block widget_body_class %}no-padding padding-left-10{% endblock %}
+{% block widget_class %}{% endblock %}
+{% block widget_body_class %}panel-twitter scrollable no-padding padding-left-10 scrollable{% endblock %}
 {% block body %}
     <script>window.twttr = (function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0],
@@ -12,7 +12,7 @@
             js = d.createElement(s);
             js.id = id;
             js.async = true;
-            js.src = "https://platform.twitter.com/widgets.js";
+            js.src = "//platform.twitter.com/widgets.js";
             fjs.parentNode.insertBefore(js, fjs);
 
             t._e = [];
@@ -23,6 +23,7 @@
             return t;
         }(document, "script", "twitter-wjs"));
     </script>
+{% if false and site.twitterIdWidget and site.twitterURLWidget %}
     <div class="text-center">
         <a class="twitter-timeline"
            href="{{ site.twitterURLWidget }}"
@@ -32,4 +33,9 @@
             <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
         </a>
     </div>
+{% else %}
+<div>
+    {{ render_esi(url('tbn_agenda_tweeter_feed')) }}
+</div>
+{% endif %}
 {% endblock %}

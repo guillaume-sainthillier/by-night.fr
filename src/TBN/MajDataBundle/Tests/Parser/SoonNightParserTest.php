@@ -3,15 +3,10 @@
 namespace TBN\MajDataBundle\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MajDataBundle\Entity\Exploration;
+
+
 use TBN\MajDataBundle\Parser\Common\SoonNightParser;
-use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Utils\Firewall;
-use TBN\MajDataBundle\Utils\Merger;
-use TBN\MajDataBundle\Utils\Monitor;
+
 
 class SoonNightParserTest extends KernelTestCase
 {

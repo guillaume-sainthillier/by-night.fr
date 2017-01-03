@@ -3,49 +3,34 @@
 namespace TBN\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use TBN\AgendaBundle\Entity\Agenda;
+
 
 class TBNController extends Controller
 {
-    private static $CACHE_TTL = 43200; //12 * 3600
+    protected function getSecondsUntilTomorrow() {
+        $minuit = strtotime('tomorrow 00:00:00');
 
-    protected function getFBStatsEvent(Agenda $soiree)
-    {
-        $stats = [];
-        $id = $soiree->getFacebookEventId();
-        if ($id) {
-            $key = 'fb.stats.' . $id;
-            $cache = $this->get("memory_cache");
-            if (!$cache->contains($key)) {
-                $api = $this->get("tbn.social.facebook_admin");
-                $retour = $api->getEventStats($id);
-
-                $cache->save($key, $retour["membres"], self::$CACHE_TTL);
-                $soiree->setFbInterets($retour["nbInterets"]);
-                $soiree->setFbParticipations($retour["nbParticipations"]);
-
-                try {
-                    $this->get('tbn.event_handler')->updateImage($soiree, $retour['image']);
-                }catch(Exception $e) {
-                    $this->get('logger')->critical($e);
-                }
-
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($soiree);
-                $em->flush();
-            }
-            $stats = $cache->fetch($key);
-        }
-
-        return $stats;
+        return $minuit - time();
     }
 
-    protected function getFBMembres(Agenda $soiree, $page, $offset)
-    {
-        $membres = $this->getFBStatsEvent($soiree) ?: array();
+    protected function getSecondsUntil($hours) {
+        $time = time();
+        $now = new \DateTime();
+        $minutes = $now->format('i');
+        $secondes = $now->format('s');
 
-        return array_slice($membres, ($page - 1) * $offset, $offset);
+        $string = $hours == 1 ? "+1 hour" : sprintf("+%d hours", $hours);
+        $now->modify($string);
+
+        if ($minutes > 0) {
+            $now->modify('-'.$minutes.' minutes');
+        }
+
+        if ($secondes > 0) {
+            $now->modify('-'.$secondes.' seconds');
+        }
+
+        return [$now, $now->getTimestamp() - $time];
     }
 
     protected function getRepo($name)

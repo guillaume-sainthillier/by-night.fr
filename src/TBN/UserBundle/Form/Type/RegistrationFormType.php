@@ -2,7 +2,7 @@
 
 namespace TBN\UserBundle\Form\Type;
 
-use Doctrine\DBAL\Types\TextType;
+
 use Symfony\Component\Form\FormBuilderInterface;
 use FOS\UserBundle\Form\Type\RegistrationFormType as BaseType;
 

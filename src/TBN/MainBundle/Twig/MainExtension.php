@@ -11,8 +11,7 @@ namespace TBN\MainBundle\Twig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use TBN\MainBundle\Site\SiteManager;
-use TBN\SocialBundle\Social\Facebook;
-use TBN\SocialBundle\Social\FacebookAdmin;
+
 
 /**
  * Description of TBNExtension
@@ -21,37 +20,24 @@ use TBN\SocialBundle\Social\FacebookAdmin;
  */
 class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
-
-    public static $LIFE_TIME_CACHE = 86400; // 3600*24
     private $router;
     /**
      * @var RequestStack
      */
     private $requestStack;
     private $doctrine;
-    private $cache;
+
+    /**
+     * @var SiteManager
+     */
     private $siteManager;
-    private $socials;
-    private $userProfilePicture;
-    private $eventProfilePicture;
-    private $api_facebook_id;
 
     public function __construct(SiteManager $manager, ContainerInterface $container)
     {
-        $this->api_facebook_id = $container->getParameter('api_facebook_id');
         $this->router = $container->get('router');
         $this->requestStack = $container->get('request_stack');
-        $this->cache = $container->get('memory_cache');
         $this->doctrine = $container->get('doctrine');
         $this->siteManager = $manager;
-        $this->requestStack = $container->get('request_stack');
-        $this->userProfilePicture = $container->get('tbn.profile_picture.user');
-        $this->eventProfilePicture = $container->get('tbn.profile_picture.event');
-        $this->socials = [
-            'facebook' => $container->get('tbn.social.facebook_admin'),
-            'twitter' => $container->get('tbn.social.twitter'),
-            'google' => $container->get('tbn.social.google')
-        ];
     }
 
     public function getFunctions()
@@ -66,53 +52,48 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     {
         return [
             new \Twig_SimpleFilter('diff_date', [$this, 'diffDate']),
+            new \Twig_SimpleFilter('stats_diff_date', [$this, 'statsDiffDate']),
             new \Twig_SimpleFilter('parse_tags', [$this, 'parseTags']),
             new \Twig_SimpleFilter('resume', [$this, 'resume']),
             new \Twig_SimpleFilter('partial_extends', [$this, 'partialExtendsFilter']),
-            new \Twig_SimpleFilter('url_decode', [$this, 'urlDecode'])
+            new \Twig_SimpleFilter('url_decode', [$this, 'urlDecode']),
+            new \Twig_SimpleFilter('tweet', [$this, 'tweet']),
+            new \Twig_SimpleFilter('datetime', [$this, 'getDateTime'])
         ];
     }
 
     public function getGlobals()
     {
-        $globals = [];
-        $site = $this->siteManager->getCurrentSite();
-        if ($site !== null && $this->requestStack->getParentRequest() === null) {
-            $key = "sites." . $site->getSubdomain();
-            if (!$this->cache->contains($key)) {
-                $repo = $this->doctrine->getRepository("TBNMainBundle:Site");
-                $sites = $repo->findRandom($site);
-                $nomSites = [];
-                foreach ($sites as $site) {
-                    $nomSites[] = ['nom' => $site->getNom(), 'subdomain' => $site->getSubdomain()];
-                }
-                $this->cache->save($key, $nomSites);
-            }
-            $sites = $this->cache->fetch($key);
+        return [
+            "site" => $this->siteManager->getCurrentSite(),
+            "siteInfo" => $this->siteManager->getSiteInfo()
+        ];
+    }
 
-            $globals = [
-                "api_facebook_id" => $this->api_facebook_id,
-                "site" => $this->siteManager->getCurrentSite(),
-                "sites" => $sites,
-                "userProfilePicture" => $this->userProfilePicture,
-                "eventProfilePicture" => $this->eventProfilePicture,
-                "siteInfo" => $this->siteManager->getSiteInfo()
-            ];
+    public function getDateTime($string) {
+        return new \DateTime($string);
+    }
 
-            foreach ($this->socials as $name => $social) {
-                $key = 'tbn.counts.' . $name;
-                if (!$this->cache->contains($key)) {
-                    if($social instanceof FacebookAdmin) {
-                        $social->init();
-                    }
-                    $this->cache->save($key, $social->getNumberOfCount(), self::$LIFE_TIME_CACHE);
-                }
+    public function tweet($tweet) {
+        $linkified = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
+        $hashified = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
+        $mentionified = '/(^|[\n\s])@([^\s"\t\n\r<:]*)/is';
 
-                $globals['count_' . $name] = $this->cache->fetch($key);
-            }
-        }
+        $prettyTweet = preg_replace(
+            array(
+                $linkified,
+                $hashified,
+                $mentionified
+            ),
+            array(
+                '<a href="$1" class="link-tweet" target="_blank">$1</a>',
+                '$1<a class="link-hashtag" href="https://twitter.com/search?q=%23$2&src=hash" target="_blank">#$2</a>',
+                '$1<a class="link-mention" href="http://twitter.com/$2" target="_blank">@$2</a>'
+            ),
+            $tweet
+        );
 
-        return $globals;
+        return $prettyTweet;
     }
 
     public function parseTags($texte)
@@ -129,32 +110,62 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function diffDate(\DateTime $date)
     {
-        $diff = $date->diff(new \DateTime);
+        return $this->statsDiffDate($date)['full'];
+    }
 
+    public function statsDiffDate(\DateTime $date)
+    {
+        $diff = $date->diff(new \DateTime);
 
         if ($diff->y > 0) //Années
         {
-            $message = sprintf("Il y a %d %s", $diff->y, "an" . ($diff->y > 1 ? "s" : ""));
+            return [
+                'short' => sprintf("%d an%s", $diff->y, $diff->y > 1 ? "s" : ""),
+                'long' => sprintf("%d an%s", $diff->y, $diff->y > 1 ? "s" : ""),
+                'full' => sprintf("Il y a %d %s", $diff->y, $diff->y > 1 ? "s" : "")
+            ];
         } else if ($diff->m > 0) //Mois
         {
-            $message = sprintf("Il y a %d mois", $diff->m);
+            return [
+                'short' => sprintf("%d mois", $diff->m),
+                'long' => sprintf("%d mois", $diff->m),
+                'full' => sprintf("Il y a %d mois", $diff->m)
+            ];
         } else if ($diff->d > 0) //Jours
         {
-            $message = sprintf("Il y a %d jours", $diff->d);
+            return [
+                'short' => sprintf("%d j", $diff->d),
+                'long' => sprintf("%d jours", $diff->d),
+                'full' => sprintf("Il y a %d jours", $diff->d)
+            ];
         } else if ($diff->h > 0) //Heures
         {
-            $message = sprintf("Il y a %d %s", $diff->h, "heure" . ($diff->h > 1 ? "s" : ""));
+            return [
+                'short' => sprintf("%d h", $diff->h),
+                'long' => sprintf("%d heure%s", $diff->h, $diff->h > 1 ? "s" : ""),
+                'full' => sprintf("Il y a %d heure%s", $diff->h, "heure" . $diff->h > 1 ? "s" : "")
+            ];
         } else if ($diff->i > 0) //Minutes
         {
-            $message = sprintf("Il y a %d %s", $diff->i, "minute" . ($diff->i > 1 ? "s" : ""));
+            return [
+                'short' => sprintf("%d min", $diff->i),
+                'long' => sprintf("%d minute%s", $diff->i, $diff->i > 1 ? "s" : ""),
+                'full' => sprintf("Il y a %d minute%s", $diff->i, $diff->i > 1 ? "s" : "")
+            ];
         } else if ($diff->s > 30) //Secondes
         {
-            $message = sprintf("Il y a %d secondes", $diff->s);
-        } else {
-            $message = "A l'instant";
+            return [
+                'short' => sprintf("%d s", $diff->s),
+                'long' => sprintf("%d seconde%s", $diff->s, $diff->s > 1 ? "s" : ""),
+                'full' => sprintf("Il y a %d seconde%s", $diff->s, $diff->s > 1 ? "s" : "")
+            ];
         }
 
-        return $message;
+        return [
+            'short' => sprintf("0 s"),
+            'long' => sprintf("à l'instant"),
+            'full' => sprintf("A l'instant")
+        ];
     }
 
     public function getAuthorizationSiteUrl($name)
@@ -164,7 +175,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function getLogoutSiteUrl($name)
     {
-        return $this->router->generate("tbn_administration_disconnect_site", ["service" => $name]);
+        return $this->router->generate("tbn_administration_site_service", ["service" => $name]);
     }
 
 

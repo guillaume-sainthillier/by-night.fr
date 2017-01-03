@@ -27,9 +27,13 @@ class ProgrammeTVParser
                 $nom = $programme->filter('.prog_name');
                 $type = $programme->filter('.prog_type');
 
+                $labelChaine = $chaine->count() ? str_replace("Programme de ", "", $chaine->attr("title")) : null;
+                $css_chaine = $this->getCSSChaine($labelChaine);
+
                 return [
                     "logo" => $logo->count() ? $logo->attr("src") : null,
-                    "chaine" => $chaine->count() ? str_replace("Programme de ", "", $chaine->attr("title")) : null,
+                    "chaine" => $labelChaine,
+                    "css_chaine" => $css_chaine ? 'icon-' . $css_chaine : null,
                     "heure" => $heure->count() ? $heure->text() : null,
                     "nom" => $nom->count() ? $nom->text() : null,
                     "lien" => $nom->count() ? "http://www.programme-tv.net/" . $nom->attr("href") : null,
@@ -50,5 +54,93 @@ class ProgrammeTVParser
                 "asset" => null,
             ];
         });
+    }
+
+    protected function getCSSChaine($chaine)
+    {
+        switch ($chaine) {
+            case 'TF1':
+                return 'tf1';
+            case 'France 2':
+                return 'france2';
+            case 'France 3':
+                return 'france3';
+            case 'Canal+':
+                return 'canal_plus';
+            case 'Arte':
+                return 'arte';
+            case 'M6':
+                return 'm6';
+            case 'France 5':
+                return 'france5';
+            case 'C8':
+                return 'canal8';
+            case 'W9':
+                return 'w9';
+            case 'TMC':
+                return 'tmc';
+            case 'NT1':
+                return 'nt1';
+            case 'NRJ 12':
+                return 'nrj';
+            case 'LCP - Public Sénat':
+                return 'lcp';
+            case 'CStar':
+                return 'cstar';
+            case 'France 4':
+                return 'france4';
+            case 'BFM TV':
+                return 'bfm_tv';
+            case 'i>Télé':
+                return 'itele';
+            case 'D17':
+                return 'd17';
+            case 'Gulli':
+                return 'gulli';
+            case 'France Ô':
+                return 'franceo';
+            case 'HD1':
+                return 'hd1';
+            case "L'Equipe":
+                return 'lequipe';
+            case "Franceinfo":
+                return 'franceinfo';
+            case "LCI":
+            case "LCI - La Chaîne Info":
+                return 'lci';
+            case '6ter':
+                return '6ter';
+            case 'Numéro 23':
+                return 'numero23';
+            case 'RMC Découverte':
+                return 'rmc';
+            case 'Chérie 25':
+                return 'cherie25';
+            case 'IDF1':
+                return 'idf';
+            case 'Canal partagé':
+                return 'canal_partage';
+            case 'RTL 9':
+                return 'rtl9';
+            case 'Paris Première':
+                return 'paris_premiere';
+            case 'Plug RTL':
+                return 'plug_rtl';
+            case 'TV5 Monde':
+            case 'TV5MONDE':
+                return 'tv5_monde';
+            case '13e rue':
+                return '13_rue';
+            case 'E ! Entertainment':
+                return 'e_entertainment';
+            case 'Syfy':
+                return 'syfy';
+            case 'Série club':
+                return 'serie_club';
+            case 'Nat Geo Wild':
+                return 'nat_geo';
+        }
+
+        return null;
     }
 }

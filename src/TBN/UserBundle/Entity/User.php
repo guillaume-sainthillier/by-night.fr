@@ -7,6 +7,8 @@ use FOS\UserBundle\Model\User as BaseUser;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Doctrine\Common\Collections\ArrayCollection;
+use TBN\AgendaBundle\Entity\Calendrier;
+use TBN\MainBundle\Entity\Site;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -113,12 +115,28 @@ class User extends BaseUser
     private $imageFile;
 
     /**
+     *
+     * @Vich\UploadableField(mapping="user_system_image", fileNameProperty="systemPath")
+     * @Assert\Valid()
+     * @Assert\File(maxSize = "6M")
+     * @Assert\Image()
+     * @var File
+     */
+    private $imageSystemFile;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Expose
      *
      * @var string
      */
     private $path;
+
+    /**
+     * @ORM\Column(type="string", name="system_path", length=255, nullable=true)
+     *
+     * @var string
+     */
+    private $systemPath;
 
     /**
      * @ORM\Column(type="datetime")
@@ -176,17 +194,39 @@ class User extends BaseUser
         return $this->imageFile;
     }
 
-    public function getExpiresAt()
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     *
+     * @return User
+     */
+    public function setImageSystemFile(File $image = null)
     {
-        return $this->expiresAt;
+        $this->imageSystemFile = $image;
+
+        if ($image) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTime('now');
+        }
+
+        return $this;
     }
 
-    public function getCredentialsExpireAt()
+    /**
+     * @return File
+     */
+    public function getImageSystemFile()
     {
-        return $this->credentialsExpireAt;
+        return $this->imageSystemFile;
     }
 
-        public function getUsername()
+    public function getUsername()
     {
         return ucfirst(parent::getUsername());
     }
@@ -343,10 +383,10 @@ class User extends BaseUser
     /**
      * Set info
      *
-     * @param \TBN\UserBundle\Entity\UserInfo $info
+     * @param UserInfo $info
      * @return User
      */
-    public function setInfo(\TBN\UserBundle\Entity\UserInfo $info = null)
+    public function setInfo(UserInfo $info = null)
     {
         $this->info = $info;
 
@@ -366,10 +406,10 @@ class User extends BaseUser
     /**
      * Add calendriers
      *
-     * @param \TBN\AgendaBundle\Entity\Calendrier $calendriers
+     * @param Calendrier $calendriers
      * @return User
      */
-    public function addCalendrier(\TBN\AgendaBundle\Entity\Calendrier $calendriers)
+    public function addCalendrier(Calendrier $calendriers)
     {
         $this->calendriers[] = $calendriers;
 
@@ -379,9 +419,9 @@ class User extends BaseUser
     /**
      * Remove calendriers
      *
-     * @param \TBN\AgendaBundle\Entity\Calendrier $calendriers
+     * @param Calendrier $calendriers
      */
-    public function removeCalendrier(\TBN\AgendaBundle\Entity\Calendrier $calendriers)
+    public function removeCalendrier(Calendrier $calendriers)
     {
         $this->calendriers->removeElement($calendriers);
     }
@@ -399,10 +439,10 @@ class User extends BaseUser
     /**
      * Set site
      *
-     * @param \TBN\MainBundle\Entity\Site $site
+     * @param Site $site
      * @return User
      */
-    public function setSite(\TBN\MainBundle\Entity\Site $site)
+    public function setSite(Site $site)
     {
         $this->site = $site;
 
@@ -518,5 +558,29 @@ class User extends BaseUser
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set systemPath
+     *
+     * @param string $systemPath
+     *
+     * @return User
+     */
+    public function setSystemPath($systemPath)
+    {
+        $this->systemPath = $systemPath;
+
+        return $this;
+    }
+
+    /**
+     * Get systemPath
+     *
+     * @return string
+     */
+    public function getSystemPath()
+    {
+        return $this->systemPath;
     }
 }

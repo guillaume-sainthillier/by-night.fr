@@ -269,6 +269,14 @@ class Agenda implements GeolocalizeInterface
     protected $file;
 
     /**
+     * @Vich\UploadableField(mapping="event_system_image", fileNameProperty="systemPath")
+     * @Assert\Valid()
+     * @Assert\File(maxSize = "6M")
+     * @Assert\Image()
+     */
+    protected $systemFile;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $name;
@@ -277,6 +285,11 @@ class Agenda implements GeolocalizeInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $path;
+
+    /**
+     * @ORM\Column(type="string", name="system_path", length=255, nullable=true)
+     */
+    protected $systemPath;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -297,14 +310,6 @@ class Agenda implements GeolocalizeInterface
      * @ORM\Column(name="isBrouillon", type="boolean", nullable=true)
      */
     protected $isBrouillon;
-
-    /**
-     *
-     * @var boolean $isMigrated
-     *
-     * @ORM\Column(name="isMigrated", type="boolean", nullable=true)
-     */
-    protected $isMigrated;
 
     /**
      * @var integer
@@ -430,6 +435,14 @@ class Agenda implements GeolocalizeInterface
      */
     protected $reject;
 
+    /**
+     *
+     * @var boolean $isArchive
+     *
+     * @ORM\Column(name="is_archive", type="boolean", nullable=true)
+     */
+    protected $isArchive;
+
     public function setReject(Reject $reject = null) {
         $this->reject = $reject;
 
@@ -438,6 +451,13 @@ class Agenda implements GeolocalizeInterface
 
     public function getReject() {
         return $this->reject;
+    }
+
+    public function isIndexable() {
+        $now = new \DateTime;
+        $now->modify('-6 months');
+
+        return $this->dateFin >= $now;
     }
 
     /**
@@ -454,6 +474,38 @@ class Agenda implements GeolocalizeInterface
     public function setFile(File $image = null)
     {
         $this->file = $image;
+
+        if ($image) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->dateModification = new \DateTime();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return File
+     */
+    public function getSystemFile()
+    {
+        return $this->systemFile;
+    }
+
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     *
+     * @return Agenda
+     */
+    public function setSystemFile(File $image = null)
+    {
+        $this->systemFile = $image;
 
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
@@ -498,6 +550,7 @@ class Agenda implements GeolocalizeInterface
         $this->place = new Place;
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
+        $this->isArchive = false;
     }
 
     public function getDistinctTags()
@@ -1473,7 +1526,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set fbParticipations
      *
-     * @param string $fbParticipations
+     * @param int $fbParticipations
      * @return Agenda
      */
     public function setFbParticipations($fbParticipations)
@@ -1486,7 +1539,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get fbParticipations
      *
-     * @return string
+     * @return int
      */
     public function getFbParticipations()
     {
@@ -1496,7 +1549,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set fbInterets
      *
-     * @param string $fbInterets
+     * @param int $fbInterets
      * @return Agenda
      */
     public function setFbInterets($fbInterets)
@@ -1509,7 +1562,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get fbInterets
      *
-     * @return string
+     * @return int
      */
     public function getFbInterets()
     {
@@ -1519,7 +1572,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set participations
      *
-     * @param string $participations
+     * @param int $participations
      * @return Agenda
      */
     public function setParticipations($participations)
@@ -1532,7 +1585,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get participations
      *
-     * @return string
+     * @return int
      */
     public function getParticipations()
     {
@@ -1542,7 +1595,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set interets
      *
-     * @param string $interets
+     * @param int $interets
      * @return Agenda
      */
     public function setInterets($interets)
@@ -1555,7 +1608,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get interets
      *
-     * @return string
+     * @return int
      */
     public function getInterets()
     {
@@ -1654,63 +1707,11 @@ class Agenda implements GeolocalizeInterface
         return $this->place;
     }
 
-    /**
-     * Set isMigrated
-     *
-     * @param boolean $isMigrated
-     * @return Agenda
-     */
-    public function setMigrated($isMigrated)
-    {
-        $this->isMigrated = $isMigrated;
-
-        return $this;
-    }
-
-    /**
-     * Set isMigrated
-     *
-     * @param boolean $isMigrated
-     * @return Agenda
-     */
-    public function setIsMigrated($isMigrated)
-    {
-        $this->isMigrated = $isMigrated;
-
-        return $this;
-    }
-
-    /**
-     * Get isMigrated
-     *
-     * @return boolean
-     */
-    public function isMigrated()
-    {
-        return $this->isMigrated;
-    }
 
     public function setId($id)
     {
         $this->id = $id;
         return $this;
-    }
-
-    public function toJSON()
-    {
-        return json_encode($this->toArray());
-    }
-
-    public function toArray()
-    {
-        return [
-            'place' => $this->place ? $this->place->toArray() : null,
-            'site' => $this->site ? $this->site->toArray() : null,
-            'nom' => $this->nom,
-            'descriptif' => $this->descriptif,
-            'dateDebut' => $this->dateDebut,
-            'dateFin' => $this->dateFin
-        ];
     }
 
     /**
@@ -1739,5 +1740,63 @@ class Agenda implements GeolocalizeInterface
     public function __toString()
     {
         return "#".$this->id ?: '?';
+    }
+
+    /**
+     * Get isBrouillon
+     *
+     * @return boolean
+     */
+    public function getIsBrouillon()
+    {
+        return $this->isBrouillon;
+    }
+
+    /**
+     * Set isArchive
+     *
+     * @param boolean $isArchive
+     *
+     * @return Agenda
+     */
+    public function setIsArchive($isArchive)
+    {
+        $this->isArchive = $isArchive;
+
+        return $this;
+    }
+
+    /**
+     * Get isArchive
+     *
+     * @return boolean
+     */
+    public function getIsArchive()
+    {
+        return $this->isArchive;
+    }
+
+    /**
+     * Set systemPath
+     *
+     * @param string $systemPath
+     *
+     * @return Agenda
+     */
+    public function setSystemPath($systemPath)
+    {
+        $this->systemPath = $systemPath;
+
+        return $this;
+    }
+
+    /**
+     * Get systemPath
+     *
+     * @return string
+     */
+    public function getSystemPath()
+    {
+        return $this->systemPath;
     }
 }

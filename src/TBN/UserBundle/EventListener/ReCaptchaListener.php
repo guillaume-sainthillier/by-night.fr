@@ -9,7 +9,7 @@
 namespace TBN\UserBundle\EventListener;
 
 use FOS\UserBundle\Controller\RegistrationController;
-use Symfony\Component\Form\AbstractType;
+
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 class ReCaptchaListener
