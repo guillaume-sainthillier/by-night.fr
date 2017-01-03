@@ -308,7 +308,7 @@ class EventController extends Controller
         $nbSoireesTotales = $pagination->getTotalItemCount();
         $soirees = $pagination;
 
-        return $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
+        $response = $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
             'villeName' => $ville,
             'placeName' => (null !== $place) ? $place->getNom() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,
@@ -323,6 +323,10 @@ class EventController extends Controller
             'isAjax' => $isAjax,
             'paginateURL' => $paginateURL,
             'form' => $form->createView()
+        ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
         ]);
     }
 
