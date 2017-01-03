@@ -91,6 +91,15 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
+        metadata_cache_driver:
+            type: service
+            id: memory_cache
+        query_cache_driver:
+            type: service
+            id: memory_cache
+        result_cache_driver:
+            type: service
+            id: memory_cache
 #HTTP Cache
 fos_http_cache:
     tags:

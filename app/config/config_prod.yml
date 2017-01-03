@@ -1,25 +1,9 @@
 imports:
     - { resource: config.yml }
 
-framework:
-    templating:
-        engines: ['twig']
-
 fos_http_cache:
     proxy_client:
         default: varnish
-
-doctrine:
-    orm:
-        metadata_cache_driver: 
-            type: service
-            id: memory_cache
-        query_cache_driver: 
-            type: service
-            id: memory_cache
-        result_cache_driver: 
-            type: service
-            id: memory_cache
 
 monolog:
     use_microseconds: false
