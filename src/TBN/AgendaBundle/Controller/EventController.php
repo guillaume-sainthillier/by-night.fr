@@ -73,7 +73,7 @@ class EventController extends Controller
         ]);
 
         $tomorrow = $this->getSecondsUntilTomorrow();
-        $response->setSharedMaxAge($tomorrow),
+        $response->setSharedMaxAge($tomorrow);
 
         $this->get('fos_http_cache.handler.tag_handler')->addTags([
            EventInvalidator::getEventDetailTag($agenda)
@@ -328,6 +328,8 @@ class EventController extends Controller
         $response->headers->add([
             'X-No-Browser-Cache' => '1'
         ]);
+
+        return $response;
     }
 
     protected function getTypesEvenements($repo, Site $site)

@@ -18,13 +18,12 @@ class Version20161126205249 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP TABLE Image');
-        $this->addSql('ALTER TABLE Exploration DROP FOREIGN KEY FK_AC0F0AB3F6BD1646');
+        $this->addSql('DROP TABLE IF EXISTS Image');
         $this->addSql('DROP INDEX IDX_2A938564F6BD1646 ON Exploration');
         $this->addSql('DROP INDEX exploration_facebook_id_site_idx ON Exploration');
         $this->addSql('ALTER TABLE Exploration DROP site_id');
         $this->addSql('CREATE INDEX exploration_facebook_id_site_idx ON Exploration (facebook_id)');
-        $this->addSql('ALTER TABLE user DROP expired, DROP credentials_expired, CHANGE username username VARCHAR(180) NOT NULL, CHANGE username_canonical username_canonical VARCHAR(180) NOT NULL, CHANGE email email VARCHAR(180) NOT NULL, CHANGE email_canonical email_canonical VARCHAR(180) NOT NULL, CHANGE confirmation_token confirmation_token VARCHAR(180) DEFAULT NULL');
+        $this->addSql('ALTER TABLE User DROP expired, DROP credentials_expired, CHANGE username username VARCHAR(180) NOT NULL, CHANGE username_canonical username_canonical VARCHAR(180) NOT NULL, CHANGE email email VARCHAR(180) NOT NULL, CHANGE email_canonical email_canonical VARCHAR(180) NOT NULL, CHANGE confirmation_token confirmation_token VARCHAR(180) DEFAULT NULL');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_2DA17977C05FB297 ON User (confirmation_token)');
         $this->addSql('DELETE FROM Exploration');
     }
