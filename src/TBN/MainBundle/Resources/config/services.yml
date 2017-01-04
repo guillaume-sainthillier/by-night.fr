@@ -14,7 +14,7 @@ services:
 
     tbn.event_http:invalidator:
         class: TBN\MainBundle\Invalidator\EventInvalidator
-        arguments: [ "@fos_http_cache.handler.tag_handler" ]
+        arguments: [ "@fos_http_cache.handler.tag_handler", "@logger" ]
     tbn.app_manager:
         class: TBN\MainBundle\App\AppManager
         arguments: [ "@service_container" ]
