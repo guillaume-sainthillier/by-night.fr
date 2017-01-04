@@ -1,0 +1,3 @@
+tbn_private_header:
+    path:  /header
+    defaults: { _controller: TBNMainBundle:Common:header }

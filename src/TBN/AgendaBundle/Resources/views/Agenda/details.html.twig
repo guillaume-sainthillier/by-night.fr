@@ -28,7 +28,8 @@
 
 {% block titre_agenda %}
     {% if is_granted('ROLE_ADMIN') or (soiree.user and soiree.user == app.user) %}<a
-        href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>{% endif %}
+        href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>
+    {% endif %}
     {{ block('title') }}
 {% endblock %}
 

@@ -72,7 +72,7 @@
             <header>
                 <!-- Menu -->
                 {% if site %}
-                {{ render_esi(controller('TBNMainBundle:Common:header')) }}
+                {{ render_esi(url('tbn_private_header')) }}
                 {% endif %}
                 <!-- ./Menu -->
                 {% block breadcrumb -%}{%- endblock %}

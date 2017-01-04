@@ -4,11 +4,12 @@ namespace TBN\CommentBundle\Controller;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-
+use FOS\HttpCacheBundle\Configuration\InvalidateRoute;
 use Symfony\Component\HttpFoundation\Response;
+
+use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\CommentBundle\Entity\Comment;
@@ -56,6 +57,7 @@ class CommentController extends Controller
 
     /**
      * @InvalidateRoute("tbn_comment_list", params={"id" = {"expression"="soiree.getId()"}})
+     * @InvalidateRoute("tbn_agenda_details", params={"id" = {"expression"="soiree.getId()"}})
      * @param Request $request
      * @param Agenda $soiree
      * @return Response
@@ -124,7 +126,7 @@ class CommentController extends Controller
      * @param Agenda $soiree
      * @param $page
      * @return \Symfony\Component\HttpFoundation\Response
-     * @Cache(smaxage="3600")
+     * @Cache(expires="tomorrow")
      */
     public function listAction(Agenda $soiree, $page)
     {
@@ -132,7 +134,7 @@ class CommentController extends Controller
         $comment = new Comment();
         $form = $this->getCreateForm($comment, $soiree);
 
-        return $this->render('TBNCommentBundle:Comment:list.html.twig', [
+        $response = $this->render('TBNCommentBundle:Comment:list.html.twig', [
             'nb_comments' => $this->getNbComments($soiree),
             'comments' => $this->getCommentaires($soiree, $page, $offset),
             "soiree" => $soiree,
@@ -140,5 +142,14 @@ class CommentController extends Controller
             "offset" => $offset,
             'form' => $form->createView()
         ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        $tomorrow = $this->getSecondsUntilTomorrow();
+        $response->setSharedMaxAge($tomorrow);
+
+        return $response;
     }
 }

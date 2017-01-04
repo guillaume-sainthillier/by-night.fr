@@ -24,7 +24,6 @@ use TBN\MainBundle\Invalidator\EventInvalidator;
 
 class EventController extends Controller
 {
-
     protected function getCreateCommentForm(Comment $comment, Agenda $soiree)
     {
         return $this->createForm(CommentType::class, $comment, [

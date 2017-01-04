@@ -40,7 +40,8 @@ security:
                     #this is my custom user provider, created from FOSUBUserProvider - will manage the
                     #automatic user registration on your site, with data from the provider (facebook. google, etc.)
                     service: my_user_provider
-            logout:       true
+            logout:
+                invalidate_session:   true
             anonymous:    true
  
         login:
@@ -58,3 +59,4 @@ security:
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/_administration, role: ROLE_ADMIN }
+        - { path: ^/_private, , roles: [IS_AUTHENTICATED_ANONYMOUSLY], ips: [127.0.0.1] }

@@ -5,6 +5,10 @@ fos_http_cache:
     proxy_client:
         default: varnish
 
+framework:
+    router:
+        strict_requirements: false
+
 monolog:
     use_microseconds: false
     handlers:

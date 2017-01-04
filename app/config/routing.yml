@@ -13,6 +13,11 @@ tbn_recherche:
     resource: "@TBNMainBundle/Resources/config/routing_search.yml"    
     prefix:   /recherche
     host:   "{subdomain}.%base_host%"
+
+tbn_private:
+    resource: "@TBNMainBundle/Resources/config/routing_private.yml"
+    prefix:   /_private
+    host:   "{subdomain}.%base_host%"
     
 tbn_comment:
     resource: "@TBNCommentBundle/Resources/config/routing.yml"
