@@ -78,7 +78,7 @@ class EventController extends Controller
         }else {
             list($expires, $ttl) = $this->getSecondsUntilTomorrow();
         }
-        
+
         $response
             ->setSharedMaxAge($ttl)
             ->setExpires($expires);
