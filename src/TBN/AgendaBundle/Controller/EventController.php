@@ -41,7 +41,6 @@ class EventController extends Controller
 
     /**
      * @Tag("detail-event")
-     * @Cache(expires="tomorrow")
      */
     public function detailsAction(Agenda $agenda)
     {
@@ -71,8 +70,18 @@ class EventController extends Controller
             'X-No-Browser-Cache' => '1'
         ]);
 
-        $tomorrow = $this->getSecondsUntilTomorrow();
-        $response->setSharedMaxAge($tomorrow);
+        $now = new \DateTime();
+        if($agenda->getDateFin() > $now) {
+            $expires = $now;
+            $expires->modify("+1 year");
+            $ttl = 31536000;
+        }else {
+            list($expires, $ttl) = $this->getSecondsUntilTomorrow();
+        }
+        
+        $response
+            ->setSharedMaxAge($ttl)
+            ->setExpires($expires);
 
         $this->get('fos_http_cache.handler.tag_handler')->addTags([
            EventInvalidator::getEventDetailTag($agenda)

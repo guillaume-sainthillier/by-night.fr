@@ -19,7 +19,7 @@
     {% set nomSoiree = '[' ~ soiree.modificationDerniereMinute ~ '] ' ~ soiree.nom %}
 {% endif %}
 {% set descriptionSoiree =  soiree.descriptif|parse_tags|raw %}
-{% set original = eventProfilePicture.getOriginalPicture(soiree) %}
+{% set original = eventProfilePicture.getOriginalPictureURL(soiree) %}
 {% set thumb = eventProfilePicture.getPicture(soiree) %}
 
 {% set distinctTags = soiree.distinctTags %}
@@ -33,7 +33,7 @@
     {{ block('title') }}
 {% endblock %}
 
-{% block title_agenda %}{{ nomSoiree }}{% endblock %}
+{% block title_agenda %}{{ nomSoiree }} - {{ soiree.place.nom }}{% endblock %}
 
 {% block breadcrumb_agenda %}
     {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda')) %}
@@ -79,7 +79,7 @@
     {% else %}
         <div class="panel panel-default details_evenement">
             <div class="panel-heading bg-white">
-                <h3 class="modal-title">
+                <h2 class="modal-title">
                     <i class="pull-right fa fa-calendar text-primary"></i>
                     {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
                     {% set dateFin = soiree.dateFin|date('d/m/Y') %}
@@ -100,10 +100,11 @@
                     {% if soiree.horaires %}
                         - {{ soiree.horaires }}
                     {% endif %}
-                </h3>
+                </h2>
             </div>
             <div class="panel-body">
-                <meta itemprop="name" content="{{ nomSoiree }}"/>
+                <meta itemprop="name" content="{{ nomSoiree }}" >
+                <meta itemprop="url" content="{{ url('tbn_agenda_details', {'slug': soiree.slug}) }}" >
 
                 {% if soiree.modificationDerniereMinute %}
                     <div class="alert alert-warning">
@@ -128,9 +129,11 @@
                                         {% set readableAdresse = "" %}
                                         {% if place.nom %}
                                             {% set readableAdresse = place.nom %}
-                                            <a itemprop="name"
-                                               href="{{ path('tbn_agenda_place', {'slug': place.slug }) }}"
-                                               title="Sortir à {{ place.nom }}"><strong>{{ place.nom }}</strong></a>
+                                            <h2 class="modal-title" style="font-size: 115%">
+                                                <a itemprop="url" href="{{ path('tbn_agenda_place', {'slug': place.slug }) }}" title="Sortir à {{ place.nom }}">
+                                                    <strong itemprop="name">{{ place.nom }}</strong>
+                                                </a>
+                                            </h2>
                                         {% endif %}
 
                                         {% if place.rue or place.ville or place.codePostal %}
@@ -146,8 +149,10 @@
                                                             <meta itemprop="addressCountry" content="FR"/>
                                                         {% endif %}
                                                         {% if place.ville %}
-                                                            {% set readableAdresse = readableAdresse ~ " " ~ place.ville %}
-                                                            <span itemprop="addressLocality">{{ place.ville }}</span>
+                                                            <a itemprop="url" href="{{ path('tbn_agenda_ville', {'ville': place.ville }) }}" title="Sortir à {{ place.ville }}">
+                                                                {% set readableAdresse = readableAdresse ~ " " ~ place.ville %}
+                                                                <span ><strong itemprop="addressLocality">{{ place.ville }}</strong></span>
+                                                            </a>
                                                         {% endif %}
                                                     </div>
                                                 {% endif %}
@@ -174,10 +179,9 @@
                             {% endif %}
                             {% if soiree.tarif %}
                                 <li>
-                                    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                                    <div>
                                         <i class="fa fa-li fa-ticket"></i>
-                                        <span itemprop="price">{{ soiree.tarif }}</span>
-                                        <meta itemprop="priceCurrency" content="EUR"/>
+                                        <span>{{ soiree.tarif }}</span>
                                     </div>
                                 </li>
                             {% endif %}
@@ -201,8 +205,9 @@
                                 {% endfor %}
                             {% endfor %}
                             {% if soiree.reservationEmail %}
-                                <li><i class="fa fa-li fa-envelope-o"></i> <a
-                                            href="mailto:{{ soiree.reservationEmail }}">{{ soiree.reservationEmail }}</a>
+                                <li>
+                                    <i class="fa fa-li fa-envelope-o"></i>
+                                    <a href="mailto:{{ soiree.reservationEmail }}">{{ soiree.reservationEmail }}</a>
                                 </li>
                             {% endif %}
                             {% if soiree.facebookEventId %}
