@@ -6,8 +6,9 @@
 {% block nom_site %}{{ site.nom }} {{ parent() }}{% endblock %}
 {% block titre %}{% block titre_agenda %}{% endblock %}{% endblock %}
 {% block meta_keywords %}{{ site.nom|lower }}{% endblock %}
+{% block og_url %}{{ url('tbn_agenda_index') }}{% endblock %}
 
-{% block meta_description %}Sortir à {{ site.nom }}. Agenda des concerts, spectacles, cafés, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.{% endblock %}
+{% block meta_description %}Sortir à {{ site.nom }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.{% endblock %}
     
 {% block body %}
     <div id="fb-root"></div>{% block body_agenda %}{% endblock %}{% endblock %}
@@ -27,6 +28,9 @@
     {% if app_manager.twitterIdPage %}
         <meta name="twitter:card" content="summary"/>
         <meta name="twitter:site" content="@{{ app_manager.twitterIdPage }}"/>
+        <meta name="twitter:title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}"/>
+        <meta name="twitter:description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}"/>
+        <meta name="twitter:image:src" content="{% spaceless %}{{ block('og_image') }}{% endspaceless %}"/>
     {% endif %}
 {% endblock %}
 

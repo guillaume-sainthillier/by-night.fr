@@ -43,7 +43,8 @@
     {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}
 {% endblock %}
     
-{% block meta_description %}{{ nomSoiree }} {% if place %}à {{ place.nom }}{% endif %}, {{ horaires }}.{% if distinctTags|length %} Thèmes : {{ distinctTags|join(', ') }}.{% endif %} Plus d'infos sur {{ block('nom_site') }}.{% endblock %}
+{% block meta_keywords %}{% if distinctTags|length %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
+{% block meta_description %}{% if place %}{{ place.nom }}, {{ place.ville }}{% endif %}, {{ horaires }}.{% if distinctTags|length %} - {{ distinctTags|join(', ') }}.{% endif %}{% endblock %}
 
 {% block metas %}
     <link rel="image_src" href="{{ original }}"/>
@@ -61,9 +62,7 @@
     {% endfor %}
 {% endblock %}
 {% block og_titre %}{{ nomSoiree }}{% endblock %}
-{% block og_type %}article{% endblock %}
 {% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug}) }}{% endblock %}
-{% block og_description %}{{ descriptionSoiree|striptags }}{% endblock %}
 {% block og_image %}{{ original }}{% endblock %}
 
 {% block widgets_agenda %}

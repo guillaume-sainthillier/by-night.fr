@@ -1,7 +1,6 @@
 {% extends "TBNAgendaBundle::layout.html.twig" %}
 
-{% block titre_agenda %}<strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong>, <strong>soirées</strong> à
-    <strong>{{ site.nom }}</strong>{% endblock %}
+{% block titre_agenda %}<strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong>, <strong>soirées</strong> à <strong>{{ site.nom }}</strong>{% endblock %}
 
 {% block title_agenda %}{{ block('titre_agenda')|striptags }}{% endblock %}
 
