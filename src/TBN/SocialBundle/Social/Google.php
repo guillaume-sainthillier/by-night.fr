@@ -65,7 +65,9 @@ class Google extends Social
                 curl_close($ch);
                 $json = json_decode($result, true);
 
-                return intval($json[0]['result']['metadata']['globalCounts']['count']);
+                if(isset($json[0]['result']['metadata']['globalCounts']['count'])) {
+                    return intval($json[0]['result']['metadata']['globalCounts']['count']);
+                }
             } catch (\Exception $ex) {
             }
         }
