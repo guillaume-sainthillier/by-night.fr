@@ -2,7 +2,6 @@
 
 namespace TBN\UserBundle\Handler;
 
-// "use" statements here
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,12 +34,11 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
             $result = ['success' => true];
             return new JsonResponse($result);
         } else {
+            $key = '_security.main.target_path'; #where "main" is your firewall name
 
-            if (($targetPath = $request->getSession()->get('_security.target_path'))) {
+            if (($targetPath = $request->getSession()->get($key))) {
                 $url = $targetPath;
             } else {
-
-                $key = '_security.main.target_path'; #where "main" is your firewall name
 
                 //check if the referer session key has been set
                 if ($this->session->has($key)) {
