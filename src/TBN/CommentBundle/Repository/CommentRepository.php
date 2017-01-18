@@ -5,6 +5,7 @@ namespace TBN\CommentBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use TBN\CommentBundle\Entity\Comment;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\UserBundle\Entity\User;
 
 /**
  * CommentRepository
@@ -25,6 +26,18 @@ class CommentRepository extends EntityRepository
             ->orderBy('a.dateCreation', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
+            ->getQuery()
+            ->execute();
+    }
+
+    public function findAllByUser(User $user)
+    {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('c')
+            ->from('TBNCommentBundle:Comment', 'c')
+            ->where("c.user = :user")
+            ->setParameters([":user" => $user->getId()])
             ->getQuery()
             ->execute();
     }

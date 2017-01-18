@@ -73,6 +73,11 @@ class ProfileController extends BaseController
                 }
                 $em->remove($calendrier);
             }
+
+            $comments = $this->getDoctrine()->getRepository('TBNCommentBundle:Comment')->findAllByUser($user);
+            foreach($comments as $comment) {
+                $em->remove($comment);
+            }
             $em->flush();
 
             $userManager->deleteUser($user);
