@@ -5,6 +5,11 @@ parameters:
 
     
 services:
+    tbn.monolog_formatter:
+        class: Monolog\Formatter\LineFormatter
+        calls:
+            - [includeStacktraces]
+
     tbn.event_listener.populate_listener:
         class: TBN\MainBundle\Listener\PopulateListener
         arguments: [ "@fos_elastica.index_manager" ]
