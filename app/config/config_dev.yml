@@ -34,6 +34,3 @@ monolog:
                 VERBOSITY_DEBUG: DEBUG
             channels: ["doctrine"]
 
-
-#swiftmailer:
-#    delivery_address: me@example.com
