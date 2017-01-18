@@ -48,6 +48,10 @@ class MenuDroitController extends Controller
             }
         }
 
+        if(! isset($results['statuses'])) {
+            $results['statuses'] = [];
+        }
+
         $response =  $this->render('TBNAgendaBundle:Hinclude:tweets.html.twig', [
             'tweets' => $results['statuses'],
             'hasNextLink' => $nextLink
