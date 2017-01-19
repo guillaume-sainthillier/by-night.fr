@@ -76,7 +76,8 @@ class EventController extends Controller
             $expires->modify("+1 year");
             $ttl = 31536000;
         }else {
-            list($expires, $ttl) = $this->getSecondsUntilTomorrow();
+            $expires = new \DateTime('tomorrow');
+            $ttl = $this->getSecondsUntilTomorrow();
         }
 
         $response
