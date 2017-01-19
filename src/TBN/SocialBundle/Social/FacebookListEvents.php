@@ -12,8 +12,8 @@ use TBN\UserBundle\Entity\User;
  */
 class FacebookListEvents extends Facebook
 {
-
     public function getUserEvents(User $user, $limit = 5000) {
+        $this->init();
         $userInfo = $user->getInfo();
 
         if(! $userInfo || !$userInfo->getFacebookAccessToken()) {

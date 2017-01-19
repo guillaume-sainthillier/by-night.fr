@@ -44,7 +44,6 @@ class Facebook extends Social
         ]);
     }
 
-
     protected function findPaginated(GraphEdge $graph = null, $maxItems = 5000)
     {
         $datas = [];

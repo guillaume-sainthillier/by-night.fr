@@ -41,6 +41,7 @@ class FacebookAdmin extends FacebookEvents
     protected $cache;
     protected $om;
     protected $oldIds;
+    protected $_isInitialized;
 
     /**
      *
@@ -53,33 +54,23 @@ class FacebookAdmin extends FacebookEvents
         parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack, $logger, $eventProfilePicture, $appManager);
 
         $this->om = $om;
-        $this->siteInfo = $this->siteManager->getSiteInfo();
         $this->serializer = $serializer;
         $this->cache = [];
         $this->oldIds = [];
-
-        if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
-            $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
-        }
+        $this->_isInitialized = false;
     }
 
-    public function init()
-    {
-        $this->siteInfo = $this->siteManager->getSiteInfo();
+    protected function init() {
+        parent::init();
 
-        //CLI
-        if ($this->isCLI()) {
-            $this->siteInfo = $this->om->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
+        if(! $this->_isInitialized) {
+            $this->siteInfo = $this->siteManager->getSiteInfo();
+
+            if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
+                $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+            }
+            $this->_isInitialized = true;
         }
-
-        if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
-            $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
-        }
-    }
-
-    protected function isCLI()
-    {
-        return php_sapi_name() === 'cli';
     }
 
     protected function afterPost(User $user, Agenda $agenda)
@@ -113,6 +104,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getNumberOfCount()
     {
+        $this->init();
         $site = $this->siteManager->getCurrentSite();
         if ($site !== null && $this->siteInfo !== null) {
             try {
@@ -171,6 +163,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getUserStatsFromIds(array $ids_users, $idsPerRequest = 50)
     {
+        $this->init();
         $requestFunction = function(array $current_ids) {
               return $this->client->request('GET', '/', [
                   'ids' => implode(',', $current_ids),
@@ -188,6 +181,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventStatsFromIds(array $ids_event, $idsPerRequest = 50)
     {
+        $this->init();
         $requestFunction = function(array $current_ids) {
               return $this->client->request('GET', '/', [
                   'ids' => implode(',', $current_ids),
@@ -207,6 +201,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function updateEventStatut($id_event, $userAccessToken, $isParticiper)
     {
+        $this->init();
         try {
             $url = $id_event . '/' . ($isParticiper ? 'attending' : 'maybe');
             $this->client->sendRequest('POST', $url, [], $userAccessToken);
@@ -220,6 +215,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getUserEventStats($id_event, $id_user)
     {
+        $this->init();
         $stats = ['participer' => false, 'interet' => false];
 
         try {
@@ -245,6 +241,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventFromId($id_event, $fields = null)
     {
+        $this->init();
         $key = 'events' . $id_event;
         if (!isset($this->cache[$key])) {
             $request = $this->client->sendRequest('GET', '/' . $id_event, [
@@ -259,6 +256,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventsFromIds(& $ids_event, $idsPerRequest = 20, $limit = 1000)
     {
+        $this->init();
         $requestPerBatch = 50;
         $idsPerBatch = $requestPerBatch * $idsPerRequest;
         $nbBatchs = ceil(count($ids_event) / $idsPerBatch);
@@ -317,6 +315,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getPageFromId($id_page, $params = [])
     {
+        $this->init();
         $key = 'pages.' . $id_page;
         if (!isset($this->cache[$key])) {
             $request = $this->client->sendRequest('GET',
@@ -333,6 +332,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventMembres($id_event, $offset, $limit)
     {
+        $this->init();
         $participations = [];
         $interets = [];
 
@@ -365,6 +365,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventCountStats($id_event)
     {
+        $this->init();
         $request = $this->client->sendRequest('GET', '/' . $id_event, [
             'fields' => 'attending_count,maybe_count'
         ], $this->siteInfo->getFacebookAccessToken());
@@ -386,7 +387,6 @@ class FacebookAdmin extends FacebookEvents
             $this->oldIds[$matches[1]] = $matches[2];
         }
     }
-
 
     private function handleEdge(array $datas, $edge, callable $getParams, callable $responseToDatas, $idsPerRequest = 10, $requestsPerBatch = 50) {
         $idsPerBatch = $requestsPerBatch * $idsPerRequest;
@@ -451,6 +451,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventsFromUsers(array $id_users, \DateTime $since)
     {
+        $this->init();
         return $this->handleEdge($id_users, '/events', function(array $current_ids) use($since) {
             return [
                 'ids' => implode(',', $current_ids),
@@ -465,6 +466,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getEventsFromPlaces(array $id_places, \DateTime $since)
     {
+        $this->init();
         return $this->handleEdge($id_places, '/events', function(array $current_ids) use($since) {
             return [
                 'ids' => implode(',', $current_ids),
@@ -477,7 +479,8 @@ class FacebookAdmin extends FacebookEvents
         });
     }
 
-    public function getEventsFromKeywords(array $keywords, \DateTime $since) {
+    public function getEventsFromKeywords(array $keywords) {
+        $this->init();
         return $this->handleEdge($keywords, '/search', function(array $keywords) {
             $keyword = $keywords[0];
             return [
@@ -493,6 +496,7 @@ class FacebookAdmin extends FacebookEvents
 
     public function getPlacesFromGPS(array $coordonnees)
     {
+        $this->init();
         return $this->handleEdge($coordonnees, '/search', function(array $coordonnees) {
             $coordonnee = $coordonnees[0];
             return [

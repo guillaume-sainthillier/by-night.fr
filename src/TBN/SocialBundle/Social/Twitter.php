@@ -39,6 +39,7 @@ class Twitter extends Social
 
     public function getNumberOfCount()
     {
+        $this->init();
         try {
             $site = $this->siteManager->getCurrentSite();
 
@@ -48,12 +49,15 @@ class Twitter extends Social
                     return $page['followers_count'];
                 }
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+            $this->logger->error($e);
+        }
 
         return 0;
     }
 
     public function getTimeline($max_id, $limit) {
+        $this->init();
         try {
             $site = $this->siteManager->getCurrentSite();
 
@@ -80,7 +84,6 @@ class Twitter extends Social
 
     protected function post(User $user, Agenda $agenda)
     {
-
         $info = $user->getInfo();
         if ($user->hasRole("ROLE_TWITTER") && $agenda->getTweetPostId() === null && $info !== null && $info->getTwitterAccessToken() !== null) {
             $config = [
@@ -108,10 +111,8 @@ class Twitter extends Social
 
     protected function afterPost(User $user, Agenda $agenda)
     {
-
         $info = $this->siteManager->getSiteInfo();
         if ($user->hasRole("ROLE_TWITTER") && $agenda->getTweetPostSystemId() === null && $agenda->getTweetPostId() !== null && $info->getTwitterAccessToken() !== null) {
-
             $config = [
                 'consumer_key' => $this->id,
                 'consumer_secret' => $this->secret,
@@ -120,7 +121,6 @@ class Twitter extends Social
             ];
 
             $client = new SingleUserAuth($config, new ArraySerializer());
-
             $ads = sprintf(" %s #%sByNight", $this->getLink($agenda), $this->siteManager->getCurrentSite()->getNom());
             $titre = sprintf("%s présente %s", $user->getUsername(), $agenda->getNom());
             $status = substr($titre, 0, 140 - strlen($ads)) . $ads;

@@ -97,6 +97,8 @@ abstract class Social
      */
     protected $appManager;
 
+    protected $isInitialized;
+
     public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, AppManager $appManager)
     {
         if (!isset($config["id"])) {
@@ -118,8 +120,14 @@ abstract class Social
         $this->logger = $logger;
         $this->eventProfilePicture = $eventProfilePicture;
         $this->appManager = $appManager;
+        $this->isInitialized = false;
+    }
 
-        $this->constructClient();
+    protected function init() {
+        if(! $this->isInitialized) {
+            $this->constructClient();
+            $this->isInitialized = true;
+        }
     }
 
 
@@ -181,6 +189,7 @@ abstract class Social
 
     public function poster(Agenda $agenda)
     {
+        $this->init();
         $user = $this->tokenStorage->getToken()->getUser();
 
         try {

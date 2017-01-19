@@ -44,6 +44,7 @@ class Google extends Social
 
     public function getNumberOfCount()
     {
+        $this->init();
         $site = $this->siteManager->getCurrentSite();
         $router = $this->router;
 
@@ -77,7 +78,6 @@ class Google extends Social
 
     protected function post(User $user, Agenda $agenda)
     {
-
         return; //Wait Google api fix
     }
 
