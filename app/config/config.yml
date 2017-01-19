@@ -38,7 +38,7 @@ framework:
 doctrine_cache:
     providers:
         memcache:
-            type: file_system
+            type: apcu
 #            type: memcache
 
             namespace: memory_cache_ns
