@@ -22,7 +22,7 @@ framework:
     assets:
         packages:
             asset:
-                version: v%application_version%
+                version: "v%application_version%"
 #        version: v%application_version%
 #        assets_version_format: %%2$s/%%1$s
     default_locale:  "%locale%"
@@ -33,14 +33,11 @@ framework:
         save_path: "%kernel.root_dir%/../var/sessions/%kernel.environment%"
     fragments:       { path: /_fragment }
     http_method_override: true
-    assets: ~
     
 doctrine_cache:
     providers:
         memcache:
             type: apcu
-#            type: memcache
-
             namespace: memory_cache_ns
             aliases:
                 - memory_cache
@@ -73,7 +70,7 @@ twig:
         facebook: "@tbn.social.facebook"
         google: "@tbn.social.google"
         googleMapKey: "%google_map_key%"
-        app_version: v%application_version%
+        app_version: "v%application_version%"
 
 # Doctrine Configuration
 doctrine:
