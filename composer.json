@@ -4,7 +4,7 @@
   "type": "project",
   "description": "The \"Symfony Standard Edition\" distribution",
   "autoload": {
-    "psr-4": { "": "src/" },
+    "psr-4": { "TBN\\": "src/" },
     "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
   },
   "autoload-dev": {
@@ -49,7 +49,6 @@
     "guzzlehttp/guzzle": "^6.2"
   },
   "require-dev": {
-    "sensio/generator-bundle": "^3.0",
     "symfony/phpunit-bridge": "^3.0"
   },
   "scripts": {
