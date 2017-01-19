@@ -4,7 +4,6 @@ namespace TBN\MainBundle\Listener;
 
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Vich\UploaderBundle\Event\Event;
 
 use TBN\AgendaBundle\Entity\Agenda;

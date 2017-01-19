@@ -143,12 +143,6 @@ class FaceBookParser extends AgendaParser
 
     public function getRawAgendas()
     {
-//        $this->api->setSiteInfo($this->getSiteInfo());
-//        $ids = ['1262918800387307', '1026345610827202'];
-//        $event = $this->api->getEventsFromIds($ids);
-//        $events =  array_map([$this, 'getInfoAgenda'], $event);
-//        return array_merge($events, $events);
-
         $this->api->setSiteInfo($this->getSiteInfo());
         $now = new \DateTime;
 
@@ -252,7 +246,6 @@ class FaceBookParser extends AgendaParser
             list($categorie, $type) = $this->guessTypeEventFromCategory($fbCategory);
             $tab_retour['categorie_manifestation'] = $categorie;
             $tab_retour['type_manifestation'] = $type;
-            //$tab_retour['theme_manifestation'] = $fbCategory;
         }
 
         return $tab_retour;

@@ -10,7 +10,6 @@ namespace TBN\MajDataBundle\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-use Symfony\Component\Console\Output\OutputInterface;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
 use TBN\MainBundle\Entity\Site;

@@ -28,7 +28,7 @@ class Google extends Social
         $api_secret = $this->secret;
         $this->key = $this->config['key'];
 
-        $this->client = $client = new Google_Client();
+        $this->client = new Google_Client();
         $this->client->setClientId($api_id);
         $this->client->setClientSecret($api_secret);
         $this->client->setDeveloperKey($this->key);
