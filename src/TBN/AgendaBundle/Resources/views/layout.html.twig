@@ -2,7 +2,7 @@
 
 {% set ville = site.subdomain %}
 
-{% block title %}{% block title_agenda %}{% endblock %}{% endblock %}
+{% block title %}{% spaceless %}{% block title_agenda %}{% endblock %}{% endspaceless %}{% endblock %}
 {% block nom_site %}{{ site.nom }} {{ parent() }}{% endblock %}
 {% block titre %}{% block titre_agenda %}{% endblock %}{% endblock %}
 {% block meta_keywords %}{{ site.nom|lower }}{% endblock %}
