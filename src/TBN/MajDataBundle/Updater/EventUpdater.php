@@ -79,8 +79,6 @@ class EventUpdater extends Updater
         }
     }
 
-
-
     protected function doFlush() {
         $this->entityManager->flush();
         $this->entityManager->clear(Agenda::class);
