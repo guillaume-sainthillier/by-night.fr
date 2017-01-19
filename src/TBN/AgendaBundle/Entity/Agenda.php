@@ -467,7 +467,7 @@ class Agenda implements GeolocalizeInterface
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
      *
-     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     * @param File|UploadedFile $image
      *
      * @return Agenda
      */

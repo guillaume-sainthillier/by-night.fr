@@ -30,7 +30,6 @@ class DoctrineEventHandler
 
     private $em;
     private $repoAgenda;
-    private $repoSite;
     private $repoPlace;
     private $handler;
     private $firewall;
@@ -42,11 +41,6 @@ class DoctrineEventHandler
      * @var EchantillonHandler
      */
     private $echantillonHandler;
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
 
     /**
      * @var ExplorationHandler
@@ -90,12 +84,9 @@ class DoctrineEventHandler
     /**
      * @param array $events
      * @param ParserInterface $parser
-     * @param OutputInterface $output
      * @return array
      */
-    public function handleManyCLI(array $events, ParserInterface $parser, OutputInterface $output) {
-        $this->output = $output;
-
+    public function handleManyCLI(array $events, ParserInterface $parser) {
         $events =  $this->handleMany($events);
         if($parser instanceof FaceBookParser) {
             $this->handleIdsToMigrate($parser);

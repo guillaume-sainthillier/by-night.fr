@@ -13,12 +13,10 @@ use TBN\UserBundle\Entity\User;
 
 class ImageListener
 {
-    private $requestStack;
     private $cacheManager;
 
-    public function __construct(RequestStack $requestStack, CacheManager $cacheManager)
+    public function __construct(CacheManager $cacheManager)
     {
-        $this->requestStack = $requestStack;
         $this->cacheManager = $cacheManager;
     }
 

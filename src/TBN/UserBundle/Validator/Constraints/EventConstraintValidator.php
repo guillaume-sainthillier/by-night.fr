@@ -12,23 +12,16 @@ use Symfony\Component\Routing\Router;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Handler\DoctrineEventHandler;
 
 class EventConstraintValidator extends ConstraintValidator
 {
-    /**
-     * @var \TBN\MajDataBundle\Handler\DoctrineEventHandler
-     */
-    private $doctrineEventHandler;
-
     /**
      * @var Router
      */
     private $router;
 
-    public function __construct(DoctrineEventHandler $doctrineEventHandler, Router $router)
+    public function __construct(Router $router)
     {
-        $this->doctrineEventHandler = $doctrineEventHandler;
         $this->router = $router;
     }
 

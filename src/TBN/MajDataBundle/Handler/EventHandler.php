@@ -7,7 +7,6 @@ use TBN\AgendaBundle\Entity\Place;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use TBN\MajDataBundle\Utils\Cleaner;
 use TBN\MajDataBundle\Utils\Comparator;
-use TBN\MajDataBundle\Utils\Firewall;
 use TBN\MajDataBundle\Utils\Merger;
 use TBN\MajDataBundle\Utils\Monitor;
 
@@ -19,15 +18,13 @@ use TBN\MajDataBundle\Utils\Monitor;
  */
 class EventHandler
 {
-    private $firewall;
     private $cleaner;
     private $comparator;
     private $merger;
     private $tempPath;
 
-    public function __construct(Firewall $firewall, Cleaner $cleaner, Comparator $comparator, Merger $merger, $tempPath)
+    public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, $tempPath)
     {
-        $this->firewall = $firewall;
         $this->cleaner = $cleaner;
         $this->comparator = $comparator;
         $this->merger = $merger;

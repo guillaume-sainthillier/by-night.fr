@@ -3,7 +3,6 @@
 namespace TBN\MajDataBundle\Cleaner;
 use Doctrine\ORM\EntityManager;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -20,21 +19,15 @@ class ImageCleaner
     private $entityManager;
 
     /**
-     * @var Filesystem
-     */
-    private $filesystem;
-
-    /**
      * @var CacheManager
      */
     private $cacheManager;
 
     private $webDir;
 
-    public function __construct(EntityManager $entityManager, CacheManager $cacheManager, Filesystem $filesystem, $webDir) {
+    public function __construct(EntityManager $entityManager, CacheManager $cacheManager, $webDir) {
         $this->entityManager = $entityManager;
         $this->webDir = $webDir;
-        $this->filesystem = $filesystem;
         $this->cacheManager = $cacheManager;
     }
 

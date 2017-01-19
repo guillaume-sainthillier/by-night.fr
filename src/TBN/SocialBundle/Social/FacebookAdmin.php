@@ -142,7 +142,7 @@ class FacebookAdmin extends FacebookEvents
                 }
 
                 //Exécution du batch
-                Monitor::bench('fb::getOjectsFromIds', function () use (&$requests, &$finalDatas, $dataHandlerFunction, $i, $nbBatchs) {
+                Monitor::bench('fb::getOjectsFromIds', function () use (&$requests, &$finalDatas, $dataHandlerFunction) {
                     $responses = $this->client->sendBatchRequest($requests);
 
                     //Traitement des réponses

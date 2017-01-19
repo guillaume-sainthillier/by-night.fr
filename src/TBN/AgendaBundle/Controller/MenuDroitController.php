@@ -2,10 +2,8 @@
 
 namespace TBN\AgendaBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Controller\TBNController as Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
 /**
  * Description of MenuDroitController

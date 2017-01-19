@@ -115,7 +115,7 @@ services:
         arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler"]
     tbn.event_handler:
         class: TBN\MajDataBundle\Handler\EventHandler
-        arguments: ["@tbn.firewall", "@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.root_dir%/../web/uploads/temp"]
+        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.root_dir%/../web/uploads/temp"]
     tbn.user_handler:
         class: TBN\MajDataBundle\Handler\UserHandler
         arguments: ["%kernel.root_dir%/../web/uploads/temp"]
@@ -135,4 +135,4 @@ services:
     #Cleaner
     tbn.image_cleaner:
         class: TBN\MajDataBundle\Cleaner\ImageCleaner
-        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "@filesystem", "%kernel.root_dir%/../web"]
+        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "%kernel.root_dir%/../web"]

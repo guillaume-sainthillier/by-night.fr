@@ -11,7 +11,7 @@ parameters:
 services:
     tbn.event_validator:
         class: TBN\UserBundle\Validator\Constraints\EventConstraintValidator
-        arguments: ["@tbn.doctrine_event_handler", "@router"]
+        arguments: ["@router"]
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
 

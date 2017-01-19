@@ -45,6 +45,6 @@ class FetchCommand  extends AppCommand
         $fetcher = $this->getContainer()->get('tbn.event_fetcher');
 
         $events = $fetcher->fetchEvents($service);
-        $this->getContainer()->get('tbn.doctrine_event_handler')->handleManyCLI($events, $service, $output);
+        $this->getContainer()->get('tbn.doctrine_event_handler')->handleManyCLI($events, $service);
     }
 }

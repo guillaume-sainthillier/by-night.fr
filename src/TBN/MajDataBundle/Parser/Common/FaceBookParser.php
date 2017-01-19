@@ -8,8 +8,6 @@ use Facebook\GraphNodes\GraphNode;
 use TBN\MainBundle\Entity\SiteRepository;
 use TBN\MajDataBundle\Utils\Monitor;
 use TBN\SocialBundle\Social\FacebookAdmin;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\AgendaBundle\Entity\Place;
 use TBN\MajDataBundle\Parser\AgendaParser;
 use TBN\MajDataBundle\Utils\Firewall;
 
@@ -187,16 +185,6 @@ class FaceBookParser extends AgendaParser
         }
 
         return $uniqueEvents;
-    }
-
-    private function isMoreRecent(\DateTime $date1 = null, \DateTime $date2 = null)
-    {
-        if (!$date1 || !$date2) //Non permissif
-        {
-            return false;
-        }
-
-        return $date1 > $date2;
     }
 
     /**

@@ -25,7 +25,6 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      * @var RequestStack
      */
     private $requestStack;
-    private $doctrine;
 
     /**
      * @var SiteManager
@@ -36,7 +35,6 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     {
         $this->router = $container->get('router');
         $this->requestStack = $container->get('request_stack');
-        $this->doctrine = $container->get('doctrine');
         $this->siteManager = $manager;
     }
 

@@ -4,12 +4,10 @@ namespace TBN\MainBundle\Listener;
 
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PostFlushEventArgs;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Invalidator\EventInvalidator;
 use TBN\MajDataBundle\Entity\Exploration;
 use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Handler\DoctrineEventHandler;
 use TBN\MajDataBundle\Utils\Firewall;
 
 class EventListener
@@ -21,7 +19,7 @@ class EventListener
         $this->eventInvalidator = $eventInvalidator;
     }
 
-    public function postFlush(PostFlushEventArgs $em) {
+    public function postFlush() {
         $this->eventInvalidator->invalidateEvents();
     }
 

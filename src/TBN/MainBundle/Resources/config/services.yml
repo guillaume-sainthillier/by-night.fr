@@ -55,7 +55,7 @@ services:
 
     image_listener:
         class: TBN\MainBundle\Listener\ImageListener
-        arguments: [ "@request_stack", "@liip_imagine.cache.manager" ]
+        arguments: [ "@liip_imagine.cache.manager" ]
         tags:
            - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
 
