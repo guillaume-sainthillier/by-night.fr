@@ -433,9 +433,6 @@ lexik_maintenance:
         class: '\Lexik\Bundle\MaintenanceBundle\Drivers\FileDriver'
         options: {file_path: "%kernel.cache_dir%/lock"}
 
-shivas_versioning:
-    version_file:  sem_var.yml
-
 services:
     fos_user.doctrine_registry:
         alias: doctrine
