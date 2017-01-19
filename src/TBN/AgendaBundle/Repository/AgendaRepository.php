@@ -2,6 +2,7 @@
 namespace TBN\AgendaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
