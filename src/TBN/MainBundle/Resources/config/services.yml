@@ -33,6 +33,8 @@ services:
         tags:
           - { name: doctrine.event_listener, event: preRemove }
           - { name: doctrine.event_listener, event: postUpdate }
+          - { name: doctrine.event_listener, event: postFlush }
+
     tbn.profile_picture.event:
         class: TBN\MainBundle\Picture\EventProfilePicture
         arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper", "@assets.packages", "@router" ]

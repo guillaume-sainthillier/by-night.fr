@@ -4,6 +4,7 @@ namespace TBN\MainBundle\Listener;
 
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Invalidator\EventInvalidator;
 use TBN\MajDataBundle\Entity\Exploration;
@@ -20,6 +21,10 @@ class EventListener
         $this->eventInvalidator = $eventInvalidator;
     }
 
+    public function postFlush(PostFlushEventArgs $em) {
+        $this->eventInvalidator->invalidateEvents();
+    }
+
     public function postUpdate(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
 
@@ -27,7 +32,7 @@ class EventListener
             return;
         }
 
-        $this->eventInvalidator->invalidateEvent($entity);
+        $this->eventInvalidator->addEvent($entity);
     }
 
     public function preRemove(LifecycleEventArgs $args)
@@ -38,7 +43,7 @@ class EventListener
             return;
         }
 
-        $this->eventInvalidator->invalidateEvent($entity);
+        $this->eventInvalidator->addEvent($entity);
 
         if(!$entity->getFacebookEventId()) {
             return;

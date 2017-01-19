@@ -17,10 +17,12 @@ class EventInvalidator
 {
     private $tagHandler;
     private $logger;
+    private $eventTags;
 
     public function __construct(TagHandler $tagHandler, LoggerInterface $logger) {
         $this->tagHandler = $tagHandler;
         $this->logger = $logger;
+        $this->eventTags = [];
     }
 
     public static function getEventDetailTag(Agenda $event) {
@@ -30,15 +32,29 @@ class EventInvalidator
         );
     }
 
-    public function invalidateEvent(Agenda $event) {
-        $tags = [
-            self::getEventDetailTag($event)
-        ];
+    public function addEvent(Agenda $event) {
+        $this->tags[] = self::getEventDetailTag($event);
+    }
+
+    public function invalidateEvents() {
+        $tags = array_filter(array_unique($this->eventTags));
+
+        if(! count($tags)) {
+            return;
+        }
 
         try {
             $this->tagHandler->invalidateTags($tags);
         } catch(\Exception $e) {
             $this->logger->critical($e);
         }
+
+        unset($this->eventTags);
+        $this->eventTags = [];
+    }
+
+    public function invalidateEvent(Agenda $event) {
+        $this->addEvent($event);
+        $this->invalidateEvents();
     }
 }
