@@ -49,7 +49,7 @@ class ConnectController extends BaseController
             throw new NotFoundHttpException();
         }
 
-        $hasUser = $this->isGranted('IS_AUTHENTICATED_REMEMBERED');
+        $hasUser = $this->isGranted($this->container->getParameter('hwi_oauth.grant_rule'));
         if (!$hasUser) {
             throw new AccessDeniedException('Cannot connect an account.');
         }
@@ -108,18 +108,10 @@ class ConnectController extends BaseController
 
                 $em->persist($currentSite);
                 $em->flush();
-
-                $cache = $this->container->get("memory_cache");
-                $key = $currentSite->getSubdomain();
-                if ($cache->contains($key)) {
-                    $cache->delete($key);
-                }
-                $cache->save($key, $currentSite);
-
             } else // On connecte normalement l'utilisateur*/
             {
                 /** @var $currentToken OAuthToken */
-                $currentToken = $this->getToken();
+                $currentToken = $this->get('security.token_storage')->getToken();
                 $currentUser = $currentToken->getUser();
 
                 $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
