@@ -16,7 +16,7 @@ class OldEventController extends Controller
 
     public function tendancesAction($slug)
     {
-        return $this->redirectToRoute('tbn_agenda_soirees_tendances', [
+        return $this->redirectToRoute('tbn_agenda_details', [
             'slug' => $slug
         ]);
     }

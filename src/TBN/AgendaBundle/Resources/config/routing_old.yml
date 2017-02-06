@@ -13,6 +13,10 @@ tbn_agenda_soirees_similaires_old:
 tbn_agenda_soirees_tendances_old:
     path: /{slug}.html/tendances
     defaults: { _controller: TBNAgendaBundle:OldEvent:tendances}
+
+tbn_agenda_soirees_tendances_old2:
+    path: /soiree/{slug}.html/tendances
+    defaults: { _controller: TBNAgendaBundle:OldEvent:tendances}
     
 tbn_agenda_soirees_membres_old:
     path: /{slug}.html/membres/{page}

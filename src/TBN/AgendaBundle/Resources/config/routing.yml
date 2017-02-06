@@ -115,10 +115,6 @@ tbn_agenda_soirees_similaires:
     defaults: { _controller: TBNAgendaBundle:MenuDroit:soireesSimilaires, page: 1}
     requirements:
         page: (\d+)
-
-tbn_agenda_soirees_tendances:
-    path: /soiree/{slug}.html/tendances
-    defaults: { _controller: TBNAgendaBundle:MenuDroit:tendances}
     
 tbn_agenda_soirees_membres:
     path: /soiree/{slug}.html/membres/{page}

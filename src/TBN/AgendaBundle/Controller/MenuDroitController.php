@@ -152,26 +152,6 @@ class MenuDroitController extends Controller
         ;
     }
 
-    /**
-     * TODO: Delete this action
-     */
-    public function tendancesAction(Agenda $soiree)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
-        $nbItems = 30;
-        $membres = $this->getFBMembres($soiree, 1, $nbItems);
-
-        return $this->render("TBNAgendaBundle:Hinclude:tendances.html.twig", [
-            "tendancesParticipations" => $repo->findAllTendancesParticipations($soiree),
-            "tendancesInterets" => $repo->findAllTendancesInterets($soiree),
-            "count_participer" => $soiree->getParticipations() + $soiree->getFbParticipations(),
-            "count_interets" => $soiree->getInterets() + $soiree->getFbInterets(),
-            "membres" => $membres,
-            "maxItems" => $nbItems
-        ]);
-    }
-
     public function fbMembresAction(Agenda $soiree, $page)
     {
         if(! $soiree->getFacebookEventId()) {
