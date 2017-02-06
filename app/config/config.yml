@@ -20,11 +20,11 @@ framework:
         engines: ['twig']
         hinclude_default_template: TBNAgendaBundle:Hinclude:template.html.twig
     assets:
+        base_urls: ['http://static.%base_host%']
         packages:
             asset:
-                version: "v%application_version%"
-#        version: v%application_version%
-#        assets_version_format: %%2$s/%%1$s
+                base_urls: ['http://static.%base_host%']
+                version: "v1.0"
     default_locale:  "%locale%"
     trusted_proxies: ~
     trusted_hosts:   ~
