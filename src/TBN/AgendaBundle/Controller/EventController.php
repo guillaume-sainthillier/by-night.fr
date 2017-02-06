@@ -283,6 +283,9 @@ class EventController extends Controller
         $place = null;
         if ($slug !== null) {
             $place = $em->getRepository('TBNAgendaBundle:Place')->findOneBy(['slug' => $slug]);
+            if(! $place) {
+                return new RedirectResponse($this->generateUrl('tbn_agenda_agenda'));
+            }
         }
         $formAction = $this->handleSearch($search, $type, $tag, $ville, $place);
 
