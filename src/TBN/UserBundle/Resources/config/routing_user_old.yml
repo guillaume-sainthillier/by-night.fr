@@ -1,0 +1,12 @@
+tbn_user_stats_old:
+    path: /{username}.html/stats/{type}
+    defaults: { _controller: TBNUserBundle:User:stats }
+    requirements:
+        type: (semaine|mois|annee)
+        username: (.+)
+
+tbn_user_details_old:
+    path: /{username}.html
+    defaults: { _controller: TBNUserBundle:User:details }
+    requirements:
+        username: ([^/]+)

@@ -221,7 +221,7 @@ abstract class Social
 
     protected function getMembreLink(User $user)
     {
-        return $this->router->generate("tbn_user_details", ["username" => $user->getUsername()], UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->router->generate("tbn_user_details", ["id" => $user->getId(), "slug" => $user->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     public abstract function getNumberOfCount();

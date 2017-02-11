@@ -2,6 +2,8 @@
 
 namespace TBN\UserBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\UserBundle\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,8 +26,36 @@ class UserController extends Controller
         return new RedirectResponse($this->get("router")->generate("tbn_search_query", $params));
     }
 
-    public function detailsAction(User $user)
+    protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = []) {
+        $em = $this->getDoctrine()->getManager();
+        $repoUser = $em->getRepository('TBNUserBundle:User');
+
+        if(! $id) {
+            $user = $repoUser->findOneBy(['username' => $username]);
+        }else {
+            $user = $repoUser->find($id);
+        }
+
+        if(! $user) {
+            throw new NotFoundHttpException('User not found');
+        }
+
+        if($user->getSlug() !== $slug) {
+            $routeParams = array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
+            return new RedirectResponse($this->generateUrl($routeName, $routeParams));
+        }
+
+        return $user;
+    }
+
+    public function detailsAction($id = null, $slug = null, $username = null)
     {
+        $result = $this->checkUserUrl($slug, $username, $id, 'tbn_user_details');
+        if($result instanceof Response) {
+            return $result;
+        }
+        $user = $result;
+
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
 
@@ -48,8 +78,14 @@ class UserController extends Controller
         ]);
     }
 
-    public function statsAction(Request $request, User $user, $type)
+    public function statsAction(Request $request, $type, $id = null, $slug = null, $username = null)
     {
+        $result = $this->checkUserUrl($slug, $username, $id, 'tbn_user_stats', ['type' => $type]);
+        if($result instanceof Response) {
+            return $result;
+        }
+        $user = $result;
+
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
         $str_date = $repo->getLastDateStatsUser($user);

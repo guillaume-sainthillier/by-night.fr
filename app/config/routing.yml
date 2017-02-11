@@ -34,6 +34,11 @@ tbn_membres:
     prefix:   /membres
     host:   "{subdomain}.%base_host%"
 
+tbn_membres_old:
+    resource: "@TBNUserBundle/Resources/config/routing_user_old.yml"
+    prefix:   /membres
+    host:   "{subdomain}.%base_host%"
+
 easy_admin_bundle:
     resource: "@EasyAdminBundle/Controller/"
     type:     annotation

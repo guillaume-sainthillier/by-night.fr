@@ -7,14 +7,17 @@ tbn_user_list:
     defaults: { _controller: TBNUserBundle:User:urlRedirect, term: null }
 
 tbn_user_stats:
-    path: /{username}.html/stats/{type}
+    path: /{slug}--{id}.html/stats/{type}
     defaults: { _controller: TBNUserBundle:User:stats }
     requirements:
         type: (semaine|mois|annee)
-        username: (.+)
+        slug: (.+)
+        id: (\d+)
 
 tbn_user_details:
-    path: /{username}.html
+    path: /{slug}--{id}.html
     defaults: { _controller: TBNUserBundle:User:details }
     requirements:
-        username: ([^/]+)
+        slug: (.+)
+        id: (\d+)
+

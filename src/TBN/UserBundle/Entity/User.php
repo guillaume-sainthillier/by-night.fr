@@ -4,6 +4,7 @@ namespace TBN\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
+use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -20,6 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\UserRepository")
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
+ * @ORM\HasLifecycleCallbacks()
  */
 class User extends BaseUser
 {
@@ -30,6 +32,14 @@ class User extends BaseUser
      * @Expose
      */
     protected $id;
+
+    protected $username;
+
+    /**
+     * @Gedmo\Slug(fields={"username"})
+     * @ORM\Column(length=128, unique=true)
+     */
+    protected $slug;
 
     /**
      * @var string
@@ -582,5 +592,29 @@ class User extends BaseUser
     public function getSystemPath()
     {
         return $this->systemPath;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     *
+     * @return User
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 }

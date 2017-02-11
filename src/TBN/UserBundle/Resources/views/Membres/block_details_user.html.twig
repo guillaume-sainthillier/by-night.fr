@@ -4,7 +4,7 @@
         <img class="loading" height="115" width="115" src="{{ asset('img/empty_user.png')|imagine_filter('thumb_user_115') }}"
              data-src="{{ imageURL }}"/>
         <div class="caption">
-            <h3><a class="thin" href="{{ path('tbn_user_details', {'username' : user.username}) }}">{{ user.username[:22] }}</a></h3>
+            <h3><a class="thin" href="{{ path('tbn_user_details', {'id' : user.id, 'slug': user.slug}) }}">{{ user.username[:22] }}</a></h3>
             <p>Membre depuis le <span class="date text-primary">{{ user.dateCreation|date('d/m/Y') }}</span></p>
             {% include "TBNUserBundle:Membres:social_info.html.twig" %}
         </div>

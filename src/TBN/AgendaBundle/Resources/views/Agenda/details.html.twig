@@ -54,7 +54,7 @@
     <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ app_manager.facebookIdPage }}"/>
     {% if soiree.user %}
         <meta property="article:author"
-              content="{{ url('tbn_user_details', {'username': soiree.user.usernameCanonical}) }}"/>
+              content="{{ url('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug}) }}"/>
     {% endif %}
 
     {% for tag in distinctTags %}
@@ -236,7 +236,7 @@
                                 <li>
                                     <i class="fa fa-li fa-user"></i>
                                     Par
-                                    <a href="{{ path('tbn_user_details', {'username': soiree.user.username} ) }}"
+                                    <a href="{{ path('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug} ) }}"
                                        title="Accédez au profil de {{ soiree.user.username }}">
                                         {{ soiree.user.username }}
                                     </a>

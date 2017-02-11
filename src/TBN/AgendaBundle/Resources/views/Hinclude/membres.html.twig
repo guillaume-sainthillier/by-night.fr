@@ -7,7 +7,7 @@
             </div>
             <div class="col-xs-9 col-md-10 preserve text-left">
                 <h4 class="modal-title">
-                    <a href="{{ path('tbn_user_details', {'username': user.username} ) }}"
+                    <a href="{{ path('tbn_user_details', {'id': user.id, 'slug': user.slug} ) }}"
                        title="Accédez au profil de {{ user.username }}">
                         {{ user.username|capitalize }}
                     </a>
