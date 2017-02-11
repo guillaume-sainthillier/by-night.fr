@@ -73,6 +73,45 @@ class MenuDroitController extends Controller
         ;
     }
 
+    public function nextEventsAction(Agenda $soiree, $page = 1) {
+        if ($page <= 0) {
+            $page = 1;
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+
+        $count = $repo->findAllNextCount($soiree);
+        $current = $page * self::WIDGET_ITEM_LIMIT;
+
+        if($current < $count) {
+            $hasNextLink = $this->generateUrl('tbn_agenda_prochaines_soirees', [
+                'slug' => $soiree->getSlug(),
+                'page' => $page + 1
+            ]);
+        }else {
+            $hasNextLink = null;
+        }
+
+        $response = $this->render("TBNAgendaBundle:Hinclude:evenements_details.html.twig", [
+            "place" => $soiree->getPlace(),
+            "soirees" => $repo->findAllNext($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            "current" => $current,
+            "count" => $count,
+            "hasNextLink" => $hasNextLink
+        ]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response
+            ->setExpires(new \DateTime('+1 year'))
+            ->setSharedMaxAge(31536000)
+            ->setPublic()
+            ;
+    }
+
     public function soireesSimilairesAction(Agenda $soiree, $page = 1)
     {
         if ($page <= 0) {
