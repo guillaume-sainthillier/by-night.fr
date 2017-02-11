@@ -33,10 +33,10 @@ class EventInvalidator
     }
 
     public function addEvent(Agenda $event) {
-        $this->tags[] = self::getEventDetailTag($event);
+        $this->eventTags[] = self::getEventDetailTag($event);
 
         if($event->getPlace() && $event->getPlace()->getId()) {
-            $this->tags[] = sprintf('detail-place-%d', $event->getPlace()->getId());
+            $this->eventTags[] = sprintf('detail-place-%d', $event->getPlace()->getId());
         }
     }
 
