@@ -84,6 +84,7 @@ class AgendaController extends Controller
         $form = $this->createEditForm($agenda);
         $formDelete = $this->createDeleteForm($agenda);
 
+        $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isValid()) {
 
@@ -214,6 +215,7 @@ class AgendaController extends Controller
          * @var Agenda $agenda
          */
 
+        $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
         $agenda = $form->getData();
         $isNewAgenda = $agenda->getId() !== null;
         if ($form->isValid()) {

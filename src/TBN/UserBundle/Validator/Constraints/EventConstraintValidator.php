@@ -20,9 +20,16 @@ class EventConstraintValidator extends ConstraintValidator
      */
     private $router;
 
+    private $checkIfUpdate;
+
     public function __construct(Router $router)
     {
         $this->router = $router;
+        $this->checkIfUpdate = true;
+    }
+
+    public function setUpdatabilityCkeck($checkIfUpdate) {
+        $this->checkIfUpdate = $checkIfUpdate;
     }
 
     public function validate($event, Constraint $constraint)
@@ -65,7 +72,7 @@ class EventConstraintValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->badEventDescrition)->atPath('descriptif')->addViolation();
         }
 
-        if($reject->hasNoNeedToUpdate()) {
+        if($this->checkIfUpdate && $reject->hasNoNeedToUpdate()) {
             $this->context->buildViolation($constraint->noNeedToUpdate)->addViolation();
         }
 
