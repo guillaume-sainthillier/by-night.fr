@@ -163,6 +163,9 @@ fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main  
     user_class: TBN\UserBundle\Entity\User
+    from_email:
+        address: "%mailer_user%"
+        sender_name: "By Night"
     profile:
         form:
             type: TBN\UserBundle\Form\Type\ProfileFormType
