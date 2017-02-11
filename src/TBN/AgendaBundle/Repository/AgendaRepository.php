@@ -298,6 +298,19 @@ class AgendaRepository extends EntityRepository
             ->execute();
     }
 
+    public function findAllNext(Agenda $soiree, $page = 1, $limit = 7)
+    {
+        return $this
+            ->createQueryBuilder('a')
+            ->where("a.dateFin >= :date_fin AND a.id != :id AND a.place = :place")
+            ->orderBy('a.nom', 'ASC')
+            ->setParameters([":date_fin" => $soiree->getDateFin()->format('Y-m-d'), ":id" => $soiree->getId(), ":place" => $soiree->getPlace()->getId()])
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->execute();
+    }
+
     public function findAllSimilairesCount(Agenda $soiree)
     {
         return $this->_em
@@ -306,6 +319,18 @@ class AgendaRepository extends EntityRepository
             ->from('TBNAgendaBundle:Agenda', 'a')
             ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
             ->setParameters([":date_debut" => $soiree->getDateDebut()->format('Y-m-d'), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findAllNextCount(Agenda $soiree)
+    {
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('count(a.id)')
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where("a.dateFin >= :date_fin AND a.id != :id AND a.place = :place")
+            ->setParameters([":date_fin" => $soiree->getDateFin()->format('Y-m-d'), ":id" => $soiree->getId(), ":place" => $soiree->getPlace()->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }

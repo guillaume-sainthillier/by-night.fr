@@ -279,6 +279,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="panel panel-default widget">
+            <div class="panel-heading bg-white">
+                <h3 class="modal-title">
+                    <i class="pull-right fa fa-share-alt text-primary"></i>
+                    {{ soiree.place.nom }} : Les prochaines sorties
+                </h3>
+            </div>
+            <div class="panel-body scrollable scrollable-large">
+                <div>
+                    {{ render_esi(url('tbn_agenda_prochaines_soirees', {'slug': soiree.slug} )) }}
+                </div>
+            </div>
+            <div class="panel-footer"> </div>
+        </div>
     {% endif %}
 {% endblock %}
 

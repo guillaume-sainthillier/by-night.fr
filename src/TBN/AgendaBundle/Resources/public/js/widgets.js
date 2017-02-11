@@ -42,6 +42,7 @@ var Widgets = {
                         containerBody.append(content);
                         container.find('.scrollable').mCustomScrollbar("scrollTo", "bottom");
                         Widgets.initMoreWidgets(container);
+                        App.initComponents(container);
                     });
 
                     e.preventDefault();

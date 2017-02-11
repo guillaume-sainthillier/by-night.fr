@@ -1,0 +1,6 @@
+{{ fos_httpcache_tag('detail-place-' ~ place.id ) }}
+{% include "@TBNAgenda/Agenda/block_preview_soiree.html.twig" with({"events": soirees}) %}
+{% if hasNextLink %}
+    <a class="more-content btn btn-primary btn-raised btn-block" href="{{ hasNextLink }}">Plus ({{ current }} / {{ count }})</a>
+{% endif %}
+

@@ -110,6 +110,12 @@ tbn_agenda_details:
     requirements:
         slug: (.+)
 
+tbn_agenda_prochaines_soirees:
+    path: /soiree/{slug}.html/prochaines-soirees/{page}
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:nextEvents, page: 1}
+    requirements:
+        slug: (.+)
+
 tbn_agenda_soirees_similaires:
     path: /soiree/{slug}.html/autres-soirees/{page}
     defaults: { _controller: TBNAgendaBundle:MenuDroit:soireesSimilaires, page: 1}
