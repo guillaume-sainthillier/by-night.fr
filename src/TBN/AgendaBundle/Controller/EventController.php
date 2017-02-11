@@ -71,13 +71,12 @@ class EventController extends Controller
         ]);
 
         $now = new \DateTime();
-        if($agenda->getDateFin() > $now) {
+        if($agenda->getDateFin() < $now) {
             $expires = $now;
             $expires->modify("+1 year");
             $ttl = 31536000;
         }else {
-            $expires = new \DateTime('tomorrow');
-            $ttl = $this->getSecondsUntilTomorrow();
+            list($expires, $ttl) = $this->getSecondsUntil(168);
         }
 
         $response
