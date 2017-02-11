@@ -22,7 +22,7 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE user ADD slug VARCHAR(128) DEFAULT ""');
+        $this->addSql('ALTER TABLE User ADD slug VARCHAR(128) DEFAULT ""');
     }
 
     public function postUp(Schema $schema)
@@ -37,8 +37,8 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
         }
         $em->flush();
 
-        $this->connection->executeQuery('ALTER TABLE user MODIFY slug VARCHAR(128) NOT NULL');
-        $this->connection->executeQuery('CREATE UNIQUE INDEX UNIQ_2DA17977989D9B62 ON user (slug)');
+        $this->connection->executeQuery('ALTER TABLE User MODIFY slug VARCHAR(128) NOT NULL');
+        $this->connection->executeQuery('CREATE UNIQUE INDEX UNIQ_2DA17977989D9B62 ON User (slug)');
     }
 
     /**
