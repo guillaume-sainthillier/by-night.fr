@@ -36,7 +36,7 @@ class UserController extends Controller
             $user = $repoUser->find($id);
         }
 
-        if(! $user) {
+        if(! $user || ! $user->getSlug()) {
             throw new NotFoundHttpException('User not found');
         }
 
