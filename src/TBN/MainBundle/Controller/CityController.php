@@ -20,6 +20,12 @@ class CityController extends Controller
             return $site['nom'];
         }, $sites);
 
-        return $this->render('TBNMainBundle:Ville:list.html.twig', ["sites" => $sites, "villes" => $villes]);
+        $response = $this->render('TBNMainBundle:Ville:list.html.twig', ["sites" => $sites, "villes" => $villes]);
+
+        $response->headers->add([
+            'X-No-Browser-Cache' => '1'
+        ]);
+
+        return $response;
     }
 }
