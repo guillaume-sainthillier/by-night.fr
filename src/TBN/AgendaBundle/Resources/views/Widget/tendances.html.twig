@@ -43,7 +43,7 @@
     <!-- FB Membres -->
     {% if soiree.facebookEventId %}
     <div>
-        {{ render_esi(url('tbn_agenda_soirees_membres', {'slug': soiree.slug})) }}
+        {{ render_esi(url('tbn_agenda_soirees_membres', {'slug': soiree.slug, 'id': soiree.id})) }}
     </div>
     {% endif %}
     <!-- ./FB Membres -->

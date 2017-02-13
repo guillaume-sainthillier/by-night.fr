@@ -51,7 +51,7 @@
                 <tbody>
                 {% for soiree in soirees %}
                     <tr>
-                        <td><a href="{{ path('tbn_agenda_details', {'slug': soiree.slug }) }}"
+                        <td><a href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id }) }}"
                                title="Accéder à l'événement">{{ soiree.nom }}</a></td>
                         <td>{{ soiree.place ? soiree.place.nom : '' }}</td>
                         <td>{{ soiree.place ? soiree.place.ville : '' }}</td>

@@ -42,8 +42,14 @@ class EventController extends Controller
     /**
      * @Tag("detail-event")
      */
-    public function detailsAction(Agenda $agenda)
+    public function detailsAction($slug, $id = null)
     {
+        $result = $this->checkEventUrl($slug, $id);
+        if($result instanceof Response) {
+            return $result;
+        }
+        $agenda = $result;
+
         $siteManager = $this->container->get('site_manager');
         $site = $siteManager->getCurrentSite();
 
@@ -51,6 +57,7 @@ class EventController extends Controller
         if ($agenda->getSite() !== $site) {
             return new RedirectResponse($this->get('router')->generate('tbn_agenda_details', [
                 'slug' => $agenda->getSlug(),
+                'id' => $agenda->getId(),
                 'subdomain' => $agenda->getSite()->getSubdomain()
             ]));
         }
@@ -92,12 +99,13 @@ class EventController extends Controller
 
     /**
      * @param Agenda $agenda
-     * @Cache(expires="+6 hours", smaxage="21600")
+     * @Cache(expires="+12 hours", smaxage="43200")
      * @return Response
      */
     public function shareAction(Agenda $agenda) {
         $link = $this->generateUrl('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
+            'id' => $agenda->getId(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $eventProfile = $this->get('tbn.profile_picture.event')->getOriginalPictureUrl($agenda);

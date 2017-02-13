@@ -1,27 +1,33 @@
-tbn_agenda_details_old:
+tbn_agenda_details_old2:
     path: /{slug}.html
     defaults: { _controller: TBNAgendaBundle:OldEvent:details}
     requirements:
         slug: ([^/]+)
 
-tbn_agenda_soirees_similaires_old:
+tbn_agenda_soirees_similaires_old2:
     path: /{slug}.html/autres-soirees/{page}
     defaults: { _controller: TBNAgendaBundle:OldEvent:soireesSimilaires, page: 1}
     requirements:
         page: (\d+)
+        slug: (.+)
 
 tbn_agenda_soirees_tendances_old:
     path: /{slug}.html/tendances
     defaults: { _controller: TBNAgendaBundle:OldEvent:tendances}
+    requirements:
+            slug: (.+)
 
 tbn_agenda_soirees_tendances_old2:
     path: /soiree/{slug}.html/tendances
     defaults: { _controller: TBNAgendaBundle:OldEvent:tendances}
+    requirements:
+        slug: (.+)
     
-tbn_agenda_soirees_membres_old:
+tbn_agenda_soirees_membres_old2:
     path: /{slug}.html/membres/{page}
     defaults: { _controller: TBNAgendaBundle:OldEvent:fbMembres, page: 1}
     requirements:
+        slug: (.+)
         page: (\d+)
 
 tbn_agenda_pagination_old:
@@ -30,3 +36,27 @@ tbn_agenda_pagination_old:
     methods: [GET]
     requirements:
         page: \d+
+
+tbn_agenda_details_old:
+    path: /soiree/{slug}.html
+    defaults: { _controller: TBNAgendaBundle:Event:details}
+    requirements:
+        slug: (.+)
+
+tbn_agenda_prochaines_soirees_old:
+    path: /soiree/{slug}.html/prochaines-soirees/{page}
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:nextEvents, page: 1}
+    requirements:
+        slug: (.+)
+
+tbn_agenda_soirees_similaires_old:
+    path: /soiree/{slug}.html/autres-soirees/{page}
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:soireesSimilaires, page: 1}
+    requirements:
+        page: (\d+)
+
+tbn_agenda_soirees_membres_old:
+    path: /soiree/{slug}.html/membres/{page}
+    defaults: { _controller: TBNAgendaBundle:MenuDroit:fbMembres, page: 1}
+    requirements:
+        page: (\d+)

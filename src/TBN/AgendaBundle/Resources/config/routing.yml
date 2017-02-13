@@ -105,25 +105,31 @@ tbn_agenda_top_membres:
         page: (\d+)
 
 tbn_agenda_details:
-    path: /soiree/{slug}.html
+    path: /soiree/{slug}--{id}.html
     defaults: { _controller: TBNAgendaBundle:Event:details}
     requirements:
         slug: (.+)
+        id: (\d+)
 
 tbn_agenda_prochaines_soirees:
-    path: /soiree/{slug}.html/prochaines-soirees/{page}
+    path: /soiree/{slug}--{id}.html/prochaines-soirees/{page}
     defaults: { _controller: TBNAgendaBundle:MenuDroit:nextEvents, page: 1}
     requirements:
         slug: (.+)
+        id: (\d+)
 
 tbn_agenda_soirees_similaires:
-    path: /soiree/{slug}.html/autres-soirees/{page}
+    path: /soiree/{slug}--{id}.html/autres-soirees/{page}
     defaults: { _controller: TBNAgendaBundle:MenuDroit:soireesSimilaires, page: 1}
     requirements:
         page: (\d+)
+        id: (\d+)
+        slug: (.+)
     
 tbn_agenda_soirees_membres:
-    path: /soiree/{slug}.html/membres/{page}
+    path: /soiree/{slug}--{id}.html/membres/{page}
     defaults: { _controller: TBNAgendaBundle:MenuDroit:fbMembres, page: 1}
     requirements:
         page: (\d+)
+        id: (\d+)
+        slug: (.+)

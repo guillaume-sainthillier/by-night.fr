@@ -40,7 +40,7 @@
     {% if place %}
         {% set item = menu.addItem(place.nom, path('tbn_agenda_place',{'slug': place.slug})) %}
     {% endif %}
-    {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug })) %}
+    {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug, 'id': soiree.id })) %}
 {% endblock %}
     
 {% block meta_keywords %}{% if distinctTags|length %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
@@ -62,7 +62,7 @@
     {% endfor %}
 {% endblock %}
 {% block og_titre %}{{ nomSoiree }}{% endblock %}
-{% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug}) }}{% endblock %}
+{% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id}) }}{% endblock %}
 {% block og_image %}{{ original }}{% endblock %}
 
 {% block widgets_agenda %}
@@ -103,7 +103,7 @@
             </div>
             <div class="panel-body">
                 <meta itemprop="name" content="{{ nomSoiree }}" >
-                <meta itemprop="url" content="{{ url('tbn_agenda_details', {'slug': soiree.slug}) }}" >
+                <meta itemprop="url" content="{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id}) }}" >
 
                 {% if soiree.modificationDerniereMinute %}
                     <div class="alert alert-warning">
@@ -289,7 +289,7 @@
             </div>
             <div class="panel-body scrollable scrollable-large">
                 <div>
-                    {{ render_esi(url('tbn_agenda_prochaines_soirees', {'slug': soiree.slug} )) }}
+                    {{ render_esi(url('tbn_agenda_prochaines_soirees', {'slug': soiree.slug, 'id': soiree.id} )) }}
                 </div>
             </div>
             <div class="panel-footer"> </div>

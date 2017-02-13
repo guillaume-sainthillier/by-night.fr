@@ -216,7 +216,7 @@ abstract class Social
 
     protected function getLink(Agenda $agenda)
     {
-        return $this->router->generate("tbn_agenda_details", ["slug" => $agenda->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->router->generate("tbn_agenda_details", ["slug" => $agenda->getSlug(), "id" => $agenda->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     protected function getMembreLink(User $user)

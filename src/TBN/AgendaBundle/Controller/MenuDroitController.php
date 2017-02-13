@@ -2,7 +2,7 @@
 
 namespace TBN\AgendaBundle\Controller;
 
-use TBN\AgendaBundle\Entity\Agenda;
+use Symfony\Component\HttpFoundation\Response;
 use TBN\MainBundle\Controller\TBNController as Controller;
 
 /**
@@ -73,10 +73,16 @@ class MenuDroitController extends Controller
         ;
     }
 
-    public function nextEventsAction(Agenda $soiree, $page = 1) {
+    public function nextEventsAction($slug, $id = null, $page = 1) {
         if ($page <= 0) {
             $page = 1;
         }
+
+        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_prochaines_soirees', ['page' => $page]);
+        if($result instanceof Response) {
+            return $result;
+        }
+        $soiree = $result;
 
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
@@ -87,6 +93,7 @@ class MenuDroitController extends Controller
         if($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_prochaines_soirees', [
                 'slug' => $soiree->getSlug(),
+                'id' => $soiree->getId(),
                 'page' => $page + 1
             ]);
         }else {
@@ -112,11 +119,18 @@ class MenuDroitController extends Controller
             ;
     }
 
-    public function soireesSimilairesAction(Agenda $soiree, $page = 1)
+    public function soireesSimilairesAction($slug, $id = null, $page = 1)
     {
         if ($page <= 0) {
             $page = 1;
         }
+
+        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page]);
+        if($result instanceof Response) {
+            return $result;
+        }
+        $soiree = $result;
+
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
 
@@ -126,6 +140,7 @@ class MenuDroitController extends Controller
         if($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_similaires', [
                 'slug' => $soiree->getSlug(),
+                'id' => $soiree->getId(),
                 'page' => $page + 1
             ]);
         }else {
@@ -191,14 +206,20 @@ class MenuDroitController extends Controller
         ;
     }
 
-    public function fbMembresAction(Agenda $soiree, $page)
+    public function fbMembresAction($slug, $id = null, $page)
     {
-        if(! $soiree->getFacebookEventId()) {
-            return $this->redirectToRoute('tbn_agenda_details', ['slug' => $soiree->getSlug()]);
-        }
-
         if ($page <= 1) {
             $page = 1;
+        }
+
+        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page]);
+        if($result instanceof Response) {
+            return $result;
+        }
+        $soiree = $result;
+
+        if(! $soiree->getFacebookEventId()) {
+            return $this->redirectToRoute('tbn_agenda_details', ['slug' => $soiree->getSlug(), 'id' => $soiree->getId()]);
         }
 
         $api = $this->get("tbn.social.facebook_admin");
@@ -208,6 +229,7 @@ class MenuDroitController extends Controller
         if(count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
                 'slug' => $soiree->getSlug(),
+                'id' => $soiree->getId(),
                 'page' => $page + 1
             ]);
         }else {

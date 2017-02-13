@@ -57,7 +57,7 @@ class CommentController extends Controller
 
     /**
      * @InvalidateRoute("tbn_comment_list", params={"id" = {"expression"="soiree.getId()"}})
-     * @InvalidateRoute("tbn_agenda_details", params={"id" = {"expression"="soiree.getId()"}})
+     * @InvalidateRoute("tbn_agenda_details", params={"slug" = {"expression"="soiree.getSlug()"}, "id" = {"expression"="soiree.getId()"}})
      * @param Request $request
      * @param Agenda $soiree
      * @return Response

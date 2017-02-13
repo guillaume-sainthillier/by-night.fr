@@ -10,7 +10,7 @@
             <div class="col-xs-9 col-md-10 preserve">
                 <h4 class="modal-title">
                     <a title="Tous les détails de {{ nomSoiree }}"
-                       href="{{ path('tbn_agenda_details', {'slug' : soiree.slug}) }}">{{ nomSoiree }}</a>
+                       href="{{ path('tbn_agenda_details', {'slug' : soiree.slug, 'id': soiree.id}) }}">{{ nomSoiree }}</a>
                 </h4>
                 <strong class="text-primary" style="font-weight: normal"
                       title="{{ soiree.place and soiree.place.ville ? soiree.place.ville : '' }}">{{ soiree.place ? soiree.place.nom : '' }}</strong>
