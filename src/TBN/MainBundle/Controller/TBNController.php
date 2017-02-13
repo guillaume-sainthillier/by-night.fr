@@ -37,7 +37,7 @@ class TBNController extends Controller
         }
 
         $requestStack = $this->get('request_stack');
-        if($requestStack->getMasterRequest() === null && (! $id || $event->getSlug() !== $slug)) {
+        if($requestStack->getParentRequest() === null && (! $id || $event->getSlug() !== $slug)) {
             $routeParams = array_merge(['id' => $event->getId(), 'slug' => $event->getSlug()], $extraParams);
             return new RedirectResponse($this->generateUrl($routeName, $routeParams));
         }
