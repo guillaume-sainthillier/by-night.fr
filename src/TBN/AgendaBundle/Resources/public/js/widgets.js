@@ -12,7 +12,13 @@ var Widgets = {
             targets.mCustomScrollbar({
                 axis: "y",
                 theme: "minimal-dark",
-                autoHideScrollbar: true
+                autoHideScrollbar: true,
+                callbacks: {
+                    onScroll: function(){
+                        console.log('SCROLLING');
+                        App.initLazyLoading(selecteur);
+                    }
+                }
             });
         }
     },
