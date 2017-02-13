@@ -25,6 +25,9 @@ class MenuDroitController extends Controller
             "programmes" => $programmes
         ]);
 
+//        dump($programmes);
+//        die;
+
         return $response
             ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())

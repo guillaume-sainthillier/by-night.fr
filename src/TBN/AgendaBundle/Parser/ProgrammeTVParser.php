@@ -16,13 +16,13 @@ class ProgrammeTVParser
     public function getProgrammesTV()
     {
         $this->parser->addContent(\file_get_contents("http://www.programme-tv.net/programme/toutes-les-chaines/"), "HTML");
-        return $this->parser->filter(".block.programme .channel")->each(function (Crawler $channel) {
+        return $this->parser->filter(".p-v-md")->each(function (Crawler $channel) {
             $programmes = $channel->filter(".programme");
             if ($programmes->count() > 0) {
                 $programme = $programmes->eq(0);
                 $episode = $programme->filter('.prog_episode');
-                $logo = $channel->filter('.channelItem img');
-                $chaine = $channel->filter('.channelItem a.channel_label');
+                $logo = $channel->filter('.channel_logo img');
+                $chaine = $channel->filter('a.channel_label');
                 $heure = $programme->filter('.prog_heure');
                 $nom = $programme->filter('.prog_name');
                 $type = $programme->filter('.prog_type');
@@ -31,7 +31,7 @@ class ProgrammeTVParser
                 $css_chaine = $this->getCSSChaine($labelChaine);
 
                 return [
-                    "logo" => $logo->count() ? $logo->attr("src") : null,
+                    "logo" => $logo->count() ? trim($logo->attr("data-src")) : null,
                     "chaine" => $labelChaine,
                     "css_chaine" => $css_chaine ? 'icon-' . $css_chaine : null,
                     "heure" => $heure->count() ? $heure->text() : null,
@@ -66,6 +66,7 @@ class ProgrammeTVParser
             case 'France 3':
                 return 'france3';
             case 'Canal+':
+            case 'Canal partagé TNT Ile-de-France':
                 return 'canal_plus';
             case 'Arte':
                 return 'arte';
@@ -80,17 +81,21 @@ class ProgrammeTVParser
             case 'TMC':
                 return 'tmc';
             case 'NT1':
+            case 'NT 1':
                 return 'nt1';
             case 'NRJ 12':
                 return 'nrj';
+            case 'La Chaîne parlementaire':
             case 'LCP - Public Sénat':
                 return 'lcp';
             case 'CStar':
+            case 'CSTAR':
                 return 'cstar';
             case 'France 4':
                 return 'france4';
             case 'BFM TV':
                 return 'bfm_tv';
+            case 'iTélé':
             case 'i>Télé':
                 return 'itele';
             case 'D17':
@@ -129,13 +134,16 @@ class ProgrammeTVParser
             case 'TV5 Monde':
             case 'TV5MONDE':
                 return 'tv5_monde';
+            case '13e Rue':
             case '13e rue':
                 return '13_rue';
             case 'E ! Entertainment':
+            case 'E !':
                 return 'e_entertainment';
             case 'Syfy':
                 return 'syfy';
             case 'Série club':
+            case 'serieclub':
                 return 'serie_club';
             case 'Nat Geo Wild':
                 return 'nat_geo';
