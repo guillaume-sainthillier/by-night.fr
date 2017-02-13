@@ -15,7 +15,6 @@ var Widgets = {
                 autoHideScrollbar: true,
                 callbacks: {
                     onScroll: function(){
-                        console.log('SCROLLING');
                         App.initLazyLoading(selecteur);
                     }
                 }
