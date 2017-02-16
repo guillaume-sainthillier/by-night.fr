@@ -119,6 +119,12 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         src: ['*'],
+                        dest: 'web/prod/fonts',
+                        cwd: 'web/bower/font-awesome/fonts'
+                    },
+                    {
+                        expand: true,
+                        src: ['*'],
                         dest: 'web/prod/main/fonts',
                         cwd: 'web/bower/bootstrap/dist/fonts'
                     },
