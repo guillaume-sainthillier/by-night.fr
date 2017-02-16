@@ -64,6 +64,7 @@ class UserController extends Controller
         if ($currentSite && $user->getSite() !== $currentSite) {
             return new RedirectResponse($this->generateUrl('tbn_user_details', [
                 'username' => $user->getUsername(),
+                'id' => $user->getId(),
                 'subdomain' => $user->getSite()->getSubdomain()
             ]));
         }
