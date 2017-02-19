@@ -87,13 +87,6 @@ class MenuDroitController extends Controller
         }
         $soiree = $result;
 
-        if(! $soiree->getPlace()) {
-            return $this->redirectToRoute('tbn_agenda_details', [
-                'id' => $soiree->getId(),
-                'slug' => $soiree->getSlug(),
-            ]);
-        }
-
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
 
