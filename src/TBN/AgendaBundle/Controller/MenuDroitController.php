@@ -25,9 +25,6 @@ class MenuDroitController extends Controller
             "programmes" => $programmes
         ]);
 
-//        dump($programmes);
-//        die;
-
         return $response
             ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
@@ -86,6 +83,13 @@ class MenuDroitController extends Controller
             return $result;
         }
         $soiree = $result;
+
+        if(! $soiree->getPlace()) {
+            return $this->redirectToRoute('tbn_agenda_details', [
+                'id' => $soiree->getId(),
+                'slug' => $soiree->getSlug(),
+            ]);
+        }
 
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TBNAgendaBundle:Agenda");
