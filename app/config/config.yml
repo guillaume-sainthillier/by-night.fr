@@ -21,6 +21,7 @@ framework:
         hinclude_default_template: TBNAgendaBundle:Hinclude:template.html.twig
     assets:
         base_urls: ['http://static.%base_host%']
+        version: "v1.0"
         packages:
             asset:
                 base_urls: ['http://static.%base_host%']
