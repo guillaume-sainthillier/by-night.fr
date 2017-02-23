@@ -25,7 +25,7 @@ parameters:
     twitter_app_id:         %secret%
     twitter_app_secret:     %secret%
     google_recaptcha_secret: %secret%
-    base_host:              ~
+    base_host:              by-night.fr
     facebook_id_page:       "205292952998805"
     google_id_page:         "113344346320536654292"
     twitter_id_page:        "By__Night"
