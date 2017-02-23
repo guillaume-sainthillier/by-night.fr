@@ -8,11 +8,13 @@
 
 namespace TBN\MajDataBundle\Updater;
 
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 
 use Doctrine\ORM\EntityManager;
+use Psr\Http\Message\ResponseInterface;
 use TBN\SocialBundle\Social\FacebookAdmin;
 
 abstract class Updater
@@ -54,10 +56,10 @@ abstract class Updater
         $responses = [];
         $pool = new Pool($this->client, $requests, [
             'concurrency' => self::POOL_SIZE,
-            'fulfilled' => function ($response, $index) use(& $responses) {
+            'fulfilled' => function (ResponseInterface $response, $index) use(& $responses) {
                 $responses[$index] = (string)$response->getBody();
             },
-            'rejected' => function ($reason, $index) use(& $responses) {
+            'rejected' => function (RequestException $reason, $index) use(& $responses) {
                 $responses[$index] = null;
             },
         ]);
