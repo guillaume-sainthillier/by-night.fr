@@ -15,7 +15,13 @@ class CommonController extends TBNController
     const LIFE_TIME_CACHE = 86400; // 3600*24
 
     public function headerAction() {
-        return $this->render('::menu.html.twig');
+        $response = $this->render('::menu.html.twig');
+        
+        $tomorrow = new \DateTime("tomorrow");
+        return $response
+            ->setExpires($tomorrow)
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
+            ;
     }
 
     public function footerAction() {
