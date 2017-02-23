@@ -9,9 +9,13 @@ use TBN\MainBundle\Invalidator\EventInvalidator;
 use TBN\MajDataBundle\Entity\Exploration;
 use TBN\MajDataBundle\Reject\Reject;
 use TBN\MajDataBundle\Utils\Firewall;
+use TBN\UserBundle\Entity\User;
 
 class EventListener
 {
+    /**
+     * @var EventInvalidator
+     */
     private $eventInvalidator;
 
     public function __construct(EventInvalidator $eventInvalidator)
@@ -26,6 +30,11 @@ class EventListener
     public function postUpdate(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
 
+        if($entity instanceof User) {
+            $this->eventInvalidator->addUser($entity);
+            return;
+        }
+
         if (!$entity instanceof Agenda) {
             return;
         }
@@ -36,6 +45,11 @@ class EventListener
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
+
+        if($entity instanceof User) {
+            $this->eventInvalidator->addUser($entity);
+            return;
+        }
 
         if (!$entity instanceof Agenda) {
             return;
