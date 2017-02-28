@@ -224,7 +224,6 @@ hwi_oauth:
             client_id:           "%api_facebook_id%"
             client_secret:       "%api_facebook_secret%"
             scope:               email, publish_actions, manage_pages
-            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
@@ -236,7 +235,6 @@ hwi_oauth:
             client_id:           "%api_facebook_id%"
             client_secret:       "%api_facebook_secret%"
             scope:               email, user_posts
-            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
@@ -248,7 +246,6 @@ hwi_oauth:
             client_id:           "%api_facebook_id%"
             client_secret:       "%api_facebook_secret%"
             scope:               email, user_events
-            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
@@ -391,7 +388,7 @@ fos_elastica:
             types:
                 event:
                     indexable_callback: "isIndexable"
-                    mappings:
+                    properties:
                         nom: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer  }
                         descriptif: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         date_debut: { type: date, format: 'yyyy-MM-dd' }
@@ -407,7 +404,7 @@ fos_elastica:
                         model:  TBN\AgendaBundle\Entity\Agenda
                         repository: TBN\AgendaBundle\SearchRepository\AgendaRepository
                 user:
-                    mappings:
+                    properties:
                         username: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         firstname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         lastname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }

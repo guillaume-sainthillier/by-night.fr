@@ -26,7 +26,7 @@
     "twig/extensions": "1.*",
     "stof/doctrine-extensions-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "~2.0@dev",
-    "hwi/oauth-bundle": "dev-master",
+    "hwi/oauth-bundle": "0.5.*",
     "facebook/graph-sdk": "^5.4",
     "google/apiclient": "^2.0.0@RC",
     "ricardoper/twitteroauth": "2.*",

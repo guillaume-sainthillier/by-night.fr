@@ -7,7 +7,6 @@ $loader = require __DIR__.'/../app/autoload.php';
 
 $kernel = new AppKernel('prod', false);
 
-//Request::enableHttpMethodParameterOverride();
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();

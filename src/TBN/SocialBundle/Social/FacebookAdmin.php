@@ -5,6 +5,7 @@ namespace TBN\SocialBundle\Social;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\Exceptions\FacebookResponseException;
 use Facebook\FacebookResponse;
+use Facebook\GraphNodes\GraphNode;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -171,7 +172,7 @@ class FacebookAdmin extends FacebookEvents
               ]);
         };
 
-        $dataHandlerFunction = function($data) {
+        $dataHandlerFunction = function(GraphNode $data) {
             return [ $data->getField('id') => [
                     'url' => $this->getPagePictureURL($data, false)
             ]];
@@ -189,7 +190,7 @@ class FacebookAdmin extends FacebookEvents
               ]);
         };
 
-        $dataHandlerFunction = function($data) {
+        $dataHandlerFunction = function(GraphNode $data) {
             return [ $data->getField('id') => [
                     'participations' => $data->getField('attending_count'),
                     'interets' => $data->getField('maybe_count'),

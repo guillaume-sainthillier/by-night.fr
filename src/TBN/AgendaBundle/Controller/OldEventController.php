@@ -23,13 +23,6 @@ class OldEventController extends Controller
 
     public function fbMembresAction($slug, $page)
     {
-        dump($this->generateUrl('tbn_agenda_soirees_membres_old', [
-            'slug' => $slug,
-            'page' => $page
-        ]));
-
-        die;
-
         return $this->redirectToRoute('tbn_agenda_soirees_membres_old', [
             'slug' => $slug,
             'page' => $page

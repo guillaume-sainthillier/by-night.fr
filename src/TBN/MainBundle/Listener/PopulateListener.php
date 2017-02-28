@@ -2,7 +2,6 @@
 namespace TBN\MainBundle\Listener;
 use FOS\ElasticaBundle\Event\IndexPopulateEvent;
 use FOS\ElasticaBundle\Index\IndexManager;
-use Elastica\Request;
 
 class PopulateListener
 {
@@ -27,7 +26,7 @@ class PopulateListener
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $settings = $index->getSettings();
-        $index->request('_forcemerge', Request::POST, [], ['max_num_segments' => 5]);
+        $index->forcemerge(['max_num_segments' => 5]);
         $settings->setRefreshInterval('1s');
     }
 }
