@@ -230,8 +230,7 @@ class MenuDroitController extends Controller
         }
 
         $api = $this->get("tbn.social.facebook_admin");
-        $retour = [];
-        //$retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
+        $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
         $membres = array_merge($retour['participations'], $retour['interets']);
         if(count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
