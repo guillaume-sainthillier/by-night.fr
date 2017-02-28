@@ -391,7 +391,7 @@ fos_elastica:
             types:
                 event:
                     indexable_callback: "isIndexable"
-                    mappings:
+                    properties:
                         nom: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer  }
                         descriptif: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         date_debut: { type: date, format: 'yyyy-MM-dd' }
@@ -407,7 +407,7 @@ fos_elastica:
                         model:  TBN\AgendaBundle\Entity\Agenda
                         repository: TBN\AgendaBundle\SearchRepository\AgendaRepository
                 user:
-                    mappings:
+                    properties:
                         username: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         firstname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                         lastname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
