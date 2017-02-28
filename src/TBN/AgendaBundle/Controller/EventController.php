@@ -21,6 +21,7 @@ use TBN\AgendaBundle\Form\Type\SearchType;
 use TBN\AgendaBundle\Search\SearchAgenda;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use TBN\MainBundle\Invalidator\EventInvalidator;
+use TBN\UserBundle\Entity\User;
 
 class EventController extends Controller
 {
@@ -138,6 +139,9 @@ class EventController extends Controller
 
         $user = $this->getUser();
         if ($user) {
+            /**
+             * @var User $user
+             */
             $repoCalendrier = $em->getRepository('TBNAgendaBundle:Calendrier');
             $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
             if ($calendrier !== null) {
@@ -150,7 +154,7 @@ class EventController extends Controller
                 $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
                 if (!$cache->contains($key)) {
                     $api = $this->get('tbn.social.facebook_admin');
-                    $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId());
+                    $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
                     $cache->save($key, $stats);
                 }
                 $stats = $cache->fetch($key);

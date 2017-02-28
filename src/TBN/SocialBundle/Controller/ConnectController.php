@@ -49,7 +49,7 @@ class ConnectController extends BaseController
             throw new NotFoundHttpException();
         }
 
-        $hasUser = $this->isGranted($this->container->getParameter('hwi_oauth.grant_rule'));
+        $hasUser = $this->isGranted('IS_AUTHENTICATED_REMEMBERED');
         if (!$hasUser) {
             throw new AccessDeniedException('Cannot connect an account.');
         }
