@@ -12,7 +12,7 @@ use TBN\MainBundle\Controller\TBNController as Controller;
  */
 class MenuDroitController extends Controller
 {
-    const FB_MEMBERS_LIMIT = 50;
+    const FB_MEMBERS_LIMIT = 100;
     const TWEET_LIMIT = 25;
     const WIDGET_ITEM_LIMIT = 7;
 
