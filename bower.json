@@ -15,29 +15,26 @@
         "tests"
     ],
     "dependencies": {
-        "jquery": "2.*",
+        "jquery": "3.*",
         "bootstrap": "latest",
         "font-awesome": "latest",
         "bootstrap-material-design" : "0.*",
         "dropdown.js": "master",
         "bootstrap-select": "latest",
         "fancybox": "latest",
-        "hinclude": "0.9.*",
-        "jquery-pjax": "1.*",
         "jquery-unveil": "1.*",
-        "jquery-ui": "1.11.*", 
         "summernote": "0.*",
         "jquery.scrollTo" : "1.*",
         "malihu-custom-scrollbar-plugin": "3.*",
-        "raphael": "2.1.*",
-        "highcharts": "4.0.*",
-        "morris.js": "0.5.*",
+        "raphael": "2.2.*",
+        "highcharts": "4.*",
+        "morris.js": "0.*",
         "bootstrap-datepicker": "latest",
         "typeahead-addresspicker": "latest",
         "typeahead.js": "latest",
         "jquery.cookiebar": "latest"
     },
     "resolutions": {
-      "jquery": "2.*"
+      "jquery": "3.*"
     }
 }

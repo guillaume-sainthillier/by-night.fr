@@ -328,7 +328,7 @@ module.exports = function (grunt) {
             },
             espacePersoDetailJs: {
                 src: [
-                    'web/bower/raphael/raphael-min.js',
+                    'web/bower/raphael/raphael.min.js',
                     'web/bower/morris.js/morris.min.js',
                     'web/bundles/tbnuser/js/UserDetails.js'
                 ],
