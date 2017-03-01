@@ -232,8 +232,8 @@ class FacebookAdmin extends FacebookEvents
         try {
             $url = '/' . $id_event . '/%s/' . $id_user;
             $requests = array(
-                $this->client->request('GET', sprintf($url, 'attending'), $userAccessToken),
-                $this->client->request('GET', sprintf($url, 'maybe'), $userAccessToken)
+                $this->client->request('GET', sprintf($url, 'attending'), [], $userAccessToken),
+                $this->client->request('GET', sprintf($url, 'maybe'), [], $userAccessToken)
             );
 
             $responses = $this->client->sendBatchRequest($requests, $userAccessToken);
