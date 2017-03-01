@@ -251,27 +251,25 @@ class MenuDroitController extends Controller
             "hasNextLink" => $hasNextLink
         ]);
 
-        try {
-            $now = new \DateTime();
-            if ($soiree->getDateFin() < $now) {
-                $now->modify("+1 year");
-                $response
-                    ->setExpires($now)
-                    ->setSharedMaxAge(31536000);
-            } else {
-                if($hasNextLink) {
-                    list($expires, $next2hours) = $this->getSecondsUntil(24);
-                }else {
-                    list($expires, $next2hours) = $this->getSecondsUntil(2);
-                }
-
-                $response
-                    ->setExpires($expires)
-                    ->setSharedMaxAge($next2hours);
+        $now = new \DateTime();
+        if ($soiree->getDateFin() < $now) {
+            $now->modify("+1 year");
+            $response
+                ->setExpires($now)
+                ->setSharedMaxAge(31536000);
+        } else {
+            if($hasNextLink) {
+                list($expires, $next2hours) = $this->getSecondsUntil(24);
+            }else {
+                list($expires, $next2hours) = $this->getSecondsUntil(2);
             }
-        }catch(\Exception $e) {
-            $this->get('logger')->critical($e);
+
+            $response
+                ->setExpires($expires)
+                ->setSharedMaxAge($next2hours);
         }
+
+        $this->get('fos_http_cache.handler.tag_handler')->addTags(['fb-membres']);
 
         $response->headers->add([
            'X-No-Browser-Cache' => '1'
