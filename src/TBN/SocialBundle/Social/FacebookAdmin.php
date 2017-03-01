@@ -73,18 +73,12 @@ class FacebookAdmin extends FacebookEvents
                 $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
             }
             $this->_isInitialized = true;
-            $this->guessPageAccessToken();
+            $this->guessAppAccessToken();
         }
     }
 
-    protected function guessPageAccessToken() {
-        try {
-            $response = $this->client->get('/205292952998805?fields=access_token');
-            $data = $response->getDecodedBody();
-            $this->pageAccessToken = $data['access_token'];
-        }catch(Exception $e) {
-            $this->logger->critical($e);
-        }
+    protected function guessAppAccessToken() {
+        $this->pageAccessToken = $this->client->getApp()->getAccessToken();
     }
 
     protected function getAccessToken() {
