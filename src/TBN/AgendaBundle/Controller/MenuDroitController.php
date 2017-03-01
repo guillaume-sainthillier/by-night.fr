@@ -108,6 +108,7 @@ class MenuDroitController extends Controller
         }
 
         $response = $this->render("TBNAgendaBundle:Hinclude:evenements_details.html.twig", [
+            "page" => $page,
             "place" => $soiree->getPlace(),
             "soirees" => $repo->findAllNext($soiree, $page, self::WIDGET_ITEM_LIMIT),
             "current" => $current,
