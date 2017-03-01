@@ -36,6 +36,7 @@
                     <i class="fa fa-calendar pull-left"></i>
                 <span>
                     {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}
+                        <meta itemprop="endDate" content="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}"/>
                         Le
                         <time class="number text-primary" itemprop="startDate"
                               datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ dateDebut }}</time>
@@ -66,9 +67,9 @@
                            title="Sortir à {{ place.nom }}"><strong>{{ place.nom }}</strong></a>
                         {% if place.latitude and place.longitude %}
                             <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                            <meta itemprop="latitude" content="{{ place.latitude }}"/>
-                            <meta itemprop="longitude" content="{{ place.longitude }}"/>
-                        </span>
+                                <meta itemprop="latitude" content="{{ place.latitude }}"/>
+                                <meta itemprop="longitude" content="{{ place.longitude }}"/>
+                            </span>
                         {% endif %}
                         {% if place.ville %}
                             <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">,
@@ -95,10 +96,9 @@
                     </div>
                 {% endif %}
                 {% if soiree.tarif %}
-                    <div class="trait" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                    <div class="trait">
                         <i class="fa fa-ticket pull-left"></i>
-                        <span itemprop="price">{{ soiree.tarif }}</span>
-                        <meta itemprop="priceCurrency" content="EUR"/>
+                        <span>{{ soiree.tarif }}</span>
                     </div>
                 {% endif %}
                 {% if soiree.user %}
