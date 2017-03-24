@@ -20,7 +20,7 @@ use TBN\UserBundle\Entity\User;
  */
 class Firewall
 {
-    const VERSION = "1.0";
+    const VERSION = "1.1";
 
     protected $toSaveExplorations;
     protected $explorations;
