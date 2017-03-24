@@ -398,7 +398,11 @@ class FacebookAdmin extends FacebookEvents
         }
     }
 
-    private function handleEdge(array $datas, $edge, callable $getParams, callable $responseToDatas, $idsPerRequest = 10, $requestsPerBatch = 50) {
+    private function handleEdge(array $datas, $edge, callable $getParams, callable $responseToDatas, $idsPerRequest = 10, $requestsPerBatch = 50, $accessToken  = null) {
+        if(! $accessToken) {
+            $accessToken = $this->getAccessToken();
+        }
+
         $idsPerBatch = $requestsPerBatch * $idsPerRequest;
         $nbBatchs = ceil(count($datas) / $idsPerBatch);
         $finalNodes = [];
@@ -412,12 +416,12 @@ class FacebookAdmin extends FacebookEvents
             for ($j = 0; $j < $nbIterations; $j++) {
                 $current_datas = array_slice($batch_datas, $j * $idsPerRequest, $idsPerRequest);
                 $params = call_user_func($getParams, $current_datas);
-                $requests[] = $this->client->request('GET', $edge, $params, $this->getAccessToken());
+                $requests[] = $this->client->request('GET', $edge, $params, $accessToken);
             }
 
             //Exécution du batch
-            $currentNodes = Monitor::bench(sprintf('fb::handleEdge (%s)', $edge), function () use ($requests, $responseToDatas, $edge, $i, $nbBatchs) {
-                $responses = $this->client->sendBatchRequest($requests, $this->getAccessToken());
+            $currentNodes = Monitor::bench(sprintf('fb::handleEdge (%s)', $edge), function () use ($requests, $responseToDatas, $edge, $i, $nbBatchs, $accessToken) {
+                $responses = $this->client->sendBatchRequest($requests, $accessToken);
 
                 $currentNodes = [];
                 //Traitement des réponses
@@ -501,7 +505,7 @@ class FacebookAdmin extends FacebookEvents
             ];
         }, function(FacebookResponse $response) {
             return $this->findPaginated($response->getGraphEdge());
-        }, 1);
+        }, 1, 50, $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null);
     }
 
     public function getPlacesFromGPS(array $coordonnees)
