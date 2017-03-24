@@ -48,13 +48,13 @@ class EventProfilePicture
 
     public function getOriginalPictureUrl(Agenda $agenda) {
         if($agenda->getPath()) {
-            return $this->getAppUrl() . $this->packages->getUrl(
+            return $this->packages->getUrl(
                 $this->helper->asset($agenda, 'file')
             );
         }
 
         if($agenda->getSystemPath()) {
-            return $this->getAppUrl() . $this->packages->getUrl(
+            return $this->packages->getUrl(
                 $this->helper->asset($agenda, 'systemFile')
             );
         }
@@ -63,7 +63,7 @@ class EventProfilePicture
             return $agenda->getUrl();
         }
 
-        return $this->getAppUrl() . $this->packages->getUrl('/img/empty_event.png');
+        return $this->packages->getUrl('/img/empty_event.png');
     }
 
     public function getOriginalPicture(Agenda $agenda) {
