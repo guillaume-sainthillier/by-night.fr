@@ -241,8 +241,20 @@ class Firewall
     {
         return $this->isPreciseLocation($entity) &&
         $this->isPreciseLocation($boundary) &&
-        abs($entity->getLatitude() - $boundary->getLatitude()) <= $boundary->getDistanceMax() &&
-        abs($entity->getLongitude() - $boundary->getLongitude()) <= $boundary->getDistanceMax();
+        $this->distance($entity, $boundary) <= $boundary->getDistanceMax();
+    }
+
+    private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary) {
+        $theta = $entity->getLongitude() - $boundary->getLongitude();
+        $dist = sin(deg2rad($entity->getLatitude())) *
+            sin(deg2rad($boundary->getLatitude())) +
+                cos(deg2rad($entity->getLatitude())) *
+                cos(deg2rad($boundary->getLatitude())) *
+                cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+
+        return $dist * 111.189577; //60 * 1.1515 * 1.609344
     }
 
     public function deleteCache() {
