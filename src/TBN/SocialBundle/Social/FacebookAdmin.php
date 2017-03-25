@@ -517,7 +517,7 @@ class FacebookAdmin extends FacebookEvents
                 'q' => '',
                 'type' => 'place',
                 'center' => sprintf("%s,%s", $coordonnee["latitude"], $coordonnee["longitude"]),
-                'distance' => $coordonnee['distanceMax'] * 0.621371 * 2,
+                'distance' => 4000,
                 'fields' => 'id',
                 'limit' => 1000
             ];
