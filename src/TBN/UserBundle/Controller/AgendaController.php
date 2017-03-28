@@ -3,6 +3,7 @@
 namespace TBN\UserBundle\Controller;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Validator\ConstraintViolation;
 use TBN\MainBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -89,14 +90,22 @@ class AgendaController extends Controller
         if ($form->isValid()) {
 
             $this->postSocial($agenda, $form);
-            $em->merge($agenda);
-            $em->flush();
 
-            $this->get('session')->getFlashBag()->add(
-                'success',
-                'Votre événement a bien été modifié'
-            );
-            return $this->redirect($this->generateUrl('tbn_agenda_list'));
+            try {
+                $em->merge($agenda);
+                $em->flush();
+
+                $this->get('session')->getFlashBag()->add(
+                    'success',
+                    'Votre événement a bien été modifié'
+                );
+
+                return $this->redirect($this->generateUrl('tbn_agenda_list'));
+
+            }catch (FileException $exception) {
+                $this->get('logger')->critical($exception);
+                $this->addFlash('error', 'Un problème a eu lieu avec l\'envoi de votre pièce jointe');
+            }
         }
 
         return $this->render('TBNUserBundle:Espace:edit.html.twig', [
