@@ -4,6 +4,10 @@ var EventHandler = {
             EventHandler.initSocials();
             EventHandler.initWYSIWYG();
             EventHandler.initGMap();
+
+            $(".form-delete form").submit(function() {
+                return confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?");
+            })
         });
     },
     initSocials: function () {
