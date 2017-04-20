@@ -51,7 +51,9 @@ class SubDomainListener
                 'www.' . $this->baseHost
             ], '', $currentHost);
 
-            if ($subdomain === $this->baseHost) {
+            if ($subdomain === $this->baseHost || (
+                $subdomain === 'static' && strpos($event->getRequest()->getPathInfo(), '/media') === 0
+                )) {
                 return;
             }
 
