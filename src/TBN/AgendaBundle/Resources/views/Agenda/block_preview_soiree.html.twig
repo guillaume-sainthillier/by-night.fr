@@ -1,11 +1,14 @@
+{% if microdata is not defined %}
+    {% set microdata = true %}
+{% endif %}
 {% for i, soiree in events %}
     {{ fos_httpcache_tag('detail-event-' ~ soiree.id ) }}
-    <div itemscope itemtype="http://schema.org/Event">
+    <div {% if microdata%}itemscope itemtype="http://schema.org/Event"{% endif %}>
         <div class="row event">
             <div class="col-xs-3 image_soiree">
                 {% set original = eventProfilePicture.getOriginalPicture(soiree) %}
                 {% set thumb = eventProfilePicture.getPicture(soiree) %}
-                <meta itemprop="image" content="{{ original }}"/>
+                {% if microdata%}<meta itemprop="image" content="{{ original }}"/>{% endif %}
                 <div class="image-container">
                     {% if soiree.fbParticipations %}
                         <span class="label label-warning"><i class="fa fa-facebook"></i> <span
@@ -21,13 +24,13 @@
                 {% if soiree.modificationDerniereMinute %}
                     <div class="alert alert-warning">
                         <i class="fa fa-warning"></i>
-                        <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
+                        <span {% if microdata%}itemprop="eventStatus"{% endif %}> {{ soiree.modificationDerniereMinute }}</span>
                     </div>
                 {% endif %}
                 <h3 class="modal-title nom_soiree">
                     <a title="Tous les détails de {{ soiree.nom }} "
-                       href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id}) }}" itemprop="url">
-                        <span itemprop="name">{{ soiree.nom }}</span>
+                       href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id}) }}" {% if microdata%}itemprop="url"{% endif %}>
+                        <span {% if microdata%}itemprop="name"{% endif %}>{{ soiree.nom }}</span>
                     </a>
                 </h3>
                 <div class="trait">
@@ -36,16 +39,16 @@
                     <i class="fa fa-calendar pull-left"></i>
                 <span>
                     {% if soiree.dateFin == null or ( soiree.dateFin != null and soiree.dateDebut == soiree.dateFin) %}
-                        <meta itemprop="endDate" content="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}"/>
+                    {% if microdata%}<meta itemprop="endDate" content="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}"/>{% endif %}
                         Le
-                        <time class="number text-primary" itemprop="startDate"
+                        <time class="number text-primary" {% if microdata%}itemprop="startDate"{% endif %}
                               datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ dateDebut }}</time>
                     {% else %}
                         Du
-                        <time class="number text-primary" itemprop="startDate"
+                        <time class="number text-primary" {% if microdata%}itemprop="startDate"{% endif %}
                               datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ dateDebut }}</time>
                         au
-                        <time class="number text-primary" itemprop="endDate"
+                        <time class="number text-primary" {% if microdata%}itemprop="endDate"{% endif %}
                               datetime="{{ soiree.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ dateFin }}</time>
                     {% endif %}
                     {% if soiree.horaires != "" %}
@@ -55,31 +58,31 @@
                 </div>
                 <div class="trait hidden-xs hidden-sm">
                     <i class="fa fa-quote-left pull-left"></i>
-                    <div itemprop="description" class="description">
+                    <div {% if microdata%}itemprop="description"{% endif %} class="description">
                         {{ soiree.descriptif|striptags|replace({'&#13;' : ' '})|truncate(300, true, '...')|raw }}
                     </div>
                 </div>
                 {% set place = soiree.place %}
                 {% if place and place.nom %}
-                    <div class="trait" itemprop="location" itemscope itemtype="http://schema.org/Place">
+                    <div class="trait" {% if microdata%}itemprop="location" itemscope itemtype="http://schema.org/Place"{% endif %}>
                         <i class="fa fa-map-marker pull-left"></i>
-                        <a itemprop="name" href="{{ path('tbn_agenda_place', {'slug': place.slug }) }}"
+                        <a {% if microdata%}itemprop="name"{% endif %} href="{{ path('tbn_agenda_place', {'slug': place.slug }) }}"
                            title="Sortir à {{ place.nom }}"><strong>{{ place.nom }}</strong></a>
-                        {% if place.latitude and place.longitude %}
+                        {% if microdata and place.latitude and place.longitude %}
                             <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
                                 <meta itemprop="latitude" content="{{ place.latitude }}"/>
                                 <meta itemprop="longitude" content="{{ place.longitude }}"/>
                             </span>
                         {% endif %}
                         {% if place.ville %}
-                            <span itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">,
-                            <span itemprop="addressLocality">{{ place.ville }}</span>
-                                {% if place.codePostal %}
-                                    <meta itemprop="addressRegion" content="{{ place.codePostal }}"/>
-                                    <meta itemprop="addressCountry" content="FR"/>
-                                    <meta itemprop="streetAddress" content="{{ place.rue }}"/>
-                                {% endif %}
-                        </span>
+                            <span {% if microdata%}itemprop="address" itemscope itemtype="http://schema.org/PostalAddress"{% endif %}>,
+                                <span {% if microdata%}itemprop="addressLocality"{% endif %}>{{ place.ville }}</span>
+                                    {% if microdata and place.codePostal %}
+                                        <meta itemprop="addressRegion" content="{{ place.codePostal }}"/>
+                                        <meta itemprop="addressCountry" content="FR"/>
+                                        <meta itemprop="streetAddress" content="{{ place.rue }}"/>
+                                    {% endif %}
+                            </span>
                         {% endif %}
                     </div>
                 {% endif %}
@@ -88,8 +91,7 @@
                     <div class="trait">
                         <i class="fa fa-tag pull-left"></i>
                         {% for tag in distinctTags %}
-                            <a class="label label-info" title="{{ tag }} à {{ site.nom }}"
-                               href="{{ path('tbn_agenda_tags', {'tag' : tag|trim}) }}">
+                            <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag|trim}) }}">
                                 <strong>{{ tag }}</strong>
                             </a>
                         {% endfor %}

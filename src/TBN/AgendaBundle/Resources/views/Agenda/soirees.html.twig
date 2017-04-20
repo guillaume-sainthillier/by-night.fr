@@ -21,7 +21,7 @@
 
 {% block title_agenda %}
 {% if villeName is not null %}Sortir à {{ villeName|capitalize -}}
-{% elseif placeName is not null %}Sortir à {{ placeName|capitalize -}}
+{% elseif placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
 {% elseif tag is not null %}{{- tag|capitalize -}}
 {% elseif type == 'exposition' %}Expositions
 {% elseif type == 'concert' %}Concerts

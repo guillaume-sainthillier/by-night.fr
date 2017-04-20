@@ -5,6 +5,7 @@ namespace TBN\AgendaBundle\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use TBN\AgendaBundle\Repository\AgendaRepository;
 use TBN\CommentBundle\Entity\Comment;
 use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\MainBundle\Controller\TBNController as Controller;
@@ -335,6 +336,7 @@ class EventController extends Controller
             'villeName' => $ville,
             'placeName' => (null !== $place) ? $place->getNom() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,
+            'place' => $place,
             'tag' => $tag,
             'type' => $type,
             'soirees' => $soirees,
@@ -355,7 +357,7 @@ class EventController extends Controller
         return $response;
     }
 
-    protected function getTypesEvenements($repo, Site $site)
+    protected function getTypesEvenements(AgendaRepository $repo, Site $site)
     {
         $cache = $this->get('memory_cache');
         $key = 'categories_evenements.' . $site->getSubdomain();

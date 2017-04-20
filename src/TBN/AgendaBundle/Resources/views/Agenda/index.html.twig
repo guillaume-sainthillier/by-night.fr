@@ -1,6 +1,6 @@
 {% extends "TBNAgendaBundle::layout.html.twig" %}
 
-{% block titre_agenda %}<strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong>, <strong>soirées</strong> à <strong>{{ site.nom }}</strong>{% endblock %}
+{% block titre_agenda %}<strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong> & <strong>soirées</strong> à <strong>{{ site.nom }}</strong>{% endblock %}
 
 {% block title_agenda %}{{ block('titre_agenda')|striptags }}{% endblock %}
 
@@ -57,7 +57,7 @@
     </section>
     <section class="bg-white padding-tb-30">
         <div class="container">
-            <h2 class="text-primary">Envie de sortir à {{ site.nom }} ?</h2>
+            <h2 class="text-primary">Envie de sortir aujourd'hui ou ce soir à {{ site.nom }} ?</h2>
             <p>Si vous cherchez <strong>que faire à {{ site.nom }}</strong>, trouvez facilement un
                 <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>, <strong>café</strong> ou
                 <strong>sortie</strong> dans votre ville préférée.
@@ -166,14 +166,14 @@
     </section>
     <section class="bg-white padding-tb-30">
         <div class="container">
-            <h2 class="text-primary">Les concerts, spectacles et sorties cette semaine</h2>
+            <h2 class="text-primary">Les concerts, spectacles et sorties cette semaine à {{ site.nom }}</h2>
             {% include 'TBNAgendaBundle:Agenda:block_preview_soiree.html.twig' with({'events': topEvents, 'page': 1}) %}
             <br/>
             <br/>
             <a href="{{ path('tbn_agenda_agenda') }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i>
-                Tous les événéments<span class="hidden-xs hidden-sm">, concerts, spectacles à {{ site.nom }}</span>
+                Tous les événements<span class="hidden-xs hidden-sm">, concerts, spectacles</span>
             </a>
         </div>
     </section>
