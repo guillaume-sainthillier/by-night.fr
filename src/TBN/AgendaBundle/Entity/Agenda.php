@@ -30,6 +30,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *   @ORM\Index(name="agenda_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
  *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
+ *   @ORM\Index(name="agenda_categorie_manifestation_idx", columns={"categorie_manifestation"}),
  *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"}),
  *   @ORM\Index(name="agenda_fb_idx", columns={"facebook_event_id"}),
  *   @ORM\Index(name="agenda_search_idx", columns={"site_id", "date_fin", "date_debut"}),
