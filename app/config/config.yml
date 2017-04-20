@@ -235,7 +235,7 @@ hwi_oauth:
             type:                facebook
             client_id:           "%api_facebook_id%"
             client_secret:       "%api_facebook_secret%"
-            scope:               email, publish_actions, manage_pages
+            scope:               email, publish_actions, manage_pages, publish_pages
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
