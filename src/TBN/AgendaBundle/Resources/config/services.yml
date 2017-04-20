@@ -2,6 +2,10 @@ parameters:
 #    tbn_agenda.example.class: TBN\AgendaBundle\Example
 
 services:
+    tbn.news_manager:
+        class: TBN\AgendaBundle\News\NewsManager
+        arguments: [ "@doctrine.orm.entity_manager", "@twig", "@tbn.social.facebook_admin", "@tbn.social.twitter", "@logger" ]
+
     debril.provider.default:
         class: TBN\AgendaBundle\Provider\AgendaProvider
         arguments: [ "@doctrine.orm.entity_manager", "@site_manager", "@router" ]

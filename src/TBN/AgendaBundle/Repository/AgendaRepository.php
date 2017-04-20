@@ -35,6 +35,48 @@ class AgendaRepository extends EntityRepository
             ->getResult();
     }
 
+    public function findByInterval(\DateTime $from, \DateTime $to) {
+        $sites = $this->_em->getRepository("TBNMainBundle:Site")->findBy([], ['nom' => 'ASC']);
+        $events = [];
+        foreach($sites as $site) {
+            $events[$site->getNom()] = $this
+                ->createQueryBuilder('a')
+                ->where('a.dateFin BETWEEN :debut AND :fin')
+                ->andWhere('a.site = :site')
+                ->orderBy("a.fbParticipations", "DESC")
+                ->setMaxResults(3)
+                ->setParameters([
+                    ":debut" => $from->format('Y-m-d'),
+                    ":fin" => $from->format('Y-m-d'),
+                    ":site" => $site->getId()
+                ])
+                ->getQuery()
+                ->getResult();
+
+        }
+
+        return $events;
+        /**
+         * SELECT a.* FROM event AS a
+        LEFT JOIN event AS a2
+        ON a.site_id = a2.site_id AND a.participations <= a2.participations
+        GROUP BY a.id
+        HAVING COUNT(*) <= 2
+        ORDER BY a.site_id, a.participations DESC;
+         */
+//        return $this
+//            ->createQueryBuilder('a')
+//            ->leftJoin('TBNAgendaBundle:Agenda', 'a2', "WITH", "a.site = a2.site AND a.fbParticipations <= a2.fbParticipations")
+//            ->where('a.dateFin BETWEEN :debut AND :fin')
+//            ->groupBy("a.id")
+//            ->having("COUNT(a) <= 2")
+//            ->orderBy("a.site")
+//            ->addOrderBy("a.fbParticipations", "DESC")
+//            ->setParameters([":debut" => $from->format('Y-m-d'), ":fin" => $from->format('Y-m-d')])
+//            ->getQuery()
+//            ->getResult();
+    }
+
     public function createQueryBuilder($alias, $indexBy = null)
     {
         $qb = parent::createQueryBuilder($alias, $indexBy);

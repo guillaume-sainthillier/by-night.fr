@@ -85,9 +85,33 @@ class FacebookAdmin extends FacebookEvents
         return $this->pageAccessToken ?: ($this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null);
     }
 
+    protected function getPageAccessToken() {
+        $this->init();
+
+        $accessToken = $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null;
+        $response = $this->client->get('/'.$this->appManager->getFacebookIdPage()."?fields=access_token", [], $accessToken);
+        $datas = $response->getDecodedBody();
+
+        return $datas['access_token'];
+    }
+
+    public function postNews($title, $url, $imageUrl) {
+        //Authentification
+        $accessToken = $this->getPageAccessToken();
+
+        $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed/', [
+            'message' => $title,
+            'name' => "By Night Magazine",
+            'link' => $url,
+            'picture' => $imageUrl,
+            'description' => $title
+        ], $accessToken);
+    }
+
     protected function afterPost(User $user, Agenda $agenda)
     {
-        if ($agenda->getFbPostSystemId() === null && $this->getAccessToken()) {
+        if ($agenda->getFbPostSystemId() === null) {
+            $accessToken = $this->getPageAccessToken();
             $dateDebut = $this->getReadableDate($agenda->getDateDebut());
             $dateFin = $this->getReadableDate($agenda->getDateFin());
             $date = $this->getDuree($dateDebut, $dateFin);
@@ -107,7 +131,7 @@ class FacebookAdmin extends FacebookEvents
                         'link' => $this->getMembreLink($user)
                     ]
                 ])
-            ], $this->getAccessToken());
+            ], $accessToken);
 
             $post = $request->getGraphNode();
             $agenda->setFbPostSystemId($post->getField('id'));

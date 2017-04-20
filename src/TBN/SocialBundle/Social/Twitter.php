@@ -82,6 +82,24 @@ class Twitter extends Social
         return [];
     }
 
+    public function postNews($title, $url) {
+        $info = $this->siteManager->getSiteInfo();
+        if ($info->getTwitterAccessToken() !== null) {
+            $config = [
+                'consumer_key' => $this->id,
+                'consumer_secret' => $this->secret,
+                'oauth_token' => $info->getTwitterAccessToken(),
+                'oauth_token_secret' => $info->getTwitterTokenSecret()
+            ];
+
+            $client = new SingleUserAuth($config, new ArraySerializer());
+
+            $client->post('statuses/update', [
+                'status' => sprintf("%s : %s", $title, $url)
+            ]);
+        }
+    }
+
     protected function post(User $user, Agenda $agenda)
     {
         $info = $user->getInfo();

@@ -86,6 +86,34 @@ class EventProfilePicture
         return $this->packages->getUrl('/img/empty_event.png');
     }
 
+    public function getPictureUrl(Agenda $agenda, $thumb = 'thumbs_evenement') {
+        if($agenda->getPath()) {
+            $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
+            $webPath = substr($webPath, strpos($webPath,'/media'), strlen($webPath));
+            return $this->packages->getUrl(
+                $webPath
+            );
+        }
+
+        if($agenda->getSystemPath()) {
+            $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
+            $webPath = substr($webPath, strpos($webPath,'/media'), strlen($webPath));
+            return $this->packages->getUrl(
+                $webPath
+            );
+        }
+
+        if($agenda->getUrl()) {
+            return $agenda->getUrl();
+        }
+
+        $webPath = $this->cacheManager->getBrowserPath('img/empty_event.png', $thumb);
+        $webPath = substr($webPath, strpos($webPath,'/media'), strlen($webPath));
+        return $this->packages->getUrl(
+            $webPath
+        );
+    }
+
     public function getPicture(Agenda $agenda, $thumb = 'thumbs_evenement') {
         if($agenda->getPath()) {
             return $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
