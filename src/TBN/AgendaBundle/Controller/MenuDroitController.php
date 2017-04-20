@@ -2,6 +2,7 @@
 
 namespace TBN\AgendaBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use TBN\MainBundle\Controller\TBNController as Controller;
 
@@ -48,6 +49,10 @@ class MenuDroitController extends Controller
 
         if(! isset($results['statuses'])) {
             $results['statuses'] = [];
+        }
+
+        if(! count($results['statuses']) && $this->get('request_stack')->getParentRequest() === null) {
+            return $this->redirectToRoute("tbn_agenda_agenda");
         }
 
         $response =  $this->render('TBNAgendaBundle:Hinclude:tweets.html.twig', [
