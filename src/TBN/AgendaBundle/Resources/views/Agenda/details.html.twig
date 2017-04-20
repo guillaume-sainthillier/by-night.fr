@@ -1,23 +1,13 @@
 {% extends "TBNAgendaBundle::layout-fluid.html.twig" %}
 
 {% block start_container %}
-<div itemscope itemtype="http://schema.org/Event">{{ parent() }}{% endblock %}
-    {% block end_container %}{{ parent() }}</div>{% endblock %}
+<div itemscope itemtype="http://schema.org/Event">{{ parent() }}
+{% endblock %}
 
-{% if soiree.dateFin == null or soiree.dateDebut == soiree.dateFin %}
-    {% set horaires = 'le ' ~ soiree.dateDebut|localizeddate('full', 'none') %}
-{% else %}
-    {% set horaires = 'du ' ~ soiree.dateDebut|localizeddate('full', 'none') ~ ' au '~ soiree.dateFin|localizeddate('full', 'none') %}
-{% endif %}
+{% block end_container %}{{ parent() }}</div>{% endblock %}
 
-{% if soiree.horaires %}
-    {% set horaires = horaires ~ ' - ' ~ soiree.horaires %}
-{% endif %}
-
-{% set nomSoiree = soiree.nom %}
-{% if soiree.modificationDerniereMinute %}
-    {% set nomSoiree = '[' ~ soiree.modificationDerniereMinute ~ '] ' ~ soiree.nom %}
-{% endif %}
+{% set nomSoiree = event_seo.getEventShortTitle(soiree) %}
+{% set horaires = event_seo.getEventDateTime(soiree) %}
 {% set descriptionSoiree =  soiree.descriptif|parse_tags|raw %}
 {% set original = eventProfilePicture.getOriginalPictureURL(soiree) %}
 {% set thumb = eventProfilePicture.getPicture(soiree) %}
@@ -28,12 +18,12 @@
 
 {% block titre_agenda %}
     {% if is_granted('ROLE_ADMIN') or (soiree.user and soiree.user == app.user) %}<a
-        href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"><i class="fa fa-pencil"></i></a>
+        class="btn btn-lg btn-primary btn-raised" href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}" title="Modifier l'événement"><i class="fa fa-pencil"></i></a>
     {% endif %}
     {{ block('title') }}
 {% endblock %}
 
-{% block title_agenda %}{{ nomSoiree }} - {{ soiree.place.nom }}{% endblock %}
+{% block title_agenda %}{{ event_seo.getEventFullTitle(soiree) }}{% endblock %}
 
 {% block breadcrumb_agenda %}
     {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda')) %}
@@ -44,7 +34,8 @@
 {% endblock %}
     
 {% block meta_keywords %}{% if distinctTags|length %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
-{% block meta_description %}{% if place %}{{ place.nom }}, {{ place.ville }}{% endif %}, {{ horaires }}.{% if distinctTags|length %} - {{ distinctTags|join(', ') }}.{% endif %}{% endblock %}
+{#{% block meta_description %}Découvrez {{ soiree.nom }}.{% if place %}{{ place.nom }} à {{ place.ville }}{% endif %}, {{ horaires }}.{% if distinctTags|length %} - {{ distinctTags|join(', ') }}.{% endif %}{% endblock %}#}
+{% block meta_description %}{{ event_seo.getEventDescription(soiree) }}{% endblock %}
 
 {% block metas %}
     <link rel="image_src" href="{{ original }}"/>

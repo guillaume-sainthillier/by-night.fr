@@ -22,6 +22,7 @@
         <meta property="og:title" content="{% spaceless %}{% block og_titre %}{{ block('title') }}{% endblock %}{% endspaceless %}">
         <meta property="og:type" content="{% spaceless %}{% block og_type %}website{% endblock %}{% endspaceless %}">
         <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('tbn_main_index') }}{% endblock %}{% endspaceless %}">
+        <meta property="og:locale" content="fr" />
         <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
         <!-- ./OpenGraph -->
         

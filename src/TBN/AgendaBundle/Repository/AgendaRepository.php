@@ -47,7 +47,7 @@ class AgendaRepository extends EntityRepository
                 ->setMaxResults(3)
                 ->setParameters([
                     ":debut" => $from->format('Y-m-d'),
-                    ":fin" => $from->format('Y-m-d'),
+                    ":fin" => $to->format('Y-m-d'),
                     ":site" => $site->getId()
                 ])
                 ->getQuery()
@@ -345,7 +345,8 @@ class AgendaRepository extends EntityRepository
         return $this
             ->createQueryBuilder('a')
             ->where("a.dateFin >= :date_fin AND a.id != :id AND a.place = :place")
-            ->orderBy('a.nom', 'ASC')
+            ->orderBy('a.dateFin', 'ASC')
+            ->addOrderBy('a.fbParticipations', 'DESC')
             ->setParameters([":date_fin" => $soiree->getDateFin()->format('Y-m-d'), ":id" => $soiree->getId(), ":place" => $soiree->getPlace()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)

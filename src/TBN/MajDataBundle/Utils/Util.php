@@ -14,7 +14,7 @@ class Util
 
     public function __construct()
     {
-        $this->stopWords = array_map(function ($word) {
+        $stopWords = array_map(function ($word) {
             return ' ' . $word . ' ';
         }, [
             "alors", "au", "aucuns", "aussi", "autre", "avant", "avec", "avoir", "bon", "car", "ce", "cela", "ces",
@@ -41,6 +41,8 @@ class Util
             "who", "who's", "whom", "why", "why's", "with", "won't", "would", "wouldn't", "you", "you'd", "you'll",
             "you're", "you've", "your", "yours", "yourself", "yourselves"
         ]);
+
+        $this->stopWords = array_combine($stopWords, array_fill(0, count($stopWords), ' '));
     }
 
     public function replaceNonNumericChars($string)
@@ -69,7 +71,8 @@ class Util
 
     public function deleteStopWords($string)
     {
-        return str_replace($this->stopWords, ' ', $string);
+        return strtr($string, $this->stopWords);
+//        return str_replace($this->stopWords, ' ', $string);
     }
 
     public function deleteMultipleSpaces($string)

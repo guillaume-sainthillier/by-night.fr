@@ -72,6 +72,7 @@ twig:
         google: "@tbn.social.google"
         googleMapKey: "%google_map_key%"
         app_version: "v%application_version%"
+        event_seo: "@tbn.event_seo"
 
 # Doctrine Configuration
 doctrine:
