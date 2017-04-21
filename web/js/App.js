@@ -215,6 +215,7 @@ var App = {
         });
 
         $(window).scroll(function () {
+            console.log('calcul');
             var sd = $(this).scrollTop();
             if (sd > settings.min && toTopHidden)
             {

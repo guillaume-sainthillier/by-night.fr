@@ -31,7 +31,7 @@ and open the template in the editor.
 html body #widgets .trait {
 
   padding-bottom: 5px;
-  padding-top: 5px;
+  padding-top: 5px;file:/C:/wamp/www/ByNight/src/TBN/AgendaBundle/Resources/public/less/details.less
 
   a {
     display: block;
@@ -44,4 +44,36 @@ html body #widgets .trait {
   .user_profil_picture {
     padding-right: 0;
   }
+}
+
+.panel-primary {
+      .panel-heading {
+          .modal-title {
+            position: relative;
+          }
+
+          h3 .fa {
+              .panel-icon(40px);
+          }
+
+          h2 .fa {
+            .panel-icon(50px);
+          }
+      }
+}
+
+.panel-icon(@iconSize) {
+    height: @iconSize;
+    width: @iconSize;
+    line-height: @iconSize;
+    text-align: center;
+
+    background-color: white;
+    border: 1px solid @color-primary;
+    border-radius: 50px;
+
+    position: absolute;
+    bottom: -@iconSize / 2 - 5;
+    right: 0;
+    z-index: 2;
 }

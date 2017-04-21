@@ -67,8 +67,8 @@
             Cet événément n'est pas encore disponible publiquement. Merci de patienter encore un peu !
         </div>
     {% else %}
-        <div class="panel panel-default details_evenement">
-            <div class="panel-heading bg-white">
+        <div class="panel panel-primary details_evenement">
+            <div class="panel-heading">
                 <h2 class="modal-title">
                     <i class="pull-right fa fa-calendar text-primary"></i>
                     {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
@@ -243,8 +243,8 @@
             </div>
         </div>
 
-        <div class="panel panel-default shares">
-            <div class="panel-heading bg-white">
+        <div class="panel panel-primary shares">
+            <div class="panel-heading">
                 <h3 class="modal-title">
                     <i class="pull-right fa fa-share-alt text-primary"></i>
                     Partagez cet événement
@@ -272,8 +272,8 @@
         </div>
 
         {% if soiree.place %}
-        <div class="panel panel-default widget">
-            <div class="panel-heading bg-white">
+        <div class="panel panel-primary widget">
+            <div class="panel-heading">
                 <h3 class="modal-title">
                     <i class="pull-right fa fa-share-alt text-primary"></i>
                     {{ soiree.place.nom }} : Les prochaines sorties

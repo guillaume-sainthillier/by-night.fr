@@ -113,6 +113,35 @@ html body #widgets .trait small {
 html body #widgets .trait .user_profil_picture {
   padding-right: 0;
 }
+.panel-primary .panel-heading .modal-title {
+  position: relative;
+}
+.panel-primary .panel-heading h3 .fa {
+  height: 40px;
+  width: 40px;
+  line-height: 40px;
+  text-align: center;
+  background-color: white;
+  border: 1px solid #36A9E1;
+  border-radius: 50px;
+  position: absolute;
+  bottom: -25px;
+  right: 0;
+  z-index: 2;
+}
+.panel-primary .panel-heading h2 .fa {
+  height: 50px;
+  width: 50px;
+  line-height: 50px;
+  text-align: center;
+  background-color: white;
+  border: 1px solid #36A9E1;
+  border-radius: 50px;
+  position: absolute;
+  bottom: -30px;
+  right: 0;
+  z-index: 2;
+}
 .details_evenement {
   font-size: 120%;
 }
@@ -131,3 +160,5 @@ html body #widgets .trait .user_profil_picture {
 .preview .img-responsive {
   max-height: 250px;
 }
+
+/*# sourceMappingURL=details.css.map */

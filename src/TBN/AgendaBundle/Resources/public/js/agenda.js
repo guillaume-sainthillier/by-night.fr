@@ -67,7 +67,7 @@ function init_criteres() {
         "selector_icon": ".fa",
         "selector_block_criteres": ".criteres",
         "selector_main_block": ".block_criteres",
-        "duration": 300
+        "duration": 0
     };
 
     //Bon bloc indigeste :)

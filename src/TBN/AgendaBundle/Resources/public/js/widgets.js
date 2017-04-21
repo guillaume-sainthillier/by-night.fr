@@ -7,19 +7,20 @@ var Widgets = {
     },
     //Deps: ['scrollable']
     initScrollable: function (selecteur) {
-        var targets = $(".scrollable", selecteur || document);
-        if (targets.length) {
-            targets.mCustomScrollbar({
-                axis: "y",
-                theme: "minimal-dark",
-                autoHideScrollbar: true,
-                callbacks: {
-                    onScroll: function(){
-                        App.initLazyLoading(selecteur);
-                    }
-                }
-            });
-        }
+        // var targets = $(".scrollable", selecteur || document);
+        // if (targets.length) {
+        //     targets.mCustomScrollbar({
+        //         axis: "y",
+        //         theme: "minimal-dark",
+        //         autoHideScrollbar: true,
+        //         callbacks: {
+        //             onScroll: function(){
+        //                 App.initLazyLoading(selecteur);
+        //             }
+        //         }
+        //     });
+        // }
+
     },
     //Deps: ['scrollable']
     initMoreWidgets: function (elems) {

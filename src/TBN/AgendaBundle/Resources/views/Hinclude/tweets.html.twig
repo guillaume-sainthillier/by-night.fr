@@ -37,7 +37,7 @@
                     <div class="timeline-Tweet-metadata">
                         <a href="{{ tweetURL }}" class="timeline-Tweet-timestamp">
                             <time class="dt-updated" datetime="{{ dateTweet|date('c') }}" title="Heure d'envoi : {{ dateTweet|localizeddate('long', 'long') }}" aria-label="Publié {{ dateTweetInfos.full|lower }}">
-                                <abbr title="{{ dateTweetInfos.long }}">{{ dateTweetInfos.short }}</abbr>
+                                {{ dateTweet|localizeddate('long', 'medium') }}
                             </time>
                         </a>
                     </div>

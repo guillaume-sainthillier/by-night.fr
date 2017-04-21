@@ -1,0 +1,57 @@
+{
+	"files": {
+		"material/theme.blue.less": {
+			"engines": [
+				{
+					"compiler": "less",
+					"output": "../../css/material/theme.blue.css",
+					"options": {
+						"compress": false,
+						"ieCompat": false,
+						"strictMath": false,
+						"strictUnits": false,
+						"javascriptEnabled": false,
+						"sourceMap": true
+					}
+				}
+			],
+			"sources": [
+				"../../bower/bootstrap-material-design/less/_alerts.less",
+				"../../bower/bootstrap-material-design/less/_buttons.less",
+				"../../bower/bootstrap-material-design/less/_cards.less",
+				"../../bower/bootstrap-material-design/less/_checkboxes.less",
+				"../../bower/bootstrap-material-design/less/_colors.less",
+				"../../bower/bootstrap-material-design/less/_core.less",
+				"../../bower/bootstrap-material-design/less/_dialogs.less",
+				"../../bower/bootstrap-material-design/less/_dividers.less",
+				"../../bower/bootstrap-material-design/less/_form.less",
+				"../../bower/bootstrap-material-design/less/_import-bs-less.less",
+				"../../bower/bootstrap-material-design/less/_import-bs-sass.less",
+				"../../bower/bootstrap-material-design/less/_inputs-size.less",
+				"../../bower/bootstrap-material-design/less/_inputs.less",
+				"../../bower/bootstrap-material-design/less/_lists.less",
+				"../../bower/bootstrap-material-design/less/_mixins.less",
+				"../../bower/bootstrap-material-design/less/_navbar.less",
+				"../../bower/bootstrap-material-design/less/_panels.less",
+				"../../bower/bootstrap-material-design/less/_plugins.less",
+				"../../bower/bootstrap-material-design/less/_popups.less",
+				"../../bower/bootstrap-material-design/less/_progress.less",
+				"../../bower/bootstrap-material-design/less/_radios.less",
+				"../../bower/bootstrap-material-design/less/_shadows.less",
+				"../../bower/bootstrap-material-design/less/_tabs.less",
+				"../../bower/bootstrap-material-design/less/_themes.less",
+				"../../bower/bootstrap-material-design/less/_togglebutton.less",
+				"../../bower/bootstrap-material-design/less/_typography.less",
+				"../../bower/bootstrap-material-design/less/_variables.less",
+				"../../bower/bootstrap-material-design/less/_welljumbo.less",
+				"../../bower/bootstrap-material-design/less/bootstrap-material-design.less",
+				"../../bower/bootstrap-material-design/less/plugins/_plugin-dropdownjs.less",
+				"../../bower/bootstrap-material-design/less/plugins/_plugin-nouislider.less",
+				"../../bower/bootstrap-material-design/less/plugins/_plugin-selectize.less",
+				"../../bower/bootstrap-material-design/less/plugins/_plugin-snackbarjs.less",
+				"../../bower/bootstrap/less/variables.less",
+				"theme.less"
+			]
+		}
+	}
+}
