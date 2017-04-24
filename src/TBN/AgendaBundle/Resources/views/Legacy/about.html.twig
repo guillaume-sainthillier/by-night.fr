@@ -6,26 +6,27 @@
 {% endblock %}
 
 {% block title_agenda %}
-    A propos de nous
+    A propos de By Night
 {% endblock %}
 
 {% block titre_agenda %}
-    A propos de nous
+    A propos de By Night
 {% endblock %}
 
 {% block body_agenda %}
+    <br />
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             {% set nomSite = site.nom ~ ' By Night' %}
-            <h3>{{ site.nom }} By Quoi ?</h3>
+            <h2>{{ site.nom }} By Quoi ?</h2>
             <br/>
-            <p>
-                <strong>{{ nomSite }}</strong> est une nouvelle solution
+            <p class="lead">
+                <strong>{{ nomSite }}</strong> est une solution
                 de création d'événements en ligne sur-mesure et self service.
             </p>
             <p>
                 Las de ne pas trouver une solution simple et abordable pour organiser
-                nos événements, la team {{ nomSite }} a décidé de créer son propre service
+                nos événements, la team By Night a décidé de créer son propre service
                 et de vous en faire profiter !
             </p>
             <p>
@@ -59,4 +60,5 @@
             </p>
         </div>
     </div>
+    <br />
 {% endblock %}
