@@ -81,6 +81,7 @@ class CommentController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            $this->get("tbn.event_http:invalidator")->addEvent($soiree);
             $em->persist($comment);
             $em->flush();
 
