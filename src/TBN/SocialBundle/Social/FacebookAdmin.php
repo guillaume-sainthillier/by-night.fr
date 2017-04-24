@@ -371,8 +371,6 @@ class FacebookAdmin extends FacebookEvents
         $interets = [];
 
         try {
-            $this->client->setDefaultAccessToken($this->getAccessToken());
-
             $fields = str_replace(
                 ["%offset%", "%limit%"],
                 [$offset, $limit],
@@ -381,7 +379,7 @@ class FacebookAdmin extends FacebookEvents
 
             $request = $this->client->sendRequest('GET', '/' . $id_event, [
                 'fields' => $fields
-            ]);
+            ], $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null);
             $graph = $request->getGraphPage();
 
             $participations = $this->findPaginated($graph->getField('attending'), $limit);
