@@ -38,7 +38,7 @@ framework:
 doctrine_cache:
     providers:
         memcache:
-            type: apcu
+            type: redis
             namespace: memory_cache_ns
             aliases:
                 - memory_cache
