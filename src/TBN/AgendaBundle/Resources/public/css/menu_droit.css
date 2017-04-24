@@ -22,43 +22,6 @@ and open the template in the editor.
 .include_500 .hinclude_no_error {
   display: none;
 }
-/*
-
-To get this list of colors inject jQuery at http://www.google.com/design/spec/style/color.html#color-color-palette
-
-Then, run this script to get the list.
-
-
-(function() {
-  var colors = {}, main = {};
-  $(".color-group").each(function() {
-    var color = $(this).find(".name").text().trim().toLowerCase().replace(" ", "-");
-    colors[color] = {};
-
-    $(this).find(".color").not(".main-color").each(function() {
-      var shade = $(this).find(".shade").text().trim(),
-          hex   = $(this).find(".hex").text().trim();
-
-      colors[color][shade] = hex;
-    });
-    main[color] = color + "-" + $(this).find(".main-color .shade").text().trim();
-
-  });
-  var LESS = "";
-  $.each(colors, function(name, shades) {
-    LESS += "\n\n";
-    $.each(shades, function(shade, hex) {
-      LESS += "@" + name + "-" + shade + ": " + hex + ";\n";
-    });
-    if (main[name]) {
-      LESS += "@" + name + ": " + main[name] + ";\n";
-    }
-  });
-  console.log(LESS);
-})();
-
-
-*/
 .panel-twitter {
   min-height: 400px;
 }
@@ -95,7 +58,7 @@ html body #widgets .trait .user_profil_picture {
   line-height: 40px;
   text-align: center;
   background-color: white;
-  border: 1px solid #36A9E1;
+  border: 1px solid white;
   border-radius: 50px;
   position: absolute;
   bottom: -25px;
@@ -103,15 +66,15 @@ html body #widgets .trait .user_profil_picture {
   z-index: 2;
 }
 .panel-primary .panel-heading h2 .fa {
-  height: 50px;
-  width: 50px;
-  line-height: 50px;
+  height: 40px;
+  width: 40px;
+  line-height: 40px;
   text-align: center;
   background-color: white;
-  border: 1px solid #36A9E1;
+  border: 1px solid white;
   border-radius: 50px;
   position: absolute;
-  bottom: -30px;
+  bottom: -25px;
   right: 0;
   z-index: 2;
 }

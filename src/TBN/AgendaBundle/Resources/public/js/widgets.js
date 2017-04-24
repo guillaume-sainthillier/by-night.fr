@@ -1,4 +1,6 @@
 var Widgets = {
+    scrollMap: [],
+
     init: function (selecteur) {
         $(function () {
             Widgets.initMoreWidgets($('.widget', selecteur || document));
@@ -7,19 +9,30 @@ var Widgets = {
     },
     //Deps: ['scrollable']
     initScrollable: function (selecteur) {
-        // var targets = $(".scrollable", selecteur || document);
-        // if (targets.length) {
-        //     targets.mCustomScrollbar({
-        //         axis: "y",
-        //         theme: "minimal-dark",
-        //         autoHideScrollbar: true,
-        //         callbacks: {
-        //             onScroll: function(){
-        //                 App.initLazyLoading(selecteur);
-        //             }
-        //         }
-        //     });
-        // }
+        $(".scrollable", selecteur || document).each(function() {
+            if(! $(this).attr('id')) {
+                $(this).attr('id', 'scroll-' + Math.floor(Math.random()*100000));
+            }
+
+            var id = $(this).attr('id');
+            if(! Widgets.scrollMap[id]) {
+                Widgets.scrollMap[id] = new IScroll("#" + id, {
+                    scrollbars: true,
+                    mouseWheel: true,
+                    interactiveScrollbars: true,
+                    shrinkScrollbars: false,
+                    fadeScrollbars: true
+                });
+
+                Widgets.scrollMap[id].on('scrollStart', function() {
+                    App.initLazyLoading($("#" + id));
+                });
+
+                Widgets.scrollMap[id].on('scrollEnd', function() {
+                    App.initLazyLoading($("#" + id));
+                });
+            }
+        });
 
     },
     //Deps: ['scrollable']
@@ -46,7 +59,12 @@ var Widgets = {
                     $.get(btn.attr('href')).done(function (content) {
                         btn.remove();
                         containerBody.append(content);
-                        container.find('.scrollable').mCustomScrollbar("scrollTo", "bottom");
+
+                        var scroll = Widgets.scrollMap[container.find('.scrollable').attr('id')];
+                        if(scroll) {
+                            scroll.refresh();
+                            scroll.scrollTo(0, scroll.maxScrollY, 0, IScroll.utils.ease.elastic);
+                        }
                         Widgets.initMoreWidgets(container);
                         App.initComponents(container);
                     });

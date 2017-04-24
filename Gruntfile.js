@@ -179,7 +179,7 @@ module.exports = function (grunt) {
                     'web/bower/jquery.cookiebar/jquery.cookiebar.js',
                     'web/bower/jquery.scrollTo/jquery.scrollTo.min.js',
                     'web/bower/jquery-unveil/jquery.unveil.min.js',
-                    'web/bower/fancybox/source/jquery.fancybox.js',
+                    'web/bower/fancybox/dist/jquery.fancybox.js',
                     'web/js/overrides.js',
                     'web/js/socials.js',
                     'web/js/App.js'
@@ -192,7 +192,7 @@ module.exports = function (grunt) {
                     'web/bower/bootstrap/dist/css/bootstrap.min.css',
                     'web/bower/font-awesome/css/font-awesome.min.css',
                     'web/bower/bootstrap-material-design/dist/css/ripples.css',
-                    'web/bower/fancybox/source/jquery.fancybox.css',
+                    'web/bower/fancybox/dist/jquery.fancybox.css',
                     'web/css/material/theme.blue.css',
                     'web/css/social-icons.css',
                     'web/css/commons.css',
@@ -259,7 +259,7 @@ module.exports = function (grunt) {
             },
             widgetJs: {
                 src: [
-                    'web/bower/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js',
+                    'web/bower/iscroll/build/iscroll.js',
                     'web/bundles/tbnagenda/js/widgets.js'
                 ],
                 dest: 'web/prod/widgets/js/widgets.js'
@@ -268,8 +268,7 @@ module.exports = function (grunt) {
                 src: [
                     'web/bundles/tbnagenda/css/widgets.css',
                     'web/bundles/tbnagenda/css/sprites.css',
-                    'web/bundles/tbnagenda/css/style.css',
-                    'web/bundles/tbnagenda/css/jquery.mCustomScrollbar.css'
+                    'web/bundles/tbnagenda/css/style.css'
                 ],
                 dest: 'web/prod/widgets/css/widgets.css'
             },

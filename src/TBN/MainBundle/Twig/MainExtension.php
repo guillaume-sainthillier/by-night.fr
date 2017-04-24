@@ -129,7 +129,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             return [
                 'short' => sprintf("%d an%s", $diff->y, $diff->y > 1 ? "s" : ""),
                 'long' => sprintf("%d an%s", $diff->y, $diff->y > 1 ? "s" : ""),
-                'full' => sprintf("Il y a %d %s", $diff->y, $diff->y > 1 ? "s" : "")
+                'full' => sprintf("Il y a %d an%s", $diff->y, $diff->y > 1 ? "s" : "")
             ];
         } else if ($diff->m > 0) //Mois
         {
@@ -150,7 +150,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             return [
                 'short' => sprintf("%d h", $diff->h),
                 'long' => sprintf("%d heure%s", $diff->h, $diff->h > 1 ? "s" : ""),
-                'full' => sprintf("Il y a %d heure%s", $diff->h, "heure" . $diff->h > 1 ? "s" : "")
+                'full' => sprintf("Il y a %d heure%s", $diff->h, $diff->h > 1 ? "s" : "")
             ];
         } else if ($diff->i > 0) //Minutes
         {

@@ -4,6 +4,8 @@
 {% block titre %}Pas envie de sortir ?{% endblock %}
 {% block icone %}fa-coffee{% endblock %}
 {% block body %}
+<div>
     {{ render_esi(controller('TBNAgendaBundle:MenuDroit:programmeTV')) }}
+</div>
 {% endblock %}
 {% block footer %}{% endblock %}

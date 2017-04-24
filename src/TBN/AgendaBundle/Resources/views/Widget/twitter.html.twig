@@ -5,6 +5,7 @@
 {% block widget_class %}{% endblock %}
 {% block widget_body_class %}panel-twitter scrollable no-padding padding-left-10 scrollable{% endblock %}
 {% block body %}
+<div>
     <script>window.twttr = (function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0],
                     t = window.twttr || {};
@@ -38,4 +39,5 @@
     {{ render_esi(url('tbn_agenda_tweeter_feed')) }}
 </div>
 {% endif %}
+</div>
 {% endblock %}

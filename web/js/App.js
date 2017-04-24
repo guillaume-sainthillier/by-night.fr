@@ -1,3 +1,27 @@
+(function($) {
+    var uniqueCntr = 0;
+    $.fn.scrolled = function (waitTime, fn) {
+        if (typeof waitTime === "function") {
+            fn = waitTime;
+            waitTime = 500;
+        }
+        var tag = "scrollTimer" + uniqueCntr++;
+        this.scroll(function () {
+            var self = $(this);
+            var timer = self.data(tag);
+            if (timer) {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(function () {
+                self.removeData(tag);
+                fn.call(self[0]);
+            }, waitTime);
+            self.data(tag, timer);
+        });
+    }
+})(jQuery);
+
+
 var App = {
     init: function (selecteur)
     {
@@ -6,6 +30,7 @@ var App = {
             App.initComponents(selecteur);
             App.initPopups();
             App.initScrollTo();
+            App.initHideMenuOnScroll();
         });
     },
     initPopups: function() {
@@ -136,9 +161,10 @@ var App = {
     //Deps: []
     initHideMenuOnScroll: function ()
     {
-        $(window).scroll(function ()
+        var toggle = $(".navbar-toggle");
+        $(window).scrolled(200, function ()
         {
-            $(".navbar-toggle").each(function ()
+            toggle.each(function ()
             {
                 var href = $(this).data("target");
                 var elem = $(href);
@@ -214,8 +240,7 @@ var App = {
             $.scrollTo(0, settings.scrollSpeed, {easing: settings.easingType});
         });
 
-        $(window).scroll(function () {
-            console.log('calcul');
+        $(window).scrolled(200, function () {
             var sd = $(this).scrollTop();
             if (sd > settings.min && toTopHidden)
             {

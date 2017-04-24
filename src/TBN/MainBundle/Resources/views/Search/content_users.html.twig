@@ -7,7 +7,7 @@
 {% if users|length == maxItems %}
     <div>
         <br/>
-        <a class="btn btn-lg btn-block btn-primary more"
+        <a class="btn btn-lg btn-block btn-raised btn-primary more"
            href="{{ path('tbn_search_query', {'q' : term, 'page': page+1, 'type' : 'membres'}) }}">
             Plus
         </a>

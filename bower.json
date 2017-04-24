@@ -1,6 +1,6 @@
 {
-    "name": "ByNight",
-    "version": "1.0.0",
+    "name": "by-night",
+    "version": "1.1.0",
     "homepage": "https://github.com/guillaume-sainthillier/ByNight",
     "authors": [
         "Guillaume SAINTHILLIER <guillaume.sainthillier@gmail.com>"
@@ -25,7 +25,7 @@
         "jquery-unveil": "1.*",
         "summernote": "0.*",
         "jquery.scrollTo" : "1.*",
-        "malihu-custom-scrollbar-plugin": "3.*",
+        "iscroll": "master",
         "raphael": "2.2.*",
         "highcharts": "4.*",
         "morris.js": "0.*",

@@ -4,6 +4,7 @@
 {% block titre %}Tendances{% endblock %}
 {% block icone %}fa-line-chart{% endblock %}
 {% block body %}
+<div>
     <div class="text-center">
         <div class="btn-group btn-group-justified" data-toggle="buttons">
             <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
@@ -47,7 +48,9 @@
     </div>
     {% endif %}
     <!-- ./FB Membres -->
+</div>
 {% endblock %}
+
 {% block footer %}
 <div class="panel-footer"></div>
 {% endblock %}

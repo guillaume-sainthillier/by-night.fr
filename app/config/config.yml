@@ -25,7 +25,7 @@ framework:
         packages:
             asset:
                 base_urls: ['http://static.%base_host%']
-                version: "v1.0"
+                version: "v1.1"
     default_locale:  "%locale%"
     trusted_proxies: ~
     trusted_hosts:   ~
