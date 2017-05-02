@@ -99,13 +99,16 @@ class FacebookAdmin extends FacebookEvents
         //Authentification
         $accessToken = $this->getPageAccessToken();
 
-        $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed/', [
+        $response = $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed/', [
             'message' => $title,
             'name' => "By Night Magazine",
             'link' => $url,
             'picture' => $imageUrl,
             'description' => $title
         ], $accessToken);
+
+        $post = $response->getGraphNode();
+        return $post->getField('id');
     }
 
     protected function afterPost(User $user, Agenda $agenda)

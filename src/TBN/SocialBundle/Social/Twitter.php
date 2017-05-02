@@ -94,9 +94,13 @@ class Twitter extends Social
 
             $client = new SingleUserAuth($config, new ArraySerializer());
 
-            $client->post('statuses/update', [
+            $reponse = $client->post('statuses/update', [
                 'status' => sprintf("%s : %s", $title, $url)
             ]);
+
+            if (isset($reponse->id_str)) {
+                return $reponse->id_str;
+            }
         }
     }
 

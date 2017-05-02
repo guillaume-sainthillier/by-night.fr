@@ -49,6 +49,20 @@ class News
      */
     private $wordpressPostId;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="tweet_post_id", type="string", length=256, nullable=true)
+     */
+    private $tweetPostId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="fb_post_id", type="string", length=256, nullable=true)
+     */
+    private $fbPostId;
+
 
     /**
      * Get id
@@ -154,5 +168,53 @@ class News
     public function getWordpressPostId()
     {
         return $this->wordpressPostId;
+    }
+
+    /**
+     * Set tweetPostId
+     *
+     * @param string $tweetPostId
+     *
+     * @return News
+     */
+    public function setTweetPostId($tweetPostId)
+    {
+        $this->tweetPostId = $tweetPostId;
+
+        return $this;
+    }
+
+    /**
+     * Get tweetPostId
+     *
+     * @return string
+     */
+    public function getTweetPostId()
+    {
+        return $this->tweetPostId;
+    }
+
+    /**
+     * Set fbPostId
+     *
+     * @param string $fbPostId
+     *
+     * @return News
+     */
+    public function setFbPostId($fbPostId)
+    {
+        $this->fbPostId = $fbPostId;
+
+        return $this;
+    }
+
+    /**
+     * Get fbPostId
+     *
+     * @return string
+     */
+    public function getFbPostId()
+    {
+        return $this->fbPostId;
     }
 }
