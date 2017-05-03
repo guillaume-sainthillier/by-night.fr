@@ -1,0 +1,56 @@
+{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+
+{% block widget_body_class %}scrollable membres{% endblock %}
+{% block titre %}Tendances{% endblock %}
+{% block icone %}fa-line-chart{% endblock %}
+{% block body %}
+    <div>
+        <div class="text-center">
+            <div class="btn-group btn-group-justified" data-toggle="buttons">
+                <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
+                   class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.participer ? "btn-primary" : "btn-default" }}"
+                   data-href="{{ path('tbn_user_participer', {'id' : soiree.id }) }}">
+                    <i class="fa fa-check check{{ stats.participer ? '' : ' hidden' }}"></i>
+                    <input type="radio" name="interet"/> J'y serai
+                </a>
+                <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
+                   class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.interet ? "btn-primary" : "btn-default" }}"
+                   data-href="{{ path('tbn_user_interesser', {'id' : soiree.id }) }}">
+                    <i class="fa fa-check check{{ stats.interet ? '' : ' hidden' }}"></i>
+                    <input type="radio" name="interet"/> Ça m'interesse
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div>
+                <strong class="number number-xbig">{{ stats.count_participer }}</strong>
+                <span class="text-primary">participant{{ stats.count_participer > 1 ? "s" : "" }}</span>
+                <strong class="number number-xbig"> / {{ stats.count_interets }}</strong>
+                <span class="text-primary">interessé{{ stats.count_interets > 1 ? "s" : "" }}</span>
+            </div>
+        </div>
+
+        <!-- ./Stats -->
+        <br/>
+        <!-- Membres -->
+        <div class="tendance">
+            {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': stats.tendancesParticipations }) %}
+        </div>
+        <div class="tendance">
+            {% include "TBNAgendaBundle:Hinclude:membres.html.twig" with({'membres': stats.tendancesInterets }) %}
+        </div>
+        <!-- ./Membres -->
+        <br/>
+        <!-- FB Membres -->
+        {% if soiree.facebookEventId %}
+            <div>
+                {{ render_esi(url('tbn_agenda_soirees_membres', {'slug': soiree.slug, 'id': soiree.id})) }}
+            </div>
+        {% endif %}
+        <!-- ./FB Membres -->
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <div class="panel-footer"></div>
+{% endblock %}

@@ -1,11 +1,11 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser\Toulouse;
+namespace AppBundle\Parser\Toulouse;
 
 use ForceUTF8\Encoding;
 use Symfony\Component\Filesystem\Filesystem;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MajDataBundle\Parser\AgendaParser;
+use AppBundle\Entity\Agenda;
+use AppBundle\Parser\AgendaParser;
 
 /**
  * Description of ToulouseParser

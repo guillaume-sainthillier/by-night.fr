@@ -8,6 +8,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace TBN\SocialBundle\Controller;
 
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
@@ -124,7 +125,7 @@ class ConnectController extends BaseController
                             $accessToken : $currentToken->getRawToken();
 
                     $this->authenticateUser($request, $currentUser, $service, $newToken, false);
-                }else {
+                } else {
                     $this->refreshUser($currentUser);
                 }
 
@@ -159,7 +160,7 @@ class ConnectController extends BaseController
     private function getTargetPath(SessionInterface $session)
     {
         foreach ($this->container->getParameter('hwi_oauth.firewall_names') as $providerKey) {
-            $sessionKey = '_security.'.$providerKey.'.target_path';
+            $sessionKey = '_security.' . $providerKey . '.target_path';
             if ($session->has($sessionKey)) {
                 return $session->get($sessionKey);
             }
@@ -168,7 +169,8 @@ class ConnectController extends BaseController
         return null;
     }
 
-    protected function refreshUser(UserInterface $user) {
+    protected function refreshUser(UserInterface $user)
+    {
         $userManager = $this->container->get('fos_user.user_manager');
         $userManager->reloadUser($user);
         $this->container->get('security.token_storage')->getToken()->setAuthenticated(false);

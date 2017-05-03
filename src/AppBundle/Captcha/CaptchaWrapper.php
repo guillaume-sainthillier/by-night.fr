@@ -1,8 +1,10 @@
 <?php
 
-namespace TBN\UserBundle\Captcha;
+namespace AppBundle\Captcha;
+
 use Symfony\Component\HttpFoundation\RequestStack;
 use ReCaptcha\ReCaptcha;
+
 /**
  * Created by PhpStorm.
  * User: guillaume
@@ -15,12 +17,14 @@ class CaptchaWrapper
     private $requestStack;
     private $secret;
 
-    public function __construct(RequestStack $requestStack, $secret) {
+    public function __construct(RequestStack $requestStack, $secret)
+    {
         $this->requestStack = $requestStack;
         $this->secret = $secret;
     }
 
-    public function verify($value) {
+    public function verify($value)
+    {
         $request = $this->requestStack->getMasterRequest();
 
         $reCaptcha = new ReCaptcha($this->secret);

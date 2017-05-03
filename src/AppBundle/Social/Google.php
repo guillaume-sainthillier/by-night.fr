@@ -1,11 +1,11 @@
 <?php
 
-namespace TBN\SocialBundle\Social;
+namespace AppBundle\Social;
 
 use \Google_Client;
 use Symfony\Component\Routing\Generator\UrlGenerator;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\User;
 
 /**
  * Description of Twitter
@@ -66,7 +66,7 @@ class Google extends Social
                 curl_close($ch);
                 $json = json_decode($result, true);
 
-                if(isset($json[0]['result']['metadata']['globalCounts']['count'])) {
+                if (isset($json[0]['result']['metadata']['globalCounts']['count'])) {
                     return intval($json[0]['result']['metadata']['globalCounts']['count']);
                 }
             } catch (\Exception $ex) {

@@ -1,10 +1,11 @@
 <?php
 
-namespace TBN\MajDataBundle\Fetcher;
+namespace AppBundle\Fetcher;
+
 use Doctrine\ORM\EntityManager;
-use TBN\MajDataBundle\Parser\Common\FaceBookParser;
-use TBN\MajDataBundle\Parser\Manager\ParserManager;
-use TBN\MajDataBundle\Parser\ParserInterface;
+use AppBundle\Parser\Common\FaceBookParser;
+use AppBundle\Parser\Manager\ParserManager;
+use AppBundle\Parser\ParserInterface;
 
 /**
  * Created by PhpStorm.
@@ -24,13 +25,15 @@ class EventFetcher
      */
     protected $parserManager;
 
-    public function __construct(ParserManager $parserManager, EntityManager $entityManager) {
+    public function __construct(ParserManager $parserManager, EntityManager $entityManager)
+    {
         $this->parserManager = $parserManager;
         $this->entityManager = $entityManager;
     }
 
-    public function fetchEvents(ParserInterface $parser) {
-        if($parser instanceof FaceBookParser) {
+    public function fetchEvents(ParserInterface $parser)
+    {
+        if ($parser instanceof FaceBookParser) {
             $siteInfo = $this->getSiteInfo();
             $parser->setSiteInfo($siteInfo);
         }
@@ -40,14 +43,15 @@ class EventFetcher
         return $this->parserManager->getAgendas();
     }
 
-    protected function getSiteInfo() {
-        $siteInfo = $this->entityManager->getRepository('TBNUserBundle:SiteInfo')->findOneBy([]);
+    protected function getSiteInfo()
+    {
+        $siteInfo = $this->entityManager->getRepository('AppBundle:SiteInfo')->findOneBy([]);
 
-        if(! $siteInfo) {
+        if (!$siteInfo) {
             throw new \RuntimeException("Aucun site info enregistré");
         }
 
-        if(! $siteInfo->getFacebookAccessToken()) {
+        if (!$siteInfo->getFacebookAccessToken()) {
             throw new \RuntimeException("Le site info n'est pas configuré avec Facebook");
         }
 

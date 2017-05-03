@@ -27,7 +27,8 @@ class BrowserCache extends ConfigurationAnnotation
         $this->useCache = $useCache;
     }
 
-    public function hasToUseCache() {
+    public function hasToUseCache()
+    {
         return $this->useCache;
     }
 

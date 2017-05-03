@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Search;
+namespace AppBundle\Search;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -74,13 +74,15 @@ class SearchAgenda
         return array_unique(array_filter(explode(" ", $this->getTerm())));
     }
 
-    public function setTag($tag) {
+    public function setTag($tag)
+    {
         $this->tag = $tag;
 
         return $this;
     }
 
-    public function getTag() {
+    public function getTag()
+    {
         return $this->tag;
     }
 

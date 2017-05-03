@@ -1,15 +1,15 @@
 <?php
 
-namespace TBN\MainBundle\Listener;
+namespace AppBundle\Listener;
 
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MainBundle\Invalidator\EventInvalidator;
-use TBN\MajDataBundle\Entity\Exploration;
-use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Utils\Firewall;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\Agenda;
+use AppBundle\Invalidator\EventInvalidator;
+use AppBundle\Entity\Exploration;
+use AppBundle\Reject\Reject;
+use AppBundle\Utils\Firewall;
+use AppBundle\Entity\User;
 
 class EventListener
 {
@@ -23,14 +23,16 @@ class EventListener
         $this->eventInvalidator = $eventInvalidator;
     }
 
-    public function postFlush() {
+    public function postFlush()
+    {
         $this->eventInvalidator->invalidateEvents();
     }
 
-    public function postUpdate(LifecycleEventArgs $args) {
+    public function postUpdate(LifecycleEventArgs $args)
+    {
         $entity = $args->getEntity();
 
-        if($entity instanceof User) {
+        if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);
             return;
         }
@@ -46,7 +48,7 @@ class EventListener
     {
         $entity = $args->getEntity();
 
-        if($entity instanceof User) {
+        if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);
             return;
         }
@@ -57,24 +59,23 @@ class EventListener
 
         $this->eventInvalidator->addEvent($entity);
 
-        if(!$entity->getFacebookEventId()) {
+        if (!$entity->getFacebookEventId()) {
             return;
         }
 
         $entityManager = $args->getEntityManager();
-        $exploration = $entityManager->getRepository('TBNMajDataBundle:Exploration')->findOneBy([
-           'id' => $entity->getFacebookEventId()
+        $exploration = $entityManager->getRepository('AppBundle:Exploration')->findOneBy([
+            'id' => $entity->getFacebookEventId()
         ]);
 
-        if(! $exploration) {
+        if (!$exploration) {
             $exploration = (new Exploration)->setId($entity->getFacebookEventId());
         }
 
         $exploration
             ->setFirewallVersion(Firewall::VERSION)
             ->setLastUpdated($entity->getFbDateModification())
-            ->setReason(Reject::EVENT_DELETED)
-        ;
+            ->setReason(Reject::EVENT_DELETED);
 
         $entityManager->persist($exploration);
     }

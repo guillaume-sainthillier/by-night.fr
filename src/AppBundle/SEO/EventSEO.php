@@ -6,11 +6,11 @@
  * Time: 21:47
  */
 
-namespace TBN\AgendaBundle\SEO;
+namespace AppBundle\SEO;
 
 
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MajDataBundle\Utils\Util;
+use AppBundle\Entity\Agenda;
+use AppBundle\Utils\Util;
 
 class EventSEO
 {
@@ -19,12 +19,14 @@ class EventSEO
      */
     private $util;
 
-    public function __construct(Util $util) {
+    public function __construct(Util $util)
+    {
         $this->util = $util;
     }
 
-    public function getEventDate(Agenda $event) {
-        if(! $event->getDateFin() || $event->getDateDebut() == $event->getDateFin()) {
+    public function getEventDate(Agenda $event)
+    {
+        if (!$event->getDateFin() || $event->getDateDebut() == $event->getDateFin()) {
             return sprintf("le %s",
                 $this->formatDate($event->getDateDebut(), \IntlDateFormatter::FULL, \IntlDateFormatter::NONE)
             );
@@ -36,10 +38,11 @@ class EventSEO
         );
     }
 
-    public function getEventDescription(Agenda $agenda) {
+    public function getEventDescription(Agenda $agenda)
+    {
         $description = sprintf("Découvrez %s.", $agenda->getNom());
 
-        if($agenda->getPlace()) {
+        if ($agenda->getPlace()) {
             $description .= sprintf(" %s à %s.",
                 $agenda->getPlace()->getNom(),
                 $agenda->getPlace()->getVille()
@@ -50,11 +53,11 @@ class EventSEO
 
         $tags = $agenda->getDistinctTags();
 
-        if(count($tags)) {
+        if (count($tags)) {
             $description .= sprintf(" %s.", implode(", ", $tags));
         }
 
-        if($agenda->getFbParticipations() + $agenda->getFbInterets() > 50) {
+        if ($agenda->getFbParticipations() + $agenda->getFbInterets() > 50) {
             $description .= sprintf(" %d personnes intéressées", $agenda->getFbParticipations() + $agenda->getFbInterets());
         }
 
@@ -74,26 +77,29 @@ class EventSEO
         return trim($datetime);
     }
 
-    public function getEventShortTitle(Agenda $event) {
+    public function getEventShortTitle(Agenda $event)
+    {
         $shortTitle = $event->getNom();
-        if($event->getModificationDerniereMinute()) {
+        if ($event->getModificationDerniereMinute()) {
             $shortTitle .= sprintf(" [%s]", $event->getModificationDerniereMinute());
         }
 
         return $shortTitle;
     }
 
-    public function getEventFullTitle(Agenda $event) {
+    public function getEventFullTitle(Agenda $event)
+    {
         $title = $this->getEventShortTitle($event);
 
-        if($event->getPlace()) {
+        if ($event->getPlace()) {
             $title .= sprintf(" - %s", $event->getPlace()->getNom());
         }
 
         return $title;
     }
 
-    private function formatDate(\DateTime $date, $dateFormat, $timeFormat ) {
+    private function formatDate(\DateTime $date, $dateFormat, $timeFormat)
+    {
         $formatter = \IntlDateFormatter::create(null, $dateFormat, $timeFormat);
         return $formatter->format($date->getTimestamp());
     }

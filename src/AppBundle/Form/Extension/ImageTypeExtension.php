@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\MainBundle\Form\Extension;
+namespace AppBundle\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
 

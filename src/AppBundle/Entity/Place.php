@@ -1,15 +1,15 @@
 <?php
 
-namespace TBN\AgendaBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
-use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
-use TBN\MainBundle\Entity\Site;
-use TBN\MajDataBundle\Reject\Reject;
+use AppBundle\Geolocalize\GeolocalizeInterface;
+use AppBundle\Entity\Site;
+use AppBundle\Reject\Reject;
 
 /**
  * Place
@@ -21,7 +21,7 @@ use TBN\MajDataBundle\Reject\Reject;
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")
- * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\PlaceRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PlaceRepository")
  */
 class Place implements GeolocalizeInterface
 {
@@ -102,7 +102,7 @@ class Place implements GeolocalizeInterface
     protected $codePostal;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=false)
      */
     protected $site;
@@ -119,13 +119,15 @@ class Place implements GeolocalizeInterface
      */
     protected $reject;
 
-    public function setReject(Reject $reject = null) {
+    public function setReject(Reject $reject = null)
+    {
         $this->reject = $reject;
 
         return $this;
     }
 
-    public function getReject() {
+    public function getReject()
+    {
         return $this->reject;
     }
 
@@ -177,7 +179,7 @@ class Place implements GeolocalizeInterface
      */
     public function setLatitude($latitude)
     {
-        if(! isset($this->i)) {
+        if (!isset($this->i)) {
             $this->i = 0;
         }
 
@@ -396,7 +398,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site
+     * @return \AppBundle\Entity\Site
      */
     public function getSite()
     {

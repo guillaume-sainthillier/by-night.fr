@@ -1,13 +1,13 @@
 <?php
 
-namespace TBN\AgendaBundle\News;
+namespace AppBundle\News;
 
 use Doctrine\ORM\EntityManager;
 use Psr\Log\LoggerInterface;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\AgendaBundle\Entity\News;
-use TBN\SocialBundle\Social\FacebookAdmin;
-use TBN\SocialBundle\Social\Twitter;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\News;
+use AppBundle\Social\FacebookAdmin;
+use AppBundle\Social\Twitter;
 
 class NewsManager
 {
@@ -45,25 +45,26 @@ class NewsManager
         $this->logger = $logger;
     }
 
-    public function postNews(News $news, $wordpressPostId, $shortTitle, $longTitle, $url, $imageUrl) {
+    public function postNews(News $news, $wordpressPostId, $shortTitle, $longTitle, $url, $imageUrl)
+    {
         $success = true;
-        if(!$news->getFbPostId()) {
+        if (!$news->getFbPostId()) {
             try {
                 $postId = $this->facebook->postNews($longTitle, $url, $imageUrl);
                 $news->setTweetPostId($postId);
                 $success = $success && true;
-            }catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $success = false;
                 $this->logger->critical($e);
             }
         }
 
-        if(!$news->getTweetPostId()) {
+        if (!$news->getTweetPostId()) {
             try {
                 $postId = $this->twitter->postNews($shortTitle, $url);
                 $news->setTweetPostId($postId);
                 $success = $success && true;
-            }catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $success = false;
                 $this->logger->critical($e);
             }
@@ -75,13 +76,14 @@ class NewsManager
         return $success;
     }
 
-    public function getNewsDatas(\DateTime $from, \DateTime $to) {
-        $datas = $this->em->getRepository('TBNAgendaBundle:Agenda')->findByInterval($from, $to);
+    public function getNewsDatas(\DateTime $from, \DateTime $to)
+    {
+        $datas = $this->em->getRepository('AppBundle:Agenda')->findByInterval($from, $to);
 
         $participants = [];
-        foreach($datas as $site => $events) {
+        foreach ($datas as $site => $events) {
             $participants[$site] = 0;
-            foreach($events as $event) {
+            foreach ($events as $event) {
                 /**
                  * @var Agenda $event
                  */
@@ -92,23 +94,22 @@ class NewsManager
         arsort($participants);
         $totalPartcipants = array_sum($participants);
 
-        $news = $this->em->getRepository('TBNAgendaBundle:News')->findOneBy([
+        $news = $this->em->getRepository('AppBundle:News')->findOneBy([
             'dateDebut' => $from,
             'dateFin' => $to
         ]);
 
-        if(! $news) {
-            $nextEdition = $this->em->getRepository('TBNAgendaBundle:News')->findNextEdition();
+        if (!$news) {
+            $nextEdition = $this->em->getRepository('AppBundle:News')->findNextEdition();
             $news = (new News())
                 ->setDateDebut($from)
                 ->setDateFin($to)
-                ->setNumeroEdition($nextEdition)
-            ;
+                ->setNumeroEdition($nextEdition);
         }
 
         $content = $this->twig->render("@TBNAgenda/News/news.html.twig", [
             'datas' => $datas,
-            'topParticipants' => array_slice($participants, 0,  5),
+            'topParticipants' => array_slice($participants, 0, 5),
             'participants' => $totalPartcipants,
         ]);
 

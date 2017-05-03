@@ -5,10 +5,10 @@ namespace AppBundle\Controller\City;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use TBN\AgendaBundle\Repository\AgendaRepository;
-use TBN\CommentBundle\Entity\Comment;
-use TBN\CommentBundle\Form\Type\CommentType;
-use TBN\MainBundle\Controller\TBNController as Controller;
+use AppBundle\Repository\AgendaRepository;
+use AppBundle\Entity\Comment;
+use AppBundle\Form\Type\CommentType;
+use AppBundle\Controller\TBNController as Controller;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -16,17 +16,20 @@ use FOS\HttpCacheBundle\Configuration\Tag;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use AppBundle\Configuration\BrowserCache;
-use TBN\MainBundle\Entity\Site;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Calendrier;
+use AppBundle\Entity\Site;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\Place;
+use AppBundle\Entity\Calendrier;
 
-use TBN\AgendaBundle\Form\Type\SearchType;
-use TBN\AgendaBundle\Search\SearchAgenda;
+use AppBundle\Form\Type\SearchType;
+use AppBundle\Search\SearchAgenda;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use TBN\MainBundle\Invalidator\EventInvalidator;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Invalidator\EventInvalidator;
+use AppBundle\Entity\User;
 
+/**
+ * @Route("/agenda")
+ */
 class AgendaController extends Controller
 {
     protected function handleSearch(SearchAgenda $search, $type, $tag, $ville, Place $place = null)
@@ -74,10 +77,14 @@ class AgendaController extends Controller
 
     /**
      * @Cache(expires="+30 minutes", smaxage="1800")
-     * @Route("/agenda", name="tbn_agenda_agenda")
-     * @Route("/agenda", name="tbn_agenda_sortir")
-     * @Route("/agenda", name="tbn_agenda_place")
-     * @Route("/agenda", name="tbn_agenda_tags")
+     * @Route("/", name="tbn_agenda_agenda")
+     * @Route("/page/{page}", name="tbn_agenda_pagination", requirements={"page": "\d+"})
+     * @Route("/sortir/{type}", name="tbn_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
+     * @Route("/sortir/{type}/page/{page}", name="tbn_agenda_sortir_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
+     * @Route("/sortir-a/{slug}", name="tbn_agenda_place", requirements={"slug": ".+"})
+     * @Route("/sortir-a/{slug}/page/{page}", name="tbn_agenda_place_pagination", requirements={"slug": ".+", "page": "\d+"})
+     * @Route("/tag/{tag}", name="tbn_agenda_tags", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
+     * @Route("/tag/{tag}/page/{page}", name="tbn_agenda_tags_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
      * @BrowserCache(false)
      */
     public function indexAction(Request $request, $page, $type, $tag, $ville, $slug, $paginateRoute = 'tbn_agenda_pagination')
@@ -108,14 +115,14 @@ class AgendaController extends Controller
 
         //Récupération du repo des événéments
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
+        $repo = $em->getRepository('AppBundle:Agenda');
 
         //Recherche des événements
         $search = new SearchAgenda();
         $place = null;
         if ($slug !== null) {
-            $place = $em->getRepository('TBNAgendaBundle:Place')->findOneBy(['slug' => $slug]);
-            if(! $place) {
+            $place = $em->getRepository('AppBundle:Place')->findOneBy(['slug' => $slug]);
+            if (!$place) {
                 return new RedirectResponse($this->generateUrl('tbn_agenda_agenda'));
             }
         }
@@ -144,7 +151,7 @@ class AgendaController extends Controller
 
         //Recherche ElasticSearch
         $repositoryManager = $this->get('fos_elastica.manager');
-        $repository = $repositoryManager->getRepository('TBNAgendaBundle:Agenda');
+        $repository = $repositoryManager->getRepository('AppBundle:Agenda');
         $results = $repository->findWithSearch($site, $search); //100ms
 
         $paginator = $this->get('knp_paginator');
@@ -152,7 +159,7 @@ class AgendaController extends Controller
         $nbSoireesTotales = $pagination->getTotalItemCount();
         $soirees = $pagination;
 
-        $response = $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
+        $response = $this->render('Agenda/soirees.html.twig', [
             'villeName' => $ville,
             'placeName' => (null !== $place) ? $place->getNom() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,

@@ -1,9 +1,9 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser;
+namespace AppBundle\Parser;
 
 use Symfony\Component\DomCrawler\Crawler;
-use TBN\MajDataBundle\Utils\Monitor;
+use AppBundle\Utils\Monitor;
 
 /**
  *
@@ -37,7 +37,7 @@ abstract class LinksParser extends AgendaParser
 
         try {
             $this->parser->addContent(\file_get_contents($this->url), $type);
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             Monitor::writeException($e);
         }
 
@@ -62,7 +62,7 @@ abstract class LinksParser extends AgendaParser
                 }
 
                 $agendas = array_merge($agendas, $infosAgenda);
-            }catch(\Exception $e) {
+            } catch (\Exception $e) {
                 Monitor::writeException($e);
             }
         }

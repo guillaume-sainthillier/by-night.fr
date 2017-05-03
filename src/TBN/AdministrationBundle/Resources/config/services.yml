@@ -1,4 +1,4 @@
 parameters:
-#    tbn_administration.example.class: TBN\AdministrationBundle\Example
+#    TBN\_administration.example.class: TBNAdministrationBundle\Example
 
 services:

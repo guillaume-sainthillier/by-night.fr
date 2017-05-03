@@ -2,7 +2,7 @@
 
 namespace TBN\AgendaBundle\Controller;
 
-use TBN\MainBundle\Controller\TBNController as Controller;
+use TBN\AgendaBundle\Controller\TBNController as Controller;
 
 class OldEventController extends Controller
 {

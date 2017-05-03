@@ -1,13 +1,13 @@
 <?php
 
-namespace TBN\AgendaBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
-use TBN\MainBundle\Entity\Site;
+use AppBundle\Entity\Site;
 
 /**
  * Ville
@@ -16,7 +16,7 @@ use TBN\MainBundle\Entity\Site;
  *   @ORM\Index(name="ville_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="ville_slug_idx", columns={"slug"}),
  * })
- * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Entity\VilleRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\VilleRepository")
  * @ExclusionPolicy("all")
  */
 class Ville
@@ -70,7 +70,7 @@ class Ville
     private $url;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $site;
@@ -217,7 +217,7 @@ class Ville
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site
+     * @return \AppBundle\Entity\Site
      */
     public function getSite()
     {
@@ -246,6 +246,6 @@ class Ville
 
     public function __toString()
     {
-        return "#".$this->id ?: '?';
+        return "#" . $this->id ?: '?';
     }
 }

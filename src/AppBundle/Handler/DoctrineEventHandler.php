@@ -6,22 +6,22 @@
  * Time: 19:16
  */
 
-namespace TBN\MajDataBundle\Handler;
+namespace AppBundle\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\AgendaBundle\Entity\Place;
-use TBN\MainBundle\Entity\Site;
-use TBN\MajDataBundle\Entity\Exploration;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\Place;
+use AppBundle\Entity\Site;
+use AppBundle\Entity\Exploration;
 
-use TBN\MajDataBundle\Parser\Common\FaceBookParser;
-use TBN\MajDataBundle\Parser\ParserInterface;
-use TBN\MajDataBundle\Reject\Reject;
+use AppBundle\Parser\Common\FaceBookParser;
+use AppBundle\Parser\ParserInterface;
+use AppBundle\Reject\Reject;
 
 
-use TBN\MajDataBundle\Utils\Firewall;
-use TBN\MajDataBundle\Utils\Monitor;
+use AppBundle\Utils\Firewall;
+use AppBundle\Utils\Monitor;
 
 class DoctrineEventHandler
 {
@@ -49,9 +49,9 @@ class DoctrineEventHandler
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler)
     {
         $this->em = $em;
-        $this->repoAgenda = $em->getRepository('TBNAgendaBundle:Agenda');
-        $this->repoPlace = $em->getRepository('TBNAgendaBundle:Place');
-        $this->repoSite = $em->getRepository('TBNMainBundle:Site');
+        $this->repoAgenda = $em->getRepository('AppBundle:Agenda');
+        $this->repoPlace = $em->getRepository('AppBundle:Place');
+        $this->repoSite = $em->getRepository('AppBundle:Site');
         $this->handler = $handler;
         $this->firewall = $firewall;
         $this->echantillonHandler = $echantillonHandler;
@@ -76,7 +76,8 @@ class DoctrineEventHandler
      * @param Agenda $event
      * @return Agenda
      */
-    public function handleOne(Agenda $event) {
+    public function handleOne(Agenda $event)
+    {
         return $this->handleMany([$event])[0];
     }
 
@@ -85,9 +86,10 @@ class DoctrineEventHandler
      * @param ParserInterface $parser
      * @return array
      */
-    public function handleManyCLI(array $events, ParserInterface $parser) {
-        $events =  $this->handleMany($events);
-        if($parser instanceof FaceBookParser) {
+    public function handleManyCLI(array $events, ParserInterface $parser)
+    {
+        $events = $this->handleMany($events);
+        if ($parser instanceof FaceBookParser) {
             $this->handleIdsToMigrate($parser);
         }
 
@@ -111,10 +113,11 @@ class DoctrineEventHandler
      * @param array $events
      * @return array
      */
-    public function handleMany(array $events) {
+    public function handleMany(array $events)
+    {
         $this->explorationHandler->start();
 
-        if(! count($events)) {
+        if (!count($events)) {
             return [];
         }
         $this->loadSites();
@@ -128,16 +131,17 @@ class DoctrineEventHandler
         unset($events);
 
         $nbNotAllowedEvents = count($notAllowedEvents);
-        for($i = 0; $i < $nbNotAllowedEvents; $i++) {
+        for ($i = 0; $i < $nbNotAllowedEvents; $i++) {
             $this->explorationHandler->addBlackList();
         }
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
     }
 
-    protected function handleIdsToMigrate(FaceBookParser $parser) {
+    protected function handleIdsToMigrate(FaceBookParser $parser)
+    {
         $ids = $parser->getIdsToMigrate();
 
-        if(! count($ids)) {
+        if (!count($ids)) {
             return;
         }
 
@@ -150,23 +154,23 @@ class DoctrineEventHandler
         ]);
 
         $events = array_merge($events, $eventOwners);
-        foreach($events as $event) {
-            if(isset($ids[$event->getFacebookEventId()])) {
+        foreach ($events as $event) {
+            if (isset($ids[$event->getFacebookEventId()])) {
                 $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
             }
 
-            if(isset($ids[$event->getFacebookOwnerId()])) {
+            if (isset($ids[$event->getFacebookOwnerId()])) {
                 $event->setFacebookOwnerId($ids[$event->getFacebookOwnerId()]);
             }
             $this->em->persist($event);
         }
 
         $places = $this->repoPlace->findBy([
-           'facebookId' => array_keys($ids)
+            'facebookId' => array_keys($ids)
         ]);
 
-        foreach($places as $place) {
-            if(isset($ids[$place->getFacebookId()])) {
+        foreach ($places as $place) {
+            if (isset($ids[$place->getFacebookId()])) {
                 $place->setFacebookId($ids[$place->getFacebookId()]);
             }
             $this->em->persist($place);
@@ -175,10 +179,11 @@ class DoctrineEventHandler
         $this->em->flush();
     }
 
-    protected function getAllowedEvents(array $events) {
+    protected function getAllowedEvents(array $events)
+    {
         $events = array_filter($events, [$this->firewall, 'isValid']);
-        usort($events, function(Agenda $a, Agenda $b) {
-            if($a->getSite() == $b->getSite()) {
+        usort($events, function (Agenda $a, Agenda $b) {
+            if ($a->getSite() == $b->getSite()) {
                 return 0;
             }
 
@@ -188,44 +193,48 @@ class DoctrineEventHandler
         return $events;
     }
 
-    protected function getNotAllowedEvents(array $events) {
-        return array_filter($events, function($event) {
-            return ! $this->firewall->isValid($event);
+    protected function getNotAllowedEvents(array $events)
+    {
+        return array_filter($events, function ($event) {
+            return !$this->firewall->isValid($event);
         });
     }
 
-    protected function getChunks(array $events) {
+    protected function getChunks(array $events)
+    {
         $chunks = [];
-        foreach($events as $i => $event) {
+        foreach ($events as $i => $event) {
             $chunks[$event->getSite()->getId()][$i] = $event;
         }
 
-        foreach($chunks as $i => $chunk) {
+        foreach ($chunks as $i => $chunk) {
             $chunks[$i] = array_chunk($chunk, self::BATCH_SIZE, true);
         }
 
         return $chunks;
     }
 
-    protected function unChunk(array $chunks) {
+    protected function unChunk(array $chunks)
+    {
         $flat = [];
-        foreach($chunks as $chunk) {
+        foreach ($chunks as $chunk) {
             $flat = array_merge($flat, $chunk);
         }
 
         return $flat;
     }
 
-    protected function mergeWithDatabase(array $events) {
+    protected function mergeWithDatabase(array $events)
+    {
         Monitor::createProgressBar(count($events));
 
         $chunks = $this->getChunks($events);
-        foreach($chunks as $chunk) {
+        foreach ($chunks as $chunk) {
             //Par site
             $this->echantillonHandler->prefetchPlaceEchantillons($this->unChunk($chunk));
 
             //Par n éléments
-            foreach($chunk as $currentEvents) {
+            foreach ($chunk as $currentEvents) {
                 $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
                 foreach ($currentEvents as $i => $event) {
                     /**
@@ -237,9 +246,9 @@ class DoctrineEventHandler
                     $oldUser = $event->getUser();
                     $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
                     $this->firewall->filterEventIntegrity($event, $oldUser);
-                    if(! $this->firewall->isValid($event)) {
+                    if (!$this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
-                    }else {
+                    } else {
                         Monitor::advanceProgressBar();
                         $event = $this->em->merge($event);
                         $this->echantillonHandler->addNewEvent($event);
@@ -261,16 +270,18 @@ class DoctrineEventHandler
         return $events;
     }
 
-    protected function flushPlaces() {
+    protected function flushPlaces()
+    {
         $this->em->clear(Place::class);
 
         $this->echantillonHandler->flushPlaces();
     }
 
-    protected function flushEvents() {
+    protected function flushEvents()
+    {
         try {
             $this->em->flush();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             Monitor::writeln(sprintf(
                 "<error>%s</error>",
                 $e->getMessage()
@@ -282,39 +293,43 @@ class DoctrineEventHandler
         $this->echantillonHandler->flushEvents();
     }
 
-    protected function loadVilles() {
-        $villes = $this->em->getRepository('TBNAgendaBundle:Place')->findAllVilles();
-        foreach($villes as $ville) {
+    protected function loadVilles()
+    {
+        $villes = $this->em->getRepository('AppBundle:Place')->findAllVilles();
+        foreach ($villes as $ville) {
             $key = $this->firewall->getVilleHash($ville['ville']);
             $this->villes[$key] = $ville['id'];
         }
     }
 
-    protected function loadSites() {
-        $sites = $this->em->getRepository('TBNMainBundle:Site')->findAll();
-        foreach($sites as $site) {
+    protected function loadSites()
+    {
+        $sites = $this->em->getRepository('AppBundle:Site')->findAll();
+        foreach ($sites as $site) {
             $key = $this->firewall->getVilleHash($site->getNom());
             $this->sites[$key] = $site;
         }
     }
 
-    protected function loadExplorations(array $events) {
+    protected function loadExplorations(array $events)
+    {
         $fb_ids = $this->getExplorationsFBIds($events);
 
-        if(count($fb_ids)) {
+        if (count($fb_ids)) {
             $this->firewall->loadExplorations($fb_ids);
         }
     }
 
-    protected function flushExplorations() {
+    protected function flushExplorations()
+    {
         $explorations = $this->firewall->getExplorations();
 
         $batchSize = 100;
         $nbBatches = ceil(count($explorations) / $batchSize);
 
-        for($i = 0; $i < $nbBatches; $i++) {
+        for ($i = 0; $i < $nbBatches; $i++) {
             $currentExplorations = array_slice($explorations, $i * $batchSize, $batchSize);
-            foreach($currentExplorations as $exploration) {
+            foreach ($currentExplorations as $exploration) {
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->explorationHandler->addExploration();
                 $this->em->persist($exploration);
@@ -326,27 +341,28 @@ class DoctrineEventHandler
     }
 
 
-    protected function doFilter(array $events) {
-        foreach($events as $event) {
+    protected function doFilter(array $events)
+    {
+        foreach ($events as $event) {
             /**
              * @var Agenda $event
              */
             $event->setReject(new Reject);
 
-            if($event->getPlace()) {
+            if ($event->getPlace()) {
                 $event->getPlace()->setReject(new Reject);
             }
 
-            if($event->getFacebookEventId()) {
+            if ($event->getFacebookEventId()) {
                 $exploration = $this->firewall->getExploration($event->getFacebookEventId());
 
                 //Une exploration a déjà eu lieu
-                if($exploration) {
+                if ($exploration) {
                     $this->firewall->filterEventExploration($exploration, $event);
                     $reject = $exploration->getReject();
 
                     //Celle-ci a déjà conduit à l'élimination de l'événement
-                    if(! $reject->isValid()) {
+                    if (!$reject->isValid()) {
                         $event->getReject()->setReason($reject->getReason());
                         continue;
                     }
@@ -354,10 +370,10 @@ class DoctrineEventHandler
             }
 
             //Même algorithme pour le lieu
-            if($event->getPlace() && $event->getPlace()->getFacebookId()) {
+            if ($event->getPlace() && $event->getPlace()->getFacebookId()) {
                 $exploration = $this->firewall->getExploration($event->getPlace()->getFacebookId());
 
-                if($exploration && ! $this->firewall->hasPlaceToBeUpdated($exploration) && ! $exploration->getReject()->isValid()) {
+                if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration) && !$exploration->getReject()->isValid()) {
                     $event->getReject()->addReason($exploration->getReject()->getReason());
                     $event->getPlace()->getReject()->setReason($exploration->getReject()->getReason());
                     continue;
@@ -365,7 +381,7 @@ class DoctrineEventHandler
             }
 
             $this->firewall->filterEvent($event);
-            if($this->firewall->isValid($event)) {
+            if ($this->firewall->isValid($event)) {
                 $this->guessEventSite($event);
                 $this->firewall->filterEventSite($event);
                 $this->handler->cleanEvent($event);
@@ -373,43 +389,45 @@ class DoctrineEventHandler
         }
     }
 
-    protected function guessEventSite(Agenda $event) {
+    protected function guessEventSite(Agenda $event)
+    {
         $key = $this->firewall->getVilleHash($event->getPlace()->getVille());
 
         $site = null;
-        if(isset($this->sites[$key])) {
+        if (isset($this->sites[$key])) {
             $site = $this->em->getReference(Site::class, $this->sites[$key]->getId());
-        }elseif(isset($this->villes[$key])) {
+        } elseif (isset($this->villes[$key])) {
             $site = $this->em->getReference(Site::class, $this->villes[$key]);
-        }else {
-            foreach($this->sites as $testSite) {
-                if($this->firewall->isLocationBounded($event->getPlace(), $testSite)) {
+        } else {
+            foreach ($this->sites as $testSite) {
+                if ($this->firewall->isLocationBounded($event->getPlace(), $testSite)) {
                     $site = $this->em->getReference(Site::class, $testSite->getId());
                     break;
-                }elseif($this->firewall->isLocationBounded($event, $testSite)) {
+                } elseif ($this->firewall->isLocationBounded($event, $testSite)) {
                     $site = $this->em->getReference(Site::class, $testSite->getId());
                     break;
                 }
             }
         }
 
-        if($site) {
+        if ($site) {
             $event->setSite($site);
             $event->getPlace()->setSite($site);
         }
     }
 
-    protected function getExplorationsFBIds(array $events) {
+    protected function getExplorationsFBIds(array $events)
+    {
         $fbIds = [];
-        foreach($events as $event) {
+        foreach ($events as $event) {
             /**
              * @var Agenda $event
              */
-            if($event->getFacebookEventId()) {
+            if ($event->getFacebookEventId()) {
                 $fbIds[$event->getFacebookEventId()] = true;
             }
 
-            if($event->getPlace() && $event->getPlace()->getFacebookId()) {
+            if ($event->getPlace() && $event->getPlace()->getFacebookId()) {
                 $fbIds[$event->getPlace()->getFacebookId()] = true;
             }
         }

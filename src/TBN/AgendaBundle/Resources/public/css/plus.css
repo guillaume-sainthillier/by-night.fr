@@ -45,43 +45,52 @@ Then, run this script to get the list.
 
 */
 .en-savoir-plus .bloc {
-  margin-bottom: 50px;
+    margin-bottom: 50px;
 }
+
 .en-savoir-plus .label {
-  margin-bottom: 30px;
-  -webkit-box-shadow: 2px 2px 2px 1px #656565;
-  font-size: 24px;
-  display: inline-block;
+    margin-bottom: 30px;
+    -webkit-box-shadow: 2px 2px 2px 1px #656565;
+    font-size: 24px;
+    display: inline-block;
 }
+
 .en-savoir-plus .label.odd {
-  background-color: #5cb85c;
+    background-color: #5cb85c;
 }
+
 .en-savoir-plus .label.even {
-  background-color: #337ab7;
+    background-color: #337ab7;
 }
+
 .en-savoir-plus .icon {
-  border-width: 1px;
-  border-style: dotted;
-  padding: 30px;
-  margin-top: 30px;
-  border-radius: 100%;
+    border-width: 1px;
+    border-style: dotted;
+    padding: 30px;
+    margin-top: 30px;
+    border-radius: 100%;
 }
+
 .en-savoir-plus .icon:hover {
-  opacity: 0.7;
-  filter: alpha(opacity=70);
-  border-style: solid;
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+    border-style: solid;
 }
+
 .en-savoir-plus .icon:hover.odd {
-  background-color: rgba(92, 184, 92, 0.15);
+    background-color: rgba(92, 184, 92, 0.15);
 }
+
 .en-savoir-plus .icon:hover.even {
-  background-color: rgba(51, 122, 183, 0.15);
+    background-color: rgba(51, 122, 183, 0.15);
 }
+
 .en-savoir-plus .icon.odd {
-  color: #5cb85c;
-  border-color: #5cb85c;
+    color: #5cb85c;
+    border-color: #5cb85c;
 }
+
 .en-savoir-plus .icon.even {
-  color: #337ab7;
-  border-color: #337ab7;
+    color: #337ab7;
+    border-color: #337ab7;
 }

@@ -1,6 +1,6 @@
 parameters:
 #    router.class: TBN\MainBundle\Routing\Router
-#    tbn_city.example.class: TBN\CityBundle\Example
+#    TBN\_city.example.class: TBNMainBundle\Example
     #router.class: TBN\MainBundle\Routing\Router
 
     

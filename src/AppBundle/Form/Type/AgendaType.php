@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\UserBundle\Form\Type;
+namespace AppBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -14,17 +14,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use TBN\MajDataBundle\Handler\DoctrineEventHandler;
+use AppBundle\Handler\DoctrineEventHandler;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class AgendaType extends AbstractType
 {
     /**
-     * @var \TBN\MajDataBundle\Handler\DoctrineEventHandler
+     * @var \AppBundle\Handler\DoctrineEventHandler
      */
     private $doctrineEventHandler;
 
-    public function __construct(DoctrineEventHandler $doctrineEventHandler) {
+    public function __construct(DoctrineEventHandler $doctrineEventHandler)
+    {
         $this->doctrineEventHandler = $doctrineEventHandler;
     }
 
@@ -132,59 +133,59 @@ class AgendaType extends AbstractType
                 "placeholder" => "17€ avec préventes, 20€ sur place"
             ]
         ])
-        ->add('categorieManifestation', TextType::class, [
-            "label" => "Catégorie",
-            "required" => false,
-            "attr" => [
-                "placeholder" => "Concert, Spectacle, ..."
-            ]
-        ])
-        ->add('themeManifestation', TextType::class, [
-            "label" => "Thèmes",
-            "required" => false,
-            "attr" => [
-                "placeholder" => "Humour, Tragédie, Jazz, Rock, Rap, ..."
-            ]
-        ])
-        ->add('adresse', TextType::class, [
-            "required" => false,
-            "label" => "Adresse",
-            "attr" => [
-                "placeholder" => "Tapez votre adresse ici pour remplir les champs ci-dessous"
-            ]
-        ])
-        ->add('place', PlaceType::class, [
-            "label" => false,
-        ])
-        ->add('reservationInternet', UrlType::class, [
-            "label" => "Réservation par internet",
-            "required" => false,
-            "attr" => [
-                "placeholder" => "L'URL où trouver un billet"
-            ]
-        ])
-        ->add('reservationTelephone', TextType::class, [
-            "label" => "Réservation téléphonique",
-            "required" => false,
-            "attr" => [
-                "placeholder" => "Le numéro à appeler pour acheter un billet"
-            ]
-        ])
-        ->add('reservationEmail', EmailType::class, [
-            "label" => "Réservation par mail",
-            "required" => false,
-            "attr" => [
-                "placeholder" => "Le mail pour vous contacter"
-            ]
-        ])
-        ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit'])
-        ;
+            ->add('categorieManifestation', TextType::class, [
+                "label" => "Catégorie",
+                "required" => false,
+                "attr" => [
+                    "placeholder" => "Concert, Spectacle, ..."
+                ]
+            ])
+            ->add('themeManifestation', TextType::class, [
+                "label" => "Thèmes",
+                "required" => false,
+                "attr" => [
+                    "placeholder" => "Humour, Tragédie, Jazz, Rock, Rap, ..."
+                ]
+            ])
+            ->add('adresse', TextType::class, [
+                "required" => false,
+                "label" => "Adresse",
+                "attr" => [
+                    "placeholder" => "Tapez votre adresse ici pour remplir les champs ci-dessous"
+                ]
+            ])
+            ->add('place', PlaceType::class, [
+                "label" => false,
+            ])
+            ->add('reservationInternet', UrlType::class, [
+                "label" => "Réservation par internet",
+                "required" => false,
+                "attr" => [
+                    "placeholder" => "L'URL où trouver un billet"
+                ]
+            ])
+            ->add('reservationTelephone', TextType::class, [
+                "label" => "Réservation téléphonique",
+                "required" => false,
+                "attr" => [
+                    "placeholder" => "Le numéro à appeler pour acheter un billet"
+                ]
+            ])
+            ->add('reservationEmail', EmailType::class, [
+                "label" => "Réservation par mail",
+                "required" => false,
+                "attr" => [
+                    "placeholder" => "Le mail pour vous contacter"
+                ]
+            ])
+            ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
     }
 
-    public function onSubmit(FormEvent $event) {
+    public function onSubmit(FormEvent $event)
+    {
         $data = $event->getData();
 
-        if(! $data) {
+        if (!$data) {
             return;
         }
 
@@ -195,7 +196,7 @@ class AgendaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'TBN\AgendaBundle\Entity\Agenda',
+            'data_class' => 'AppBundle\Entity\Agenda',
             'site_info' => null,
             'user' => null,
             'config' => []

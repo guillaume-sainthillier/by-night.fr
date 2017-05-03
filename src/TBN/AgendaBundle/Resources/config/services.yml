@@ -1,5 +1,5 @@
 parameters:
-#    tbn_agenda.example.class: TBN\AgendaBundle\Example
+#    TBN\_agenda.example.class: TBNAgendaBundle\Example
 
 services:
     tbn.news_manager:

@@ -1,15 +1,15 @@
 <?php
 
-namespace TBN\MajDataBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use TBN\MainBundle\Entity\Site;
+use AppBundle\Entity\Site;
 
 /**
  * HistoriqueMaj
  *
  * @ORM\Table(name="HistoriqueMaj")
- * @ORM\Entity(repositoryClass="TBN\MajDataBundle\Entity\HistoriqueMajRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\HistoriqueMajRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class HistoriqueMaj
@@ -24,7 +24,7 @@ class HistoriqueMaj
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"}, fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
      */
     protected $site;
@@ -267,7 +267,7 @@ class HistoriqueMaj
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site
+     * @return \AppBundle\Entity\Site
      */
     public function getSite()
     {

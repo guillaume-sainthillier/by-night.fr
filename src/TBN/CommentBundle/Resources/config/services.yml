@@ -1,5 +1,5 @@
 parameters:
-#    tbn_comment.example.class: TBN\CommentBundle\Example
+#    TBN\_comment.example.class: TBNCommentBundle\Example
 
 services:
 

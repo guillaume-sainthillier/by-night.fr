@@ -6,11 +6,11 @@
  * Time: 22:24
  */
 
-namespace TBN\UserBundle\Validator\Constraints;
+namespace AppBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use TBN\UserBundle\Captcha\CaptchaWrapper;
+use AppBundle\Captcha\CaptchaWrapper;
 
 class ReCaptchaResponseValidator extends ConstraintValidator
 {

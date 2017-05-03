@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\MajDataBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 

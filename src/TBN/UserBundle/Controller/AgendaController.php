@@ -5,11 +5,11 @@ namespace TBN\UserBundle\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Validator\ConstraintViolation;
-use TBN\MainBundle\Controller\TBNController as Controller;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MajDataBundle\Handler\ExplorationHandler;
+use TBN\UserBundle\Controller\TBNController as Controller;
+use TBN\UserBundle\Entity\Agenda;
+use TBN\UserBundle\Handler\ExplorationHandler;
 use TBN\UserBundle\Form\Type\AgendaType;
-use TBN\AgendaBundle\Entity\Calendrier;
+use TBN\UserBundle\Entity\Calendrier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -102,7 +102,7 @@ class AgendaController extends Controller
 
                 return $this->redirect($this->generateUrl('tbn_agenda_list'));
 
-            }catch (FileException $exception) {
+            } catch (FileException $exception) {
                 $this->get('logger')->critical($exception);
                 $this->addFlash('error', 'Un problème a eu lieu avec l\'envoi de votre pièce jointe');
             }
@@ -119,7 +119,8 @@ class AgendaController extends Controller
      * @Security("has_role('ROLE_FACEBOOK_LIST_EVENTS')")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function importAction() {
+    public function importAction()
+    {
         $importer = $this->get('tbn.social.facebook_list_events');
         $parser = $this->get('tbn.parser.abstracts.facebook');
         $handler = $this->get('tbn.doctrine_event_handler');
@@ -129,7 +130,7 @@ class AgendaController extends Controller
 
 
         $events = [];
-        foreach($fb_events as $fb_event) {
+        foreach ($fb_events as $fb_event) {
             $array_event = $parser->getInfoAgenda($fb_event);
             $event = $parser->arrayToAgenda($array_event);
 
@@ -137,19 +138,19 @@ class AgendaController extends Controller
         }
 
         $events = $handler->handleMany($events);
-        
+
         $this->addImportMessage($handler->getExplorationHandler());
         $validator = $this->get('validator');
-        foreach($events as $event) {
+        foreach ($events as $event) {
             /**
              * @var Agenda $event
              */
             $errors = $validator->validate($event);
-            if($errors->count() > 0) {
+            if ($errors->count() > 0) {
                 $errorsString = [];
-                foreach($errors as $error) {
+                foreach ($errors as $error) {
                     /**
-                     * @var ConstraintViolation $error;
+                     * @var ConstraintViolation $error ;
                      */
                     $errorsString[] = sprintf(
                         "<li>%s</li>",
@@ -168,14 +169,15 @@ class AgendaController extends Controller
         return $this->redirectToRoute('tbn_agenda_list');
     }
 
-    protected function addImportMessage(ExplorationHandler $explorationHandler) {
-        if($explorationHandler->getNbInserts() > 0 || $explorationHandler->getNbUpdates() > 0) {
+    protected function addImportMessage(ExplorationHandler $explorationHandler)
+    {
+        if ($explorationHandler->getNbInserts() > 0 || $explorationHandler->getNbUpdates() > 0) {
             $plurielInsert = $explorationHandler->getNbInserts() > 1 ? "s" : "";
             $plurielUpdate = $explorationHandler->getNbUpdates() > 1 ? "s" : "";
-            $indicatifInsert = $explorationHandler->getNbInserts() == 1 ? "a": "ont";
-            $indicatifUpdate = $explorationHandler->getNbUpdates() == 1 ? "a": "ont";
+            $indicatifInsert = $explorationHandler->getNbInserts() == 1 ? "a" : "ont";
+            $indicatifUpdate = $explorationHandler->getNbUpdates() == 1 ? "a" : "ont";
             $message = null;
-            if($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
+            if ($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
                 $message = sprintf(
                     "<strong>%d</strong> événément%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !",
                     $explorationHandler->getNbInserts(),
@@ -185,7 +187,7 @@ class AgendaController extends Controller
                     $explorationHandler->getNbUpdates(),
                     $indicatifUpdate
                 );
-            }elseif($explorationHandler->getNbInserts() > 0) {
+            } elseif ($explorationHandler->getNbInserts() > 0) {
                 $message = sprintf(
                     "<strong>%d</strong> événément%s %s été ajouté%s sur By Night !",
                     $explorationHandler->getNbInserts(),
@@ -193,7 +195,7 @@ class AgendaController extends Controller
                     $indicatifInsert,
                     $plurielInsert
                 );
-            }elseif($explorationHandler->getNbUpdates() > 0) {
+            } elseif ($explorationHandler->getNbUpdates() > 0) {
                 $message = sprintf(
                     "<strong>%d</strong> événément%s %s été mis à jour sur By Night !",
                     $explorationHandler->getNbUpdates(),
@@ -203,7 +205,7 @@ class AgendaController extends Controller
             }
 
             $this->addFlash('success', $message);
-        }elseif($explorationHandler->getNbBlackLists() === 0) {
+        } elseif ($explorationHandler->getNbBlackLists() === 0) {
             $message = "Aucun événément n'a été retrouvé sur votre compte.";
 
             $this->addFlash('info', $message);
@@ -249,12 +251,12 @@ class AgendaController extends Controller
             $this->postSocial($agenda, $form);
             $em->flush();
 
-            if($isNewAgenda) {
+            if ($isNewAgenda) {
                 $this->get('session')->getFlashBag()->add(
                     'success',
                     'Votre événement a bien été mis à jour'
                 );
-            }else {
+            } else {
                 $this->get('session')->getFlashBag()->add(
                     'success',
                     'Votre événement a bien été créé. Merci !'

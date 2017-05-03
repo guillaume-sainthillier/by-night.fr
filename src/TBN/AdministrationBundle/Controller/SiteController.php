@@ -5,8 +5,8 @@ namespace TBN\AdministrationBundle\Controller;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use TBN\MainBundle\Entity\Site;
-use TBN\MainBundle\Form\Type\SiteType;
+use TBN\AdministrationBundle\Entity\Site;
+use TBN\AdministrationBundle\Form\Type\SiteType;
 
 class SiteController extends Controller
 {

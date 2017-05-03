@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Repository;
+namespace AppBundle\Repository;
 
 /**
  * NewsRepository
@@ -10,14 +10,15 @@ namespace TBN\AgendaBundle\Repository;
  */
 class NewsRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findNextEdition() {
+    public function findNextEdition()
+    {
         $result = $this
             ->createQueryBuilder('n')
             ->select('MAX (n.numeroEdition) AS nextEdition')
             ->getQuery()
             ->getSingleScalarResult();
 
-        if(! $result) {
+        if (!$result) {
             return 1;
         }
 

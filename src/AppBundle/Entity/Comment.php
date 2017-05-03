@@ -1,19 +1,19 @@
 <?php
 
-namespace TBN\CommentBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\User;
 
 /**
  * Comment
  *
  * @ORM\Table(name="Comment")
- * @ORM\Entity(repositoryClass="TBN\CommentBundle\Repository\CommentRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\CommentRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class Comment
@@ -61,7 +61,7 @@ class Comment
      *
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $user;
@@ -70,7 +70,7 @@ class Comment
      *
      * @var Agenda
      *
-     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Agenda", inversedBy="commentaires")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Agenda", inversedBy="commentaires")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $agenda;
@@ -79,13 +79,13 @@ class Comment
      *
      * @var Comment
      *
-     * @ORM\ManyToOne(targetEntity="TBN\CommentBundle\Entity\Comment", inversedBy="reponses")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comment", inversedBy="reponses")
      * @ORM\JoinColumn(nullable=true)
      */
     protected $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $reponses;
@@ -232,7 +232,7 @@ class Comment
     /**
      * Get user
      *
-     * @return \TBN\UserBundle\Entity\User
+     * @return \AppBundle\Entity\User
      */
     public function getUser()
     {
@@ -256,7 +256,7 @@ class Comment
     /**
      * Get agenda
      *
-     * @return \TBN\AgendaBundle\Entity\Agenda
+     * @return \AppBundle\Entity\Agenda
      */
     public function getAgenda()
     {
@@ -280,7 +280,7 @@ class Comment
     /**
      * Get parent
      *
-     * @return \TBN\CommentBundle\Entity\Comment
+     * @return \AppBundle\Entity\Comment
      */
     public function getParent()
     {

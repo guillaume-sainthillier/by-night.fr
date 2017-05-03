@@ -35,7 +35,7 @@ class BrowserCacheListener implements EventSubscriberInterface
          * @var BrowserCache|null $browserCache
          */
         $browserCache = $request->attributes->get('_browser_cache');
-        if(null === $browserCache || $browserCache->hasToUseCache()) {
+        if (null === $browserCache || $browserCache->hasToUseCache()) {
             return;
         }
 

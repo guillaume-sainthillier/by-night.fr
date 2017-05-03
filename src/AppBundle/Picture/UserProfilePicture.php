@@ -6,11 +6,11 @@
  * Time: 18:48
  */
 
-namespace TBN\MainBundle\Picture;
+namespace AppBundle\Picture;
 
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\User;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserProfilePicture
@@ -30,17 +30,18 @@ class UserProfilePicture
         $this->helper = $helper;
     }
 
-    public function getProfilePicture(User $user, $thumb = 'thumb_user') {
-        if($user->getPath()) {
+    public function getProfilePicture(User $user, $thumb = 'thumb_user')
+    {
+        if ($user->getPath()) {
             return $this->cacheManager->getBrowserPath($this->helper->asset($user, 'imageFile'), $thumb);
         }
 
-        if($user->getSystemPath()) {
+        if ($user->getSystemPath()) {
             return $this->cacheManager->getBrowserPath($this->helper->asset($user, 'imageSystemFile'), $thumb);
         }
 
         $info = $user->getInfo();
-        if($info) {
+        if ($info) {
             if ($info->getFacebookProfilePicture() !== null) {
                 return $info->getFacebookProfilePicture();
             } elseif ($info->getTwitterProfilePicture() !== null) {

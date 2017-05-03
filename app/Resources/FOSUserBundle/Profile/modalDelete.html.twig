@@ -1,0 +1,15 @@
+{% extends "::modal.html.twig" %}
+
+{% block titre %}Confirmation de suppression{% endblock %}
+{% block body %}
+    <div class="alert alert-warning"><i class="fa fa-warning"></i> Vous êtes sur le point de supprimer votre compte.
+        <strong> Cette action est irréversible !</strong></div>
+    {{ form_errors(formDelete.delete_events) }}
+    <div class="checkbox checkbox-primary">
+        <label>Supprimer mes événements {{ form_widget(formDelete.delete_events) }}</label>
+    </div>
+    {{ form_rest(formDelete) }}
+{% endblock %}
+{% block footer %}<input class="btn btn-flat btn-danger" type="submit" value="Confirmer"/>{% endblock %}
+{% block modal_id %}modalDelete{% endblock %}
+{% block form_action %}{{ path('tbn_user_delete') }}{% endblock %}

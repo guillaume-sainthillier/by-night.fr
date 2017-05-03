@@ -1,14 +1,14 @@
 <?php
 
-namespace TBN\MajDataBundle\Tests\Utils;
+namespace AppBundle\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MajDataBundle\Entity\Exploration;
-use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Utils\Firewall;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\Exploration;
+use AppBundle\Reject\Reject;
+use AppBundle\Utils\Firewall;
 
 
 class FirewallTest extends KernelTestCase
@@ -25,7 +25,8 @@ class FirewallTest extends KernelTestCase
         $this->firewall = static::$kernel->getContainer()->get('tbn.firewall');
     }
 
-    public function testExplorations() {
+    public function testExplorations()
+    {
         $noNeedToUpdateReject = (new Reject())->addReason(Reject::NO_NEED_TO_UPDATE);
         $badReject = (new Reject())->addReason(Reject::BAD_PLACE_LOCATION);
         $deletedReject = (new Reject())->addReason(Reject::EVENT_DELETED);

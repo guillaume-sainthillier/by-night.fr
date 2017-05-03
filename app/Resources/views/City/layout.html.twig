@@ -1,0 +1,80 @@
+{% extends "::base.html.twig" %}
+
+{% set ville = site.subdomain %}
+
+{% block title %}{% spaceless %}{% block title_agenda %}{% endblock %}{% endspaceless %}{% endblock %}
+{% block nom_site %}{{ site.nom }} {{ parent() }}{% endblock %}
+{% block titre %}{% block titre_agenda %}{% endblock %}{% endblock %}
+{% block meta_keywords %}{{ site.nom|lower }}{% endblock %}
+{% block og_url %}{{ url('tbn_agenda_index', {'city': site.subdomain}) }}{% endblock %}
+
+{% block meta_description %}Sortir à {{ site.nom }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.{% endblock %}
+    
+{% block body %}
+    <div id="fb-root"></div>{% block body_agenda %}{% endblock %}{% endblock %}
+{% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
+
+{% block breadcrumb %}
+    <div id="bread" class="bg-white">
+        <div class="container">
+            {% set item = menu.addItem('Sortir à ' ~ site.nom, path('tbn_agenda_index', {'city': site.subdomain})) %}
+            {% block breadcrumb_agenda %}{% endblock %}
+            {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block twitter %}
+    {% if app_manager.twitterIdPage %}
+        <meta name="twitter:card" content="summary"/>
+        <meta name="twitter:site" content="@{{ app_manager.twitterIdPage }}"/>
+        <meta name="twitter:title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}"/>
+        <meta name="twitter:description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}"/>
+        <meta name="twitter:image:src" content="{% spaceless %}{{ block('og_image') }}{% endspaceless %}"/>
+    {% endif %}
+{% endblock %}
+
+{% block google %}
+    {% if app_manager.googleIdPage %}
+        <link rel="author" href="https://plus.google.com/u/{{ app_manager.googleIdPage }}"/>
+    {% endif %}
+{% endblock %}
+
+{% block facebook %}
+    {% if app_manager.facebookIdPage %}
+        <meta property="fb:page_id" content="{{ app_manager.facebookIdPage }}"/>
+    {% endif %}
+{% endblock %}
+
+{% block footer %}
+    {{ render_esi(controller('AppBundle:Fragments/Common:footer', {'site': site})) }}
+{% endblock %}
+
+{% block js %}
+    {% block js_template %}{% block js_agenda %}{% endblock %}{% endblock %}
+{% endblock %}
+    
+{% block css %}
+    {% block css_agenda %}{% endblock %}
+{% endblock %}
+    
+{% block head_js %}
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "url": "{{ url('tbn_agenda_index', {'city': site.subdomain}) }}",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "{{ url('tbn_search_query', {'q': '{search_term_string}', 'city': site.subdomain})|url_decode }}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+
+    </script>
+    <script type="text/javascript">
+        var ville = "{{ site.nom }}";
+        var fbAppId = "{{ facebook_app_id }}";
+    </script>
+    {% block head_js_agenda %}{% endblock %}
+{% endblock %}

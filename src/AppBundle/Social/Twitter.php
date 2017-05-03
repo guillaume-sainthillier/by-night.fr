@@ -1,10 +1,10 @@
 <?php
 
 
-namespace TBN\SocialBundle\Social;
+namespace AppBundle\Social;
 
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\User;
 use TwitterOAuth\Auth\SingleUserAuth;
 /**
  * Serializer Namespace
@@ -56,7 +56,8 @@ class Twitter extends Social
         return 0;
     }
 
-    public function getTimeline($max_id, $limit) {
+    public function getTimeline($max_id, $limit)
+    {
         $this->init();
         try {
             $site = $this->siteManager->getCurrentSite();
@@ -69,7 +70,7 @@ class Twitter extends Social
                     'count' => $limit
                 ];
 
-                if($max_id) {
+                if ($max_id) {
                     $params['max_id'] = $max_id;
                 }
 
@@ -82,7 +83,8 @@ class Twitter extends Social
         return [];
     }
 
-    public function postNews($title, $url) {
+    public function postNews($title, $url)
+    {
         $info = $this->siteManager->getSiteInfo();
         if ($info->getTwitterAccessToken() !== null) {
             $config = [

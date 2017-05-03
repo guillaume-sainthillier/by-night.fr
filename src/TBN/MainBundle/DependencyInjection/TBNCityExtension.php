@@ -23,31 +23,31 @@ class TBNCityExtension extends Extension
         $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yml');
+//        $loader->load('services.yml');
 
-        $this->addClassesToCompile([
-           'TBN\\AgendaBundle\\Geolocalize',
-           'TBN\\AgendaBundle\\AgendaRepository',
-           'TBN\\MainBundle\\Listener',
-           'TBN\\MainBundle\\Routing',
-           'TBN\\MainBundle\\Site',
-           'TBN\\MainBundle\\Twig',
-           'TBN\\MajDataBundle\\Cleaner',
-           'TBN\\MajDataBundle\\Fetcher',
-           'TBN\\MajDataBundle\\Reject',
-           'TBN\\MajDataBundle\\Utils',
-           'TBN\\SocialBundle\\Exception',
-           'TBN\\UserBundle\\Captcha',
-           'TBN\\UserBundle\\EventListener',
-           'TBN\\UserBundle\\Handler',
-           'TBN\\UserBundle\\Validator\\Constraints',
-           'TBN\\SocialBundle\\Social',
-           'TBN\\**Bundle\\Repository',
-           'TBN\\**Bundle\\Parser',
-        ]);
-
-        $this->addAnnotatedClassesToCompile([
-            'TBN\\AgendaBundle\\Search',
-        ]);
+//        $this->addClassesToCompile([
+//            'TBN\MainBundle\\Geolocalize',
+//            'TBN\MainBundle\\AgendaRepository',
+//            'TBN\MainBundle\\Listener',
+//            'TBN\MainBundle\\Routing',
+//            'TBN\MainBundle\\Site',
+//            'TBN\MainBundle\\Twig',
+//            'TBN\MainBundle\\Cleaner',
+//            'TBN\MainBundle\\Fetcher',
+//            'TBN\MainBundle\\Reject',
+//            'TBN\MainBundle\\Utils',
+//            'TBN\MainBundle\\Exception',
+//            'TBN\MainBundle\\Captcha',
+//            'TBN\MainBundle\\EventListener',
+//            'TBN\MainBundle\\Handler',
+//            'TBN\MainBundle\\Validator\\Constraints',
+//            'TBN\MainBundle\\Social',
+//            'TBN\MainBundle\\Repository',
+//            'TBN\MainBundle\\Parser',
+//        ]);
+//
+//        $this->addAnnotatedClassesToCompile([
+//            'TBN\MainBundle\\Search',
+//        ]);
     }
 }

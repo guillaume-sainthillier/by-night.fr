@@ -1,9 +1,9 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser\Common;
+namespace AppBundle\Parser\Common;
 
 use Symfony\Component\DomCrawler\Crawler;
-use TBN\MajDataBundle\Parser\LinksParser;
+use AppBundle\Parser\LinksParser;
 use \ForceUTF8\Encoding;
 
 /**
@@ -47,7 +47,7 @@ class SoonNightParser extends LinksParser
         $lieux = $this->parser->filter('.adresse');
         if ($lieux->count()) {
             $infosGPS = array_map('trim', explode(',', $lieux->attr('longlat')));
-            if(count($infosGPS) > 1) {
+            if (count($infosGPS) > 1) {
                 $lat = $infosGPS[0];
                 $long = $infosGPS[1];
             }
@@ -111,7 +111,8 @@ class SoonNightParser extends LinksParser
         return $tab_retour;
     }
 
-    public function normalizeAddress($adresse) {
+    public function normalizeAddress($adresse)
+    {
         $infos = array_values(array_filter(array_map('trim', explode(',', $adresse))));
 
         $rue = null;
@@ -124,15 +125,15 @@ class SoonNightParser extends LinksParser
          * Canal de l'Ourcq - Parc de la Villette, 59 Boulevard Macdonald, 75019 Paris
          * Escale de Passy, parking Passy face à la maison de la radio, 75016 Paris
          */
-        if(count($infos) > 2) {
-            if(is_numeric($infos[0])) {
+        if (count($infos) > 2) {
+            if (is_numeric($infos[0])) {
                 $infos[0] = sprintf(
                     "%s %s",
                     $infos[0],
                     $infos[1]
                 );
                 $infos[1] = $infos[2];
-            }elseif(! preg_match("#^\d{5} #", $infos[1])) {
+            } elseif (!preg_match("#^\d{5} #", $infos[1])) {
                 $infos[0] = $infos[1];
                 $infos[1] = $infos[2];
             }
@@ -141,10 +142,10 @@ class SoonNightParser extends LinksParser
 
         $infosRue = array_values(array_filter(array_map('trim', explode('-', $infos[0]))));
         $rue = $infosRue[count($infosRue) - 1];
-        if(count($infos) > 1) {
+        if (count($infos) > 1) {
             $infosVille = array_map('trim', explode(' ', $infos[1]));
             $code_postal = $infosVille[0];
-            if(count($infosVille) > 0) {
+            if (count($infosVille) > 0) {
                 $ville = implode(' ', array_slice($infosVille, 1, count($infosVille)));
             }
         }
@@ -155,7 +156,7 @@ class SoonNightParser extends LinksParser
     public function getLinks()
     {
         $urls = [];
-        foreach($this->urls as $url) {
+        foreach ($this->urls as $url) {
             $this->setURL($url);
             $this->parseContent('HTML');
             $currentUrls = $this->parser->filter('div.soiree_liste .col_left a.titre')->each(function (Crawler $item) {
@@ -188,12 +189,13 @@ class SoonNightParser extends LinksParser
         return Encoding::UTF8FixWin1252Chars(Encoding::fixUTF8($t));
     }
 
-    protected function getSibling(Crawler $node, $filter) {
-        if($node->count()) {
+    protected function getSibling(Crawler $node, $filter)
+    {
+        if ($node->count()) {
             $parents = $node->parents();
-            if($parents->count()) {
+            if ($parents->count()) {
                 $sibling = $parents->filter($filter);
-                if($sibling->count()) {
+                if ($sibling->count()) {
                     return $sibling->eq(0);
                 }
             }

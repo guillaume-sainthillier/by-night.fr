@@ -6,7 +6,7 @@
  * Time: 20:51
  */
 
-namespace TBN\MajDataBundle\Utils;
+namespace AppBundle\Utils;
 
 
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -31,20 +31,23 @@ class Monitor
 
     private static $stats = [];
 
-    public static function createProgressBar($nbSteps) {
-        if( self::$output) {
+    public static function createProgressBar($nbSteps)
+    {
+        if (self::$output) {
             static::$progressBar = new ProgressBar(self::$output, $nbSteps);
         }
     }
 
-    public static function advanceProgressBar($step = 1) {
-        if(static::$progressBar) {
+    public static function advanceProgressBar($step = 1)
+    {
+        if (static::$progressBar) {
             static::$progressBar->advance($step);
         }
     }
 
-    public static function finishProgressBar() {
-        if(static::$progressBar) {
+    public static function finishProgressBar()
+    {
+        if (static::$progressBar) {
             static::$progressBar->finish();
         }
     }
@@ -59,7 +62,8 @@ class Monitor
         return $stats;
     }
 
-    public static function enableMonitoring($enable) {
+    public static function enableMonitoring($enable)
+    {
         self::$enableMonitoring = $enable;
     }
 
@@ -111,7 +115,8 @@ class Monitor
         }
     }
 
-    public static function writeException(\Exception $e) {
+    public static function writeException(\Exception $e)
+    {
         self::writeln(sprintf(
             "<error>%s at %s(%d)</error> <info>%s</info>",
             $e->getMessage(),
@@ -128,7 +133,8 @@ class Monitor
         }
     }
 
-    public static function displayTable(array $datas) {
+    public static function displayTable(array $datas)
+    {
         $datas = isset($datas[0]) ? $datas[0] : [$datas];
         $headers = array_keys($datas[0]);
 
@@ -158,7 +164,7 @@ class Monitor
     public static function bench($message, callable $function)
     {
         $stopwatch = null;
-        if(self::$enableMonitoring) {
+        if (self::$enableMonitoring) {
             if (!isset(self::$stats[$message])) {
                 self::$stats[$message] = [
                     'time' => [],
@@ -172,7 +178,7 @@ class Monitor
 
         $retour = call_user_func($function);
 
-        if(self::$enableMonitoring) {
+        if (self::$enableMonitoring) {
             $event = $stopwatch->stop($message);
 
             self::$stats[$message]['time'][] = $event->getDuration();

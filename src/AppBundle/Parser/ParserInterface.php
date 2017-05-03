@@ -1,7 +1,8 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser;
-use TBN\AgendaBundle\Entity\Agenda;
+namespace AppBundle\Parser;
+
+use AppBundle\Entity\Agenda;
 
 /**
  * Description of ParserInterface

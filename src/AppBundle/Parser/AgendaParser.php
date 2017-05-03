@@ -1,13 +1,13 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser;
+namespace AppBundle\Parser;
 
 
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\MainBundle\Entity\Site;
-use TBN\UserBundle\Entity\SiteInfo;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\Site;
+use AppBundle\Entity\SiteInfo;
 
 /*
  * Classe abstraite représentant le parse des données d'un site Internet
@@ -58,13 +58,15 @@ abstract class AgendaParser implements ParserInterface
 
     public abstract function getRawAgendas();
 
-    public function addUrl($url) {
+    public function addUrl($url)
+    {
         $this->urls[] = $url;
 
         return $this;
     }
 
-    public function getUrls() {
+    public function getUrls()
+    {
         return $this->urls;
     }
 

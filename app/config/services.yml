@@ -1,10 +1,124 @@
+parameters:
+    my_user_provider.class: AppBundle\Security\Core\User\FOSUBUserProvider
+    class.guzzle.response: Guzzle\Http\Message\Response
+    class.guzzle.client: Guzzle\Http\Client
+    class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
+    twitter.baseurl: https://api.twitter.com/1.1
+    twitter.config:
+    consumer_key: "%twitter_app_id%"
+    consumer_secret: "%twitter_app_secret%"
+    url_soonnight_tlse: http://www.soonnight.com/midi-pyrenees/sortir-midi-pyrenees,4.html?id_dept=15
+    url_soonnight_paris: http://www.soonnight.com/paris/sortir-paris,4.html
+    url_soonnight_marseille: http://www.soonnight.com/paca/sortir-paca,4.html?id_dept=40
+    url_soonnight_lyon: http://www.soonnight.com/rhone-alpes/sortir-rhone-alpes,4.html?id_dept=21
+    url_soonnight_brest: http://www.soonnight.com/bretagne/sortir-bretagne,4.html?id_dept=85
+    url_soonnight_nantes: http://www.soonnight.com/pays-de-la-loire/sortir-pays-de-la-loire,4.html?id_dept=89
+    url_soonnight_lille: http://www.soonnight.com/nord-pas-de-calais/sortir-nord-pas-de-calais,4.html?id_dept=32
+    url_soonnight_montpellier: http://www.soonnight.com/languedoc-roussillon/sortir-languedoc-roussillon,4.html?id_dept=26
+    url_soonnight_nice: http://www.soonnight.com/paca/sortir-paca,4.html?id_dept=11
+    url_soonnight_bordeaux: http://www.soonnight.com/aquitaine/sortir-aquitaine,4.html?id_dept=36
+    url_opendata_toulouse: https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true
+
+
 services:
+    tbn.news_manager:
+        class: AppBundle\News\NewsManager
+        arguments: [ "@doctrine.orm.entity_manager", "@twig", "@tbn.social.facebook_admin", "@tbn.social.twitter", "@logger" ]
+
+    debril.provider.default:
+        class: AppBundle\Provider\AgendaProvider
+        arguments: [ "@doctrine.orm.entity_manager", "@site_manager", "@router" ]
+    tbn.programmetv:
+        class: AppBundle\Parser\ProgrammeTVParser
+
+    tbn.event_seo:
+        class: AppBundle\SEO\EventSEO
+        arguments: [ "@tbn.util" ]
+
     app.city_converter:
         class: AppBundle\Request\ParamConverter\CityConverter
         tags:
             - { name: request.param_converter, priority: 0, converter: city_converter }
         arguments:
             - "@doctrine"
+
+    tbn.monolog_formatter:
+            class: Monolog\Formatter\LineFormatter
+            calls:
+                - [includeStacktraces]
+
+    tbn.event_listener.populate_listener:
+        class: AppBundle\Listener\PopulateListener
+        arguments: [ "@fos_elastica.index_manager" ]
+        tags:
+            - { name: kernel.event_listener, event: "elastica.index.index_pre_populate", method: preIndexPopulate}
+            - { name: kernel.event_listener, event: "elastica.index.index_post_populate", method: postIndexPopulate}
+
+    tbn.event_http:invalidator:
+        class: AppBundle\Invalidator\EventInvalidator
+        arguments: [ "@fos_http_cache.handler.tag_handler", "@logger" ]
+    tbn.app_manager:
+        class: AppBundle\App\AppManager
+        arguments: [ "@service_container" ]
+    tbn.event_archivator:
+        class: AppBundle\Archive\EventArchivator
+        arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.by_night.event" ]
+
+    tbn.event_listener:
+        class: AppBundle\Listener\EventListener
+        arguments: [ "@tbn.event_http:invalidator" ]
+        tags:
+          - { name: doctrine.event_listener, event: preRemove }
+          - { name: doctrine.event_listener, event: postUpdate }
+          - { name: doctrine.event_listener, event: postFlush }
+
+    tbn.profile_picture.event:
+        class: AppBundle\Picture\EventProfilePicture
+        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper", "@assets.packages", "@router" ]
+
+    tbn.profile_picture.user:
+        class: AppBundle\Picture\UserProfilePicture
+        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper" ]
+
+    site_manager:
+        class: AppBundle\Site\SiteManager
+        arguments: [ "@doctrine.orm.entity_manager" ]
+
+    image_listener:
+        class: AppBundle\Listener\ImageListener
+        arguments: [ "@liip_imagine.cache.manager" ]
+        tags:
+           - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
+
+    tbn.twig.main_extension:
+        class: AppBundle\Twig\MainExtension
+        arguments: [ "@site_manager", "@service_container" ]
+        tags:
+            - { name: twig.extension }
+
+    #Forms
+    #Collections
+    tbn.collections:
+        class: AppBundle\Form\Extension\CollectionExtension
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\CollectionType }
+
+    #Surcouche globale des formulaires
+    tbn.forms:
+        class: AppBundle\Form\Extension\WidgetFormTypeExtension
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
+    #Datepicker
+    tbn.forms.datepicker:
+        class: AppBundle\Form\Extension\DateTypeExtension
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\DateType }
+    #Image
+    tbn.image_type_extension:
+        class: AppBundle\Form\Extension\ImageTypeExtension
+        tags:
+            - { name: form.type_extension, extended_type: Vich\UploaderBundle\Form\Type\VichImageType }
+
 
     app.event_listener.browser_cache:
         class: AppBundle\EventListener\BrowserCacheListener
@@ -19,3 +133,202 @@ services:
 #          - "@router"
 #        tags:
 #           - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}
+    tbn.event_updater:
+            class: AppBundle\Updater\EventUpdater
+            arguments:
+              - "@doctrine.orm.default_entity_manager"
+              - "@tbn.social.facebook_admin"
+              - "@tbn.event_handler"
+    tbn.user_updater:
+        class: AppBundle\Updater\UserUpdater
+        arguments:
+          - "@doctrine.orm.default_entity_manager"
+          - "@tbn.social.facebook_admin"
+          - "@tbn.user_handler"
+    tbn.event_fetcher:
+        class: AppBundle\Fetcher\EventFetcher
+        arguments:
+          - "@tbn.parser_manager"
+          - "@doctrine.orm.default_entity_manager"
+    #Parsers
+    tbn.parser.abstract:
+        class: AppBundle\Parser\AgendaParser
+    tbn.parser.abstracts.soonnight:
+        class: AppBundle\Parser\Common\SoonNightParser
+        calls:
+            - ['addUrl', ["%url_soonnight_paris%"]]
+            - ['addUrl', ["%url_soonnight_tlse%"]]
+            - ['addUrl', ["%url_soonnight_marseille%"]]
+            - ['addUrl', ["%url_soonnight_lyon%"]]
+            - ['addUrl', ["%url_soonnight_brest%"]]
+            - ['addUrl', ["%url_soonnight_nice%"]]
+            - ['addUrl', ["%url_soonnight_nantes%"]]
+            - ['addUrl', ["%url_soonnight_bordeaux%"]]
+            - ['addUrl', ["%url_soonnight_lille%"]]
+            - ['addUrl', ["%url_soonnight_montpellier%"]]
+
+    tbn.parser.abstracts.facebook:
+        class: AppBundle\Parser\Common\FaceBookParser
+        arguments: ["@doctrine.orm.entity_manager", "@tbn.firewall", "@tbn.social.facebook_admin"]
+    #Toulouse
+    tbn.parser.toulouse.bikini:
+        class: AppBundle\Parser\Toulouse\BikiniParser
+    tbn.parser.toulouse.toulouse:
+        class: AppBundle\Parser\Toulouse\ToulouseParser
+        calls:
+            - ['setUrl', ["%url_opendata_toulouse%"]]
+    tbn.parser.toulouse.tourisme:
+        class: AppBundle\Parser\Toulouse\ToulouseTourismeParser
+    tbn.parser.toulouse.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #Paris
+    tbn.parser.paris.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #Marseille
+    tbn.parser.marseille.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #lyon
+    tbn.parser.lyon.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #brest
+    tbn.parser.brest.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #nice
+    tbn.parser.nice.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #nantes
+    tbn.parser.nantes.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #bordeaux
+    tbn.parser.bordeaux.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #lille
+    tbn.parser.lille.facebook:
+        parent: tbn.parser.abstracts.facebook
+    #montpellier
+    tbn.parser.montpellier.facebook:
+        parent: tbn.parser.abstracts.facebook
+
+    #Alises
+    tbn.facebook_parser:
+        alias: tbn.parser.abstracts.facebook
+    tbn.soonnight_parser:
+        alias: tbn.parser.abstracts.soonnight
+    tbn.toulouse_parser:
+        alias: tbn.parser.toulouse.toulouse
+    tbn.bikini_parser:
+        alias: tbn.parser.toulouse.bikini
+    tbn.toulouse_tourisme_parser:
+        alias: tbn.parser.toulouse.tourisme
+
+    #Manager
+    tbn.parser_manager:
+        class: AppBundle\Parser\Manager\ParserManager
+
+    #Utils
+    tbn.util:
+        class: AppBundle\Utils\Util
+    tbn.echantillon_handler:
+        class: AppBundle\Handler\EchantillonHandler
+        arguments: ["@doctrine.orm.entity_manager"]
+    tbn.doctrine_event_handler:
+        class: AppBundle\Handler\DoctrineEventHandler
+        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler"]
+    tbn.event_handler:
+        class: AppBundle\Handler\EventHandler
+        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.root_dir%/../web/uploads/temp"]
+    tbn.user_handler:
+        class: AppBundle\Handler\UserHandler
+        arguments: ["%kernel.root_dir%/../web/uploads/temp"]
+    tbn.comparator:
+        class: AppBundle\Utils\Comparator
+        arguments: ["@tbn.util", "@comparator_cache"]
+    tbn.cleaner:
+        class: AppBundle\Utils\Cleaner
+        arguments: ["@tbn.util"]
+    tbn.firewall:
+        class: AppBundle\Utils\Firewall
+        arguments: ["@doctrine", "@tbn.comparator"]
+    tbn.merger:
+        class: AppBundle\Utils\Merger
+        arguments: ["@tbn.comparator"]
+
+    #Cleaner
+    tbn.image_cleaner:
+        class: AppBundle\Cleaner\ImageCleaner
+        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "%kernel.root_dir%/../web"]
+
+    tbn.social.twitter:
+        class:        AppBundle\Social\Twitter
+        arguments:    [{ id: "%twitter_app_id%", secret: "%twitter_app_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+    tbn.social.facebook:
+        class:        AppBundle\Social\Facebook
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+    tbn.social.facebook_events:
+        class:        AppBundle\Social\FacebookEvents
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+    tbn.social.facebook_list_events:
+        class:        AppBundle\Social\FacebookListEvents
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+    tbn.social.facebook_admin:
+        class:        AppBundle\Social\FacebookAdmin
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager", "@doctrine.orm.entity_manager", "@jms_serializer"]
+    tbn.social.google:
+        class:        AppBundle\Social\Google
+        arguments:    [{ id: "%google_app_id%", secret: "%google_app_secret%", key: "%google_map_key%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+
+    tbn.event_validator:
+        class: AppBundle\Validator\Constraints\EventConstraintValidator
+        arguments: ["@router"]
+        tags:
+            - { name: validator.constraint_validator, alias: EventContraintValidator }
+
+    tbn.captcha_listener:
+        class: AppBundle\EventListener\ReCaptchaListener
+        arguments: ["fos_user_registration_form", "recaptcha"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: "onKernelController" }
+
+    tbn.captcha_wrapper:
+        class: AppBundle\Captcha\CaptchaWrapper
+        arguments: ["@request_stack", "%google_recaptcha_secret%"]
+
+    tbn.validation.response_validator:
+        class: AppBundle\Validator\Constraints\ReCaptchaResponseValidator
+        arguments: ["@tbn.captcha_wrapper"]
+        tags:
+          - { name: validator.constraint_validator, alias: recaptcha_response_validator }
+
+    my_user_provider:
+        class: "%my_user_provider.class%"
+        #this is the place where the properties are passed to the UserProvider - see config.yml
+        arguments: ["@fos_user.user_manager", {facebook: facebook_id, google: google_id, twitter: twitter_id}, "@site_manager", "@doctrine", {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook_list_events: "@tbn.social.facebook_list_events", facebook: "@tbn.social.facebook"}]
+
+    tbn.form.type.task:
+        class: AppBundle\Form\Type\AgendaType
+        arguments: ['@tbn.doctrine_event_handler']
+        tags:
+            - { name: form.type }
+
+    tbn.registration.form.type:
+        class: AppBundle\Form\Type\RegistrationFormType
+        arguments: ["%fos_user.model.user.class%"]
+        tags:
+            - { name: form.type, alias: tbn_user_registration }
+
+    tbn.form.type.recaptcha:
+        class: AppBundle\Form\Type\ReCaptchaType
+        arguments:
+            - '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
+        tags:
+            - { name: form.type, alias: recaptcha}
+
+    tbn.profile.form.type:
+        class: AppBundle\Form\Type\ProfileFormType
+        arguments: ["%fos_user.model.user.class%"]
+        tags:
+            - { name: form.type, alias: tbn_user_profile }
+
+    authentication_handler:
+        class: AppBundle\Handler\AuthenticationHandler
+        arguments: ["@translator", "@router", "@session", "@site_manager"]

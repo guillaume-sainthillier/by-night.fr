@@ -7,17 +7,18 @@
  */
 
 namespace TBN\UserBundle\Controller;
-use \FOS\UserBundle\Controller\ProfileController as BaseController;
-use FOS\UserBundle\FOSUserEvents;
-use FOS\UserBundle\Event\FormEvent;
+
+use TBN\UserBundle\Entity\Agenda;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
+use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseUserEvent;
+use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Model\UserInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use TBN\AgendaBundle\Entity\Agenda;
+use \FOS\UserBundle\Controller\ProfileController as BaseController;
 
 class ProfileController extends BaseController
 {
@@ -26,15 +27,17 @@ class ProfileController extends BaseController
         return $this->redirectToRoute('fos_user_profile_edit');
     }
 
-    private function createDeleteForm() {
+    private function createDeleteForm()
+    {
         return $this->createFormBuilder()
             ->add('delete_events', CheckboxType::class, [
-                'required' => false
+                'required' => false,
             ])
             ->getForm();
     }
 
-    public function deleteAction(Request $request) {
+    public function deleteAction(Request $request)
+    {
         $user = $this->getUser();
         if (!is_object($user) || !$user instanceof UserInterface) {
             throw new AccessDeniedException('This user does not have access to this section.');
@@ -51,31 +54,31 @@ class ProfileController extends BaseController
 
             $deleteEvents = $form->get('delete_events')->getData();
             $events = $this->getDoctrine()->getRepository('TBNAgendaBundle:Agenda')->findBy([
-                'user' => $user
+                'user' => $user,
             ]);
 
-            foreach($events as $event) {
-                if(! $deleteEvents) {
+            foreach ($events as $event) {
+                if (!$deleteEvents) {
                     $event->setUser(null);
-                }else {
+                } else {
                     $em->remove($event);
                 }
             }
 
             $calendriers = $user->getCalendriers();
-            foreach($calendriers as $calendrier) {
+            foreach ($calendriers as $calendrier) {
                 /** @var Agenda $agenda */
                 $agenda = $calendrier->getAgenda();
-                if($calendrier->getParticipe()) {
+                if ($calendrier->getParticipe()) {
                     $agenda->setParticipations($agenda->getParticipations() - 1);
-                }else {
+                } else {
                     $agenda->setInterets($agenda->getInterets() - 1);
                 }
                 $em->remove($calendrier);
             }
 
             $comments = $this->getDoctrine()->getRepository('TBNCommentBundle:Comment')->findAllByUser($user);
-            foreach($comments as $comment) {
+            foreach ($comments as $comment) {
                 $em->remove($comment);
             }
             $em->flush();
@@ -84,13 +87,12 @@ class ProfileController extends BaseController
 
             $this->addFlash('info', 'Votre compte a bien été supprimé. A bientôt sur By Night !');
             return $this->redirectToRoute('tbn_agenda_index');
-        }else {
+        } else {
             $errors = $form->getErrors(true);
-            foreach($errors as $error) {
+            foreach ($errors as $error) {
                 $this->addFlash('error', $error);
             }
         }
-
 
         return $this->redirectToRoute('fos_user_profile_edit');
     }
@@ -150,7 +152,7 @@ class ProfileController extends BaseController
         return $this->render('FOSUserBundle:Profile:edit.html.twig', array(
             'form' => $form->createView(),
             'formChangePassword' => $formChangePassword->createView(),
-            'formDelete' => $formDelete->createView()
+            'formDelete' => $formDelete->createView(),
         ));
     }
 }

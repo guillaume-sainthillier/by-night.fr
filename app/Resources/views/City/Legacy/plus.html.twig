@@ -1,0 +1,95 @@
+{% set no_ads = true %}
+{% extends "TBNAgendaBundle::layout.html.twig" %}
+
+{% block breadcrumb_agenda %}
+    {% set item = menu.addItem("En savoir plus", path('tbn_agenda_mention_legales')) %}
+{% endblock %}
+
+{% block title_agenda %}
+    En savoir plus
+{% endblock %}
+    
+{% block titre_agenda %}
+    Comment ça marche ?
+{% endblock %}
+    
+{% block body_agenda %}
+    <br/>
+    <h2 class="text-center">Vos événements en 4 actions : </h2>
+    <br/>
+    <div class="row en-savoir-plus">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="row bloc">
+                <div class="col-sm-4 text-center">
+                    <span class="icon even"><i class="fa fa-5x fa-cogs"></i></span>
+                </div>
+                <div class="col-sm-8">
+                    <h3 class="label even">Configurez</h3>
+                    <p>
+                        3 minutes suffisent pour créer gratuitement votre événement !
+                        Commencez à les diffuser sur internet sans connaissance
+                        technique quelque soit votre événement et sa taille.
+                        Éditez plusieurs types (entrées, tarifs réduits),
+                        rendez votre événement public ou privé, créez vos brouillons...
+                        {{ block('nom_site') }} vous propose tout un panel de fonctionnalités pour garantir
+                        le succès de vos événements !
+                    </p>
+                </div>
+            </div>
+            <hr/>
+            <div class="row bloc">
+                <div class="col-sm-4 text-center">
+                    <span class="icon odd"><i class="fa fa-5x fa-bullhorn"></i></span>
+                </div>
+                <div class="col-sm-8">
+                    <h3 class="label odd">Communiquez</h3>
+                    <p>
+                        Boostez votre auditoire grâce à nos outils de communication !
+                        Personnalisez vos événements à votre image, et la plateforme
+                        s'occupe pour vous de les diffuser sur les réseaux sociaux !
+                        Créez une communauté autour de vos évènements et développez votre audience
+                        grâce aux membres de {{ block('nom_site') }} !
+                    </p>
+                </div>
+            </div>
+            <hr/>
+            <div class="row bloc">
+                <div class="col-sm-4 text-center">
+                    <span class="icon even"><i class="fa fa-5x fa-eye"></i></span>
+                </div>
+                <div class="col-sm-8">
+                    <h3 class="label even">Contrôlez</h3>
+                    <p>
+                        Contrôlez les événements de manière simple, sûre et efficace !
+                    </p>
+                </div>
+            </div>
+            <hr/>
+            <div class="row bloc">
+                <div class="col-sm-4 text-center">
+                    <span class="icon odd"><i class="fa fa-5x fa-bar-chart-o"></i></span>
+                </div>
+                <div class="col-sm-8">
+                    <h3 class="label odd">Analysez</h3>
+                    <p>
+                        Un tableau de bord vous permet de piloter vos événements et
+                        votre communication en temps réel. Menez des actions de
+                        communication, analysez leurs impacts et touchez plus de personnes !
+                    </p>
+                </div>
+            </div>
+            <br/>
+            <br/>
+            <div class="text-center">
+                <a class="btn btn-primary btn-raised btn-block btn-lg" href="{{ path('tbn_agenda_new') }}">Créez votre
+                    événement dès maintenant</a>
+            </div>
+            <br/>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block css_agenda %}
+    <link rel="stylesheet" href="{{ asset('prod/plus/css/style.min.css', 'asset') }}" type="text/css">
+{% endblock %}

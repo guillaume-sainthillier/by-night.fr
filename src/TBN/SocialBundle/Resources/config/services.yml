@@ -1,5 +1,5 @@
 parameters:
-#    tbn_social.example.class: TBN\SocialBundle\Example
+#    TBN\_social.example.class: TBNSocialBundle\Example
 
 services:
     tbn.social.twitter:

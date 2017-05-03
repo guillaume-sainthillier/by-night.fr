@@ -1,14 +1,14 @@
 <?php
 
-namespace TBN\AgendaBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\User;
 
 /**
  * Calendrier
  *
- * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\CalendrierRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\CalendrierRepository")
  * @ORM\Table(name="Calendrier",
  *      uniqueConstraints={
  *          @ORM\UniqueConstraint(name="user_agenda_unique",columns={"user_id","agenda_id"})
@@ -41,13 +41,13 @@ class Calendrier
     protected $interet;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User", inversedBy="calendriers")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Agenda", inversedBy="calendriers")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Agenda", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $agenda;
@@ -155,7 +155,7 @@ class Calendrier
     /**
      * Get user
      *
-     * @return \TBN\UserBundle\Entity\User
+     * @return \AppBundle\Entity\User
      */
     public function getUser()
     {
@@ -179,7 +179,7 @@ class Calendrier
     /**
      * Get agenda
      *
-     * @return \TBN\AgendaBundle\Entity\Agenda
+     * @return \AppBundle\Entity\Agenda
      */
     public function getAgenda()
     {
@@ -211,6 +211,6 @@ class Calendrier
 
     public function __toString()
     {
-        return "#".$this->id ?: '?';
+        return "#" . $this->id ?: '?';
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\MainBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr;
@@ -13,12 +13,13 @@ use Doctrine\ORM\Query\Expr;
  */
 class SiteRepository extends EntityRepository
 {
-    public function findStats() {
+    public function findStats()
+    {
         return $this
             ->createQueryBuilder('s')
             ->select('s.nom, s.subdomain, count(DISTINCT u.id) AS count_users, count(DISTINCT a.id) as count_events')
-            ->leftJoin('TBNUserBundle:User', 'u',  Expr\Join::WITH, 'u.site = s')
-            ->leftJoin('TBNAgendaBundle:Agenda', 'a',  Expr\Join::WITH, 'a.site = s')
+            ->leftJoin('AppBundle:User', 'u', Expr\Join::WITH, 'u.site = s')
+            ->leftJoin('AppBundle:Agenda', 'a', Expr\Join::WITH, 'a.site = s')
             ->orderBy('s.nom')
             ->groupBy('s.id')
             ->getQuery()
@@ -28,12 +29,12 @@ class SiteRepository extends EntityRepository
     public function findRandomNames(Site $site, $limit = 5)
     {
         $results = $this
-        ->createQueryBuilder('s')
-        ->select('s.nom, s.subdomain')
-        ->where('s.id != :id')
-        ->setParameter('id', $site->getId())
-        ->getQuery()
-        ->getScalarResult();
+            ->createQueryBuilder('s')
+            ->select('s.nom, s.subdomain')
+            ->where('s.id != :id')
+            ->setParameter('id', $site->getId())
+            ->getQuery()
+            ->getScalarResult();
 
         shuffle($results);
         return array_slice($results, 0, $limit);
@@ -49,6 +50,6 @@ class SiteRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-       return $results;
+        return $results;
     }
 }

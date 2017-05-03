@@ -1,6 +1,7 @@
 <?php
 
-namespace TBN\MainBundle\Archive;
+namespace AppBundle\Archive;
+
 use Doctrine\ORM\EntityManager;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
@@ -22,19 +23,21 @@ class EventArchivator
      */
     private $entityManager;
 
-    public function __construct(EntityManager $entityManager, ObjectPersisterInterface $objectPersister) {
+    public function __construct(EntityManager $entityManager, ObjectPersisterInterface $objectPersister)
+    {
         $this->entityManager = $entityManager;
         $this->objectPersister = $objectPersister;
     }
 
-    public function archive() {
+    public function archive()
+    {
         $now = new \DateTime();
         $now->modify('-6 months');
-        $events = $this->entityManager->getRepository('TBNAgendaBundle:Agenda')->findOlds($now);
+        $events = $this->entityManager->getRepository('AppBundle:Agenda')->findOlds($now);
 
-        if($events) {
+        if ($events) {
             $this->objectPersister->deleteMany($events);
-            $this->entityManager->getRepository('TBNAgendaBundle:Agenda')->updateOlds($now);
+            $this->entityManager->getRepository('AppBundle:Agenda')->updateOlds($now);
         }
     }
 }

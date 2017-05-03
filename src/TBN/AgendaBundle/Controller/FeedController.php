@@ -2,7 +2,7 @@
 
 namespace TBN\AgendaBundle\Controller;
 
-use TBN\MainBundle\Controller\TBNController as Controller;
+use TBN\AgendaBundle\Controller\TBNController as Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 class FeedController extends Controller

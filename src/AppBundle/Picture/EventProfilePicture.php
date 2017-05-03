@@ -6,13 +6,13 @@
  * Time: 18:48
  */
 
-namespace TBN\MainBundle\Picture;
+namespace AppBundle\Picture;
 
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Routing\Router;
-use TBN\AgendaBundle\Entity\Agenda;
+use AppBundle\Entity\Agenda;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class EventProfilePicture
@@ -42,88 +42,93 @@ class EventProfilePicture
         $this->router = $router;
     }
 
-    private function getAppUrl() {
+    private function getAppUrl()
+    {
         return rtrim($this->router->generate('tbn_agenda_index', [], Router::ABSOLUTE_URL), '/');
     }
 
-    public function getOriginalPictureUrl(Agenda $agenda) {
-        if($agenda->getPath()) {
+    public function getOriginalPictureUrl(Agenda $agenda)
+    {
+        if ($agenda->getPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($agenda, 'file')
             );
         }
 
-        if($agenda->getSystemPath()) {
+        if ($agenda->getSystemPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($agenda, 'systemFile')
             );
         }
 
-        if($agenda->getUrl()) {
+        if ($agenda->getUrl()) {
             return $agenda->getUrl();
         }
 
         return $this->packages->getUrl('/img/empty_event.png');
     }
 
-    public function getOriginalPicture(Agenda $agenda) {
-        if($agenda->getPath()) {
+    public function getOriginalPicture(Agenda $agenda)
+    {
+        if ($agenda->getPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($agenda, 'file')
             );
         }
 
-        if($agenda->getSystemPath()) {
+        if ($agenda->getSystemPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($agenda, 'systemFile')
             );
         }
 
-        if($agenda->getUrl()) {
+        if ($agenda->getUrl()) {
             return $agenda->getUrl();
         }
 
         return $this->packages->getUrl('/img/empty_event.png');
     }
 
-    public function getPictureUrl(Agenda $agenda, $thumb = 'thumbs_evenement') {
-        if($agenda->getPath()) {
+    public function getPictureUrl(Agenda $agenda, $thumb = 'thumbs_evenement')
+    {
+        if ($agenda->getPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
-            $webPath = substr($webPath, strpos($webPath,'/media'), strlen($webPath));
+            $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
             return $this->packages->getUrl(
                 $webPath
             );
         }
 
-        if($agenda->getSystemPath()) {
+        if ($agenda->getSystemPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
-            $webPath = substr($webPath, strpos($webPath,'/media'), strlen($webPath));
+            $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
             return $this->packages->getUrl(
                 $webPath
             );
         }
 
-        if($agenda->getUrl()) {
+        if ($agenda->getUrl()) {
             return $agenda->getUrl();
         }
 
         $webPath = $this->cacheManager->getBrowserPath('img/empty_event.png', $thumb);
-        $webPath = substr($webPath, strpos($webPath,'/media'), strlen($webPath));
+        $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
         return $this->packages->getUrl(
             $webPath
         );
     }
 
-    public function getPicture(Agenda $agenda, $thumb = 'thumbs_evenement') {
-        if($agenda->getPath()) {
+    public function getPicture(Agenda $agenda, $thumb = 'thumbs_evenement')
+    {
+        if ($agenda->getPath()) {
             return $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
         }
 
-        if($agenda->getSystemPath()) {
+        if ($agenda->getSystemPath()) {
             return $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
         }
 
-        if($agenda->getUrl()) {
+        if ($agenda->getUrl()) {
             return $agenda->getUrl();
         }
 

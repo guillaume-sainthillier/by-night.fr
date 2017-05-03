@@ -1,10 +1,10 @@
 <?php
 
-namespace TBN\MajDataBundle\Command;
+namespace AppBundle\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use TBN\MajDataBundle\Utils\Monitor;
+use AppBundle\Utils\Monitor;
 
 
 class ArchiveCommand extends AppCommand
@@ -14,8 +14,7 @@ class ArchiveCommand extends AppCommand
     {
         $this
             ->setName('tbn:events:archive')
-            ->setDescription('Archive les vieux événements sur By Night')
-        ;
+            ->setDescription('Archive les vieux événements sur By Night');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

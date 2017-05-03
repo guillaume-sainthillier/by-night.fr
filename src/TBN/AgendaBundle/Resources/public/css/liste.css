@@ -54,103 +54,124 @@ and open the template in the editor.
     Author     : guillaume
 */
 .hinclude_errors .error {
-  display: none;
-  width: 100%;
-  text-align: center;
+    display: none;
+    width: 100%;
+    text-align: center;
 }
+
 .include_404 .error_404 {
-  display: inline-block;
+    display: inline-block;
 }
+
 .include_500 .error_500 {
-  display: inline-block;
+    display: inline-block;
 }
+
 .include_404 .hinclude_no_error,
 .include_500 .hinclude_no_error {
-  display: none;
+    display: none;
 }
+
 .panel-twitter {
-  min-height: 400px;
+    min-height: 400px;
 }
+
 .panel-twitter iframe {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
+
 .tendances strong {
-  display: block;
+    display: block;
 }
+
 .buttons {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
+
 html body #widgets .trait {
-  padding-bottom: 5px;
-  padding-top: 5px;
+    padding-bottom: 5px;
+    padding-top: 5px;
 }
+
 html body #widgets .trait a {
-  display: block;
+    display: block;
 }
+
 html body #widgets .trait small {
-  font-style: italic;
+    font-style: italic;
 }
+
 html body #widgets .trait .user_profil_picture {
-  padding-right: 0;
+    padding-right: 0;
 }
+
 .panel-primary .panel-heading .modal-title {
-  position: relative;
+    position: relative;
 }
+
 .panel-primary .panel-heading h3 .fa {
-  font-size: 20px;
-  height: 40px;
-  width: 40px;
-  line-height: 40px;
-  text-align: center;
-  background-color: white;
-  border: 1px solid #3f51b5;
-  border-radius: 50px;
-  position: absolute;
-  bottom: -25px;
-  right: 0;
-  z-index: 2;
+    font-size: 20px;
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid #3f51b5;
+    border-radius: 50px;
+    position: absolute;
+    bottom: -25px;
+    right: 0;
+    z-index: 2;
 }
+
 .panel-primary .panel-heading h2 .fa {
-  font-size: 25px;
-  height: 50px;
-  width: 50px;
-  line-height: 50px;
-  text-align: center;
-  background-color: white;
-  border: 1px solid #3f51b5;
-  border-radius: 50px;
-  position: absolute;
-  bottom: -30px;
-  right: 0;
-  z-index: 2;
+    font-size: 25px;
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid #3f51b5;
+    border-radius: 50px;
+    position: absolute;
+    bottom: -30px;
+    right: 0;
+    z-index: 2;
 }
+
 /*
 Created on : 21 mars 2014, 16:48:10
 Author     : guillaume
 */
 .block_criteres {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
+
 .block_criteres select[multiple].form-control {
-  display: none;
+    display: none;
 }
+
 .block_criteres .main_criteres .form-group {
-  margin-top: 15px;
+    margin-top: 15px;
 }
+
 .block_criteres .btn_shorcuts .btn {
-  margin-top: 0;
-  margin-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
+
 .block_criteres .btn_criteres {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
+
 .criteres {
-  margin-top: 10px;
+    margin-top: 10px;
 }
+
 .size-135 {
-  font-size: 1.35em;
+    font-size: 1.35em;
 }
 
 /*# sourceMappingURL=liste.css.map */

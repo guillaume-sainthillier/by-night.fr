@@ -6,7 +6,7 @@
  * Time: 18:55
  */
 
-namespace TBN\MajDataBundle\Updater;
+namespace AppBundle\Updater;
 
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
@@ -15,7 +15,7 @@ use GuzzleHttp\Psr7\Request;
 
 use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ResponseInterface;
-use TBN\SocialBundle\Social\FacebookAdmin;
+use AppBundle\Social\FacebookAdmin;
 
 abstract class Updater
 {
@@ -47,19 +47,20 @@ abstract class Updater
         ]);
     }
 
-    protected function downloadUrls(array $urls) {
+    protected function downloadUrls(array $urls)
+    {
         $requests = [];
-        foreach($urls as $i => $url) {
+        foreach ($urls as $i => $url) {
             $requests[$i] = new Request('GET', $url);
         }
 
         $responses = [];
         $pool = new Pool($this->client, $requests, [
             'concurrency' => self::POOL_SIZE,
-            'fulfilled' => function (ResponseInterface $response, $index) use(& $responses) {
+            'fulfilled' => function (ResponseInterface $response, $index) use (& $responses) {
                 $responses[$index] = (string)$response->getBody();
             },
-            'rejected' => function (RequestException $reason, $index) use(& $responses) {
+            'rejected' => function (RequestException $reason, $index) use (& $responses) {
                 $responses[$index] = null;
             },
         ]);

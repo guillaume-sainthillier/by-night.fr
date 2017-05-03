@@ -6,11 +6,11 @@
  * Time: 19:29
  */
 
-namespace TBN\MajDataBundle\Handler;
+namespace AppBundle\Handler;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\User;
 
 class UserHandler
 {
@@ -21,35 +21,37 @@ class UserHandler
         $this->tempPath = $tempPath;
     }
 
-    public function hasToDownloadImage($newURL, User $user) {
+    public function hasToDownloadImage($newURL, User $user)
+    {
         return $newURL && (
-            ! $user->getSystemPath() ||
-            ($user->getInfo() && $user->getInfo()->getFacebookProfilePicture() != $newURL)
-        );
+                !$user->getSystemPath() ||
+                ($user->getInfo() && $user->getInfo()->getFacebookProfilePicture() != $newURL)
+            );
     }
 
-    public function uploadFile(User $user, $content) {
-        if(! $user->getInfo()) {
+    public function uploadFile(User $user, $content)
+    {
+        if (!$user->getInfo()) {
             return;
         }
 
-        if(! $content) {
+        if (!$content) {
             $user->getInfo()->setFacebookProfilePicture(null);
-        }else {
+        } else {
             $url = $user->getInfo()->getFacebookProfilePicture();
             //En cas d'url du type:  http://u.rl/image.png?params
             $ext = preg_replace("/(\?|_)(.*)$/", "", pathinfo($url, PATHINFO_EXTENSION));
 
             $filename = sha1(uniqid(mt_rand(), true)) . "." . $ext;
 
-            $tempPath = $this->tempPath.'/'.$filename;
+            $tempPath = $this->tempPath . '/' . $filename;
             $octets = file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);
                 $user->setSystemPath($filename);
                 $user->setImageSystemFile($file);
-            }else {
+            } else {
                 $user->setImageSystemFile(null)->setSystemPath(null);
             }
         }

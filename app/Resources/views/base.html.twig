@@ -95,9 +95,9 @@
         <div id="wrap">
             <header>
                 <!-- Menu -->
-                {% if site %}
+                {#{% if site is defined and site %}#}
                 {{ render_esi(url('tbn_private_header')) }}
-                {% endif %}
+                {#{% endif %}#}
                 <!-- ./Menu -->
                 {% block breadcrumb -%}{%- endblock %}
             </header>

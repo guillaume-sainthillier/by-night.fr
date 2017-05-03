@@ -1,17 +1,17 @@
 <?php
 
-namespace TBN\MajDataBundle\Utils;
+namespace AppBundle\Utils;
 
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\AgendaBundle\Geolocalize\BoundaryInterface;
-use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
-use TBN\MajDataBundle\Entity\Exploration;
+use AppBundle\Entity\Place;
+use AppBundle\Entity\Agenda;
+use AppBundle\Geolocalize\BoundaryInterface;
+use AppBundle\Geolocalize\GeolocalizeInterface;
+use AppBundle\Entity\Exploration;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use TBN\MajDataBundle\Reject\Reject;
-use TBN\MajDataBundle\Repository\ExplorationRepository;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Reject\Reject;
+use AppBundle\Repository\ExplorationRepository;
+use AppBundle\Entity\User;
 
 /**
  * Description of Firewall
@@ -36,7 +36,7 @@ class Firewall
     public function __construct(Registry $doctrine, Comparator $comparator)
     {
         $this->om = $doctrine->getManager();
-        $this->repoExploration = $this->om->getRepository('TBNMajDataBundle:Exploration');
+        $this->repoExploration = $this->om->getRepository('AppBundle:Exploration');
         $this->comparator = $comparator;
         $this->places = [];
         $this->explorations = [];
@@ -50,15 +50,17 @@ class Firewall
         }
     }
 
-    protected function hasExplorationToBeUpdated(Exploration $exploration) {
-        if($exploration->getFirewallVersion() !== self::VERSION) {
+    protected function hasExplorationToBeUpdated(Exploration $exploration)
+    {
+        if ($exploration->getFirewallVersion() !== self::VERSION) {
             return true;
         }
 
         return false;
     }
 
-    public function hasPlaceToBeUpdated(Exploration $exploration) {
+    public function hasPlaceToBeUpdated(Exploration $exploration)
+    {
         return $this->hasExplorationToBeUpdated($exploration);
     }
 
@@ -67,18 +69,19 @@ class Firewall
         $explorationDate = $exploration->getLastUpdated();
         $eventDateModification = $event->getFbDateModification();
 
-        if(! $explorationDate || !$eventDateModification) {
+        if (!$explorationDate || !$eventDateModification) {
             return true;
         }
 
-        if($eventDateModification > $explorationDate) {
+        if ($eventDateModification > $explorationDate) {
             return true;
         }
 
         return false;
     }
 
-    public function isValid(Agenda $event) {
+    public function isValid(Agenda $event)
+    {
         return $event->getReject()->isValid() && $event->getPlace()->getReject()->isValid();
     }
 
@@ -87,36 +90,41 @@ class Firewall
         return ($object !== null && $object->getId() !== null);
     }
 
-    public function filterEventIntegrity(Agenda $event, User $oldEventUser = null) {
-        if(! $oldEventUser) {
+    public function filterEventIntegrity(Agenda $event, User $oldEventUser = null)
+    {
+        if (!$oldEventUser) {
             return;
         }
 
-        if(null === $event->getUser() ||
-            ($event->getUser()->getId() !== $oldEventUser->getId())) {
+        if (null === $event->getUser() ||
+            ($event->getUser()->getId() !== $oldEventUser->getId())
+        ) {
             $event->getReject()->addReason(Reject::BAD_USER);
         }
     }
 
-    public function filterEvent(Agenda $event) {
+    public function filterEvent(Agenda $event)
+    {
         $this->filterEventInfos($event);
-        if($event->getPlace()) {
+        if ($event->getPlace()) {
             $this->filterEventPlace($event->getPlace());
         }
     }
 
-    public function filterEventSite(Agenda $event) {
-        if(! $event->getSite()) {
+    public function filterEventSite(Agenda $event)
+    {
+        if (!$event->getSite()) {
             $event->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
             $event->getPlace()->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
         }
     }
 
-    public function filterEventExploration(Exploration $exploration, Agenda $event) {
+    public function filterEventExploration(Exploration $exploration, Agenda $event)
+    {
         $reject = $exploration->getReject();
 
         //Aucune action sur un événement supprimé sur la plateforme par son créateur
-        if($reject->isEventDeleted()) {
+        if ($reject->isEventDeleted()) {
             return;
         }
 
@@ -124,110 +132,108 @@ class Firewall
         $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
 
         //L'évémenement n'a pas changé -> non valide
-        if(! $hasToBeUpdated && ! $reject->hasNoNeedToUpdate()) {
+        if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-        //L'événement a changé -> valide
-        }elseif($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
+            //L'événement a changé -> valide
+        } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
 
         //L'exploration est ancienne -> maj de la version
-        if($hasFirewallVersionChanged)
-        {
+        if ($hasFirewallVersionChanged) {
             $exploration->setFirewallVersion(self::VERSION);
 
             //L'événement n'était pas valide -> valide
-            if(! $reject->hasNoNeedToUpdate()) {
+            if (!$reject->hasNoNeedToUpdate()) {
                 $reject->setValid();
             }
         }
     }
 
-    protected function filterEventPlace(Place $place) {
-        if(! $this->checkMinLengthValidity($place->getNom(), 2)) {
+    protected function filterEventPlace(Place $place)
+    {
+        if (!$this->checkMinLengthValidity($place->getNom(), 2)) {
             $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
         }
 
-        if(! $this->checkMinLengthValidity($place->getVille(), 2) && (
-            ! $place->getLatitude() ||
-            ! $place->getLongitude()
-        )) {
+        if (!$this->checkMinLengthValidity($place->getVille(), 2) && (
+                !$place->getLatitude() ||
+                !$place->getLongitude()
+            )
+        ) {
             $place->getReject()->addReason(Reject::NO_PLACE_LOCATION_PROVIDED);
         }
 
         $codePostal = $this->comparator->sanitizeNumber($place->getCodePostal());
-        if(! $this->checkLengthValidity($codePostal, 0) && ! $this->checkLengthValidity($codePostal, 5)) {
+        if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
             $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
         }
 
         //Observation du lieu
-        if($place->getFacebookId()) {
+        if ($place->getFacebookId()) {
             $exploration = $this->getExploration($place->getFacebookId());
-            if(! $exploration) {
+            if (!$exploration) {
                 $exploration = (new Exploration)
                     ->setId($place->getFacebookId())
                     ->setReject($place->getReject())
                     ->setReason($place->getReject()->getReason())
-                    ->setFirewallVersion(self::VERSION)
-                ;
+                    ->setFirewallVersion(self::VERSION);
                 $this->addExploration($exploration);
-            }else {
+            } else {
                 $exploration
                     ->setReject($place->getReject())
-                    ->setReason($place->getReject()->getReason())
-                ;
+                    ->setReason($place->getReject()->getReason());
             }
         }
     }
 
-    protected function filterEventInfos(Agenda $event) {
-        if (! $this->checkMinLengthValidity($event->getNom(), 3)) {
+    protected function filterEventInfos(Agenda $event)
+    {
+        if (!$this->checkMinLengthValidity($event->getNom(), 3)) {
             $event->getReject()->addReason(Reject::BAD_EVENT_NAME);
         }
 
-        if(! $this->checkMinLengthValidity($event->getDescriptif(), 20)) {
+        if (!$this->checkMinLengthValidity($event->getDescriptif(), 20)) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DESCRIPTION);
         }
 
-        if($this->isSPAMContent($event->getDescriptif())) {
+        if ($this->isSPAMContent($event->getDescriptif())) {
             $event->getReject()->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
-        if(! $event->getDateDebut() instanceof \DateTime ||
-            ($event->getDateFin() && ! $event->getDateFin() instanceof \DateTime)
+        if (!$event->getDateDebut() instanceof \DateTime ||
+            ($event->getDateFin() && !$event->getDateFin() instanceof \DateTime)
         ) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DATE);
-        }elseif($event->getDateFin() && $event->getDateFin() < $event->getDateDebut()) {
+        } elseif ($event->getDateFin() && $event->getDateFin() < $event->getDateDebut()) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
         }
 
-        if(! $event->getPlace()) {
+        if (!$event->getPlace()) {
             $event->getReject()->addReason(Reject::NO_PLACE_PROVIDED);
         }
 
         //Observation de l'événément
-        if($event->getFacebookEventId()) {
+        if ($event->getFacebookEventId()) {
             $exploration = $this->getExploration($event->getFacebookEventId());
-            if(! $exploration) {
+            if (!$exploration) {
                 $exploration = (new Exploration)
                     ->setId($event->getFacebookEventId())
                     ->setLastUpdated($event->getFbDateModification())
                     ->setReject($event->getReject())
                     ->setReason($event->getReject()->getReason())
-                    ->setFirewallVersion(self::VERSION)
-                ;
+                    ->setFirewallVersion(self::VERSION);
 
                 $this->addExploration($exploration);
-            }else {
+            } else {
                 //Pas besoin de paniquer l'EM si les dates sont équivalentes
-                if($exploration->getLastUpdated() != $event->getFbDateModification()) {
+                if ($exploration->getLastUpdated() != $event->getFbDateModification()) {
                     $exploration->setLastUpdated($event->getFbDateModification());
                 }
 
                 $exploration
                     ->setReject($event->getReject())
-                    ->setReason($event->getReject()->getReason())
-                ;
+                    ->setReason($event->getReject()->getReason());
             }
         }
     }
@@ -240,24 +246,26 @@ class Firewall
     public function isLocationBounded(GeolocalizeInterface $entity, BoundaryInterface $boundary)
     {
         return $this->isPreciseLocation($entity) &&
-        $this->isPreciseLocation($boundary) &&
-        $this->distance($entity, $boundary) <= $boundary->getDistanceMax();
+            $this->isPreciseLocation($boundary) &&
+            $this->distance($entity, $boundary) <= $boundary->getDistanceMax();
     }
 
-    private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary) {
+    private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
+    {
         $theta = $entity->getLongitude() - $boundary->getLongitude();
         $dist = sin(deg2rad($entity->getLatitude())) *
             sin(deg2rad($boundary->getLatitude())) +
-                cos(deg2rad($entity->getLatitude())) *
-                cos(deg2rad($boundary->getLatitude())) *
-                cos(deg2rad($theta));
+            cos(deg2rad($entity->getLatitude())) *
+            cos(deg2rad($boundary->getLatitude())) *
+            cos(deg2rad($theta));
         $dist = acos($dist);
         $dist = rad2deg($dist);
 
         return $dist * 111.189577; //60 * 1.1515 * 1.609344
     }
 
-    public function deleteCache() {
+    public function deleteCache()
+    {
         $this->comparator->deleteCache();
     }
 
@@ -292,7 +300,8 @@ class Firewall
         return count($filter) > 0;
     }
 
-    public function getVilleHash($villeName) {
+    public function getVilleHash($villeName)
+    {
         return $this->comparator->sanitizeVille($villeName);
     }
 
@@ -319,7 +328,8 @@ class Firewall
         return $this->explorations;
     }
 
-    public function flushExplorations() {
+    public function flushExplorations()
+    {
         unset($this->explorations);
         $this->explorations = [];
     }

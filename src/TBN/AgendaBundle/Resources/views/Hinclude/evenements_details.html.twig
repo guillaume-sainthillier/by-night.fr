@@ -1,9 +1,0 @@
-{{ fos_httpcache_tag('detail-place-' ~ place.id ) }}
-{% if page == 1 and soirees|length == 0 %}
-    <p>Aucun événement prévu à {{ place.nom }} pour le moment ! Vous souhaitez <a href="{{ path('tbn_agenda_new') }}">créer un événement à {{ place.nom }}</a> ?</p>
-{% else %}
-{% include "@TBNAgenda/Agenda/block_preview_soiree.html.twig" with({"events": soirees, "microdata" : false}) %}
-{% if hasNextLink %}
-    <a class="more-content btn btn-primary btn-raised btn-block" href="{{ hasNextLink }}">Plus ({{ current }} / {{ count }})</a>
-{% endif %}
-{% endif %}

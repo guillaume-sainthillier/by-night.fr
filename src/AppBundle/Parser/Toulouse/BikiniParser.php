@@ -1,10 +1,10 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser\Toulouse;
+namespace AppBundle\Parser\Toulouse;
 
 use Symfony\Component\DomCrawler\Crawler;
 
-use TBN\MajDataBundle\Parser\LinksParser;
+use AppBundle\Parser\LinksParser;
 
 /**
  *

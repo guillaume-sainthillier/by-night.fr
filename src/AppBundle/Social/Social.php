@@ -1,7 +1,7 @@
 <?php
 
 
-namespace TBN\SocialBundle\Social;
+namespace AppBundle\Social;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -12,13 +12,13 @@ namespace TBN\SocialBundle\Social;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use TBN\MainBundle\App\AppManager;
-use TBN\MainBundle\Picture\EventProfilePicture;
-use TBN\SocialBundle\Exception\SocialException;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\UserBundle\Entity\User;
-use TBN\UserBundle\Entity\Info;
-use TBN\MainBundle\Site\SiteManager;
+use AppBundle\App\AppManager;
+use AppBundle\Picture\EventProfilePicture;
+use AppBundle\Exception\SocialException;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\User;
+use AppBundle\Entity\Info;
+use AppBundle\Site\SiteManager;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -123,8 +123,9 @@ abstract class Social
         $this->isInitialized = false;
     }
 
-    protected function init() {
-        if(! $this->isInitialized) {
+    protected function init()
+    {
+        if (!$this->isInitialized) {
             $this->constructClient();
             $this->isInitialized = true;
         }

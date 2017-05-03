@@ -2,13 +2,13 @@
 
 namespace TBN\UserBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use TBN\MainBundle\Controller\TBNController as Controller;
+use TBN\UserBundle\Controller\TBNController as Controller;
 use TBN\UserBundle\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserController extends Controller
 {
@@ -16,7 +16,7 @@ class UserController extends Controller
     public function urlRedirectAction($term)
     {
         $params = [
-            "type" => "membres"
+            "type" => "membres",
         ];
 
         if ($term) {
@@ -26,21 +26,22 @@ class UserController extends Controller
         return new RedirectResponse($this->get("router")->generate("tbn_search_query", $params));
     }
 
-    protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = []) {
+    protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
+    {
         $em = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository('TBNUserBundle:User');
 
-        if(! $id) {
+        if (!$id) {
             $user = $repoUser->findOneBy(['username' => $username]);
-        }else {
+        } else {
             $user = $repoUser->find($id);
         }
 
-        if(! $user || ! $user->getSlug()) {
+        if (!$user || !$user->getSlug()) {
             throw new NotFoundHttpException('User not found');
         }
 
-        if($user->getSlug() !== $slug) {
+        if ($user->getSlug() !== $slug) {
             $routeParams = array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
             return new RedirectResponse($this->generateUrl($routeName, $routeParams));
         }
@@ -51,7 +52,7 @@ class UserController extends Controller
     public function detailsAction($id = null, $slug = null, $username = null)
     {
         $result = $this->checkUserUrl($slug, $username, $id, 'tbn_user_details');
-        if($result instanceof Response) {
+        if ($result instanceof Response) {
             return $result;
         }
         $user = $result;
@@ -65,7 +66,7 @@ class UserController extends Controller
             return new RedirectResponse($this->generateUrl('tbn_user_details', [
                 'slug' => $user->getSlug(),
                 'id' => $user->getId(),
-                'subdomain' => $user->getSite()->getSubdomain()
+                'subdomain' => $user->getSite()->getSubdomain(),
             ]));
         }
 
@@ -82,7 +83,7 @@ class UserController extends Controller
     public function statsAction(Request $request, $type, $id = null, $slug = null, $username = null)
     {
         $result = $this->checkUserUrl($slug, $username, $id, 'tbn_user_stats', ['type' => $type]);
-        if($result instanceof Response) {
+        if ($result instanceof Response) {
             return $result;
         }
         $user = $result;
@@ -142,7 +143,7 @@ class UserController extends Controller
         $final_datas = [
             "categories" => [],
             "data" => [],
-            "full_categories"
+            "full_categories",
         ];
 
         for ($i = 1; $date <= $now; $i++) {
@@ -174,7 +175,7 @@ class UserController extends Controller
         $final_datas = [
             "categories" => [],
             "data" => [],
-            "full_categories"
+            "full_categories",
         ];
 
         for ($i = 1; $date <= $now; $i++) {
@@ -206,7 +207,7 @@ class UserController extends Controller
         $final_datas = [
             "categories" => [],
             "data" => [],
-            "full_categories"
+            "full_categories",
         ];
 
         for ($i = 1; $date <= $now; $i++) {

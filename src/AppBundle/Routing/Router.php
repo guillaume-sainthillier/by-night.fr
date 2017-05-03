@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\MainBundle\Routing;
+namespace AppBundle\Routing;
 
 use Symfony\Bundle\FrameworkBundle\Routing\Router as BaseRouter;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;

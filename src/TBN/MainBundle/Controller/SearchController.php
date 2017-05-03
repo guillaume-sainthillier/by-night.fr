@@ -9,7 +9,7 @@ use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Pagerfanta\Pagerfanta;
 
 use TBN\MainBundle\Entity\Site;
-use TBN\AgendaBundle\Search\SearchAgenda;
+use TBN\MainBundle\Search\SearchAgenda;
 
 
 class SearchController extends Controller
@@ -77,7 +77,7 @@ class SearchController extends Controller
             $page = 1;
         }
 
-        if($type && ! in_array($type, ['evenements', 'membres'])) {
+        if ($type && !in_array($type, ['evenements', 'membres'])) {
             $type = null;
         }
 

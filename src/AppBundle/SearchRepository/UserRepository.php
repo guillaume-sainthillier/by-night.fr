@@ -1,9 +1,9 @@
 <?php
 
-namespace TBN\UserBundle\SearchRepository;
+namespace AppBundle\SearchRepository;
 
 use FOS\ElasticaBundle\Repository;
-use TBN\MainBundle\Entity\Site;
+use AppBundle\Entity\Site;
 use Elastica\Query\Term;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;

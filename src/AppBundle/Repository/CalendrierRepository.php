@@ -1,8 +1,8 @@
 <?php
 
-namespace TBN\AgendaBundle\Repository;
+namespace AppBundle\Repository;
 
-use TBN\AgendaBundle\Entity\Agenda;
+use AppBundle\Entity\Agenda;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -18,7 +18,7 @@ class CalendrierRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('MAX(c.lastDate)')
-            ->from('TBNAgendaBundle:Calendrier', "c")
+            ->from('AppBundle:Calendrier', "c")
             ->where("c.agenda = :agenda")
             ->setParameters([":agenda" => $soiree])
             ->getQuery()

@@ -1,19 +1,19 @@
 <?php
 
-namespace TBN\MajDataBundle\Tests\Utils;
+namespace AppBundle\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Agenda;
+use AppBundle\Entity\Place;
+use AppBundle\Entity\Agenda;
 
 
 class HandlerTest extends KernelTestCase
 {
 
     /**
-     * @var \TBN\MajDataBundle\Handler\EventHandler
+     * @var \AppBundle\Handler\EventHandler
      */
     protected $handler;
 
@@ -23,7 +23,8 @@ class HandlerTest extends KernelTestCase
         $this->handler = static::$kernel->getContainer()->get('tbn.event_handler');
     }
 
-    public function testHandleEvent() {
+    public function testHandleEvent()
+    {
         $now = new \DateTime;
 
         $oclub = (new Place)->setId(1)->setNom('Oclub')->setRue('101 Route d\'Agde')->setVille('Toulouse')->setCodePostal('31500');

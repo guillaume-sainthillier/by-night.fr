@@ -5,7 +5,7 @@ namespace AppBundle\Listener;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
-use TBN\MainBundle\Site\SiteManager;
+use AppBundle\Site\SiteManager;
 use Doctrine\ORM\EntityManager;
 
 class CityListener
@@ -40,7 +40,7 @@ class CityListener
 
             dump($event);
             die;
-            if(! $request->attributes->has('city')) {
+            if (!$request->attributes->has('city')) {
                 return;
             }
 
@@ -48,7 +48,7 @@ class CityListener
             $city = $request->attributes->get('city');
 
             $site = $this->em
-                ->getRepository('TBNMainBundle:Site')
+                ->getRepository('AppBundle:Site')
                 ->findOneBy(['subdomain' => $city]);
 
             if (!$site || !$site->isActif()) {

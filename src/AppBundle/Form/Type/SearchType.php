@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Form\Type;
+namespace AppBundle\Form\Type;
 
 
 use Symfony\Component\Form\AbstractType;
@@ -95,7 +95,7 @@ class SearchType extends AbstractType
             'communes' => [],
             'lieux' => [],
             'types_manif' => [],
-            'data_class' => 'TBN\AgendaBundle\Search\SearchAgenda',
+            'data_class' => 'AppBundle\Search\SearchAgenda',
             'csrf_protection' => false
         ]);
     }

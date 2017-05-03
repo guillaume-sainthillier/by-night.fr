@@ -6,8 +6,7 @@
  * Time: 20:52
  */
 
-namespace TBN\MajDataBundle\Command;
-
+namespace AppBundle\Command;
 
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,8 +18,7 @@ class CleanCommand extends AppCommand
     {
         $this
             ->setName('tbn:events:clean')
-            ->setDescription('Mettre à jour les images sur le serveur')
-        ;
+            ->setDescription('Mettre à jour les images sur le serveur');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

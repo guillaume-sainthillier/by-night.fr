@@ -1,9 +1,9 @@
 <?php
 
-namespace TBN\SocialBundle\Social;
+namespace AppBundle\Social;
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\User;
 
 /**
  * Description of Facebook
@@ -12,11 +12,12 @@ use TBN\UserBundle\Entity\User;
  */
 class FacebookListEvents extends Facebook
 {
-    public function getUserEvents(User $user, $limit = 5000) {
+    public function getUserEvents(User $user, $limit = 5000)
+    {
         $this->init();
         $userInfo = $user->getInfo();
 
-        if(! $userInfo || !$userInfo->getFacebookAccessToken()) {
+        if (!$userInfo || !$userInfo->getFacebookAccessToken()) {
             throw new \RuntimeException(sprintf(
                 "Unable to find user social infos for user '%d'",
                 $user->getId()
@@ -25,7 +26,7 @@ class FacebookListEvents extends Facebook
 
         $this->client->setDefaultAccessToken($userInfo->getFacebookAccessToken());
 
-        $request = $this->client->sendRequest('GET', '/' . $userInfo->getFacebookId(). '/events', [
+        $request = $this->client->sendRequest('GET', '/' . $userInfo->getFacebookId() . '/events', [
             'type' => "created",
             'fields' => self::FIELDS,
             'limit' => $limit

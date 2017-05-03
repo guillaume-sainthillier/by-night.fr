@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\CommentBundle\Controller;
+namespace AppBundle\Controller\Comment;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -8,10 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-use TBN\CommentBundle\Form\Type\CommentType;
-use TBN\CommentBundle\Entity\Comment;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\CommentBundle\Repository\CommentRepository;
+use AppBundle\Form\Type\CommentType;
+use AppBundle\Entity\Comment;
+use AppBundle\Entity\Agenda;
+use AppBundle\Repository\CommentRepository;
 
 
 class ReplyController extends Controller
@@ -22,7 +22,7 @@ class ReplyController extends Controller
      */
     protected function getCommentRepo()
     {
-        $repo = $this->getDoctrine()->getRepository("TBNCommentBundle:Comment");
+        $repo = $this->getDoctrine()->getRepository("AppBundle:Comment");
         return $repo;
     }
 
@@ -48,7 +48,7 @@ class ReplyController extends Controller
 
     public function detailsAction(Comment $comment)
     {
-        return $this->render("TBNCommentBundle:Reply:details.html.twig", [
+        return $this->render("Reply/details.html.twig", [
             "comment" => $comment,
             "nb_reponses" => $this->getNbReponses($comment)
         ]);
@@ -57,7 +57,7 @@ class ReplyController extends Controller
     public function listAction(Comment $comment, $page)
     {
         $limit = 5;
-        return $this->render('TBNCommentBundle:Reply:list.html.twig', [
+        return $this->render('Reply/list.html.twig', [
             'comments' => $this->getReponses($comment, $page, $limit),
             "main_comment" => $comment,
             "nb_comments" => $this->getNbReponses($comment),
@@ -95,7 +95,7 @@ class ReplyController extends Controller
 
                 return new JsonResponse([
                     "success" => true,
-                    "comment" => $this->container->get("templating")->render("TBNCommentBundle:Reply:details.html.twig", [
+                    "comment" => $this->container->get("templating")->render("Reply/details.html.twig", [
                         "comment" => $reponse,
                         "success_confirmation" => true,
                     ]),
@@ -104,14 +104,14 @@ class ReplyController extends Controller
             } else {
                 return new JsonResponse([
                     "success" => false,
-                    "post" => $this->container->get("templating")->render("TBNCommentBundle:Reply:post.html.twig", [
+                    "post" => $this->container->get("templating")->render("Reply/post.html.twig", [
                         "comment" => $comment,
                         "form" => $form->createView()
                     ])
                 ]);
             }
         }
-        return $this->render('TBNCommentBundle:Reply:post.html.twig', [
+        return $this->render('Reply/post.html.twig', [
             'comment' => $comment,
             'form' => $form->createView()
         ]);

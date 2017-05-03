@@ -1,0 +1,161 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% set user = app.user %}
+<div class="row">
+    <div class="col-md-3">
+        <ul id="shorcuts" class="nav nav-pills nav-stacked">
+            <li role="presentation" class="active"><a href="#socials" aria-controls="socials">Réseaux sociaux</a></li>
+            <li role="presentation"><a href="#profil" aria-controls="profil">Profil</a></li>
+            <li role="presentation"><a href="#password" aria-controls="password">Mot de passe</a></li>
+            <li role="presentation"><a href="#supprimer" aria-controls="supprimer">Supprimer le compte</a></li>
+        </ul>
+    </div>
+    <div class="col-md-7">
+        <div id="socials" class="panel panel-default">
+            <div class="panel-heading bg-white">
+                <h2 class="modal-title">Réseaux sociaux</h2>
+            </div>
+            <div class="panel-body">
+                {% for service in ['facebook','google','twitter'] %}
+                    <div class="bloc_config">
+                        {% include "TBNSocialBundle:Social:social.html.twig" with { 'info': app.user.info, 'service': service } %}
+                    </div>
+                {% endfor %}
+                <br/>
+            </div>
+        </div>
+        <div id="profil" class="panel panel-default">
+            <div class="panel-heading bg-white">
+                <h2 class="modal-title">Profil</h2>
+            </div>
+            <div class="panel-body">
+                <form action="{{ path('fos_user_profile_edit') }}" enctype="multipart/form-data" method="post"
+                      class="form-horizontal">
+                    <div class="form-group">
+                        {{ form_label(form.imageFile, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {% if not user.path %}
+                                {% set imageURL = userProfilePicture.getProfilePicture(user) %}
+                                <img class="img img-responsive" src="{{ imageURL }}" style="max-height: 200px;"/>
+                            {% endif %}
+                            {{ form_errors(form.imageFile) }}
+                            {{ form_widget(form.imageFile) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.username, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(form.username) }}
+                            {{ form_widget(form.username) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.email, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(form.email) }}
+                            {{ form_widget(form.email) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.firstname, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(form.firstname) }}
+                            {{ form_widget(form.firstname) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.lastname, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(form.lastname) }}
+                            {{ form_widget(form.lastname) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.description, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(form.description) }}
+                            {{ form_widget(form.description) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.website, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(form.website) }}
+                            {{ form_widget(form.website) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.showSocials, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(form.showSocials) }}
+                            <div class="checkbox checkbox-primary">
+                                <label>{{ form_widget(form.showSocials) }}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <input type="submit" class="btn btn-primary btn-raised btn-block"
+                                   value="Modifier mes informations"/>
+                        </div>
+                    </div>
+                    {{ form_rest(form) }}
+                </form>
+            </div>
+        </div>
+        <div id="password" class="panel panel-default">
+            <div class="panel-heading bg-white">
+                <h2 class="modal-title">Mot de passe</h2>
+            </div>
+            <div class="panel-body">
+                <form action="{{ path('fos_user_change_password') }}" method="POST" class="form-horizontal">
+                    <div class="form-group">
+                        {{ form_label(formChangePassword.current_password, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(formChangePassword.current_password) }}
+                            {{ form_widget(formChangePassword.current_password) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(formChangePassword.plainPassword.first, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(formChangePassword.plainPassword.first) }}
+                            {{ form_widget(formChangePassword.plainPassword.first) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(formChangePassword.plainPassword.second, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
+                        <div class="col-md-8">
+                            {{ form_errors(formChangePassword.plainPassword.second) }}
+                            {{ form_widget(formChangePassword.plainPassword.second) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <input type="submit" class="btn btn-primary btn-raised btn-block"
+                                   value="{{ 'change_password.submit'|trans }}"/>
+                        </div>
+                    </div>
+                    {{ form_rest(formChangePassword) }}
+                </form>
+            </div>
+        </div>
+        <div id="supprimer" class="panel panel-default">
+            <div class="panel-heading bg-white">
+                <h2 class="modal-title">Supprimer le compte</h2>
+            </div>
+            <div class="panel-body">
+                <p>Supprimer les informations relatives à mon compte</p>
+                <div class="form-group">
+                    <div class="col-md-offset-4 col-md-8">
+                        <button id="btnDelete" type="button" data-toggle="modal" data-target="#deleteModal"
+                                class="btn btn-danger btn-raised btn-block">Supprimer mon compte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "TBNUserBundle:Profile:modalDelete.html.twig" %}

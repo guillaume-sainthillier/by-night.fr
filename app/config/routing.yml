@@ -1,7 +1,15 @@
 #La ville est définie à partir d'ici
+app.default:
+    resource: "@AppBundle/Controller"
+    type:     annotation
+
 app.legacy:
     resource: "@AppBundle/Controller/Legacy"
-    prefix:   /
+    type:     annotation
+
+app.search:
+    resource: "@AppBundle/Controller/Search"
+    prefix:   /recherche
     type:     annotation
 
 app.private:
@@ -18,99 +26,100 @@ app.city:
 #    resource: "@TBNAgendaBundle/Resources/config/routing.yml"
 #    prefix:   /{city}
 ##    host:   "{city}.%base_host%"
-    
-tbn_agenda_old:
-    resource: "@TBNAgendaBundle/Resources/config/routing_old.yml"
-    prefix:   /
-    host:   "{city}.%base_host%"
-
-tbn_recherche:
-    resource: "@TBNMainBundle/Resources/config/routing_search.yml"
-    prefix:   /recherche
-
-tbn_comment:
-    resource: "@TBNCommentBundle/Resources/config/routing.yml"
-    prefix:   /commentaire
-
-tbn_administration:
-    resource: "@TBNAdministrationBundle/Resources/config/routing.yml"
-    prefix:   /_administration
-
-tbn_membres:
-    resource: "@TBNUserBundle/Resources/config/routing_user.yml"
-    prefix:   /membres
-
-tbn_membres_old:
-    resource: "@TBNUserBundle/Resources/config/routing_user_old.yml"
-    prefix:   /membres
-
+#
+#tbn_agenda_old:
+#    resource: "@TBNAgendaBundle/Resources/config/routing_old.yml"
+#    prefix:   /
+#    host:   "{city}.%base_host%"
+#
+#tbn_recherche:
+#    resource: "@TBNMainBundle/Resources/config/routing_search.yml"
+#    prefix:   /recherche
+#
+#tbn_comment:
+#    resource: "@TBNCommentBundle/Resources/config/routing.yml"
+#    prefix:   /commentaire
+#
+#tbn_administration:
+#    resource: "@TBNAdministrationBundle/Resources/config/routing.yml"
+#    prefix:   /_administration
+#
+#tbn_membres:
+#    resource: "@TBNUserBundle/Resources/config/routing_user.yml"
+#    prefix:   /membres
+#
+#tbn_membres_old:
+#    resource: "@TBNUserBundle/Resources/config/routing_user_old.yml"
+#    prefix:   /membres
+#
 easy_admin_bundle:
     resource: "@EasyAdminBundle/Controller/"
     type:     annotation
     prefix:   /_administration
-
-#MainBundle, pas de ville définie ici
-tbn_city:
-    resource: "@TBNMainBundle/Resources/config/routing.yml"
-    prefix:   /
-
-tbn_social:
-    resource: "@TBNSocialBundle/Resources/config/routing.yml"
-    prefix:   /
-
-#Login
+#
+##MainBundle, pas de ville définie ici
+#tbn_city:
+#    resource: "@TBNMainBundle/Resources/config/routing.yml"
+#    prefix:   /
+#
+#tbn_social:
+#    resource: "@TBNSocialBundle/Resources/config/routing.yml"
+#    prefix:   /
+#
+##Login
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
-#Profile
+##Profile
 fos_user_profile:
     resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
     prefix: /profile
 
-#Inscription
+##Inscription
 fos_user_register:
     resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
     prefix: /inscription
 
-#Changement de password
+##Changement de password
 fos_user_resetting:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
     prefix: /resetting
 
-#Demande de changement de password
+##Demande de changement de password
 fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profil
 
-#Login réseaux sociaux
+##Login réseaux sociaux
 hwi_oauth_security:
     resource: "@HWIOAuthBundle/Resources/config/routing/login.xml"
     prefix: /login-social
 
-#Login réseaux sociaux
+##Login réseaux sociaux
 hwi_oauth_connect:
     resource: "@HWIOAuthBundle/Resources/config/routing/connect.xml"
     prefix: /login-social
 
-#Login réseaux sociaux
+##Login réseaux sociaux
 hwi_oauth_redirect:
     resource: "@HWIOAuthBundle/Resources/config/routing/redirect.xml"
     prefix:   /login-social
 
-#Login twitter
+##Login twitter
 twitter_login:
     path: /login/check-twitter
 
-#Login facebook
+##Login facebook
 facebook_login:
     path: /login/check-facebook
 
-#Login Google
+##Login Google
 google_login:
     path: /login/check-google
 
-tbn_user:
-    resource: "@TBNUserBundle/Resources/config/routing.yml"
-    prefix:   /espace-perso
+#tbn_user:
+#    resource: "@TBNUserBundle/Resources/config/routing.yml"
+#    prefix:   /espace-perso
+#
 
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"

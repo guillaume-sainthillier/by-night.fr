@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * News
  *
  * @ORM\Table(name="news")
- * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\NewsRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\NewsRepository")
  */
 class News
 {

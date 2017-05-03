@@ -1,11 +1,11 @@
 <?php
 
-namespace TBN\CommentBundle\Repository;
+namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use TBN\CommentBundle\Entity\Comment;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\Comment;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\User;
 
 /**
  * CommentRepository
@@ -20,7 +20,7 @@ class CommentRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('a')
-            ->from('TBNCommentBundle:Comment', 'a')
+            ->from('AppBundle:Comment', 'a')
             ->where("a.agenda = :agenda AND a.parent IS NULL AND a.isApprouve = :is_approuve")
             ->setParameters([":agenda" => $agenda, "is_approuve" => true])
             ->orderBy('a.dateCreation', 'DESC')
@@ -35,7 +35,7 @@ class CommentRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('c')
-            ->from('TBNCommentBundle:Comment', 'c')
+            ->from('AppBundle:Comment', 'c')
             ->where("c.user = :user")
             ->setParameters([":user" => $user->getId()])
             ->getQuery()
@@ -47,7 +47,7 @@ class CommentRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('a')
-            ->from('TBNCommentBundle:Comment', 'a')
+            ->from('AppBundle:Comment', 'a')
             ->where("a.parent = :parent AND a.isApprouve = :is_approuve")
             ->setParameters([":parent" => $comment, "is_approuve" => true])
             ->orderBy('a.dateCreation', 'DESC')
@@ -61,7 +61,7 @@ class CommentRepository extends EntityRepository
     {
         return $this->_em->createQueryBuilder()
             ->select('COUNT(a)')
-            ->from('TBNCommentBundle:Comment', 'a')
+            ->from('AppBundle:Comment', 'a')
             ->where("a.agenda = :agenda AND a.parent IS NULL AND a.isApprouve = :is_approuve")
             ->setParameters([":agenda" => $agenda, "is_approuve" => true])
             ->getQuery()
@@ -72,7 +72,7 @@ class CommentRepository extends EntityRepository
     {
         return $this->_em->createQueryBuilder()
             ->select('COUNT(a)')
-            ->from('TBNCommentBundle:Comment', 'a')
+            ->from('AppBundle:Comment', 'a')
             ->where("a.parent = :parent AND a.isApprouve = :is_approuve")
             ->setParameters([":parent" => $parent, "is_approuve" => true])
             ->getQuery()

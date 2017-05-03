@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Geolocalize;
+namespace AppBundle\Geolocalize;
 
 /**
  * Created by PhpStorm.
@@ -11,5 +11,6 @@ namespace TBN\AgendaBundle\Geolocalize;
 interface GeolocalizeInterface
 {
     public function getLatitude();
+
     public function getLongitude();
 }

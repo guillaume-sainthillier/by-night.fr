@@ -1,15 +1,15 @@
 <?php
 
-namespace TBN\MajDataBundle\Parser\Common;
+namespace AppBundle\Parser\Common;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 
-use TBN\MainBundle\Entity\SiteRepository;
-use TBN\MajDataBundle\Utils\Monitor;
-use TBN\SocialBundle\Social\FacebookAdmin;
-use TBN\MajDataBundle\Parser\AgendaParser;
-use TBN\MajDataBundle\Utils\Firewall;
+use AppBundle\Entity\SiteRepository;
+use AppBundle\Utils\Monitor;
+use AppBundle\Social\FacebookAdmin;
+use AppBundle\Parser\AgendaParser;
+use AppBundle\Utils\Firewall;
 
 /**
  * Classe de parsing des événéments FB
@@ -53,24 +53,28 @@ class FaceBookParser extends AgendaParser
         $this->om = $om;
     }
 
-    protected function getPlaces() {
-        $places =  $this->om->getRepository('TBNAgendaBundle:Place')->findAllFBIds();
+    protected function getPlaces()
+    {
+        $places = $this->om->getRepository('AppBundle:Place')->findAllFBIds();
 
         return $places;
     }
 
-    protected function getUsers() {
-        $users =  $this->om->getRepository('TBNAgendaBundle:Agenda')->findAllFBOwnerIds();
+    protected function getUsers()
+    {
+        $users = $this->om->getRepository('AppBundle:Agenda')->findAllFBOwnerIds();
 
         return $users;
     }
 
-    protected function getCities() {
-        return $this->om->getRepository('TBNAgendaBundle:Place')->findAllCities();
+    protected function getCities()
+    {
+        return $this->om->getRepository('AppBundle:Place')->findAllCities();
     }
 
-    protected function getSiteLocations() {
-        return $this->om->getRepository('TBNMainBundle:Site')->findLocations();
+    protected function getSiteLocations()
+    {
+        return $this->om->getRepository('AppBundle:Site')->findLocations();
     }
 
     protected function getEventsFromUsers(array $additional_users, \DateTime $now)
@@ -102,7 +106,7 @@ class FaceBookParser extends AgendaParser
             count($gps_places)
         ));
 
-        $gps_places = array_map(function(GraphNode $node) {
+        $gps_places = array_map(function (GraphNode $node) {
             return $node->getField('id');
         }, $gps_places);
 
@@ -119,7 +123,8 @@ class FaceBookParser extends AgendaParser
         return $events;
     }
 
-    protected function getEventFromCities(\DateTime $now) {
+    protected function getEventFromCities(\DateTime $now)
+    {
         //Récupération des événements par mots-clés
         Monitor::writeln("Recherche d'événements associés aux mots clés...");
         $cities = $this->getCities();
@@ -134,7 +139,8 @@ class FaceBookParser extends AgendaParser
         return $events;
     }
 
-    protected function getOwners(array $nodes) {
+    protected function getOwners(array $nodes)
+    {
         return array_filter(array_map(function (GraphNode $node) {
             $owner = $node->getField('owner');
             return $owner ? $owner->getField('id') : null;
@@ -168,13 +174,15 @@ class FaceBookParser extends AgendaParser
         return array_map([$this, 'getInfoAgenda'], $events);
     }
 
-    public function getIdsToMigrate() {
+    public function getIdsToMigrate()
+    {
         return $this->api->getIdsToMigrate();
     }
 
-    protected function getUniqueEvents(array $events) {
+    protected function getUniqueEvents(array $events)
+    {
         $uniqueEvents = [];
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $uniqueEvents[$event->getField('id')] = $event;
         }
 

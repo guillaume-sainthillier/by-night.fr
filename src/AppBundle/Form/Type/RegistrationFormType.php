@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\UserBundle\Form\Type;
+namespace AppBundle\Form\Type;
 
 
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,8 +20,7 @@ class RegistrationFormType extends BaseType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('recaptcha', ReCaptchaType::class)
-        ;
+            ->add('recaptcha', ReCaptchaType::class);
     }
 
 }

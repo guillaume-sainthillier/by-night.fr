@@ -21,17 +21,17 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('tbn_user');
 
         $rootNode
-        ->children()
+            ->children()
             ->arrayNode('socials')
-                ->useAttributeAsKey('socials')
-                ->prototype('array')
-                    ->children()
-                        ->booleanNode('enabled')->defaultTrue()->end()
-                        ->scalarNode('nom')->defaultValue('')->end()
-                    ->end()
-                ->end()
+            ->useAttributeAsKey('socials')
+            ->prototype('array')
+            ->children()
+            ->booleanNode('enabled')->defaultTrue()->end()
+            ->scalarNode('nom')->defaultValue('')->end()
             ->end()
-        ->end();
+            ->end()
+            ->end()
+            ->end();
 
         return $treeBuilder;
     }

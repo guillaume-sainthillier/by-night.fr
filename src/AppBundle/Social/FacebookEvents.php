@@ -1,10 +1,10 @@
 <?php
 
-namespace TBN\SocialBundle\Social;
+namespace AppBundle\Social;
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\Agenda;
+use AppBundle\Entity\User;
 
 /**
  * Description of Facebook

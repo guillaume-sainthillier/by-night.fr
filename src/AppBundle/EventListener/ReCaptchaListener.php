@@ -6,7 +6,7 @@
  * Time: 23:28
  */
 
-namespace TBN\UserBundle\EventListener;
+namespace AppBundle\EventListener;
 
 use FOS\UserBundle\Controller\RegistrationController;
 
@@ -16,11 +16,13 @@ class ReCaptchaListener
 {
     private $formName;
     private $field;
+
     public function __construct($formName, $field)
     {
         $this->formName = $formName;
         $this->field = $field;
     }
+
     public function onKernelController(FilterControllerEvent $event)
     {
         $controller = $event->getController();

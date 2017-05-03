@@ -8,10 +8,10 @@ use FOS\HttpCacheBundle\Configuration\Tag;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use AppBundle\Configuration\BrowserCache;
-use TBN\MainBundle\Controller\TBNController as Controller;
+use AppBundle\Controller\TBNController as Controller;
 
-use TBN\MainBundle\Entity\Site;
-use TBN\AgendaBundle\Search\SearchAgenda;
+use AppBundle\Entity\Site;
+use AppBundle\Search\SearchAgenda;
 
 class DefaultController extends Controller
 {
@@ -23,12 +23,12 @@ class DefaultController extends Controller
     public function indexAction(Site $site)
     {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repo = $em->getRepository("AppBundle:Agenda");
 
         $search = (new SearchAgenda)->setDu(null);
         $topEvents = $repo->findTopSoiree($site, 1, 7);
 
-        return $this->render('TBNAgendaBundle:Agenda:index.html.twig', [
+        return $this->render('City/Default/index.html.twig', [
             'site' => $site,
             'topEvents' => $topEvents,
             'nbEvents' => $repo->findCountWithSearch($site, $search)

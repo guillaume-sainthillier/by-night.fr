@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\UserBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
@@ -8,8 +8,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Doctrine\Common\Collections\ArrayCollection;
-use TBN\AgendaBundle\Entity\Calendrier;
-use TBN\MainBundle\Entity\Site;
+use AppBundle\Entity\Calendrier;
+use AppBundle\Entity\Site;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * User
  *
  * @ORM\Table(name="User", indexes={@ORM\Index(name="user_nom_idx", columns={"nom"})})
- * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\UserRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
  * @ORM\HasLifecycleCallbacks()
@@ -74,18 +74,18 @@ class User extends BaseUser
     protected $description;
 
     /**
-     * @ORM\OneToOne(targetEntity="TBN\UserBundle\Entity\UserInfo", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\UserInfo", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     protected $info;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Calendrier", mappedBy="user")
      */
     protected $calendriers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site")
      * @ORM\JoinColumn(nullable=false)
      * @Expose
      */
@@ -406,7 +406,7 @@ class User extends BaseUser
     /**
      * Get info
      *
-     * @return \TBN\UserBundle\Entity\UserInfo
+     * @return \AppBundle\Entity\UserInfo
      */
     public function getInfo()
     {
@@ -462,7 +462,7 @@ class User extends BaseUser
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site
+     * @return \AppBundle\Entity\Site
      */
     public function getSite()
     {

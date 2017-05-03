@@ -1,18 +1,18 @@
 <?php
 
-namespace TBN\SocialBundle\Social;
+namespace AppBundle\Social;
 
 
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphEdge;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\SocialBundle\Exception\SocialException;
+use AppBundle\Entity\Agenda;
+use AppBundle\Exception\SocialException;
 use Facebook\Exceptions\FacebookSDKException;
-use TBN\MajDataBundle\Utils\Monitor;
+use AppBundle\Utils\Monitor;
 
 use Facebook\GraphNodes\GraphNode;
 use Facebook\Facebook as Client;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Entity\User;
 
 /**
  * Description of Facebook
@@ -77,7 +77,8 @@ class Facebook extends Social
         }, $indexes);
     }
 
-    protected function findPaginatedNodes(FacebookResponse $response) {
+    protected function findPaginatedNodes(FacebookResponse $response)
+    {
         $datas = [];
         $graph = $response->getGraphNode();
         $indexes = $graph->getFieldNames();
@@ -89,25 +90,26 @@ class Facebook extends Social
         return $datas;
     }
 
-    protected function next(GraphEdge $graph = null) {
-        if(! $graph) {
+    protected function next(GraphEdge $graph = null)
+    {
+        if (!$graph) {
             return [];
         }
 
         $datas = $graph->all();
         $nextRequest = $graph->getNextPageRequest();
 
-        if(! $nextRequest) {
+        if (!$nextRequest) {
             return $datas;
         }
 
         try {
             $response = $this->client->getClient()->sendRequest($nextRequest);
             $nodes = $response->getGraphNode();
-            foreach($nodes as $node) {
+            foreach ($nodes as $node) {
                 $datas = array_merge($datas, $this->next($node));
             }
-        }catch(FacebookSDKException $ex) {
+        } catch (FacebookSDKException $ex) {
             Monitor::writeln(sprintf('<error>Erreur dans next : %s</error>', $ex->getMessage()));
         }
         return $datas;

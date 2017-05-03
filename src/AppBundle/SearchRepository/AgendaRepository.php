@@ -1,11 +1,11 @@
 <?php
 
-namespace TBN\AgendaBundle\SearchRepository;
+namespace AppBundle\SearchRepository;
 
 use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
-use TBN\AgendaBundle\Search\SearchAgenda;
-use TBN\MainBundle\Entity\Site;
+use AppBundle\Search\SearchAgenda;
+use AppBundle\Entity\Site;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query;
@@ -26,7 +26,6 @@ class AgendaRepository extends Repository
     public function findWithSearch(Site $site, SearchAgenda $search)
     {
         $mainQuery = new BoolQuery();
-
 
         //Filters
         $mainQuery->addMust(
@@ -82,8 +81,7 @@ class AgendaRepository extends Repository
                     ->addShould($cas1)
                     ->addShould($cas2)
                     ->addShould($cas3)
-                    ->addShould($cas4)
-                ;
+                    ->addShould($cas4);
 
                 $mainQuery->addMust($filterDate);
             }
@@ -117,8 +115,7 @@ class AgendaRepository extends Repository
         if ($search->getTag()) {
             $query = new MultiMatch;
             $query->setQuery($search->getTag())
-                ->setFields(['type_manifestation', 'theme_manifestation', 'categorie_manifestation'])
-            ;
+                ->setFields(['type_manifestation', 'theme_manifestation', 'categorie_manifestation']);
             $mainQuery->addMust($query);
         }
 

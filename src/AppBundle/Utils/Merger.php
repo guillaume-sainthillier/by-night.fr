@@ -1,9 +1,9 @@
 <?php
 
-namespace TBN\MajDataBundle\Utils;
+namespace AppBundle\Utils;
 
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Agenda;
+use AppBundle\Entity\Place;
+use AppBundle\Entity\Agenda;
 
 
 /**
@@ -105,14 +105,14 @@ class Merger
             return ($a ?: $b); //Retourne l'objet non nul s'il existe
         }
 
-        if($a === $b) {
+        if ($a === $b) {
             return $a;
         }
 
         foreach ($fields as $type => $field) {
-            if(is_numeric($type)) {
+            if (is_numeric($type)) {
                 $type = self::DEFAULT_MERGE;
-            }else {
+            } else {
                 $oldField = $field;
                 $field = $type;
                 $type = $oldField;
@@ -133,11 +133,11 @@ class Merger
 
     protected function getBestContent($valueA, $valueB, $mergeType)
     {
-        if(is_callable($mergeType)) {
+        if (is_callable($mergeType)) {
             return call_user_func($mergeType, $valueA, $valueB);
         }
 
-        switch($mergeType) {
+        switch ($mergeType) {
             case self::MERGE_RIGHT:
                 return $valueB ?: $valueA;
             case self::MERGE_LEFT:
@@ -149,7 +149,7 @@ class Merger
             case self::MERGE_RIGHT_IF_DIFFERENT:
                 return $valueA != $valueB ? $valueB : $valueA;
             case self::MERGE_RIGHT_IF_DATE_DIFFERENT:
-                if($valueA && $valueB) {
+                if ($valueA && $valueB) {
                     return $valueA->format('Y-m-d') != $valueB->format("Y-m-d") ? $valueB : $valueA;
                 }
                 return $this->getBestContent($valueA, $valueB, self::MERGE_RIGHT_IF_DIFFERENT);

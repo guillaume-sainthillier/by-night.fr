@@ -1,9 +1,9 @@
 <?php
 
-namespace TBN\UserBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
-use TBN\MainBundle\Entity\Site;
+use AppBundle\Entity\Site;
 
 /**
  * UserRepository
@@ -13,7 +13,8 @@ use TBN\MainBundle\Entity\Site;
  */
 class UserRepository extends EntityRepository
 {
-    public function getUserFbIds() {
+    public function getUserFbIds()
+    {
         $datas = $this->createQueryBuilder('u')
             ->select('DISTINCT(i.facebook_id)')
             ->join('u.info', 'i')
@@ -24,7 +25,8 @@ class UserRepository extends EntityRepository
         return array_filter(array_map('current', $datas));
     }
 
-    public function getUsersWithInfo($page, $limit) {
+    public function getUsersWithInfo($page, $limit)
+    {
         return $this->createQueryBuilder('u')
             ->select('u', 'i')
             ->join('u.info', 'i')
@@ -53,7 +55,7 @@ class UserRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('count(u.id)')
-            ->from('TBNUserBundle:User', 'u')
+            ->from('AppBundle:User', 'u')
             ->where("u.site = :site")
             ->setParameters([":site" => $site->getId()])
             ->getQuery()
@@ -65,7 +67,7 @@ class UserRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('MAX(u.lastLogin)')
-            ->from('TBNUserBundle:User', "u")
+            ->from('AppBundle:User', "u")
             ->where("u.site = :site")
             ->setParameters([":site" => $site->getId()])
             ->getQuery()
@@ -77,7 +79,7 @@ class UserRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('u')
-            ->from('TBNUserBundle:User', "u")
+            ->from('AppBundle:User', "u")
             ->where("u.site = :site")
             ->andWhere("u.username LIKE :username")
             ->orderBy("u.username")

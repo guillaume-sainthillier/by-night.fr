@@ -3,7 +3,7 @@
 namespace TBN\AdministrationBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use TBN\UserBundle\Entity\SiteInfo;
+use TBN\AdministrationBundle\Entity\SiteInfo;
 
 class InfoController extends Controller
 {

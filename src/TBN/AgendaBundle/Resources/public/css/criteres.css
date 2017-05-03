@@ -3,24 +3,30 @@ Created on : 21 mars 2014, 16:48:10
 Author     : guillaume
 */
 .block_criteres {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
+
 .block_criteres select[multiple].form-control {
-  display: none;
+    display: none;
 }
+
 .block_criteres .main_criteres .form-group {
-  margin-top: 15px;
+    margin-top: 15px;
 }
+
 .block_criteres .btn_shorcuts .btn {
-  margin-top: 0;
-  margin-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
+
 .block_criteres .btn_criteres {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
+
 .criteres {
-  margin-top: 10px;
+    margin-top: 10px;
 }
+
 .size-135 {
-  font-size: 1.35em;
+    font-size: 1.35em;
 }

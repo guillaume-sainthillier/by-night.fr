@@ -6,11 +6,11 @@
  * and open the template in the editor.
  */
 
-namespace TBN\MainBundle\Twig;
+namespace AppBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use TBN\MainBundle\Site\SiteManager;
+use AppBundle\Site\SiteManager;
 
 
 /**
@@ -64,24 +64,26 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     {
         $site = $this->siteManager->getCurrentSite();
 
-        if(! $site) {
+        if (!$site) {
             return [
 //                "site" => null,
                 "siteInfo" => null
             ];
         }
-        
+
         return [
 //            "site" => $this->siteManager->getCurrentSite(),
             "siteInfo" => $this->siteManager->getSiteInfo()
         ];
     }
 
-    public function getDateTime($string) {
+    public function getDateTime($string)
+    {
         return new \DateTime($string);
     }
 
-    public function tweet($tweet) {
+    public function tweet($tweet)
+    {
         $linkified = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
         $hashified = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
         $mentionified = '/(^|[\n\s])@([^\s"\t\n\r<:]*)/is';

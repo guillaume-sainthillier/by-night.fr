@@ -4,12 +4,11 @@
  * Effectue la gestion des différents parser
  */
 
-namespace TBN\MajDataBundle\Parser\Manager;
+namespace AppBundle\Parser\Manager;
 
 
-
-use TBN\MajDataBundle\Parser\ParserInterface;
-use TBN\MajDataBundle\Utils\Monitor;
+use AppBundle\Parser\ParserInterface;
+use AppBundle\Utils\Monitor;
 
 /**
  *

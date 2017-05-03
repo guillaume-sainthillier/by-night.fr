@@ -2,7 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: "@TBNMainBundle/Resources/config/services.yml" }
+#    - { resource: "@AppBundle/Resources/config/services.yml" }
     - { resource: sem_var.yml, ignore_errors: true }
 
 framework:
@@ -19,7 +19,6 @@ framework:
     validation:      { enable_annotations: true }
     templating:
         engines: ['twig']
-        hinclude_default_template: TBNAgendaBundle:Hinclude:template.html.twig
     assets:
         base_urls: ['http://static.%base_host%']
         version: "v1.0"
@@ -177,16 +176,16 @@ stof_doctrine_extensions:
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main  
-    user_class: TBN\UserBundle\Entity\User
+    user_class: AppBundle\Entity\User
     from_email:
         address: "%mailer_user%"
         sender_name: "By Night"
     profile:
         form:
-            type: TBN\UserBundle\Form\Type\ProfileFormType
+            type: AppBundle\Form\Type\ProfileFormType
     registration:
         form:
-            type: TBN\UserBundle\Form\Type\RegistrationFormType
+            type: AppBundle\Form\Type\RegistrationFormType
     
 #ivory_google_map:
 #    geocoder:
@@ -195,16 +194,16 @@ fos_user:
 
 easy_admin:
     entities:
-        - TBN\AgendaBundle\Entity\Agenda
-        - TBN\UserBundle\Entity\User
-        - TBN\MainBundle\Entity\Site
-        - TBN\AgendaBundle\Entity\Place
-        - TBN\AgendaBundle\Entity\Calendrier
-        - TBN\CommentBundle\Entity\Comment
-        - TBN\MajDataBundle\Entity\Exploration
-        - TBN\MajDataBundle\Entity\HistoriqueMaj
-        - TBN\UserBundle\Entity\SiteInfo
-        - TBN\UserBundle\Entity\UserInfo
+        - AppBundle\Entity\Agenda
+        - AppBundle\Entity\User
+        - AppBundle\Entity\Site
+        - AppBundle\Entity\Place
+        - AppBundle\Entity\Calendrier
+        - AppBundle\Entity\Comment
+        - AppBundle\Entity\Exploration
+        - AppBundle\Entity\HistoriqueMaj
+        - AppBundle\Entity\SiteInfo
+        - AppBundle\Entity\UserInfo
 
 hwi_oauth:
     #this is my custom user provider, created from FOSUBUserProvider - will manage the 
@@ -348,14 +347,14 @@ liip_imagine:
             filters:
                 thumbnail: { size: [115, 115], mode: outbound }
 
-tbn_user:
-    socials:
-        facebook:
-            enabled: true
-            nom: Facebook
-        twitter: 
-            enabled: true
-            nom: Twitter
+#tbn_user:
+#    socials:
+#        facebook:
+#            enabled: true
+#            nom: Facebook
+#        twitter:
+#            enabled: true
+#            nom: Twitter
 
 
 fos_elastica:
@@ -415,8 +414,8 @@ fos_elastica:
                                 ville: { boost: 2, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                     persistence:
                         driver: orm # orm, mongodb, propel are available
-                        model:  TBN\AgendaBundle\Entity\Agenda
-                        repository: TBN\AgendaBundle\SearchRepository\AgendaRepository
+                        model:  AppBundle\Entity\Agenda
+                        repository: AppBundle\SearchRepository\AgendaRepository
                 user:
                     properties:
                         username: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
@@ -424,8 +423,8 @@ fos_elastica:
                         lastname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
                     persistence:
                         driver: orm
-                        model:  TBN\UserBundle\Entity\User
-                        repository: TBN\UserBundle\SearchRepository\UserRepository
+                        model:  AppBundle\Entity\User
+                        repository: AppBundle\SearchRepository\UserRepository
 
 jms_serializer:
     metadata:
@@ -433,7 +432,7 @@ jms_serializer:
         directories:
             FOSUserBundle:
                 namespace_prefix: "FOS\\UserBundle"
-                path: "@TBNUserBundle/Resources/config/serializer/fos"
+                path: "config/serializer/fos"
 
 presta_sitemap:
     route_annotation_listener: false

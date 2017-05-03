@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use \Doctrine\Common\Collections\ArrayCollection;
@@ -13,13 +13,13 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
-use TBN\UserBundle\Validator\Constraints\EventConstraint;
+use AppBundle\Validator\Constraints\EventConstraint;
 
-use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
-use TBN\CommentBundle\Entity\Comment;
-use TBN\MainBundle\Entity\Site;
-use TBN\MajDataBundle\Reject\Reject;
-use TBN\UserBundle\Entity\User;
+use AppBundle\Geolocalize\GeolocalizeInterface;
+use AppBundle\Entity\Comment;
+use AppBundle\Entity\Site;
+use AppBundle\Reject\Reject;
+use AppBundle\Entity\User;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -37,7 +37,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *   @ORM\Index(name="agenda_search2_idx", columns={"site_id", "date_debut"})
  * })
  *
- * @ORM\Entity(repositoryClass="TBN\AgendaBundle\Repository\AgendaRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AgendaRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
@@ -299,7 +299,7 @@ class Agenda implements GeolocalizeInterface
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(nullable=true)
      */
     protected $user;
@@ -362,19 +362,19 @@ class Agenda implements GeolocalizeInterface
     protected $googleSystemPostId;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\AgendaBundle\Entity\Calendrier", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Calendrier", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      */
     protected $calendriers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\MainBundle\Entity\Site", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=false)
      * @Expose
      */
     protected $site;
 
     /**
-     * @ORM\OneToMany(targetEntity="TBN\CommentBundle\Entity\Comment", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $commentaires;
@@ -424,7 +424,7 @@ class Agenda implements GeolocalizeInterface
     protected $source;
 
     /**
-     * @ORM\ManyToOne(targetEntity="TBN\AgendaBundle\Entity\Place", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Place", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
      * @Expose
      * @Assert\Valid()
@@ -444,17 +444,20 @@ class Agenda implements GeolocalizeInterface
      */
     protected $isArchive;
 
-    public function setReject(Reject $reject = null) {
+    public function setReject(Reject $reject = null)
+    {
         $this->reject = $reject;
 
         return $this;
     }
 
-    public function getReject() {
+    public function getReject()
+    {
         return $this->reject;
     }
 
-    public function isIndexable() {
+    public function isIndexable()
+    {
         $now = new \DateTime;
         $now->modify('-6 months');
 
@@ -1428,7 +1431,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get user
      *
-     * @return \TBN\UserBundle\Entity\User
+     * @return \AppBundle\Entity\User
      */
     public function getUser()
     {
@@ -1484,7 +1487,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get site
      *
-     * @return \TBN\MainBundle\Entity\Site
+     * @return \AppBundle\Entity\Site
      */
     public function getSite()
     {
@@ -1740,7 +1743,7 @@ class Agenda implements GeolocalizeInterface
 
     public function __toString()
     {
-        return "#".$this->id ?: '?';
+        return "#" . $this->id ?: '?';
     }
 
     /**

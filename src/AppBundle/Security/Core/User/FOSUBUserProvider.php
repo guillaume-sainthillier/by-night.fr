@@ -1,12 +1,13 @@
 <?php
-namespace TBN\UserBundle\Security\Core\User;
+
+namespace AppBundle\Security\Core\User;
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
 use Symfony\Component\Security\Core\User\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
-use TBN\UserBundle\Entity\UserInfo;
-use TBN\MainBundle\Site\SiteManager;
+use AppBundle\Entity\UserInfo;
+use AppBundle\Site\SiteManager;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 
 class FOSUBUserProvider extends BaseClass
@@ -59,7 +60,7 @@ class FOSUBUserProvider extends BaseClass
     /**
      *
      * @param string $service
-     * @return \TBN\SocialBundle\Social\Social
+     * @return \AppBundle\Social\Social
      */
     protected function getSocialService($service)
     {
@@ -74,11 +75,11 @@ class FOSUBUserProvider extends BaseClass
     protected function findUserBySocialInfo(UserResponseInterface $cle, $valeur)
     {
         $em = $this->doctrine->getManager();
-        $repo = $em->getRepository('TBNUserBundle:Info');
+        $repo = $em->getRepository('AppBundle:Info');
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
         if ($info !== null) {
-            return $em->getRepository('TBNUserBundle:User')->findOneByInfo($info);
+            return $em->getRepository('AppBundle:User')->findOneByInfo($info);
         }
 
         return null;

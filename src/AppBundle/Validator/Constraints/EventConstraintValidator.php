@@ -6,12 +6,12 @@
  * Time: 22:24
  */
 
-namespace TBN\UserBundle\Validator\Constraints;
+namespace AppBundle\Validator\Constraints;
 
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use TBN\MajDataBundle\Reject\Reject;
+use AppBundle\Reject\Reject;
 
 class EventConstraintValidator extends ConstraintValidator
 {
@@ -28,7 +28,8 @@ class EventConstraintValidator extends ConstraintValidator
         $this->checkIfUpdate = true;
     }
 
-    public function setUpdatabilityCkeck($checkIfUpdate) {
+    public function setUpdatabilityCkeck($checkIfUpdate)
+    {
         $this->checkIfUpdate = $checkIfUpdate;
     }
 
@@ -43,64 +44,64 @@ class EventConstraintValidator extends ConstraintValidator
          * @var EventConstraint $constraint
          */
 
-        if(! $reject || $reject->isValid()) {
+        if (!$reject || $reject->isValid()) {
             return;
         }
 
-        if($reject->isEventDeleted()) {
+        if ($reject->isEventDeleted()) {
             $this->context->buildViolation($constraint->eventDeleted)->addViolation();
             return;
         }
 
-        if($reject->isBadEventName()) {
+        if ($reject->isBadEventName()) {
             $this->context->buildViolation($constraint->badEventName)->atPath('nom')->addViolation();
         }
 
-        if($reject->isBadEventDate()) {
+        if ($reject->isBadEventDate()) {
             $this->context->buildViolation($constraint->badEventDate)->atPath('dateDebut')->addViolation();
         }
 
-        if($reject->isBadEventDateInterval()) {
+        if ($reject->isBadEventDateInterval()) {
             $this->context->buildViolation($constraint->badEventDateInterval)->atPath('dateDebut')->addViolation();
         }
 
-        if($reject->isSpamEventDescription()) {
+        if ($reject->isSpamEventDescription()) {
             $this->context->buildViolation($constraint->spamEventDescription)->atPath('descriptif')->addViolation();
         }
 
-        if($reject->isBadEventDescription()) {
+        if ($reject->isBadEventDescription()) {
             $this->context->buildViolation($constraint->badEventDescrition)->atPath('descriptif')->addViolation();
         }
 
-        if($this->checkIfUpdate && $reject->hasNoNeedToUpdate()) {
+        if ($this->checkIfUpdate && $reject->hasNoNeedToUpdate()) {
             $this->context->buildViolation($constraint->noNeedToUpdate)->addViolation();
         }
 
-        if($reject->hasNoPlaceProvided()) {
+        if ($reject->hasNoPlaceProvided()) {
             $this->context->buildViolation($constraint->noPlaceProvided)->atPath('place')->addViolation();
         }
 
-        if($reject->hasNoPlaceLocationProvided()) {
+        if ($reject->hasNoPlaceLocationProvided()) {
             $this->context->buildViolation($constraint->noPlaceLocationProvided)->atPath('place')->addViolation();
         }
 
-        if($reject->isBadPlaceName()) {
+        if ($reject->isBadPlaceName()) {
             $this->context->buildViolation($constraint->badPlaceName)->atPath('place.nom')->addViolation();
         }
 
-        if($reject->isBadPlaceLocation()) {
+        if ($reject->isBadPlaceLocation()) {
             $this->context->buildViolation($constraint->badPlaceLocation)->atPath('place.ville')->addViolation();
         }
 
-        if($reject->isBadPlaceCityName()) {
+        if ($reject->isBadPlaceCityName()) {
             $this->context->buildViolation($constraint->badPlaceCityName)->atPath('place.ville')->addViolation();
         }
 
-        if($reject->isBadPlaceCityPostalCode()) {
+        if ($reject->isBadPlaceCityPostalCode()) {
             $this->context->buildViolation($constraint->badPlacePostalCode)->atPath('place.codePostal')->addViolation();
         }
 
-        if($reject->isBadUser()) {
+        if ($reject->isBadUser()) {
             $link = $this->router->generate("tbn_agenda_details", ['slug' => $event->getSlug(), "id" => $event->getId()]);
             $message = str_replace([
                 "[link]",

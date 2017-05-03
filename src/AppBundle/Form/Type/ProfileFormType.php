@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TBN\UserBundle\Form\Type;
+namespace AppBundle\Form\Type;
 
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -70,7 +70,6 @@ class ProfileFormType extends BaseType
                 'required' => false,
                 'label' => 'Photo de profil',
                 'image_filter' => 'thumb_user_large',
-            ])
-            ;
+            ]);
     }
 }

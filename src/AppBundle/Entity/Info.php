@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\UserBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"user" = "UserInfo", "site" = "SiteInfo"})
- * @ORM\Entity(repositoryClass="TBN\UserBundle\Entity\InfoRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\InfoRepository")
  */
 abstract class Info
 {
@@ -862,6 +862,6 @@ abstract class Info
 
     public function __toString()
     {
-        return "#".$this->id ?: '?';
+        return "#" . $this->id ?: '?';
     }
 }

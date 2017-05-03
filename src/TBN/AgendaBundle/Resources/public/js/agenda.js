@@ -72,18 +72,18 @@ function init_criteres() {
 
     //Bon bloc indigeste :)
     var block = $(options.selector_btn_criteres).click(function () {
-            if (block.hasClass(options.css_hidden)) {
-                $(this).find(options.selector_icon).removeClass(options.css_icon_class_open).addClass(options.css_icon_class_close);
-                block.show(options.duration, function () {
-                    $(this).removeClass(options.css_hidden);
-                });
-            } else {
-                $(this).find(options.selector_icon).removeClass(options.css_icon_class_close).addClass(options.css_icon_class_open);
-                block.hide(options.duration, function () {
-                    $(this).addClass(options.css_hidden);
-                });
-            }
-        })
+        if (block.hasClass(options.css_hidden)) {
+            $(this).find(options.selector_icon).removeClass(options.css_icon_class_open).addClass(options.css_icon_class_close);
+            block.show(options.duration, function () {
+                $(this).removeClass(options.css_hidden);
+            });
+        } else {
+            $(this).find(options.selector_icon).removeClass(options.css_icon_class_close).addClass(options.css_icon_class_open);
+            block.hide(options.duration, function () {
+                $(this).addClass(options.css_hidden);
+            });
+        }
+    })
         .closest(options.selector_main_block)
         .find(options.selector_block_criteres);
 

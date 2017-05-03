@@ -1,10 +1,10 @@
 <?php
 
-namespace TBN\MajDataBundle\Utils;
+namespace AppBundle\Utils;
 
 use Doctrine\Common\Cache\ArrayCache;
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Agenda;
+use AppBundle\Entity\Place;
+use AppBundle\Entity\Agenda;
 use Doctrine\Common\Cache\Cache;
 
 /**
@@ -30,7 +30,8 @@ class Comparator
         $this->cache = $cache;
     }
 
-    public function deleteCache() {
+    public function deleteCache()
+    {
         $this->cache->deleteAll();
     }
 
@@ -65,7 +66,7 @@ class Comparator
     public function getMatchingScorePlace(Place $a = null, Place $b = null)
     {
         if ($a !== null && $b !== null) {
-            if($this->getStrictMatchingPlace($a, $b)) {
+            if ($this->getStrictMatchingPlace($a, $b)) {
                 return 100;
             }
 
@@ -94,13 +95,13 @@ class Comparator
     protected function getStrictMatchingEvent(Agenda $a, Agenda $b)
     {
         return ($a->getFacebookEventId() && $a->getFacebookEventId() == $b->getFacebookEventId()) ||
-        ($a->getId() && $a->getId() == $b->getId());
+            ($a->getId() && $a->getId() == $b->getId());
     }
 
     protected function getStrictMatchingPlace(Place $a, Place $b)
     {
         return ($a->getFacebookId() && $a->getFacebookId() == $b->getFacebookId()) ||
-        ($a->getId() && $a->getId() == $b->getId());
+            ($a->getId() && $a->getId() == $b->getId());
     }
 
     public function getBestEvent(array $events, Agenda $testedEvent)
@@ -118,8 +119,9 @@ class Comparator
         $placeA = $a->getPlace();
         $placeB = $b->getPlace();
         if ($this->getMatchingScorePlace($placeA, $placeB) >= 80) {
-            if($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
-                $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75) {
+            if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
+                $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75
+            ) {
                 return 90;
             }
 
@@ -265,7 +267,8 @@ class Comparator
         return $this->sanitize(strip_tags($string));
     }
 
-    public function sanitizeVille($string) {
+    public function sanitizeVille($string)
+    {
         $string = preg_replace("#-(\s*)st(\s*)-#i", "saint", $string);
         return $this->sanitize($string);
     }

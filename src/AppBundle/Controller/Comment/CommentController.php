@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\CommentBundle\Controller;
+namespace AppBundle\Controller\Comment;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,11 +9,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use FOS\HttpCacheBundle\Configuration\InvalidateRoute;
 use Symfony\Component\HttpFoundation\Response;
 
-use TBN\MainBundle\Controller\TBNController as Controller;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\CommentBundle\Form\Type\CommentType;
-use TBN\CommentBundle\Entity\Comment;
-use TBN\CommentBundle\Repository\CommentRepository;
+use AppBundle\Controller\TBNController as Controller;
+use AppBundle\Entity\Agenda;
+use AppBundle\Form\Type\CommentType;
+use AppBundle\Entity\Comment;
+use AppBundle\Repository\CommentRepository;
 
 class CommentController extends Controller
 {
@@ -23,7 +23,7 @@ class CommentController extends Controller
      */
     protected function getCommentRepo()
     {
-        $repo = $this->getDoctrine()->getRepository("TBNCommentBundle:Comment");
+        $repo = $this->getDoctrine()->getRepository("AppBundle:Comment");
         return $repo;
     }
 
@@ -49,7 +49,7 @@ class CommentController extends Controller
 
     public function detailsAction(Comment $comment)
     {
-        return $this->render("TBNCommentBundle:Comment:details.html.twig", [
+        return $this->render("Comment/details.html.twig", [
             "comment" => $comment,
             "nb_reponses" => $this->getNbReponses($comment)
         ]);
@@ -72,7 +72,7 @@ class CommentController extends Controller
         if (!$user) {
             return new JsonResponse([
                 "success" => false,
-                "post" => $this->container->get("templating")->render("TBNCommentBundle:Comment:error.html.twig")
+                "post" => $this->container->get("templating")->render("Comment/error.html.twig")
             ]);
         }
 
@@ -87,13 +87,13 @@ class CommentController extends Controller
 
             return new JsonResponse([
                 "success" => true,
-                "comment" => $this->container->get("templating")->render("TBNCommentBundle:Comment:details.html.twig", [
+                "comment" => $this->container->get("templating")->render("Comment/details.html.twig", [
                     "comment" => $comment,
                     "success_confirmation" => true,
                     "nb_reponses" => 0
 
                 ]),
-                "header" => $this->container->get("templating")->render("TBNCommentBundle:Comment:header.html.twig", [
+                "header" => $this->container->get("templating")->render("Comment/header.html.twig", [
                     "nb_comments" => $this->getNbComments($soiree)
                 ])
             ]);
@@ -101,7 +101,7 @@ class CommentController extends Controller
 
         return new JsonResponse([
             "success" => false,
-            "post" => $this->container->get("templating")->render("TBNCommentBundle:Comment:post.html.twig", [
+            "post" => $this->container->get("templating")->render("Comment/post.html.twig", [
                 "form" => $form->createView()
             ])
         ]);
@@ -135,7 +135,7 @@ class CommentController extends Controller
         $comment = new Comment();
         $form = $this->getCreateForm($comment, $soiree);
 
-        $response = $this->render('TBNCommentBundle:Comment:list.html.twig', [
+        $response = $this->render('Comment/list.html.twig', [
             'nb_comments' => $this->getNbComments($soiree),
             'comments' => $this->getCommentaires($soiree, $page, $offset),
             "soiree" => $soiree,

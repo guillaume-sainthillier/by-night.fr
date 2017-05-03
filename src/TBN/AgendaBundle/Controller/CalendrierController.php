@@ -2,10 +2,10 @@
 
 namespace TBN\AgendaBundle\Controller;
 
-use TBN\MainBundle\Controller\TBNController as Controller;
+use TBN\AgendaBundle\Controller\TBNController as Controller;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Calendrier;
-use TBN\UserBundle\Entity\User;
+use TBN\AgendaBundle\Entity\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CalendrierController extends Controller
@@ -35,7 +35,7 @@ class CalendrierController extends Controller
     public function participerAction(Agenda $agenda, $participer, $interet)
     {
         /**
-         * @var \TBN\UserBundle\Entity\User Description
+         * @var \TBN\AgendaBundle\Entity\User Description
          */
         $user = $this->get('security.token_storage')->getToken()->getUser();
 

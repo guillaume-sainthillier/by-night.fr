@@ -1,10 +1,10 @@
 <?php
 
-namespace TBN\MainBundle\Site;
+namespace AppBundle\Site;
 
 use Doctrine\ORM\EntityManager;
-use TBN\MainBundle\Entity\Site;
-use TBN\UserBundle\Entity\SiteInfo;
+use AppBundle\Entity\Site;
+use AppBundle\Entity\SiteInfo;
 
 class SiteManager
 {
@@ -35,10 +35,11 @@ class SiteManager
         $this->entityManager = $entityManager;
     }
 
-    protected function init() {
-        if(! $this->isInitialized) {
+    protected function init()
+    {
+        if (!$this->isInitialized) {
             $siteInfo = $this->entityManager
-                ->getRepository('TBNUserBundle:SiteInfo')
+                ->getRepository('AppBundle:SiteInfo')
                 ->findOneBy([]);
 
             $this->setSiteInfo($siteInfo);

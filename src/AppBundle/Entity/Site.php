@@ -1,18 +1,18 @@
 <?php
 
-namespace TBN\MainBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
-use TBN\AgendaBundle\Geolocalize\BoundaryInterface;
+use AppBundle\Geolocalize\BoundaryInterface;
 
 /**
  * Site
  *
  * @ORM\Table(name="Site",
  *      indexes={@ORM\Index(name="recherche_site_idx", columns={"subdomain"})})
- * @ORM\Entity(repositoryClass="TBN\MainBundle\Entity\SiteRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\SiteRepository")
  * @ExclusionPolicy("all")
  */
 class Site implements BoundaryInterface

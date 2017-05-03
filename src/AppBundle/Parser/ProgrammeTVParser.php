@@ -1,5 +1,6 @@
 <?php
-namespace TBN\AgendaBundle\Parser;
+
+namespace AppBundle\Parser;
 
 use Symfony\Component\DomCrawler\Crawler as Crawler;
 

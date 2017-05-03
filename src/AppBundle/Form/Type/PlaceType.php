@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\UserBundle\Form\Type;
+namespace AppBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -10,7 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use TBN\AgendaBundle\Entity\Place;
+use AppBundle\Entity\Place;
 
 class PlaceType extends AbstractType
 {
@@ -39,8 +39,7 @@ class PlaceType extends AbstractType
             ])
             ->add('codePostal', TextType::class, [
                 "required" => false,
-            ])
-        ;
+            ]);
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {

@@ -1,16 +1,16 @@
 <?php
 
-namespace TBN\MajDataBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use TBN\MajDataBundle\Reject\Reject;
+use AppBundle\Reject\Reject;
 
 /**
  * Exploration
  *
  * @ORM\Table(name="Exploration")
  * @ORM\Entity
- * @ORM\Entity(repositoryClass="TBN\MajDataBundle\Repository\ExplorationRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ExplorationRepository")
  */
 class Exploration
 {
@@ -48,17 +48,20 @@ class Exploration
      */
     private $reject;
 
-    public function setReject(Reject $reject) {
+    public function setReject(Reject $reject)
+    {
         $this->reject = $reject;
 
         return $this;
     }
 
-    public function getReject() {
+    public function getReject()
+    {
         return $this->reject;
     }
 
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
 
         return $this;

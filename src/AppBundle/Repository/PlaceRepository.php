@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Repository;
+namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr;
@@ -14,24 +14,26 @@ use Doctrine\ORM\Query\Expr;
 class PlaceRepository extends EntityRepository
 {
 
-    public function findAllVilles() {
+    public function findAllVilles()
+    {
         return $this->_em
             ->createQueryBuilder()
             ->select('p.ville')
             ->addSelect('s.id')
-            ->from('TBNAgendaBundle:Place', 'p')
-            ->join('TBNMainBundle:Site', 's', Expr\Join::WITH, 'p.site = s')
+            ->from('AppBundle:Place', 'p')
+            ->join('AppBundle:Site', 's', Expr\Join::WITH, 'p.site = s')
             ->where('p.ville IS NOT NULL')
             ->groupBy('p.ville')
             ->getQuery()
             ->getScalarResult();
     }
+
     public function findAllFBIds()
     {
         $places = $this->_em
             ->createQueryBuilder()
             ->select('p.facebookId')
-            ->from('TBNAgendaBundle:Place', 'p')
+            ->from('AppBundle:Place', 'p')
             ->where('p.facebookId IS NOT NULL')
             ->getQuery()
             ->getScalarResult();
@@ -39,11 +41,12 @@ class PlaceRepository extends EntityRepository
         return array_unique(array_filter(array_column($places, 'facebookId')));
     }
 
-    public function findAllCities() {
+    public function findAllCities()
+    {
         $places = $this->_em
             ->createQueryBuilder()
             ->select('p.ville')
-            ->from('TBNAgendaBundle:Place', 'p')
+            ->from('AppBundle:Place', 'p')
             ->where('p.ville IS NOT NULL')
             ->groupBy('p.ville')
             ->getQuery()

@@ -6,7 +6,7 @@
  * && open the template in the editor.
  */
 
-namespace TBN\MajDataBundle\Command;
+namespace AppBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 

@@ -45,23 +45,29 @@ Then, run this script to get the list.
 
 */
 .comments {
-  margin-top: 40px;
+    margin-top: 40px;
 }
+
 .comments .comment {
-  margin-bottom: 30px;
+    margin-bottom: 30px;
 }
+
 .comments .comment .infos {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
+
 .comments .comment .infos span {
-  margin-left: 10px;
+    margin-left: 10px;
 }
+
 .comments .block_reponses .comment {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
+
 .comments .block_post {
-  margin-top: 10px;
+    margin-top: 10px;
 }
+
 /*
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
@@ -72,95 +78,115 @@ and open the template in the editor.
     Author     : guillaume
 */
 .hinclude_errors .error {
-  display: none;
-  width: 100%;
-  text-align: center;
+    display: none;
+    width: 100%;
+    text-align: center;
 }
+
 .include_404 .error_404 {
-  display: inline-block;
+    display: inline-block;
 }
+
 .include_500 .error_500 {
-  display: inline-block;
+    display: inline-block;
 }
+
 .include_404 .hinclude_no_error,
 .include_500 .hinclude_no_error {
-  display: none;
+    display: none;
 }
+
 .panel-twitter {
-  min-height: 400px;
+    min-height: 400px;
 }
+
 .panel-twitter iframe {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
+
 .tendances strong {
-  display: block;
+    display: block;
 }
+
 .buttons {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
+
 html body #widgets .trait {
-  padding-bottom: 5px;
-  padding-top: 5px;
+    padding-bottom: 5px;
+    padding-top: 5px;
 }
+
 html body #widgets .trait a {
-  display: block;
+    display: block;
 }
+
 html body #widgets .trait small {
-  font-style: italic;
+    font-style: italic;
 }
+
 html body #widgets .trait .user_profil_picture {
-  padding-right: 0;
+    padding-right: 0;
 }
+
 .panel-primary .panel-heading .modal-title {
-  position: relative;
+    position: relative;
 }
+
 .panel-primary .panel-heading h3 .fa {
-  font-size: 20px;
-  height: 40px;
-  width: 40px;
-  line-height: 40px;
-  text-align: center;
-  background-color: white;
-  border: 1px solid #3f51b5;
-  border-radius: 50px;
-  position: absolute;
-  bottom: -25px;
-  right: 0;
-  z-index: 2;
+    font-size: 20px;
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid #3f51b5;
+    border-radius: 50px;
+    position: absolute;
+    bottom: -25px;
+    right: 0;
+    z-index: 2;
 }
+
 .panel-primary .panel-heading h2 .fa {
-  font-size: 25px;
-  height: 50px;
-  width: 50px;
-  line-height: 50px;
-  text-align: center;
-  background-color: white;
-  border: 1px solid #3f51b5;
-  border-radius: 50px;
-  position: absolute;
-  bottom: -30px;
-  right: 0;
-  z-index: 2;
+    font-size: 25px;
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid #3f51b5;
+    border-radius: 50px;
+    position: absolute;
+    bottom: -30px;
+    right: 0;
+    z-index: 2;
 }
+
 .details_evenement {
-  font-size: 120%;
+    font-size: 120%;
 }
+
 .details_evenement .block_infos {
-  overflow: hidden;
+    overflow: hidden;
 }
+
 .details_evenement .block_infos .fa-ul li {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
+
 .details_evenement .block_infos .tags .label {
-  margin-right: 5px;
+    margin-right: 5px;
 }
+
 #loadMap {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
+
 .preview .img-responsive {
-  max-height: 250px;
+    max-height: 250px;
 }
 
 /*# sourceMappingURL=details.css.map */

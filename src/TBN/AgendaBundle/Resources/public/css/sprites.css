@@ -10,278 +10,323 @@ Icon classes can be used entirely standalone. They are named after their origina
 ```
 */
 .icon-13_rue {
-  background-image: url(../images/spritesheet.png);
-  background-position: -70px -210px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -70px -210px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-6ter {
-  background-image: url(../images/spritesheet.png);
-  background-position: -250px -60px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -250px -60px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-arte {
-  background-image: url(../images/spritesheet.png);
-  background-position: -180px 0px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -180px 0px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-bfm_tv {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px -239px;
-  width: 66px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px -239px;
+    width: 66px;
+    height: 30px;
 }
+
 .icon-canal-partage-tnt-ile-de-france {
-  background-image: url(../images/spritesheet.png);
-  background-position: 0px 0px;
-  width: 60px;
-  height: 60px;
+    background-image: url(../images/spritesheet.png);
+    background-position: 0px 0px;
+    width: 60px;
+    height: 60px;
 }
+
 .icon-canal8 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -250px -120px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -250px -120px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-canal_partage {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px -210px;
-  width: 70px;
-  height: 29px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px -210px;
+    width: 70px;
+    height: 29px;
 }
+
 .icon-canal_plus {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px -90px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px -90px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-cherie25 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -60px -150px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -60px -150px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-cstar {
-  background-image: url(../images/spritesheet.png);
-  background-position: -60px 0px;
-  width: 60px;
-  height: 60px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -60px 0px;
+    width: 60px;
+    height: 60px;
 }
+
 .icon-d17 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -180px -30px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -180px -30px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-direct23 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -180px -60px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -180px -60px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-direct8 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -180px -90px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -180px -90px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-e {
-  background-image: url(../images/spritesheet.png);
-  background-position: 0px -60px;
-  width: 60px;
-  height: 60px;
+    background-image: url(../images/spritesheet.png);
+    background-position: 0px -60px;
+    width: 60px;
+    height: 60px;
 }
+
 .icon-e_entertainment {
-  background-image: url(../images/spritesheet.png);
-  background-position: -180px -150px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -180px -150px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-france2 {
-  background-image: url(../images/spritesheet.png);
-  background-position: 0px -180px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: 0px -180px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-france3 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -70px -180px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -70px -180px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-france4 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -140px -180px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -140px -180px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-france5 {
-  background-image: url(../images/spritesheet.png);
-  background-position: 0px -210px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: 0px -210px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-franceinfo {
-  background-image: url(../images/spritesheet.png);
-  background-position: -60px -60px;
-  width: 60px;
-  height: 60px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -60px -60px;
+    width: 60px;
+    height: 60px;
 }
+
 .icon-franceo {
-  background-image: url(../images/spritesheet.png);
-  background-position: -140px -210px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -140px -210px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-gulli {
-  background-image: url(../images/spritesheet.png);
-  background-position: -250px 0px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -250px 0px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-hd1 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -250px -30px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -250px -30px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-idf {
-  background-image: url(../images/spritesheet.png);
-  background-position: -60px -120px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -60px -120px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-itele {
-  background-image: url(../images/spritesheet.png);
-  background-position: -250px -90px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -250px -90px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-la-chaine-parlementaire {
-  background-image: url(../images/spritesheet.png);
-  background-position: -120px 0px;
-  width: 60px;
-  height: 60px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -120px 0px;
+    width: 60px;
+    height: 60px;
 }
+
 .icon-lci {
-  background-image: url(../images/spritesheet.png);
-  background-position: -250px -150px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -250px -150px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-lcp {
-  background-image: url(../images/spritesheet.png);
-  background-position: -250px -180px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -250px -180px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-lequipe {
-  background-image: url(../images/spritesheet.png);
-  background-position: -250px -210px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -250px -210px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-m6 {
-  background-image: url(../images/spritesheet.png);
-  background-position: 0px -240px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: 0px -240px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-nat_geo {
-  background-image: url(../images/spritesheet.png);
-  background-position: -70px -240px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -70px -240px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-nrj {
-  background-image: url(../images/spritesheet.png);
-  background-position: -140px -240px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -140px -240px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-nt-1 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -120px -60px;
-  width: 60px;
-  height: 60px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -120px -60px;
+    width: 60px;
+    height: 60px;
 }
+
 .icon-nt1 {
-  background-image: url(../images/spritesheet.png);
-  background-position: 0px -270px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: 0px -270px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-numero23 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -70px -270px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -70px -270px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-paris_premiere {
-  background-image: url(../images/spritesheet.png);
-  background-position: -140px -270px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -140px -270px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-plug_rtl {
-  background-image: url(../images/spritesheet.png);
-  background-position: -210px -270px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -210px -270px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-rmc {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px 0px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px 0px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-rtl9 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px -30px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px -30px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-serie_club {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px -60px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px -60px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-serieclub {
-  background-image: url(../images/spritesheet.png);
-  background-position: 0px -120px;
-  width: 60px;
-  height: 60px;
+    background-image: url(../images/spritesheet.png);
+    background-position: 0px -120px;
+    width: 60px;
+    height: 60px;
 }
+
 .icon-syfy {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px -120px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px -120px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-tf1 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px -150px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px -150px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-tmc {
-  background-image: url(../images/spritesheet.png);
-  background-position: -210px -240px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -210px -240px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-tv5_monde {
-  background-image: url(../images/spritesheet.png);
-  background-position: -180px -120px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -180px -120px;
+    width: 70px;
+    height: 30px;
 }
+
 .icon-w9 {
-  background-image: url(../images/spritesheet.png);
-  background-position: -320px -180px;
-  width: 70px;
-  height: 30px;
+    background-image: url(../images/spritesheet.png);
+    background-position: -320px -180px;
+    width: 70px;
+    height: 30px;
 }

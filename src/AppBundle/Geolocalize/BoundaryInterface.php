@@ -1,6 +1,6 @@
 <?php
 
-namespace TBN\AgendaBundle\Geolocalize;
+namespace AppBundle\Geolocalize;
 
 /**
  * Created by PhpStorm.

@@ -8,9 +8,9 @@
 
 namespace AppBundle\Controller\Fragments;
 
-use TBN\MainBundle\Controller\TBNController;
-use TBN\MainBundle\Entity\Site;
-use TBN\SocialBundle\Social\FacebookAdmin;
+use AppBundle\Controller\TBNController;
+use AppBundle\Entity\Site;
+use AppBundle\Social\FacebookAdmin;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommonController extends TBNController
@@ -20,17 +20,18 @@ class CommonController extends TBNController
     /**
      * @Route("/header", name="tbn_private_header")
      */
-    public function headerAction() {
+    public function headerAction()
+    {
         $response = $this->render('::menu.html.twig');
-        
+
         $tomorrow = new \DateTime("tomorrow");
         return $response
             ->setExpires($tomorrow)
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-            ;
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
-    public function footerAction(Site $site) {
+    public function footerAction(Site $site)
+    {
         $cache = $this->get('memory_cache');
         $siteManager = $this->get('site_manager');
 
@@ -44,7 +45,7 @@ class CommonController extends TBNController
         foreach ($socials as $name => $social) {
             $key = 'tbn.counts.' . $name;
             if (!$cache->contains($key)) {
-                if($social instanceof FacebookAdmin) {
+                if ($social instanceof FacebookAdmin) {
                     $social->setSiteInfo($siteManager->getSiteInfo());
                 }
                 $cache->save($key, $social->getNumberOfCount(), self::LIFE_TIME_CACHE);
@@ -53,15 +54,14 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo = $this->getDoctrine()->getRepository("TBNMainBundle:Site");
+        $repo = $this->getDoctrine()->getRepository("AppBundle:Site");
         $params['sites'] = $repo->findRandomNames($site);
         $params['site'] = $site;
-        $response = $this->render('TBNAgendaBundle::footer.html.twig', $params);
+        $response = $this->render('City/footer.html.twig', $params);
 
         $tomorrow = new \DateTime("tomorrow");
         return $response
             ->setExpires($tomorrow)
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-        ;
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 }
