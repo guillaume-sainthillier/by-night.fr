@@ -6,15 +6,17 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="{{ path('tbn_agenda_index') }}" title="By Night : les concerts, spectacles, sorties à {{ site.nom }}" class="navbar-brand">
-                <img src="{{ asset('img/by-night_40x40.png') }}" width="40" height="40" alt="{{ site.nom }} By Night" />
+            <a href="{{ path('tbn_main_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand">
+                <img src="{{ asset('img/by-night_40x40.png') }}" width="40" height="40" alt="By Night" />
             </a>
         </div>
         <div class="navbar-collapse collapse navbar-responsive-collapse" id="navbar-main">
             <ul class="nav navbar-nav">
+                {% if site is defined and site %}
                 <li>
-                    <a href="{{ path('tbn_agenda_agenda') }}" title="L'agenda des sorties, c'est par ici !"><strong>Agenda</strong></a>
+                    <a href="{{ path('tbn_agenda_agenda', {'city': site.subdomain}) }}" title="L'agenda des sorties, c'est par ici !"><strong>Agenda</strong></a>
                 </li>
+                {% endif %}
                 <li>
                     <a title="Créez votre événement en 1 clic !" href="{{ path('tbn_agenda_new') }}">Créer un événement</a>
                 </li>
@@ -63,14 +65,14 @@
                     {% set route = app.request.attributes.get('_route') %}
                     {% if route != "fos_user_registration_register" %}
                     <li>
-                        <a class="register" title="Inscrivez-vous sur {{ site.nom }} By Night" href="{{ path('fos_user_registration_register') }}" >
+                        <a class="register" title="Inscrivez-vous sur By Night" href="{{ path('fos_user_registration_register') }}" >
                             Rejoignez-nous
                         </a>
                     </li>
                     {% endif %}
                     {% if route != "fos_user_security_login" %}
                     <li>
-                        <a class="connexion" title="Connectez-vous sur {{ site.nom }} By Night" href="{{ path('fos_user_security_login') }}" >
+                        <a class="connexion" title="Connectez-vous sur By Night" href="{{ path('fos_user_security_login') }}" >
                             Connexion
                         </a>
                     </li>

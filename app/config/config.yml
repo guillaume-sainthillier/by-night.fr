@@ -1,6 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
+    - { resource: services.yml }
     - { resource: "@TBNMainBundle/Resources/config/services.yml" }
     - { resource: sem_var.yml, ignore_errors: true }
 

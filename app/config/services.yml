@@ -1,0 +1,21 @@
+services:
+    app.city_converter:
+        class: AppBundle\Request\ParamConverter\CityConverter
+        tags:
+            - { name: request.param_converter, priority: 0, converter: city_converter }
+        arguments:
+            - "@doctrine"
+
+    app.event_listener.browser_cache:
+        class: AppBundle\EventListener\BrowserCacheListener
+        tags:
+            - { name: kernel.event_subscriber }
+
+#    ville_listener:
+#        class: AppBundle\Listener\CityListener
+#        arguments:
+#          - "@site_manager"
+#          - "@doctrine.orm.entity_manager"
+#          - "@router"
+#        tags:
+#           - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}

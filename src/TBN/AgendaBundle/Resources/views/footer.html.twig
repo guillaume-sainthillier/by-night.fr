@@ -35,12 +35,11 @@
                         <li>
                             <i class="fa fa-li fa-angle-right"></i>
                             <a title="Découvrir les événements sur {{ site.nom }}"
-                               href="{{ path('tbn_agenda_index', {'subdomain' : site.subdomain}) }}">
+                               href="{{ path('tbn_agenda_index', {'city' : site.subdomain}) }}">
                                 {{ site.nom }}
                             </a>
                         </li>
                     {% endfor %}
-
                 </ul>
             </div>
         </div>

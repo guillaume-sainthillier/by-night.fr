@@ -1,141 +1,120 @@
 #La ville est définie à partir d'ici
-tbn_agenda:
-    resource: "@TBNAgendaBundle/Resources/config/routing.yml"    
+app.legacy:
+    resource: "@AppBundle/Controller/Legacy"
     prefix:   /
-    host:   "{subdomain}.%base_host%"
+    type:     annotation
+
+app.private:
+    resource: "@AppBundle/Controller/Fragments"
+    prefix:   /_private
+
+#La ville est définie à partir d'ici
+app.city:
+    resource: "@AppBundle/Controller/City"
+    prefix:   /{city}
+    type:     annotation
+
+#tbn_agenda:
+#    resource: "@TBNAgendaBundle/Resources/config/routing.yml"
+#    prefix:   /{city}
+##    host:   "{city}.%base_host%"
     
 tbn_agenda_old:
-    resource: "@TBNAgendaBundle/Resources/config/routing_old.yml"    
+    resource: "@TBNAgendaBundle/Resources/config/routing_old.yml"
     prefix:   /
-    host:   "{subdomain}.%base_host%"
-    
-tbn_recherche:
-    resource: "@TBNMainBundle/Resources/config/routing_search.yml"    
-    prefix:   /recherche
-    host:   "{subdomain}.%base_host%"
+    host:   "{city}.%base_host%"
 
-tbn_private:
-    resource: "@TBNMainBundle/Resources/config/routing_private.yml"
-    prefix:   /_private
-    host:   "{subdomain}.%base_host%"
-    
+tbn_recherche:
+    resource: "@TBNMainBundle/Resources/config/routing_search.yml"
+    prefix:   /recherche
+
 tbn_comment:
     resource: "@TBNCommentBundle/Resources/config/routing.yml"
     prefix:   /commentaire
-    host:   "{subdomain}.%base_host%"
 
 tbn_administration:
     resource: "@TBNAdministrationBundle/Resources/config/routing.yml"
     prefix:   /_administration
-    host:   "{subdomain}.%base_host%"
 
 tbn_membres:
     resource: "@TBNUserBundle/Resources/config/routing_user.yml"
     prefix:   /membres
-    host:   "{subdomain}.%base_host%"
 
 tbn_membres_old:
     resource: "@TBNUserBundle/Resources/config/routing_user_old.yml"
     prefix:   /membres
-    host:   "{subdomain}.%base_host%"
 
 easy_admin_bundle:
     resource: "@EasyAdminBundle/Controller/"
     type:     annotation
     prefix:   /_administration
-    host:   "{subdomain}.%base_host%"
 
 #MainBundle, pas de ville définie ici
 tbn_city:
     resource: "@TBNMainBundle/Resources/config/routing.yml"
     prefix:   /
-    host:   '%base_host%'
 
 tbn_social:
     resource: "@TBNSocialBundle/Resources/config/routing.yml"
     prefix:   /
-    host:   "{subdomain}.%base_host%"
 
 #Login
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
-    host:   "{subdomain}.%base_host%"
-    #requirements:
-        #_scheme:  https
-        
 #Profile
 fos_user_profile:
     resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
     prefix: /profile
-    host:   "{subdomain}.%base_host%"
 
 #Inscription
 fos_user_register:
     resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
     prefix: /inscription
-    host:   "{subdomain}.%base_host%"
-    #requirements:
-        #_scheme:  https
 
 #Changement de password
 fos_user_resetting:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
     prefix: /resetting
-    host:   "{subdomain}.%base_host%"
 
 #Demande de changement de password
 fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profil
-    host:   "{subdomain}.%base_host%"    
 
 #Login réseaux sociaux
 hwi_oauth_security:
     resource: "@HWIOAuthBundle/Resources/config/routing/login.xml"
     prefix: /login-social
-    host:   "{subdomain}.%base_host%"
-    #requirements:
-        #_scheme:  https
 
 #Login réseaux sociaux
 hwi_oauth_connect:
     resource: "@HWIOAuthBundle/Resources/config/routing/connect.xml"
     prefix: /login-social
-    host:   "{subdomain}.%base_host%"
-    #requirements:
-        #_scheme:  https
-        
+
 #Login réseaux sociaux
 hwi_oauth_redirect:
     resource: "@HWIOAuthBundle/Resources/config/routing/redirect.xml"
     prefix:   /login-social
-    host:   "{subdomain}.%base_host%"
-    #requirements:
-        #_scheme:  https
 
 #Login twitter
 twitter_login:
     path: /login/check-twitter
-    host:   "{subdomain}.%base_host%"
 
 #Login facebook
 facebook_login:
     path: /login/check-facebook
-    host:   "{subdomain}.%base_host%"
- 
+
 #Login Google
 google_login:
     path: /login/check-google
-    host:   "{subdomain}.%base_host%"
 
 tbn_user:
     resource: "@TBNUserBundle/Resources/config/routing.yml"
     prefix:   /espace-perso
-    host:   "{subdomain}.%base_host%"
 
 _liip_imagine:
-    resource: "@LiipImagineBundle/Resources/config/routing.xml" 
-    
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"
+
 PrestaSitemapBundle:
     resource: "@PrestaSitemapBundle/Resources/config/routing.yml"
     prefix:   /

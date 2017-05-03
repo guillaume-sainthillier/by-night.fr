@@ -47,12 +47,6 @@ services:
         class: TBN\MainBundle\Site\SiteManager
         arguments: [ "@doctrine.orm.entity_manager" ]
 
-    ville_listener:
-        class: TBN\MainBundle\Listener\SubDomainListener
-        arguments: [ "@site_manager", "@doctrine.orm.entity_manager", "@router", "%base_host%", "%request_listener.http_port%" ]
-        tags:
-           - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}
-
     image_listener:
         class: TBN\MainBundle\Listener\ImageListener
         arguments: [ "@liip_imagine.cache.manager" ]

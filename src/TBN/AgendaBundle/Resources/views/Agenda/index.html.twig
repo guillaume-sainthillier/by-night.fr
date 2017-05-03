@@ -12,7 +12,7 @@
             <h1 class="titrebloc text-center">{{ block('titre_agenda') }}</h1>
             <div class="row">
                 <div class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2 col-lg-6 col-lg-push-3 no-margin-form panel panel-primary search_container img-rounded">
-                    <form name="tbn_search_agenda" role="search" action="{{ path('tbn_agenda_agenda') }}" method="POST">
+                    <form name="tbn_search_agenda" role="search" action="{{ path('tbn_agenda_agenda', {'city': site.subdomain}) }}" method="POST">
                         <div class="row">
                             <div class="col-md-8">
                                 <input type="hidden" id="search_du" name="search[du]" value=""/>
@@ -71,7 +71,7 @@
                 offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
             </p>
             <br/>
-            <a href="{{ path('tbn_agenda_agenda') }}"
+            <a href="{{ path('tbn_agenda_agenda', {'city': site.subdomain}) }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i>
                 Agenda des événéments<span class="hidden-xs hidden-sm">, concerts, spectacles à {{ site.nom }}</span>
@@ -87,7 +87,7 @@
                 'title': 'Concert',
                 'icon': 'flaticon-microphone47',
                 'color': 'red',
-                'link': path('tbn_agenda_sortir', {'type': 'concert'}),
+                'link': path('tbn_agenda_sortir', {'type': 'concert', 'city': site.subdomain}),
                 'title_link': 'Concerts à ' ~ site.nom,
                 'text': "Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples à
                             " ~ site.nom ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et 
@@ -96,7 +96,7 @@
                 'title': 'Etudiant',
                 'icon': 'flaticon-students17',
                 'color': 'orange',
-                'link': path('tbn_agenda_sortir', {'type': 'etudiant'}),
+                'link': path('tbn_agenda_sortir', {'type': 'etudiant', 'city': site.subdomain}),
                 'title_link': 'Soirées étudiantes à ' ~ site.nom,
                 'text': "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>,
                             d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en 
@@ -106,7 +106,7 @@
                 'title': 'Famille',
                 'icon': 'flaticon-father16',
                 'color': 'green',
-                'link': path('tbn_agenda_sortir', {'type': 'famille'}),
+                'link': path('tbn_agenda_sortir', {'type': 'famille', 'city': site.subdomain}),
                 'title_link': 'Sorties familles à ' ~ site.nom,
                 'text': "Trouvez des idées pour <strong>sortir en famille</strong> à " ~ site.nom ~ " avec tous les
                             <strong>spectacles enfants</strong>. Découvrez de nouveaux <strong>spectacles jeune public</strong>,
@@ -115,7 +115,7 @@
                 'title': 'Spectacle',
                 'icon': 'flaticon-tickets',
                 'color': 'blue',
-                'link': path('tbn_agenda_sortir', {'type': 'spectacle'}),
+                'link': path('tbn_agenda_sortir', {'type': 'spectacle', 'city': site.subdomain}),
                 'title_link': 'Spectacles à ' ~ site.nom,
                 'text': site.nom ~ " regorge de <strong>spectacles en " ~ "now"|date('Y') ~ "</strong> ! Divertissement & culture,
                             trouvez votre spectacle préféré ou votre animation favorie grâce à 
@@ -124,7 +124,7 @@
                 'title': 'Exposition',
                 'icon': 'flaticon-theater1',
                 'color': 'darkblue',
-                'link': path('tbn_agenda_sortir', {'type': 'exposition'}),
+                'link': path('tbn_agenda_sortir', {'type': 'exposition', 'city': site.subdomain}),
                 'title_link': 'Les expos à ' ~ site.nom,
                 'text': "Les <strong>expos à " ~ site.nom ~ "</strong> sont nombreuses ! Envie d'aller visiter les
                     <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir 
@@ -170,7 +170,7 @@
             {% include 'TBNAgendaBundle:Agenda:block_preview_soiree.html.twig' with({'events': topEvents, 'page': 1}) %}
             <br/>
             <br/>
-            <a href="{{ path('tbn_agenda_agenda') }}"
+            <a href="{{ path('tbn_agenda_agenda', {'city': site.subdomain}) }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i>
                 Tous les événements<span class="hidden-xs hidden-sm">, concerts, spectacles</span>
@@ -180,13 +180,12 @@
 {% endblock %}
 
 {% block ad %}{% endblock %}
-{% block start_container -%}
-<div>{% endblock %}
+{% block start_container -%}<div>{% endblock %}
 
-    {% block css_agenda %}
-        <link rel="stylesheet" href="{{ asset('prod/evenements/css/index.min.css', 'asset') }}" type="text/css">
-    {% endblock %}
+{% block css_agenda %}
+    <link rel="stylesheet" href="{{ asset('prod/evenements/css/index.min.css', 'asset') }}" type="text/css">
+{% endblock %}
 
-    {% block js_agenda %}
-        <script src="{{ asset('prod/evenements/js/index.min.js', 'asset') }}" type="text/javascript"></script>
-    {% endblock %}
+{% block js_agenda %}
+    <script src="{{ asset('prod/evenements/js/index.min.js', 'asset') }}" type="text/javascript"></script>
+{% endblock %}

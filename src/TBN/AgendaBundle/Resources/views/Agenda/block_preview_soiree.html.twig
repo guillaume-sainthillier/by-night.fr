@@ -29,7 +29,7 @@
                 {% endif %}
                 <h3 class="modal-title nom_soiree">
                     <a title="Tous les détails de {{ soiree.nom }} "
-                       href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id}) }}" {% if microdata%}itemprop="url"{% endif %}>
+                       href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.site.subdomain}) }}" {% if microdata%}itemprop="url"{% endif %}>
                         <span {% if microdata%}itemprop="name"{% endif %}>{{ soiree.nom }}</span>
                     </a>
                 </h3>
@@ -66,7 +66,7 @@
                 {% if place and place.nom %}
                     <div class="trait" {% if microdata%}itemprop="location" itemscope itemtype="http://schema.org/Place"{% endif %}>
                         <i class="fa fa-map-marker pull-left"></i>
-                        <a {% if microdata%}itemprop="name"{% endif %} href="{{ path('tbn_agenda_place', {'slug': place.slug }) }}"
+                        <a {% if microdata%}itemprop="name"{% endif %} href="{{ path('tbn_agenda_place', {'slug': place.slug, 'city': soiree.site.subdomain}) }}"
                            title="Sortir à {{ place.nom }}"><strong>{{ place.nom }}</strong></a>
                         {% if microdata and place.latitude and place.longitude %}
                             <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
@@ -91,7 +91,7 @@
                     <div class="trait">
                         <i class="fa fa-tag pull-left"></i>
                         {% for tag in distinctTags %}
-                            <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag|trim}) }}">
+                            <a class="label label-info" title="{{ tag }} à {{ site.nom }}" href="{{ path('tbn_agenda_tags', {'tag' : tag|trim, 'city': soiree.site.subdomain}) }}">
                                 <strong>{{ tag }}</strong>
                             </a>
                         {% endfor %}
