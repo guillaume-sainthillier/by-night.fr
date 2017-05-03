@@ -47,19 +47,22 @@ class NewsManager
 
     public function postNews(News $news, $wordpressPostId, $shortTitle, $longTitle, $url, $imageUrl) {
         $success = true;
-        if($news->getId()) {
+        if(!$news->getFbPostId()) {
             try {
-                $this->facebook->postNews($longTitle, $url, $imageUrl);
+                $postId = $this->facebook->postNews($longTitle, $url, $imageUrl);
+                $news->setTweetPostId($postId);
                 $success = $success && true;
             }catch(\Exception $e) {
                 $success = false;
-                dump($e);
                 $this->logger->critical($e);
             }
+        }
 
+        if(!$news->getTweetPostId()) {
             try {
+                $postId = $this->twitter->postNews($shortTitle, $url);
+                $news->setTweetPostId($postId);
                 $success = $success && true;
-                $this->twitter->postNews($shortTitle, $url);
             }catch(\Exception $e) {
                 $success = false;
                 $this->logger->critical($e);

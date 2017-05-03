@@ -1,8 +1,8 @@
-<p>Cette semaine, ce sont près de <strong>{{ participants }} personnes</strong> qui vont participer à des événements partout en France !</p>
+<p>Cette semaine, ce sont près de <strong>{{ participants|localizednumber }} personnes</strong> qui vont participer à des événements partout en France !</p>
 <p>Parmis les 5 villes les plus actives cette semaine, on retrouve :</p>
 <ul>
     {% for site, participations in topParticipants %}
-    <li>{{ site }} : {{ participations }} participants</li>
+    <li>{{ site }} : {{ participations|localizednumber }} participants</li>
     {% endfor %}
 </ul>
 <br />
@@ -85,6 +85,7 @@
                 {% endfor %}
             </li>
             {% endif %}
+            <li> Participants : {{ (event.fbParticipations + event.fbInterets)|localizednumber }}</li>
         </ul>
     </div>
     {% endfor %}

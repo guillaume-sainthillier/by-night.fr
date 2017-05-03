@@ -99,13 +99,16 @@ class FacebookAdmin extends FacebookEvents
         //Authentification
         $accessToken = $this->getPageAccessToken();
 
-        $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed/', [
+        $response = $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed/', [
             'message' => $title,
             'name' => "By Night Magazine",
             'link' => $url,
             'picture' => $imageUrl,
             'description' => $title
         ], $accessToken);
+
+        $post = $response->getGraphNode();
+        return $post->getField('id');
     }
 
     protected function afterPost(User $user, Agenda $agenda)
@@ -371,8 +374,6 @@ class FacebookAdmin extends FacebookEvents
         $interets = [];
 
         try {
-            $this->client->setDefaultAccessToken($this->getAccessToken());
-
             $fields = str_replace(
                 ["%offset%", "%limit%"],
                 [$offset, $limit],
@@ -381,7 +382,7 @@ class FacebookAdmin extends FacebookEvents
 
             $request = $this->client->sendRequest('GET', '/' . $id_event, [
                 'fields' => $fields
-            ]);
+            ], $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null);
             $graph = $request->getGraphPage();
 
             $participations = $this->findPaginated($graph->getField('attending'), $limit);
