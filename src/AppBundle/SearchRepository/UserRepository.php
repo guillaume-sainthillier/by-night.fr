@@ -12,16 +12,12 @@ class UserRepository extends Repository
 {
 
     /**
-     * @param Site $site
      * @param string $q
      * @return \Pagerfanta\Pagerfanta
      */
-    public function findWithSearch(Site $site, $q)
+    public function findWithSearch($q)
     {
         $query = new BoolQuery;
-        $query->addFilter(
-            new Term(['site.id' => $site->getId()])
-        );
 
         $match = new MultiMatch;
         $match->setQuery($q)

@@ -78,7 +78,7 @@
                                         Aucun événément de prévu pour {{ username }} !
                                     </div>
                                 {% else %}
-                                    {% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" with({'events' : next_events}) %}
+                                    {% include "City/Event/block_preview_event.html.twig" with({'events' : next_events}) %}
                                 {% endif %}
                             </div>
                             <div class="tab-pane" id="passes">
@@ -88,7 +88,7 @@
                                         Aucun événément passé pour {{ username }} !
                                     </div>
                                 {% else %}
-                                    {% include "TBNAgendaBundle:Agenda:block_preview_soiree.html.twig" with({'events' : previous_events}) %}
+                                    {% include "City/Event/block_preview_event.html.twig" with({'events' : previous_events}) %}
                                 {% endif %}
                             </div>
                         </div>

@@ -7,6 +7,16 @@ app.legacy:
     resource: "@AppBundle/Controller/Legacy"
     type:     annotation
 
+easy_admin_bundle:
+    resource: "@EasyAdminBundle/Controller/"
+    type:     annotation
+    prefix:   /_administration
+
+app.admin:
+    resource: "@AppBundle/Controller/Admin"
+    prefix:   /_administration
+    type:     annotation
+
 app.search:
     resource: "@AppBundle/Controller/Search"
     prefix:   /recherche
@@ -15,6 +25,57 @@ app.search:
 app.private:
     resource: "@AppBundle/Controller/Fragments"
     prefix:   /_private
+
+#Login
+fos_user_security:
+    resource: "@FOSUserBundle/Resources/config/routing/security.xml"
+
+#Profile
+fos_user_profile:
+    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
+    prefix: /profile
+
+#Inscription
+fos_user_register:
+    resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
+    prefix: /inscription
+
+#Changement de password
+fos_user_resetting:
+    resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
+    prefix: /resetting
+
+#Demande de changement de password
+fos_user_change_password:
+    resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
+    prefix: /profil
+
+#Login réseaux sociaux
+hwi_oauth_security:
+    resource: "@HWIOAuthBundle/Resources/config/routing/login.xml"
+    prefix: /login-social
+
+#Login réseaux sociaux
+hwi_oauth_connect:
+    resource: "@HWIOAuthBundle/Resources/config/routing/connect.xml"
+    prefix: /login-social
+
+#Login réseaux sociaux
+hwi_oauth_redirect:
+    resource: "@HWIOAuthBundle/Resources/config/routing/redirect.xml"
+    prefix:   /login-social
+
+#Login twitter
+twitter_login:
+    path: /login/check-twitter
+
+#Login facebook
+facebook_login:
+    path: /login/check-facebook
+
+#Login Google
+google_login:
+    path: /login/check-google
 
 #La ville est définie à partir d'ici
 app.city:
@@ -52,10 +113,7 @@ app.city:
 #    resource: "@TBNUserBundle/Resources/config/routing_user_old.yml"
 #    prefix:   /membres
 #
-easy_admin_bundle:
-    resource: "@EasyAdminBundle/Controller/"
-    type:     annotation
-    prefix:   /_administration
+
 #
 ##MainBundle, pas de ville définie ici
 #tbn_city:
@@ -66,55 +124,6 @@ easy_admin_bundle:
 #    resource: "@TBNSocialBundle/Resources/config/routing.yml"
 #    prefix:   /
 #
-##Login
-fos_user_security:
-    resource: "@FOSUserBundle/Resources/config/routing/security.xml"
-##Profile
-fos_user_profile:
-    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
-    prefix: /profile
-
-##Inscription
-fos_user_register:
-    resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
-    prefix: /inscription
-
-##Changement de password
-fos_user_resetting:
-    resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
-    prefix: /resetting
-
-##Demande de changement de password
-fos_user_change_password:
-    resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
-    prefix: /profil
-
-##Login réseaux sociaux
-hwi_oauth_security:
-    resource: "@HWIOAuthBundle/Resources/config/routing/login.xml"
-    prefix: /login-social
-
-##Login réseaux sociaux
-hwi_oauth_connect:
-    resource: "@HWIOAuthBundle/Resources/config/routing/connect.xml"
-    prefix: /login-social
-
-##Login réseaux sociaux
-hwi_oauth_redirect:
-    resource: "@HWIOAuthBundle/Resources/config/routing/redirect.xml"
-    prefix:   /login-social
-
-##Login twitter
-twitter_login:
-    path: /login/check-twitter
-
-##Login facebook
-facebook_login:
-    path: /login/check-facebook
-
-##Login Google
-google_login:
-    path: /login/check-google
 
 #tbn_user:
 #    resource: "@TBNUserBundle/Resources/config/routing.yml"

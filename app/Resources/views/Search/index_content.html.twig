@@ -1,0 +1,59 @@
+{% set currentType = type %}
+{% set options = {
+'': 'Tout',
+'evenements': 'Événements',
+'places': 'Lieux',
+'membres': 'Membres',
+} %}
+
+{%- block search -%}
+    <br/>
+    <br/>
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <form method="GET" class="no-margin-form" action="{{ path('tbn_search_query') }}">
+                <div class="col-md-8 col-lg-6">
+                    <input name="q" class="form-control" size="16" type="text"
+                           placeholder="{% block form_placeholder %}Que cherchez-vous ?{% endblock %}"
+                           value="{{ term }}">
+                </div>
+                <div class="col-md-2 col-lg-3">
+                    <select name="type" class="form-control">
+                        {% for value, label in options %}
+                            <option value="{{ value }}" {{ value == currentType ? 'selected' : '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 col-lg-3">
+                    <input class="btn btn-primary btn-raised" type="submit" value="Rechercher"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if term %}
+        <h2>
+            {% if result.count == 0 %}Aucun{% else %}
+                <span class="number">{{ result.count }}</span>
+            {% endif %}
+            {{ result.label }}{{ s }} trouvé{{ s }}
+        </h2>
+        <br/>
+        {% if events|length > 0 and (not type or type == 'evenements') %}
+            {% if type != 'evenements' %}
+                {% set s = nbEvents > 1 ? 's': null %}
+                <h3>Événement{{ s }} <span class="badge label-info number number-sm">{{ nbEvents }}</span></h3>
+            {% endif %}
+            {% include "Search/content_events.html.twig" %}
+        {% endif %}
+
+        {% if users|length > 0 and (not type or type == 'membres') %}
+            {% if type != 'membres' %}
+                {% set s = nbUsers > 1 ? 's': null %}
+                <h3><span class="number">{{ nbUsers }}</span> Membre{{ s }}</h3>
+                <br>
+            {% endif %}
+            {% include "Search/content_users.html.twig" %}
+        {% endif %}
+    {% endif %}
+{%- endblock -%}

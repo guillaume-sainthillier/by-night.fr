@@ -18,11 +18,14 @@ class CommonController extends TBNController
     const LIFE_TIME_CACHE = 86400; // 3600*24
 
     /**
+     * @Route("/header/{city}", name="tbn_private_header_site")
      * @Route("/header", name="tbn_private_header")
      */
-    public function headerAction()
+    public function headerAction(Site $site = null)
     {
-        $response = $this->render('::menu.html.twig');
+        $response = $this->render('::menu.html.twig', [
+            'site' => $site
+        ]);
 
         $tomorrow = new \DateTime("tomorrow");
         return $response
@@ -30,7 +33,7 @@ class CommonController extends TBNController
             ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
-    public function footerAction(Site $site)
+    public function footerAction()
     {
         $cache = $this->get('memory_cache');
         $siteManager = $this->get('site_manager');
@@ -55,8 +58,8 @@ class CommonController extends TBNController
         }
 
         $repo = $this->getDoctrine()->getRepository("AppBundle:Site");
-        $params['sites'] = $repo->findRandomNames($site);
-        $params['site'] = $site;
+        $params['sites'] = $repo->findRandomNames();
+//        $params['site'] = $site;
         $response = $this->render('City/footer.html.twig', $params);
 
         $tomorrow = new \DateTime("tomorrow");

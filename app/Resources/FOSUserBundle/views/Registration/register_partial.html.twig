@@ -1,0 +1,19 @@
+{% extends "::base.json.twig" %}
+
+{% block titre -%}
+    Devenez membre de By Night
+{%- endblock %}
+
+{% block body -%}
+    {% include "FOSUserBundle:Registration:register_content.html.twig" with({'partial': true}) %}
+{%- endblock %}
+
+{% block footer -%}
+    <button id="_register" class="btn btn-primary {{ partial ? 'btn-flat' : 'btn-raised' }}" type="submit">
+        Créer mon profil
+    </button>
+{%- endblock %}
+
+{% block form_action -%}
+    {{ path('fos_user_registration_register') }}
+{%- endblock %}

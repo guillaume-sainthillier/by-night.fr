@@ -1,0 +1,25 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+
+{% block start_container -%}
+    <div class="container" id="container">
+{%- endblock %}
+
+{% block titre -%}
+    Mon compte
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
+{%- endblock %}
+
+{% block body -%}
+    {% include "FOSUserBundle:Profile:show_content.html.twig" %}
+{%- endblock %}
+
+{% block css -%}
+    <link rel="stylesheet" href="{{ asset('prod/espace-perso/login/css/login.min.css', 'asset') }}" type="text/css">
+{%- endblock %}
+
+{% block js -%}
+    <script src="{{ asset('prod/espace-perso/login/js/login.min.js', 'asset') }}" type="text/javascript"></script>
+{%- endblock %}

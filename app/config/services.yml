@@ -21,6 +21,12 @@ parameters:
 
 
 services:
+    app.registration_listener:
+        class: AppBundle\Listener\RegistrationListener
+        arguments: []
+        tags:
+            - { name: kernel.event_subscriber }
+
     tbn.news_manager:
         class: AppBundle\News\NewsManager
         arguments: [ "@doctrine.orm.entity_manager", "@twig", "@tbn.social.facebook_admin", "@tbn.social.twitter", "@logger" ]
@@ -28,6 +34,7 @@ services:
     debril.provider.default:
         class: AppBundle\Provider\AgendaProvider
         arguments: [ "@doctrine.orm.entity_manager", "@site_manager", "@router" ]
+
     tbn.programmetv:
         class: AppBundle\Parser\ProgrammeTVParser
 

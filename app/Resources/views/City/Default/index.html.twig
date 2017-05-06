@@ -168,7 +168,7 @@
     <section class="bg-white padding-tb-30">
         <div class="container">
             <h2 class="text-primary">Les concerts, spectacles et sorties cette semaine à {{ site.nom }}</h2>
-            {% include 'City/Agenda/block_preview_soiree.html.twig' with({'events': topEvents, 'page': 1}) %}
+            {% include 'City/Event/block_preview_event.html.twig' with({'events': topEvents, 'page': 1}) %}
             <br/>
             <br/>
             <a href="{{ path('tbn_agenda_agenda', {'city': site.subdomain}) }}"

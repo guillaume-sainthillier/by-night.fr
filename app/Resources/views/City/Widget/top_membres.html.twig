@@ -1,10 +1,10 @@
-{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+{% extends "City/Widget/template.html.twig" %}
 
 {% block titre %}Les supers membres{% endblock %}
 {% block widget_body_class %}scrollable{% endblock %}
 {% block icone %}fa-users{% endblock %}
 {% block body %}
     <div>
-        {{ render_esi(controller('TBNAgendaBundle:MenuDroit:topMembres')) }}
+        {{ render_esi(controller('AppBundle:Fragments/Widgets:topMembres')) }}
     </div>
 {% endblock %}

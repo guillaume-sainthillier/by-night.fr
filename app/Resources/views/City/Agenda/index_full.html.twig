@@ -1,0 +1,85 @@
+{% extends "City/layout-fluid.html.twig" %}
+
+{% block helper -%}
+    {% include "City/Agenda/block_criteres.html.twig" %}
+{%- endblock %}
+
+{% block widgets -%}
+    {% include "City/MenuDroit/accueil.html.twig" %}
+{%- endblock %}
+
+{% block body %}
+    {% if soirees|length == 0 %}
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i>
+            Aucun événement trouvé
+        </div>
+    {% else %}
+        <h3 class="info"><span class="label label-info">{{ nbEvents }} événément{{ nbEvents > 1 ? 's' : '' }}</span>
+        </h3>
+        <div class="panel panel-primary">
+            <div class="panel-body">
+                {% include "City/Agenda/index_content.html.twig" with({'partial': false}) %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block title %}
+    {% if villeName is not null %}Sortir à {{ villeName|capitalize -}}
+    {% elseif placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
+    {% elseif tag is not null %}{{- tag|capitalize -}}
+    {% elseif type == 'exposition' %}Expositions
+    {% elseif type == 'concert' %}Concerts
+    {% elseif type == 'famille' %}Sorties familles
+    {% elseif type == 'spectacle' %}Spectacles
+    {% elseif type == 'etudiant' %}Soirées étudiantes
+    {% else %}Agenda des événements{% endif %}
+    {% if placeName is null and villeName is null %} à {{ site.nom }}{% endif %}
+    {% if page > 1 %} (Page {{ page }}){% endif %}
+{% endblock %}
+
+{% block breadcrumb_content %}
+    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': site.subdomain})) %}
+    {% if placeName is not null %}
+        {% set item = menu.addItem(placeName|capitalize, path('tbn_agenda_place', {'slug' : placeSlug,'city': site.subdomain})) %}
+    {% elseif tag is not null %}
+        {% set item = menu.addItem(tag|capitalize, path('tbn_agenda_tags', {'tag' : tag,'city': site.subdomain})) %}
+    {% elseif type is not null %}
+        {% set item = menu.addItem(type|capitalize, path('tbn_agenda_sortir', {'type' : type,'city': site.subdomain})) %}
+    {% endif %}
+    {% if page > 1 %}
+        {% set item = menu.addItem("Page " ~ page, path('tbn_agenda_pagination', {'page': page,'city': site.subdomain})) %}
+    {% endif %}
+{% endblock %}
+
+{% block titre -%}
+    {% if villeName is not null %}Sortir à {{ villeName|capitalize -}}
+    {% elseif placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
+    {% elseif tag is not null %}{{- tag|capitalize -}}
+    {% elseif type == 'exposition' %}Expositions
+    {% elseif type == 'concert' %}Concerts
+    {% elseif type == 'famille' %}Sorties familles
+    {% elseif type == 'spectacle' %}Spectacles
+    {% elseif type == 'etudiant' %}Soirées étudiantes
+    {% else %}Agenda des <strong>événements</strong>{% endif %}
+    {% if placeName is null and villeName is null %} à <strong>{{- site.nom -}}</strong>{% endif %}
+{%- endblock %}
+
+{% block og_titre -%}
+    {{ block('titre')|striptags }}
+{%- endblock %}
+
+{% block meta_description -%}
+    {{ block('og_titre')|striptags }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.
+{%- endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ asset('prod/widgets/css/widgets.min.css', 'asset') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('prod/evenements/css/agenda.min.css', 'asset') }}" type="text/css">
+{% endblock %}
+
+{% block js %}
+    <script src="{{ asset('prod/widgets/js/widgets.min.js', 'asset') }}" type="text/javascript"></script>
+    <script src="{{ asset('prod/evenements/js/agenda.min.js', 'asset') }}" type="text/javascript"></script>
+{% endblock %}

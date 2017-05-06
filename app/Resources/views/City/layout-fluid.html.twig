@@ -1,4 +1,4 @@
-{% extends "TBNAgendaBundle::layout.html.twig" %}
+{% extends ":City:layout.html.twig" %}
 
 {% block start_container %}
 <div class="container-fluid" id="container-fluid">
@@ -12,19 +12,9 @@
     <div class="col-md-4 col-md-offset-0 col-sm-offset-0 col-sm-12 col-xs-12 col-xs-offset-0" id="widgets">
         <div class="col-lg-11 col-lg-offset-1">
             <div class="row">
-                {% block widgets_agenda %}{% endblock %}
+                {% block widgets %}{% endblock %}
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block css %}
-    <link rel="stylesheet" href="{{ asset('prod/widgets/css/widgets.min.css', 'asset') }}" type="text/css">
-    {% block css_agenda %}{% endblock %}
-{% endblock %}
-
-{% block js_template %}
-    <script src="{{ asset('prod/widgets/js/widgets.min.js', 'asset') }}" type="text/javascript"></script>
-    {% block js_agenda %}{% endblock %}
 {% endblock %}

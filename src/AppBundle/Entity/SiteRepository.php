@@ -26,13 +26,13 @@ class SiteRepository extends EntityRepository
             ->getScalarResult();
     }
 
-    public function findRandomNames(Site $site, $limit = 5)
+    public function findRandomNames($limit = 5)
     {
         $results = $this
             ->createQueryBuilder('s')
             ->select('s.nom, s.subdomain')
-            ->where('s.id != :id')
-            ->setParameter('id', $site->getId())
+//            ->where('s.id != :id')
+//            ->setParameter('id', $site->getId())
             ->getQuery()
             ->getScalarResult();
 

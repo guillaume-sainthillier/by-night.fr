@@ -10,6 +10,10 @@ framework:
 web_profiler:
     toolbar: true
     intercept_redirects: false
+
+doctrine:
+    orm:
+        auto_generate_proxy_classes: false
                 
 monolog:
     handlers:

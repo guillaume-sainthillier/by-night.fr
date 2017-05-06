@@ -1,6 +1,6 @@
-{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+{% extends "City/Widget/template.html.twig" %}
 
-{% block titre %}Restez informé avec @{{ siteInfo.twitterNickname }}{% endblock %}
+{% block titre %}Restez informé à {{ site.nom }}{% endblock %}
 {% block icone %}fa-twitter{% endblock %}
 {% block widget_class %}{% endblock %}
 {% block widget_body_class %}panel-twitter scrollable no-padding padding-left-10 scrollable{% endblock %}
@@ -24,20 +24,8 @@
                 return t;
             }(document, "script", "twitter-wjs"));
         </script>
-        {% if false and site.twitterIdWidget and site.twitterURLWidget %}
-            <div class="text-center">
-                <a class="twitter-timeline"
-                   href="{{ site.twitterURLWidget }}"
-                   data-widget-id="{{ site.twitterIdWidget }}"
-                   data-chrome="transparent noheader">
-                    Restez informé
-                    <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
-                </a>
-            </div>
-        {% else %}
-            <div>
-                {{ render_esi(url('tbn_agenda_tweeter_feed')) }}
-            </div>
-        {% endif %}
+        <div>
+            {{ render_esi(url('tbn_agenda_tweeter_feed', {'city': site.subdomain})) }}
+        </div>
     </div>
 {% endblock %}

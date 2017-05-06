@@ -1,0 +1,29 @@
+{% extends "Admin/layout.html.twig" %}
+
+{% block titre_admin -%}
+    Réseaux Sociaux
+{%- endblock %}
+
+{% block title_admin -%}
+    Paramétrage des Réseaux Sociaux
+{%- endblock %}
+
+{% block breadcrumb_content_admin -%}
+    {% set item = menu.addItem(info.id, path('tbn_administration_info_edit', {'id': info.id})) %}
+{%- endblock %}
+
+{% block body -%}
+    {% for service in ['facebook','google','twitter'] %}
+        <div class="bloc_config">
+            {% include "Social/social_info.html.twig" with { 'info': info, 'service': service } %}
+        </div>
+    {% endfor %}
+{%- endblock %}
+
+{% block css -%}
+    <link rel="stylesheet" href="{{ asset('prod/admin/info/css/style.min.css', 'asset') }}" type="text/css">
+{%- endblock %}
+
+{% block js -%}
+    <script src="{{ asset('prod/admin/info/js/login.min.js', 'asset') }}" type="text/javascript"></script>
+{%- endblock %}

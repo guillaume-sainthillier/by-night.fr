@@ -1,0 +1,63 @@
+{% trans_default_domain 'FOSUserBundle' %}
+
+<br/>
+<br/>
+<div class="row text-center">
+    <div class="col-xs-4 preserve">
+        <a class="social-facebook big-social tbn_tooltip" title="Connectez vous avec Facebook"
+           href="{{ hwi_oauth_login_url('facebook') }}" data-toggle="tooltip" data-placement="bottom"></a>
+    </div>
+    <div class="col-xs-4 preserve">
+        <a class="social-twitter big-social tbn_tooltip" title="Connectez vous avec Twitter"
+           href="{{ hwi_oauth_login_url('twitter') }}" data-toggle="tooltip" data-placement="bottom"></a>
+    </div>
+    <div class="col-xs-4 preserve">
+        <a class="social-googleplus big-social tbn_tooltip" title="Connectez vous avec Google+"
+           href="{{ hwi_oauth_login_url('google') }}" data-toggle="tooltip" data-placement="bottom"></a>
+    </div>
+</div>
+<br/>
+<br/>
+<form action="{{ path('fos_user_security_check') }}" method="post" role="form">
+    {% if error is defined and error %}
+        <div class="alert alert-danger">
+            <i class="fa fa-warning"></i>
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+
+    <div class="form-group form-group-lg label-static">
+        <label for="username" class="control-label">{{ 'security.login.username'|trans }}</label>
+        <input class="form-control" type="text" id="username" name="_username" value="{{ last_username }}"
+               required="required"/>
+    </div>
+
+    <div class="form-group form-group-lg label-static">
+        <label for="password" class="control-label">{{ 'security.login.password'|trans }}</label>
+        <input class="form-control" type="password" id="password" name="_password" required="required"/>
+    </div>
+    <div class="checkbox checkbox-primary">
+        <label>
+            <input type="checkbox" id="remember_me" name="_remember_me" value="on" checked/>
+            {{ 'security.login.remember_me'|trans }}
+        </label>
+        <a class="pull-right" href="{{ path('fos_user_resetting_request') }}"
+           title="Récupérez votre mot de passe oublié">Mot de passe perdu?</a>
+    </div>
+    {% if not partial %}
+        <button class="btn btn-primary {{ partial ? 'btn-flat' : 'btn-raised' }}" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
+            Connexion
+        </button>
+    {% endif %}
+    <br/>
+    <br/>
+    <p>
+        Pas encore inscrit ?
+        <a class="register" href="{{ path('fos_user_registration_register') }}"
+           title="Rejoignez By Night en vous inscrivant">
+            Rejoignez-nous dès maintenant !
+        </a>
+    </p>
+</form>

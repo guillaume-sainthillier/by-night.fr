@@ -1,0 +1,19 @@
+{% extends "::base.json.twig" %}
+
+{% block titre -%}
+    Me déconnecter de {{ service|capitalize }}
+{%- endblock %}
+
+{% block form_action -%}
+    {{ url }}
+{%- endblock %}
+
+{% block body -%}
+    <p class="lead">
+        En vous deconnectant de {{ service|capitalize }}, vous ne pourrez poster vos événements sur le réseau social.
+    </p>
+{%- endblock %}
+
+{% block footer -%}
+    <input type="submit" class="btn btn-raised btn-primary" data-loading-text="Veuillez patienter..." value="Continuer" id="disconnect_social"/>
+{%- endblock %}

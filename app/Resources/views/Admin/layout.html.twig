@@ -1,0 +1,16 @@
+{% extends "::base.html.twig" %}
+
+{% block breadcrumb_content -%}
+    {% set item = menu.addItem("Administration", path('easyadmin')) %}
+    {% block breadcrumb_admin %}{% endblock %}
+{%- endblock %}
+
+{% block title -%}
+    Administration -
+    {% block title_admin %}{% endblock %}
+{%- endblock %}
+    
+{% block titre -%}
+    Administration -
+    {% block titre_admin %}{% endblock %}
+{%- endblock %}

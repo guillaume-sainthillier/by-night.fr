@@ -46,10 +46,6 @@
     {% endif %}
 {% endblock %}
 
-{% block footer %}
-    {{ render_esi(controller('AppBundle:Fragments/Common:footer', {'site': site})) }}
-{% endblock %}
-
 {% block js %}
     {% block js_template %}{% block js_agenda %}{% endblock %}{% endblock %}
 {% endblock %}

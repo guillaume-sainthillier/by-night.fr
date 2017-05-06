@@ -1,10 +1,10 @@
-{% extends "TBNAgendaBundle:Widget:template.html.twig" %}
+{% extends "City/Widget/template.html.twig" %}
 
 {% block titre %}À la une cette semaine{% endblock %}
 {% block widget_body_class %}scrollable{% endblock %}
 {% block icone %}fa-star{% endblock %}
 {% block body %}
     <div>
-        {{ render_esi(controller('TBNAgendaBundle:MenuDroit:topSoirees')) }}
+        {{ render_esi(controller('AppBundle:City/Widgets:topSoirees', {'site': site})) }}
     </div>
 {% endblock %}

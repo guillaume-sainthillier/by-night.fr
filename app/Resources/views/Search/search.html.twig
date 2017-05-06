@@ -1,19 +1,19 @@
-{% extends "TBNMainBundle:Search:layout.html.twig"|partial_extends %}
+{% extends "Search/layout.html.twig"|partial_extends %}
 
 {% if not type %}
-    {% set titre = 'Recherche d\'événements, lieux et membres à ' ~ site.nom %}
+    {% set titre = 'Recherche d\'événements, lieux et membres' %}
     {% set title = 'Recherche' %}
-    {% set description = 'Recherche d\'événements, concerts, spectacles et membres à ' ~ site.nom %}
+    {% set description = 'Recherche d\'événements, concerts, spectacles et membres' %}
     {% set result = {count: (nbEvents + nbUsers), label: 'résultat'} %}
     {% set nom = 'Tout' %}
 {% elseif type == 'evenements' %}
     {% set titre = 'Recherche d\'événements à ' ~ site.nom %}
     {% set title = 'Recherche d\'événements' %}
-    {% set description = 'Recherche d\'événements, concerts, spectacles, sorties à ' ~ site.nom %}
+    {% set description = 'Recherche d\'événements, concerts, spectacles, sorties' %}
     {% set result = {count: nbEvents, label: 'événement'} %}
     {% set nom = 'Événements' %}
 {% elseif type == 'membres' %}
-    {% set titre = 'Recherche de membres à ' ~ site.nom %}
+    {% set titre = 'Recherche de membres à' %}
     {% set title = 'Recherche de membres' %}
     {% set result = {count: nbUsers, label: 'membre'} %}
     {% set description = titre %}

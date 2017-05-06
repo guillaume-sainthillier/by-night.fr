@@ -12,15 +12,15 @@
         </div>
         <div class="navbar-collapse collapse navbar-responsive-collapse" id="navbar-main">
             <ul class="nav navbar-nav">
-                {% if site is defined and site %}
+                {% if site %}
                 <li>
-                    <a href="{{ path('tbn_agenda_agenda', {'city': site.subdomain}) }}" title="L'agenda des sorties, c'est par ici !"><strong>Agenda</strong></a>
+                    <a href="{{ path('tbn_agenda_agenda', {'city': site.subdomain}) }}" title="L'agenda des sorties à {{ site.nom }}, c'est par ici !"><strong>Agenda</strong></a>
                 </li>
                 {% endif %}
                 <li>
                     <a title="Créez votre événement en 1 clic !" href="{{ path('tbn_agenda_new') }}">Créer un événement</a>
                 </li>
-                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") -%}
+                {% if false and is_granted("IS_AUTHENTICATED_REMEMBERED") -%}
                     <li>
                         <a title="Voir mes soirées" href="{{ path('tbn_agenda_list') }}">Mes événements</a>
                     </li>
@@ -41,8 +41,6 @@
                     <ul class="dropdown-menu">
                         <li><a href="{{ path('easyadmin') }}">Administration</a></li>
                         <li><a href="{{ path('tbn_administration_info_index') }}">Réseaux Sociaux</a></li>
-                        <li><a href="{{ path('tbn_administration_site_index') }}">Sites</a></li>
-                        <li><a href="{{ path('tbn_administration_historique_index') }}">Historique</a></li>                    
                     </ul>
                 </li>
                 {% endif %}

@@ -1,0 +1,78 @@
+{% extends "::base.html.twig" %}
+
+{% block start_container -%}
+<div>
+{%- endblock %}
+
+{% block titre -%}
+    Bienvenue sur By Night !
+{%- endblock %}
+
+{% block title -%}
+    Choisissez votre ville
+{%- endblock %}
+
+{% block meta_description -%}
+    Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les événements du moment !
+{%- endblock %}
+
+
+{% block meta_keywords -%}
+    {% for site in sites %}
+        {{ site.nom }},
+    {% endfor %}
+{%- endblock %}
+
+{% block body %}
+    <section class="bg-white">
+        <div class="container">
+            <h2 class="text-primary">Envie de sortir ?</h2>
+            <br/>
+            <p class="lead">
+                By Night vous propose les <strong>agendas des événements</strong>, concerts, spectacles et
+                manifestations dans les plus grandes villes de France.
+            </p>
+            <p class="lead">
+                Qu'attendez vous ? Choisissez votre ville et découvrez tous les événements !
+            </p>
+            <p class="lead">
+                Inscrivez-vous et bénéficiez de fonctionnalités supplémentaires sur la plateforme !
+            </p>
+        </div>
+        <br/>
+    </section>
+    <br/>
+    <br/>
+    <br/>
+    <div class="container">
+        <div class="row">
+            {% for i, site in sites %}
+                <div class="col-xs-6 col-md-4 col-lg-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading bg-white">
+                            <h2 class="modal-title">
+                                <a title="Accéder aux événements de {{ site.nom }}"
+                                   href="{{ path('tbn_agenda_index', {'city': site.subdomain }) }}">
+                                    {{ site.nom }}
+                                </a>
+                            </h2>
+                        </div>
+                        <div class="panel-body">
+                            <p><span class="number number-big text-primary">{{ site.count_events }}</span>
+                                événement{{ site.count_events > 1 ? 's' : '' }}</p>
+                            <p><span class="number number-big text-primary">{{ site.count_users }}</span>
+                                membre{{ site.count_users > 1 ? 's' : '' }}</p>
+                        </div>
+                        <div class="panel-footer bg-white text-right">
+                            <a title="Accéder aux événements de {{ site.nom }}"
+                               class="btn btn-primary btn-raised"
+                               href="{{ path('tbn_agenda_index', {'city': site.subdomain }) }}">
+                                <i class="fa fa-chevron-right"></i> Accéder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

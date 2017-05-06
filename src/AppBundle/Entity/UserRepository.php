@@ -36,28 +36,24 @@ class UserRepository extends EntityRepository
             ->getResult();
     }
 
-    public function findTopMembres(Site $site, $page = 1, $limit = 7)
+    public function findTopMembres($page = 1, $limit = 7)
     {
         return $this->createQueryBuilder('u')
             ->select('u', 'i')
             ->leftJoin('u.info', 'i')
-            ->where("u.site = :site")
             ->orderBy('u.lastLogin', 'DESC')
-            ->setParameters([":site" => $site->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
     }
 
-    public function findMembresCount(Site $site)
+    public function findMembresCount()
     {
         return $this->_em
             ->createQueryBuilder()
             ->select('count(u.id)')
             ->from('AppBundle:User', 'u')
-            ->where("u.site = :site")
-            ->setParameters([":site" => $site->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }

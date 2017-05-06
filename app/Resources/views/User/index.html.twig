@@ -1,0 +1,163 @@
+{% extends "::base.html.twig" %}
+
+{% block start_container -%}
+<div class="container" id="container">
+{%- endblock %}
+
+{% set username = user.username|capitalize %}
+{% block title %}{{ username }}{% endblock %}
+{% block titre %}{{ username }}{% endblock %}
+
+{% block head_js %}
+    <script type="text/javascript">
+        window.datas = {{ etablissements|json_encode()|raw }};
+    </script>
+{% endblock %}
+
+{% block meta_keywords %}{{ username }},{% endblock %}
+
+{% block breadcrumb_content %}
+    {% set item = menu.addItem(username, path('tbn_user_details', {'id' : user.id, 'slug': user.slug })) %}
+{% endblock %}
+
+{% set totalCount = count_participations + count_interets %}
+{% block meta_description -%}
+    {{ username }} est en relation avec {{ totalCount }} événement{{ totalCount > 1 ? "s" : "" }}
+    {% if user.site %} à {{ user.site.nom }}{% endif %}
+    .
+{%- endblock %}
+
+
+{% block body -%}
+    {% set imageURL = userProfilePicture.getProfilePicture(user) %}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="panel panel-default fiche_profil text-center">
+                <div class="panel-heading bg-white">
+                    <h2 class="modal-title">Profil</h2>
+                </div>
+                <div class="panel-body">
+                    <img class="img img-responsive margin-auto" src="{{ imageURL }}"/>
+                    <br/>
+                    <div class="row">
+                        <div class="col-xs-6 preserve">
+                            <strong class="number number-xbig">{{ count_participations }}</strong>
+                            <span class="text-primary">participation{{ count_participations > 1 ? "s" : "" }}</span>
+                        </div>
+                        <div class="col-xs-6 preserve">
+                            <strong class="number number-xbig">{{ count_interets }}</strong>
+                            <span class="text-primary">intérêt{{ count_interets > 1 ? "s" : "" }}</span>
+                        </div>
+                    </div>
+                    <hr/>
+                    {% if user.dateCreation %}Membre depuis le <strong
+                            class="number number-big">{{ user.dateCreation.format('d/m/Y') }}</strong>
+                        <br/>{% endif %}
+                    Dernière connexion <strong class="number number-big">{{ user.lastLogin|diff_date }}</strong>
+                    {% if user.description %}
+                        <hr/>
+                        <p>
+                            {{ user.description }}
+                        </p>
+                    {% endif %}
+                    {% include "Social/user.html.twig" %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div class="panel-heading bg-white">
+                    <ul class="nav nav-tabs">
+                        <li><a href="#passes">Passés</a></li>
+                        <li class="active"><a href="#a-venir">A venir</a></li>
+                    </ul>
+                    <h2 class="modal-title">Événements</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="a-venir">
+                            {% if not next_events|length %}
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"></i>
+                                    Aucun événément de prévu pour {{ username }} !
+                                </div>
+                            {% else %}
+                                {% include "City/Event/block_preview_event.html.twig" with({'events' : next_events}) %}
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane" id="passes">
+                            {% if not previous_events|length %}
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"></i>
+                                    Aucun événément passé pour {{ username }} !
+                                </div>
+                            {% else %}
+                                {% include "City/Event/block_preview_event.html.twig" with({'events' : previous_events}) %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading bg-white">
+                            <h3 class="modal-title">Lieux fréquentés</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="hero-donut" class="chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading bg-white">
+                            <ul class="nav nav-tabs" id="chartsActivite">
+                                <li id="chartSemaine"><a href="#semaine">Semaine</a></li>
+                                <li id="chartMois"><a href="#mois">Mois</a></li>
+                                <li id="chartAnnee" class="active"><a href="#annee">Année</a></li>
+                            </ul>
+                            <h3 class="modal-title">Activité</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane" id="semaine">
+                                    <div id="chart-semaine" class="chart"
+                                         data-url="{{ path("tbn_user_stats", {'type': 'semaine', 'id' : user.id, 'slug': user.slug }) }}">
+                                        <div class="text-center">
+                                            <i class="fa fa-spin fa-spinner fa-5x color-second"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="mois">
+                                    <div id="chart-mois" class="chart"
+                                         data-url="{{ path("tbn_user_stats", {'type': 'mois', 'id' : user.id, 'slug': user.slug }) }}">
+                                        <div class="text-center">
+                                            <i class="fa fa-spin fa-spinner fa-5x color-success"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane active" id="annee">
+                                    <div id="chart-annee" class="chart"
+                                         data-url="{{ path("tbn_user_stats", {'type': 'annee', 'id' : user.id, 'slug': user.slug }) }}">
+                                        <div class="text-center">
+                                            <i class="fa fa-spin fa-spinner fa-5x color-info"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endblock %}
+
+{% block css -%}
+    <link rel="stylesheet" href="{{ asset('prod/membres/css/detail.min.css', 'asset') }}" type="text/css" >
+{%- endblock %}
+
+{% block js -%}
+    <script src="{{ asset('prod/membres/js/detail.min.js', 'asset') }}" type="text/javascript"></script>
+{%- endblock %}

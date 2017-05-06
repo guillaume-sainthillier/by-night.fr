@@ -1,0 +1,25 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+
+{% block title -%}
+    Inscription
+{%- endblock %}
+
+{% block titre -%}
+    Devenez membre sur <strong>By Night</strong>
+{%- endblock %}
+
+{% block breadcrumb_content -%}
+    {% set item = menu.addItem("Inscription", path('fos_user_registration_register')) %}
+{%- endblock %}
+
+{% block meta_keywords_espace -%}
+    inscription
+{%- endblock %}
+
+{% block meta_description_espace -%}
+    Devenez membre de By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !
+{%- endblock %}
+
+{% block fos_user_content %}
+    {% include "FOSUserBundle:Registration:register_content.html.twig" with({'partial': false}) %}
+{% endblock %}

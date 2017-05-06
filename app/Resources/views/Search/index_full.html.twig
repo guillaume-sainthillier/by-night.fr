@@ -1,0 +1,61 @@
+{% extends "::base.html.twig" %}
+
+{% if not type %}
+    {% set titre = 'Recherche d\'événements, lieux et membres' %}
+    {% set title = 'Recherche' %}
+    {% set description = 'Recherche d\'événements, concerts, spectacles et membres' %}
+    {% set result = {count: (nbEvents + nbUsers), label: 'résultat'} %}
+    {% set nom = 'Tout' %}
+{% elseif type == 'evenements' %}
+    {% set titre = 'Recherche d\'événements' %}
+    {% set title = 'Recherche d\'événements' %}
+    {% set description = 'Recherche d\'événements, concerts, spectacles, sorties' %}
+    {% set result = {count: nbEvents, label: 'événement'} %}
+    {% set nom = 'Événements' %}
+{% elseif type == 'membres' %}
+    {% set titre = 'Recherche de membres' %}
+    {% set title = 'Recherche de membres' %}
+    {% set result = {count: nbUsers, label: 'membre'} %}
+    {% set description = titre %}
+    {% set nom = 'Membres' %}
+{% endif %}
+
+{% if term %}{% set title = term %}{% endif %}
+
+{% block breadcrumb_content %}
+    {% set item = menu.addItem('Recherche', path('tbn_search_query')) %}
+
+    {% if type %}
+        {% set item = menu.addItem(nom, path('tbn_search_query', {'type': type})) %}
+    {% endif %}
+
+    {% if term %}
+        {% set item = menu.addItem(term, path('tbn_search_query', {'q': term, 'type': type})) %}
+    {% endif %}
+
+    {% if page > 1 %}
+        {% set item = menu.addItem('Page ' ~ page, path('tbn_search_query', {'page': page, 'q': term, 'type': type})) %}
+    {% endif %}
+{% endblock %}
+
+{% set s = result.count > 1 ? 's': null %}
+{% if term %}
+    {% set description = description ~ '. ' ~ result.count ~ ' '
+    ~ result.label ~ s ~ ' trouvé' ~ s ~ ' pour la recherche "' ~ term ~ '"' %}
+{% endif %}
+
+{% block title -%}{{ title }}{%- endblock %}
+{% block titre -%}{{ titre }}{%- endblock %}
+{% block meta_description -%}{{ description }}{%- endblock %}
+
+{% block body %}
+    {% include "Search/index_content.html.twig" %}
+{% endblock %}
+
+{% block js -%}
+    <script src="{{ asset('prod/search/js/search.min.js', 'asset') }}" type="text/javascript"></script>
+{%- endblock %}
+
+{% block css -%}
+    <link rel="stylesheet" href="{{ asset('prod/search/css/search.min.css', 'asset') }}" type="text/css">
+{%- endblock %}

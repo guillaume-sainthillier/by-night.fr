@@ -32,23 +32,25 @@ use AppBundle\Entity\User;
  */
 class AgendaController extends Controller
 {
-    protected function handleSearch(SearchAgenda $search, $type, $tag, $ville, Place $place = null)
+    const EVENT_PER_PAGE = 15;
+
+    protected function handleSearch(SearchAgenda $search, Site $site, $type, $tag, $ville, Place $place = null)
     {
         $term = null;
         if ($ville !== null) {
             $term = null;
             $search->setCommune([$ville]);
-            $formAction = $this->generateUrl('tbn_agenda_ville', ['ville' => $ville]);
+            $formAction = $this->generateUrl('tbn_agenda_ville', ['ville' => $ville, 'city' => $site->getSubdomain()]);
         } elseif ($place !== null) {
             $term = null;
             $search->setLieux([$place->getId()]);
-            $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug()]);
+            $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $site->getSubdomain()]);
         } elseif ($tag !== null) {
             $term = null;
             $search->setTag($tag);
-            $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag]);
+            $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag, 'city' => $site->getSubdomain()]);
         } elseif ($type !== null) {
-            $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type]);
+            $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type, 'city' => $site->getSubdomain()]);
             switch ($type) {
                 case 'exposition':
                     $term = 'expo, exposition';
@@ -67,7 +69,7 @@ class AgendaController extends Controller
                     break;
             }
         } else {
-            $formAction = $this->generateUrl('tbn_agenda_agenda');
+            $formAction = $this->generateUrl('tbn_agenda_agenda', ['city' => $site->getSubdomain()]);
         }
 
         $search->setTerm($term);
@@ -87,14 +89,17 @@ class AgendaController extends Controller
      * @Route("/tag/{tag}/page/{page}", name="tbn_agenda_tags_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
      * @BrowserCache(false)
      */
-    public function indexAction(Request $request, $page, $type, $tag, $ville, $slug, $paginateRoute = 'tbn_agenda_pagination')
+    public function indexAction(Request $request, Site $site, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
         $isPost = $request->isMethod('POST');
         $isUserPostSearch = $isPost && !$isAjax;
 
-        $routeParams = ['page' => $page + 1];
+        $routeParams = [
+            'page' => $page + 1,
+            'city' => $site->getSubdomain()
+        ];
         if ($paginateRoute === 'tbn_agenda_sortir_pagination') {
             $routeParams['type'] = $type;
         } elseif ($paginateRoute === 'tbn_agenda_tags_pagination') {
@@ -105,13 +110,6 @@ class AgendaController extends Controller
             $routeParams['ville'] = $ville;
         }
         $paginateURL = $this->generateUrl($paginateRoute, $routeParams);
-
-        //Pagination
-        $nbSoireeParPage = 15;
-
-        //Gestion du site courant
-        $siteManager = $this->container->get('site_manager');
-        $site = $siteManager->getCurrentSite();
 
         //Récupération du repo des événéments
         $em = $this->getDoctrine()->getManager();
@@ -126,7 +124,7 @@ class AgendaController extends Controller
                 return new RedirectResponse($this->generateUrl('tbn_agenda_agenda'));
             }
         }
-        $formAction = $this->handleSearch($search, $type, $tag, $ville, $place);
+        $formAction = $this->handleSearch($search, $site, $type, $tag, $ville, $place);
 
         //Récupération des lieux, types événéments et villes
         $lieux = $this->getPlaces($repo, $site);
@@ -155,11 +153,12 @@ class AgendaController extends Controller
         $results = $repository->findWithSearch($site, $search); //100ms
 
         $paginator = $this->get('knp_paginator');
-        $pagination = $paginator->paginate($results, $page, $nbSoireeParPage);
+        $pagination = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
         $nbSoireesTotales = $pagination->getTotalItemCount();
         $soirees = $pagination;
 
-        $response = $this->render('Agenda/soirees.html.twig', [
+        return $this->render('City/Agenda/index.html.twig', [
+            'site' => $site,
             'villeName' => $ville,
             'placeName' => (null !== $place) ? $place->getNom() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,
@@ -168,7 +167,7 @@ class AgendaController extends Controller
             'type' => $type,
             'soirees' => $soirees,
             'nbEvents' => $nbSoireesTotales,
-            'maxPerEvent' => $nbSoireeParPage,
+            'maxPerEvent' => self::EVENT_PER_PAGE,
             'page' => $page,
             'search' => $search,
             'isPost' => $isPost,
@@ -176,12 +175,6 @@ class AgendaController extends Controller
             'paginateURL' => $paginateURL,
             'form' => $form->createView()
         ]);
-
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1'
-        ]);
-
-        return $response;
     }
 
     protected function getTypesEvenements(AgendaRepository $repo, Site $site)

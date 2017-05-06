@@ -28,8 +28,10 @@ class CityConverter implements ParamConverterInterface
     {
         $city = $request->attributes->get('city');
 
-        if (null === $city) {
+        if (null === $city && ! $configuration->isOptional()) {
             throw new \InvalidArgumentException('Route attribute is missing');
+        }elseif($configuration->isOptional()) {
+            return;
         }
 
         $city = $this

@@ -19,18 +19,12 @@ class AgendaRepository extends Repository
 {
 
     /**
-     * @param $site Site
      * @param $search SearchAgenda
      * @return PaginatorAdapterInterface
      */
-    public function findWithSearch(Site $site, SearchAgenda $search)
+    public function findWithSearch(SearchAgenda $search)
     {
         $mainQuery = new BoolQuery();
-
-        //Filters
-        $mainQuery->addMust(
-            new Term(['site.id' => $site->getId()])
-        );
 
         if ($search->getDu()) {
             if (!$search->getAu()) {

@@ -16,20 +16,11 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
-            new AppBundle\AppBundle(),
             new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Presta\SitemapBundle\PrestaSitemapBundle(),
-//            new TBN\MainBundle\TBNMainBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new HWI\Bundle\OAuthBundle\HWIOAuthBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
-//            new TBN\AgendaBundle\TBNAgendaBundle(),
-//            new TBN\MajDataBundle\TBNMajDataBundle(),
-//            new TBN\UserBundle\TBNUserBundle(),
-//            new TBN\SocialBundle\TBNSocialBundle(),
-//            new TBN\CommentBundle\TBNCommentBundle(),
-//            new TBN\AdministrationBundle\TBNAdministrationBundle(),
-
             new FOS\HttpCacheBundle\FOSHttpCacheBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle(),
@@ -42,6 +33,9 @@ class AppKernel extends Kernel
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Lexik\Bundle\MaintenanceBundle\LexikMaintenanceBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
+
+            new AppBundle\AppBundle(),
+            new SocialBundle\SocialBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'pre_prod'))) {

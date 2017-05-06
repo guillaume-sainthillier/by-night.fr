@@ -95,11 +95,21 @@
         <div id="wrap">
             <header>
                 <!-- Menu -->
-                {#{% if site is defined and site %}#}
-                {{ render_esi(url('tbn_private_header')) }}
-                {#{% endif %}#}
+                {% if site is defined and site %}
+                    {{ render_esi(url('tbn_private_header_site', {'city' : (site is defined and site ? site.subdomain : null)})) }}
+                {% else %}
+                    {{ render_esi(url('tbn_private_header')) }}
+                {% endif %}
                 <!-- ./Menu -->
-                {% block breadcrumb -%}{%- endblock %}
+                {% block breadcrumb %}
+                    <div id="bread" class="bg-white">
+                        <div class="container">
+                            {% set item = menu.addItem('By Night', path('tbn_main_index')) %}
+                            {% block breadcrumb_content %}{% endblock %}
+                            {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
+                        </div>
+                    </div>
+                {% endblock %}
             </header>
             {% block container_titre %}
             <div class="container-fluid">
@@ -148,7 +158,7 @@
         <footer>
             <div id="footer">
                 <div class="container sous-header">
-                        {% block footer -%}{%- endblock %}                        
+                        {{ render_esi(controller('AppBundle:Fragments/Common:footer')) }}
                         <p class="pull-left">
                             <a href="{{ path('tbn_main_index') }}"><strong>By Night</strong> {{ app_version }}</a>
                             | © {{ "now"|date('Y') }} - Tous droits réservés
