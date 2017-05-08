@@ -108,7 +108,7 @@ app.city:
     type:     annotation
 
 app.old:
-    resource: "@AppBundle/Controller/Old/City"
+    resource: "@AppBundle/Controller/Old"
     type:     annotation
 
 #tbn_agenda:

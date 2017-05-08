@@ -14,6 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Site;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CityConverter implements ParamConverterInterface
 {
@@ -34,13 +35,20 @@ class CityConverter implements ParamConverterInterface
             return;
         }
 
-        $city = $this
+        $entity = $this
             ->registry
             ->getManager()
             ->getRepository("AppBundle:Site")
             ->findOneBy(['subdomain' => $city]);
 
-        $request->attributes->set($configuration->getName(), $city);
+        if(! $entity) {
+            throw new NotFoundHttpException(sprintf(
+                "Le site '%s' est introuvable",
+                $city
+            ));
+        }
+
+        $request->attributes->set($configuration->getName(), $entity);
     }
 
     public function supports(ParamConverter $configuration)

@@ -16,6 +16,10 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
+            new AppBundle\AppBundle(),
+            new SocialBundle\SocialBundle(),
+            new UserBundle\UserBundle(),
+
             new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Presta\SitemapBundle\PrestaSitemapBundle(),
             new FOS\UserBundle\FOSUserBundle(),
@@ -25,7 +29,6 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
-
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
             new \FOS\ElasticaBundle\FOSElasticaBundle(),
@@ -33,10 +36,6 @@ class AppKernel extends Kernel
             new Vich\UploaderBundle\VichUploaderBundle(),
             new Lexik\Bundle\MaintenanceBundle\LexikMaintenanceBundle(),
             new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(),
-
-            new AppBundle\AppBundle(),
-            new SocialBundle\SocialBundle(),
-            new UserBundle\UserBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test', 'pre_prod'))) {
