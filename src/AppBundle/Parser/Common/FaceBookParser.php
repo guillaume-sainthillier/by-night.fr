@@ -130,7 +130,7 @@ class FaceBookParser extends AgendaParser
         $cities = $this->getCities();
         shuffle($cities);
         $cities = array_slice($cities, 0, 100);
-        $events = $this->api->getEventsFromKeywords($cities, $now);
+        $events = $this->api->getEventsFromKeywords($cities);
         Monitor::writeln(sprintf(
             "<info>%d</info> événements trouvés",
             count($events)

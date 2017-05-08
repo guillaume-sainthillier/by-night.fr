@@ -3,7 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
-use AppBundle\Entity\Site;
+
 
 /**
  * UserRepository

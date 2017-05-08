@@ -5,25 +5,24 @@ namespace AppBundle\Controller\City;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use AppBundle\Repository\AgendaRepository;
+
 use AppBundle\Entity\Comment;
 use AppBundle\Form\Type\CommentType;
 use AppBundle\Controller\TBNController as Controller;
 use SocialLinks\Page;
-use Symfony\Component\HttpFoundation\Request;
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+
 use AppBundle\Configuration\BrowserCache;
 
 use AppBundle\Entity\Site;
 use AppBundle\Entity\Agenda;
-use AppBundle\Entity\Place;
+
 use AppBundle\Entity\Calendrier;
 
-use AppBundle\Form\Type\SearchType;
-use AppBundle\Search\SearchAgenda;
+
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use AppBundle\Invalidator\EventInvalidator;
 use AppBundle\Entity\User;

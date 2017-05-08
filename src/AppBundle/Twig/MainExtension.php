@@ -40,10 +40,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function getFunctions()
     {
-        return [
-            new \Twig_SimpleFunction('tbn_oauth_authorization_site_url', [$this, 'getAuthorizationSiteUrl']),
-            new \Twig_SimpleFunction('tbn_oauth_logout_site_url', [$this, 'getLogoutSiteUrl'])
-        ];
+        return [];
     }
 
     public function getFilters()
@@ -167,18 +164,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             'full' => sprintf("A l'instant")
         ];
     }
-
-    public function getAuthorizationSiteUrl($name)
-    {
-        return $this->router->generate("tbn_administration_connect_site", ["service" => $name]);
-    }
-
-    public function getLogoutSiteUrl($name)
-    {
-        return $this->router->generate("tbn_administration_site_service", ["service" => $name]);
-    }
-
-
+    
     public function urlDecode($value)
     {
         return urldecode($value);

@@ -2,11 +2,11 @@
 
 namespace AppBundle\Controller\City;
 
-use Symfony\Component\HttpFoundation\Request;
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use FOS\HttpCacheBundle\Configuration\Tag;
+
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+
 use AppBundle\Configuration\BrowserCache;
 use AppBundle\Controller\TBNController as Controller;
 

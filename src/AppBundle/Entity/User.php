@@ -8,8 +8,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Doctrine\Common\Collections\ArrayCollection;
-use AppBundle\Entity\Calendrier;
-use AppBundle\Entity\Site;
+
+
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;

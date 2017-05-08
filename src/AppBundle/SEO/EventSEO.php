@@ -26,7 +26,7 @@ class EventSEO
 
     public function getEventDate(Agenda $event)
     {
-        if (!$event->getDateFin() || $event->getDateDebut() == $event->getDateFin()) {
+        if (!$event->getDateFin() || $event->getDateDebut() === $event->getDateFin()) {
             return sprintf("le %s",
                 $this->formatDate($event->getDateDebut(), \IntlDateFormatter::FULL, \IntlDateFormatter::NONE)
             );

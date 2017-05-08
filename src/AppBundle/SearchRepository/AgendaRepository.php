@@ -5,7 +5,7 @@ namespace AppBundle\SearchRepository;
 use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
 use AppBundle\Search\SearchAgenda;
-use AppBundle\Entity\Site;
+
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query;

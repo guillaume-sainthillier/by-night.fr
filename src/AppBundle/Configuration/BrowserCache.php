@@ -11,9 +11,9 @@
 
 namespace AppBundle\Configuration;
 
-use FOS\HttpCacheBundle\Exception\InvalidTagException;
+
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+
 
 /**
  * @Annotation

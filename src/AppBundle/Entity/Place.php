@@ -8,7 +8,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use AppBundle\Geolocalize\GeolocalizeInterface;
-use AppBundle\Entity\Site;
+
 use AppBundle\Reject\Reject;
 
 /**

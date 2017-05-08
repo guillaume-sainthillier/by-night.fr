@@ -28,6 +28,10 @@ class DoctrineEventHandler
     const BATCH_SIZE = 50;
 
     private $em;
+
+    /**
+     * @var \AppBundle\Repository\AgendaRepository
+     */
     private $repoAgenda;
     private $repoPlace;
     private $handler;
@@ -183,7 +187,7 @@ class DoctrineEventHandler
     {
         $events = array_filter($events, [$this->firewall, 'isValid']);
         usort($events, function (Agenda $a, Agenda $b) {
-            if ($a->getSite() == $b->getSite()) {
+            if ($a->getSite() === $b->getSite()) {
                 return 0;
             }
 

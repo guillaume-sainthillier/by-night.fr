@@ -125,7 +125,7 @@ class ReplyController extends Controller
 
     public function detailsAction(Comment $comment)
     {
-        return $this->render("Reply/details.html.twig", [
+        return $this->render("Comment/Reply/details.html.twig", [
             "comment" => $comment,
             "nb_reponses" => $this->getNbReponses($comment)
         ]);

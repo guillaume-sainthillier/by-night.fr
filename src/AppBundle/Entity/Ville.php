@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
-use AppBundle\Entity\Site;
+
 
 /**
  * Ville
@@ -16,7 +16,7 @@ use AppBundle\Entity\Site;
  *   @ORM\Index(name="ville_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="ville_slug_idx", columns={"slug"}),
  * })
- * @ORM\Entity(repositoryClass="AppBundle\Entity\VilleRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\VilleRepository")
  * @ExclusionPolicy("all")
  */
 class Ville

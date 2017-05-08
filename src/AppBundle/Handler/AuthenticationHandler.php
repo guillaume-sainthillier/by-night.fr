@@ -2,6 +2,9 @@
 
 namespace AppBundle\Handler;
 
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,13 +14,29 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use AppBundle\Site\SiteManager;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
 
+    /**
+     * @var TranslatorInterface
+     */
     protected $translator;
+
+    /**
+     * @var Router
+     */
     protected $router;
+
+    /**
+     * @var Session
+     */
     protected $session;
+
+    /**
+     * @var SiteManager
+     */
     protected $site_manager;
 
     public function __construct($translator, $router, $session, SiteManager $site_manager)
@@ -68,8 +87,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
             return new JsonResponse($result);
         } else {
-            // Handle non XmlHttp request here
-            $request->getSession()->getFlashBag()->set('error', $exception->getMessage());
+            $this->session->getFlashBag()->set('error', $exception->getMessage());
             $url = $this->router->generate('fos_user_security_login');
 
             return new RedirectResponse($url);

@@ -51,6 +51,7 @@ class ExplorationHandler
     protected function add($key)
     {
         $this->stats[$key]++;
+        return $this;
     }
 
     public function getNbExplorations()

@@ -227,7 +227,7 @@ class Firewall
                 $this->addExploration($exploration);
             } else {
                 //Pas besoin de paniquer l'EM si les dates sont équivalentes
-                if ($exploration->getLastUpdated() != $event->getFbDateModification()) {
+                if ($exploration->getLastUpdated() !== $event->getFbDateModification()) {
                     $exploration->setLastUpdated($event->getFbDateModification());
                 }
 

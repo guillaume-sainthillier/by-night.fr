@@ -6,7 +6,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use FOS\HttpCacheBundle\Configuration\InvalidateRoute;
+
 use Symfony\Component\Routing\Annotation\Route;
 use AppBundle\Configuration\BrowserCache;
 use Symfony\Component\HttpFoundation\Response;

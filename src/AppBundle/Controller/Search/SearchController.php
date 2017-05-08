@@ -11,7 +11,7 @@ use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Symfony\Component\Routing\Annotation\Route;
 use Pagerfanta\Pagerfanta;
 
-use AppBundle\Entity\Site;
+
 use AppBundle\Search\SearchAgenda;
 
 

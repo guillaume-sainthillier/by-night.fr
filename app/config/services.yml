@@ -21,6 +21,14 @@ parameters:
 
 
 services:
+    app.sitemap.sitemap_subscriber:
+        class:     AppBundle\EventListener\SitemapSuscriber
+        arguments:
+            - "@router"
+            - "@doctrine.orm.entity_manager"
+        tags:
+            - { name: "kernel.event_subscriber", priority: 100 }
+
     app.registration_listener:
         class: AppBundle\Listener\RegistrationListener
         arguments: []
@@ -30,10 +38,6 @@ services:
     tbn.news_manager:
         class: AppBundle\News\NewsManager
         arguments: [ "@doctrine.orm.entity_manager", "@twig", "@tbn.social.facebook_admin", "@tbn.social.twitter", "@logger" ]
-
-    debril.provider.default:
-        class: AppBundle\Provider\AgendaProvider
-        arguments: [ "@doctrine.orm.entity_manager", "@site_manager", "@router" ]
 
     tbn.programmetv:
         class: AppBundle\Parser\ProgrammeTVParser

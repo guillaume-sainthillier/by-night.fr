@@ -4,15 +4,14 @@ namespace AppBundle\Controller\Social;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+
 
 use AppBundle\Social\Social;
-use AppBundle\Entity\User;
 
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use FOS\UserBundle\Model\UserInterface;
+
 use Symfony\Component\Routing\Annotation\Route;
 
 /**

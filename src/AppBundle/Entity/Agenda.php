@@ -16,10 +16,10 @@ use JMS\Serializer\Annotation\Type;
 use AppBundle\Validator\Constraints\EventConstraint;
 
 use AppBundle\Geolocalize\GeolocalizeInterface;
-use AppBundle\Entity\Comment;
-use AppBundle\Entity\Site;
+
+
 use AppBundle\Reject\Reject;
-use AppBundle\Entity\User;
+
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**

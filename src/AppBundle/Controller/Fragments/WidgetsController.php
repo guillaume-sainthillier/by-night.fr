@@ -2,8 +2,8 @@
 
 namespace AppBundle\Controller\Fragments;
 
-use AppBundle\Entity\Site;
-use Symfony\Component\HttpFoundation\Response;
+
+
 use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use AppBundle\Configuration\BrowserCache;

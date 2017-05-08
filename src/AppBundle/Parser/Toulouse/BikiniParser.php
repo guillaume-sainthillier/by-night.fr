@@ -93,6 +93,8 @@ class BikiniParser extends LinksParser
 
                 return trim($matches[1]);
             }
+
+            return false;
         }));
     }
 
