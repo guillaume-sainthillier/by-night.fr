@@ -70,7 +70,7 @@ class ReplyController extends Controller
 
                 return new JsonResponse([
                     "success" => true,
-                    "comment" => $this->container->get("templating")->render("Comment/Reply/details.html.twig", [
+                    "comment" => $this->renderView("Comment/Reply/details.html.twig", [
                         "comment" => $reponse,
                         "success_confirmation" => true,
                     ]),
@@ -79,7 +79,7 @@ class ReplyController extends Controller
             } else {
                 return new JsonResponse([
                     "success" => false,
-                    "post" => $this->container->get("templating")->render("Comment/Reply/post.html.twig", [
+                    "post" => $this->renderView("Comment/Reply/post.html.twig", [
                         "comment" => $comment,
                         "form" => $form->createView()
                     ])

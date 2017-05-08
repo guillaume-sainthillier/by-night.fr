@@ -1,4 +1,4 @@
-{% extends ":City:layout.html.twig" %}
+{% extends "City/layout.html.twig" %}
 
 {% block titre_agenda -%}
     <strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong> & <strong>soirées</strong> à <strong>{{ site.nom }}</strong>
@@ -83,7 +83,7 @@
     </section>
     <section>
         <div class="container">
-            {% include '::ad.html.twig' %}
+            {% include 'ad.html.twig' %}
             <br/>
             <div class="row">
                 {% set contents = [{
