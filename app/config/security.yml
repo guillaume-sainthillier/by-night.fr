@@ -56,7 +56,9 @@ security:
  
     access_control:
         - { path: ^/espace-perso, role: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/commentaire, role: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/social, role: IS_AUTHENTICATED_REMEMBERED }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/_administration, role: ROLE_ADMIN }
-        - { path: ^/_private, , roles: [IS_AUTHENTICATED_ANONYMOUSLY], ips: [127.0.0.1] }
+        - { path: ^/_private, roles: [IS_AUTHENTICATED_ANONYMOUSLY], ips: [127.0.0.1] }

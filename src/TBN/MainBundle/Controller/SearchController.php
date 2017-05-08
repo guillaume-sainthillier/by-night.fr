@@ -8,13 +8,12 @@ use Symfony\Component\HttpFoundation\Request;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Pagerfanta\Pagerfanta;
 
-use TBN\MainBundle\Entity\Site;
-use TBN\MainBundle\Search\SearchAgenda;
+use AppBundle\Search\SearchAgenda;
+use AppBundle\Entity\Site;
 
 
 class SearchController extends Controller
 {
-
     public function oldSearchAction()
     {
         $params = [

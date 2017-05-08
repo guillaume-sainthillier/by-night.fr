@@ -50,7 +50,7 @@ class EventController extends Controller
      * @Route("/soiree/{slug}--{id}.html", name="tbn_agenda_details", requirements={"slug": ".+", "id": "\d+"})
      * @BrowserCache(false)
      */
-    public function detailsAction($slug, $id = null)
+    public function detailsAction(Site $site, $slug, $id = null)
     {
         $result = $this->checkEventUrl($slug, $id);
         if ($result instanceof Response) {
@@ -58,15 +58,12 @@ class EventController extends Controller
         }
         $agenda = $result;
 
-        $siteManager = $this->container->get('site_manager');
-        $site = $siteManager->getCurrentSite();
-
         //Redirection vers le bon site
         if ($agenda->getSite() !== $site) {
             return new RedirectResponse($this->get('router')->generate('tbn_agenda_details', [
                 'slug' => $agenda->getSlug(),
                 'id' => $agenda->getId(),
-                'subdomain' => $agenda->getSite()->getSubdomain()
+                'city' => $agenda->getSite()->getSubdomain()
             ]));
         }
 
@@ -74,7 +71,8 @@ class EventController extends Controller
         $form = $this->getCreateCommentForm($comment, $agenda);
         $nbComments = $agenda->getCommentaires()->count();
 
-        $response = $this->render('Agenda/details.html.twig', [
+        $response = $this->render('City/Agenda/details.html.twig', [
+            'site' => $site,
             'soiree' => $agenda,
             'form' => $form->createView(),
             'nb_comments' => $nbComments,
@@ -102,8 +100,8 @@ class EventController extends Controller
     }
 
     /**
-     * @param Agenda $agenda
      * @Cache(expires="+12 hours", smaxage="43200")
+     * @param Agenda $agenda
      * @return Response
      */
     public function shareAction(Agenda $agenda)
@@ -111,6 +109,7 @@ class EventController extends Controller
         $link = $this->generateUrl('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
             'id' => $agenda->getId(),
+            'city' => $agenda->getSite()->getSubdomain()
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $eventProfile = $this->get('tbn.profile_picture.event')->getOriginalPictureUrl($agenda);
@@ -124,7 +123,7 @@ class EventController extends Controller
 
         $page->shareCount(['twitter', 'facebook', 'plus']);
 
-        return $this->render("@TBNAgenda/Hinclude/shares.html.twig", [
+        return $this->render("City/Hinclude/shares.html.twig", [
             "shares" => [
                 'facebook' => $page->facebook,
                 'twitter' => $page->twitter,

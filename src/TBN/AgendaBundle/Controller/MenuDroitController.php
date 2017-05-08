@@ -216,13 +216,13 @@ class MenuDroitController extends Controller
             ->setPublic();
     }
 
-    public function fbMembresAction($slug, $id = null, $page)
+    public function fbMembresAction(Site $site, $slug, $id = null, $page)
     {
         if ($page <= 1) {
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page]);
+        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page, 'city' => $site->get]);
         if ($result instanceof Response) {
             return $result;
         }

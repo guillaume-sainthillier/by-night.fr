@@ -1,10 +1,10 @@
-{% extends "TBNAgendaBundle::layout-fluid.html.twig" %}
+{% extends "City/layout-fluid.html.twig" %}
 
 {% block start_container %}
 <div itemscope itemtype="http://schema.org/Event">{{ parent() }}
-    {% endblock %}
+{% endblock %}
 
-    {% block end_container %}{{ parent() }}</div>{% endblock %}
+{% block end_container %}{{ parent() }}</div>{% endblock %}
 
 {% set nomSoiree = event_seo.getEventShortTitle(soiree) %}
 {% set horaires = event_seo.getEventDateTime(soiree) %}
@@ -16,26 +16,27 @@
 
 {% set place = soiree.place %}
 
-{% block titre_agenda %}
+{% block titre -%}
     {% if is_granted('ROLE_ADMIN') or (soiree.user and soiree.user == app.user) %}<a
         class="btn btn-lg btn-primary btn-raised" href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"
         title="Modifier l'événement"><i class="fa fa-pencil"></i></a>
     {% endif %}
     {{ block('title') }}
-{% endblock %}
+{%- endblock %}
 
-{% block title_agenda %}{{ event_seo.getEventFullTitle(soiree) }}{% endblock %}
+{% block title -%}
+    {{ event_seo.getEventFullTitle(soiree) }}
+{%- endblock %}
 
-{% block breadcrumb_agenda %}
-    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda')) %}
+{% block breadcrumb_city_content %}
+    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': site.subdomain})) %}
     {% if place %}
-        {% set item = menu.addItem(place.nom, path('tbn_agenda_place',{'slug': place.slug})) %}
+        {% set item = menu.addItem(place.nom, path('tbn_agenda_place', {'slug': place.slug, 'city': site.subdomain})) %}
     {% endif %}
-    {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details',{'slug': soiree.slug, 'id': soiree.id })) %}
+    {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': site.subdomain})) %}
 {% endblock %}
     
 {% block meta_keywords %}{% if distinctTags|length %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
-{#{% block meta_description %}Découvrez {{ soiree.nom }}.{% if place %}{{ place.nom }} à {{ place.ville }}{% endif %}, {{ horaires }}.{% if distinctTags|length %} - {{ distinctTags|join(', ') }}.{% endif %}{% endblock %}#}
 {% block meta_description %}{{ event_seo.getEventDescription(soiree) }}{% endblock %}
 
 {% block metas %}
@@ -47,7 +48,7 @@
           content="https://www.facebook.com/pages/By-Night/{{ app_manager.facebookIdPage }}"/>
     {% if soiree.user %}
         <meta property="article:author"
-              content="{{ url('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug}) }}"/>
+              content="{{ url('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug, 'city': site.subdomain}) }}"/>
     {% endif %}
 
     {% for tag in distinctTags %}
@@ -55,14 +56,14 @@
     {% endfor %}
 {% endblock %}
 {% block og_titre %}{{ nomSoiree }}{% endblock %}
-{% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id}) }}{% endblock %}
+{% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': site.subdomain}) }}{% endblock %}
 {% block og_image %}{{ original }}{% endblock %}
 
-{% block widgets_agenda %}
-    {% include "TBNAgendaBundle:MenuDroit:details.html.twig" with({'soiree': soiree, 'stats': stats}) %}
-{% endblock %}
+{% block widgets -%}
+    {% include "City/MenuDroit/details.html.twig" with({'soiree': soiree, 'stats': stats}) %}
+{%- endblock %}
 
-{% block body_agenda %}
+{% block body -%}
     {% if soiree.isBrouillon %}
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i>
@@ -96,7 +97,7 @@
             </div>
             <div class="panel-body">
                 <meta itemprop="name" content="{{ nomSoiree }}">
-                <meta itemprop="url" content="{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id}) }}">
+                <meta itemprop="url" content="{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': site.subdomain}) }}">
 
                 {% if soiree.modificationDerniereMinute %}
                     <div class="alert alert-warning">
@@ -123,7 +124,7 @@
                                             {% set readableAdresse = place.nom %}
                                             <h2 class="modal-title" style="font-size: 115%">
                                                 <a itemprop="url"
-                                                   href="{{ path('tbn_agenda_place', {'slug': place.slug }) }}"
+                                                   href="{{ path('tbn_agenda_place', {'slug': place.slug, 'city': site.subdomain}) }}"
                                                    title="Sortir à {{ place.nom }}">
                                                     <strong itemprop="name">{{ place.nom }}</strong>
                                                 </a>
@@ -144,7 +145,7 @@
                                                         {% endif %}
                                                         {% if place.ville %}
                                                             <a itemprop="url"
-                                                               href="{{ path('tbn_agenda_ville', {'ville': place.ville }) }}"
+                                                               href="{{ path('tbn_agenda_ville', {'ville': place.ville, 'city': site.subdomain}) }}"
                                                                title="Sortir à {{ place.ville }}">
                                                                 {% set readableAdresse = readableAdresse ~ " " ~ place.ville %}
                                                                 <span><strong
@@ -259,7 +260,7 @@
             </div>
             <div class="panel-body">
                 <br/>
-                {{ render_esi(controller('TBNAgendaBundle:Event:share', {'slug': soiree.slug })) }}
+                {{ render_esi(controller('AppBundle:City/Event:share', {'slug': soiree.slug, 'city': soiree.site.subdomain})) }}
 
                 <div class="comments">
                     <h4 class="heading">
@@ -270,7 +271,7 @@
                         {% endif %}
                     </h4>
                     <br/>
-                    {% include "TBNCommentBundle:Comment:post.html.twig" %}
+                    {% include "Comment/post.html.twig" %}
                     {% if nb_comments > 0 %}
                         {{ render_esi(url('tbn_comment_list', {'id': soiree.id})) }}
                     {% endif %}
@@ -288,19 +289,21 @@
                 </div>
                 <div class="panel-body scrollable scrollable-large">
                     <div>
-                        {{ render_esi(url('tbn_agenda_prochaines_soirees', {'slug': soiree.slug, 'id': soiree.id} )) }}
+                        {{ render_esi(url('tbn_agenda_prochaines_soirees', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.site.subdomain} )) }}
                     </div>
                 </div>
                 <div class="panel-footer"></div>
             </div>
         {% endif %}
     {% endif %}
-{% endblock %}
+{%- endblock %}
 
-{% block css_agenda %}
+{% block css %}
+    <link rel="stylesheet" href="{{ asset('prod/widgets/css/widgets.min.css', 'asset') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('prod/evenements/css/details.min.css', 'asset') }}" type="text/css">
 {% endblock %}
         
-{% block js_agenda %}
+{% block js %}
+    <script src="{{ asset('prod/widgets/js/widgets.min.js', 'asset') }}" type="text/javascript"></script>
     <script src="{{ asset('prod/evenements/js/details.min.js', 'asset') }}" type="text/javascript"></script>
 {% endblock %}

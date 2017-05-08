@@ -27,7 +27,7 @@ class SocialController extends Controller
 
 
     /**
-     * @Route("/deconnexion", name="tbn_administration_site_service")
+     * @Route("/deconnexion", name="tbn_administration_disconnect_service")
      */
     public function disconnectSiteAction($service)
     {
@@ -35,31 +35,23 @@ class SocialController extends Controller
 
         /** @var Social $social */
         $social = $this->container->get($serviceName);
-
         $social->disconnectSite();
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($this->get('site_manager')->getSiteInfo());
+        $em->flush();
 
-        try {
-            $em->flush();
-            $success = true;
-        }catch(\Exception $e) {
-            $success = false;
-            $this->get('logger')->critical($e);
-        }
-
-        return new JsonResponse(["success" => $success]);
+        return new JsonResponse(["success" => true]);
     }
 
     /**
-     * @Route("/deconnexion/confirmation", name="tbn_administration_site_service_confirm")
+     * @Route("/deconnexion/confirmation", name="tbn_administration_disconnect_service_confirm")
      */
     public function disconnectConfirmAction($service)
     {
         return $this->render('Social/confirm.html.twig', [
             "service" => $service,
-            "url" => $this->generateUrl("tbn_administration_site_service", ["service" => $service])
+            "url" => $this->generateUrl("tbn_administration_disconnect_service", ["service" => $service])
         ]);
     }
 }

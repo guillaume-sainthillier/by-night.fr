@@ -1,6 +1,20 @@
-#La ville est définie à partir d'ici
 app.default:
     resource: "@AppBundle/Controller"
+    type:     annotation
+
+app.social:
+    resource: "@AppBundle/Controller/Social"
+    prefix:   /social
+    type:     annotation
+
+app.espace_perso:
+    resource: "@AppBundle/Controller/EspacePerso"
+    prefix:   /espace-perso
+    type:     annotation
+
+app.comments:
+    resource: "@AppBundle/Controller/Comment"
+    prefix:   /commentaire
     type:     annotation
 
 app.legacy:
@@ -34,6 +48,10 @@ fos_user_security:
 fos_user_profile:
     resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
     prefix: /profile
+
+app.user_profile:
+    resource: "@UserBundle/Controller"
+    prefix:   /profile
 
 #Inscription
 fos_user_register:

@@ -39,7 +39,7 @@
     {% if page > 1 %} (Page {{ page }}){% endif %}
 {% endblock %}
 
-{% block breadcrumb_content %}
+{% block breadcrumb_city_content %}
     {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': site.subdomain})) %}
     {% if placeName is not null %}
         {% set item = menu.addItem(placeName|capitalize, path('tbn_agenda_place', {'slug' : placeSlug,'city': site.subdomain})) %}

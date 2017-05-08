@@ -2,6 +2,7 @@
 
 namespace AppBundle\Search;
 
+use AppBundle\Entity\Site;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -62,6 +63,12 @@ class SearchAgenda
      */
     protected $page;
 
+    /**
+     *
+     * @var Site
+     */
+    protected $site;
+
 
     public function __construct()
     {
@@ -72,6 +79,10 @@ class SearchAgenda
     public function getTerms()
     {
         return array_unique(array_filter(explode(" ", $this->getTerm())));
+    }
+
+    public function getSite() {
+        return $this->site;
     }
 
     public function setTag($tag)
@@ -109,6 +120,11 @@ class SearchAgenda
     public function getTerm()
     {
         return $this->term;
+    }
+
+    public function setSite(Site $site) {
+        $this->site = $site;
+        return $this;
     }
 
     public function setDu(\DateTime $du = null)

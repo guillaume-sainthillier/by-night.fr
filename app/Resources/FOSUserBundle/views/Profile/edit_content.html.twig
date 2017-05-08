@@ -18,7 +18,7 @@
             <div class="panel-body">
                 {% for service in ['facebook','google','twitter'] %}
                     <div class="bloc_config">
-                        {% include "TBNSocialBundle:Social:social.html.twig" with { 'info': app.user.info, 'service': service } %}
+                        {% include "Social/social.html.twig" with { 'info': app.user.info, 'service': service } %}
                     </div>
                 {% endfor %}
                 <br/>
@@ -149,8 +149,8 @@
                 <p>Supprimer les informations relatives à mon compte</p>
                 <div class="form-group">
                     <div class="col-md-offset-4 col-md-8">
-                        <button id="btnDelete" type="button" data-toggle="modal" data-target="#deleteModal"
-                                class="btn btn-danger btn-raised btn-block">Supprimer mon compte
+                        <button id="btnDelete" type="button" data-toggle="modal" data-target="#deleteModal" class="btn btn-danger btn-raised btn-block">
+                            Supprimer mon compte
                         </button>
                     </div>
                 </div>
@@ -158,4 +158,4 @@
         </div>
     </div>
 </div>
-{% include "TBNUserBundle:Profile:modalDelete.html.twig" %}
+{% include "FOSUserBundle:Profile:modalDelete.html.twig" %}

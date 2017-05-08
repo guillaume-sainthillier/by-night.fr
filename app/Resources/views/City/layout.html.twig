@@ -8,21 +8,20 @@
 {% block meta_keywords %}{{ site.nom|lower }}{% endblock %}
 {% block og_url %}{{ url('tbn_agenda_index', {'city': site.subdomain}) }}{% endblock %}
 
-{% block meta_description %}Sortir à {{ site.nom }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.{% endblock %}
+{% block meta_description -%}
+    Sortir à {{ site.nom }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.
+{%- endblock %}
     
-{% block body %}
-    <div id="fb-root"></div>{% block body_agenda %}{% endblock %}{% endblock %}
+{% block body -%}
+    <div id="fb-root"></div>{% block body_agenda %}{% endblock %}
+{%- endblock %}
+
 {% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
 
-{% block breadcrumb %}
-    <div id="bread" class="bg-white">
-        <div class="container">
-            {% set item = menu.addItem('Sortir à ' ~ site.nom, path('tbn_agenda_index', {'city': site.subdomain})) %}
-            {% block breadcrumb_agenda %}{% endblock %}
-            {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
-        </div>
-    </div>
-{% endblock %}
+{% block breadcrumb_content -%}
+    {% set item = menu.addItem('Sortir à ' ~ site.nom, path('tbn_agenda_index', {'city': site.subdomain})) %}
+    {% block breadcrumb_city_content %}{% endblock %}
+{%- endblock %}
 
 {% block twitter %}
     {% if app_manager.twitterIdPage %}

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace AppBundle\Controller\Social;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,65 +15,36 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Routing\Annotation\Route;
 
-
+/**
+ * @Route("/{service}", requirements={"service": "facebook|twitter|google"})
+ */
 class DefaultController extends BaseController
 {
     /**
-     * @Security("has_role('ROLE_ADMIN')")
-     * @Route("/deconnexion/{service}", name="tbn_administration_site_service")
-     * @param string $service
-     * @return JsonResponse
+     * @Route("/deconnexion", name="tbn_disconnect_service")
      */
-    public function disconnectSiteAction($service)
+    public function disconnectAction($service)
     {
-        /** @var Social */
-        $social = $this->container->get("tbn.social." . strtolower($service === "facebook" ? "facebook_events" : $service));
-        $siteManager = $this->container->get("site_manager");
-        $currentSite = $siteManager->getCurrentSite();
-        $social->disconnectSite($currentSite);//On enlève le profil social du site
-        $em = $this->container->get("doctrine.orm.entity_manager");
-        $em->persist($currentSite);
-        $em->flush();
+        $user = $this->getUser();
 
-
-        return new JsonResponse(["success" => true]);
-    }
-
-    public function disconnectAction(Request $request, $service)
-    {
-        $user = $this->getUserWithService($request);
-        /** @var Social */
+        /** @var Social $social */
         $social = $this->container->get("tbn.social." . strtolower($service === "facebook" ? "facebook_events" : $service));
         $social->disconnectUser($user);
+
         $this->authenticateBasicUser($user);
 
         return new JsonResponse(["success" => true]);
     }
 
-    public function disconnectConfirmAction(Request $request, $service, $from_site = false)
-    {
-        $this->getUserWithService($request);
-
-        return $this->render('TBNSocialBundle:Social:confirm_disconnect_' . ($from_site ? "site_" : "") . $service . '.html.twig', [
-            "service" => $service
-        ]);
-    }
-
     /**
-     *
-     * @param Request $request
-     * @return User
-     * @throws AccessDeniedException
+     * @Route("/deconnexion/confirmation", name="tbn_disconnect_service_confirm")
      */
-    protected function getUserWithService(Request $request)
+    public function disconnectConfirmAction($service)
     {
-        if (!$request->isXmlHttpRequest()) {
-            throw $this->createNotFoundException('La page demandée est introuvable');
-        }
-
-        $user = $this->getUser();
-
-        return $user;
+        return $this->render('Social/confirm.html.twig', [
+            "service" => $service,
+            "url" => $this->generateUrl("tbn_disconnect_service", ["service" => $service])
+        ]);
     }
 
     /**
@@ -84,6 +55,7 @@ class DefaultController extends BaseController
     protected function authenticateBasicUser(UserInterface $user)
     {
         try {
+            $this->container->get('hwi_oauth.user_checker')->checkPreAuth($user);
             $this->container->get('hwi_oauth.user_checker')->checkPostAuth($user);
         } catch (AccountStatusException $e) {
             // Don't authenticate locked, disabled or expired users

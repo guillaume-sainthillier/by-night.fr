@@ -26,6 +26,12 @@ class AgendaRepository extends Repository
     {
         $mainQuery = new BoolQuery();
 
+        if($search->getSite()) {
+            $mainQuery->addMust(
+                new Term(['site.id' => $search->getSite()->getId()])
+            );
+        }
+
         if ($search->getDu()) {
             if (!$search->getAu()) {
                 $mainQuery->addMust(new Range('date_fin', [

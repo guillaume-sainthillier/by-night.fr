@@ -31,8 +31,6 @@ class SiteRepository extends EntityRepository
         $results = $this
             ->createQueryBuilder('s')
             ->select('s.nom, s.subdomain')
-//            ->where('s.id != :id')
-//            ->setParameter('id', $site->getId())
             ->getQuery()
             ->getScalarResult();
 

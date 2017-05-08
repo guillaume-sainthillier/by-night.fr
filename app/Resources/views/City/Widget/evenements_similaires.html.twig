@@ -5,6 +5,6 @@
 {% block icone %}fa-star{% endblock %}
 {% block body %}
     <div>
-        {{ render_esi(controller('TBNAgendaBundle:MenuDroit:soireesSimilaires',{'slug': soiree.slug, 'id': soiree.id})) }}
+        {{ render_esi(controller('AppBundle:City/Widgets:soireesSimilaires', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.site.subdomain})) }}
     </div>
 {% endblock %}

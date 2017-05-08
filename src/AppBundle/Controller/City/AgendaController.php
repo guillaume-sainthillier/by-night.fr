@@ -87,6 +87,8 @@ class AgendaController extends Controller
      * @Route("/sortir-a/{slug}/page/{page}", name="tbn_agenda_place_pagination", requirements={"slug": ".+", "page": "\d+"})
      * @Route("/tag/{tag}", name="tbn_agenda_tags", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
      * @Route("/tag/{tag}/page/{page}", name="tbn_agenda_tags_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
+     * @Route("/agenda/sortir-dans/{ville}", name="tbn_agenda_ville", requirements={"ville": ".*"})
+     * @Route("/agenda/sortir-dans/{ville}/page/{page}", name="tbn_agenda_ville_pagination", requirements={"ville": ".*", "page": "\d+"})
      * @BrowserCache(false)
      */
     public function indexAction(Request $request, Site $site, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
@@ -117,6 +119,7 @@ class AgendaController extends Controller
 
         //Recherche des événements
         $search = new SearchAgenda();
+        $search->setSite($site);
         $place = null;
         if ($slug !== null) {
             $place = $em->getRepository('AppBundle:Place')->findOneBy(['slug' => $slug]);
@@ -150,7 +153,7 @@ class AgendaController extends Controller
         //Recherche ElasticSearch
         $repositoryManager = $this->get('fos_elastica.manager');
         $repository = $repositoryManager->getRepository('AppBundle:Agenda');
-        $results = $repository->findWithSearch($site, $search); //100ms
+        $results = $repository->findWithSearch($search); //100ms
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);

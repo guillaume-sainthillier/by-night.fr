@@ -41,13 +41,9 @@ class Twitter extends Social
     {
         $this->init();
         try {
-            $site = $this->siteManager->getCurrentSite();
-
-            if ($site !== null) {
-                $page = $this->client->get('users/show', ['screen_name' => $this->appManager->getTwitterIdPage()]);
-                if (isset($page['followers_count'])) {
-                    return $page['followers_count'];
-                }
+            $page = $this->client->get('users/show', ['screen_name' => $this->appManager->getTwitterIdPage()]);
+            if (isset($page['followers_count'])) {
+                return $page['followers_count'];
             }
         } catch (\Exception $e) {
             $this->logger->error($e);

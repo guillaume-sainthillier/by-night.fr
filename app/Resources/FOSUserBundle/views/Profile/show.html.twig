@@ -5,7 +5,11 @@
 {%- endblock %}
 
 {% block titre -%}
-    Mon compte
+    {{ app.user.username }}
+{%- endblock %}
+
+{% block title -%}
+    {{ app.user.username }}
 {%- endblock %}
 
 {% block breadcrumb_content -%}

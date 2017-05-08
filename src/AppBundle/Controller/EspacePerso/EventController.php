@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller\EspacePerso;
 
+use AppBundle\Entity\User;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -19,7 +20,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends Controller
 {
-
     public function annulerAction(Request $request, Agenda $agenda)
     {
         $this->checkIfOwner($agenda);
@@ -77,6 +77,12 @@ class EventController extends Controller
         return $this->redirect($this->generateUrl('tbn_agenda_list'));
     }
 
+    /**
+     * @Route("/corriger/{slug}", name="tbn_agenda_edit", requirements={"slug": ".+"})
+     * @param Request $request
+     * @param Agenda $agenda
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function editAction(Request $request, Agenda $agenda)
     {
         $em = $this->getDoctrine()->getManager();
@@ -88,7 +94,7 @@ class EventController extends Controller
 
         $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $this->postSocial($agenda, $form);
 
@@ -367,5 +373,61 @@ class EventController extends Controller
         if (!$current_user->hasRole("ROLE_ADMIN") && $user_agenda !== $current_user) {
             throw new AccessDeniedException("Vous n'êtes pas autorisé à modifier cet événement");
         }
+    }
+
+    private function updateFBEvent(Agenda $agenda, User $user, Calendrier $calendrier)
+    {
+        if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookAccessToken()) {
+            $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
+            $cache = $this->get('memory_cache');
+            $api = $this->get('tbn.social.facebook_admin');
+            $api->updateEventStatut(
+                $agenda->getFacebookEventId(),
+                $user->getInfo()->getFacebookAccessToken(),
+                $calendrier->getParticipe()
+            );
+
+            $datas = [
+                'participer' => $calendrier->getParticipe(),
+                'interet' => $calendrier->getInteret()
+            ];
+
+            $cache->save($key, $datas);
+        }
+    }
+
+    /**
+     * @Route("/participer/{id}", name="tbn_user_participer", defaults={"participer": true, "interet": false})
+     * @Route("/interet/{id}", name="tbn_user_interesser", defaults={"participer": false, "interet": true})
+     */
+    public function participerAction(Agenda $agenda, $participer, $interet)
+    {
+        $user = $this->getUser();
+
+        $em = $this->getDoctrine()->getManager();
+        $calendrier = $em->getRepository("AppBundle:Calendrier")->findOneBy(["user" => $user, "agenda" => $agenda]);
+
+        if ($calendrier === null) {
+            $calendrier = new Calendrier;
+            $calendrier->setUser($user)->setAgenda($agenda);
+        }
+        $calendrier->setParticipe($participer)->setInteret($interet);
+        $this->updateFBEvent($agenda, $user, $calendrier);
+
+        $em->persist($calendrier);
+        $em->flush();
+
+        $repo = $em->getRepository("AppBundle:Agenda");
+        $participations = $repo->getCountTendancesParticipation($agenda);
+        $interets = $repo->getCountTendancesInterets($agenda);
+
+        $agenda->setParticipations($participations)->setInterets($interets);
+        $em->flush();
+
+        return new JsonResponse([
+            "success" => true,
+            "participer" => $participer,
+            "interet" => $interet
+        ]);
     }
 }

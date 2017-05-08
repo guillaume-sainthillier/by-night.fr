@@ -45,32 +45,30 @@ class Google extends Social
     public function getNumberOfCount()
     {
         $this->init();
-        $site = $this->siteManager->getCurrentSite();
         $router = $this->router;
 
-        if ($site !== null) {
-            try {
-                $url = $router->generate("tbn_main_index", [], UrlGenerator::ABSOLUTE_URL);
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, "https://clients6.google.com/rpc");
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, '[{"method":"pos.plusones.get","id":"p",
-                "params":{"nolog":true,"id":"' . $url . '","source":"widget","userId":"@viewer","groupId":"@self"},
-                "jsonrpc":"2.0","key":"p","apiVersion":"v1"}]');
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+        try {
+            $url = $router->generate("tbn_main_index", [], UrlGenerator::ABSOLUTE_URL);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://clients6.google.com/rpc");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, '[{"method":"pos.plusones.get","id":"p",
+            "params":{"nolog":true,"id":"' . $url . '","source":"widget","userId":"@viewer","groupId":"@self"},
+            "jsonrpc":"2.0","key":"p","apiVersion":"v1"}]');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
 
-                $result = curl_exec($ch);
+            $result = curl_exec($ch);
 
-                curl_close($ch);
-                $json = json_decode($result, true);
+            curl_close($ch);
+            $json = json_decode($result, true);
 
-                if (isset($json[0]['result']['metadata']['globalCounts']['count'])) {
-                    return intval($json[0]['result']['metadata']['globalCounts']['count']);
-                }
-            } catch (\Exception $ex) {
+            if (isset($json[0]['result']['metadata']['globalCounts']['count'])) {
+                return intval($json[0]['result']['metadata']['globalCounts']['count']);
             }
+        } catch (\Exception $ex) {
+            $this->logger->error($ex);
         }
 
         return 0;

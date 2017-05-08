@@ -23,11 +23,6 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 class ProfileFormType extends BaseType
 {
 
-    public function getName()
-    {
-        return 'tbn_user_profile';
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
@@ -71,5 +66,10 @@ class ProfileFormType extends BaseType
                 'label' => 'Photo de profil',
                 'image_filter' => 'thumb_user_large',
             ]);
+    }
+
+    public function getName()
+    {
+        return 'tbn_user_profile';
     }
 }

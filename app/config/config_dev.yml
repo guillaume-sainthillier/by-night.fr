@@ -14,7 +14,15 @@ web_profiler:
 doctrine:
     orm:
         auto_generate_proxy_classes: false
-                
+
+doctrine_cache:
+    providers:
+        memcache:
+            type: apcu
+            namespace: memory_cache_ns
+            aliases:
+                - memory_cache
+
 monolog:
     handlers:
         main:

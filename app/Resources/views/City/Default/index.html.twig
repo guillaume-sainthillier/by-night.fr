@@ -1,11 +1,13 @@
 {% extends ":City:layout.html.twig" %}
 
-{% block titre_agenda %}<strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong> & <strong>soirées</strong> à
-    <strong>{{ site.nom }}</strong>{% endblock %}
+{% block titre_agenda -%}
+    <strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong> & <strong>soirées</strong> à <strong>{{ site.nom }}</strong>
+{%- endblock %}
 
 {% block title_agenda %}{{ block('titre_agenda')|striptags }}{% endblock %}
 
 {% block container_titre %}{% endblock %}
+
 {% block helper_top %}
     <section class="full_wrapper" style="background-image: url({{ asset('img/sites/' ~ site.subdomain ~ '.jpg') }})">
         <div class="fade-black-transp"></div>

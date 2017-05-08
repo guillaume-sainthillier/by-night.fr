@@ -35,8 +35,7 @@
                     {% for site in sites %}
                         <li>
                             <i class="fa fa-li fa-angle-right"></i>
-                            <a title="Découvrir les événements sur {{ site.nom }}"
-                               href="{{ path('tbn_agenda_index', {'city' : site.subdomain}) }}">
+                            <a title="Découvrir les événements sur {{ site.nom }}" href="{{ path('tbn_agenda_index', {'city' : site.subdomain}) }}">
                                 {{ site.nom }}
                             </a>
                         </li>
@@ -49,19 +48,17 @@
         <div class="row counts">
             <div class="col-xs-4 preserve">
                 {% if app_manager.facebookIdPage %}
-                    <a class="social" title="By Night sur Facebook"
-                       href="https://www.facebook.com/{{ app_manager.facebookIdPage }}">
+                    <a class="social" title="By Night sur Facebook" href="https://www.facebook.com/{{ app_manager.facebookIdPage }}">
                         <i class="fa fa-facebook fa-3x"></i>
-                        <span class="number number-xbig">{{ count_facebook|default(null) }}</span>
+                        <span class="number number-xbig">{{ count_facebook }}</span>
                     </a>
                 {% endif %}
             </div>
             <div class="col-xs-4 preserve">
                 {% if app_manager.twitterIdPage %}
-                    <a class="social" title="By Night sur Twitter"
-                       href="https://twitter.com/{{ app_manager.twitterIdPage }}">
+                    <a class="social" title="By Night sur Twitter" href="https://twitter.com/{{ app_manager.twitterIdPage }}">
                         <i class="fa fa-twitter fa-3x"></i>
-                        <span class="number number-xbig">{{ count_twitter|default(null) }}</span>
+                        <span class="number number-xbig">{{ count_twitter }}</span>
                     </a>
                 {% endif %}
             </div>
@@ -70,7 +67,7 @@
                     <a class="social" title="By Night sur Google+"
                        href="https://plus.google.com/{{ app_manager.googleIdPage }}" rel="publisher">
                         <i class="fa fa-google-plus fa-3x"></i>
-                        <span class="number number-xbig">{{ count_google|default(null) }}</span>
+                        <span class="number number-xbig">{{ count_google }}</span>
                     </a>
                 {% endif %}
             </div>

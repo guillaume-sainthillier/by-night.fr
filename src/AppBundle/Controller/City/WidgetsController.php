@@ -66,13 +66,20 @@ class WidgetsController extends Controller
             ->setExpires($expire);
     }
 
-    public function nextEventsAction($slug, $id = null, $page = 1)
+    /**
+     * @Route("/soiree/{slug}--{id}.html/prochaines-soirees/{page}", name="tbn_agenda_prochaines_soirees", requirements={"slug": ".+", "id": "\d+", "page": "\d+"})
+     */
+    public function nextEventsAction(Site $site, $slug, $id = null, $page = 1)
     {
         if ($page <= 0) {
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_prochaines_soirees', ['page' => $page]);
+        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_prochaines_soirees', [
+            'page' => $page,
+            'city' => $site->getSubdomain()
+        ]);
+
         if ($result instanceof Response) {
             return $result;
         }
@@ -82,11 +89,12 @@ class WidgetsController extends Controller
             return $this->redirectToRoute('tbn_agenda_details', [
                 'id' => $soiree->getId(),
                 'slug' => $soiree->getSlug(),
+                'city' => $site->getSubdomain()
             ]);
         }
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repo = $em->getRepository("AppBundle:Agenda");
 
         $count = $repo->findAllNextCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -95,6 +103,7 @@ class WidgetsController extends Controller
             $hasNextLink = $this->generateUrl('tbn_agenda_prochaines_soirees', [
                 'slug' => $soiree->getSlug(),
                 'id' => $soiree->getId(),
+                'city' => $soiree->getSite()->getSubdomain(),
                 'page' => $page + 1
             ]);
         } else {
@@ -120,26 +129,30 @@ class WidgetsController extends Controller
             ->setPublic();
     }
 
-    public function soireesSimilairesAction($slug, $id = null, $page = 1)
+    /**
+     * @Route("/soiree/{slug}--{id}.html/autres-soirees/{page}", name="tbn_agenda_soirees_similaires", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))
+     */
+    public function soireesSimilairesAction(Site $site, $slug, $id = null, $page = 1)
     {
         if ($page <= 0) {
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page]);
+        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page, 'city' => $site->getSubdomain()]);
         if ($result instanceof Response) {
             return $result;
         }
         $soiree = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repo = $em->getRepository("AppBundle:Agenda");
 
         $count = $repo->findAllSimilairesCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_similaires', [
+                'city' => $site->getSubdomain(),
                 'slug' => $soiree->getSlug(),
                 'id' => $soiree->getId(),
                 'page' => $page + 1
@@ -149,6 +162,7 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render("City/Hinclude/evenements.html.twig", [
+            'site' => $site,
             "soirees" => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
             "current" => $current,
             "count" => $count,
@@ -207,20 +221,27 @@ class WidgetsController extends Controller
             ->setPublic();
     }
 
-    public function fbMembresAction(Site $site, $slug, $id = null, $page)
+    /**
+     * @Route("/soiree/{slug}--{id}.html/membres/{page}", name="tbn_agenda_soirees_membres", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))
+     */
+    public function fbMembresAction(Site $site, $slug, $id = null, $page = 1)
     {
         if ($page <= 1) {
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page]);
+        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page, 'city' => $site]);
         if ($result instanceof Response) {
             return $result;
         }
         $soiree = $result;
 
         if (!$soiree->getFacebookEventId()) {
-            return $this->redirectToRoute('tbn_agenda_details', ['slug' => $soiree->getSlug(), 'id' => $soiree->getId()]);
+            return $this->redirectToRoute('tbn_agenda_details', [
+                'slug' => $soiree->getSlug(),
+                'id' => $soiree->getId(),
+                'city' => $soiree->getSite()->getSubdomain()
+            ]);
         }
 
         $api = $this->get("tbn.social.facebook_admin");
@@ -229,6 +250,7 @@ class WidgetsController extends Controller
         $membres = array_merge($retour['participations'], $retour['interets']);
         if (count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
+                'city' => $soiree->getSite()->getSubdomain(),
                 'slug' => $soiree->getSlug(),
                 'id' => $soiree->getId(),
                 'page' => $page + 1
@@ -238,6 +260,7 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render("City/Hinclude/fb_membres.html.twig", [
+            "site" => $site,
             "event" => $soiree,
             "page" => $page,
             "membres" => $membres,

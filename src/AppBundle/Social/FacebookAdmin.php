@@ -149,14 +149,11 @@ class FacebookAdmin extends FacebookEvents
     public function getNumberOfCount()
     {
         $this->init();
-        $site = $this->siteManager->getCurrentSite();
-        if ($site !== null && $this->siteInfo !== null) {
-            try {
-                $page = $this->getPageFromId($this->appManager->getFacebookIdPage(), ['fields' => 'fan_count']);
-                return $page->getField('fan_count');
-            } catch (FacebookSDKException $ex) {
-                $this->logger->error($ex);
-            }
+        try {
+            $page = $this->getPageFromId($this->appManager->getFacebookIdPage(), ['fields' => 'fan_count']);
+            return $page->getField('fan_count');
+        } catch (FacebookSDKException $ex) {
+            $this->logger->error($ex);
         }
 
         return 0;
