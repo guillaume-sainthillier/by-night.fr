@@ -38,7 +38,13 @@ app.search:
 
 app.private:
     resource: "@AppBundle/Controller/Fragments"
-    prefix:   /_private
+
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"
+
+PrestaSitemapBundle:
+    resource: "@PrestaSitemapBundle/Resources/config/routing.yml"
+    prefix:   /
 
 #Login
 fos_user_security:
@@ -101,6 +107,10 @@ app.city:
     prefix:   /{city}
     type:     annotation
 
+app.old:
+    resource: "@AppBundle/Controller/Old/City"
+    type:     annotation
+
 #tbn_agenda:
 #    resource: "@TBNAgendaBundle/Resources/config/routing.yml"
 #    prefix:   /{city}
@@ -147,10 +157,3 @@ app.city:
 #    resource: "@TBNUserBundle/Resources/config/routing.yml"
 #    prefix:   /espace-perso
 #
-
-_liip_imagine:
-    resource: "@LiipImagineBundle/Resources/config/routing.xml"
-
-PrestaSitemapBundle:
-    resource: "@PrestaSitemapBundle/Resources/config/routing.yml"
-    prefix:   /

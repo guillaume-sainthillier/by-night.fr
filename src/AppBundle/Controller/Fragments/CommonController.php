@@ -12,6 +12,9 @@ use AppBundle\Controller\TBNController;
 use AppBundle\Entity\Site;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/_internal")
+ */
 class CommonController extends TBNController
 {
     const LIFE_TIME_CACHE = 86400; // 3600*24
