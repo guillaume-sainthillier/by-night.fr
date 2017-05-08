@@ -1,9 +1,4 @@
-{% extends "TBNCommentBundle:Comment:list.html.twig" %}
-
-
-{#{% block detail_commentaire %}#}
-    {#{{ render(controller('TBNCommentBundle:Reply:details', {'comment': comment})) }}#}
-{#{% endblock %}#}
+{% extends "Comment/list.html.twig" %}
 
 {% block load_more %}
     <div class="load_more" data-url="{{ path('tbn_comment_reponse_list',{'id': main_comment.id ,'page': (page+1) }) }}">

@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Annotation\Route;
 
 use AppBundle\Form\Type\CommentType;
 use AppBundle\Entity\Comment;
@@ -17,47 +18,15 @@ use AppBundle\Repository\CommentRepository;
 class ReplyController extends Controller
 {
     /**
-     *
-     * @return CommentRepository
+     * @Route("/{id}/reponses/{page}", name="tbn_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})
+     * @param Comment $comment
+     * @param $page
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function getCommentRepo()
-    {
-        $repo = $this->getDoctrine()->getRepository("AppBundle:Comment");
-        return $repo;
-    }
-
-    protected function getCommentaires(Agenda $soiree, $page, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllByAgenda($soiree, $page, $limit);
-    }
-
-    protected function getReponses(Comment $comment, $page, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
-    }
-
-    protected function getNbComments(Agenda $soiree)
-    {
-        return $this->getCommentRepo()->findNBCommentaires($soiree);
-    }
-
-    protected function getNbReponses(Comment $comment)
-    {
-        return $this->getCommentRepo()->findNBReponses($comment);
-    }
-
-    public function detailsAction(Comment $comment)
-    {
-        return $this->render("Reply/details.html.twig", [
-            "comment" => $comment,
-            "nb_reponses" => $this->getNbReponses($comment)
-        ]);
-    }
-
-    public function listAction(Comment $comment, $page)
+    public function listAction(Comment $comment, $page = 1)
     {
         $limit = 5;
-        return $this->render('Reply/list.html.twig', [
+        return $this->render('Comment/Reply/list.html.twig', [
             'comments' => $this->getReponses($comment, $page, $limit),
             "main_comment" => $comment,
             "nb_comments" => $this->getNbReponses($comment),
@@ -66,6 +35,12 @@ class ReplyController extends Controller
         ]);
     }
 
+    /**
+     * @Route("/{id}/repondre", name="tbn_comment_reponse_new", requirements={"id": "\d+"})
+     * @param Request $request
+     * @param Comment $comment
+     * @return JsonResponse|RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function newAction(Request $request, Comment $comment)
     {
         $reponse = new Comment();
@@ -111,12 +86,50 @@ class ReplyController extends Controller
                 ]);
             }
         }
-        return $this->render('Reply/post.html.twig', [
+        return $this->render('Comment/Reply/post.html.twig', [
             'comment' => $comment,
             'form' => $form->createView()
         ]);
     }
 
+
+    /**
+     *
+     * @return CommentRepository
+     */
+    protected function getCommentRepo()
+    {
+        $repo = $this->getDoctrine()->getRepository("AppBundle:Comment");
+        return $repo;
+    }
+
+    protected function getCommentaires(Agenda $soiree, $page, $limit = 10)
+    {
+        return $this->getCommentRepo()->findAllByAgenda($soiree, $page, $limit);
+    }
+
+    protected function getReponses(Comment $comment, $page, $limit = 10)
+    {
+        return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
+    }
+
+    protected function getNbComments(Agenda $soiree)
+    {
+        return $this->getCommentRepo()->findNBCommentaires($soiree);
+    }
+
+    protected function getNbReponses(Comment $comment)
+    {
+        return $this->getCommentRepo()->findNBReponses($comment);
+    }
+
+    public function detailsAction(Comment $comment)
+    {
+        return $this->render("Reply/details.html.twig", [
+            "comment" => $comment,
+            "nb_reponses" => $this->getNbReponses($comment)
+        ]);
+    }
 
     protected function getCreateForm(Comment $reponse, Comment $comment)
     {

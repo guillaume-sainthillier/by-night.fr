@@ -17,9 +17,14 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 class EventController extends Controller
 {
+    /**
+     * @Route("/annuler/{slug}", name="tbn_agenda_annuler", requirements={"slug": ".+"})
+     * @param Request $request
+     * @param Agenda $agenda
+     * @return JsonResponse
+     */
     public function annulerAction(Request $request, Agenda $agenda)
     {
         $this->checkIfOwner($agenda);
@@ -35,6 +40,12 @@ class EventController extends Controller
         return new JsonResponse(['success' => true]);
     }
 
+    /**
+     * @Route("/brouillon/{slug}", name="tbn_agenda_brouillon", requirements={"slug": ".+"})
+     * @param Request $request
+     * @param Agenda $agenda
+     * @return JsonResponse
+     */
     public function brouillonAction(Request $request, Agenda $agenda)
     {
         $this->checkIfOwner($agenda);
@@ -50,14 +61,17 @@ class EventController extends Controller
         return new JsonResponse(['success' => true]);
     }
 
-    public function listAction()
+    /**
+     * @Route("/mes-soirees", name="tbn_agenda_list")
+     */
+    public function indexAction()
     {
         $user = $this->getUser();
-        $soirees = $this->getRepo('TBNAgendaBundle:Agenda')->findAllByUser($user);
+        $soirees = $this->getRepo('AppBundle:Agenda')->findAllByUser($user);
 
         $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
 
-        return $this->render('TBNUserBundle:Espace:liste.html.twig', [
+        return $this->render('EspacePerso/liste.html.twig', [
             "soirees" => $soirees,
             "canSynchro" => $canSynchro
         ]);
@@ -123,6 +137,7 @@ class EventController extends Controller
     }
 
     /**
+     * @Route("/import", name="tbn_agenda_import_events")
      * @Security("has_role('ROLE_FACEBOOK_LIST_EVENTS')")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -259,7 +274,6 @@ class EventController extends Controller
                 $em->merge($calendrier);
             }
 
-
             $this->postSocial($agenda, $form);
             $em->flush();
 
@@ -278,7 +292,7 @@ class EventController extends Controller
             return $this->redirect($this->generateUrl('tbn_agenda_list'));
         }
 
-        return $this->render('TBNUserBundle:Espace:new.html.twig', [
+        return $this->render('EspacePerso/new.html.twig', [
             "form" => $form->createView(),
             "agenda" => $agenda
         ]);

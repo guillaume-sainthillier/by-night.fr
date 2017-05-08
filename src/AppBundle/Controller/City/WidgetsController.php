@@ -23,7 +23,7 @@ class WidgetsController extends Controller
      */
     public function twitterAction(Site $site, $max_id = null)
     {
-        $results = $this->get('tbn.social.twitter')->getTimeline($max_id, self::TWEET_LIMIT);
+        $results = $this->get('tbn.social.twitter')->getTimeline($site, $max_id, self::TWEET_LIMIT);
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
@@ -31,6 +31,7 @@ class WidgetsController extends Controller
 
             if (isset($infos['?max_id'])) {
                 $nextLink = $this->generateUrl('tbn_agenda_tweeter_feed', [
+                    'city' => $site->getSubdomain(),
                     'max_id' => $infos['?max_id']
                 ]);
             }

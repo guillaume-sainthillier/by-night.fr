@@ -20,7 +20,7 @@
                 <li>
                     <a title="Créez votre événement en 1 clic !" href="{{ path('tbn_agenda_new') }}">Créer un événement</a>
                 </li>
-                {% if false and is_granted("IS_AUTHENTICATED_REMEMBERED") -%}
+                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") -%}
                     <li>
                         <a title="Voir mes soirées" href="{{ path('tbn_agenda_list') }}">Mes événements</a>
                     </li>

@@ -33,7 +33,6 @@ class AgendaType extends AbstractType
     {
         $siteInfo = $options['site_info'];
         $user = $options['user'];
-        $configs = $options['config'];
 
         $builder
             ->add('nom', TextType::class, [
@@ -80,15 +79,17 @@ class AgendaType extends AbstractType
                 ]
             ]);
 
-        foreach ($configs as $service => $config) {
+        $services = [
+            "facebook" => ["nom" => "Facebook"],
+            "twitter" => ["nom" => "Twitter"],
+        ];
+
+        foreach ($services as $service => $config) {
             $nomService = $config["nom"];
             $accessService = ucfirst($service);
-            if ($nomService === '') {
-                $nomService = $accessService;
-            }
 
             $getter = "get" . $accessService . "AccessToken";
-            $is_api_ready = ($config["enabled"] && $siteInfo && $siteInfo->$getter());
+            $is_api_ready = $siteInfo && $siteInfo->$getter();
 
             if (!$is_api_ready) {
                 $message = "L'accès à " . $nomService . " est momentanément désactivé";

@@ -27,12 +27,13 @@ class CommentController extends Controller
     }
 
     /**
+     * @Route("/{id}/{page}", name="tbn_comment_list", requirements={"id": "\d+", "page": "\d+"})
      * @param Agenda $soiree
      * @param $page
      * @return \Symfony\Component\HttpFoundation\Response
      * @Cache(expires="tomorrow")
      */
-    public function listAction(Agenda $soiree, $page)
+    public function listAction(Agenda $soiree, $page = 1)
     {
         $offset = 10;
         $comment = new Comment();
@@ -58,8 +59,6 @@ class CommentController extends Controller
     }
 
     /**
-     * @InvalidateRoute("tbn_comment_list", params={"id" = {"expression"="soiree.getId()"}})
-     * @InvalidateRoute("tbn_agenda_details", params={"slug" = {"expression"="soiree.getSlug()"}, "id" = {"expression"="soiree.getId()"}})
      * @Route("/{id}/nouveau", name="tbn_comment_new", requirements={"id": "\d+"})
      * @param Request $request
      * @param Agenda $soiree
@@ -71,11 +70,10 @@ class CommentController extends Controller
         $form = $this->getCreateForm($comment, $soiree);
 
         $user = $this->getUser();
-
         if (!$user) {
             return new JsonResponse([
                 "success" => false,
-                "post" => $this->container->get("templating")->render("Comment/error.html.twig")
+                "post" => $this->renderView("Comment/error.html.twig")
             ]);
         }
 
@@ -90,13 +88,13 @@ class CommentController extends Controller
 
             return new JsonResponse([
                 "success" => true,
-                "comment" => $this->container->get("templating")->render("Comment/details.html.twig", [
+                "comment" => $this->renderView("Comment/details.html.twig", [
                     "comment" => $comment,
                     "success_confirmation" => true,
                     "nb_reponses" => 0
 
                 ]),
-                "header" => $this->container->get("templating")->render("Comment/header.html.twig", [
+                "header" => $this->renderView("Comment/header.html.twig", [
                     "nb_comments" => $this->getNbComments($soiree)
                 ])
             ]);
@@ -104,7 +102,7 @@ class CommentController extends Controller
 
         return new JsonResponse([
             "success" => false,
-            "post" => $this->container->get("templating")->render("Comment/post.html.twig", [
+            "post" => $this->renderView("Comment/post.html.twig", [
                 "form" => $form->createView()
             ])
         ]);

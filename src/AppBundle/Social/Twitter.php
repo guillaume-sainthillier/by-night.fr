@@ -4,6 +4,7 @@
 namespace AppBundle\Social;
 
 use AppBundle\Entity\Agenda;
+use AppBundle\Entity\Site;
 use AppBundle\Entity\User;
 use TwitterOAuth\Auth\SingleUserAuth;
 /**
@@ -52,26 +53,22 @@ class Twitter extends Social
         return 0;
     }
 
-    public function getTimeline($max_id, $limit)
+    public function getTimeline(Site $site, $max_id, $limit)
     {
         $this->init();
         try {
-            $site = $this->siteManager->getCurrentSite();
+            $params = [
+                'q' => sprintf('#%s filter:safe', $site->getNom()),
+                'lang' => 'fr',
+                'result_type' => 'recent',
+                'count' => $limit
+            ];
 
-            if ($site !== null) {
-                $params = [
-                    'q' => sprintf('#%s filter:safe', $site->getNom()),
-                    'lang' => 'fr',
-                    'result_type' => 'recent',
-                    'count' => $limit
-                ];
-
-                if ($max_id) {
-                    $params['max_id'] = $max_id;
-                }
-
-                return $this->client->get('search/tweets', $params);
+            if ($max_id) {
+                $params['max_id'] = $max_id;
             }
+
+            return $this->client->get('search/tweets', $params);
         } catch (\Exception $e) {
             $this->logger->error($e);
         }

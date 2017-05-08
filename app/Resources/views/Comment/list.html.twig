@@ -10,8 +10,8 @@
                     <div class="infos">
                         <a href="{{ path('tbn_user_details', {'id': comment.user.id, 'slug': comment.user.slug}) }}">{{ comment.user.username }}</a>
                         <span title="{{ comment.dateCreation|localizeddate('medium','medium')|capitalize }}">
-                <i class="fa fa-clock-o"></i> {{ comment.dateCreation|diff_date }}
-            </span>
+                            <i class="fa fa-clock-o"></i> {{ comment.dateCreation|diff_date }}
+                        </span>
                     </div>
                     <p>
                         {{ comment.commentaire|striptags('<i><b>')|nl2br|parse_tags|raw }}
