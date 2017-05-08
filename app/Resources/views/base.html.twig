@@ -140,9 +140,9 @@
                 {% endfor %}
                 {% endif %}
                 {%- block helper -%}{%- endblock -%}
-                {% block ad %}{% if no_ads is not defined %}{% include '::ad.html.twig' %}{% endif %}{% endblock %}
+                {% block ad %}{% if no_ads is not defined %}{% include 'ad.html.twig' %}{% endif %}{% endblock %}
                 {%- block body -%}{%- endblock -%}
-                {% block ad2 %}{% if no_ads is not defined %}{% include '::ad2.html.twig' %}{% endif %}{% endblock %}
+                {% block ad2 %}{% if no_ads is not defined %}{% include 'ad2.html.twig' %}{% endif %}{% endblock %}
             {% block end_container -%}
             </div>
             {%- endblock -%}
@@ -151,7 +151,7 @@
             
         <!-- Modals -->
         <div class="modal fade" id="dialog_details" tabindex="-1" role="dialog" aria-labelledby="dialog_titre" aria-hidden="true">
-            {% include "::modals.html.twig" %}                        
+            {% include "modals.html.twig" %}
         </div>
         <!-- ./Modals -->
         

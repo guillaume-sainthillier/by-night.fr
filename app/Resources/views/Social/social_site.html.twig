@@ -1,9 +1,0 @@
-{% extends "TBNSocialBundle:Social:social.html.twig" %}
-
-{% block url_connect %}
-    {{ tbn_oauth_authorization_site_url(service) }}
-{% endblock %}
-
-{% block url_disconnect %}
-    {{ path('tbn_administration_site_service_confirm', {'service' : service}) }}
-{% endblock %}
