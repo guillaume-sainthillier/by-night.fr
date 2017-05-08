@@ -6,6 +6,7 @@ use AppBundle\Entity\Site;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Configuration\BrowserCache;
 
 /**
  * Description of MenuDroitController
@@ -38,6 +39,7 @@ class WidgetsController extends Controller
 
     /**
      * @Route("/top/membres/{page}", name="tbn_agenda_top_membres", requirements={"page": "\d+"})
+     * @BrowserCache(false)
      */
     public function topMembresAction($page = 1)
     {
@@ -67,10 +69,6 @@ class WidgetsController extends Controller
         ]);
 
         list($future, $seconds) = $this->getSecondsUntil(6);
-
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1'
-        ]);
 
         return $response
             ->setExpires($future)

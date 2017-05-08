@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use FOS\HttpCacheBundle\Configuration\InvalidateRoute;
 use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Configuration\BrowserCache;
 use Symfony\Component\HttpFoundation\Response;
 
 use AppBundle\Controller\TBNController as Controller;
@@ -28,6 +29,7 @@ class CommentController extends Controller
 
     /**
      * @Route("/{id}/{page}", name="tbn_comment_list", requirements={"id": "\d+", "page": "\d+"})
+     * @BrowserCache(false)
      * @param Agenda $soiree
      * @param $page
      * @return \Symfony\Component\HttpFoundation\Response
@@ -46,10 +48,6 @@ class CommentController extends Controller
             "page" => $page,
             "offset" => $offset,
             'form' => $form->createView()
-        ]);
-
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1'
         ]);
 
         $tomorrow = $this->getSecondsUntilTomorrow();

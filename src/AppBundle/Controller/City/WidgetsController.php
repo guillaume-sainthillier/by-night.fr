@@ -6,6 +6,7 @@ use AppBundle\Entity\Site;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
+use AppBundle\Configuration\BrowserCache;
 
 /**
  * Description of MenuDroitController
@@ -20,6 +21,7 @@ class WidgetsController extends Controller
 
     /**
      * @Route("/tweeter-feed/{max_id}", name="tbn_agenda_tweeter_feed", requirements={"max_id": "\d+"})
+     * @BrowserCache(false)
      */
     public function twitterAction(Site $site, $max_id = null)
     {
@@ -58,10 +60,6 @@ class WidgetsController extends Controller
             $ttl = 31536000;
         }
 
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1'
-        ]);
-
         return $response
             ->setSharedMaxAge($ttl)
             ->setExpires($expire);
@@ -69,6 +67,7 @@ class WidgetsController extends Controller
 
     /**
      * @Route("/soiree/{slug}--{id}.html/prochaines-soirees/{page}", name="tbn_agenda_prochaines_soirees", requirements={"slug": ".+", "id": "\d+", "page": "\d+"})
+     * @BrowserCache(false)
      */
     public function nextEventsAction(Site $site, $slug, $id = null, $page = 1)
     {
@@ -120,10 +119,6 @@ class WidgetsController extends Controller
             "hasNextLink" => $hasNextLink
         ]);
 
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1'
-        ]);
-
         return $response
             ->setExpires(new \DateTime('+1 year'))
             ->setSharedMaxAge(31536000)
@@ -131,7 +126,8 @@ class WidgetsController extends Controller
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}.html/autres-soirees/{page}", name="tbn_agenda_soirees_similaires", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))
+     * @Route("/soiree/{slug}--{id}.html/autres-soirees/{page}", name="tbn_agenda_soirees_similaires", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))3
+     * @BrowserCache(false)
      */
     public function soireesSimilairesAction(Site $site, $slug, $id = null, $page = 1)
     {
@@ -170,10 +166,6 @@ class WidgetsController extends Controller
             "hasNextLink" => $hasNextLink
         ]);
 
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1'
-        ]);
-
         return $response
             ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
@@ -182,6 +174,7 @@ class WidgetsController extends Controller
 
     /**
      * @Route("/top/soirees/{page}", name="tbn_agenda_top_soirees", requirements={"page": "\d+"})
+     * @BrowserCache(false)
      */
     public function topSoireesAction(Site $site, $page = 1)
     {
@@ -212,10 +205,6 @@ class WidgetsController extends Controller
             "count" => $count
         ]);
 
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1'
-        ]);
-
         return $response
             ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
@@ -224,6 +213,7 @@ class WidgetsController extends Controller
 
     /**
      * @Route("/soiree/{slug}--{id}.html/membres/{page}", name="tbn_agenda_soirees_membres", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))
+     * @BrowserCache(false)
      */
     public function fbMembresAction(Site $site, $slug, $id = null, $page = 1)
     {
@@ -287,10 +277,6 @@ class WidgetsController extends Controller
         }
 
         $this->get('fos_http_cache.handler.tag_handler')->addTags(['fb-membres']);
-
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1'
-        ]);
 
         return $response->setPublic();
     }
