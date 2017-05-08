@@ -108,7 +108,7 @@ class SearchController extends Controller
 
 
                 if ($request->isXmlHttpRequest()) {
-                    return $this->render('TBNMainBundle:Search:content_events.html.twig', [
+                    return $this->render('Search/content_events.html.twig', [
                         'type' => $type,
                         'term' => $q,
                         'maxItems' => $maxItems,

@@ -107,7 +107,7 @@ class NewsManager
                 ->setNumeroEdition($nextEdition);
         }
 
-        $content = $this->twig->render("@TBNAgenda/News/news.html.twig", [
+        $content = $this->twig->render("News/news.html.twig", [
             'datas' => $datas,
             'topParticipants' => array_slice($participants, 0, 5),
             'participants' => $totalPartcipants,
