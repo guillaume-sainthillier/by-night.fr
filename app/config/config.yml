@@ -341,16 +341,6 @@ liip_imagine:
             filters:
                 thumbnail: { size: [115, 115], mode: outbound }
 
-#tbn_user:
-#    socials:
-#        facebook:
-#            enabled: true
-#            nom: Facebook
-#        twitter:
-#            enabled: true
-#            nom: Twitter
-
-
 fos_elastica:
     clients:
         default:

@@ -12,7 +12,7 @@ use AppBundle\Geolocalize\BoundaryInterface;
  *
  * @ORM\Table(name="Site",
  *      indexes={@ORM\Index(name="recherche_site_idx", columns={"subdomain"})})
- * @ORM\Entity(repositoryClass="AppBundle\Entity\SiteRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\SiteRepository")
  * @ExclusionPolicy("all")
  */
 class Site implements BoundaryInterface

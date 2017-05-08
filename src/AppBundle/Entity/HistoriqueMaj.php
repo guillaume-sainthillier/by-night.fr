@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * HistoriqueMaj
  *
  * @ORM\Table(name="HistoriqueMaj")
- * @ORM\Entity(repositoryClass="AppBundle\Entity\HistoriqueMajRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\HistoriqueMajRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class HistoriqueMaj

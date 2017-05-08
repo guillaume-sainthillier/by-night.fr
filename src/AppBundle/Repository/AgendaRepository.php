@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Place;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -15,6 +16,14 @@ use Doctrine\ORM\QueryBuilder;
 
 class AgendaRepository extends EntityRepository
 {
+
+    public function findSiteMap() {
+        return $this->createQueryBuilder("a")
+            ->select("a.slug, a.id, s.subdomain")
+            ->leftJoin("AppBundle:Site", "s", "WITH", "s = a.site")
+            ->getQuery()
+            ->getArrayResult();
+    }
 
     public function updateOlds(\DateTime $since)
     {
@@ -569,6 +578,10 @@ class AgendaRepository extends EntityRepository
             ->execute();
     }
 
+    /**
+     * @param Site $site
+     * @return Place[]
+     */
     public function getAgendaPlaces(Site $site)
     {
         return $this->_em
@@ -586,6 +599,10 @@ class AgendaRepository extends EntityRepository
             ->execute();
     }
 
+    /**
+     * @param Site $site
+     * @return Place[]
+     */
     public function getAgendaVilles(Site $site)
     {
         return $this->_em
@@ -603,6 +620,10 @@ class AgendaRepository extends EntityRepository
             ->execute();
     }
 
+    /**
+     * @param Site $site
+     * @return Agenda[]
+     */
     public function getTypesEvenements(Site $site)
     {
         return $this
