@@ -42,11 +42,6 @@ class EventProfilePicture
         $this->router = $router;
     }
 
-    private function getAppUrl()
-    {
-        return rtrim($this->router->generate('tbn_agenda_index', [], Router::ABSOLUTE_URL), '/');
-    }
-
     public function getOriginalPictureUrl(Agenda $agenda)
     {
         if ($agenda->getPath()) {

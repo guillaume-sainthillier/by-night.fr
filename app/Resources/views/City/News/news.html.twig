@@ -19,11 +19,11 @@
                 {% set dateDebut = event.dateDebut|date('d/m/Y') %}
                 {% set dateFin = event.dateFin|date('d/m/Y') %}
                 <h3>#{{ i + 1 }} : <a title="{{ event.nom }} à {{ event.site.nom }}"
-                                      href="{{ url('tbn_agenda_details', {'id': event.id, 'slug': event.slug, 'subdomain': event.site.subdomain}) }}">{{ event.nom }}</a>
+                                      href="{{ url('tbn_agenda_details', {'id': event.id, 'slug': event.slug, 'city': event.site.subdomain}) }}">{{ event.nom }}</a>
                 </h3>
                 <meta itemprop="image" content="{{ original }}"/>
                 <a title="{{ event.nom }} à {{ event.site.nom }}"
-                   href="{{ url('tbn_agenda_details', {'id': event.id, 'slug': event.slug, 'subdomain': event.site.subdomain}) }}">
+                   href="{{ url('tbn_agenda_details', {'id': event.id, 'slug': event.slug, 'city': event.site.subdomain}) }}">
                     <img class="event-image" src="{{ thumb }}" alt="{{ event.nom }} à {{ event.site.nom }}"/>
                 </a>
 
@@ -58,7 +58,7 @@
                             <div class="trait" itemprop="location" itemscope itemtype="http://schema.org/Place">
                                 Lieu :
                                 <a itemprop="name"
-                                   href="{{ path('tbn_agenda_place', {'slug': place.slug, 'subdomain': place.site.subdomain }) }}"
+                                   href="{{ path('tbn_agenda_place', {'slug': place.slug, 'city': place.site.subdomain }) }}"
                                    title="Sortir à {{ place.nom }}"><strong>{{ place.nom }}</strong></a>
                                 {% if place.latitude and place.longitude %}
                                     <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
@@ -84,7 +84,7 @@
                         <li> Thèmes :
                             {% for tag in distinctTags %}
                                 <a class="label label-info" title="{{ tag }} à {{ event.site.nom }}"
-                                   href="{{ path('tbn_agenda_tags', {'tag' : tag|trim, 'subdomain': event.site.subdomain}) }}">
+                                   href="{{ path('tbn_agenda_tags', {'tag' : tag|trim, 'city': event.site.subdomain}) }}">
                                     <strong>{{ tag }}</strong>
                                 </a>
                             {% endfor %}

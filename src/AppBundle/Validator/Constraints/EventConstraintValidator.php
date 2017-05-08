@@ -8,6 +8,7 @@
 
 namespace AppBundle\Validator\Constraints;
 
+use AppBundle\Entity\Agenda;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -35,6 +36,9 @@ class EventConstraintValidator extends ConstraintValidator
 
     public function validate($event, Constraint $constraint)
     {
+        /**
+         * @var Agenda $event
+         */
         /**
          * @var Reject $reject
          */
@@ -102,7 +106,11 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         if ($reject->isBadUser()) {
-            $link = $this->router->generate("tbn_agenda_details", ['slug' => $event->getSlug(), "id" => $event->getId()]);
+            $link = $this->router->generate("tbn_agenda_details", [
+                'slug' => $event->getSlug(),
+                "id" => $event->getId(),
+                "city" => $event->getSite()->getSubdomain()
+            ]);
             $message = str_replace([
                 "[link]",
                 "[/link]"

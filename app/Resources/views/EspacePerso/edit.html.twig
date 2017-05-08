@@ -1,18 +1,18 @@
-{% extends "TBNUserBundle:Espace:new.html.twig" %}
+{% extends "EspacePerso/new.html.twig" %}
 
-{% block title_espace %}
+{% block title -%}
     {{ agenda.nom }}
-{% endblock %}
+{%- endblock %}
 
-{% block titre_espace %}
+{% block titre -%}
     {{ agenda.nom }}
-{% endblock %}
+{%- endblock %}
 
-{% block breadcrumb_espace %}
+{% block breadcrumb_content -%}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
     {% set item = menu.addItem("Mes événements", path('tbn_agenda_list')) %}
     {% set item = menu.addItem(agenda.nom, path('tbn_agenda_edit', {'slug' : agenda.slug})) %}
-{% endblock %}
+{%- endblock %}
 
 {% block body_form %}
     {{ parent() }}

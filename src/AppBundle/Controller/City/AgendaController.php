@@ -124,7 +124,7 @@ class AgendaController extends Controller
         if ($slug !== null) {
             $place = $em->getRepository('AppBundle:Place')->findOneBy(['slug' => $slug]);
             if (!$place) {
-                return new RedirectResponse($this->generateUrl('tbn_agenda_agenda'));
+                return new RedirectResponse($this->generateUrl('tbn_agenda_agenda', ['city' => $site->getSubdomain()]));
             }
         }
         $formAction = $this->handleSearch($search, $site, $type, $tag, $ville, $place);

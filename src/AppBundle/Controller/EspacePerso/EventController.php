@@ -77,6 +77,11 @@ class EventController extends Controller
         ]);
     }
 
+    /**
+     * @Route("/supprimer/{id}", name="tbn_agenda_delete", requirements={"id": "\d+"})
+     * @param Agenda $agenda
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function deleteAction(Agenda $agenda)
     {
         $this->checkIfOwner($agenda);
@@ -129,7 +134,7 @@ class EventController extends Controller
             }
         }
 
-        return $this->render('TBNUserBundle:Espace:edit.html.twig', [
+        return $this->render('EspacePerso/edit.html.twig', [
             "form" => $form->createView(),
             "agenda" => $agenda,
             "form_delete" => $formDelete->createView()

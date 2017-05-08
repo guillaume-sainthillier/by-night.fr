@@ -231,7 +231,7 @@ class WidgetsController extends Controller
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page, 'city' => $site]);
+        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page, 'city' => $site->getSubdomain()]);
         if ($result instanceof Response) {
             return $result;
         }

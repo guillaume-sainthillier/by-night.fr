@@ -17,6 +17,7 @@
 {% block meta_keywords %}{{ username }},{% endblock %}
 
 {% block breadcrumb_content %}
+    {% set item = menu.addItem("Membres", path('tbn_search_query', {'type' : 'membres'})) %}
     {% set item = menu.addItem(username, path('tbn_user_details', {'id' : user.id, 'slug': user.slug })) %}
 {% endblock %}
 
