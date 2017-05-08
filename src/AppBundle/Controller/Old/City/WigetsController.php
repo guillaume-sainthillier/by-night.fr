@@ -13,4 +13,14 @@ class WigetsController extends Controller
     public function programmeTVAction() {
         return $this->redirectToRoute("tbn_agenda_programme_tv");
     }
+
+    /**
+     * @Route("/{city}/top/membres/{page}", name="tbn_agenda_top_membres_old", requirements={"city": ".+", "page": "\d+"})
+     */
+    public function topMembresAction($page = 1)
+    {
+        $page = max(1, $page);
+
+        return $this->redirectToRoute("tbn_agenda_top_membres", ["page" => $page]);
+    }
 }
