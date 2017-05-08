@@ -2,6 +2,7 @@
 
 namespace TBN\AgendaBundle\Controller;
 
+use AppBundle\Entity\Site;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use TBN\AgendaBundle\Controller\TBNController as Controller;
@@ -77,13 +78,13 @@ class MenuDroitController extends Controller
             ->setExpires($expire);
     }
 
-    public function nextEventsAction($slug, $id = null, $page = 1)
+    public function nextEventsAction(Site $site, $slug, $id = null, $page = 1)
     {
         if ($page <= 0) {
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_prochaines_soirees', ['page' => $page]);
+        $result = $this->checkEventUrl($site, $slug, $id, 'tbn_agenda_prochaines_soirees', ['page' => $page]);
         if ($result instanceof Response) {
             return $result;
         }

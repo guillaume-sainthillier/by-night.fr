@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Site;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -23,7 +24,7 @@ class TBNController extends Controller
      * @param array $extraParams
      * @return null|object|RedirectResponse|\AppBundle\Entity\Agenda
      */
-    protected function checkEventUrl($slug, $id, $routeName = 'tbn_agenda_details', array $extraParams = [])
+    protected function checkEventUrl(Site $site, $slug, $id, $routeName = 'tbn_agenda_details', array $extraParams = [])
     {
         $em = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository('AppBundle:Agenda');
@@ -40,7 +41,11 @@ class TBNController extends Controller
 
         $requestStack = $this->get('request_stack');
         if ($requestStack->getParentRequest() === null && (!$id || $event->getSlug() !== $slug)) {
-            $routeParams = array_merge(['id' => $event->getId(), 'slug' => $event->getSlug()], $extraParams);
+            $routeParams = array_merge([
+                'id' => $event->getId(),
+                'slug' => $event->getSlug(),
+                'city' => $site->getSubdomain()
+            ], $extraParams);
             return new RedirectResponse($this->generateUrl($routeName, $routeParams));
         }
 

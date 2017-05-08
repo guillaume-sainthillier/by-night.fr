@@ -76,7 +76,7 @@ class WidgetsController extends Controller
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_prochaines_soirees', [
+        $result = $this->checkEventUrl($site, $slug, $id, 'tbn_agenda_prochaines_soirees', [
             'page' => $page,
             'city' => $site->getSubdomain()
         ]);
@@ -139,7 +139,7 @@ class WidgetsController extends Controller
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page, 'city' => $site->getSubdomain()]);
+        $result = $this->checkEventUrl($site, $slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page, 'city' => $site->getSubdomain()]);
         if ($result instanceof Response) {
             return $result;
         }
@@ -231,7 +231,7 @@ class WidgetsController extends Controller
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page, 'city' => $site->getSubdomain()]);
+        $result = $this->checkEventUrl($site, $slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page, 'city' => $site->getSubdomain()]);
         if ($result instanceof Response) {
             return $result;
         }
