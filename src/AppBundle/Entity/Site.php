@@ -278,4 +278,28 @@ class Site implements BoundaryInterface
     {
         return sprintf("#%s (%s)", $this->id ?: '?', $this->getNom());
     }
+
+    /**
+     * Set twitterIdWidget
+     *
+     * @param string $twitterIdWidget
+     *
+     * @return Site
+     */
+    public function setTwitterIdWidget($twitterIdWidget)
+    {
+        $this->twitterIdWidget = $twitterIdWidget;
+
+        return $this;
+    }
+
+    /**
+     * Get isActif
+     *
+     * @return boolean
+     */
+    public function getIsActif()
+    {
+        return $this->isActif;
+    }
 }

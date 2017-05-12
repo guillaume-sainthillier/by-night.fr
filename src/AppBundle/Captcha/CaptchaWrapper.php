@@ -13,7 +13,6 @@ use ReCaptcha\ReCaptcha;
  */
 class CaptchaWrapper
 {
-
     private $requestStack;
     private $secret;
 

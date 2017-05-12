@@ -115,6 +115,20 @@ class Place implements GeolocalizeInterface
     protected $facebookId;
 
     /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City", cascade={"persist", "merge"})
+     * @ORM\JoinColumn(nullable=true)
+     * @Expose
+     */
+    protected $city;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ZipCity", cascade={"persist", "merge"})
+     * @ORM\JoinColumn(nullable=true)
+     * @Expose
+     */
+    protected $zipCity;
+
+    /**
      * @var Reject
      */
     protected $reject;
@@ -408,5 +422,53 @@ class Place implements GeolocalizeInterface
     public function __toString()
     {
         return sprintf("#%s (%s)", $this->id ?: '?', $this->getNom());
+    }
+
+    /**
+     * Set city
+     *
+     * @param \AppBundle\Entity\City $city
+     *
+     * @return Place
+     */
+    public function setCity(\AppBundle\Entity\City $city = null)
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * Get city
+     *
+     * @return \AppBundle\Entity\City
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * Set zipCity
+     *
+     * @param \AppBundle\Entity\ZipCity $zipCity
+     *
+     * @return Place
+     */
+    public function setZipCity(\AppBundle\Entity\ZipCity $zipCity = null)
+    {
+        $this->zipCity = $zipCity;
+
+        return $this;
+    }
+
+    /**
+     * Get zipCity
+     *
+     * @return \AppBundle\Entity\ZipCity
+     */
+    public function getZipCity()
+    {
+        return $this->zipCity;
     }
 }

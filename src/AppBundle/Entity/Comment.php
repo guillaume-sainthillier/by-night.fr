@@ -323,4 +323,28 @@ class Comment
     {
         return sprintf("#%s", $this->id ?: '?');
     }
+
+    /**
+     * Set isApprouve
+     *
+     * @param boolean $isApprouve
+     *
+     * @return Comment
+     */
+    public function setIsApprouve($isApprouve)
+    {
+        $this->isApprouve = $isApprouve;
+
+        return $this;
+    }
+
+    /**
+     * Get isApprouve
+     *
+     * @return boolean
+     */
+    public function getIsApprouve()
+    {
+        return $this->isApprouve;
+    }
 }

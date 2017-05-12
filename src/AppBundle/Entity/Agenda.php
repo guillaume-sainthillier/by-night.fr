@@ -126,28 +126,6 @@ class Agenda implements GeolocalizeInterface
     protected $modificationDerniereMinute;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="ville", type="string", length=255, nullable=true)
-     *
-     */
-    protected $ville;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="rue", type="string", length=255, nullable=true)
-     */
-    protected $rue;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="code_postal", type="string", length=15, nullable=true)
-     */
-    protected $codePostal;
-
-    /**
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", nullable=true)
@@ -162,21 +140,6 @@ class Agenda implements GeolocalizeInterface
      * @Expose
      */
     protected $longitude;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="commune", type="string", length=255, nullable=true)
-     */
-    protected $commune;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="lieu_nom", type="string", length=255, nullable=true)
-     *
-     */
-    protected $lieuNom;
 
     /**
      * @var string
@@ -213,13 +176,6 @@ class Agenda implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="station_metro_tram", type="string", length=255, nullable=true)
-     */
-    protected $stationMetroTram;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="reservation_telephone", type="string", length=255, nullable=true)
      */
     protected $reservationTelephone;
@@ -246,13 +202,6 @@ class Agenda implements GeolocalizeInterface
      * @ORM\Column(name="tarif", type="string", length=255, nullable=true)
      */
     protected $tarif;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tranche_age", type="string", length=128, nullable=true)
-     */
-    protected $trancheAge;
 
     /**
      * @var string
@@ -431,6 +380,7 @@ class Agenda implements GeolocalizeInterface
      */
     protected $place;
 
+
     /**
      * @var Reject
      */
@@ -563,267 +513,9 @@ class Agenda implements GeolocalizeInterface
         return array_unique(array_map('trim', array_map('ucfirst', array_filter(explode(',', $tags)))));
     }
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
+    public function __toString()
     {
-        return $this->id;
-    }
-
-    /**
-     * Set slug
-     *
-     * @param string $slug
-     * @return Agenda
-     */
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    /**
-     * Get slug
-     *
-     * @return string
-     */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
-
-    /**
-     * Set nom
-     *
-     * @param string $nom
-     * @return Agenda
-     */
-    public function setNom($nom)
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    /**
-     * Get nom
-     *
-     * @return string
-     */
-    public function getNom()
-    {
-        return $this->nom;
-    }
-
-    /**
-     * Set descriptif
-     *
-     * @param string $descriptif
-     * @return Agenda
-     */
-    public function setDescriptif($descriptif)
-    {
-        $this->descriptif = $descriptif;
-
-        return $this;
-    }
-
-    /**
-     * Get descriptif
-     *
-     * @return string
-     */
-    public function getDescriptif()
-    {
-        return $this->descriptif;
-    }
-
-    /**
-     * Set dateModification
-     *
-     * @param \DateTime $dateModification
-     * @return Agenda
-     */
-    public function setDateModification($dateModification)
-    {
-        $this->dateModification = $dateModification;
-
-        return $this;
-    }
-
-    /**
-     * Get dateModification
-     *
-     * @return \DateTime
-     */
-    public function getDateModification()
-    {
-        return $this->dateModification;
-    }
-
-    /**
-     * Set dateDebut
-     *
-     * @param \DateTime $dateDebut
-     * @return Agenda
-     */
-    public function setDateDebut($dateDebut)
-    {
-        $this->dateDebut = $dateDebut;
-
-        return $this;
-    }
-
-    /**
-     * Get dateDebut
-     *
-     * @return \DateTime
-     */
-    public function getDateDebut()
-    {
-        return $this->dateDebut;
-    }
-
-    /**
-     * Set dateFin
-     *
-     * @param \DateTime $dateFin
-     * @return Agenda
-     */
-    public function setDateFin($dateFin)
-    {
-        $this->dateFin = $dateFin;
-
-        return $this;
-    }
-
-    /**
-     * Get dateFin
-     *
-     * @return \DateTime
-     */
-    public function getDateFin()
-    {
-        return $this->dateFin;
-    }
-
-    /**
-     * Set horaires
-     *
-     * @param string $horaires
-     * @return Agenda
-     */
-    public function setHoraires($horaires)
-    {
-        $this->horaires = $horaires;
-
-        return $this;
-    }
-
-    /**
-     * Get horaires
-     *
-     * @return string
-     */
-    public function getHoraires()
-    {
-        return $this->horaires;
-    }
-
-    /**
-     * Set modificationDerniereMinute
-     *
-     * @param string $modificationDerniereMinute
-     * @return Agenda
-     */
-    public function setModificationDerniereMinute($modificationDerniereMinute)
-    {
-        $this->modificationDerniereMinute = $modificationDerniereMinute;
-
-        return $this;
-    }
-
-    /**
-     * Get modificationDerniereMinute
-     *
-     * @return string
-     */
-    public function getModificationDerniereMinute()
-    {
-        return $this->modificationDerniereMinute;
-    }
-
-    /**
-     * Set ville
-     *
-     * @param string $ville
-     * @return Agenda
-     */
-    public function setVille($ville)
-    {
-        $this->ville = $ville;
-
-        return $this;
-    }
-
-    /**
-     * Get ville
-     *
-     * @return string
-     */
-    public function getVille()
-    {
-        return $this->ville;
-    }
-
-    /**
-     * Set rue
-     *
-     * @param string $rue
-     * @return Agenda
-     */
-    public function setRue($rue)
-    {
-        $this->rue = $rue;
-
-        return $this;
-    }
-
-    /**
-     * Get rue
-     *
-     * @return string
-     */
-    public function getRue()
-    {
-        return $this->rue;
-    }
-
-    /**
-     * Set codePostal
-     *
-     * @param string $codePostal
-     * @return Agenda
-     */
-    public function setCodePostal($codePostal)
-    {
-        $this->codePostal = $codePostal;
-
-        return $this;
-    }
-
-    /**
-     * Get codePostal
-     *
-     * @return string
-     */
-    public function getCodePostal()
-    {
-        return $this->codePostal;
+        return "#" . $this->id ?: '?';
     }
 
     /**
@@ -873,55 +565,260 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set commune
+     * Get id
      *
-     * @param string $commune
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     *
      * @return Agenda
      */
-    public function setCommune($commune)
+    public function setSlug($slug)
     {
-        $this->commune = $commune;
+        $this->slug = $slug;
 
         return $this;
     }
 
     /**
-     * Get commune
+     * Get slug
      *
      * @return string
      */
-    public function getCommune()
+    public function getSlug()
     {
-        return $this->commune;
+        return $this->slug;
     }
 
     /**
-     * Set lieuNom
+     * Set nom
      *
-     * @param string $lieuNom
+     * @param string $nom
+     *
      * @return Agenda
      */
-    public function setLieuNom($lieuNom)
+    public function setNom($nom)
     {
-        $this->lieuNom = $lieuNom;
+        $this->nom = $nom;
 
         return $this;
     }
 
     /**
-     * Get lieuNom
+     * Get nom
      *
      * @return string
      */
-    public function getLieuNom()
+    public function getNom()
     {
-        return $this->lieuNom;
+        return $this->nom;
+    }
+
+    /**
+     * Set descriptif
+     *
+     * @param string $descriptif
+     *
+     * @return Agenda
+     */
+    public function setDescriptif($descriptif)
+    {
+        $this->descriptif = $descriptif;
+
+        return $this;
+    }
+
+    /**
+     * Get descriptif
+     *
+     * @return string
+     */
+    public function getDescriptif()
+    {
+        return $this->descriptif;
+    }
+
+    /**
+     * Set dateModification
+     *
+     * @param \DateTime $dateModification
+     *
+     * @return Agenda
+     */
+    public function setDateModification($dateModification)
+    {
+        $this->dateModification = $dateModification;
+
+        return $this;
+    }
+
+    /**
+     * Get dateModification
+     *
+     * @return \DateTime
+     */
+    public function getDateModification()
+    {
+        return $this->dateModification;
+    }
+
+    /**
+     * Set fbDateModification
+     *
+     * @param \DateTime $fbDateModification
+     *
+     * @return Agenda
+     */
+    public function setFbDateModification($fbDateModification)
+    {
+        $this->fbDateModification = $fbDateModification;
+
+        return $this;
+    }
+
+    /**
+     * Get fbDateModification
+     *
+     * @return \DateTime
+     */
+    public function getFbDateModification()
+    {
+        return $this->fbDateModification;
+    }
+
+    /**
+     * Set dateDebut
+     *
+     * @param \DateTime $dateDebut
+     *
+     * @return Agenda
+     */
+    public function setDateDebut($dateDebut)
+    {
+        $this->dateDebut = $dateDebut;
+
+        return $this;
+    }
+
+    /**
+     * Get dateDebut
+     *
+     * @return \DateTime
+     */
+    public function getDateDebut()
+    {
+        return $this->dateDebut;
+    }
+
+    /**
+     * Set dateFin
+     *
+     * @param \DateTime $dateFin
+     *
+     * @return Agenda
+     */
+    public function setDateFin($dateFin)
+    {
+        $this->dateFin = $dateFin;
+
+        return $this;
+    }
+
+    /**
+     * Get dateFin
+     *
+     * @return \DateTime
+     */
+    public function getDateFin()
+    {
+        return $this->dateFin;
+    }
+
+    /**
+     * Set horaires
+     *
+     * @param string $horaires
+     *
+     * @return Agenda
+     */
+    public function setHoraires($horaires)
+    {
+        $this->horaires = $horaires;
+
+        return $this;
+    }
+
+    /**
+     * Get horaires
+     *
+     * @return string
+     */
+    public function getHoraires()
+    {
+        return $this->horaires;
+    }
+
+    /**
+     * Set modificationDerniereMinute
+     *
+     * @param string $modificationDerniereMinute
+     *
+     * @return Agenda
+     */
+    public function setModificationDerniereMinute($modificationDerniereMinute)
+    {
+        $this->modificationDerniereMinute = $modificationDerniereMinute;
+
+        return $this;
+    }
+
+    /**
+     * Get modificationDerniereMinute
+     *
+     * @return string
+     */
+    public function getModificationDerniereMinute()
+    {
+        return $this->modificationDerniereMinute;
+    }
+
+    /**
+     * Set adresse
+     *
+     * @param string $adresse
+     *
+     * @return Agenda
+     */
+    public function setAdresse($adresse)
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    /**
+     * Get adresse
+     *
+     * @return string
+     */
+    public function getAdresse()
+    {
+        return $this->adresse;
     }
 
     /**
      * Set typeManifestation
      *
      * @param string $typeManifestation
+     *
      * @return Agenda
      */
     public function setTypeManifestation($typeManifestation)
@@ -945,6 +842,7 @@ class Agenda implements GeolocalizeInterface
      * Set categorieManifestation
      *
      * @param string $categorieManifestation
+     *
      * @return Agenda
      */
     public function setCategorieManifestation($categorieManifestation)
@@ -968,6 +866,7 @@ class Agenda implements GeolocalizeInterface
      * Set themeManifestation
      *
      * @param string $themeManifestation
+     *
      * @return Agenda
      */
     public function setThemeManifestation($themeManifestation)
@@ -988,32 +887,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set stationMetroTram
-     *
-     * @param string $stationMetroTram
-     * @return Agenda
-     */
-    public function setStationMetroTram($stationMetroTram)
-    {
-        $this->stationMetroTram = $stationMetroTram;
-
-        return $this;
-    }
-
-    /**
-     * Get stationMetroTram
-     *
-     * @return string
-     */
-    public function getStationMetroTram()
-    {
-        return $this->stationMetroTram;
-    }
-
-    /**
      * Set reservationTelephone
      *
      * @param string $reservationTelephone
+     *
      * @return Agenda
      */
     public function setReservationTelephone($reservationTelephone)
@@ -1037,6 +914,7 @@ class Agenda implements GeolocalizeInterface
      * Set reservationEmail
      *
      * @param string $reservationEmail
+     *
      * @return Agenda
      */
     public function setReservationEmail($reservationEmail)
@@ -1060,6 +938,7 @@ class Agenda implements GeolocalizeInterface
      * Set reservationInternet
      *
      * @param string $reservationInternet
+     *
      * @return Agenda
      */
     public function setReservationInternet($reservationInternet)
@@ -1083,6 +962,7 @@ class Agenda implements GeolocalizeInterface
      * Set tarif
      *
      * @param string $tarif
+     *
      * @return Agenda
      */
     public function setTarif($tarif)
@@ -1103,32 +983,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set trancheAge
-     *
-     * @param string $trancheAge
-     * @return Agenda
-     */
-    public function setTrancheAge($trancheAge)
-    {
-        $this->trancheAge = $trancheAge;
-
-        return $this;
-    }
-
-    /**
-     * Get trancheAge
-     *
-     * @return string
-     */
-    public function getTrancheAge()
-    {
-        return $this->trancheAge;
-    }
-
-    /**
      * Set fromData
      *
      * @param string $fromData
+     *
      * @return Agenda
      */
     public function setFromData($fromData)
@@ -1152,6 +1010,7 @@ class Agenda implements GeolocalizeInterface
      * Set name
      *
      * @param string $name
+     *
      * @return Agenda
      */
     public function setName($name)
@@ -1175,6 +1034,7 @@ class Agenda implements GeolocalizeInterface
      * Set path
      *
      * @param string $path
+     *
      * @return Agenda
      */
     public function setPath($path)
@@ -1194,11 +1054,35 @@ class Agenda implements GeolocalizeInterface
         return $this->path;
     }
 
+    /**
+     * Set systemPath
+     *
+     * @param string $systemPath
+     *
+     * @return Agenda
+     */
+    public function setSystemPath($systemPath)
+    {
+        $this->systemPath = $systemPath;
+
+        return $this;
+    }
+
+    /**
+     * Get systemPath
+     *
+     * @return string
+     */
+    public function getSystemPath()
+    {
+        return $this->systemPath;
+    }
 
     /**
      * Set url
      *
      * @param string $url
+     *
      * @return Agenda
      */
     public function setUrl($url)
@@ -1222,19 +1106,7 @@ class Agenda implements GeolocalizeInterface
      * Set isBrouillon
      *
      * @param boolean $isBrouillon
-     * @return Agenda
-     */
-    public function setBrouillon($isBrouillon)
-    {
-        $this->isBrouillon = $isBrouillon;
-
-        return $this;
-    }
-
-    /**
-     * Set isBrouillon
      *
-     * @param boolean $isBrouillon
      * @return Agenda
      */
     public function setIsBrouillon($isBrouillon)
@@ -1249,7 +1121,7 @@ class Agenda implements GeolocalizeInterface
      *
      * @return boolean
      */
-    public function isBrouillon()
+    public function getIsBrouillon()
     {
         return $this->isBrouillon;
     }
@@ -1258,6 +1130,7 @@ class Agenda implements GeolocalizeInterface
      * Set tweetPostId
      *
      * @param string $tweetPostId
+     *
      * @return Agenda
      */
     public function setTweetPostId($tweetPostId)
@@ -1281,6 +1154,7 @@ class Agenda implements GeolocalizeInterface
      * Set facebookEventId
      *
      * @param string $facebookEventId
+     *
      * @return Agenda
      */
     public function setFacebookEventId($facebookEventId)
@@ -1304,6 +1178,7 @@ class Agenda implements GeolocalizeInterface
      * Set tweetPostSystemId
      *
      * @param string $tweetPostSystemId
+     *
      * @return Agenda
      */
     public function setTweetPostSystemId($tweetPostSystemId)
@@ -1327,6 +1202,7 @@ class Agenda implements GeolocalizeInterface
      * Set fbPostId
      *
      * @param string $fbPostId
+     *
      * @return Agenda
      */
     public function setFbPostId($fbPostId)
@@ -1350,6 +1226,7 @@ class Agenda implements GeolocalizeInterface
      * Set fbPostSystemId
      *
      * @param string $fbPostSystemId
+     *
      * @return Agenda
      */
     public function setFbPostSystemId($fbPostSystemId)
@@ -1373,6 +1250,7 @@ class Agenda implements GeolocalizeInterface
      * Set googlePostId
      *
      * @param string $googlePostId
+     *
      * @return Agenda
      */
     public function setGooglePostId($googlePostId)
@@ -1396,6 +1274,7 @@ class Agenda implements GeolocalizeInterface
      * Set googleSystemPostId
      *
      * @param string $googleSystemPostId
+     *
      * @return Agenda
      */
     public function setGoogleSystemPostId($googleSystemPostId)
@@ -1416,213 +1295,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set user
-     *
-     * @param User $user
-     * @return Agenda
-     */
-    public function setUser(User $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \AppBundle\Entity\User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Add calendriers
-     *
-     * @param Calendrier $calendriers
-     * @return Agenda
-     */
-    public function addCalendrier(Calendrier $calendriers)
-    {
-        $this->calendriers[] = $calendriers;
-
-        return $this;
-    }
-
-    /**
-     * Remove calendriers
-     *
-     * @param Calendrier $calendriers
-     */
-    public function removeCalendrier(Calendrier $calendriers)
-    {
-        $this->calendriers->removeElement($calendriers);
-    }
-
-    /**
-     * Get calendriers
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCalendriers()
-    {
-        return $this->calendriers;
-    }
-
-    /**
-     * Set site
-     *
-     * @param Site $site
-     * @return Agenda
-     */
-    public function setSite(Site $site)
-    {
-        $this->site = $site;
-
-        return $this;
-    }
-
-    /**
-     * Get site
-     *
-     * @return \AppBundle\Entity\Site
-     */
-    public function getSite()
-    {
-        return $this->site;
-    }
-
-    /**
-     * Add commentaires
-     *
-     * @param Comment $commentaires
-     * @return Agenda
-     */
-    public function addCommentaire(Comment $commentaires)
-    {
-        $this->commentaires[] = $commentaires;
-
-        return $this;
-    }
-
-    /**
-     * Remove commentaires
-     *
-     * @param Comment $commentaires
-     */
-    public function removeCommentaire(Comment $commentaires)
-    {
-        $this->commentaires->removeElement($commentaires);
-    }
-
-    /**
-     * Get commentaires
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCommentaires()
-    {
-        return $this->commentaires;
-    }
-
-    /**
-     * Set fbParticipations
-     *
-     * @param int $fbParticipations
-     * @return Agenda
-     */
-    public function setFbParticipations($fbParticipations)
-    {
-        $this->fbParticipations = $fbParticipations;
-
-        return $this;
-    }
-
-    /**
-     * Get fbParticipations
-     *
-     * @return int
-     */
-    public function getFbParticipations()
-    {
-        return $this->fbParticipations;
-    }
-
-    /**
-     * Set fbInterets
-     *
-     * @param int $fbInterets
-     * @return Agenda
-     */
-    public function setFbInterets($fbInterets)
-    {
-        $this->fbInterets = $fbInterets;
-
-        return $this;
-    }
-
-    /**
-     * Get fbInterets
-     *
-     * @return int
-     */
-    public function getFbInterets()
-    {
-        return $this->fbInterets;
-    }
-
-    /**
-     * Set participations
-     *
-     * @param int $participations
-     * @return Agenda
-     */
-    public function setParticipations($participations)
-    {
-        $this->participations = $participations;
-
-        return $this;
-    }
-
-    /**
-     * Get participations
-     *
-     * @return int
-     */
-    public function getParticipations()
-    {
-        return $this->participations;
-    }
-
-    /**
-     * Set interets
-     *
-     * @param int $interets
-     * @return Agenda
-     */
-    public function setInterets($interets)
-    {
-        $this->interets = $interets;
-
-        return $this;
-    }
-
-    /**
-     * Get interets
-     *
-     * @return int
-     */
-    public function getInterets()
-    {
-        return $this->interets;
-    }
-
-    /**
      * Set facebookOwnerId
      *
      * @param string $facebookOwnerId
+     *
      * @return Agenda
      */
     public function setFacebookOwnerId($facebookOwnerId)
@@ -1643,32 +1319,106 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set adresse
+     * Set fbParticipations
      *
-     * @param string $adresse
+     * @param integer $fbParticipations
+     *
      * @return Agenda
      */
-    public function setAdresse($adresse)
+    public function setFbParticipations($fbParticipations)
     {
-        $this->adresse = $adresse;
+        $this->fbParticipations = $fbParticipations;
 
         return $this;
     }
 
     /**
-     * Get adresse
+     * Get fbParticipations
      *
-     * @return string
+     * @return integer
      */
-    public function getAdresse()
+    public function getFbParticipations()
     {
-        return $this->adresse;
+        return $this->fbParticipations;
+    }
+
+    /**
+     * Set fbInterets
+     *
+     * @param integer $fbInterets
+     *
+     * @return Agenda
+     */
+    public function setFbInterets($fbInterets)
+    {
+        $this->fbInterets = $fbInterets;
+
+        return $this;
+    }
+
+    /**
+     * Get fbInterets
+     *
+     * @return integer
+     */
+    public function getFbInterets()
+    {
+        return $this->fbInterets;
+    }
+
+    /**
+     * Set participations
+     *
+     * @param integer $participations
+     *
+     * @return Agenda
+     */
+    public function setParticipations($participations)
+    {
+        $this->participations = $participations;
+
+        return $this;
+    }
+
+    /**
+     * Get participations
+     *
+     * @return integer
+     */
+    public function getParticipations()
+    {
+        return $this->participations;
+    }
+
+    /**
+     * Set interets
+     *
+     * @param integer $interets
+     *
+     * @return Agenda
+     */
+    public function setInterets($interets)
+    {
+        $this->interets = $interets;
+
+        return $this;
+    }
+
+    /**
+     * Get interets
+     *
+     * @return integer
+     */
+    public function getInterets()
+    {
+        return $this->interets;
     }
 
     /**
      * Set source
      *
      * @param string $source
+     *
      * @return Agenda
      */
     public function setSource($source)
@@ -1686,74 +1436,6 @@ class Agenda implements GeolocalizeInterface
     public function getSource()
     {
         return $this->source;
-    }
-
-    /**
-     * Set place
-     *
-     * @param Place $place
-     * @return Agenda
-     */
-    public function setPlace(Place $place = null)
-    {
-        $this->place = $place;
-
-        return $this;
-    }
-
-    /**
-     * Get place
-     *
-     * @return Place
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
-
-
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * Set fbDateModification
-     *
-     * @param \DateTime $fbDateModification
-     * @return Agenda
-     */
-    public function setFbDateModification($fbDateModification)
-    {
-        $this->fbDateModification = $fbDateModification;
-
-        return $this;
-    }
-
-    /**
-     * Get fbDateModification
-     *
-     * @return \DateTime
-     */
-    public function getFbDateModification()
-    {
-        return $this->fbDateModification;
-    }
-
-    public function __toString()
-    {
-        return "#" . $this->id ?: '?';
-    }
-
-    /**
-     * Get isBrouillon
-     *
-     * @return boolean
-     */
-    public function getIsBrouillon()
-    {
-        return $this->isBrouillon;
     }
 
     /**
@@ -1781,26 +1463,142 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set systemPath
+     * Set user
      *
-     * @param string $systemPath
+     * @param \AppBundle\Entity\User $user
      *
      * @return Agenda
      */
-    public function setSystemPath($systemPath)
+    public function setUser(\AppBundle\Entity\User $user = null)
     {
-        $this->systemPath = $systemPath;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * Get systemPath
+     * Get user
      *
-     * @return string
+     * @return \AppBundle\Entity\User
      */
-    public function getSystemPath()
+    public function getUser()
     {
-        return $this->systemPath;
+        return $this->user;
+    }
+
+    /**
+     * Add calendrier
+     *
+     * @param \AppBundle\Entity\Calendrier $calendrier
+     *
+     * @return Agenda
+     */
+    public function addCalendrier(\AppBundle\Entity\Calendrier $calendrier)
+    {
+        $this->calendriers[] = $calendrier;
+
+        return $this;
+    }
+
+    /**
+     * Remove calendrier
+     *
+     * @param \AppBundle\Entity\Calendrier $calendrier
+     */
+    public function removeCalendrier(\AppBundle\Entity\Calendrier $calendrier)
+    {
+        $this->calendriers->removeElement($calendrier);
+    }
+
+    /**
+     * Get calendriers
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCalendriers()
+    {
+        return $this->calendriers;
+    }
+
+    /**
+     * Set site
+     *
+     * @param \AppBundle\Entity\Site $site
+     *
+     * @return Agenda
+     */
+    public function setSite(\AppBundle\Entity\Site $site)
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    /**
+     * Get site
+     *
+     * @return \AppBundle\Entity\Site
+     */
+    public function getSite()
+    {
+        return $this->site;
+    }
+
+    /**
+     * Add commentaire
+     *
+     * @param \AppBundle\Entity\Comment $commentaire
+     *
+     * @return Agenda
+     */
+    public function addCommentaire(\AppBundle\Entity\Comment $commentaire)
+    {
+        $this->commentaires[] = $commentaire;
+
+        return $this;
+    }
+
+    /**
+     * Remove commentaire
+     *
+     * @param \AppBundle\Entity\Comment $commentaire
+     */
+    public function removeCommentaire(\AppBundle\Entity\Comment $commentaire)
+    {
+        $this->commentaires->removeElement($commentaire);
+    }
+
+    /**
+     * Get commentaires
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCommentaires()
+    {
+        return $this->commentaires;
+    }
+
+    /**
+     * Set place
+     *
+     * @param \AppBundle\Entity\Place $place
+     *
+     * @return Agenda
+     */
+    public function setPlace(\AppBundle\Entity\Place $place = null)
+    {
+        $this->place = $place;
+
+        return $this;
+    }
+
+    /**
+     * Get place
+     *
+     * @return \AppBundle\Entity\Place
+     */
+    public function getPlace()
+    {
+        return $this->place;
     }
 }

@@ -46,7 +46,6 @@ class Merger
             'type_manifestation',
             'categorie_manifestation',
             'theme_manifestation',
-            'station_metro_tram',
             'reservation_telephone',
             'reservation_email',
             'reservation_internet',

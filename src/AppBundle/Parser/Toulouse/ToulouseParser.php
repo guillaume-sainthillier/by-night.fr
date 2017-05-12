@@ -64,7 +64,6 @@ class ToulouseParser extends AgendaParser
                     'type_manifestation' => $tab[16],
                     'categorie_manifestation' => $tab[17],
                     'theme_manifestation' => $tab[18],
-                    'station_metro_tram' => $tab[19],
                     'reservation_telephone' => $tab[22],
                     'reservation_email' => $tab[23],
                     'reservation_internet' => $tab[24],
