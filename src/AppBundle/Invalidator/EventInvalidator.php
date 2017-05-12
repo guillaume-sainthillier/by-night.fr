@@ -16,9 +16,24 @@ use AppBundle\Entity\User;
 
 class EventInvalidator
 {
+    /**
+     * @var TagHandler
+     */
     private $tagHandler;
+
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
+
+    /**
+     * @var array
+     */
     private $eventTags;
+
+    /**
+     * @var array
+     */
     private $userTags;
 
     public function __construct(TagHandler $tagHandler, LoggerInterface $logger)

@@ -13,7 +13,14 @@ use ReCaptcha\ReCaptcha;
  */
 class CaptchaWrapper
 {
+    /**
+     * @var RequestStack
+     */
     private $requestStack;
+
+    /**
+     * @var string
+     */
     private $secret;
 
     public function __construct(RequestStack $requestStack, $secret)
@@ -22,6 +29,10 @@ class CaptchaWrapper
         $this->secret = $secret;
     }
 
+    /**
+     * @param string $value
+     * @return bool
+     */
     public function verify($value)
     {
         $request = $this->requestStack->getMasterRequest();

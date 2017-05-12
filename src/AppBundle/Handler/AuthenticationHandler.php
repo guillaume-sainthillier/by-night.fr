@@ -47,6 +47,11 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
         $this->site_manager = $site_manager;
     }
 
+    /**
+     * @param Request $request
+     * @param TokenInterface $token
+     * @return JsonResponse|RedirectResponse
+     */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
         if ($request->isXmlHttpRequest()) {
@@ -77,6 +82,11 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
         }
     }
 
+    /**
+     * @param Request $request
+     * @param AuthenticationException $exception
+     * @return JsonResponse|RedirectResponse
+     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         if ($request->isXmlHttpRequest()) {

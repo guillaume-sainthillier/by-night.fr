@@ -10,7 +10,13 @@ namespace AppBundle\Geolocalize;
  */
 interface GeolocalizeInterface
 {
+    /**
+     * @return float
+     */
     public function getLatitude();
 
+    /**
+     * @return float
+     */
     public function getLongitude();
 }

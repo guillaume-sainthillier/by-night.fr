@@ -16,15 +16,44 @@ use AppBundle\Entity\Place;
 
 class EchantillonHandler
 {
+    /**
+     * @var \AppBundle\Repository\AgendaRepository
+     */
     private $repoAgenda;
+
+    /**
+     * @var \AppBundle\Repository\PlaceRepository
+     */
     private $repoPlace;
 
+    /**
+     * @var Place[]
+     */
     private $places;
+
+    /**
+     * @var Place[]
+     */
     private $fbPlaces;
+
+    /**
+     * @var Place[]
+     */
     private $newPlaces;
 
+    /**
+     * @var Agenda[]
+     */
     private $agendas;
+
+    /**
+     * @var Agenda[]
+     */
     private $fbAgendas;
+
+    /**
+     * @var Agenda[]
+     */
     private $newAgendas;
 
     public function __construct(EntityManagerInterface $em)
@@ -151,6 +180,10 @@ class EchantillonHandler
         }
     }
 
+    /**
+     * @param Place $place
+     * @return Place[]
+     */
     public function getPlaceEchantillons(Place $place)
     {
         if ($place->getFacebookId() && isset($this->fbPlaces[$place->getFacebookId()])) {
@@ -162,6 +195,7 @@ class EchantillonHandler
             $this->getNewPlaces($place)
         );
     }
+
 
     public function getEventEchantillons(Agenda $event)
     {

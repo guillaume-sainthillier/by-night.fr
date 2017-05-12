@@ -31,6 +31,10 @@ class EventFetcher
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @param ParserInterface $parser
+     * @return array
+     */
     public function fetchEvents(ParserInterface $parser)
     {
         if ($parser instanceof FaceBookParser) {
@@ -43,6 +47,9 @@ class EventFetcher
         return $this->parserManager->getAgendas();
     }
 
+    /**
+     * @return \AppBundle\Entity\SiteInfo
+     */
     protected function getSiteInfo()
     {
         $siteInfo = $this->entityManager->getRepository('AppBundle:SiteInfo')->findOneBy([]);

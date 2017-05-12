@@ -10,5 +10,8 @@ namespace AppBundle\Geolocalize;
  */
 interface BoundaryInterface extends GeolocalizeInterface
 {
+    /**
+     * @return float
+     */
     public function getDistanceMax();
 }

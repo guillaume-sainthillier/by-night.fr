@@ -33,11 +33,30 @@ class DoctrineEventHandler
      * @var \AppBundle\Repository\AgendaRepository
      */
     private $repoAgenda;
+
+    /**
+     * @var \AppBundle\Repository\PlaceRepository
+     */
     private $repoPlace;
+
+    /**
+     * @var EventHandler
+     */
     private $handler;
+
+    /**
+     * @var Firewall
+     */
     private $firewall;
 
+    /**
+     * @var array
+     */
     private $sites;
+
+    /**
+     * @var array
+     */
     private $villes;
 
     /**
@@ -86,9 +105,9 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param array $events
+     * @param Agenda[] $events
      * @param ParserInterface $parser
-     * @return array
+     * @return Agenda[]
      */
     public function handleManyCLI(array $events, ParserInterface $parser)
     {
@@ -114,8 +133,8 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param array $events
-     * @return array
+     * @param Agenda[] $events
+     * @return Agenda[]
      */
     public function handleMany(array $events)
     {
@@ -183,6 +202,10 @@ class DoctrineEventHandler
         $this->em->flush();
     }
 
+    /**
+     * @param Agenda[] $events
+     * @return Agenda[]
+     */
     protected function getAllowedEvents(array $events)
     {
         $events = array_filter($events, [$this->firewall, 'isValid']);
@@ -197,6 +220,10 @@ class DoctrineEventHandler
         return $events;
     }
 
+    /**
+     * @param Agenda[] $events
+     * @return Agenda[]
+     */
     protected function getNotAllowedEvents(array $events)
     {
         return array_filter($events, function ($event) {
@@ -204,6 +231,10 @@ class DoctrineEventHandler
         });
     }
 
+    /**
+     * @param Agenda[] $events
+     * @return Agenda[]
+     */
     protected function getChunks(array $events)
     {
         $chunks = [];
@@ -218,6 +249,10 @@ class DoctrineEventHandler
         return $chunks;
     }
 
+    /**
+     * @param Agenda[] $chunks
+     * @return Agenda[]
+     */
     protected function unChunk(array $chunks)
     {
         $flat = [];
@@ -228,6 +263,10 @@ class DoctrineEventHandler
         return $flat;
     }
 
+    /**
+     * @param Agenda[] $events
+     * @return Agenda[]
+     */
     protected function mergeWithDatabase(array $events)
     {
         Monitor::createProgressBar(count($events));
@@ -344,13 +383,12 @@ class DoctrineEventHandler
         $this->firewall->flushExplorations();
     }
 
-
+    /**
+     * @param Agenda[] $events
+     */
     protected function doFilter(array $events)
     {
         foreach ($events as $event) {
-            /**
-             * @var Agenda $event
-             */
             $event->setReject(new Reject);
 
             if ($event->getPlace()) {
@@ -393,6 +431,9 @@ class DoctrineEventHandler
         }
     }
 
+    /**
+     * @param Agenda $event
+     */
     protected function guessEventSite(Agenda $event)
     {
         $key = $this->firewall->getVilleHash($event->getPlace()->getVille());
@@ -420,6 +461,10 @@ class DoctrineEventHandler
         }
     }
 
+    /**
+     * @param Agenda[] $events
+     * @return int[]
+     */
     protected function getExplorationsFBIds(array $events)
     {
         $fbIds = [];

@@ -12,7 +12,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class AppManager
 {
+    /**
+     * @var string
+     */
     private $facebookIdPage;
+
+    /**
+     * @var string
+     */
+    private $twitterIdPage;
+
+    /**
+     * @var string
+     */
+    private $googleIdPage;
 
     public function __construct(ContainerInterface $container)
     {
@@ -21,16 +34,25 @@ class AppManager
         $this->googleIdPage = $container->getParameter('google_id_page');
     }
 
+    /**
+     * @return string
+     */
     public function getFacebookIdPage()
     {
         return $this->facebookIdPage;
     }
 
+    /**
+     * @return string
+     */
     public function getTwitterIdPage()
     {
         return $this->twitterIdPage;
     }
 
+    /**
+     * @return string
+     */
     public function getGoogleIdPage()
     {
         return $this->googleIdPage;

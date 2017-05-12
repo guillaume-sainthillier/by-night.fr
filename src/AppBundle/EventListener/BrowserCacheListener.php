@@ -16,7 +16,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class BrowserCacheListener implements EventSubscriberInterface
 {
-
     /**
      * {@inheritdoc}
      */

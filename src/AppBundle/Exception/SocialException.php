@@ -14,7 +14,9 @@ namespace AppBundle\Exception;
  */
 class SocialException extends \Exception
 {
-
+    /**
+     * @var string
+     */
     protected $type;
 
     public function __construct($message, $type = "warning", $code = 500, \Exception $previous = null)
@@ -23,6 +25,9 @@ class SocialException extends \Exception
         $this->type = $type;
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->type;

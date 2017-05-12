@@ -20,13 +20,22 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
  */
 class BrowserCache extends ConfigurationAnnotation
 {
+    /**
+     * @var bool
+     */
     private $useCache = true;
 
+    /**
+     * @param bool $useCache
+     */
     public function setValue($useCache)
     {
         $this->useCache = $useCache;
     }
 
+    /**
+     * @return bool
+     */
     public function hasToUseCache()
     {
         return $this->useCache;

@@ -24,6 +24,9 @@ class ImageCleaner
      */
     private $cacheManager;
 
+    /**
+     * @var string
+     */
     private $webDir;
 
     public function __construct(EntityManager $entityManager, CacheManager $cacheManager, $webDir)
