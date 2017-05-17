@@ -111,11 +111,14 @@ class Firewall
         }
     }
 
-    public function filterEventSite(Agenda $event)
+    public function filterEventLocation(Agenda $event)
     {
-        if (!$event->getSite()) {
-            $event->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
-            $event->getPlace()->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
+        $place = $event->getPlace();
+
+        //TODO: Not valid if there is no country
+        $reject = $event->getPlace()->getReject();
+        if(! $reject->isValid()) {
+            $event->getReject()->addReason($reject->getReason());
         }
     }
 
@@ -152,17 +155,18 @@ class Firewall
 
     protected function filterEventPlace(Place $place)
     {
+        //Le nom du lieu doit comporter au moins 2 caractères
         if (!$this->checkMinLengthValidity($place->getNom(), 2)) {
             $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
         }
 
-        if (!$this->checkMinLengthValidity($place->getVille(), 2) && (
-                !$place->getLatitude() ||
-                !$place->getLongitude()
-            )
-        ) {
-            $place->getReject()->addReason(Reject::NO_PLACE_LOCATION_PROVIDED);
-        }
+//        if (!$this->checkMinLengthValidity($place->getVille(), 2) && (
+//                !$place->getLatitude() ||
+//                !$place->getLongitude()
+//            )
+//        ) {
+//            $place->getReject()->addReason(Reject::NO_PLACE_LOCATION_PROVIDED);
+//        }
 
         $codePostal = $this->comparator->sanitizeNumber($place->getCodePostal());
         if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
@@ -187,20 +191,27 @@ class Firewall
         }
     }
 
+    /**
+     * @param Agenda $event
+     */
     protected function filterEventInfos(Agenda $event)
     {
+        //Le nom de l'événement doit comporter au moins 3 caractères
         if (!$this->checkMinLengthValidity($event->getNom(), 3)) {
             $event->getReject()->addReason(Reject::BAD_EVENT_NAME);
         }
 
+        //La description de l'événment doit comporter au moins 20 caractères
         if (!$this->checkMinLengthValidity($event->getDescriptif(), 20)) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DESCRIPTION);
         }
 
+        //Pas de SPAM dans la description
         if ($this->isSPAMContent($event->getDescriptif())) {
             $event->getReject()->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
+        //Pas de dates valides fournies
         if (!$event->getDateDebut() instanceof \DateTime ||
             ($event->getDateFin() && !$event->getDateFin() instanceof \DateTime)
         ) {
@@ -288,16 +299,18 @@ class Firewall
         $black_list = [
             "Buy && sell tickets at", "Please join", "Invite Friends", "Buy Tickets",
             "Find Local Concerts", "reverbnation.com", "pastaparty.com", "evrd.us",
-            "farishams.com", "tinyurl.com", "bandcamp.com", "ty-segall.com",
+            "farishams.com", "ty-segall.com",
             "fritzkalkbrenner.com", "campusfm.fr", "polyamour.info", "parislanuit.fr",
             "Please find the agenda", "Fore More Details like our Page & Massage us"
         ];
 
-        $filter = array_filter($black_list, function ($elem) use ($content) {
-            return strstr($content, $elem);
-        });
+        foreach($black_list as $black_word) {
+            if(strstr($content, $black_word)) {
+                return true;
+            }
+        }
 
-        return count($filter) > 0;
+        return false;
     }
 
     public function getVilleHash($villeName)
@@ -312,7 +325,8 @@ class Firewall
 
     public function checkMinLengthValidity($str, $min)
     {
-        return isset($this->comparator->sanitize($str)[$min]);
+        return isset(trim($str)[$min]);
+//        return isset($this->comparator->sanitize($str)[$min]);
     }
 
     public function addExploration(Exploration $exploration)
@@ -323,6 +337,9 @@ class Firewall
         $this->explorations[$exploration->getId()] = $exploration->setReject($reject);
     }
 
+    /**
+     * @return Exploration[]
+     */
     public function getExplorations()
     {
         return $this->explorations;

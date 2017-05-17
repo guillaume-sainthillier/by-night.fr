@@ -18,9 +18,15 @@ class EventListener
      */
     private $eventInvalidator;
 
-    public function __construct(EventInvalidator $eventInvalidator)
+    /**
+     * @var bool
+     */
+    private $debug;
+
+    public function __construct(EventInvalidator $eventInvalidator, $debug)
     {
         $this->eventInvalidator = $eventInvalidator;
+        $this->debug = $debug;
     }
 
     public function postFlush()
@@ -30,6 +36,10 @@ class EventListener
 
     public function postUpdate(LifecycleEventArgs $args)
     {
+        if($this->debug) {
+            return;
+        }
+
         $entity = $args->getEntity();
 
         if ($entity instanceof User) {
@@ -46,27 +56,27 @@ class EventListener
 
     public function preRemove(LifecycleEventArgs $args)
     {
-        $entity = $args->getEntity();
+        if(! $this->debug) {
+            $entity = $args->getEntity();
 
-        if ($entity instanceof User) {
-            $this->eventInvalidator->addUser($entity);
-            return;
+            if ($entity instanceof User) {
+                $this->eventInvalidator->addUser($entity);
+                return;
+            }
+
+            if (!$entity instanceof Agenda) {
+                return;
+            }
+
+            $this->eventInvalidator->addEvent($entity);
         }
-
-        if (!$entity instanceof Agenda) {
-            return;
-        }
-
-        $this->eventInvalidator->addEvent($entity);
 
         if (!$entity->getFacebookEventId()) {
             return;
         }
 
         $entityManager = $args->getEntityManager();
-        $exploration = $entityManager->getRepository('AppBundle:Exploration')->findOneBy([
-            'id' => $entity->getFacebookEventId()
-        ]);
+        $exploration = $entityManager->getRepository('AppBundle:Exploration')->find($entity->getFacebookEventId());
 
         if (!$exploration) {
             $exploration = (new Exploration)->setId($entity->getFacebookEventId());

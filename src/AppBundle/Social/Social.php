@@ -126,8 +126,8 @@ abstract class Social
     protected function init()
     {
         if (!$this->isInitialized) {
-            $this->constructClient();
             $this->isInitialized = true;
+            $this->constructClient();
         }
     }
 

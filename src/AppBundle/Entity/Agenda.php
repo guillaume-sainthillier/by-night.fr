@@ -317,7 +317,7 @@ class Agenda implements GeolocalizeInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      * @Expose
      */
     protected $site;

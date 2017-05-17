@@ -8,6 +8,8 @@
 
 namespace AppBundle\Handler;
 
+use AppBundle\Entity\City;
+use AppBundle\Entity\ZipCity;
 use Doctrine\ORM\EntityManagerInterface;
 
 use AppBundle\Entity\Agenda;
@@ -38,6 +40,16 @@ class DoctrineEventHandler
      * @var \AppBundle\Repository\PlaceRepository
      */
     private $repoPlace;
+
+    /**
+     * @var \AppBundle\Repository\CityRepository
+     */
+    private $repoCity;
+
+    /**
+     * @var \AppBundle\Repository\ZipCityRepository
+     */
+    private $repoZipCity;
 
     /**
      * @var EventHandler
@@ -75,6 +87,8 @@ class DoctrineEventHandler
         $this->repoAgenda = $em->getRepository('AppBundle:Agenda');
         $this->repoPlace = $em->getRepository('AppBundle:Place');
         $this->repoSite = $em->getRepository('AppBundle:Site');
+        $this->repoCity = $em->getRepository('AppBundle:City');
+        $this->repoZipCity = $em->getRepository("AppBundle:ZipCity");
         $this->handler = $handler;
         $this->firewall = $firewall;
         $this->echantillonHandler = $echantillonHandler;
@@ -143,10 +157,17 @@ class DoctrineEventHandler
         if (!count($events)) {
             return [];
         }
-        $this->loadSites();
-        $this->loadVilles();
+
+//        $this->loadSites();
+//        $this->loadVilles();
+
+        //On récupère toutes les explorations existantes pour ces événements
         $this->loadExplorations($events);
-        $this->doFilter($events);
+
+        //Grace à ça, on peut déjà filtrer une bonne partie des événements
+        $this->doFilterAndClean($events);
+
+        //On met ensuite à jour le statut de ces explorations en base
         $this->flushExplorations();
 
         $allowedEvents = $this->getAllowedEvents($events);
@@ -160,7 +181,7 @@ class DoctrineEventHandler
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
     }
 
-    protected function handleIdsToMigrate(FaceBookParser $parser)
+    private function handleIdsToMigrate(FaceBookParser $parser)
     {
         $ids = $parser->getIdsToMigrate();
 
@@ -206,25 +227,25 @@ class DoctrineEventHandler
      * @param Agenda[] $events
      * @return Agenda[]
      */
-    protected function getAllowedEvents(array $events)
+    private function getAllowedEvents(array $events)
     {
-        $events = array_filter($events, [$this->firewall, 'isValid']);
-        usort($events, function (Agenda $a, Agenda $b) {
-            if ($a->getSite() === $b->getSite()) {
-                return 0;
-            }
-
-            return $a->getSite()->getId() - $b->getSite()->getId();
-        });
-
-        return $events;
+        return array_filter($events, [$this->firewall, 'isValid']);
+//        usort($events, function (Agenda $a, Agenda $b) {
+//            if ($a->getSite() === $b->getSite()) {
+//                return 0;
+//            }
+//
+//            return $a->getSite()->getId() - $b->getSite()->getId();
+//        });
+//
+//        return $events;
     }
 
     /**
      * @param Agenda[] $events
      * @return Agenda[]
      */
-    protected function getNotAllowedEvents(array $events)
+    private function getNotAllowedEvents(array $events)
     {
         return array_filter($events, function ($event) {
             return !$this->firewall->isValid($event);
@@ -233,13 +254,25 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
-     * @return Agenda[]
+     * @return array
      */
-    protected function getChunks(array $events)
+    private function getChunks(array $events)
     {
         $chunks = [];
         foreach ($events as $i => $event) {
-            $chunks[$event->getSite()->getId()][$i] = $event;
+            $place = $event->getPlace();
+
+            if($place->getCity()) {
+                $key = "city.". $place->getCity()->getId();
+            }elseif($place->getZipCity()) {
+                $key = "zip_city.".$place->getZipCity()->getId();
+            }else {
+                $key = null; //TODO: Add country
+            }
+
+            if($key) {
+                $chunks[$key][$i] = $event;
+            }
         }
 
         foreach ($chunks as $i => $chunk) {
@@ -250,10 +283,10 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[] $chunks
+     * @param array $chunks
      * @return Agenda[]
      */
-    protected function unChunk(array $chunks)
+    private function unChunk(array $chunks)
     {
         $flat = [];
         foreach ($chunks as $chunk) {
@@ -267,18 +300,21 @@ class DoctrineEventHandler
      * @param Agenda[] $events
      * @return Agenda[]
      */
-    protected function mergeWithDatabase(array $events)
+    private function mergeWithDatabase(array $events)
     {
         Monitor::createProgressBar(count($events));
 
         $chunks = $this->getChunks($events);
+
+        //Par localisation
         foreach ($chunks as $chunk) {
-            //Par site
             $this->echantillonHandler->prefetchPlaceEchantillons($this->unChunk($chunk));
 
-            //Par n éléments
+            //Par n événements
             foreach ($chunk as $currentEvents) {
                 $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
+
+                //Par événement
                 foreach ($currentEvents as $i => $event) {
                     /**
                      * @var Agenda $event
@@ -303,24 +339,31 @@ class DoctrineEventHandler
                     }
                     $events[$i] = $event;
                 }
-                $this->flushEvents();
+                $this->commit();
+                $this->clearEvents();
                 $this->firewall->deleteCache();
             }
-            $this->flushPlaces();
+            $this->clearPlaces();
         }
         Monitor::finishProgressBar();
 
         return $events;
     }
 
-    protected function flushPlaces()
+    private function clearPlaces()
     {
         $this->em->clear(Place::class);
-
-        $this->echantillonHandler->flushPlaces();
+        $this->em->clear(ZipCity::class);
+        $this->em->clear(City::class);
+        $this->echantillonHandler->clearPlaces();
     }
 
-    protected function flushEvents()
+    private function clearEvents() {
+        $this->em->clear(Agenda::class);
+        $this->echantillonHandler->clearEvents();
+    }
+
+    private function commit()
     {
         try {
             $this->em->flush();
@@ -330,31 +373,9 @@ class DoctrineEventHandler
                 $e->getMessage()
             ));
         }
-
-        $this->em->clear(Agenda::class);
-
-        $this->echantillonHandler->flushEvents();
     }
 
-    protected function loadVilles()
-    {
-        $villes = $this->em->getRepository('AppBundle:Place')->findAllVilles();
-        foreach ($villes as $ville) {
-            $key = $this->firewall->getVilleHash($ville['ville']);
-            $this->villes[$key] = $ville['id'];
-        }
-    }
-
-    protected function loadSites()
-    {
-        $sites = $this->em->getRepository('AppBundle:Site')->findAll();
-        foreach ($sites as $site) {
-            $key = $this->firewall->getVilleHash($site->getNom());
-            $this->sites[$key] = $site;
-        }
-    }
-
-    protected function loadExplorations(array $events)
+    private function loadExplorations(array $events)
     {
         $fb_ids = $this->getExplorationsFBIds($events);
 
@@ -363,16 +384,19 @@ class DoctrineEventHandler
         }
     }
 
-    protected function flushExplorations()
+    private function flushExplorations()
     {
         $explorations = $this->firewall->getExplorations();
 
-        $batchSize = 100;
+        $batchSize = 200;
         $nbBatches = ceil(count($explorations) / $batchSize);
 
         for ($i = 0; $i < $nbBatches; $i++) {
             $currentExplorations = array_slice($explorations, $i * $batchSize, $batchSize);
             foreach ($currentExplorations as $exploration) {
+                /**
+                 * @var Exploration $exploration
+                 */
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->explorationHandler->addExploration();
                 $this->em->persist($exploration);
@@ -386,7 +410,7 @@ class DoctrineEventHandler
     /**
      * @param Agenda[] $events
      */
-    protected function doFilter(array $events)
+    private function doFilterAndClean(array $events)
     {
         foreach ($events as $event) {
             $event->setReject(new Reject);
@@ -424,54 +448,134 @@ class DoctrineEventHandler
 
             $this->firewall->filterEvent($event);
             if ($this->firewall->isValid($event)) {
-                $this->guessEventSite($event);
-                $this->firewall->filterEventSite($event);
+                $this->guessEventLocation($event->getPlace());
+                $this->firewall->filterEventLocation($event);
                 $this->handler->cleanEvent($event);
             }
         }
     }
 
     /**
-     * @param Agenda $event
+     * @param Place $place
      */
-    protected function guessEventSite(Agenda $event)
+    public function guessEventLocation(Place $place)
     {
-        $key = $this->firewall->getVilleHash($event->getPlace()->getVille());
+        //Pas besoin de trouver à nouveau un lieu déjà calculé
+        if($place->getZipCity() || $place->getCity()) {
+            return;
+        }
 
-        $site = null;
-        if (isset($this->sites[$key])) {
-            $site = $this->em->getReference(Site::class, $this->sites[$key]->getId());
-        } elseif (isset($this->villes[$key])) {
-            $site = $this->em->getReference(Site::class, $this->villes[$key]);
-        } else {
-            foreach ($this->sites as $testSite) {
-                if ($this->firewall->isLocationBounded($event->getPlace(), $testSite)) {
-                    $site = $this->em->getReference(Site::class, $testSite->getId());
-                    break;
-                } elseif ($this->firewall->isLocationBounded($event, $testSite)) {
-                    $site = $this->em->getReference(Site::class, $testSite->getId());
-                    break;
+        //Pas besoin de chercher un lieu dont le pays n'est même pas connu
+        if(! $place->getId() && ! $place->getCountryName()) {
+            return;
+        }
+
+        //Nom de lieu (avec ou sans coordoonnées GPS)
+        if(!$place->getCodePostal() && !$place->getVille()) {
+            //TODO: Geocoding
+            $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
+            return;
+            //Géocoding à partir du nom du lieu ou de l'adresse facebook. (Ex: Avenue de Castres, 31500 Toulouse, France
+        }
+
+        //Location fournie -> Vérification dans la base des villes existantes
+        if($place->getCodePostal() || $place->getVille()) {
+            $zipCity = null;
+            $city = null;
+            //Un code postal (et peut-être une ville) est fourni
+            if($place->getCodePostal()) {
+                $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille());
+
+                if($place->getVille() && count($zipCities) === 0) {
+                    $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal());
+                }
+
+                //On tente de trouver un candidat si pas de strict match
+                if($place->getVille() && count($zipCities) > 1) {
+                    $zipCities = array_values(array_filter($zipCities, function(ZipCity $zipCity) use($place) {
+                        return $this->handler->getComparator()->isSubInSub($zipCity->getName(), $place->getVille());
+                    }));
+                }
+
+                //Aucun code postal n'a été trouvé -> Pas besoin de continuer plus loin
+                if(count($zipCities) === 0) {
+                    $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
+                    return;
+                }elseif(count($zipCities) > 1) {
+                    //Plusieurs villes ont été trouvées pour ce code postal -> Impossible de déterminer quelle ville choisir
+                    $place->getReject()->addReason(Reject::AMBIGOUS_ZIP);
+                    return;
+                }
+
+                $zipCity = $zipCities[0];
+                $city = $zipCity->getParent();
+            }else {
+                //Un nom de ville est fourni
+                $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille());
+
+                //Aucune ville trouvée -> Pas besoin de continuer plus loin
+                if(count($zipCities) === 0) {
+                    $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
+                    return;
+                }elseif(count($zipCities) === 1) {
+                    //Une seule ville trouvée -> Cool
+                    $zipCity = $zipCities[0];
+                }
+
+                //Pas de ville trouvée -> on va chercher dans les City
+                if(! $zipCity) {
+                    $cities = $this->repoCity->findByName($place->getVille());
+                    if(count($cities) === 0) {
+                        $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
+                        return;
+                    }elseif(count($cities) > 1) {
+                        $place->getReject()->addReason(Reject::AMBIGOUS_CITY);
+                        return;
+                    }
+                    
+                    $city = $cities[0];
+                }else {
+                    $city = $zipCity->getParent();
                 }
             }
+            
+            $place->setCity($city)->setZipCity($zipCity);
+            //TODO: Ajouter le country ici
         }
 
-        if ($site) {
-            $event->setSite($site);
-            $event->getPlace()->setSite($site);
-        }
+//        $key = $this->firewall->getVilleHash($event->getPlace()->getVille());
+//
+//        $site = null;
+//        if (isset($this->sites[$key])) {
+//            $site = $this->em->getReference(Site::class, $this->sites[$key]->getId());
+//        } elseif (isset($this->villes[$key])) {
+//            $site = $this->em->getReference(Site::class, $this->villes[$key]);
+//        } else {
+//            foreach ($this->sites as $testSite) {
+//                if ($this->firewall->isLocationBounded($event->getPlace(), $testSite)) {
+//                    $site = $this->em->getReference(Site::class, $testSite->getId());
+//                    break;
+//                } elseif ($this->firewall->isLocationBounded($event, $testSite)) {
+//                    $site = $this->em->getReference(Site::class, $testSite->getId());
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if ($site) {
+//            $event->setSite($site);
+//            $event->getPlace()->setSite($site);
+//        }
     }
 
     /**
      * @param Agenda[] $events
      * @return int[]
      */
-    protected function getExplorationsFBIds(array $events)
+    private function getExplorationsFBIds(array $events)
     {
         $fbIds = [];
         foreach ($events as $event) {
-            /**
-             * @var Agenda $event
-             */
             if ($event->getFacebookEventId()) {
                 $fbIds[$event->getFacebookEventId()] = true;
             }

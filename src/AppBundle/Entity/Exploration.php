@@ -17,7 +17,7 @@ class Exploration
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="string", length=31)
+     * @ORM\Column(name="id", type="bigint", options={"unsigned"=true})
      * @ORM\Id
      */
     protected $id;

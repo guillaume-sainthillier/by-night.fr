@@ -77,7 +77,7 @@ services:
 
     tbn.event_listener:
         class: AppBundle\Listener\EventListener
-        arguments: [ "@tbn.event_http:invalidator" ]
+        arguments: [ "@tbn.event_http:invalidator", "%kernel.debug" ]
         tags:
           - { name: doctrine.event_listener, event: preRemove }
           - { name: doctrine.event_listener, event: postUpdate }
@@ -161,6 +161,7 @@ services:
         arguments:
           - "@tbn.parser_manager"
           - "@doctrine.orm.default_entity_manager"
+          - "@site_manager"
     #Parsers
     tbn.parser.abstract:
         class: AppBundle\Parser\AgendaParser

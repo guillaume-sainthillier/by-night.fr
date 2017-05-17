@@ -13,6 +13,47 @@ use Doctrine\ORM\Query\Expr;
  */
 class PlaceRepository extends EntityRepository
 {
+    public function findByCities(array $cityIds, array $fbIds) {
+        if(! count($cityIds)) {
+            return [];
+        }
+
+        $query = $this
+            ->createQueryBuilder("p")
+            ->where("p.city IN(:cities)")
+            ->setParameter('cities', $cityIds);
+
+        if(count($fbIds)) {
+            $query
+                ->andWhere("p.facebookId NOT IN (:fbIds)")
+                ->setParameter("fbIds", $fbIds);
+        }
+
+        return $query
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByZipCities(array $zipCityIds, array $fbIds) {
+        if(! count($zipCityIds)) {
+            return [];
+        }
+
+        $query = $this
+            ->createQueryBuilder("p")
+            ->where("p.zipCity IN(:cities)")
+            ->setParameter('cities', $zipCityIds);
+
+        if(count($fbIds)) {
+            $query
+                ->andWhere("p.facebookId NOT IN (:fbIds)")
+                ->setParameter("fbIds", $fbIds);
+        }
+
+        return $query
+            ->getQuery()
+            ->getResult();
+    }
 
     public function findAllVilles()
     {

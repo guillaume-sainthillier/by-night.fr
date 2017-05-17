@@ -2,6 +2,7 @@
 
 namespace AppBundle\Fetcher;
 
+use AppBundle\Site\SiteManager;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Parser\Common\FaceBookParser;
 use AppBundle\Parser\Manager\ParserManager;
@@ -25,10 +26,16 @@ class EventFetcher
      */
     protected $parserManager;
 
-    public function __construct(ParserManager $parserManager, EntityManager $entityManager)
+    /**
+     * @var SiteManager
+     */
+    protected $siteManager;
+
+    public function __construct(ParserManager $parserManager, EntityManager $entityManager, SiteManager $siteManager)
     {
         $this->parserManager = $parserManager;
         $this->entityManager = $entityManager;
+        $this->siteManager = $siteManager;
     }
 
     /**
@@ -52,7 +59,7 @@ class EventFetcher
      */
     protected function getSiteInfo()
     {
-        $siteInfo = $this->entityManager->getRepository('AppBundle:SiteInfo')->findOneBy([]);
+        $siteInfo = $this->siteManager->getSiteInfo();
 
         if (!$siteInfo) {
             throw new \RuntimeException("Aucun site info enregistré");

@@ -24,7 +24,7 @@ class ZipCity
     protected $id;
 
     /**
-     * @Gedmo\Slug(fields={"postalCode", "name"})
+     * @Gedmo\Slug(fields={"postalCode", "name"}, updatable=false)
      * @ORM\Column(length=201, unique=true)
      */
     protected $slug;

@@ -103,7 +103,7 @@ class Place implements GeolocalizeInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     protected $site;
 
@@ -115,18 +115,30 @@ class Place implements GeolocalizeInterface
     protected $facebookId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City")
      * @ORM\JoinColumn(nullable=true)
      * @Expose
      */
     protected $city;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ZipCity", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ZipCity")
      * @ORM\JoinColumn(nullable=true)
      * @Expose
      */
     protected $zipCity;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Country")
+     * @ORM\JoinColumn(nullable=true)
+     * @Expose
+     */
+    protected $country;
+
+    /**
+     * @var string
+     */
+    protected $countryName;
 
     /**
      * @var Reject
@@ -150,6 +162,23 @@ class Place implements GeolocalizeInterface
     {
         $this->id = $id;
         return $this;
+    }
+
+    /**
+     * @param $country
+     * @return Place
+     */
+    public function setCountryName($country) {
+        $this->countryName = $country;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountryName() {
+        return $this->countryName;
     }
 
     /**
@@ -193,10 +222,6 @@ class Place implements GeolocalizeInterface
      */
     public function setLatitude($latitude)
     {
-        if (!isset($this->i)) {
-            $this->i = 0;
-        }
-
         $this->latitude = $latitude;
 
         return $this;
@@ -470,5 +495,29 @@ class Place implements GeolocalizeInterface
     public function getZipCity()
     {
         return $this->zipCity;
+    }
+
+    /**
+     * Set country
+     *
+     * @param \AppBundle\Entity\Country $country
+     *
+     * @return Place
+     */
+    public function setCountry(\AppBundle\Entity\Country $country = null)
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * Get country
+     *
+     * @return \AppBundle\Entity\Country
+     */
+    public function getCountry()
+    {
+        return $this->country;
     }
 }

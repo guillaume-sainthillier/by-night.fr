@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\ZipCity;
+
 /**
  * ZipCityRepository
  *
@@ -10,4 +12,49 @@ namespace AppBundle\Repository;
  */
 class ZipCityRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @param string|null $postalCode
+     * @param string|null $city
+     * @return ZipCity[]
+     */
+    private function findByPostalCodeOrCity($postalCode, $city) {
+        $query = $this
+            ->createQueryBuilder("zc");
+
+        if($postalCode) {
+            $query
+                ->where("zc.postalCode = :postalCode")
+                ->setParameter("postalCode", $postalCode);
+        }
+
+        if($city) {
+            $query
+                ->andWhere("(zc.name = :city OR zc.name = :city_bis)")
+                ->setParameter("city", $city)
+                ->setParameter("city_bis", str_replace(" ", "-", $city));
+        }
+
+        return $query
+            ->getQuery()
+            ->useQueryCache(true)
+            ->useResultCache(true)
+            ->getResult();
+    }
+
+    /**
+     * @param string $postalCode
+     * @param string|null $city
+     * @return ZipCity[]
+     */
+    public function findByPostalCodeAndCity($postalCode, $city = null) {
+        return $this->findByPostalCodeOrCity($postalCode, $city);
+    }
+
+    /**
+     * @param string|null $city
+     * @return ZipCity[]
+     */
+    public function findByCity($city) {
+        return $this->findByPostalCodeOrCity(null, $city);
+    }
 }

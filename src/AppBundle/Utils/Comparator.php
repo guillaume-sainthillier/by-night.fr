@@ -155,16 +155,24 @@ class Comparator
         return $bestItem;
     }
 
-    protected function isSubInSub($str1, $str2)
+    public function isSubInSub($str1, $str2)
     {
+        if($this->isSubstrInStr($str1, $str2) || $this->isSubstrInStr($str2, $str1)) {
+            return true;
+
+        }
         $sanitized1 = $this->sanitize($str1);
         $sanitized2 = $this->sanitize($str2);
 
-        return $this->isSubstrInStr($str1, $str2) || $this->isSubstrInStr($str2, $str1) || $this->isSubstrInStr($sanitized1, $sanitized2) || $this->isSubstrInStr($sanitized2, $sanitized1);
+        return $this->isSubstrInStr($sanitized1, $sanitized2) || $this->isSubstrInStr($sanitized2, $sanitized1);
     }
 
     protected function isSubstrInStr($needle, $haystack)
     {
+        if(! $needle) {
+            return false;
+        }
+
         return strpos($haystack, $needle) !== false;
     }
 

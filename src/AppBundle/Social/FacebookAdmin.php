@@ -68,12 +68,12 @@ class FacebookAdmin extends FacebookEvents
         parent::init();
 
         if (!$this->_isInitialized) {
+            $this->_isInitialized = true;
             $this->siteInfo = $this->siteManager->getSiteInfo();
 
             if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
                 $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
             }
-            $this->_isInitialized = true;
             $this->guessAppAccessToken();
         }
     }
@@ -295,7 +295,7 @@ class FacebookAdmin extends FacebookEvents
         return $this->cache[$key];
     }
 
-    public function getEventsFromIds(& $ids_event, $idsPerRequest = 20, $limit = 1000)
+    public function getEventsFromIds(array $ids_event, $idsPerRequest = 20, $limit = 1000)
     {
         $this->init();
         $requestPerBatch = 50;
@@ -438,7 +438,7 @@ class FacebookAdmin extends FacebookEvents
         $nbBatchs = ceil(count($datas) / $idsPerBatch);
         $finalNodes = [];
 
-
+        $nbBatchs = 1; //TODO: Supprimer ça
         for ($i = 0; $i < $nbBatchs; $i++) {
             $requests = [];
             $batch_datas = array_slice($datas, $i * $idsPerBatch, $idsPerBatch);
@@ -524,15 +524,16 @@ class FacebookAdmin extends FacebookEvents
         });
     }
 
-    public function getEventsFromKeywords(array $keywords)
+    public function getEventsFromKeywords(array $keywords, \DateTime $since)
     {
         $this->init();
-        return $this->handleEdge($keywords, '/search', function (array $keywords) {
+        return $this->handleEdge($keywords, '/search', function (array $keywords) use($since) {
             $keyword = $keywords[0];
             return [
                 'q' => sprintf('"%s"', $keyword),
                 'type' => 'event',
                 'fields' => self::FIELDS,
+                'since' => $since->format('Y-m-d'),
                 'limit' => 1000
             ];
         }, function (FacebookResponse $response) {

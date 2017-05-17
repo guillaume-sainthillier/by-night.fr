@@ -28,9 +28,9 @@ class Cleaner
 
         $agenda->setNom($this->clean($agenda->getNom()) ?: null)
             ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
-            ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127) ?: null)
-            ->setReservationTelephone(substr($agenda->getReservationTelephone(), 0, 127) ?: null)
-            ->setReservationInternet(substr($agenda->getReservationInternet(), 0, 511) ?: null)
+            ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 255) ?: null)
+            ->setReservationTelephone(substr($agenda->getReservationTelephone(), 0, 255) ?: null)
+            ->setReservationInternet(substr($agenda->getReservationInternet(), 0, 512) ?: null)
             ->setAdresse(substr($agenda->getAdresse(), 0, 255) ?: null)
             ->setCategorieManifestation(substr($agenda->getCategorieManifestation(), 0, 128) ?: null)
             ->setThemeManifestation(substr($agenda->getThemeManifestation(), 0, 128) ?: null)
@@ -50,7 +50,7 @@ class Cleaner
 
     private function clean($string)
     {
-        return trim($this->util->deleteMultipleSpaces($string));
+        return trim($string);
     }
 
     private function cleanString($string, $delimiters = [])

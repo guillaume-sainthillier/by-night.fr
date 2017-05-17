@@ -146,6 +146,9 @@ class Monitor
 
     public static function displayStats()
     {
+        if(! self::$enableMonitoring) {
+            return;
+        }
         $table = new Table(self::$output);
         $table
             ->setHeaders(array(

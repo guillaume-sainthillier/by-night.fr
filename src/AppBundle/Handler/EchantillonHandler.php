@@ -84,13 +84,13 @@ class EchantillonHandler
         $this->initPlaces();
     }
 
-    public function flushEvents()
+    public function clearEvents()
     {
         unset($this->agendas, $this->newAgendas, $this->fbAgendas);
         $this->initEvents();
     }
 
-    public function flushPlaces()
+    public function clearPlaces()
     {
         unset($this->fbPlaces, $this->newPlaces, $this->places);
         $this->initPlaces();
@@ -103,17 +103,20 @@ class EchantillonHandler
         }, $events);
 
         $byFbIdPlaces = [];
-        $bySitePlaces = [];
+        $byCityPlaces = [];
+        $byZipCityPlaces = [];
 
         foreach ($places as $place) {
             /**
              * @var Place $place
              */
             if ($place->getFacebookId()) {
-                $byFbIdPlaces[$place->getFacebookId()] = $place->getFacebookId();
+                $byFbIdPlaces[$place->getFacebookId()] = true;
             }
         }
+        $byFbIdPlaces = array_keys($byFbIdPlaces);
 
+        //On prend toutes les places déjà connues par leur ID FB
         if (count($byFbIdPlaces) > 0) {
             $fbPlaces = $this->repoPlace->findBy([
                 'facebookId' => $byFbIdPlaces
@@ -124,21 +127,29 @@ class EchantillonHandler
             }
         }
 
+        //On prend ensuite toutes les places selon leur localisation
         foreach ($places as $place) {
-            if (!$place->getFacebookId() || !isset($this->fbPlaces[$place->getFacebookId()])) {
-                $key = $place->getSite()->getId();
-                $bySitePlaces[$key] = $key;
+            if($place->getCity()) {
+                $key = $place->getCity()->getId();
+                $byCityPlaces[$key] = true;
+            }elseif($place->getZipCity()) {
+                $key = $place->getZipCity()->getId();
+                $byZipCityPlaces[$key] = true;
             }
         }
 
-        if (count($bySitePlaces)) {
-            $sitePlaces = $this->repoPlace->findBy([
-                'site' => $bySitePlaces
-            ]);
+        $byCityPlaces = array_keys($byCityPlaces);
+        $byZipCityPlaces = array_keys($byZipCityPlaces);
 
-            foreach ($sitePlaces as $place) {
-                $this->addPlace($place);
-            }
+        $sitePlaces = [];
+        if (count($byCityPlaces)) {
+            $sitePlaces = $this->repoPlace->findByCities($byCityPlaces, $byFbIdPlaces);
+        }elseif(count($byZipCityPlaces)) {
+            $sitePlaces = $this->repoPlace->findByZipCities($byZipCityPlaces, $byFbIdPlaces);
+        }
+
+        foreach ($sitePlaces as $place) {
+            $this->addPlace($place);
         }
     }
 
@@ -151,9 +162,10 @@ class EchantillonHandler
              * @var Agenda $event
              */
             if ($event->getFacebookEventId()) {
-                $byFbIdEvents[$event->getFacebookEventId()] = $event->getFacebookEventId();
+                $byFbIdEvents[$event->getFacebookEventId()] = true;
             }
         }
+        $byFbIdEvents = array_keys($byFbIdEvents);
 
         if (count($byFbIdEvents) > 0) {
             $fbEvents = $this->repoAgenda->findBy([
@@ -166,14 +178,14 @@ class EchantillonHandler
         }
 
         foreach ($events as $event) {
-            if (!$event->getFacebookEventId() || !isset($this->fbAgendas[$event->getFacebookEventId()])) {
+            if(!$event->getFacebookEventId()) {
                 $key = $this->getAgendaCacheKey($event);
                 $byDateEvents[$key] = $event;
             }
         }
 
         if (count($byDateEvents)) {
-            $dateEvents = $this->repoAgenda->findAllByDates($byDateEvents);
+            $dateEvents = $this->repoAgenda->findAllByDates($byDateEvents, $byFbIdEvents);
             foreach ($dateEvents as $event) {
                 $this->addEvent($event);
             }
@@ -191,21 +203,28 @@ class EchantillonHandler
         }
 
         return array_merge(
-            $this->getPlaces($place),
-            $this->getNewPlaces($place)
+            $this->places,
+            $this->newPlaces,
+            $this->fbPlaces
         );
     }
 
 
     public function getEventEchantillons(Agenda $event)
     {
-        if ($event->getFacebookEventId() && isset($this->fbAgendas[$event->getFacebookEventId()])) {
-            return [$this->fbAgendas[$event->getFacebookEventId()]];
+        if ($event->getFacebookEventId()) {
+            if(isset($this->fbAgendas[$event->getFacebookEventId()])) {
+                return [$this->fbAgendas[$event->getFacebookEventId()]];
+            }
+
+            //Pas d'ID fb trouvé -> Pas de chances pour trouver un doublon, on ajoute alors l'événement
+            return [];
         }
 
         return array_merge(
-            $this->getEvents($event),
-            $this->getNewEvents($event)
+            $this->agendas,
+            $this->newAgendas,
+            $this->fbAgendas
         );
     }
 
@@ -216,11 +235,12 @@ class EchantillonHandler
 
     protected function addEvent(Agenda $event)
     {
-        $key = $this->getAgendaCacheKey($event);
-        if (!isset($this->agendas[$key])) {
-            $this->agendas[$key] = [];
-        }
-        $this->agendas[$key][$event->getId()] = $event;
+        $this->agendas[$event->getId()] = $event;
+//        $key = $this->getAgendaCacheKey($event);
+//        if (!isset($this->agendas[$key])) {
+//            $this->agendas[$key] = [];
+//        }
+//        $this->agendas[$key][$event->getId()] = $event;
     }
 
     protected function getEvents(Agenda $event)
@@ -237,19 +257,12 @@ class EchantillonHandler
     public function addNewEvent(Agenda $event)
     {
         if ($event->getFacebookEventId()) {
-            $this->fbAgendas[$event->getFacebookEventId()] = $event;
-        }
-
-        $key = $this->getAgendaCacheKey($event);
-        if ($event->getId()) {
-            $this->agendas[$key][$event->getId()] = $event;
+            $this->addFbEvent($event);
+        }elseif ($event->getId()) {
+            $this->agendas[$event->getId()] = $event;
         } else {
-            if (!isset($this->newAgendas[$key])) {
-                $this->newAgendas[$key] = [];
-            }
-
-            $id = spl_object_hash($event);
-            $this->newAgendas[$key][$id] = $event;
+            $key = spl_object_hash($event);
+            $this->newAgendas[$key] = $event;
         }
 
         $this->addNewPlace($event->getPlace());
@@ -272,11 +285,12 @@ class EchantillonHandler
 
     protected function addPlace(Place $place)
     {
-        $key = $place->getSite()->getId();
-        if (!isset($this->places[$key])) {
-            $this->places[$key] = [];
-        }
-        $this->places[$key][$place->getId()] = $place;
+        $this->places[$place->getId()] = $place;
+//        $key = $place->getSite()->getId();
+//        if (!isset($this->places[$key])) {
+//            $this->places[$key] = [];
+//        }
+//        $this->places[$key][$place->getId()] = $place;
     }
 
     protected function getPlaces(Place $place)
@@ -293,18 +307,11 @@ class EchantillonHandler
     {
         if ($place->getFacebookId()) {
             $this->fbPlaces[$place->getFacebookId()] = $place;
-        }
-
-        $key = $place->getSite()->getId();
-        if ($place->getId()) {
+        }elseif($place->getId()) {
             $this->places[$place->getId()] = $place;
-        } else {
-            if (!isset($this->newPlaces[$key])) {
-                $this->newPlaces[$key] = [];
-            }
-
-            $id = spl_object_hash($place);
-            $this->newPlaces[$key][$id] = $place;
+        }else {
+            $key = spl_object_hash($place);
+            $this->newPlaces[$key] = $place;
         }
     }
 
@@ -321,8 +328,7 @@ class EchantillonHandler
     protected function getAgendaCacheKey(Agenda $agenda)
     {
         return sprintf(
-            "%s.%s.%s",
-            $agenda->getSite()->getId(),
+            "%s.%s",
             $agenda->getDateDebut()->format('Y-m-d'),
             $agenda->getDateFin()->format('Y-m-d')
         );

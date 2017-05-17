@@ -22,6 +22,6 @@ class AppExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter('tbn_user.social', $config['socials']);
+//        $container->setParameter('tbn_user.social', $config['socials']);
     }
 }

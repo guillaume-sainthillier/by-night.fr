@@ -518,7 +518,7 @@ class AgendaRepository extends EntityRepository
     }
 
     //Appelé par DoctrineEventParser
-    public function findAllByDates(array $events)
+    public function findAllByDates(array $events, array $fbIds)
     {
         if (!count($events)) {
             return [];
@@ -533,11 +533,16 @@ class AgendaRepository extends EntityRepository
             /**
              * @var Agenda $event
              */
-            $query->orWhere("a.dateDebut = :date_debut_$i AND a.dateFin = :date_fin_$i AND a.site = :site_$i");
+            $query->orWhere("a.dateDebut = :date_debut_$i AND a.dateFin = :date_fin_$i");
             $params["date_debut_$i"] = $event->getDateDebut()->format('Y-m-d');
             $params["date_fin_$i"] = $event->getDateFin()->format('Y-m-d');
-            $params["site_$i"] = $event->getSite()->getId();
         }
+
+        if(count($fbIds)) {
+            $query->andWhere("a.facebookEventId NOT IN (:fbIds)");
+            $params['fbIds'] = $fbIds;
+        }
+
 
         return $query
             ->setParameters($params)

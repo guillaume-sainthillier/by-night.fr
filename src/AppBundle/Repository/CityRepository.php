@@ -10,4 +10,14 @@ namespace AppBundle\Repository;
  */
 class CityRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByName($city) {
+        return $this
+            ->createQueryBuilder("c")
+            ->where("c.name = :city")
+            ->setParameter("city", $city)
+            ->getQuery()
+            ->useResultCache(true)
+            ->useQueryCache(true)
+            ->getResult();
+    }
 }

@@ -25,6 +25,8 @@ class Reject
     const BAD_PLACE_CITY_POSTAL_CODE = 4096;
     const BAD_USER = 8192;
     const EVENT_DELETED = 16384;
+    const AMBIGOUS_ZIP = 32768;
+    const AMBIGOUS_CITY = 65536;
 
     protected $reason;
 

@@ -35,7 +35,7 @@ class Merger
     public function mergeEvent(Agenda $a = null, Agenda $b = null)
     {
         return $this->merge($a, $b, [
-            'id' => self::FORCE_MERGE_LEFT,
+//            'id' => self::FORCE_MERGE_LEFT,
 //            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
@@ -76,7 +76,7 @@ class Merger
     public function mergePlace(Place $a = null, Place $b = null)
     {
         return $this->merge($a, $b, [
-            'id' => self::FORCE_MERGE_LEFT,
+//            'id' => self::FORCE_MERGE_LEFT,
 //            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'latitude' => self::MERGE_LEFT,

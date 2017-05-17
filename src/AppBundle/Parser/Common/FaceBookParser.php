@@ -5,7 +5,7 @@ namespace AppBundle\Parser\Common;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 
-use AppBundle\Entity\SiteRepository;
+use AppBundle\Repository\SiteRepository;
 use AppBundle\Utils\Monitor;
 use AppBundle\Social\FacebookAdmin;
 use AppBundle\Parser\AgendaParser;
@@ -17,19 +17,16 @@ use AppBundle\Utils\Firewall;
  */
 class FaceBookParser extends AgendaParser
 {
-
     /**
      * @var FacebookAdmin $api
      */
     protected $api;
-
 
     /**
      *
      * @var ObjectManager
      */
     protected $om;
-
 
     /**
      *
@@ -42,7 +39,6 @@ class FaceBookParser extends AgendaParser
      * @var Firewall
      */
     protected $firewall;
-
 
     public function __construct(ObjectManager $om, Firewall $firewall, FacebookAdmin $api)
     {
@@ -130,7 +126,7 @@ class FaceBookParser extends AgendaParser
         $cities = $this->getCities();
         shuffle($cities);
         $cities = array_slice($cities, 0, 100);
-        $events = $this->api->getEventsFromKeywords($cities);
+        $events = $this->api->getEventsFromKeywords($cities, $now);
         Monitor::writeln(sprintf(
             "<info>%d</info> événements trouvés",
             count($events)
@@ -151,6 +147,10 @@ class FaceBookParser extends AgendaParser
     {
         $this->api->setSiteInfo($this->getSiteInfo());
         $now = new \DateTime;
+
+//        $events = $this->api->getEventsFromIds(["830234333792674", "1538235536480501"]);
+//        $events = $this->api->getEventsFromIds(["1752921201640362", "1538235536480501", "248556222222718"]);
+//        return array_map([$this, 'getInfoAgenda'], $events);
 
         //Recherche d'événements de l'API en fonction des lieux
         $place_events = $this->getEventsFromPlaces($now);

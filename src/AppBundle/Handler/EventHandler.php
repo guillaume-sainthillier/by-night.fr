@@ -79,7 +79,7 @@ class EventHandler
      * @param array $persistedEvents
      * @param array $persistedPlaces
      * @param Agenda $event
-     * @return mixed|null
+     * @return Agenda
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Agenda $event)
     {
@@ -118,5 +118,12 @@ class EventHandler
         return Monitor::bench('mergePlace', function () use ($bestPlace, $notPersistedPlace) {
             return $this->merger->mergePlace($bestPlace, $notPersistedPlace);
         });
+    }
+
+    /**
+     * @return Comparator
+     */
+    public function getComparator() {
+        return $this->comparator;
     }
 }
