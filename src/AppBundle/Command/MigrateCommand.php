@@ -31,7 +31,7 @@ class MigrateCommand extends AppCommand
 
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
         $places = $em->getRepository("AppBundle:Place")->findAll();
-
+        $france = $em->getRepository("AppBundle:Country")->find("FR");
         Monitor::createProgressBar(count($places));
 
         $migratedPlaces = [];
@@ -39,12 +39,10 @@ class MigrateCommand extends AppCommand
             /**
              * @var Place $place
              */
+            $place->setReject(new Reject())->setCountry($france);
+            $firewall->guessEventLocation($place);
+            $em->persist($place);
 
-            if(! $place->getCity() && ! $place->getZipCity()) {
-                $place->setReject(new Reject());
-                $firewall->guessEventLocation($place);
-                $em->persist($place);
-            }
 
             $migratedPlaces[] = $place;
             Monitor::advanceProgressBar();

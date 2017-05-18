@@ -132,7 +132,7 @@ class ToulouseTourismeParser extends LinksParser
         $tab_retour['place.rue'] = $rue;
         $tab_retour['place.codePostal'] = $cp;
         $tab_retour['place.ville'] = $ville;
-        $tab_retour['place.country'] = "France";
+        $tab_retour['place.country_name'] = "France";
         $tab_retour['descriptif'] = $description_start . ' ' . $description_end;
         $tab_retour['reservation_telephone'] = implode(',', $resa_telephone);
         $tab_retour['reservation_internet'] = implode(',', $resa_internet);

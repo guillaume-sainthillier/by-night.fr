@@ -2,6 +2,8 @@
 
 namespace AppBundle\Utils;
 
+use AppBundle\Entity\City;
+use AppBundle\Entity\ZipCity;
 use Doctrine\Common\Cache\ArrayCache;
 use AppBundle\Entity\Place;
 use AppBundle\Entity\Agenda;
@@ -33,34 +35,12 @@ class Comparator
     public function deleteCache()
     {
         $this->cache->deleteAll();
-    }
-
-    public function getMatchingScoreVille(Place $a = null, Place $b = null)
-    {
-        $pourcentage = 0;
-        if ($a !== null && $b !== null) {
-            $isMatchingCP = ($a->getCodePostal() && $b->getCodePostal()) ? $this->isSameText($a->getCodePostal(), $b->getCodePostal()) : false;
-            //Même CP -> fortement identiques
-            if ($isMatchingCP) {
-                return 100;
-            }
-
-            $matchingNom = ($a->getVille() && $b->getVille()) ? $this->getMatchingScoreText($a->getVille(), $b->getVille()) : 0;
-
-            //Même Nom et pas de CP sur l'une des villes -> fortement identiques
-            if ($matchingNom >= 80 && (!$a->getCodePostal() || !$b->getCodePostal())) {
-                return 80;
-            } elseif ($matchingNom >= 80) {
-                return 75;
-            }
-        }
-
-        return $pourcentage;
+        $this->cache->flushAll();
     }
 
     public function getBestPlace(array $places, Place $testedPlace = null)
     {
-        return $this->getBest($places, [$this, 'getMatchingScorePlace'], $testedPlace, 80);
+        return $this->getBest($places, [$this, 'getMatchingScorePlace'], $testedPlace, 90);
     }
 
     public function getMatchingScorePlace(Place $a = null, Place $b = null)
@@ -70,21 +50,23 @@ class Comparator
                 return 100;
             }
 
-            if ($this->getMatchingScoreVille($a, $b) >= 75) {
+            //Même ville
+            if (($a->getCity() && $b->getCity() && $a->getCity()->getId() === $b->getCity()->getId()) ||
+                ($a->getZipCity() && $b->getZipCity() && $a->getZipCity()->getId() === $b->getZipCity()->getId())) {
+                $matchinScoreNom = $this->getMatchingScoreTextWithoutCity(
+                    $a->getNom(), $a->getCity(), $a->getZipCity(),
+                    $b->getNom(), $b->getCity(), $b->getZipCity()
+                );
 
-                //~ Même ville et même rue
-                if ($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100) {
-                    if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80) {
-                        return 100;
-                    }
+                //Même rue & ~ même nom
+                if ($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100 &&
+                    $matchinScoreNom >= 80) {
+                    return 100;
                 }
 
-                if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80) {
+                //~ Même nom
+                if ($matchinScoreNom >= 80) {
                     return 90;
-                }
-
-                if ($this->isSubInSub($a->getNom(), $b->getNom())) {
-                    return 85;
                 }
             }
         }
@@ -109,7 +91,7 @@ class Comparator
         return $this->getBest($events, [$this, 'getMatchingScoreEvent'], $testedEvent);
     }
 
-    protected function getMatchingScoreEvent(Agenda $a, Agenda $b)
+    public function getMatchingScoreEvent(Agenda $a, Agenda $b)
     {
         //Fort taux de ressemblance du nom ou descriptif ou égalité de l'id FB
         if ($this->getStrictMatchingEvent($a, $b)) {
@@ -219,6 +201,10 @@ class Comparator
 
     protected function getMatchingScoreRue($a, $b)
     {
+        if($a === $b) {
+            return 100;
+        }
+
         $trimedA = $this->sanitizeRue($a);
         $trimedB = $this->sanitizeRue($b);
 
@@ -227,14 +213,46 @@ class Comparator
 
     protected function getMatchingScoreHTML($a, $b)
     {
+        if($a === $b) {
+            return 100;
+        }
+
         $trimedA = $this->sanitizeHTML($a);
         $trimedB = $this->sanitizeHTML($b);
 
         return $this->getMatchingScore($trimedA, $trimedB);
     }
 
+    protected function getMatchingScoreTextWithoutCity($a, City $cityA = null, ZipCity $zipCityA = null, $b = null, City $cityB = null, ZipCity $zipCityB = null)
+    {
+        if($a === $b) {
+            return 100;
+        }
+
+        if($cityA) {
+            $a = str_ireplace($cityA->getName(), '', $a);
+        }elseif($zipCityA) {
+            $a = str_ireplace($zipCityA->getName(), '', $a);
+        }
+
+        if($cityB) {
+            $b = str_ireplace($cityB->getName(), '', $b);
+        }elseif($zipCityB) {
+            $b = str_ireplace($zipCityB->getName(), '', $b);
+        }
+
+        $a = $this->sanitize($a);
+        $b = $this->sanitize($b);
+
+        return $this->getMatchingScore($a, $b);
+    }
+
     protected function getMatchingScoreText($a, $b)
     {
+        if($a === $b) {
+            return 100;
+        }
+
         $trimedA = $this->sanitize($a);
         $trimedB = $this->sanitize($b);
 
@@ -284,15 +302,16 @@ class Comparator
     public function sanitize($string)
     {
         return Monitor::bench('Sanitize', function () use ($string) {
-            $key = 'sanitize' . $string;
+            $key = 'sanitize.' . $string;
             if (!$this->cache->contains($key)) {
-                $step1 = $this->util->utf8LowerCase($string);
-                $step2 = $this->util->replaceAccents($step1);
-                $step3 = $this->util->replaceNonAlphanumericChars($step2);
-                $step4 = $this->util->deleteStopWords($step3);
-                $step5 = $this->util->deleteMultipleSpaces($step4);
-                $step6 = trim($step5);
-                $this->cache->save($key, $step6);
+                $string = $this->util->deleteStopWords($string);
+                $string = $this->util->utf8LowerCase($string);
+                $string = $this->util->replaceAccents($string);
+                $string = $this->util->replaceNonAlphanumericChars($string);
+                $string = $this->util->deleteStopWords($string);
+                $string = $this->util->deleteMultipleSpaces($string);
+                $string = trim($string);
+                $this->cache->save($key, $string);
             }
             return $this->cache->fetch($key);
         });

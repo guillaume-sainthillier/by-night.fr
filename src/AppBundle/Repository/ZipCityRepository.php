@@ -15,15 +15,18 @@ class ZipCityRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param string|null $postalCode
      * @param string|null $city
+     * @param string $country
      * @return ZipCity[]
      */
-    private function findByPostalCodeOrCity($postalCode, $city) {
+    private function findByPostalCodeOrCity($postalCode, $city, $country) {
         $query = $this
-            ->createQueryBuilder("zc");
+            ->createQueryBuilder("zc")
+            ->where("zc.country = :country")
+            ->setParameter("country", $country);
 
         if($postalCode) {
             $query
-                ->where("zc.postalCode = :postalCode")
+                ->andWhere("zc.postalCode = :postalCode")
                 ->setParameter("postalCode", $postalCode);
         }
 
@@ -44,17 +47,28 @@ class ZipCityRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param string $postalCode
      * @param string|null $city
+     * @param string $country
      * @return ZipCity[]
      */
-    public function findByPostalCodeAndCity($postalCode, $city = null) {
-        return $this->findByPostalCodeOrCity($postalCode, $city);
+    public function findByPostalCodeAndCity($postalCode, $city, $country) {
+        return $this->findByPostalCodeOrCity($postalCode, $city, $country);
     }
 
     /**
      * @param string|null $city
+     * @param string $country
      * @return ZipCity[]
      */
-    public function findByCity($city) {
-        return $this->findByPostalCodeOrCity(null, $city);
+    public function findByCity($city, $country) {
+        return $this->findByPostalCodeOrCity(null, $city, $country);
+    }
+
+    /**
+     * @param string $postalCode
+     * @param string $country
+     * @return ZipCity[]
+     */
+    public function findByPostalCode($postalCode, $country) {
+        return $this->findByPostalCodeOrCity($postalCode, null, $country);
     }
 }

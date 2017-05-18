@@ -1,7 +1,9 @@
 <?php
 
-namespace AppBundle\Tests\Utils;
+namespace Tests\AppBundle\Utils;
 
+use AppBundle\Entity\City;
+use AppBundle\Entity\ZipCity;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
@@ -63,32 +65,42 @@ class HandlerTest extends KernelTestCase
 
     public function testHandlePlace()
     {
+        $toulouseZip = new ZipCity();
+        $toulouseZip->setId(1)->setName('Toulouse')->setPostalCode('31000');
+
+        $toulouseZip2 = new ZipCity();
+        $toulouseZip2->setId(2)->setName('Toulouse')->setPostalCode('31500');
+
+        $toulouse = new City();
+        $toulouse->setName('Toulouse');
+
         //Construction des places
-        $dynamo = (new Place)->setId(1)->setNom('Dynamo')->setRue('6 rue Amélie')->setVille('Toulouse')->setCodePostal('31000');
-        $bikini = (new Place)->setId(2)->setNom('Le bikini')->setVille('Toulouse')->setCodePostal('31000');
-        $moloko = (new Place)->setId(3)->setNom('Moloko')->setRue("6 Rue Joutx Aigues")->setVille('Toulouse')->setCodePostal('31000');
+        $dynamo = (new Place)->setId(1)->setNom('Dynamo')->setRue('6 rue Amélie')->setZipCity(clone $toulouseZip)->setCity(clone $toulouse);
+        $bikini = (new Place)->setId(2)->setNom('Le bikini')->setZipCity(clone $toulouseZip)->setCity(clone $toulouse);
+        $moloko = (new Place)->setId(3)->setNom('Moloko')->setRue("6 Rue Joutx Aigues")->setZipCity(clone $toulouseZip)->setCity(clone $toulouse);
         $persistedPlaces = [$dynamo, $bikini, $moloko];
 
-        $place = (new Place)->setNom('Dynamo')->setRue('6 rue Amélie')->setVille('Toulouse')->setCodePostal('31000');
+        $place = (new Place)->setNom('Dynamo')->setRue('6 rue Amelie')->setZipCity(clone $toulouseZip)->setCity(clone $toulouse);
         $place = $this->handler->handlePlace($persistedPlaces, $place);
         $this->assertNotEquals($place, null);
         $this->assertEquals($place->getId(), 1);
 
-        $place = (new Place)->setNom('Autre Lieu')->setRue('rue Amélie')->setVille('Toulouse')->setCodePostal('31000');
+        $place = (new Place)->setNom('Autre Lieu')->setRue('rue Amélie')->setZipCity(clone $toulouseZip)->setCity(clone $toulouse);
         $place = $this->handler->handlePlace($persistedPlaces, $place);
         $this->assertNotEquals($place, null);
         $this->assertEquals($place->getId(), null);
 
-        $place = (new Place)->setNom('Bikini')->setVille('Toulouse');
+
+        $place = (new Place)->setNom('Bikini, Toulouse')->setCity(clone $toulouse);
         $place = $this->handler->handlePlace($persistedPlaces, $place);
         $this->assertNotEquals($place, null);
         $this->assertEquals($place->getId(), 2);
 
-        $place = (new Place)->setNom('La gouaille')->setRue('6 Rue Joutx Aigues')->setVille('Toulouse')->setCodePostal('31000');
+        $place = (new Place)->setNom('La gouaille')->setRue('6 Rue Joutx Aigues')->setZipCity(clone $toulouseZip)->setCity(clone $toulouse);
         $place = $this->handler->handlePlace($persistedPlaces, $place);
         $this->assertEquals($place->getId(), null);
 
-        $place = (new Place)->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setVille('Toulouse')->setCodePostal('31500');
+        $place = (new Place)->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setZipCity(clone $toulouseZip2)->setCity(clone $toulouse);
         $place = $this->handler->handlePlace($persistedPlaces, $place);
         $this->assertEquals($place->getId(), 3);
     }

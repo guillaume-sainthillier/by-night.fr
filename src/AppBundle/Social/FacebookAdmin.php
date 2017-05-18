@@ -438,7 +438,7 @@ class FacebookAdmin extends FacebookEvents
         $nbBatchs = ceil(count($datas) / $idsPerBatch);
         $finalNodes = [];
 
-        $nbBatchs = 1; //TODO: Supprimer ça
+        $nbBatchs = min($nbBatchs, 5); //TODO: Supprimer ça
         for ($i = 0; $i < $nbBatchs; $i++) {
             $requests = [];
             $batch_datas = array_slice($datas, $i * $idsPerBatch, $idsPerBatch);

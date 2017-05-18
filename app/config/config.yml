@@ -36,12 +36,20 @@ framework:
     http_method_override: true
     
 doctrine_cache:
+    custom_providers:
+        location:
+          prototype:  "app.location_cache_provider"
     providers:
         memcache:
             type: redis
             namespace: memory_cache_ns
             aliases:
                 - memory_cache
+#        location:
+#            type: location
+#            namespace: location_cache_ns
+#            aliases:
+#                - location_cache
         array:
             type: array
             namespace: array_cache_ns

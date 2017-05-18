@@ -8,6 +8,7 @@
 
 namespace AppBundle\Handler;
 
+use AppBundle\Entity\AdminZone;
 use AppBundle\Entity\City;
 use AppBundle\Entity\ZipCity;
 use Doctrine\ORM\EntityManagerInterface;
@@ -158,9 +159,6 @@ class DoctrineEventHandler
             return [];
         }
 
-//        $this->loadSites();
-//        $this->loadVilles();
-
         //On récupère toutes les explorations existantes pour ces événements
         $this->loadExplorations($events);
 
@@ -199,6 +197,9 @@ class DoctrineEventHandler
 
         $events = array_merge($events, $eventOwners);
         foreach ($events as $event) {
+            /**
+             * @var Agenda $event
+             */
             if (isset($ids[$event->getFacebookEventId()])) {
                 $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
             }
@@ -230,15 +231,6 @@ class DoctrineEventHandler
     private function getAllowedEvents(array $events)
     {
         return array_filter($events, [$this->firewall, 'isValid']);
-//        usort($events, function (Agenda $a, Agenda $b) {
-//            if ($a->getSite() === $b->getSite()) {
-//                return 0;
-//            }
-//
-//            return $a->getSite()->getId() - $b->getSite()->getId();
-//        });
-//
-//        return $events;
     }
 
     /**
@@ -262,12 +254,13 @@ class DoctrineEventHandler
         foreach ($events as $i => $event) {
             $place = $event->getPlace();
 
+            $key = null;
             if($place->getCity()) {
                 $key = "city.". $place->getCity()->getId();
             }elseif($place->getZipCity()) {
                 $key = "zip_city.".$place->getZipCity()->getId();
-            }else {
-                $key = null; //TODO: Add country
+            }elseif($place->getCountry()) {
+                $key = "country.".$place->getCountry()->getId();
             }
 
             if($key) {
@@ -312,10 +305,11 @@ class DoctrineEventHandler
 
             //Par n événements
             foreach ($chunk as $currentEvents) {
-                $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
 
                 //Par événement
                 foreach ($currentEvents as $i => $event) {
+                    $this->echantillonHandler->prefetchEventEchantillons([$event]);
+
                     /**
                      * @var Agenda $event
                      */
@@ -328,7 +322,6 @@ class DoctrineEventHandler
                     if (!$this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
                     } else {
-                        Monitor::advanceProgressBar();
                         $event = $this->em->merge($event);
                         $this->echantillonHandler->addNewEvent($event);
                         if ($this->firewall->isPersisted($event)) {
@@ -337,7 +330,9 @@ class DoctrineEventHandler
                             $this->explorationHandler->addInsert();
                         }
                     }
+                    Monitor::advanceProgressBar();
                     $events[$i] = $event;
+                    $this->echantillonHandler->clearEvents();
                 }
                 $this->commit();
                 $this->clearEvents();
@@ -353,8 +348,7 @@ class DoctrineEventHandler
     private function clearPlaces()
     {
         $this->em->clear(Place::class);
-        $this->em->clear(ZipCity::class);
-        $this->em->clear(City::class);
+        $this->em->clear(Site::class);
         $this->echantillonHandler->clearPlaces();
     }
 
@@ -388,7 +382,7 @@ class DoctrineEventHandler
     {
         $explorations = $this->firewall->getExplorations();
 
-        $batchSize = 200;
+        $batchSize = 500;
         $nbBatches = ceil(count($explorations) / $batchSize);
 
         for ($i = 0; $i < $nbBatches; $i++) {
@@ -467,15 +461,27 @@ class DoctrineEventHandler
 
         //Pas besoin de chercher un lieu dont le pays n'est même pas connu
         if(! $place->getId() && ! $place->getCountryName()) {
+            $place->getReject()->addReason(Reject::NO_COUNTRY_PROVIDED);
             return;
         }
 
         //Nom de lieu (avec ou sans coordoonnées GPS)
         if(!$place->getCodePostal() && !$place->getVille()) {
-            //TODO: Geocoding
+            //TODO: Géocoding à partir du nom du lieu ou de l'adresse facebook. (Ex: Avenue de Castres, 31500 Toulouse, France
             $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
             return;
-            //Géocoding à partir du nom du lieu ou de l'adresse facebook. (Ex: Avenue de Castres, 31500 Toulouse, France
+        }
+
+        //Recherche du pays en premier lieu
+        if(! $place->getCountry() && $place->getCountryName()) {
+            $country = $this->em->getRepository('AppBundle:Country')->findByName($place->getCountryName());
+            $place->setCountry($country);
+        }
+
+        //Pas de pays détecté -> next
+        if(! $place->getCountry()) {
+            $place->getReject()->addReason(Reject::BAD_COUNTRY);
+            return;
         }
 
         //Location fournie -> Vérification dans la base des villes existantes
@@ -484,10 +490,10 @@ class DoctrineEventHandler
             $city = null;
             //Un code postal (et peut-être une ville) est fourni
             if($place->getCodePostal()) {
-                $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille());
+                $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
 
                 if($place->getVille() && count($zipCities) === 0) {
-                    $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal());
+                    $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
                 }
 
                 //On tente de trouver un candidat si pas de strict match
@@ -511,7 +517,7 @@ class DoctrineEventHandler
                 $city = $zipCity->getParent();
             }else {
                 //Un nom de ville est fourni
-                $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille());
+                $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
 
                 //Aucune ville trouvée -> Pas besoin de continuer plus loin
                 if(count($zipCities) === 0) {
@@ -522,9 +528,9 @@ class DoctrineEventHandler
                     $zipCity = $zipCities[0];
                 }
 
-                //Pas de ville trouvée -> on va chercher dans les City
+                //Pas de ville trouvée -> on va chercher dans les Cities
                 if(! $zipCity) {
-                    $cities = $this->repoCity->findByName($place->getVille());
+                    $cities = $this->repoCity->findByName($place->getVille(), $place->getCountry()->getId());
                     if(count($cities) === 0) {
                         $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
                         return;
@@ -540,32 +546,7 @@ class DoctrineEventHandler
             }
             
             $place->setCity($city)->setZipCity($zipCity);
-            //TODO: Ajouter le country ici
         }
-
-//        $key = $this->firewall->getVilleHash($event->getPlace()->getVille());
-//
-//        $site = null;
-//        if (isset($this->sites[$key])) {
-//            $site = $this->em->getReference(Site::class, $this->sites[$key]->getId());
-//        } elseif (isset($this->villes[$key])) {
-//            $site = $this->em->getReference(Site::class, $this->villes[$key]);
-//        } else {
-//            foreach ($this->sites as $testSite) {
-//                if ($this->firewall->isLocationBounded($event->getPlace(), $testSite)) {
-//                    $site = $this->em->getReference(Site::class, $testSite->getId());
-//                    break;
-//                } elseif ($this->firewall->isLocationBounded($event, $testSite)) {
-//                    $site = $this->em->getReference(Site::class, $testSite->getId());
-//                    break;
-//                }
-//            }
-//        }
-//
-//        if ($site) {
-//            $event->setSite($site);
-//            $event->getPlace()->setSite($site);
-//        }
     }
 
     /**

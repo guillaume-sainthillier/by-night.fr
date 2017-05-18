@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Utils;
+namespace Tests\AppBundle\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 

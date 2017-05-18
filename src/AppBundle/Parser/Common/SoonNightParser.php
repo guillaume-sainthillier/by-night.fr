@@ -64,7 +64,7 @@ class SoonNightParser extends LinksParser
         $tab_retour['place.rue'] = $rue;
         $tab_retour['place.code_postal'] = $code_postal;
         $tab_retour['place.ville'] = $ville;
-        $tab_retour['place.country'] = "France";
+        $tab_retour['place.country_name'] = "France";
 
 
         //Tarifs

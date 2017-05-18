@@ -10,11 +10,27 @@ namespace AppBundle\Repository;
  */
 class CityRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findByName($city) {
+    public function findLocations()
+    {
+        $results = $this->createQueryBuilder('c')
+            ->select('c.latitude, c.longitude')
+            ->where('c.latitude IS NOT NULL')
+            ->andWhere('c.longitude IS NOT NULL')
+            ->orderBy('c.population', 'DESC')
+            ->getQuery()
+            ->setMaxResults(50)
+            ->getScalarResult();
+
+        return $results;
+    }
+
+    public function findByName($city, $country) {
         return $this
             ->createQueryBuilder("c")
             ->where("c.name = :city")
+            ->andWhere("c.country = :country")
             ->setParameter("city", $city)
+            ->setParameter("country", $country)
             ->getQuery()
             ->useResultCache(true)
             ->useQueryCache(true)

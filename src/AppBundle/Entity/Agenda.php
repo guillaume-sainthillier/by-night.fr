@@ -507,6 +507,12 @@ class Agenda implements GeolocalizeInterface
         $this->isArchive = false;
     }
 
+    public function setId($id) {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function getDistinctTags()
     {
         $tags = $this->getCategorieManifestation() . ',' . $this->getTypeManifestation() . ',' . $this->getThemeManifestation();

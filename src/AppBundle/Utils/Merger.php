@@ -76,13 +76,11 @@ class Merger
     public function mergePlace(Place $a = null, Place $b = null)
     {
         return $this->merge($a, $b, [
-//            'id' => self::FORCE_MERGE_LEFT,
-//            'slug' => self::FORCE_MERGE_LEFT,
-            'nom',
+            'nom' => self::MERGE_LEFT,
             'latitude' => self::MERGE_LEFT,
             'longitude' => self::MERGE_LEFT,
             'rue' => self::MERGE_LEFT,
-            'url',
+            'url' => self::MERGE_LEFT,
             'ville' => self::MERGE_LEFT,
             'codePostal' => self::MERGE_LEFT,
             'facebook_id' => self::MERGE_LEFT,

@@ -60,7 +60,7 @@ class BikiniParser extends LinksParser
         $tab_retour['place.rue'] = preg_replace("#^(\d+), #", "$1 ", $full_adresse[0]);
         $tab_retour['place.code_postal'] = isset($this->cache[$this->url]) ? $this->cache[$this->url] : null;
         $tab_retour['place.ville'] = $ville;
-        $tab_retour['place.country'] = "France";
+        $tab_retour['place.country_name'] = "France";
 
         $this->parser->filter('#blocContenu')->children()->each(function (Crawler $sibling) use (&$tab_retour) {
             if ($sibling->attr('id') === 'prix') {

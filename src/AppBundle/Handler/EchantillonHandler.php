@@ -92,7 +92,7 @@ class EchantillonHandler
 
     public function clearPlaces()
     {
-        unset($this->fbPlaces, $this->newPlaces, $this->places);
+        unset($this->places, $this->newPlaces, $this->fbPlaces);
         $this->initPlaces();
     }
 
@@ -101,6 +101,8 @@ class EchantillonHandler
         $places = array_map(function (Agenda $event) {
             return $event->getPlace();
         }, $events);
+
+        unset($events);
 
         $byFbIdPlaces = [];
         $byCityPlaces = [];
@@ -236,11 +238,6 @@ class EchantillonHandler
     protected function addEvent(Agenda $event)
     {
         $this->agendas[$event->getId()] = $event;
-//        $key = $this->getAgendaCacheKey($event);
-//        if (!isset($this->agendas[$key])) {
-//            $this->agendas[$key] = [];
-//        }
-//        $this->agendas[$key][$event->getId()] = $event;
     }
 
     protected function getEvents(Agenda $event)
@@ -286,11 +283,6 @@ class EchantillonHandler
     protected function addPlace(Place $place)
     {
         $this->places[$place->getId()] = $place;
-//        $key = $place->getSite()->getId();
-//        if (!isset($this->places[$key])) {
-//            $this->places[$key] = [];
-//        }
-//        $this->places[$key][$place->getId()] = $place;
     }
 
     protected function getPlaces(Place $place)

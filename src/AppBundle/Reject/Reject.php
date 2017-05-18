@@ -27,6 +27,8 @@ class Reject
     const EVENT_DELETED = 16384;
     const AMBIGOUS_ZIP = 32768;
     const AMBIGOUS_CITY = 65536;
+    const NO_COUNTRY_PROVIDED = 131072;
+    const BAD_COUNTRY = 262144;
 
     protected $reason;
 

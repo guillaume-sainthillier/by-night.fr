@@ -21,6 +21,11 @@ parameters:
 
 
 services:
+    app.location_cache_provider:
+        class:     AppBundle\Cache\LocationCacheProvider
+        arguments:
+            - "@doctrine.orm.entity_manager"
+
     app.sitemap.sitemap_subscriber:
         class:     AppBundle\EventListener\SitemapSuscriber
         arguments:

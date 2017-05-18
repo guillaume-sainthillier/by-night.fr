@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Tests\Utils;
+namespace Tests\AppBundle\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -32,7 +32,7 @@ class MergerTest extends KernelTestCase
         $this->merger->mergePlace($oldPlace, $newPlace);
 
         $this->assertEquals($oldPlace->getId(), 1);
-        $this->assertEquals($oldPlace->getNom(), "La Dynamo");
+        $this->assertEquals($oldPlace->getNom(), "Dynamo");
         $this->assertEquals($oldPlace->getLatitude(), 43.6);
     }
 

@@ -25,6 +25,10 @@ class Firewall
     protected $toSaveExplorations;
     protected $explorations;
     protected $fbExploration;
+
+    /**
+     * @var Comparator
+     */
     protected $comparator;
     protected $om;
 
@@ -114,9 +118,7 @@ class Firewall
     public function filterEventLocation(Agenda $event)
     {
         $place = $event->getPlace();
-
-        //TODO: Not valid if there is no country
-        $reject = $event->getPlace()->getReject();
+        $reject = $place->getReject();
         if(! $reject->isValid()) {
             $event->getReject()->addReason($reject->getReason());
         }

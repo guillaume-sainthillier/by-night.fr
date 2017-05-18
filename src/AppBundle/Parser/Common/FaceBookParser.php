@@ -70,7 +70,7 @@ class FaceBookParser extends AgendaParser
 
     protected function getSiteLocations()
     {
-        return $this->om->getRepository('AppBundle:Site')->findLocations();
+        return $this->om->getRepository('AppBundle:City')->findLocations();
     }
 
     protected function getEventsFromUsers(array $additional_users, \DateTime $now)
@@ -145,7 +145,6 @@ class FaceBookParser extends AgendaParser
 
     public function getRawAgendas()
     {
-        $this->api->setSiteInfo($this->getSiteInfo());
         $now = new \DateTime;
 
 //        $events = $this->api->getEventsFromIds(["830234333792674", "1538235536480501"]);
@@ -241,6 +240,7 @@ class FaceBookParser extends AgendaParser
                 $tab_retour['place.longitude'] = $this->api->ensureGoodValue($location->getField('longitude'));
                 $tab_retour['place.code_postal'] = $this->api->ensureGoodValue($location->getField('zip'));
                 $tab_retour['place.ville'] = $this->api->ensureGoodValue($location->getField('city'));
+                $tab_retour['place.country_name'] = $this->api->ensureGoodValue($location->getField('country'));
             }
         }
 

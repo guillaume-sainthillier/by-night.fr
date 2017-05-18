@@ -61,7 +61,7 @@ class ToulouseParser extends AgendaParser
                     'place.longitude' => $tab[21],
                     'place.code_postal' => $tab[14],
                     'place.ville' => $tab[15],
-                    'place.country' => "France",
+                    'place.country_name' => "France",
                     'type_manifestation' => $tab[16],
                     'categorie_manifestation' => $tab[17],
                     'theme_manifestation' => $tab[18],
