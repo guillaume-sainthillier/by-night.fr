@@ -64,13 +64,13 @@ abstract class AdminZone
 
     /**
      * @var string
-     * @ORM\Column(name="admin1_code", type="string", length=20)
+     * @ORM\Column(name="admin1_code", type="string", length=20, nullable=true)
      */
     protected $admin1Code;
 
     /**
      * @var string
-     * @ORM\Column(name="admin2_code", type="string", length=80)
+     * @ORM\Column(name="admin2_code", type="string", length=80, nullable=true)
      */
     protected $admin2Code;
 

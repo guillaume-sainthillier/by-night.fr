@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\City;
 use AppBundle\Entity\Site;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -18,13 +19,14 @@ class TBNController extends Controller
     }
 
     /**
+     * @param City $city
      * @param $slug
      * @param $id
      * @param string $routeName
      * @param array $extraParams
      * @return null|object|RedirectResponse|\AppBundle\Entity\Agenda
      */
-    protected function checkEventUrl(Site $site, $slug, $id, $routeName = 'tbn_agenda_details', array $extraParams = [])
+    protected function checkEventUrl(City $city, $slug, $id, $routeName = 'tbn_agenda_details', array $extraParams = [])
     {
         $em = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository('AppBundle:Agenda');
@@ -44,7 +46,7 @@ class TBNController extends Controller
             $routeParams = array_merge([
                 'id' => $event->getId(),
                 'slug' => $event->getSlug(),
-                'city' => $site->getSubdomain()
+                'city' => $city->getSlug()
             ], $extraParams);
             return new RedirectResponse($this->generateUrl($routeName, $routeParams));
         }

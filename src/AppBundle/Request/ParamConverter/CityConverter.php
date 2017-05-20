@@ -9,11 +9,11 @@
 namespace AppBundle\Request\ParamConverter;
 
 
+use AppBundle\Entity\City;
 use Doctrine\Common\Persistence\AbstractManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Entity\Site;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CityConverter implements ParamConverterInterface
@@ -38,12 +38,12 @@ class CityConverter implements ParamConverterInterface
         $entity = $this
             ->registry
             ->getManager()
-            ->getRepository("AppBundle:Site")
-            ->findOneBy(['subdomain' => $city]);
+            ->getRepository("AppBundle:City")
+            ->findBySlug($city);
 
         if(! $entity) {
             throw new NotFoundHttpException(sprintf(
-                "Le site '%s' est introuvable",
+                "La ville '%s' est introuvable",
                 $city
             ));
         }
@@ -53,6 +53,6 @@ class CityConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getClass() === Site::class;
+        return $configuration->getClass() === City::class;
     }
 }

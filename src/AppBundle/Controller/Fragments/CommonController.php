@@ -9,6 +9,7 @@
 namespace AppBundle\Controller\Fragments;
 
 use AppBundle\Controller\TBNController;
+use AppBundle\Entity\City;
 use AppBundle\Entity\Site;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -23,10 +24,10 @@ class CommonController extends TBNController
      * @Route("/header/{city}", name="tbn_private_header_site")
      * @Route("/header", name="tbn_private_header")
      */
-    public function headerAction(Site $site = null)
+    public function headerAction(City $city)
     {
         $response = $this->render('menu.html.twig', [
-            'site' => $site
+            'city' => $city
         ]);
 
         $tomorrow = new \DateTime("tomorrow");

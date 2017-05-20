@@ -5,6 +5,6 @@
 {% block icone %}fa-star{% endblock %}
 {% block body %}
     <div>
-        {{ render_esi(controller('AppBundle:City/Widgets:topSoirees', {'site': site})) }}
+        {{ render_esi(controller('AppBundle:City/Widgets:topSoirees', {'city': city})) }}
     </div>
 {% endblock %}

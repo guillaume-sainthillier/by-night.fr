@@ -38,31 +38,4 @@ class SearchController extends Controller
 
         return new RedirectResponse($this->get("router")->generate("tbn_search_query", $params));
     }
-
-    /**
-     * @Route("/{city}/recherche/", name="tbn_search_query_old", requirements={"city": ".+"})
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function searchAction(Request $request)
-    {
-        $params = [];
-
-        $term = $request->get("q");
-        if($term) {
-            $params['q'] = $term;
-        }
-
-        $page = $request->get('page');
-        if($page) {
-            $params['page'] = $page;
-        }
-
-        $type = $request->get('type');
-        if($type) {
-            $params['type'] = $type;
-        }
-
-        return $this->redirectToRoute("tbn_search_query", $params);
-    }
 }

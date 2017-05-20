@@ -95,8 +95,8 @@
         <div id="wrap">
             <header>
                 <!-- Menu -->
-                {% if site is defined and site %}
-                    {{ render_esi(url('tbn_private_header_site', {'city' : site.subdomain})) }}
+                {% if city is defined and city %}
+                    {{ render_esi(url('tbn_private_header_site', {'city' : city.name})) }}
                 {% else %}
                     {{ render_esi(url('tbn_private_header')) }}
                 {% endif %}

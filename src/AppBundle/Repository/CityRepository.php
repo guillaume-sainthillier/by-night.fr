@@ -2,6 +2,8 @@
 
 namespace AppBundle\Repository;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 /**
  * CityRepository
  *
@@ -32,8 +34,46 @@ class CityRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter("city", $city)
             ->setParameter("country", $country)
             ->getQuery()
+            ->setCacheable(true)
+            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
             ->useResultCache(true)
             ->useQueryCache(true)
             ->getResult();
+    }
+
+    public function findTopPopulation($maxResults) {
+        return $this
+            ->createQueryBuilder("c")
+            ->orderBy("c.population", "DESC")
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->setCacheable(true)
+            ->useResultCache(true)
+            ->useQueryCache(true)
+            ->getResult();
+    }
+
+    public function findBySlug($slug) {
+        return $this
+            ->createQueryBuilder("c")
+            ->where("c.slug = :slug")
+            ->setParameter("slug", $slug)
+            ->getQuery()
+            ->useResultCache(true)
+            ->useQueryCache(true)
+            ->getOneOrNullResult();
+    }
+
+    public function findAllCities()
+    {
+        $cities = $this
+            ->createQueryBuilder('c')
+            ->select('c.name')
+            ->where('c.population > 10000')
+            ->groupBy('c.name')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_unique(array_filter(array_column($cities, 'name')));
     }
 }

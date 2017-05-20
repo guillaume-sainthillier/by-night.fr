@@ -12,9 +12,12 @@
         </div>
         <div class="navbar-collapse collapse navbar-responsive-collapse" id="navbar-main">
             <ul class="nav navbar-nav">
-                {% if site %}
+                {% if city %}
                 <li>
-                    <a href="{{ path('tbn_agenda_agenda', {'city': site.subdomain}) }}" title="L'agenda des sorties à {{ site.nom }}, c'est par ici !"><strong>Agenda</strong></a>
+                    <a href="{{ path('tbn_agenda_index', {'city': city.slug}) }}" title="{{ city.name }} ({{ city.parent.name }}, {{ city.parent.parent.name }})"><strong>{{ city.name }}</strong></a>
+                </li>
+                    <li>
+                    <a href="{{ path('tbn_agenda_agenda', {'city': city.slug}) }}" title="L'agenda des sorties à {{ city.name }}, c'est par ici !">Agenda</a>
                 </li>
                 {% endif %}
                 <li>
@@ -26,14 +29,22 @@
                     </li>
                 {%- endif %}
             </ul>
-            
+
+            {% if city %}
+            <form title="Que cherchez-vous à {{ city.name }} ?" action="{{ path('tbn_search_query_city', {'city': city.slug}) }}" method="GET" class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" class="form-control col-md-8" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
+                </div>
+                <button class="btn btn-raised btn-primary" type="submit"><i class="fa fa-search"></i></button>
+            </form>
+            {% else %}
             <form action="{{ path('tbn_search_query') }}" method="GET" class="navbar-form navbar-left" role="search">
                 <div class="form-group">
                     <input type="text" class="form-control col-md-8" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
                 </div>
                 <button class="btn btn-raised btn-primary" type="submit"><i class="fa fa-search"></i></button>
             </form>
-    
+            {% endif %}
             <ul class="nav navbar-nav navbar-right">
                 {% if is_granted("ROLE_ADMIN") %}
                 <li class="dropdown">
@@ -47,7 +58,7 @@
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                     {{ fos_httpcache_tag('menu-' ~ app.user.id) }}
                     <li class="dropdown profile">
-                        <a href="#" title="{{ app.user.username }} " class="dropdown-toggle" data-toggle="dropdown">
+                        <a href="#" title="{{ app.user.username }}" class="dropdown-toggle" data-toggle="dropdown">
                             {% set imageURL = userProfilePicture.getProfilePicture(app.user, 'thumb_user_menu') %}
                             <img class="img-circle" height="30" width="30" src="{{ imageURL }}" alt="Mon profil" /> 
                             <b class="caret"></b>

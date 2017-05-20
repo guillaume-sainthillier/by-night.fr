@@ -2,25 +2,14 @@
 
 namespace AppBundle\Controller\City;
 
-
-
-
 use AppBundle\Repository\AgendaRepository;
-
-
 use AppBundle\Controller\TBNController as Controller;
-
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-
 use Symfony\Component\Routing\Annotation\Route;
-
 use AppBundle\Configuration\BrowserCache;
-use AppBundle\Entity\Site;
-
+use AppBundle\Entity\City;
 use AppBundle\Entity\Place;
-
-
 use AppBundle\Form\Type\SearchType;
 use AppBundle\Search\SearchAgenda;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -33,23 +22,23 @@ class AgendaController extends Controller
 {
     const EVENT_PER_PAGE = 15;
 
-    protected function handleSearch(SearchAgenda $search, Site $site, $type, $tag, $ville, Place $place = null)
+    protected function handleSearch(SearchAgenda $search, City $city, $type, $tag, $ville, Place $place = null)
     {
         $term = null;
         if ($ville !== null) {
             $term = null;
             $search->setCommune([$ville]);
-            $formAction = $this->generateUrl('tbn_agenda_ville', ['ville' => $ville, 'city' => $site->getSubdomain()]);
+            $formAction = $this->generateUrl('tbn_agenda_ville', ['ville' => $ville, 'city' => $city->getSlug()]);
         } elseif ($place !== null) {
             $term = null;
             $search->setLieux([$place->getId()]);
-            $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $site->getSubdomain()]);
+            $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $city->getSlug()]);
         } elseif ($tag !== null) {
             $term = null;
             $search->setTag($tag);
-            $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag, 'city' => $site->getSubdomain()]);
+            $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag, 'city' => $city->getSlug()]);
         } elseif ($type !== null) {
-            $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type, 'city' => $site->getSubdomain()]);
+            $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type, 'city' => $city->getSlug()]);
             switch ($type) {
                 case 'exposition':
                     $term = 'expo, exposition';
@@ -68,7 +57,7 @@ class AgendaController extends Controller
                     break;
             }
         } else {
-            $formAction = $this->generateUrl('tbn_agenda_agenda', ['city' => $site->getSubdomain()]);
+            $formAction = $this->generateUrl('tbn_agenda_agenda', ['city' => $city->getSlug()]);
         }
 
         $search->setTerm($term);
@@ -90,7 +79,7 @@ class AgendaController extends Controller
      * @Route("/agenda/sortir-dans/{ville}/page/{page}", name="tbn_agenda_ville_pagination", requirements={"ville": ".*", "page": "\d+"})
      * @BrowserCache(false)
      */
-    public function indexAction(Request $request, Site $site, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
+    public function indexAction(Request $request, City $city, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -99,7 +88,7 @@ class AgendaController extends Controller
 
         $routeParams = [
             'page' => $page + 1,
-            'city' => $site->getSubdomain()
+            'city' => $city->getSlug()
         ];
         if ($paginateRoute === 'tbn_agenda_sortir_pagination') {
             $routeParams['type'] = $type;
@@ -118,20 +107,20 @@ class AgendaController extends Controller
 
         //Recherche des événements
         $search = new SearchAgenda();
-        $search->setSite($site);
+        $search->setCity($city);
         $place = null;
         if ($slug !== null) {
             $place = $em->getRepository('AppBundle:Place')->findOneBy(['slug' => $slug]);
             if (!$place) {
-                return new RedirectResponse($this->generateUrl('tbn_agenda_agenda', ['city' => $site->getSubdomain()]));
+                return new RedirectResponse($this->generateUrl('tbn_agenda_agenda', ['city' => $city->getSlug()]));
             }
         }
-        $formAction = $this->handleSearch($search, $site, $type, $tag, $ville, $place);
+        $formAction = $this->handleSearch($search, $city, $type, $tag, $ville, $place);
 
         //Récupération des lieux, types événéments et villes
-        $lieux = $this->getPlaces($repo, $site);
-        $types_manif = $this->getTypesEvenements($repo, $site);
-        $communes = $this->getVilles($repo, $site);
+        $lieux = $this->getPlaces($repo, $city);
+        $types_manif = $this->getTypesEvenements($repo, $city);
+        $communes = $this->getVilles($repo, $city);
 
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
@@ -160,7 +149,7 @@ class AgendaController extends Controller
         $soirees = $pagination;
 
         return $this->render('City/Agenda/index.html.twig', [
-            'site' => $site,
+            'city' => $city,
             'villeName' => $ville,
             'placeName' => (null !== $place) ? $place->getNom() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,
@@ -179,13 +168,13 @@ class AgendaController extends Controller
         ]);
     }
 
-    protected function getTypesEvenements(AgendaRepository $repo, Site $site)
+    protected function getTypesEvenements(AgendaRepository $repo, City $city)
     {
         $cache = $this->get('memory_cache');
-        $key = 'categories_evenements.' . $site->getSubdomain();
+        $key = 'categories_evenements.' . $city->getSlug();
 
         if (!$cache->contains($key)) {
-            $soirees_type_manifestation = $repo->getTypesEvenements($site);
+            $soirees_type_manifestation = $repo->getTypesEvenements($city);
             $type_manifestation = [];
 
             foreach ($soirees_type_manifestation as $soiree) {//
@@ -204,16 +193,16 @@ class AgendaController extends Controller
         return $cache->fetch($key);
     }
 
-    protected function getVilles(AgendaRepository $repo, Site $site)
+    protected function getVilles(AgendaRepository $repo, City $city)
     {
         $cache = $this->get('memory_cache');
-        $key = 'villes.' . $site->getSubdomain();
+        $key = 'villes.' . $city->getSlug();
 
         if (!$cache->contains($key)) {
-            $places = $repo->getAgendaVilles($site);
+            $places = $repo->getAgendaVilles($city);
             $tab_villes = [];
             foreach ($places as $place) {
-                $tab_villes[$place->getVille()] = $place->getVille();
+                $tab_villes[$place->getCity()->getName()] = $place->getCity()->getName();
             }
 
             $cache->save($key, $tab_villes, 24 * 60 * 60);
@@ -222,13 +211,13 @@ class AgendaController extends Controller
         return $cache->fetch($key);
     }
 
-    protected function getPlaces(AgendaRepository $repo, Site $site)
+    protected function getPlaces(AgendaRepository $repo, City $city)
     {
         $cache = $this->get('memory_cache');
-        $key = 'places.' . $site->getSubdomain();
+        $key = 'places.' . $city->getSlug();
 
         if (!$cache->contains($key)) {
-            $places = $repo->getAgendaPlaces($site);
+            $places = $repo->getAgendaPlaces($city);
             $lieux = array();
             foreach ($places as $place) {
                 $lieux[$place->getNom()] = $place->getId();

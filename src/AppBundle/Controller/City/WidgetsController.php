@@ -2,7 +2,7 @@
 
 namespace AppBundle\Controller\City;
 
-use AppBundle\Entity\Site;
+use AppBundle\Entity\City;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,9 +23,9 @@ class WidgetsController extends Controller
      * @Route("/tweeter-feed/{max_id}", name="tbn_agenda_tweeter_feed", requirements={"max_id": "\d+"})
      * @BrowserCache(false)
      */
-    public function twitterAction(Site $site, $max_id = null)
+    public function twitterAction(City $city, $max_id = null)
     {
-        $results = $this->get('tbn.social.twitter')->getTimeline($site, $max_id, self::TWEET_LIMIT);
+        $results = $this->get('tbn.social.twitter')->getTimeline($city, $max_id, self::TWEET_LIMIT);
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
@@ -33,7 +33,7 @@ class WidgetsController extends Controller
 
             if (isset($infos['?max_id'])) {
                 $nextLink = $this->generateUrl('tbn_agenda_tweeter_feed', [
-                    'city' => $site->getSubdomain(),
+                    'city' => $city->getSlug(),
                     'max_id' => $infos['?max_id']
                 ]);
             }
@@ -44,7 +44,7 @@ class WidgetsController extends Controller
         }
 
         if (!count($results['statuses']) && $this->get('request_stack')->getParentRequest() === null) {
-            return $this->redirectToRoute("tbn_agenda_agenda", ["city" => $site->getSubdomain()]);
+            return $this->redirectToRoute("tbn_agenda_agenda", ["city" => $city->getSlug()]);
         }
 
         $response = $this->render('City/Hinclude/tweets.html.twig', [
@@ -69,15 +69,15 @@ class WidgetsController extends Controller
      * @Route("/soiree/{slug}--{id}.html/prochaines-soirees/{page}", name="tbn_agenda_prochaines_soirees", requirements={"slug": ".+", "id": "\d+", "page": "\d+"})
      * @BrowserCache(false)
      */
-    public function nextEventsAction(Site $site, $slug, $id = null, $page = 1)
+    public function nextEventsAction(City $city, $slug, $id = null, $page = 1)
     {
         if ($page <= 0) {
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($site, $slug, $id, 'tbn_agenda_prochaines_soirees', [
+        $result = $this->checkEventUrl($city, $slug, $id, 'tbn_agenda_prochaines_soirees', [
             'page' => $page,
-            'city' => $site->getSubdomain()
+            'city' => $city->getSlug()
         ]);
 
         if ($result instanceof Response) {
@@ -89,7 +89,7 @@ class WidgetsController extends Controller
             return $this->redirectToRoute('tbn_agenda_details', [
                 'id' => $soiree->getId(),
                 'slug' => $soiree->getSlug(),
-                'city' => $site->getSubdomain()
+                'city' => $city->getSlug()
             ]);
         }
 
@@ -103,7 +103,7 @@ class WidgetsController extends Controller
             $hasNextLink = $this->generateUrl('tbn_agenda_prochaines_soirees', [
                 'slug' => $soiree->getSlug(),
                 'id' => $soiree->getId(),
-                'city' => $soiree->getSite()->getSubdomain(),
+                'city' => $soiree->getPlace()->getCity()->getSlug(),
                 'page' => $page + 1
             ]);
         } else {
@@ -129,13 +129,13 @@ class WidgetsController extends Controller
      * @Route("/soiree/{slug}--{id}.html/autres-soirees/{page}", name="tbn_agenda_soirees_similaires", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))3
      * @BrowserCache(false)
      */
-    public function soireesSimilairesAction(Site $site, $slug, $id = null, $page = 1)
+    public function soireesSimilairesAction(City $city, $slug, $id = null, $page = 1)
     {
         if ($page <= 0) {
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($site, $slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page, 'city' => $site->getSubdomain()]);
+        $result = $this->checkEventUrl($city, $slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page, 'city' => $city->getSlug()]);
         if ($result instanceof Response) {
             return $result;
         }
@@ -149,7 +149,7 @@ class WidgetsController extends Controller
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_similaires', [
-                'city' => $site->getSubdomain(),
+                'city' => $city->getSlug(),
                 'slug' => $soiree->getSlug(),
                 'id' => $soiree->getId(),
                 'page' => $page + 1
@@ -159,7 +159,7 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render("City/Hinclude/evenements.html.twig", [
-            'site' => $site,
+            'site' => $city,
             "soirees" => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
             "current" => $current,
             "count" => $count,
@@ -176,7 +176,7 @@ class WidgetsController extends Controller
      * @Route("/top/soirees/{page}", name="tbn_agenda_top_soirees", requirements={"page": "\d+"})
      * @BrowserCache(false)
      */
-    public function topSoireesAction(Site $site, $page = 1)
+    public function topSoireesAction(City $city, $page = 1)
     {
         if ($page <= 1) {
             $page = 1;
@@ -186,20 +186,20 @@ class WidgetsController extends Controller
         $repo = $em->getRepository('AppBundle:Agenda');
 
         $current = $page * self::WIDGET_ITEM_LIMIT;
-        $count = $repo->findTopSoireeCount($site);
+        $count = $repo->findTopSoireeCount($city);
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_top_soirees', [
                 'page' => $page + 1,
-                'city' => $site->getSubdomain()
+                'city' => $city->getSlug()
             ]);
         } else {
             $hasNextLink = null;
         }
 
         $response = $this->render("City/Hinclude/evenements.html.twig", [
-            "site" => $site,
-            "soirees" => $repo->findTopSoiree($site, $page, self::WIDGET_ITEM_LIMIT),
+            "city" => $city,
+            "soirees" => $repo->findTopSoiree($city, $page, self::WIDGET_ITEM_LIMIT),
             "hasNextLink" => $hasNextLink,
             "current" => $current,
             "count" => $count
@@ -215,13 +215,13 @@ class WidgetsController extends Controller
      * @Route("/soiree/{slug}--{id}.html/membres/{page}", name="tbn_agenda_soirees_membres", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))
      * @BrowserCache(false)
      */
-    public function fbMembresAction(Site $site, $slug, $id = null, $page = 1)
+    public function fbMembresAction(City $city, $slug, $id = null, $page = 1)
     {
         if ($page <= 1) {
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($site, $slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page, 'city' => $site->getSubdomain()]);
+        $result = $this->checkEventUrl($city, $slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page, 'city' => $city->getSlug()]);
         if ($result instanceof Response) {
             return $result;
         }
@@ -231,7 +231,7 @@ class WidgetsController extends Controller
             return $this->redirectToRoute('tbn_agenda_details', [
                 'slug' => $soiree->getSlug(),
                 'id' => $soiree->getId(),
-                'city' => $soiree->getSite()->getSubdomain()
+                'city' => $soiree->getPlace()->getCity()->getSlug()
             ]);
         }
 
@@ -241,7 +241,7 @@ class WidgetsController extends Controller
         $membres = array_merge($retour['participations'], $retour['interets']);
         if (count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
-                'city' => $soiree->getSite()->getSubdomain(),
+                'city' => $soiree->getPlace()->getCity()->getSlug(),
                 'slug' => $soiree->getSlug(),
                 'id' => $soiree->getId(),
                 'page' => $page + 1
@@ -251,7 +251,7 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render("City/Hinclude/fb_membres.html.twig", [
-            "site" => $site,
+            "city" => $city,
             "event" => $soiree,
             "page" => $page,
             "membres" => $membres,

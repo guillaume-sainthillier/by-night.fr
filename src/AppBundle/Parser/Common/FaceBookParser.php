@@ -65,7 +65,7 @@ class FaceBookParser extends AgendaParser
 
     protected function getCities()
     {
-        return $this->om->getRepository('AppBundle:Place')->findAllCities();
+        return $this->om->getRepository('AppBundle:City')->findAllCities();
     }
 
     protected function getSiteLocations()

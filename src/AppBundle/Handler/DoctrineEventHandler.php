@@ -8,8 +8,6 @@
 
 namespace AppBundle\Handler;
 
-use AppBundle\Entity\AdminZone;
-use AppBundle\Entity\City;
 use AppBundle\Entity\ZipCity;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -117,6 +115,13 @@ class DoctrineEventHandler
     public function handleOne(Agenda $event)
     {
         return $this->handleMany([$event])[0];
+    }
+
+    private function pingConnection() {
+        if($this->em->getConnection()->ping() === false) {
+            $this->em->getConnection()->close();
+            $this->em->getConnection()->connect();
+        }
     }
 
     /**
@@ -334,6 +339,7 @@ class DoctrineEventHandler
                     $events[$i] = $event;
                     $this->echantillonHandler->clearEvents();
                 }
+                Monitor::writeln("\n\nCOMMIT\n\n");
                 $this->commit();
                 $this->clearEvents();
                 $this->firewall->deleteCache();
@@ -380,6 +386,7 @@ class DoctrineEventHandler
 
     private function flushExplorations()
     {
+        $this->pingConnection();
         $explorations = $this->firewall->getExplorations();
 
         $batchSize = 500;

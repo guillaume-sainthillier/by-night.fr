@@ -33,7 +33,7 @@
     "presta/sitemap-bundle": "dev-master",
     "whiteoctober/breadcrumbs-bundle": "dev-master",
     "liip/imagine-bundle": "dev-master",
-    "jms/serializer-bundle": "1.*",
+    "jms/serializer-bundle": "2.*",
     "friendsofsymfony/elastica-bundle": "dev-master",
     "white-october/pagerfanta-bundle": "dev-master",
     "social-links/social-links": "dev-master",

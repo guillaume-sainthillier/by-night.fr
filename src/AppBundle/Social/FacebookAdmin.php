@@ -39,24 +39,36 @@ class FacebookAdmin extends FacebookEvents
      */
     protected $siteInfo;
 
+    /**
+     * @var array
+     */
     protected $cache;
-    protected $om;
-    protected $oldIds;
-    protected $_isInitialized;
-    protected $pageAccessToken;
 
     /**
-     *
-     * @var SerializerInterface
+     * @var ObjectManager
      */
-    protected $serializer;
+    protected $om;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, AppManager $appManager, ObjectManager $om, SerializerInterface $serializer)
+    /**
+     * @var array
+     */
+    protected $oldIds;
+
+    /**
+     * @var bool
+     */
+    protected $_isInitialized;
+
+    /**
+     * @var string
+     */
+    protected $pageAccessToken;
+
+    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, AppManager $appManager, ObjectManager $om)
     {
         parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack, $logger, $eventProfilePicture, $appManager);
 
         $this->om = $om;
-        $this->serializer = $serializer;
         $this->cache = [];
         $this->oldIds = [];
         $this->_isInitialized = false;
@@ -438,7 +450,7 @@ class FacebookAdmin extends FacebookEvents
         $nbBatchs = ceil(count($datas) / $idsPerBatch);
         $finalNodes = [];
 
-        $nbBatchs = min($nbBatchs, 5); //TODO: Supprimer ça
+//        $nbBatchs = min($nbBatchs, 5); //TODO: Supprimer ça
         for ($i = 0; $i < $nbBatchs; $i++) {
             $requests = [];
             $batch_datas = array_slice($datas, $i * $idsPerBatch, $idsPerBatch);

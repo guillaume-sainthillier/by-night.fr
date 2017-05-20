@@ -4,6 +4,7 @@
 namespace AppBundle\Social;
 
 use AppBundle\Entity\Agenda;
+use AppBundle\Entity\City;
 use AppBundle\Entity\Site;
 use AppBundle\Entity\User;
 use TwitterOAuth\Auth\SingleUserAuth;
@@ -53,12 +54,12 @@ class Twitter extends Social
         return 0;
     }
 
-    public function getTimeline(Site $site, $max_id, $limit)
+    public function getTimeline(City $city, $max_id, $limit)
     {
         $this->init();
         try {
             $params = [
-                'q' => sprintf('#%s filter:safe', $site->getNom()),
+                'q' => sprintf('#%s filter:safe', $city->getName()),
                 'lang' => 'fr',
                 'result_type' => 'recent',
                 'count' => $limit

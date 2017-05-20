@@ -35,21 +35,21 @@
     {% elseif type == 'spectacle' %}Spectacles
     {% elseif type == 'etudiant' %}Soirées étudiantes
     {% else %}Agenda des événements{% endif %}
-    {% if placeName is null and villeName is null %} à {{ site.nom }}{% endif %}
+    {% if placeName is null and villeName is null %} à {{ city.name }}{% endif %}
     {% if page > 1 %} (Page {{ page }}){% endif %}
 {% endblock %}
 
 {% block breadcrumb_city_content %}
-    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': site.subdomain})) %}
+    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': city.slug})) %}
     {% if placeName is not null %}
-        {% set item = menu.addItem(placeName|capitalize, path('tbn_agenda_place', {'slug' : placeSlug,'city': site.subdomain})) %}
+        {% set item = menu.addItem(placeName|capitalize, path('tbn_agenda_place', {'slug' : placeSlug,'city': city.slug})) %}
     {% elseif tag is not null %}
-        {% set item = menu.addItem(tag|capitalize, path('tbn_agenda_tags', {'tag' : tag,'city': site.subdomain})) %}
+        {% set item = menu.addItem(tag|capitalize, path('tbn_agenda_tags', {'tag' : tag,'city': city.slug})) %}
     {% elseif type is not null %}
-        {% set item = menu.addItem(type|capitalize, path('tbn_agenda_sortir', {'type' : type,'city': site.subdomain})) %}
+        {% set item = menu.addItem(type|capitalize, path('tbn_agenda_sortir', {'type' : type,'city': city.slug})) %}
     {% endif %}
     {% if page > 1 %}
-        {% set item = menu.addItem("Page " ~ page, path('tbn_agenda_pagination', {'page': page,'city': site.subdomain})) %}
+        {% set item = menu.addItem("Page " ~ page, path('tbn_agenda_pagination', {'page': page,'city': city.slug})) %}
     {% endif %}
 {% endblock %}
 
@@ -63,7 +63,7 @@
     {% elseif type == 'spectacle' %}Spectacles
     {% elseif type == 'etudiant' %}Soirées étudiantes
     {% else %}Agenda des <strong>événements</strong>{% endif %}
-    {% if placeName is null and villeName is null %} à <strong>{{- site.nom -}}</strong>{% endif %}
+    {% if placeName is null and villeName is null %} à <strong>{{- city.name -}}</strong>{% endif %}
 {%- endblock %}
 
 {% block og_titre -%}
@@ -71,7 +71,7 @@
 {%- endblock %}
 
 {% block meta_description -%}
-    {{ block('og_titre')|striptags }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.
+    {{ block('og_titre')|striptags }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ city.name }}.
 {%- endblock %}
 
 {% block css %}

@@ -28,7 +28,6 @@ class MigrateCommand extends AppCommand
         Monitor::$output = $output;
 
         $firewall = $this->getContainer()->get('tbn.doctrine_event_handler');
-
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
         $places = $em->getRepository("AppBundle:Place")->findAll();
         $france = $em->getRepository("AppBundle:Country")->find("FR");

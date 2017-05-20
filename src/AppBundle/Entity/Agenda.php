@@ -26,15 +26,11 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * Agenda
  *
  * @ORM\Table(name="Agenda", indexes={
- *   @ORM\Index(name="agenda_slug_idx", columns={"slug"}),
- *   @ORM\Index(name="agenda_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
  *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
  *   @ORM\Index(name="agenda_categorie_manifestation_idx", columns={"categorie_manifestation"}),
- *   @ORM\Index(name="agenda_date_debut_idx", columns={"date_debut"}),
- *   @ORM\Index(name="agenda_fb_idx", columns={"facebook_event_id"}),
- *   @ORM\Index(name="agenda_search_idx", columns={"site_id", "date_fin", "date_debut"}),
- *   @ORM\Index(name="agenda_search2_idx", columns={"site_id", "date_debut"})
+ *   @ORM\Index(name="agenda_search_idx", columns={"place_id", "date_fin", "date_debut"}),
+ *   @ORM\Index(name="agenda_fb_participations", columns={"fb_participations", "fb_interets"})
  * })
  *
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AgendaRepository")
@@ -56,7 +52,7 @@ class Agenda implements GeolocalizeInterface
 
     /**
      * @Gedmo\Slug(fields={"nom"})
-     * @ORM\Column(length=128, unique=true)
+     * @ORM\Column(length=255, unique=true)
      */
     protected $slug;
 
@@ -232,12 +228,12 @@ class Agenda implements GeolocalizeInterface
     protected $name;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=61, nullable=true)
      */
     protected $path;
 
     /**
-     * @ORM\Column(type="string", name="system_path", length=255, nullable=true)
+     * @ORM\Column(type="string", name="system_path", length=61, nullable=true)
      */
     protected $systemPath;
 
@@ -264,49 +260,49 @@ class Agenda implements GeolocalizeInterface
     /**
      * @var integer
      *
-     * @ORM\Column(name="tweet_post_id", type="string", length=256, nullable=true)
+     * @ORM\Column(name="tweet_post_id", type="string", length=31, nullable=true)
      */
     protected $tweetPostId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="facebook_event_id", type="string", length=256, nullable=true)
+     * @ORM\Column(name="facebook_event_id", type="string", length=31, nullable=true)
      */
     protected $facebookEventId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="tweet_post_system_id", type="string", length=256, nullable=true)
+     * @ORM\Column(name="tweet_post_system_id", type="string", length=31, nullable=true)
      */
     protected $tweetPostSystemId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="fb_post_id", type="string", length=256, nullable=true)
+     * @ORM\Column(name="fb_post_id", type="string", length=31, nullable=true)
      */
     protected $fbPostId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="fb_post_system_id", type="string", length=256, nullable=true)
+     * @ORM\Column(name="fb_post_system_id", type="string", length=31, nullable=true)
      */
     protected $fbPostSystemId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="google_post_id", type="string", length=256, nullable=true)
+     * @ORM\Column(name="google_post_id", type="string", length=31, nullable=true)
      */
     protected $googlePostId;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="google_post_system_id", type="string", length=256, nullable=true)
+     * @ORM\Column(name="google_post_system_id", type="string", length=31, nullable=true)
      */
     protected $googleSystemPostId;
 
@@ -331,7 +327,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * @var integer
      *
-     * @ORM\Column(name="facebook_owner_id", type="string", length=256, nullable=true)
+     * @ORM\Column(name="facebook_owner_id", type="string", length=31, nullable=true)
      */
     protected $facebookOwnerId;
 
@@ -409,7 +405,7 @@ class Agenda implements GeolocalizeInterface
     public function isIndexable()
     {
         $now = new \DateTime;
-        $now->modify('-6 months');
+        $now->modify('-1 month');
 
         return $this->dateFin >= $now;
     }

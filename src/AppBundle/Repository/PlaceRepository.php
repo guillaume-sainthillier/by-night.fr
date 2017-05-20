@@ -81,18 +81,4 @@ class PlaceRepository extends EntityRepository
 
         return array_unique(array_filter(array_column($places, 'facebookId')));
     }
-
-    public function findAllCities()
-    {
-        $places = $this->_em
-            ->createQueryBuilder()
-            ->select('p.ville')
-            ->from('AppBundle:Place', 'p')
-            ->where('p.ville IS NOT NULL')
-            ->groupBy('p.ville')
-            ->getQuery()
-            ->getScalarResult();
-
-        return array_unique(array_filter(array_column($places, 'ville')));
-    }
 }

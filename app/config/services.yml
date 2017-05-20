@@ -21,6 +21,12 @@ parameters:
 
 
 services:
+    app.importer.country_importer:
+        class: AppBundle\Importer\CountryImporter
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - "%kernel.root_dir%/datas"
+
     app.location_cache_provider:
         class:     AppBundle\Cache\LocationCacheProvider
         arguments:
@@ -289,7 +295,7 @@ services:
         arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
     tbn.social.facebook_admin:
         class:        AppBundle\Social\FacebookAdmin
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager", "@doctrine.orm.entity_manager", "@jms_serializer"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager", "@doctrine.orm.entity_manager"]
     tbn.social.google:
         class:        AppBundle\Social\Google
         arguments:    [{ id: "%google_app_id%", secret: "%google_app_secret%", key: "%google_map_key%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]

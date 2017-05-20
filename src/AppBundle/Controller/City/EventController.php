@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller\City;
 
+use AppBundle\Entity\City;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -50,20 +51,20 @@ class EventController extends Controller
      * @Route("/soiree/{slug}.html", name="tbn_agenda_details_old", requirements={"slug": ".+"})
      * @BrowserCache(false)
      */
-    public function detailsAction(Site $site, $slug, $id = null)
+    public function detailsAction(City $city, $slug, $id = null)
     {
-        $result = $this->checkEventUrl($site, $slug, $id);
+        $result = $this->checkEventUrl($city, $slug, $id);
         if ($result instanceof Response) {
             return $result;
         }
         $agenda = $result;
 
         //Redirection vers le bon site
-        if ($agenda->getSite() !== $site) {
+        if ($agenda->getPlace()->getCity() !== $city) {
             return new RedirectResponse($this->get('router')->generate('tbn_agenda_details', [
                 'slug' => $agenda->getSlug(),
                 'id' => $agenda->getId(),
-                'city' => $agenda->getSite()->getSubdomain()
+                'city' => $agenda->getPlace()->getCity()->getSlug()
             ]));
         }
 
@@ -72,7 +73,7 @@ class EventController extends Controller
         $nbComments = $agenda->getCommentaires()->count();
 
         $response = $this->render('City/Agenda/details.html.twig', [
-            'site' => $site,
+            'city' => $city,
             'soiree' => $agenda,
             'form' => $form->createView(),
             'nb_comments' => $nbComments,
@@ -109,7 +110,7 @@ class EventController extends Controller
         $link = $this->generateUrl('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
             'id' => $agenda->getId(),
-            'city' => $agenda->getSite()->getSubdomain()
+            'city' => $agenda->getPlace()->getCity()->getSlug()
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $eventProfile = $this->get('tbn.profile_picture.event')->getOriginalPictureUrl($agenda);

@@ -1,15 +1,15 @@
 {% extends "base.html.twig" %}
 
-{% set ville = site.subdomain %}
+{% set ville = city.name %}
 
 {% block title %}{% spaceless %}{% block title_agenda %}{% endblock %}{% endspaceless %}{% endblock %}
-{% block nom_site %}{{ site.nom }} {{ parent() }}{% endblock %}
+{% block nom_site %}{{ city.name }} {{ parent() }}{% endblock %}
 {% block titre %}{% block titre_agenda %}{% endblock %}{% endblock %}
-{% block meta_keywords %}{{ site.nom|lower }}{% endblock %}
-{% block og_url %}{{ url('tbn_agenda_index', {'city': site.subdomain}) }}{% endblock %}
+{% block meta_keywords %}{{ city.name|lower }}{% endblock %}
+{% block og_url %}{{ url('tbn_agenda_index', {'city': city.slug}) }}{% endblock %}
 
 {% block meta_description -%}
-    Sortir à {{ site.nom }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ site.nom }}.
+    Sortir à {{ city.name }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ city.name }}.
 {%- endblock %}
     
 {% block body -%}
@@ -19,7 +19,7 @@
 {% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
 
 {% block breadcrumb_content -%}
-    {% set item = menu.addItem('Sortir à ' ~ site.nom, path('tbn_agenda_index', {'city': site.subdomain})) %}
+    {% set item = menu.addItem('Sortir à ' ~ city.name, path('tbn_agenda_index', {'city': city.slug})) %}
     {% block breadcrumb_city_content %}{% endblock %}
 {%- endblock %}
 
@@ -58,17 +58,17 @@
         {
             "@context": "http://schema.org",
             "@type": "WebSite",
-            "url": "{{ url('tbn_agenda_index', {'city': site.subdomain}) }}",
+            "url": "{{ url('tbn_agenda_index', {'city': city.slug}) }}",
             "potentialAction": {
                 "@type": "SearchAction",
-                "target": "{{ url('tbn_search_query', {'q': '{search_term_string}', 'city': site.subdomain})|url_decode }}",
+                "target": "{{ url('tbn_search_query', {'q': '{search_term_string}', 'city': city.slug})|url_decode }}",
                 "query-input": "required name=search_term_string"
             }
         }
 
     </script>
     <script type="text/javascript">
-        var ville = "{{ site.nom }}";
+        var ville = "{{ city.name }}";
         var fbAppId = "{{ facebook_app_id }}";
     </script>
     {% block head_js_agenda %}{% endblock %}

@@ -1,6 +1,6 @@
 {% extends "City/Widget/template.html.twig" %}
 
-{% block titre %}Les actus à {{ site.nom }}{% endblock %}
+{% block titre %}Les actus à {{ city.name }}{% endblock %}
 {% block icone %}fa-twitter{% endblock %}
 {% block widget_class %}{% endblock %}
 {% block widget_body_class %}panel-twitter scrollable no-padding padding-left-10 scrollable{% endblock %}
@@ -25,7 +25,7 @@
             }(document, "script", "twitter-wjs"));
         </script>
         <div>
-            {{ render_esi(url('tbn_agenda_tweeter_feed', {'city': site.subdomain})) }}
+            {{ render_esi(url('tbn_agenda_tweeter_feed', {'city': city.slug})) }}
         </div>
     </div>
 {% endblock %}

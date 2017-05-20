@@ -29,11 +29,11 @@
 {%- endblock %}
 
 {% block breadcrumb_city_content %}
-    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': site.subdomain})) %}
+    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': city.slug})) %}
     {% if place %}
-        {% set item = menu.addItem(place.nom, path('tbn_agenda_place', {'slug': place.slug, 'city': site.subdomain})) %}
+        {% set item = menu.addItem(place.nom, path('tbn_agenda_place', {'slug': place.slug, 'city': city.slug})) %}
     {% endif %}
-    {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': site.subdomain})) %}
+    {% set item = menu.addItem(nomSoiree, path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': city.slug})) %}
 {% endblock %}
     
 {% block meta_keywords %}{% if distinctTags|length %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
@@ -48,7 +48,7 @@
           content="https://www.facebook.com/pages/By-Night/{{ app_manager.facebookIdPage }}"/>
     {% if soiree.user %}
         <meta property="article:author"
-              content="{{ url('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug, 'city': site.subdomain}) }}"/>
+              content="{{ url('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug, 'city': city.slug}) }}"/>
     {% endif %}
 
     {% for tag in distinctTags %}
@@ -56,7 +56,7 @@
     {% endfor %}
 {% endblock %}
 {% block og_titre %}{{ nomSoiree }}{% endblock %}
-{% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': site.subdomain}) }}{% endblock %}
+{% block og_url %}{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': city.slug}) }}{% endblock %}
 {% block og_image %}{{ original }}{% endblock %}
 
 {% block widgets -%}
@@ -97,7 +97,7 @@
             </div>
             <div class="panel-body">
                 <meta itemprop="name" content="{{ nomSoiree }}">
-                <meta itemprop="url" content="{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': site.subdomain}) }}">
+                <meta itemprop="url" content="{{ url('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': city.slug}) }}">
 
                 {% if soiree.modificationDerniereMinute %}
                     <div class="alert alert-warning">
@@ -124,7 +124,7 @@
                                             {% set readableAdresse = place.nom %}
                                             <h2 class="modal-title" style="font-size: 115%">
                                                 <a itemprop="url"
-                                                   href="{{ path('tbn_agenda_place', {'slug': place.slug, 'city': site.subdomain}) }}"
+                                                   href="{{ path('tbn_agenda_place', {'slug': place.slug, 'city': city.slug}) }}"
                                                    title="Sortir à {{ place.nom }}">
                                                     <strong itemprop="name">{{ place.nom }}</strong>
                                                 </a>
@@ -145,7 +145,7 @@
                                                         {% endif %}
                                                         {% if place.ville %}
                                                             <a itemprop="url"
-                                                               href="{{ path('tbn_agenda_ville', {'ville': place.ville, 'city': site.subdomain}) }}"
+                                                               href="{{ path('tbn_agenda_ville', {'ville': place.ville, 'city': city.slug}) }}"
                                                                title="Sortir à {{ place.ville }}">
                                                                 {% set readableAdresse = readableAdresse ~ " " ~ place.ville %}
                                                                 <span><strong
@@ -220,8 +220,8 @@
                                 <li class="tags">
                                     <i class="fa fa-li fa-tags"></i>
                                     {% for tag in distinctTags %}
-                                        <a class="label label-info" title="{{ tag }} à {{ site.nom }}"
-                                           href="{{ path('tbn_agenda_tags', {'tag' : tag|trim, 'city': soiree.site.subdomain}) }}"><strong>{{ tag }}</strong></a>
+                                        <a class="label label-info" title="{{ tag }} à {{ city.name }}"
+                                           href="{{ path('tbn_agenda_tags', {'tag' : tag|trim, 'city': soiree.place.city.slug}) }}"><strong>{{ tag }}</strong></a>
                                     {% endfor %}
                                 </li>
                             {% endif %}
@@ -260,7 +260,7 @@
             </div>
             <div class="panel-body">
                 <br/>
-                {{ render_esi(controller('AppBundle:City/Event:share', {'slug': soiree.slug, 'city': soiree.site.subdomain})) }}
+                {{ render_esi(controller('AppBundle:City/Event:share', {'slug': soiree.slug, 'city': soiree.place.city.slug})) }}
 
                 <div class="comments">
                     <h4 class="heading">
@@ -289,7 +289,7 @@
                 </div>
                 <div class="panel-body scrollable scrollable-large">
                     <div>
-                        {{ render_esi(url('tbn_agenda_prochaines_soirees', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.site.subdomain} )) }}
+                        {{ render_esi(url('tbn_agenda_prochaines_soirees', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug} )) }}
                     </div>
                 </div>
                 <div class="panel-footer"></div>

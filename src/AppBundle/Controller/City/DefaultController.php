@@ -2,15 +2,11 @@
 
 namespace AppBundle\Controller\City;
 
-
+use AppBundle\Entity\City;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-
 use Symfony\Component\Routing\Annotation\Route;
-
 use AppBundle\Configuration\BrowserCache;
 use AppBundle\Controller\TBNController as Controller;
-
-use AppBundle\Entity\Site;
 use AppBundle\Search\SearchAgenda;
 
 class DefaultController extends Controller
@@ -20,18 +16,18 @@ class DefaultController extends Controller
      * @Route("/", name="tbn_agenda_index")
      * @BrowserCache(false)
      */
-    public function indexAction(Site $site)
+    public function indexAction(City $city)
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("AppBundle:Agenda");
 
         $search = (new SearchAgenda)->setDu(null);
-        $topEvents = $repo->findTopSoiree($site, 1, 7);
+        $topEvents = $repo->findTopSoiree($city, 1, 7);
 
         return $this->render('City/Default/index.html.twig', [
-            'site' => $site,
+            'city' => $city,
             'topEvents' => $topEvents,
-            'nbEvents' => $repo->findCountWithSearch($site, $search)
+            'nbEvents' => $repo->findCountWithSearch($city, $search)
         ]);
     }
 }
