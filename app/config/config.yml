@@ -27,7 +27,6 @@ framework:
                 base_urls: ['http://static.%base_host%']
                 version: "v1.1"
     default_locale:  "%locale%"
-    trusted_proxies: ~
     trusted_hosts:   ~
     session:
         handler_id: session.handler.native_file
@@ -38,18 +37,17 @@ framework:
 doctrine_cache:
     custom_providers:
         location:
-          prototype:  "app.location_cache_provider"
+            prototype:  "app.location_cache_provider"
     providers:
         memcache:
             type: redis
             namespace: memory_cache_ns
             aliases:
                 - memory_cache
-#        location:
-#            type: location
-#            namespace: location_cache_ns
-#            aliases:
-#                - location_cache
+        location_cache:
+            name: location_cache
+            location: ~
+            namespace: location_cache_ns
         array:
             type: array
             namespace: array_cache_ns
@@ -191,11 +189,31 @@ fos_user:
     registration:
         form:
             type: AppBundle\Form\Type\RegistrationFormType
-    
-#ivory_google_map:
-#    geocoder:
-        # Enable the service
-#        enabled: true
+
+httplug:
+    classes:
+        client: Http\Adapter\Guzzle6\Client
+        message_factory: Http\Message\MessageFactory\GuzzleMessageFactory
+    clients:
+        acme:
+            factory: httplug.factory.guzzle6
+
+ivory_google_map:
+    place_search:
+        client: httplug.client.default
+        message_factory: httplug.message_factory.default
+        format: json
+        api_key: "%google_map_key%"
+    place_detail:
+        client: httplug.client.default
+        message_factory: httplug.message_factory.default
+        format: json
+        api_key: "%google_map_key%"
+    geocoder:
+        format: json
+        api_key: "%google_map_key%"
+        client: httplug.client.default
+        message_factory: httplug.message_factory.default
 
 easy_admin:
     entities:
@@ -355,9 +373,9 @@ liip_imagine:
 fos_elastica:
     clients:
         default:
-          host: localhost
-          port: 9200
-          compression: true
+            host: localhost
+            port: 9200
+            compression: true
     serializer:
         serializer: "jms_serializer"
     indexes:

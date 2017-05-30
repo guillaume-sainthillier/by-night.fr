@@ -108,8 +108,8 @@ class CountryImporter
             inner join admin_zone c ON (
                 c.type = \'PPL\'
                 AND zc.name = c.name
-                AND zc.admin1_code = c.admin1_code
-                AND zc.admin2_code = c.admin2_code
+                AND (zc.admin1_code = c.admin1_code OR zc.admin1_code = CONCAT(\'0\', c.admin1_code))
+                AND (zc.admin2_code = c.admin2_code OR zc.admin2_code = CONCAT(\'0\', c.admin2_code))
                 AND zc.country_id = c.country_id
             )
             SET zc.parent_id = c.id

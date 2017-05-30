@@ -20,6 +20,9 @@ class AppKernel extends Kernel
             new SocialBundle\SocialBundle(),
             new UserBundle\UserBundle(),
 
+            new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),
+            new Ivory\SerializerBundle\IvorySerializerBundle(),
+            new Http\HttplugBundle\HttplugBundle(),
             new Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle(),
             new Presta\SitemapBundle\PrestaSitemapBundle(),
             new FOS\UserBundle\FOSUserBundle(),

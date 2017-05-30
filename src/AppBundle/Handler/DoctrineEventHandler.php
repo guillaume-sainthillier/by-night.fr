@@ -9,6 +9,7 @@
 namespace AppBundle\Handler;
 
 use AppBundle\Entity\ZipCity;
+use AppBundle\Geocoder\PlaceGeocoder;
 use Doctrine\ORM\EntityManagerInterface;
 
 use AppBundle\Entity\Agenda;
@@ -80,7 +81,12 @@ class DoctrineEventHandler
      */
     private $explorationHandler;
 
-    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler)
+    /**
+     * @var PlaceGeocoder
+     */
+    private $geocoder;
+
+    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, PlaceGeocoder $geocoder)
     {
         $this->em = $em;
         $this->repoAgenda = $em->getRepository('AppBundle:Agenda');
@@ -91,6 +97,7 @@ class DoctrineEventHandler
         $this->handler = $handler;
         $this->firewall = $firewall;
         $this->echantillonHandler = $echantillonHandler;
+        $this->geocoder = $geocoder;
         $this->explorationHandler = new ExplorationHandler();
 
         $this->output = null;
@@ -462,7 +469,7 @@ class DoctrineEventHandler
     public function guessEventLocation(Place $place)
     {
         //Pas besoin de trouver à nouveau un lieu déjà calculé
-        if($place->getZipCity() || $place->getCity()) {
+        if($place->getCity()) {
             return;
         }
 
@@ -473,10 +480,8 @@ class DoctrineEventHandler
         }
 
         //Nom de lieu (avec ou sans coordoonnées GPS)
-        if(!$place->getCodePostal() && !$place->getVille()) {
-            //TODO: Géocoding à partir du nom du lieu ou de l'adresse facebook. (Ex: Avenue de Castres, 31500 Toulouse, France
-            $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
-            return;
+        if(!$place->getCodePostal() && !$place->getVille() && $place->getNom()) {
+            $this->geocoder->geocode($place);
         }
 
         //Recherche du pays en premier lieu

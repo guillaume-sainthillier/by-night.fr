@@ -21,6 +21,14 @@ parameters:
 
 
 services:
+    app.geocoder.place_geocoder:
+        class: AppBundle\Geocoder\PlaceGeocoder
+        arguments:
+            - "@app.location_cache_provider"
+            - "@ivory.google_map.place_search"
+            - "@ivory.google_map.place_detail"
+            - "@ivory.serializer"
+            - "@tbn.firewall"
     app.importer.country_importer:
         class: AppBundle\Importer\CountryImporter
         arguments:
@@ -256,7 +264,7 @@ services:
         arguments: ["@doctrine.orm.entity_manager"]
     tbn.doctrine_event_handler:
         class: AppBundle\Handler\DoctrineEventHandler
-        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler"]
+        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler", "@app.geocoder.place_geocoder"]
     tbn.event_handler:
         class: AppBundle\Handler\EventHandler
         arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.root_dir%/../web/uploads/temp"]

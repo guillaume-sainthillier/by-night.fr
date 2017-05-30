@@ -29,7 +29,7 @@ class MigrateCommand extends AppCommand
 
         $firewall = $this->getContainer()->get('tbn.doctrine_event_handler');
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $places = $em->getRepository("AppBundle:Place")->findAll();
+        $places = $em->getRepository("AppBundle:Place")->findBy(['city' => null]);
         $france = $em->getRepository("AppBundle:Country")->find("FR");
         Monitor::createProgressBar(count($places));
 
@@ -39,6 +39,10 @@ class MigrateCommand extends AppCommand
              * @var Place $place
              */
             $place->setReject(new Reject())->setCountry($france);
+            if($place->getZipCity() && $place->getZipCity()->getParent()) {
+                $place->setCity($place->getZipCity()->getParent());
+            }
+
             $firewall->guessEventLocation($place);
             $em->persist($place);
 

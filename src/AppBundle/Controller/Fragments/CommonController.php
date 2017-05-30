@@ -24,7 +24,7 @@ class CommonController extends TBNController
      * @Route("/header/{city}", name="tbn_private_header_site")
      * @Route("/header", name="tbn_private_header")
      */
-    public function headerAction(City $city)
+    public function headerAction(City $city = null)
     {
         $response = $this->render('menu.html.twig', [
             'city' => $city
