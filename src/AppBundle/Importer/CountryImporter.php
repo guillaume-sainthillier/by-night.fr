@@ -108,8 +108,8 @@ class CountryImporter
             inner join admin_zone c ON (
                 c.type = \'PPL\'
                 AND zc.name = c.name
-                AND (zc.admin1_code = c.admin1_code OR zc.admin1_code = CONCAT(\'0\', c.admin1_code))
-                AND (zc.admin2_code = c.admin2_code OR zc.admin2_code = CONCAT(\'0\', c.admin2_code))
+                AND zc.admin1_code = c.admin1_code
+                AND zc.admin2_code = c.admin2_code
                 AND zc.country_id = c.country_id
             )
             SET zc.parent_id = c.id
@@ -141,11 +141,13 @@ class CountryImporter
             $data[1] = explode(" ", $data[1])[0];
             $data[2] = preg_replace("/ (\d+)$/", "", $data[2]);
 
+            list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($data[4], $data[6]);
+
             $city
                 ->setPostalCode($data[1])
                 ->setName($data[2])
-                ->setAdmin1Code($data[4])
-                ->setAdmin2Code($data[6])
+                ->setAdmin1Code($adminCode1)
+                ->setAdmin2Code($adminCode2)
                 ->setLatitude((float)$data[9])
                 ->setLongitude((float)$data[10])
                 ->setCountry($country);
@@ -185,14 +187,16 @@ class CountryImporter
                 $entity = new AdminZone2();
             }
 
+            list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($data[10], $data[11]);
+
             $entity
                 ->setId((int)$data[0])
                 ->setName($data[1])
                 ->setPopulation((int)$data[14])
                 ->setLatitude((float)$data[4])
                 ->setLongitude((float)$data[5])
-                ->setAdmin1Code($data[10])
-                ->setAdmin2Code($data[11] ?: null)
+                ->setAdmin1Code($adminCode1)
+                ->setAdmin2Code($adminCode2)
                 ->setCountry($country);
 
             if($entity instanceof AdminZone2) {
@@ -220,6 +224,31 @@ class CountryImporter
         }
         $this->em->flush();
         fclose($fd);
+    }
+
+    private function formatAdminZoneCodes($code1, $code2) {
+        if($code1 === $code2) {
+            $code2 = "";
+        }
+
+        return [
+            $this->formatAdminZoneCode($code1),
+            $this->formatAdminZoneCode($code2),
+        ];
+    }
+
+    private function formatAdminZoneCode($code) {
+        if($code === "0" || $code === "00") {
+            return "1";
+        }
+
+        $code = ltrim($code, '0');
+//
+//        if($code === "") {
+//            return null;
+//        }
+
+        return $code;
     }
 
     private function deleteRelatedDatas(Country $country) {

@@ -44,7 +44,7 @@ class MigrateCommand extends AppCommand
             }
 
             $firewall->guessEventLocation($place);
-            $em->persist($place);
+            $place = $em->merge($place);
 
 
             $migratedPlaces[] = $place;

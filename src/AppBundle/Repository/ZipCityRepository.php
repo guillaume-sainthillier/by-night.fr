@@ -31,10 +31,17 @@ class ZipCityRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if($city) {
+            $cities = [];
+            $cities[] = $city;
+            $cities[] = str_replace(' ', '-', $city);
+            $cities[] = str_replace('-', ' ', $city);
+            $cities[] = str_replace("'", '', $city);
+            $cities[] = preg_replace("#(^|\s)st\s#i", 'saint', $city);
+            $cities = array_unique($cities);
+
             $query
-                ->andWhere("(zc.name = :city OR zc.name = :city_bis)")
-                ->setParameter("city", $city)
-                ->setParameter("city_bis", str_replace(" ", "-", $city));
+                ->andWhere("zc.name IN(:cities)")
+                ->setParameter("cities", $cities);
         }
 
         return $query

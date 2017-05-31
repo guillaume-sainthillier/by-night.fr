@@ -27,6 +27,7 @@ services:
             - "@app.location_cache_provider"
             - "@ivory.google_map.place_search"
             - "@ivory.google_map.place_detail"
+            - "@ivory.google_map.geocoder"
             - "@ivory.serializer"
             - "@tbn.firewall"
     app.importer.country_importer:

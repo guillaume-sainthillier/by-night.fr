@@ -13,8 +13,8 @@ class CountryRepository extends \Doctrine\ORM\EntityRepository
     public function findByName($country) {
         return $this
             ->createQueryBuilder("c")
-            ->andWhere("c.name = :country")
-            ->setParameter("country", $country)
+            ->andWhere("LOWER(c.name) = :country")
+            ->setParameter("country", strtolower($country))
             ->getQuery()
             ->useResultCache(true)
             ->useQueryCache(true)

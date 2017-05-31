@@ -463,27 +463,7 @@ class DoctrineEventHandler
         }
     }
 
-    /**
-     * @param Place $place
-     */
-    public function guessEventLocation(Place $place)
-    {
-        //Pas besoin de trouver à nouveau un lieu déjà calculé
-        if($place->getCity()) {
-            return;
-        }
-
-        //Pas besoin de chercher un lieu dont le pays n'est même pas connu
-        if(! $place->getId() && ! $place->getCountryName()) {
-            $place->getReject()->addReason(Reject::NO_COUNTRY_PROVIDED);
-            return;
-        }
-
-        //Nom de lieu (avec ou sans coordoonnées GPS)
-        if(!$place->getCodePostal() && !$place->getVille() && $place->getNom()) {
-            $this->geocoder->geocode($place);
-        }
-
+    private function guessEventCity(Place $place) {
         //Recherche du pays en premier lieu
         if(! $place->getCountry() && $place->getCountryName()) {
             $country = $this->em->getRepository('AppBundle:Country')->findByName($place->getCountryName());
@@ -492,7 +472,11 @@ class DoctrineEventHandler
 
         //Pas de pays détecté -> next
         if(! $place->getCountry()) {
-            $place->getReject()->addReason(Reject::BAD_COUNTRY);
+            if($place->getCountryName()) {
+                $place->getReject()->addReason(Reject::BAD_COUNTRY);
+            }else {
+                $place->getReject()->addReason(Reject::NO_COUNTRY_PROVIDED);
+            }
             return;
         }
 
@@ -504,7 +488,8 @@ class DoctrineEventHandler
             if($place->getCodePostal()) {
                 $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
 
-                if($place->getVille() && count($zipCities) === 0) {
+                //Pas de places trouvée avec le CP + ville, on tente avec juste le CP
+                if(count($zipCities) === 0) {
                     $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
                 }
 
@@ -515,26 +500,29 @@ class DoctrineEventHandler
                     }));
                 }
 
+                if($place->getVille() && count($zipCities) === 0) {
+                    $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
+                }
+
                 //Aucun code postal n'a été trouvé -> Pas besoin de continuer plus loin
                 if(count($zipCities) === 0) {
                     $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
-                    return;
                 }elseif(count($zipCities) > 1) {
                     //Plusieurs villes ont été trouvées pour ce code postal -> Impossible de déterminer quelle ville choisir
                     $place->getReject()->addReason(Reject::AMBIGOUS_ZIP);
-                    return;
+                }else {
+                    $zipCity = $zipCities[0];
+                    $city = $zipCity->getParent();
                 }
+            }
 
-                $zipCity = $zipCities[0];
-                $city = $zipCity->getParent();
-            }else {
+            if($city === null && $place->getVille()) {
                 //Un nom de ville est fourni
                 $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
 
                 //Aucune ville trouvée -> Pas besoin de continuer plus loin
                 if(count($zipCities) === 0) {
                     $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
-                    return;
                 }elseif(count($zipCities) === 1) {
                     //Une seule ville trouvée -> Cool
                     $zipCity = $zipCities[0];
@@ -550,15 +538,52 @@ class DoctrineEventHandler
                         $place->getReject()->addReason(Reject::AMBIGOUS_CITY);
                         return;
                     }
-                    
                     $city = $cities[0];
                 }else {
                     $city = $zipCity->getParent();
                 }
             }
-            
+
+            if($city || $zipCity) {
+                $place->getReject()->setReason(Reject::VALID);
+            }
+
             $place->setCity($city)->setZipCity($zipCity);
         }
+    }
+
+    /**
+     * @param Place $place
+     */
+    public function guessEventLocation(Place $place)
+    {
+        //Pas besoin de trouver un lieu déjà blacklisté
+        if($place->getReject() && !$place->getReject()->isValid()) {
+            return;
+        }
+
+        //Pas non plus besoin de trouver à nouveau un lieu déjà calculé
+        if($place->getCity()) {
+            return;
+        }
+
+        //On tente d'abord de trouver la ville via pays/cp/nom
+        if($place->getCountry() && ($place->getCodePostal() || $place->getVille())) {
+            $this->guessEventCity($place);
+            if($place->getCity()) {
+                return;
+            }
+        }
+
+        //Sinon, on tente de trouver la ville via lat/long
+        if($place->getLatitude() && $place->getLongitude()) {
+            $this->geocoder->geocodeCoordinates($place);
+        }else {
+            //Dernière tentative, on trouve la ville via le nom du lieu
+            $this->geocoder->geocodePlace($place);
+        }
+
+        $this->guessEventCity($place);
     }
 
     /**
