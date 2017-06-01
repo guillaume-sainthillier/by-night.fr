@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * City
  *
  * @ORM\Table()
- * @ORM\Entity()
+ * @ORM\Entity(readOnly=true)
  */
 class Location
 {

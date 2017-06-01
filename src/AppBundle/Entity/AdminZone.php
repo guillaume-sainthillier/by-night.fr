@@ -14,7 +14,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
  * @ORM\DiscriminatorMap({"PPL" = "City","ADM1" = "AdminZone1", "ADM2" = "AdminZone2"})
- * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZoneRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZoneRepository", readOnly=true)
  * @ORM\HasLifecycleCallbacks()
  */
 abstract class AdminZone

@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\Table(name="zip_city", indexes={
         @ORM\Index(name="zip_city_postal_code_name_idx", columns={"name", "postal_code"})
  * })
- * @ORM\Entity(repositoryClass="AppBundle\Repository\ZipCityRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ZipCityRepository", readOnly=true)
  */
 class ZipCity
 {

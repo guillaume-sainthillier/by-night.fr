@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * AdminZone2
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZone2Repository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZone2Repository", readOnly=true)
  */
 class AdminZone2 extends AdminZone
 {
