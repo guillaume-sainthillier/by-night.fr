@@ -347,12 +347,10 @@ class EventController extends Controller
     {
         $user = $this->getUser();
         $siteInfo = $this->get('site_manager')->getSiteInfo();
-        $config = $this->container->getParameter('tbn_user.social');
 
         return [
             'site_info' => $siteInfo,
-            'user' => $user,
-            'config' => $config
+            'user' => $user
         ];
     }
 
