@@ -8,7 +8,8 @@
     "classmap": [ "app/AppKernel.php", "app/AppCache.php" ]
   },
   "autoload-dev": {
-    "psr-4": { "Tests\\": "tests/" }
+    "psr-4": { "Tests\\": "tests/" },
+    "files": [ "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php" ]
   },
   "require": {
     "php": ">=7.0.0",
@@ -22,7 +23,6 @@
     "symfony/swiftmailer-bundle": "^2.3.10",
     "symfony/symfony": "3.3.*",
     "twig/twig": "^1.0||^2.0",
-    "sensio/generator-bundle": "dev-master",
     "twig/extensions": "1.*",
     "stof/doctrine-extensions-bundle": "dev-master",
     "friendsofsymfony/user-bundle": "~2.0@dev",
@@ -52,6 +52,7 @@
     "egeloen/serializer-bundle": "^1.0"
   },
   "require-dev": {
+    "sensio/generator-bundle": "^3.0",
     "symfony/phpunit-bridge": "^3.0"
   },
   "scripts": {
@@ -71,10 +72,10 @@
     ]
   },
   "config": {
-    "bin-dir": "bin",
     "platform": {
       "php": "7.0"
-    }
+    },
+    "sort-packages": true
   },
   "extra": {
     "symfony-app-dir": "app",
@@ -87,7 +88,7 @@
       "file": "app/config/parameters.yml"
     },
     "branch-alias": {
-      "dev-master": "3.2-dev"
+      "dev-master": "3.3-dev"
     }
   }
 }
