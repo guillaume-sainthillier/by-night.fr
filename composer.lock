@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ffe962fd1e674bd94624dd947f8bfc91",
+    "content-hash": "d1e9b883c5228fa552f9b17615c9988a",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1823,7 +1823,7 @@
         },
         {
             "name": "friendsofsymfony/user-bundle",
-            "version": "dev-master",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
@@ -1896,7 +1896,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2017-05-31 11:50:14"
+            "time": "2017-05-31T11:50:14+00:00"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -6657,7 +6657,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "stof/doctrine-extensions-bundle": 20,
-        "friendsofsymfony/user-bundle": 20,
         "google/apiclient": 5,
         "presta/sitemap-bundle": 20,
         "whiteoctober/breadcrumbs-bundle": 20,
