@@ -13,9 +13,9 @@ module.exports = function (grunt) {
 
         sprite: {
             all: {
-                src: 'web/bundles/tbnagenda/images/programmes/*.png',
-                dest: 'web/bundles/tbnagenda/images/spritesheet.png',
-                destCss: 'web/bundles/tbnagenda/css/sprites.css'
+                src: 'web/css/img/programmes/*.png',
+                dest: 'web/css/img/spritesheet.png',
+                destCss: 'web/css/sprites.css'
             }
         },
 
@@ -108,7 +108,7 @@ module.exports = function (grunt) {
                         expand: true,
                         src: ['*'],
                         dest: 'web/prod/evenements/font',
-                        cwd: 'web/bundles/tbnagenda/font'
+                        cwd: 'web/fonts'
                     },
                     {
                         expand: true,
@@ -132,13 +132,13 @@ module.exports = function (grunt) {
                         expand: true,
                         src: ['*'],
                         dest: 'web/prod/evenements/images',
-                        cwd: 'web/bundles/tbnagenda/images'
+                        cwd: 'web/img'
                     },
                     {
                         expand: true,
                         src: ['*'],
                         dest: 'web/prod/widgets/images',
-                        cwd: 'web/bundles/tbnagenda/images'
+                        cwd: 'web/img'
                     },
                     {
                         expand: true,
@@ -194,7 +194,7 @@ module.exports = function (grunt) {
                     'web/bower/bootstrap-material-design/dist/css/ripples.css',
                     'web/bower/fancybox/dist/jquery.fancybox.css',
                     'web/css/material/theme.blue.css',
-                    'web/css/social-icons.css',
+                    'web/css/components/social_icons.css',
                     'web/css/commons.css',
                     'web/css/footer.css',
                     'web/css/event.css',
@@ -206,16 +206,16 @@ module.exports = function (grunt) {
             indexJs: {
                 src: [
                     'web/bower/dropdown.js/jquery.dropdown.js',
-                    'web/bundles/tbnagenda/js/index.js'
+                    'web/js/pages/event_index.js'
                 ],
                 dest: 'web/prod/evenements/js/index.js'
             },
             indexCss: {
                 src: [
                     'web/bower/dropdown.js/jquery.dropdown.css',
-                    'web/bundles/tbnagenda/css/flaticon.css',
-                    'web/bundles/tbnagenda/css/liste.css',
-                    'web/bundles/tbnagenda/css/index.css'
+                    'web/css/flaticon.css',
+                    'web/css/pages/event_details.css',
+                    'web/css/pages/event_list.css'
                 ],
                 dest: 'web/prod/evenements/css/index.css'
             },
@@ -226,7 +226,7 @@ module.exports = function (grunt) {
                     'web/bower/bootstrap-select/dist/js/bootstrap-select.min.js',
                     'web/bower/dropdown.js/jquery.dropdown.js',
                     'web/bower/bootstrap-select/js/i18n/defaults-fr_FR.js',
-                    'web/bundles/tbnagenda/js/agenda.js'
+                    'web/js/pagesevent_list.js'
                 ],
                 dest: 'web/prod/evenements/js/agenda.js'
             },
@@ -235,19 +235,19 @@ module.exports = function (grunt) {
                     'web/bower/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
                     'web/bower/bootstrap-select/dist/css/bootstrap-select.min.css',
                     'web/bower/dropdown.js/jquery.dropdown.css',
-                    'web/bundles/tbnagenda/css/liste.css'
+                    'web/css/pages/event_list.css'
                 ],
                 dest: 'web/prod/evenements/css/agenda.css'
             },
             adminInfoJS: {
                 src: [
-                    'web/bundles/tbnsocial/js/SocialLogin.js'
+                    'web/js/components/SocialLogin.js'
                 ],
                 dest: 'web/prod/admin/info/js/login.js'
             },
             adminInfoCss: {
                 src: [
-                    'web/bundles/tbnsocial/css/social_login.css'
+                    'web/css/components/social_login.css'
                 ],
                 dest: 'web/prod/admin/info/css/style.css'
             },
@@ -260,28 +260,27 @@ module.exports = function (grunt) {
             widgetJs: {
                 src: [
                     'web/bower/iscroll/build/iscroll.js',
-                    'web/bundles/tbnagenda/js/widgets.js'
+                    'web/js/components/Widgets.js'
                 ],
                 dest: 'web/prod/widgets/js/widgets.js'
             },
             widgetCss: {
                 src: [
-                    'web/bundles/tbnagenda/css/widgets.css',
-                    'web/bundles/tbnagenda/css/sprites.css',
-                    'web/bundles/tbnagenda/css/style.css'
+                    'web/css/components/widgets.css',
+                    'web/css/sprites.css'
                 ],
                 dest: 'web/prod/widgets/css/widgets.css'
             },
             detailEventJs: {
                 src: [
-                    'web/bundles/tbncomment/js/CommentApp.js',
-                    'web/bundles/tbnagenda/js/details.js'
+                    'web/js/components/CommentApp.js',
+                    'web/js/pages/event_details.js'
                 ],
                 dest: 'web/prod/evenements/js/details.js'
             },
             detailEventCss: {
                 src: [
-                    'web/bundles/tbnagenda/css/details.css'
+                    'web/css/event_details.css'
                 ],
                 dest: 'web/prod/evenements/css/details.css'
             },
@@ -302,11 +301,11 @@ module.exports = function (grunt) {
                     'web/bower/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
                     'web/bower/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js',
                     'web/bower/summernote/dist/summernote.js',
-                    'web/bower/summernote/lang/summernote-fr-FR.js',
+                    'web/js/i18n/summernote/summernote-fr-FR.js',
                     'web/bower/typeahead.js/dist/typeahead.bundle.min.js',
                     'web/bower/typeahead-addresspicker/dist/typeahead-addresspicker.min.js',
-                    'web/bundles/tbnsocial/js/SocialLogin.js',
-                    'web/bundles/tbnuser/js/EventHandler.js'
+                    'web/js/components/SocialLogin.js',
+                    'web/js/components/UserEventHandler.js'
                 ],
                 dest: 'web/prod/espace-perso/evenements/js/manager.js'
             },
@@ -314,14 +313,14 @@ module.exports = function (grunt) {
                 src: [
                     'web/bower/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
                     'web/bower/summernote/dist/summernote.css',
-                    'web/bundles/tbnuser/css/espace_perso.css',
-                    'web/bundles/tbnsocial/css/social_login.css'
+                    'web/css/pages/user_event_crud.css',
+                    'web/css/components/social_login.css'
                 ],
                 dest: 'web/prod/espace-perso/evenements/css/manager.css'
             },
             espacePersoJs: {
                 src: [
-                    'web/bundles/tbnuser/js/ListEvents.js'
+                    'web/js/components/UserEventsList.js'
                 ],
                 dest: 'web/prod/espace-perso/evenements/js/liste.js'
             },
@@ -329,50 +328,50 @@ module.exports = function (grunt) {
                 src: [
                     'web/bower/raphael/raphael.min.js',
                     'web/bower/morris.js/morris.min.js',
-                    'web/bundles/tbnuser/js/UserDetails.js'
+                    'web/js/components/UserDetails.js'
                 ],
                 dest: 'web/prod/membres/js/detail.js'
             },
             espacePersoDetailCss: {
                 src: [
                     'web/bower/morris.js/morris.css',
-                    'web/bundles/tbnuser/css/membre.css'
+                    'web/css/pages/user_details.css'
                 ],
                 dest: 'web/prod/membres/css/detail.css'
             },
             espacePersoLoginJs: {
                 src: [
-                    'web/bundles/tbnsocial/js/SocialLogin.js'
+                    'web/js/components/SocialLogin.js'
                 ],
                 dest: 'web/prod/espace-perso/login/js/login.js'
             },
             espacePersoLoginCss: {
                 src: [
-                    'web/bundles/tbnsocial/css/social_login.css'
+                    'web/css/components/social_login.css'
                 ],
                 dest: 'web/prod/espace-perso/login/css/login.css'
             },
             espacePersoProfileJs: {
                 src: [
-                    'web/bundles/tbnsocial/js/SocialLogin.js',
-                    'web/bundles/tbnuser/js/Profile.js'
+                    'web/js/components/SocialLogin.js',
+                    'web/js/components/UserProfile.js'
                 ],
                 dest: 'web/prod/espace-perso/profile/js/edit.js'
             },
             enSavoirPlusCss: {
                 src: [
-                    'web/bundles/tbnagenda/css/plus.css'
+                    'web/css/pages/en_savoir_plus.css'
                 ],
                 dest: 'web/prod/plus/css/style.css'
             },
         },
         watch: {
             css: {
-                files: ['web/bundles/*/css/*.css', 'web/css/*.css', 'web/css/*/*.css', '!web/bundles/tbnagenda/css/sprites.css'],
+                files: ['web/css/*.css', 'web/css/*/*.css', '!web/css/sprites.css'],
                 tasks: ['css']
             },
             javascript: {
-                files: ['web/bundles/*/js/*.js', 'web/js/*.js'],
+                files: ['web/js/*.js'],
                 tasks: ['javascript']
             }
         },
@@ -397,7 +396,6 @@ module.exports = function (grunt) {
     });
 
     // Default task(s).
-
     grunt.registerTask('default', ['css', 'javascript']);
     grunt.registerTask('css', ['sprite', 'concat', 'cssmin']);
     grunt.registerTask('javascript', ['concat', 'uglify']);

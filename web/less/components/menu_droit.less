@@ -1,0 +1,80 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 7 mars 2014, 18:05:06
+    Author     : guillaume
+*/
+@import "hinclude";
+
+.panel-twitter {
+  min-height: 400px;
+  iframe {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.tendances {
+  strong {
+    display: block;
+  }
+}
+
+.buttons {
+  margin-bottom: 15px;
+}
+
+html body #widgets .trait {
+
+  padding-bottom: 5px;
+  padding-top: 5px;
+
+  a {
+    display: block;
+  }
+
+  small {
+    font-style: italic;
+  }
+
+  .user_profil_picture {
+    padding-right: 0;
+  }
+}
+
+.panel-primary {
+  .panel-heading {
+    .modal-title {
+      position: relative;
+    }
+
+    h3 .fa {
+      .panel-icon(40px);
+    }
+
+    h2 .fa {
+      .panel-icon(50px);
+    }
+  }
+}
+
+.panel-icon(@iconSize) {
+  font-size: @iconSize / 2;
+  height: @iconSize;
+  width: @iconSize;
+  line-height: @iconSize;
+  text-align: center;
+
+  background-color: white;
+  border: 1px solid @brand-primary;
+  border-radius: 50px;
+
+  position: absolute;
+  bottom: -@iconSize / 2 - 5;
+  right: 0;
+  z-index: 2;
+}

@@ -1,0 +1,64 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 21 mars 2014, 14:12:15
+    Author     : guillaume
+*/
+@import "../../../../../../web/less/variables";
+
+@colorEven: @brand-primary;
+@colorOdd: @brand-success;
+
+.en-savoir-plus {
+
+  .bloc {
+    margin-bottom: 50px;
+  }
+
+  .label {
+    margin-bottom: 30px;
+    -webkit-box-shadow: 2px 2px 2px 1px #656565;
+    font-size: 24px;
+    display: inline-block;
+
+    &.odd {
+      background-color: @colorOdd;
+    }
+    &.even {
+      background-color: @colorEven;
+    }
+  }
+
+  .icon {
+    border-width: 1px;
+    border-style: dotted;
+    padding: 30px;
+    margin-top: 30px;
+    border-radius: 100%;
+
+    &:hover {
+      .opacity(0.7);
+      border-style: solid;
+
+      &.odd {
+        background-color: rgba(red(@colorOdd), green(@colorOdd), blue(@colorOdd), 0.15);
+      }
+      &.even {
+        background-color: rgba(red(@colorEven), green(@colorEven), blue(@colorEven), 0.15);
+      }
+    }
+
+    &.odd {
+      color: @colorOdd;
+      border-color: @colorOdd;
+    }
+
+    &.even {
+      color: @colorEven;
+      border-color: @colorEven;
+    }
+  }
+}
