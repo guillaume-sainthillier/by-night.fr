@@ -436,7 +436,7 @@ class AgendaRepository extends EntityRepository
                 $params[":au"] = $search->getAu()->format("Y-m-d");
             }
         } else {
-            $qb->andWhere("a.dateDebut >= :now");
+            $qb->andWhere("a.dateFin >= :now");
             $params[":now"] = (new \DateTime)->format("Y-m-d");
         }
 
