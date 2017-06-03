@@ -15,9 +15,6 @@ use AppBundle\Search\SearchAgenda;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
-/**
- * @Route("/agenda")
- */
 class AgendaController extends Controller
 {
     const EVENT_PER_PAGE = 15;
@@ -67,16 +64,14 @@ class AgendaController extends Controller
 
     /**
      * @Cache(expires="+30 minutes", smaxage="1800")
-     * @Route("/", name="tbn_agenda_agenda")
-     * @Route("/page/{page}", name="tbn_agenda_pagination", requirements={"page": "\d+"})
+     * @Route("/agenda", name="tbn_agenda_agenda")
+     * @Route("/agenda/page/{page}", name="tbn_agenda_pagination", requirements={"page": "\d+"})
      * @Route("/sortir/{type}", name="tbn_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
      * @Route("/sortir/{type}/page/{page}", name="tbn_agenda_sortir_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
      * @Route("/sortir-a/{slug}", name="tbn_agenda_place", requirements={"slug": ".+"})
      * @Route("/sortir-a/{slug}/page/{page}", name="tbn_agenda_place_pagination", requirements={"slug": ".+", "page": "\d+"})
      * @Route("/tag/{tag}", name="tbn_agenda_tags", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
      * @Route("/tag/{tag}/page/{page}", name="tbn_agenda_tags_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
-     * @Route("/agenda/sortir-dans/{ville}", name="tbn_agenda_ville", requirements={"ville": ".*"})
-     * @Route("/agenda/sortir-dans/{ville}/page/{page}", name="tbn_agenda_ville_pagination", requirements={"ville": ".*", "page": "\d+"})
      * @BrowserCache(false)
      */
     public function indexAction(Request $request, City $city, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')

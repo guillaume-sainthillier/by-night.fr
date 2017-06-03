@@ -30,13 +30,13 @@ class SecurityController extends BaseController
      * @Route("/{city}/login", name="fos_user_security_login_old", requirements={"city": ".+"})
      */
     public function loginAction() {
-        return $this->redirectToRoute("fos_user_security_login");
+        return $this->redirectToRoute("fos_user_security_login", [], Response::HTTP_MOVED_PERMANENTLY);
     }
 
     /**
      * @Route("/{city}/inscription", name="fos_user_registration_register_old", requirements={"city": ".+"})
      */
     public function registerAction() {
-        return $this->redirectToRoute("fos_user_registration_register");
+        return $this->redirectToRoute("fos_user_registration_register", [], Response::HTTP_MOVED_PERMANENTLY);
     }
 }
