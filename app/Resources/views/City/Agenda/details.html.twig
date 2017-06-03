@@ -29,7 +29,6 @@
 {%- endblock %}
 
 {% block breadcrumb_city_content %}
-    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': city.slug})) %}
     {% if place %}
         {% set item = menu.addItem(place.nom, path('tbn_agenda_place', {'slug': place.slug, 'city': city.slug})) %}
     {% endif %}
