@@ -96,7 +96,7 @@
             <header>
                 <!-- Menu -->
                 {% if city is defined and city %}
-                    {{ render_esi(url('tbn_private_header_site', {'city' : city.name})) }}
+                    {{ render_esi(url('tbn_private_header_site', {'city' : city.slug})) }}
                 {% else %}
                     {{ render_esi(url('tbn_private_header')) }}
                 {% endif %}
@@ -104,7 +104,11 @@
                 {% block breadcrumb %}
                     <div id="bread" class="bg-white">
                         <div class="container">
-                            {% set item = menu.addItem('By Night', path('tbn_main_index')) %}
+                            {% if city is defined and city %}
+                                {% set item = menu.addItem(city.country.name, path('tbn_main_index')) %}
+                            {% else %}
+                                {% set item = menu.addItem('By Night', path('tbn_main_index')) %}
+                            {% endif %}
                             {% block breadcrumb_content %}{% endblock %}
                             {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
                         </div>
