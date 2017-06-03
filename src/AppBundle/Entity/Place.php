@@ -136,6 +136,12 @@ class Place implements GeolocalizeInterface
     protected $country;
 
     /**
+     * @ORM\Column(name="is_junk", type="boolean", nullable=true)
+     * @Expose
+     */
+    protected $isJunk;
+
+    /**
      * @var string
      */
     protected $countryName;
@@ -519,5 +525,29 @@ class Place implements GeolocalizeInterface
     public function getCountry()
     {
         return $this->country;
+    }
+
+    /**
+     * Set isJunk
+     *
+     * @param boolean $isJunk
+     *
+     * @return Place
+     */
+    public function setJunk($isJunk)
+    {
+        $this->isJunk = $isJunk;
+
+        return $this;
+    }
+
+    /**
+     * Get isJunk
+     *
+     * @return boolean
+     */
+    public function IsJunk()
+    {
+        return $this->isJunk;
     }
 }

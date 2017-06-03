@@ -59,5 +59,42 @@ class MigrateCommand extends AppCommand
             }
         }
         $em->flush();
+
+        $mapping = [
+            "basse-terre" => "basse-terre",
+            "bordeaux" => "bordeaux",
+            "brest" => "brest",
+            "caen" => "caen",
+            "cayenne" => "cayenne",
+            "dijon" => "dijon",
+            "fort-de-france" => "fort-de-france",
+            "grenoble" => "grenoble",
+            "le-havre" => "le-havre",
+            "lille" => "lille",
+            "lyon" => "lyon",
+            "mamoudzou" => "mamoudzou",
+            "marseille" => "marseille",
+            "montpellier" => "montpellier",
+            "nantes" => "nantes",
+            "narbonne" => "narbonne",
+            "nice" => "nice",
+            "paris" => "paris",
+            "perpignan" => "perpignan",
+            "poitiers" => "poitiers",
+            "reims" => "reims",
+            "rennes" => "rennes",
+            "rouen" => "rouen",
+            "saint-denis" => "saint-denis-8",
+            "strasbourg" => "strasbourg",
+            "toulouse" => "toulouse",
+        ];
+
+        $places = $em->getRepository("AppBundle:Place")->findBy(['city' => null]);
+        foreach($places as $place) {
+            $newCity = $em->getRepository("AppBundle:City")->findBySlug($mapping[$place->getSite()->getSubdomain()]);
+            $place->setCity($newCity)->setJunk(true);
+            $em->persist($place);
+        }
+        $em->flush();
     }
 }
