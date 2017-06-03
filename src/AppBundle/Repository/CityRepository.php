@@ -27,11 +27,20 @@ class CityRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function findByName($city, $country) {
+        $cities = [];
+        $city = preg_replace("#(^|\s)st\s#i", 'saint', $city);
+        $city = str_replace( "’", "'", $city);
+        $cities[] = $city;
+        $cities[] = str_replace(' ', '-', $city);
+        $cities[] = str_replace('-', ' ', $city);
+        $cities[] = str_replace("'", '', $city);
+        $cities = array_unique($cities);
+
         return $this
             ->createQueryBuilder("c")
-            ->where("c.name = :city")
+            ->where("c.name IN (:cities)")
             ->andWhere("c.country = :country")
-            ->setParameter("city", $city)
+            ->setParameter("cities", $cities)
             ->setParameter("country", $country)
             ->getQuery()
             ->setCacheable(true)

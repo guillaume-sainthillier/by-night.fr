@@ -465,7 +465,7 @@ class DoctrineEventHandler
 
     private function guessEventCity(Place $place) {
         //Recherche du pays en premier lieu
-        if(! $place->getCountry() && $place->getCountryName()) {
+        if($place->getCountryName() && (! $place->getCountry() || $place->getCountry()->getName() !== $place->getCountryName()) ) {
             $country = $this->em->getRepository('AppBundle:Country')->findByName($place->getCountryName());
             $place->setCountry($country);
         }
@@ -480,75 +480,70 @@ class DoctrineEventHandler
             return;
         }
 
+        if(! $place->getCodePostal() && ! $place->getVille()) {
+            $place->getReject()->addReason(Reject::NO_PLACE_LOCATION_PROVIDED);
+            return;
+        }
+
         //Location fournie -> Vérification dans la base des villes existantes
-        if($place->getCodePostal() || $place->getVille()) {
-            $zipCity = null;
-            $city = null;
-            //Un code postal (et peut-être une ville) est fourni
-            if($place->getCodePostal()) {
-                $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
+        $zipCity = null;
+        $city = null;
 
-                //Pas de places trouvée avec le CP + ville, on tente avec juste le CP
-                if(count($zipCities) === 0) {
-                    $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
-                }
+        //Ville + CP
+        if($place->getVille() && $place->getCodePostal()) {
+            $zipCity = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
+        }
 
-                //On tente de trouver un candidat si pas de strict match
-                if($place->getVille() && count($zipCities) > 1) {
-                    $zipCities = array_values(array_filter($zipCities, function(ZipCity $zipCity) use($place) {
-                        return $this->handler->getComparator()->isSubInSub($zipCity->getName(), $place->getVille());
-                    }));
-                }
-
-                if($place->getVille() && count($zipCities) === 0) {
-                    $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
-                }
-
-                //Aucun code postal n'a été trouvé -> Pas besoin de continuer plus loin
-                if(count($zipCities) === 0) {
-                    $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
-                }elseif(count($zipCities) > 1) {
-                    //Plusieurs villes ont été trouvées pour ce code postal -> Impossible de déterminer quelle ville choisir
-                    $place->getReject()->addReason(Reject::AMBIGOUS_ZIP);
-                }else {
-                    $zipCity = $zipCities[0];
-                    $city = $zipCity->getParent();
-                }
+        //Ville
+        if(! $zipCity && $place->getVille()) {
+            $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
+            if(count($zipCities) === 0) {
+                $place->getReject()->addReason(Reject::BAD_PLACE_CITY_NAME);
+            }elseif(count($zipCities) > 1) {
+                $place->getReject()->addReason(Reject::AMBIGOUS_CITY);
+            }else {
+                $zipCity = $zipCities[0];
             }
+        }
 
-            if($city === null && $place->getVille()) {
-                //Un nom de ville est fourni
-                $zipCities = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
+        //CP
+        if(! $zipCity && ! $place->getCodePostal() && $place->getCodePostal()) {
+            $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
+            if(count($zipCities) === 0) {
+                $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
+            }elseif(count($zipCities) > 1) {
+                $place->getReject()->addReason(Reject::AMBIGOUS_ZIP);
+            }else {
+                $zipCity = $zipCities[0];
+            }
+        }
 
-                //Aucune ville trouvée -> Pas besoin de continuer plus loin
-                if(count($zipCities) === 0) {
-                    $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
-                }elseif(count($zipCities) === 1) {
-                    //Une seule ville trouvée -> Cool
-                    $zipCity = $zipCities[0];
-                }
+        if($zipCity) {
+            $city = $zipCity->getParent();
+        }
 
-                //Pas de ville trouvée -> on va chercher dans les Cities
-                if(! $zipCity) {
-                    $cities = $this->repoCity->findByName($place->getVille(), $place->getCountry()->getId());
-                    if(count($cities) === 0) {
-                        $place->getReject()->addReason(Reject::BAD_PLACE_LOCATION);
-                        return;
-                    }elseif(count($cities) > 1) {
-                        $place->getReject()->addReason(Reject::AMBIGOUS_CITY);
-                        return;
-                    }
+        //Recherche de l'entité via sa ville ou son nom
+        if(! $city) {
+            $tries = array_filter([$place->getVille(), $place->getNom()]);
+            foreach($tries as $try) {
+                $cities = $this->repoCity->findByName($try, $place->getCountry()->getId());
+                if (count($cities) === 1) {
                     $city = $cities[0];
-                }else {
-                    $city = $zipCity->getParent();
+                    break;
                 }
             }
+        }
 
-            if($city || $zipCity) {
-                $place->getReject()->setReason(Reject::VALID);
-            }
+        if($city || $zipCity) {
+            $place->getReject()->setReason(Reject::VALID);
+        }
 
-            $place->setCity($city)->setZipCity($zipCity);
+        $place->setCity($city)->setZipCity($zipCity);
+
+        if($city) {
+            $place->setCountry($city->getCountry());
+        }elseif($zipCity) {
+            $place->setCountry($zipCity->getCountry());
         }
     }
 
