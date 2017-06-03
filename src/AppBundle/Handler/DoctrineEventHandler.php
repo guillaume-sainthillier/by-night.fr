@@ -264,20 +264,8 @@ class DoctrineEventHandler
     {
         $chunks = [];
         foreach ($events as $i => $event) {
-            $place = $event->getPlace();
-
-            $key = null;
-            if($place->getCity()) {
-                $key = "city.". $place->getCity()->getId();
-            }elseif($place->getZipCity()) {
-                $key = "zip_city.".$place->getZipCity()->getId();
-            }elseif($place->getCountry()) {
-                $key = "country.".$place->getCountry()->getId();
-            }
-
-            if($key) {
-                $chunks[$key][$i] = $event;
-            }
+            $key = "city.". $event->getPlace()->getCity()->getId();
+            $chunks[$key][$i] = $event;
         }
 
         foreach ($chunks as $i => $chunk) {
@@ -346,7 +334,6 @@ class DoctrineEventHandler
                     $events[$i] = $event;
                     $this->echantillonHandler->clearEvents();
                 }
-                Monitor::writeln("\n\nCOMMIT\n\n");
                 $this->commit();
                 $this->clearEvents();
                 $this->firewall->deleteCache();

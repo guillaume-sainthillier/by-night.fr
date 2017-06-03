@@ -106,7 +106,6 @@ class EchantillonHandler
 
         $byFbIdPlaces = [];
         $byCityPlaces = [];
-        $byZipCityPlaces = [];
 
         foreach ($places as $place) {
             /**
@@ -131,23 +130,15 @@ class EchantillonHandler
 
         //On prend ensuite toutes les places selon leur localisation
         foreach ($places as $place) {
-            if($place->getCity()) {
-                $key = $place->getCity()->getId();
-                $byCityPlaces[$key] = true;
-            }elseif($place->getZipCity()) {
-                $key = $place->getZipCity()->getId();
-                $byZipCityPlaces[$key] = true;
-            }
+            $key = $place->getCity()->getId();
+            $byCityPlaces[$key] = true;
         }
 
         $byCityPlaces = array_keys($byCityPlaces);
-        $byZipCityPlaces = array_keys($byZipCityPlaces);
 
         $sitePlaces = [];
         if (count($byCityPlaces)) {
             $sitePlaces = $this->repoPlace->findByCities($byCityPlaces, $byFbIdPlaces);
-        }elseif(count($byZipCityPlaces)) {
-            $sitePlaces = $this->repoPlace->findByZipCities($byZipCityPlaces, $byFbIdPlaces);
         }
 
         foreach ($sitePlaces as $place) {
