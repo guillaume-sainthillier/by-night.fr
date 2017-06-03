@@ -9,6 +9,7 @@
 namespace AppBundle\Request\ParamConverter;
 
 
+use AppBundle\App\CityManager;
 use AppBundle\Entity\City;
 use Doctrine\Common\Persistence\AbstractManagerRegistry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -18,11 +19,20 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CityConverter implements ParamConverterInterface
 {
+    /**
+     * @var AbstractManagerRegistry
+     */
     private $registry;
 
-    public function __construct(AbstractManagerRegistry $registry)
+    /**
+     * @var CityManager
+     */
+    private $cityManager;
+
+    public function __construct(AbstractManagerRegistry $registry, CityManager $cityManager)
     {
         $this->registry = $registry;
+        $this->cityManager = $cityManager;
     }
 
     public function apply(Request $request, ParamConverter $configuration)
@@ -35,11 +45,15 @@ class CityConverter implements ParamConverterInterface
             return;
         }
 
-        $entity = $this
-            ->registry
-            ->getManager()
-            ->getRepository("AppBundle:City")
-            ->findBySlug($city);
+        if($this->cityManager->getCurrentCity()) {
+            $entity = $this->cityManager->getCurrentCity();
+        }else {
+            $entity = $this
+                ->registry
+                ->getManager()
+                ->getRepository("AppBundle:City")
+                ->findBySlug($city);
+        }
 
         if(! $entity) {
             throw new NotFoundHttpException(sprintf(
@@ -48,6 +62,8 @@ class CityConverter implements ParamConverterInterface
             ));
         }
 
+        $this->cityManager->setCurrentCity($entity);
+        $request->attributes->set("_current_city", $entity->getSlug());
         $request->attributes->set($configuration->getName(), $entity);
     }
 

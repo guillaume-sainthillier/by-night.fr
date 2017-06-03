@@ -69,6 +69,7 @@ twig:
     globals:
         menu: "@white_october_breadcrumbs"
         app_manager: "@tbn.app_manager"
+        city_manager: "@tbn.city_manager"
         site_manager: "@site_manager"
         userProfilePicture: "@tbn.profile_picture.user"
         eventProfilePicture: "@tbn.profile_picture.event"

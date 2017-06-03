@@ -72,6 +72,7 @@ services:
             - { name: request.param_converter, priority: 0, converter: city_converter }
         arguments:
             - "@doctrine"
+            - "@tbn.city_manager"
 
     tbn.monolog_formatter:
             class: Monolog\Formatter\LineFormatter
@@ -91,6 +92,11 @@ services:
     tbn.app_manager:
         class: AppBundle\App\AppManager
         arguments: [ "@service_container" ]
+    tbn.city_manager:
+        class: AppBundle\App\CityManager
+        arguments:
+          - "@doctrine.orm.default_entity_manager"
+          - "@request_stack"
     tbn.event_archivator:
         class: AppBundle\Archive\EventArchivator
         arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.by_night.event" ]
@@ -153,6 +159,11 @@ services:
 
     app.event_listener.browser_cache:
         class: AppBundle\EventListener\BrowserCacheListener
+        tags:
+            - { name: kernel.event_subscriber }
+
+    app.event_listener.city:
+        class: AppBundle\EventListener\CityListener
         tags:
             - { name: kernel.event_subscriber }
 

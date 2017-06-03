@@ -1,3 +1,6 @@
+{% if city is not defined or not city %}
+{% set city = city_manager.city %}
+{% endif %}
 <!DOCTYPE HTML>
 <html prefix="og: http://ogp.me/ns#" lang="fr" xmlns:fb="http://ogp.me/ns/fb#">
     <head>
