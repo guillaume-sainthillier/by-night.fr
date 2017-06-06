@@ -129,4 +129,4 @@ var UserEventHandler = {
     }
 };
 
-UserUserEventHandler.init();
+UserEventHandler.init();
