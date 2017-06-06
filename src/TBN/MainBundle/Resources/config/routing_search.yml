@@ -1,7 +1,0 @@
-tbn_old_search_query:
-    path: /evenements
-    defaults: { _controller: TBNMainBundle:Search:oldSearch}
-
-tbn_search_query:
-    path: /
-    defaults: { _controller: TBNMainBundle:Search:search}

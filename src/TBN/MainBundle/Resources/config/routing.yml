@@ -1,7 +1,0 @@
-tbn_main_index:
-    path:  /
-    defaults: { _controller: TBNMainBundle:City:index }
-    
-tbn_main_cookie:
-    path:  /cookie
-    defaults: { _controller: TBNMainBundle:Cookie:index }
