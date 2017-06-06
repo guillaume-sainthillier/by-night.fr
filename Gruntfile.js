@@ -404,7 +404,7 @@ module.exports = function (grunt) {
                 tasks: ['css']
             },
             javascript: {
-                files: ['web/js/*.js'],
+                files: ['web/js/*.js', 'web/js/*/*.js'],
                 tasks: ['javascript']
             }
         },
