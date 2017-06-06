@@ -1,0 +1,524 @@
+/*
+
+To get this list of colors inject jQuery at http://www.google.com/design/spec/style/color.html#color-color-palette
+
+Then, run this script to get the list.
+
+
+(function() {
+  var colors = {}, main = {};
+  $(".color-group").each(function() {
+    var color = $(this).find(".name").text().trim().toLowerCase().replace(" ", "-");
+    colors[color] = {};
+
+    $(this).find(".color").not(".main-color").each(function() {
+      var shade = $(this).find(".shade").text().trim(),
+          hex   = $(this).find(".hex").text().trim();
+
+      colors[color][shade] = hex;
+    });
+    main[color] = color + "-" + $(this).find(".main-color .shade").text().trim();
+
+  });
+  var LESS = "";
+  $.each(colors, function(name, shades) {
+    LESS += "\n\n";
+    $.each(shades, function(shade, hex) {
+      LESS += "@" + name + "-" + shade + ": " + hex + ";\n";
+    });
+    if (main[name]) {
+      LESS += "@" + name + ": " + main[name] + ";\n";
+    }
+  });
+  console.log(LESS);
+})();
+
+
+*/
+.tab-content {
+  padding: 10px;
+}
+.bloc_config {
+  margin-top: 40px;
+}
+.no_margin {
+  margin: 0;
+}
+.mon_evenement #map {
+  min-height: 300px;
+}
+.mon_evenement h2 {
+  margin-bottom: 40px;
+}
+.mon_evenement h2 .label {
+  margin-right: 10px;
+}
+.mon_evenement h2 .underline {
+  border-bottom: 1px dotted #3f51b5;
+}
+.note-editor .btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.note-editor .btn:focus,
+.note-editor .btn:active:focus,
+.note-editor .btn.active:focus,
+.note-editor .btn.focus,
+.note-editor .btn:active.focus,
+.note-editor .btn.active.focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.note-editor .btn:hover,
+.note-editor .btn:focus,
+.note-editor .btn.focus {
+  color: #333;
+  text-decoration: none;
+}
+.note-editor .btn:active,
+.note-editor .btn.active {
+  outline: 0;
+  background-image: none;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.note-editor .btn.disabled,
+.note-editor .btn[disabled],
+fieldset[disabled] .note-editor .btn {
+  cursor: not-allowed;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+a.note-editor .btn.disabled,
+fieldset[disabled] a.note-editor .btn {
+  pointer-events: none;
+}
+.note-editor .btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.note-editor .btn-default:focus,
+.note-editor .btn-default.focus {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #8c8c8c;
+}
+.note-editor .btn-default:hover {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.note-editor .btn-default:active,
+.note-editor .btn-default.active,
+.open > .dropdown-toggle.note-editor .btn-default {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.note-editor .btn-default:active:hover,
+.note-editor .btn-default.active:hover,
+.open > .dropdown-toggle.note-editor .btn-default:hover,
+.note-editor .btn-default:active:focus,
+.note-editor .btn-default.active:focus,
+.open > .dropdown-toggle.note-editor .btn-default:focus,
+.note-editor .btn-default:active.focus,
+.note-editor .btn-default.active.focus,
+.open > .dropdown-toggle.note-editor .btn-default.focus {
+  color: #333;
+  background-color: #d4d4d4;
+  border-color: #8c8c8c;
+}
+.note-editor .btn-default:active,
+.note-editor .btn-default.active,
+.open > .dropdown-toggle.note-editor .btn-default {
+  background-image: none;
+}
+.note-editor .btn-default.disabled:hover,
+.note-editor .btn-default[disabled]:hover,
+fieldset[disabled] .note-editor .btn-default:hover,
+.note-editor .btn-default.disabled:focus,
+.note-editor .btn-default[disabled]:focus,
+fieldset[disabled] .note-editor .btn-default:focus,
+.note-editor .btn-default.disabled.focus,
+.note-editor .btn-default[disabled].focus,
+fieldset[disabled] .note-editor .btn-default.focus {
+  background-color: #fff;
+  border-color: #ccc;
+}
+.note-editor .btn-default .badge {
+  color: #fff;
+  background-color: #333;
+}
+.note-editor .btn-primary {
+  color: #fff;
+  background-color: #3f51b5;
+  border-color: #3849a2;
+}
+.note-editor .btn-primary:focus,
+.note-editor .btn-primary.focus {
+  color: #fff;
+  background-color: #32408f;
+  border-color: #171e44;
+}
+.note-editor .btn-primary:hover {
+  color: #fff;
+  background-color: #32408f;
+  border-color: #293475;
+}
+.note-editor .btn-primary:active,
+.note-editor .btn-primary.active,
+.open > .dropdown-toggle.note-editor .btn-primary {
+  color: #fff;
+  background-color: #32408f;
+  border-color: #293475;
+}
+.note-editor .btn-primary:active:hover,
+.note-editor .btn-primary.active:hover,
+.open > .dropdown-toggle.note-editor .btn-primary:hover,
+.note-editor .btn-primary:active:focus,
+.note-editor .btn-primary.active:focus,
+.open > .dropdown-toggle.note-editor .btn-primary:focus,
+.note-editor .btn-primary:active.focus,
+.note-editor .btn-primary.active.focus,
+.open > .dropdown-toggle.note-editor .btn-primary.focus {
+  color: #fff;
+  background-color: #293475;
+  border-color: #171e44;
+}
+.note-editor .btn-primary:active,
+.note-editor .btn-primary.active,
+.open > .dropdown-toggle.note-editor .btn-primary {
+  background-image: none;
+}
+.note-editor .btn-primary.disabled:hover,
+.note-editor .btn-primary[disabled]:hover,
+fieldset[disabled] .note-editor .btn-primary:hover,
+.note-editor .btn-primary.disabled:focus,
+.note-editor .btn-primary[disabled]:focus,
+fieldset[disabled] .note-editor .btn-primary:focus,
+.note-editor .btn-primary.disabled.focus,
+.note-editor .btn-primary[disabled].focus,
+fieldset[disabled] .note-editor .btn-primary.focus {
+  background-color: #3f51b5;
+  border-color: #3849a2;
+}
+.note-editor .btn-primary .badge {
+  color: #3f51b5;
+  background-color: #fff;
+}
+.note-editor .btn-success {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.note-editor .btn-success:focus,
+.note-editor .btn-success.focus {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #255625;
+}
+.note-editor .btn-success:hover {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #398439;
+}
+.note-editor .btn-success:active,
+.note-editor .btn-success.active,
+.open > .dropdown-toggle.note-editor .btn-success {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #398439;
+}
+.note-editor .btn-success:active:hover,
+.note-editor .btn-success.active:hover,
+.open > .dropdown-toggle.note-editor .btn-success:hover,
+.note-editor .btn-success:active:focus,
+.note-editor .btn-success.active:focus,
+.open > .dropdown-toggle.note-editor .btn-success:focus,
+.note-editor .btn-success:active.focus,
+.note-editor .btn-success.active.focus,
+.open > .dropdown-toggle.note-editor .btn-success.focus {
+  color: #fff;
+  background-color: #398439;
+  border-color: #255625;
+}
+.note-editor .btn-success:active,
+.note-editor .btn-success.active,
+.open > .dropdown-toggle.note-editor .btn-success {
+  background-image: none;
+}
+.note-editor .btn-success.disabled:hover,
+.note-editor .btn-success[disabled]:hover,
+fieldset[disabled] .note-editor .btn-success:hover,
+.note-editor .btn-success.disabled:focus,
+.note-editor .btn-success[disabled]:focus,
+fieldset[disabled] .note-editor .btn-success:focus,
+.note-editor .btn-success.disabled.focus,
+.note-editor .btn-success[disabled].focus,
+fieldset[disabled] .note-editor .btn-success.focus {
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.note-editor .btn-success .badge {
+  color: #5cb85c;
+  background-color: #fff;
+}
+.note-editor .btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.note-editor .btn-info:focus,
+.note-editor .btn-info.focus {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #1b6d85;
+}
+.note-editor .btn-info:hover {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #269abc;
+}
+.note-editor .btn-info:active,
+.note-editor .btn-info.active,
+.open > .dropdown-toggle.note-editor .btn-info {
+  color: #fff;
+  background-color: #31b0d5;
+  border-color: #269abc;
+}
+.note-editor .btn-info:active:hover,
+.note-editor .btn-info.active:hover,
+.open > .dropdown-toggle.note-editor .btn-info:hover,
+.note-editor .btn-info:active:focus,
+.note-editor .btn-info.active:focus,
+.open > .dropdown-toggle.note-editor .btn-info:focus,
+.note-editor .btn-info:active.focus,
+.note-editor .btn-info.active.focus,
+.open > .dropdown-toggle.note-editor .btn-info.focus {
+  color: #fff;
+  background-color: #269abc;
+  border-color: #1b6d85;
+}
+.note-editor .btn-info:active,
+.note-editor .btn-info.active,
+.open > .dropdown-toggle.note-editor .btn-info {
+  background-image: none;
+}
+.note-editor .btn-info.disabled:hover,
+.note-editor .btn-info[disabled]:hover,
+fieldset[disabled] .note-editor .btn-info:hover,
+.note-editor .btn-info.disabled:focus,
+.note-editor .btn-info[disabled]:focus,
+fieldset[disabled] .note-editor .btn-info:focus,
+.note-editor .btn-info.disabled.focus,
+.note-editor .btn-info[disabled].focus,
+fieldset[disabled] .note-editor .btn-info.focus {
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+.note-editor .btn-info .badge {
+  color: #5bc0de;
+  background-color: #fff;
+}
+.note-editor .btn-warning {
+  color: #fff;
+  background-color: #fabb3d;
+  border-color: #f9b224;
+}
+.note-editor .btn-warning:focus,
+.note-editor .btn-warning.focus {
+  color: #fff;
+  background-color: #f9aa0b;
+  border-color: #9a6804;
+}
+.note-editor .btn-warning:hover {
+  color: #fff;
+  background-color: #f9aa0b;
+  border-color: #db9406;
+}
+.note-editor .btn-warning:active,
+.note-editor .btn-warning.active,
+.open > .dropdown-toggle.note-editor .btn-warning {
+  color: #fff;
+  background-color: #f9aa0b;
+  border-color: #db9406;
+}
+.note-editor .btn-warning:active:hover,
+.note-editor .btn-warning.active:hover,
+.open > .dropdown-toggle.note-editor .btn-warning:hover,
+.note-editor .btn-warning:active:focus,
+.note-editor .btn-warning.active:focus,
+.open > .dropdown-toggle.note-editor .btn-warning:focus,
+.note-editor .btn-warning:active.focus,
+.note-editor .btn-warning.active.focus,
+.open > .dropdown-toggle.note-editor .btn-warning.focus {
+  color: #fff;
+  background-color: #db9406;
+  border-color: #9a6804;
+}
+.note-editor .btn-warning:active,
+.note-editor .btn-warning.active,
+.open > .dropdown-toggle.note-editor .btn-warning {
+  background-image: none;
+}
+.note-editor .btn-warning.disabled:hover,
+.note-editor .btn-warning[disabled]:hover,
+fieldset[disabled] .note-editor .btn-warning:hover,
+.note-editor .btn-warning.disabled:focus,
+.note-editor .btn-warning[disabled]:focus,
+fieldset[disabled] .note-editor .btn-warning:focus,
+.note-editor .btn-warning.disabled.focus,
+.note-editor .btn-warning[disabled].focus,
+fieldset[disabled] .note-editor .btn-warning.focus {
+  background-color: #fabb3d;
+  border-color: #f9b224;
+}
+.note-editor .btn-warning .badge {
+  color: #fabb3d;
+  background-color: #fff;
+}
+.note-editor .btn-danger {
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+.note-editor .btn-danger:focus,
+.note-editor .btn-danger.focus {
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #761c19;
+}
+.note-editor .btn-danger:hover {
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
+.note-editor .btn-danger:active,
+.note-editor .btn-danger.active,
+.open > .dropdown-toggle.note-editor .btn-danger {
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
+.note-editor .btn-danger:active:hover,
+.note-editor .btn-danger.active:hover,
+.open > .dropdown-toggle.note-editor .btn-danger:hover,
+.note-editor .btn-danger:active:focus,
+.note-editor .btn-danger.active:focus,
+.open > .dropdown-toggle.note-editor .btn-danger:focus,
+.note-editor .btn-danger:active.focus,
+.note-editor .btn-danger.active.focus,
+.open > .dropdown-toggle.note-editor .btn-danger.focus {
+  color: #fff;
+  background-color: #ac2925;
+  border-color: #761c19;
+}
+.note-editor .btn-danger:active,
+.note-editor .btn-danger.active,
+.open > .dropdown-toggle.note-editor .btn-danger {
+  background-image: none;
+}
+.note-editor .btn-danger.disabled:hover,
+.note-editor .btn-danger[disabled]:hover,
+fieldset[disabled] .note-editor .btn-danger:hover,
+.note-editor .btn-danger.disabled:focus,
+.note-editor .btn-danger[disabled]:focus,
+fieldset[disabled] .note-editor .btn-danger:focus,
+.note-editor .btn-danger.disabled.focus,
+.note-editor .btn-danger[disabled].focus,
+fieldset[disabled] .note-editor .btn-danger.focus {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+.note-editor .btn-danger .badge {
+  color: #d9534f;
+  background-color: #fff;
+}
+.note-editor .btn-link {
+  color: #3f51b5;
+  font-weight: normal;
+  border-radius: 0;
+}
+.note-editor .btn-link,
+.note-editor .btn-link:active,
+.note-editor .btn-link.active,
+.note-editor .btn-link[disabled],
+fieldset[disabled] .note-editor .btn-link {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.note-editor .btn-link,
+.note-editor .btn-link:hover,
+.note-editor .btn-link:focus,
+.note-editor .btn-link:active {
+  border-color: transparent;
+}
+.note-editor .btn-link:hover,
+.note-editor .btn-link:focus {
+  color: #2b387c;
+  text-decoration: underline;
+  background-color: transparent;
+}
+.note-editor .btn-link[disabled]:hover,
+fieldset[disabled] .note-editor .btn-link:hover,
+.note-editor .btn-link[disabled]:focus,
+fieldset[disabled] .note-editor .btn-link:focus {
+  color: #777777;
+  text-decoration: none;
+}
+.note-editor .btn-lg {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 6px;
+}
+.note-editor .btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+.note-editor .btn-xs {
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+.note-editor .btn-block {
+  display: block;
+  width: 100%;
+}
+.note-editor .btn-block + .btn-block {
+  margin-top: 5px;
+}
+.note-editor input[type="submit"].btn-block,
+.note-editor input[type="reset"].btn-block,
+.note-editor input[type="button"].btn-block {
+  width: 100%;
+}
+.note-editor .btn {
+  margin: 0;
+}
+.note-editor .btn-default {
+  border-color: #CCC;
+}

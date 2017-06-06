@@ -1,0 +1,108 @@
+/*
+    Created on : 21 mars 2014, 14:12:15
+    Author     : guillaume
+*/
+/*
+
+To get this list of colors inject jQuery at http://www.google.com/design/spec/style/color.html#color-color-palette
+
+Then, run this script to get the list.
+
+
+(function() {
+  var colors = {}, main = {};
+  $(".color-group").each(function() {
+    var color = $(this).find(".name").text().trim().toLowerCase().replace(" ", "-");
+    colors[color] = {};
+
+    $(this).find(".color").not(".main-color").each(function() {
+      var shade = $(this).find(".shade").text().trim(),
+          hex   = $(this).find(".hex").text().trim();
+
+      colors[color][shade] = hex;
+    });
+    main[color] = color + "-" + $(this).find(".main-color .shade").text().trim();
+
+  });
+  var LESS = "";
+  $.each(colors, function(name, shades) {
+    LESS += "\n\n";
+    $.each(shades, function(shade, hex) {
+      LESS += "@" + name + "-" + shade + ": " + hex + ";\n";
+    });
+    if (main[name]) {
+      LESS += "@" + name + ": " + main[name] + ";\n";
+    }
+  });
+  console.log(LESS);
+})();
+
+
+*/
+.padding-tb-30 {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+.full_wrapper {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: #c3c3c3;
+  height: 560px;
+  width: 100%;
+  position: relative;
+  display: table;
+}
+.full_wrapper h1.titrebloc {
+  color: white;
+  margin: 20px 0 20px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.45);
+}
+.full_wrapper h1.titrebloc span {
+  display: block;
+}
+.full_wrapper .footer_wrapper {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  color: #205081;
+  font-size: 14px;
+  text-align: center;
+}
+.full_wrapper .footer_wrapper h2 {
+  margin: 0;
+}
+.full_wrapper .fade-black-transp {
+  width: 100%;
+  height: 359px;
+  background: url(../images/transp_fade.png);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+.full_wrapper .wrapper {
+  position: relative;
+  padding: 20px 0;
+}
+.full_wrapper .wrapper .search_container {
+  z-index: 2;
+  border-radius: 2px;
+  top: 150%;
+  padding: 20px;
+  position: absolute;
+  transform: translate3d(0px, 0, 0);
+}
+@media (max-width: 991px) {
+  .full_wrapper .wrapper .search_container .form-control {
+    margin-bottom: 10px;
+  }
+}
+@media (max-width: 480px) {
+  .full_wrapper .wrapper .search_container {
+    padding: 10px;
+    width: 95%;
+    left: 2.5%;
+  }
+}
