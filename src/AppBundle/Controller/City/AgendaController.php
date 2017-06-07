@@ -38,19 +38,19 @@ class AgendaController extends Controller
             $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type, 'city' => $city->getSlug()]);
             switch ($type) {
                 case 'exposition':
-                    $term = 'expo, exposition';
+                    $term = \AppBundle\SearchRepository\AgendaRepository::EXPO_TERMS;
                     break;
                 case 'concert':
-                    $term = 'concert, musique, artiste';
+                    $term = \AppBundle\SearchRepository\AgendaRepository::CONCERT_TERMS;
                     break;
                 case 'famille':
-                    $term = 'famille, enfant';
+                    $term = \AppBundle\SearchRepository\AgendaRepository::FAMILY_TERMS;
                     break;
                 case 'spectacle':
-                    $term = 'spectacle, exposition, théâtre';
+                    $term = \AppBundle\SearchRepository\AgendaRepository::SHOW_TERMS;
                     break;
                 case 'etudiant':
-                    $term = 'soirée, étudiant, bar, discothèque, boîte de nuit, after';
+                    $term = \AppBundle\SearchRepository\AgendaRepository::STUDENT_TERMS;
                     break;
             }
         } else {
@@ -136,7 +136,7 @@ class AgendaController extends Controller
         //Recherche ElasticSearch
         $repositoryManager = $this->get('fos_elastica.manager');
         $repository = $repositoryManager->getRepository('AppBundle:Agenda');
-        $results = $repository->findWithSearch($search); //100ms
+        $results = $repository->findWithSearch($search);
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);

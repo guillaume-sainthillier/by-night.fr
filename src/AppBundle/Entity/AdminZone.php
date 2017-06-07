@@ -4,6 +4,8 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * Info
@@ -16,6 +18,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @ORM\DiscriminatorMap({"PPL" = "City","ADM1" = "AdminZone1", "ADM2" = "AdminZone2"})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZoneRepository", readOnly=true)
  * @ORM\HasLifecycleCallbacks()
+ * @ExclusionPolicy("NONE")
  */
 abstract class AdminZone
 {
@@ -29,6 +32,7 @@ abstract class AdminZone
     /**
      * @Gedmo\Slug(fields={"name"}, updatable=false)
      * @ORM\Column(length=200, unique=true)
+     * @Exclude
      */
     protected $slug;
 
@@ -65,12 +69,14 @@ abstract class AdminZone
     /**
      * @var string
      * @ORM\Column(name="admin1_code", type="string", length=20, nullable=true)
+     * @Exclude
      */
     protected $admin1Code;
 
     /**
      * @var string
      * @ORM\Column(name="admin2_code", type="string", length=80, nullable=true)
+     * @Exclude
      */
     protected $admin2Code;
 

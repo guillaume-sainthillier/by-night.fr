@@ -156,6 +156,30 @@ services:
         tags:
             - { name: form.type_extension, extended_type: Vich\UploaderBundle\Form\Type\VichImageType }
 
+    tbn.form.type.task:
+        class: AppBundle\Form\Type\AgendaType
+        arguments: ['@tbn.doctrine_event_handler']
+        tags:
+            - { name: form.type }
+
+    tbn.registration.form.type:
+        class: AppBundle\Form\Type\RegistrationFormType
+        arguments: ["%fos_user.model.user.class%"]
+        tags:
+            - { name: form.type, alias: tbn_user_registration }
+
+    tbn.form.type.recaptcha:
+        class: AppBundle\Form\Type\ReCaptchaType
+        arguments:
+            - '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
+        tags:
+            - { name: form.type, alias: recaptcha}
+
+    tbn.profile.form.type:
+        class: AppBundle\Form\Type\ProfileFormType
+        arguments: ["%fos_user.model.user.class%"]
+        tags:
+            - { name: form.type, alias: tbn_user_profile }
 
     app.event_listener.browser_cache:
         class: AppBundle\EventListener\BrowserCacheListener
@@ -346,31 +370,6 @@ services:
         class: "%my_user_provider.class%"
         #this is the place where the properties are passed to the UserProvider - see config.yml
         arguments: ["@fos_user.user_manager", {facebook: facebook_id, google: google_id, twitter: twitter_id}, "@site_manager", "@doctrine", {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook_list_events: "@tbn.social.facebook_list_events", facebook: "@tbn.social.facebook"}]
-
-    tbn.form.type.task:
-        class: AppBundle\Form\Type\AgendaType
-        arguments: ['@tbn.doctrine_event_handler']
-        tags:
-            - { name: form.type }
-
-    tbn.registration.form.type:
-        class: AppBundle\Form\Type\RegistrationFormType
-        arguments: ["%fos_user.model.user.class%"]
-        tags:
-            - { name: form.type, alias: tbn_user_registration }
-
-    tbn.form.type.recaptcha:
-        class: AppBundle\Form\Type\ReCaptchaType
-        arguments:
-            - '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
-        tags:
-            - { name: form.type, alias: recaptcha}
-
-    tbn.profile.form.type:
-        class: AppBundle\Form\Type\ProfileFormType
-        arguments: ["%fos_user.model.user.class%"]
-        tags:
-            - { name: form.type, alias: tbn_user_profile }
 
     authentication_handler:
         class: AppBundle\Handler\AuthenticationHandler

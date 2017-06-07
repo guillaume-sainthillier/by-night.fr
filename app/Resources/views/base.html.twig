@@ -1,5 +1,5 @@
 {% if city is not defined or not city %}
-{% set city = city_manager.city %}
+    {% set city = city_manager.city %}
 {% endif %}
 <!DOCTYPE HTML>
 <html prefix="og: http://ogp.me/ns#" lang="fr" xmlns:fb="http://ogp.me/ns/fb#">
@@ -18,7 +18,7 @@
         <meta name="title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}">
         <meta name="keywords" content="{% block meta_full_keywords %}{% spaceless %}{% block meta_keywords %}{% endblock %},aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endspaceless %}{% endblock %}">
         <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
-        
+
         <!-- OpenGraph -->
         <meta property="og:site_name" content="{% spaceless %}{{ block('nom_site') }}{% endspaceless %}">
         <meta property="og:description" content="{% spaceless %}{% block og_description %}{{ block('description') }}{% endblock %}{% endspaceless %}">
@@ -28,12 +28,12 @@
         <meta property="og:locale" content="fr" />
         <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
         <!-- ./OpenGraph -->
-        
+
         <!-- IE10+ -->
         <meta name="application-name" content="{{ block('nom_site') }}">
         <meta name="msapplication-config" content="browserconfig.xml" >
         <!-- ./IE10+ -->
-        
+
         <!-- Twitter -->
         {% if app_manager.twitterIdPage %}
             <meta name="twitter:card" content="summary"/>
@@ -76,7 +76,7 @@
             <script src="//oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
             <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
-        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <script async defer src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <script>
             (adsbygoogle = window.adsbygoogle || []).push({
                 google_ad_client: "ca-pub-2072406985754187",
@@ -91,6 +91,10 @@
             ga('create', 'UA-45716709-2', 'by-night.fr');
             ga('require', 'displayfeatures');
             ga('send', 'pageview');
+
+            var AppConfig = {
+                "apiCityURL" : "{{ url('app_api_city') }}?q=%QUERY"
+            };
         </script>
         {% block head_js %}{% endblock %}
     </head>
@@ -98,7 +102,7 @@
         <div id="wrap">
             <header>
                 <!-- Menu -->
-                {% if city is defined and city %}
+                {% if city %}
                     {{ render_esi(url('tbn_private_header_site', {'city' : city.slug})) }}
                 {% else %}
                     {{ render_esi(url('tbn_private_header')) }}
@@ -107,8 +111,9 @@
                 {% block breadcrumb %}
                     <div id="bread" class="bg-white">
                         <div class="container">
-                            {% if city is defined and city %}
+                            {% if city %}
                                 {% set item = menu.addItem(city.country.name, path('tbn_main_index')) %}
+                                {% set item = menu.addItem(city.name, path('tbn_agenda_index', {'city': city.slug})) %}
                             {% else %}
                                 {% set item = menu.addItem('By Night', path('tbn_main_index')) %}
                             {% endif %}

@@ -440,6 +440,13 @@ fos_elastica:
                         driver: orm
                         model:  AppBundle\Entity\User
                         repository: AppBundle\SearchRepository\UserRepository
+                city:
+                    properties:
+                        name: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                    persistence:
+                        driver: orm
+                        model:  AppBundle\Entity\City
+                        repository: AppBundle\SearchRepository\CityRepository
 
 jms_serializer:
     metadata:

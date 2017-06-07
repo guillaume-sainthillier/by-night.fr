@@ -4,12 +4,15 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * News
  *
  * @ORM\Table(name="country")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CountryRepository")
+ * @ExclusionPolicy("NONE")
  */
 class Country
 {
@@ -24,6 +27,7 @@ class Country
     /**
      * @Gedmo\Slug(fields={"name"})
      * @ORM\Column(length=63, unique=true)
+     * @Exclude
      */
     protected $slug;
 
@@ -31,6 +35,7 @@ class Country
      * @var string
      *
      * @ORM\Column(name="locale", type="string", length=5, nullable=true)
+     * @Exclude
      */
     private $locale;
 
@@ -45,6 +50,7 @@ class Country
      * @var string
      *
      * @ORM\Column(name="capital", type="string", length=63)
+     * @Exclude
      */
     private $capital;
 

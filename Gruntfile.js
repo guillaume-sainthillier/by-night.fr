@@ -182,6 +182,8 @@ module.exports = function (grunt) {
                     'web/bower/jquery.scrollTo/jquery.scrollTo.min.js',
                     'web/bower/jquery-unveil/jquery.unveil.min.js',
                     'web/bower/fancybox/dist/jquery.fancybox.js',
+                    'web/bower/typeahead.js/dist/typeahead.bundle.min.js',
+                    'web/bower/typeahead-addresspicker/dist/typeahead-addresspicker.min.js',
                     'web/js/overrides.js',
                     'web/js/socials.js',
                     'web/js/App.js'
@@ -196,6 +198,7 @@ module.exports = function (grunt) {
                     'web/bower/font-awesome/css/font-awesome.min.css',
                     'web/bower/bootstrap-material-design/dist/css/ripples.css',
                     'web/bower/fancybox/dist/jquery.fancybox.css',
+                    'web/css/components/typeahead.css',
                     'web/css/material/theme.blue.css',
                     'web/css/components/social_icons.css',
                     'web/css/commons.css',
@@ -324,8 +327,6 @@ module.exports = function (grunt) {
                     'web/bower/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js',
                     'web/bower/summernote/dist/summernote.js',
                     'web/js/i18n/summernote/summernote-fr-FR.js',
-                    'web/bower/typeahead.js/dist/typeahead.bundle.min.js',
-                    'web/bower/typeahead-addresspicker/dist/typeahead-addresspicker.min.js',
                     'web/js/components/SocialLogin.js',
                     'web/js/components/UserEventHandler.js'
                 ],
@@ -336,7 +337,6 @@ module.exports = function (grunt) {
                 src: [
                     'web/bower/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
                     'web/bower/summernote/dist/summernote.css',
-                    'web/css/components/typeahead.css',
                     'web/css/pages/user_event_crud.css',
                     'web/css/components/social_login.css'
                 ],

@@ -13,66 +13,154 @@
 {%- endblock %}
 
 {% block meta_description -%}
-    Choisissez votre ville parmis {{ villes|join(", ") }} pour découvrir les événements du moment !
+    Choisissez votre ville et découvrez les événements du moment !
 {%- endblock %}
 
+{% block js -%}
+    <script>
+        $(document).ready(function() {
+            $('.form-city-picker').each(function() {
+                var form = $(this);
+                var $btn = form.find('.choose-city-action');
+                $btn.attr('disabled', false);
 
-{% block meta_keywords -%}
-    {% for site in sites %}
-        {{ site.nom }},
-    {% endfor %}
+                // Saisie de la ville
+                var $field = form.find('.city-picker');
+
+                var cities = new Bloodhound({
+                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    remote: {
+                        url: AppConfig.apiCityURL,
+                        wildcard: '%QUERY'
+                    }
+                });
+                cities.initialize();
+
+                // Proxy inputs typeahead events to addressPicker
+                $field.typeahead(null, {
+                    name: 'cities',
+                    display: 'name',
+                    source: cities.ttAdapter()
+                }).on('typeahead:selected', function (e, data) {
+                    form.find('.city-value').val(data.slug || '');
+                });
+            });
+        });
+
+        function initMap() {
+            CityPicker.init();
+        }
+
+        var CityPicker = {
+            VENDOR_ID: 'gmap',
+            VENDOR_SCRIPT_URL: "//maps.googleapis.com/maps/api/js?key=" + AppConfig.googleMapKey + "&language=fr&libraries=places&callback=initMap",
+
+            init: function() {
+                $(".form-city-picker").each(function() {
+                    var $btn = $(this).find('.choose-city-action');
+                    $btn.attr('disabled', false);
+
+                    // Saisie de la ville
+                    var $field = $(this).find('.city-picker');
+
+                    // Instantiate the placePicker suggestion engine (based on bloodhound)
+                    var placePicker = new AddressPicker({
+                        autocompleteService: {
+                            types: ['(cities)']
+                        }
+                    });
+
+                    // Proxy inputs typeahead events to addressPicker
+                    placePicker.bindDefaultTypeaheadEvent($field);
+                    $field.typeahead(null, {
+                        displayKey: 'description',
+                        source: placePicker.ttAdapter()
+                    }).on('typeahead:selected', function (e, data) {
+                            console.log("SELECTION", data);
+//                        $(this).typeahead('val', data.terms[0].value).blur();
+                    });
+                });
+            },
+            load: function() {
+                if(! CityPicker.isLoaded()) {
+                    CityPicker.loadScript(CityPicker.VENDOR_SCRIPT_URL);
+                }
+            },
+            isLoaded: function() {
+                return $("#" + CityPicker.VENDOR_ID).length > 0;
+            },
+            loadScript: function(src) {
+                var s = document.createElement('script');
+                s.id = CityPicker.VENDOR_ID;
+                s.async = true;
+                s.defer = true;
+                s.type = 'text/javascript';
+                s.src = src;
+
+                var t = document.getElementsByTagName('head')[0];
+                t.appendChild(s);
+            }
+        };
+    </script>
 {%- endblock %}
 
 {% block body %}
-    <section class="bg-white">
-        <div class="container">
-            <h2 class="text-primary">Envie de sortir ?</h2>
-            <br/>
-            <p class="lead">
-                By Night vous propose les <strong>agendas des événements</strong>, concerts, spectacles et
-                manifestations dans les plus grandes villes de France.
-            </p>
-            <p class="lead">
-                Qu'attendez vous ? Choisissez votre ville et découvrez tous les événements !
-            </p>
-            <p class="lead">
-                Inscrivez-vous et bénéficiez de fonctionnalités supplémentaires sur la plateforme !
-            </p>
+<div class="container">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="modal-title">Choisissez une ville</h2>
         </div>
-        <br/>
-    </section>
-    <br/>
-    <br/>
-    <br/>
-    <div class="container">
-        <div class="row">
-            {% for i, site in sites %}
-                <div class="col-xs-6 col-md-4 col-lg-3">
-                    <div class="panel panel-default">
-                        <div class="panel-heading bg-white">
-                            <h2 class="modal-title">
-                                <a title="Accéder aux événements de {{ site.nom }}"
-                                   href="{{ path('tbn_agenda_index', {'city': site.subdomain }) }}">
-                                    {{ site.nom }}
-                                </a>
-                            </h2>
-                        </div>
-                        <div class="panel-body">
-                            <p><span class="number number-big text-primary">{{ site.count_events }}</span>
-                                événement{{ site.count_events > 1 ? 's' : '' }}</p>
-                            <p><span class="number number-big text-primary">{{ site.count_users }}</span>
-                                membre{{ site.count_users > 1 ? 's' : '' }}</p>
-                        </div>
-                        <div class="panel-footer bg-white text-right">
-                            <a title="Accéder aux événements de {{ site.nom }}"
-                               class="btn btn-primary btn-raised"
-                               href="{{ path('tbn_agenda_index', {'city': site.subdomain }) }}">
-                                <i class="fa fa-chevron-right"></i> Accéder
-                            </a>
-                        </div>
+        <div class="panel-body">
+            {{ form_start(autocomplete_form, { 'action': path('app_change_city'), 'attr': {'class': 'form-city-picker'} }) }}
+            <div class="form-group">
+                <div class="input-group">
+                    {{ form_errors(autocomplete_form.city) }}
+                    {{ form_widget(autocomplete_form.name) }}
+                    <div class="input-group-btn">
+                        <button class="btn btn-lg btn-block btn-primary btn-raised choose-city-action" type="submit" disabled>Choisir</button>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
+            {{ form(autocomplete_form) }}
+            {{ form_end(autocomplete_form) }}
         </div>
     </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="modal-title">Les concerts</h2>
+        </div>
+        <div class="panel-body">
+            {% include ":City/Event:block_preview_event.html.twig" with({"events": concerts}) %}
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="modal-title">Les spectacles</h2>
+        </div>
+        <div class="panel-body">
+            {% include ":City/Event:block_preview_event.html.twig" with({"events": spectacles}) %}
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="modal-title">Les sorties étudiantes</h2>
+        </div>
+        <div class="panel-body">
+            {% include ":City/Event:block_preview_event.html.twig" with({"events": etudiants}) %}
+        </div>
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="modal-title">Les sorties en famille</h2>
+        </div>
+        <div class="panel-body">
+            {% include ":City/Event:block_preview_event.html.twig" with({"events": familles}) %}
+        </div>
+    </div>
+</div>
 {% endblock %}
