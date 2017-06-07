@@ -12,9 +12,9 @@ framework:
 # Doctrine Configuration
 doctrine:
     orm:
-        metadata_cache_driver: redis
-        query_cache_driver: redis
-        result_cache_driver: redis
+        metadata_cache_driver: apcu
+        query_cache_driver: apcu
+        result_cache_driver: apcu
 
 monolog:
     use_microseconds: false
