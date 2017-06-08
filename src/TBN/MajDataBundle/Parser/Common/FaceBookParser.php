@@ -4,45 +4,38 @@ namespace TBN\MajDataBundle\Parser\Common;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
-
 use TBN\MainBundle\Entity\SiteRepository;
-use TBN\MajDataBundle\Utils\Monitor;
-use TBN\SocialBundle\Social\FacebookAdmin;
 use TBN\MajDataBundle\Parser\AgendaParser;
 use TBN\MajDataBundle\Utils\Firewall;
+use TBN\MajDataBundle\Utils\Monitor;
+use TBN\SocialBundle\Social\FacebookAdmin;
 
 /**
- * Classe de parsing des événéments FB
+ * Classe de parsing des événéments FB.
+ *
  * @author Guillaume SAINTHILLIER
  */
 class FaceBookParser extends AgendaParser
 {
-
     /**
-     * @var FacebookAdmin $api
+     * @var FacebookAdmin
      */
     protected $api;
 
-
     /**
-     *
      * @var ObjectManager
      */
     protected $om;
 
-
     /**
-     *
      * @var SiteRepository
      */
     protected $repoSite;
 
     /**
-     *
      * @var Firewall
      */
     protected $firewall;
-
 
     public function __construct(ObjectManager $om, Firewall $firewall, FacebookAdmin $api)
     {
@@ -53,23 +46,27 @@ class FaceBookParser extends AgendaParser
         $this->om = $om;
     }
 
-    protected function getPlaces() {
-        $places =  $this->om->getRepository('TBNAgendaBundle:Place')->findAllFBIds();
+    protected function getPlaces()
+    {
+        $places = $this->om->getRepository('TBNAgendaBundle:Place')->findAllFBIds();
 
         return $places;
     }
 
-    protected function getUsers() {
-        $users =  $this->om->getRepository('TBNAgendaBundle:Agenda')->findAllFBOwnerIds();
+    protected function getUsers()
+    {
+        $users = $this->om->getRepository('TBNAgendaBundle:Agenda')->findAllFBOwnerIds();
 
         return $users;
     }
 
-    protected function getCities() {
+    protected function getCities()
+    {
         return $this->om->getRepository('TBNAgendaBundle:Place')->findAllCities();
     }
 
-    protected function getSiteLocations() {
+    protected function getSiteLocations()
+    {
         return $this->om->getRepository('TBNMainBundle:Site')->findLocations();
     }
 
@@ -79,10 +76,10 @@ class FaceBookParser extends AgendaParser
         $users = array_unique(array_merge($users, $additional_users));
 
         //Récupération des événements depuis les lieux trouvés
-        Monitor::writeln("Recherche des événements associés aux users ...");
+        Monitor::writeln('Recherche des événements associés aux users ...');
         $events = $this->api->getEventsFromUsers($users, $now);
         Monitor::writeln(sprintf(
-            "<info>%d</info> événements trouvés",
+            '<info>%d</info> événements trouvés',
             count($events)
         ));
 
@@ -95,31 +92,32 @@ class FaceBookParser extends AgendaParser
 
         //Récupération des places depuis les GPS
         $locations = $this->getSiteLocations();
-        Monitor::writeln("Recherche des places associés aux sites ...");
+        Monitor::writeln('Recherche des places associés aux sites ...');
         $gps_places = $this->api->getPlacesFromGPS($locations);
         Monitor::writeln(sprintf(
-            "<info>%d</info> places trouvées",
+            '<info>%d</info> places trouvées',
             count($gps_places)
         ));
 
-        $gps_places = array_map(function(GraphNode $node) {
+        $gps_places = array_map(function (GraphNode $node) {
             return $node->getField('id');
         }, $gps_places);
 
         $places = array_unique(array_filter(array_merge($places, $gps_places)));
 
 //        Récupération des événements depuis les lieux trouvés
-        Monitor::writeln("Recherche des événements associés aux places ...");
+        Monitor::writeln('Recherche des événements associés aux places ...');
         $events = $this->api->getEventsFromPlaces($places, $now);
         Monitor::writeln(sprintf(
-            "<info>%d</info> événements trouvés",
+            '<info>%d</info> événements trouvés',
             count($events)
         ));
 
         return $events;
     }
 
-    protected function getEventFromCities(\DateTime $now) {
+    protected function getEventFromCities(\DateTime $now)
+    {
         //Récupération des événements par mots-clés
         Monitor::writeln("Recherche d'événements associés aux mots clés...");
         $cities = $this->getCities();
@@ -127,16 +125,18 @@ class FaceBookParser extends AgendaParser
         $cities = array_slice($cities, 0, 100);
         $events = $this->api->getEventsFromKeywords($cities, $now);
         Monitor::writeln(sprintf(
-            "<info>%d</info> événements trouvés",
+            '<info>%d</info> événements trouvés',
             count($events)
         ));
 
         return $events;
     }
 
-    protected function getOwners(array $nodes) {
+    protected function getOwners(array $nodes)
+    {
         return array_filter(array_map(function (GraphNode $node) {
             $owner = $node->getField('owner');
+
             return $owner ? $owner->getField('id') : null;
         }, $nodes));
     }
@@ -144,7 +144,7 @@ class FaceBookParser extends AgendaParser
     public function getRawAgendas()
     {
         $this->api->setSiteInfo($this->getSiteInfo());
-        $now = new \DateTime;
+        $now = new \DateTime();
 
         //Recherche d'événements de l'API en fonction des lieux
         $place_events = $this->getEventsFromPlaces($now);
@@ -168,13 +168,15 @@ class FaceBookParser extends AgendaParser
         return array_map([$this, 'getInfoAgenda'], $events);
     }
 
-    public function getIdsToMigrate() {
+    public function getIdsToMigrate()
+    {
         return $this->api->getIdsToMigrate();
     }
 
-    protected function getUniqueEvents(array $events) {
+    protected function getUniqueEvents(array $events)
+    {
         $uniqueEvents = [];
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $uniqueEvents[$event->getField('id')] = $event;
         }
 
@@ -182,8 +184,10 @@ class FaceBookParser extends AgendaParser
     }
 
     /**
-     * Retourne les informations d'un événement en fonction de l'ID de cet événement sur Facebook
+     * Retourne les informations d'un événement en fonction de l'ID de cet événement sur Facebook.
+     *
      * @param $event
+     *
      * @return array l'agenda parsé
      */
     public function getInfoAgenda(GraphNode $event)
@@ -207,7 +211,7 @@ class FaceBookParser extends AgendaParser
         if ($dateDebut instanceof \DateTime && $dateFin instanceof \DateTime) {
             $horaires = sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
         } elseif ($dateDebut instanceof \DateTime) {
-            $horaires = sprintf("A %s", $dateDebut->format("H\hi"));
+            $horaires = sprintf('A %s', $dateDebut->format("H\hi"));
         }
 
         $tab_retour['horaires'] = $horaires;
@@ -221,7 +225,6 @@ class FaceBookParser extends AgendaParser
         //Place
         $place = $event->getField('place');
         if ($place) {
-
             $tab_retour['place.nom'] = $place->getField('name');
             $tab_retour['place.facebookId'] = $place->getField('id');
 
@@ -241,8 +244,8 @@ class FaceBookParser extends AgendaParser
         if ($owner) {
             $tab_retour['facebook_owner_id'] = $owner->getField('id');
             $tab_retour['reservation_internet'] = $this->api->ensureGoodValue($owner->getField('website'));
-            $tab_retour['reservation_telephone'] = $this->api->ensureGoodValue($owner->getField("phone"));
-            $fbCategory = $this->api->ensureGoodValue($owner->getField("category"));
+            $tab_retour['reservation_telephone'] = $this->api->ensureGoodValue($owner->getField('phone'));
+            $fbCategory = $this->api->ensureGoodValue($owner->getField('category'));
             list($categorie, $type) = $this->guessTypeEventFromCategory($fbCategory);
             $tab_retour['categorie_manifestation'] = $categorie;
             $tab_retour['type_manifestation'] = $type;
@@ -254,28 +257,28 @@ class FaceBookParser extends AgendaParser
     private function guessTypeEventFromCategory($category)
     {
         $list = [
-            'Album' => ['type' => 'Musique', 'categorie' => ''],
-            'Arts' => ['type' => 'Art', 'categorie' => ''],
-            'Athlete' => ['type' => 'Sport', 'categorie' => ''],
-            'Artist' => ['type' => 'Concert', 'categorie' => ''],
-            'Bar' => ['type' => 'Soirée', 'categorie' => 'Bar'],
-            'Cafe' => ['type' => 'Café', 'categorie' => ''],
-            'Club' => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
-            'Comedian' => ['type' => 'Spectacle', 'categorie' => 'Comédie'],
-            'Concert' => ['type' => 'Concert', 'categorie' => ''],
+            'Album'        => ['type' => 'Musique', 'categorie' => ''],
+            'Arts'         => ['type' => 'Art', 'categorie' => ''],
+            'Athlete'      => ['type' => 'Sport', 'categorie' => ''],
+            'Artist'       => ['type' => 'Concert', 'categorie' => ''],
+            'Bar'          => ['type' => 'Soirée', 'categorie' => 'Bar'],
+            'Cafe'         => ['type' => 'Café', 'categorie' => ''],
+            'Club'         => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
+            'Comedian'     => ['type' => 'Spectacle', 'categorie' => 'Comédie'],
+            'Concert'      => ['type' => 'Concert', 'categorie' => ''],
             'Just For Fun' => ['type' => 'Détente', 'categorie' => ''],
-            'Gallery' => ['type' => 'Art', 'categorie' => 'Galerie'],
-            'Groove' => ['type' => 'Musique', 'categorie' => ''],
-            'Library' => ['type' => 'Culture', 'categorie' => ''],
-            'Museum' => ['type' => 'Culture', 'categorie' => 'Musée'],
-            'Music' => ['type' => 'Musique', 'categorie' => ''],
-            'Night' => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
-            'Political' => ['type' => 'Politique', 'categorie' => ''],
+            'Gallery'      => ['type' => 'Art', 'categorie' => 'Galerie'],
+            'Groove'       => ['type' => 'Musique', 'categorie' => ''],
+            'Library'      => ['type' => 'Culture', 'categorie' => ''],
+            'Museum'       => ['type' => 'Culture', 'categorie' => 'Musée'],
+            'Music'        => ['type' => 'Musique', 'categorie' => ''],
+            'Night'        => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
+            'Political'    => ['type' => 'Politique', 'categorie' => ''],
             'Record Label' => ['type' => 'Musique', 'categorie' => ''],
-            'Restaurant' => ['type' => 'Restaurant', 'categorie' => ''],
-            'Sport' => ['type' => 'Art', 'categorie' => ''],
-            'Travel' => ['type' => 'Culture', 'categorie' => ''],
-            'University' => ['type' => 'Etudiant', 'categorie' => ''],
+            'Restaurant'   => ['type' => 'Restaurant', 'categorie' => ''],
+            'Sport'        => ['type' => 'Art', 'categorie' => ''],
+            'Travel'       => ['type' => 'Culture', 'categorie' => ''],
+            'University'   => ['type' => 'Etudiant', 'categorie' => ''],
         ];
 
         $types = [];

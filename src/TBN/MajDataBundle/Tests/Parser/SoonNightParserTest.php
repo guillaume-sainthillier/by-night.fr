@@ -3,10 +3,7 @@
 namespace TBN\MajDataBundle\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-
-
 use TBN\MajDataBundle\Parser\Common\SoonNightParser;
-
 
 class SoonNightParserTest extends KernelTestCase
 {
@@ -22,7 +19,8 @@ class SoonNightParserTest extends KernelTestCase
         $this->parser = static::$kernel->getContainer()->get('tbn.soonnight_parser');
     }
 
-    public function testNormalize() {
+    public function testNormalize()
+    {
         list($rue, $codePostal, $ville) = $this->parser->normalizeAddress('46 rue des lombards, 75001 Paris');
         $this->assertEquals($rue, '46 rue des lombards');
         $this->assertEquals($codePostal, '75001');

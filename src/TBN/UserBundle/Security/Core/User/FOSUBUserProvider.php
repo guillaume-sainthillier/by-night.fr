@@ -1,13 +1,14 @@
 <?php
+
 namespace TBN\UserBundle\Security\Core\User;
 
+use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
-use Symfony\Component\Security\Core\User\UserInterface;
-use FOS\UserBundle\Model\UserManagerInterface;
-use TBN\UserBundle\Entity\UserInfo;
-use TBN\MainBundle\Site\SiteManager;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
+use Symfony\Component\Security\Core\User\UserInterface;
+use TBN\MainBundle\Site\SiteManager;
+use TBN\UserBundle\Entity\UserInfo;
 
 class FOSUBUserProvider extends BaseClass
 {
@@ -27,21 +28,21 @@ class FOSUBUserProvider extends BaseClass
     public function connectSite(UserResponseInterface $response)
     {
         //on connect - get the access token and the user ID
-        $service = $response->getResourceOwner()->getName();//google, facebook,...
+        $service = $response->getResourceOwner()->getName(); //google, facebook,...
 
         $social = $this->getSocialService($service);
         $social->connectSite($response);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function connect(UserInterface $user, UserResponseInterface $response)
     {
         $username = $response->getUsername(); //ID de l'user sur le réseau social
 
         //on connect - get the access token and the user ID
-        $service = $response->getResourceOwner()->getName();//google, facebook,...
+        $service = $response->getResourceOwner()->getName(); //google, facebook,...
 
         //On récupère le service gérant les infos
         $social = $this->getSocialService($service);
@@ -57,15 +58,15 @@ class FOSUBUserProvider extends BaseClass
     }
 
     /**
-     *
      * @param string $service
+     *
      * @return \TBN\SocialBundle\Social\Social
      */
     protected function getSocialService($service)
     {
         $key = strtolower($service);
         if (!isset($this->socials[$key])) {
-            throw new RuntimeException(sprintf("Le service %s est introuvable", $service));
+            throw new RuntimeException(sprintf('Le service %s est introuvable', $service));
         }
 
         return $this->socials[$key];
@@ -80,14 +81,12 @@ class FOSUBUserProvider extends BaseClass
         if ($info !== null) {
             return $em->getRepository('TBNUserBundle:User')->findOneByInfo($info);
         }
-
-        return null;
     }
 
     protected function getProperty(UserResponseInterface $response)
     {
-        if (preg_match("/facebook/i", $response->getResourceOwner()->getName())) {
-            $response->getResourceOwner()->setName("facebook");
+        if (preg_match('/facebook/i', $response->getResourceOwner()->getName())) {
+            $response->getResourceOwner()->setName('facebook');
         }
 
         return parent::getProperty($response);
@@ -101,13 +100,12 @@ class FOSUBUserProvider extends BaseClass
         $username = $response->getUsername();
         $service = $response->getResourceOwner()->getName();
 
-
         // Recherche de l'user par son id sur les réseaux sociaux (facebook_id)
         $user = $this->findUserBySocialInfo($response, $username);
 
         //Recherche de l'user par l'email du compte social associé
         if (null === $user) {
-            $user = $this->userManager->findUserBy(["email" => $response->getEmail()]);
+            $user = $this->userManager->findUserBy(['email' => $response->getEmail()]);
         }
 
         //Si l'utilisateur n'existe pas on le créé
@@ -122,7 +120,7 @@ class FOSUBUserProvider extends BaseClass
 
             //On définit le profil de l'utilisateur
             $this->hydrateUser($user, $response, $service);
-            $this->userManager->updateUser($user);// Mise à jour
+            $this->userManager->updateUser($user); // Mise à jour
 
             return $user;
         }
@@ -134,7 +132,7 @@ class FOSUBUserProvider extends BaseClass
 
         //On met à jour l'utilisateur
         $this->hydrateUser($user, $response, $service);
-        $this->userManager->updateUser($user);// Mise à jour
+        $this->userManager->updateUser($user); // Mise à jour
 
         return $user;
     }
@@ -142,7 +140,7 @@ class FOSUBUserProvider extends BaseClass
     protected function hydrateUser(UserInterface $user, UserResponseInterface $response, $service)
     {
         if ($user->getInfo() === null) {
-            $user->setInfo(new UserInfo);
+            $user->setInfo(new UserInfo());
         }
 
         if ($user->getSite() === null && $this->siteManager->getCurrentSite()) {
@@ -150,18 +148,18 @@ class FOSUBUserProvider extends BaseClass
         }
 
         if ($user->getEmail() === null) {
-            $user->setEmail($response->getEmail() === null ? $response->getNickname() . "@" . $service . ".fr" : $response->getEmail());
+            $user->setEmail($response->getEmail() === null ? $response->getNickname().'@'.$service.'.fr' : $response->getEmail());
         }
 
         if ($user->getFirstname() === null && $user->getLastname() === null) {
-            $nom_prenoms = preg_split("/ /", $response->getRealName());
+            $nom_prenoms = preg_split('/ /', $response->getRealName());
             $user->setFirstname($nom_prenoms[0]);
             if (count($nom_prenoms) > 0) {
-                $user->setLastname(implode(" ", array_slice($nom_prenoms, 1)));
+                $user->setLastname(implode(' ', array_slice($nom_prenoms, 1)));
             }
         }
 
-        if ($user->getUsername() === null || $user->getUsername() === "") {
+        if ($user->getUsername() === null || $user->getUsername() === '') {
             $user->setUsername($response->getNickname());
         }
 

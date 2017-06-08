@@ -2,12 +2,11 @@
 
 namespace TBN\AgendaBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use TBN\MainBundle\Controller\TBNController as Controller;
 
 /**
- * Description of MenuDroitController
+ * Description of MenuDroitController.
  *
  * @author guillaume
  */
@@ -19,117 +18,116 @@ class MenuDroitController extends Controller
 
     public function programmeTVAction()
     {
-        $parser = $this->get("tbn.programmetv");
+        $parser = $this->get('tbn.programmetv');
         $programmes = $parser->getProgrammesTV();
 
-        $response = $this->render("TBNAgendaBundle:Hinclude:programme_tv.html.twig", [
-            "programmes" => $programmes
+        $response = $this->render('TBNAgendaBundle:Hinclude:programme_tv.html.twig', [
+            'programmes' => $programmes,
         ]);
 
         return $response
             ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-            ->setPublic()
-        ;
+            ->setPublic();
     }
 
-    public function twitterAction($max_id = null) {
+    public function twitterAction($max_id = null)
+    {
         $results = $this->get('tbn.social.twitter')->getTimeline($max_id, self::TWEET_LIMIT);
 
         $nextLink = null;
-        if(isset($results['search_metadata']['next_results'])) {
+        if (isset($results['search_metadata']['next_results'])) {
             parse_str($results['search_metadata']['next_results'], $infos);
 
-            if(isset($infos['?max_id'])) {
+            if (isset($infos['?max_id'])) {
                 $nextLink = $this->generateUrl('tbn_agenda_tweeter_feed', [
-                    'max_id' => $infos['?max_id']
+                    'max_id' => $infos['?max_id'],
                 ]);
             }
         }
 
-        if(! isset($results['statuses'])) {
+        if (!isset($results['statuses'])) {
             $results['statuses'] = [];
         }
 
-        if(! count($results['statuses']) && $this->get('request_stack')->getParentRequest() === null) {
-            return $this->redirectToRoute("tbn_agenda_agenda");
+        if (!count($results['statuses']) && $this->get('request_stack')->getParentRequest() === null) {
+            return $this->redirectToRoute('tbn_agenda_agenda');
         }
 
-        $response =  $this->render('TBNAgendaBundle:Hinclude:tweets.html.twig', [
-            'tweets' => $results['statuses'],
-            'hasNextLink' => $nextLink
+        $response = $this->render('TBNAgendaBundle:Hinclude:tweets.html.twig', [
+            'tweets'      => $results['statuses'],
+            'hasNextLink' => $nextLink,
         ]);
 
-        if(! $max_id || count($results['statuses']) !== self::TWEET_LIMIT) {
+        if (!$max_id || count($results['statuses']) !== self::TWEET_LIMIT) {
             list($expire, $ttl) = $this->getSecondsUntil(1);
-        }else {
-            $expire = new \DateTime;
-            $expire->modify("+1 year");
+        } else {
+            $expire = new \DateTime();
+            $expire->modify('+1 year');
             $ttl = 31536000;
         }
 
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
 
         return $response
             ->setSharedMaxAge($ttl)
-            ->setExpires($expire)
-        ;
+            ->setExpires($expire);
     }
 
-    public function nextEventsAction($slug, $id = null, $page = 1) {
+    public function nextEventsAction($slug, $id = null, $page = 1)
+    {
         if ($page <= 0) {
             $page = 1;
         }
 
         $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_prochaines_soirees', ['page' => $page]);
-        if($result instanceof Response) {
+        if ($result instanceof Response) {
             return $result;
         }
         $soiree = $result;
 
-        if(! $soiree->getPlace()) {
+        if (!$soiree->getPlace()) {
             return $this->redirectToRoute('tbn_agenda_details', [
-                'id' => $soiree->getId(),
+                'id'   => $soiree->getId(),
                 'slug' => $soiree->getSlug(),
             ]);
         }
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
         $count = $repo->findAllNextCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
-        if($current < $count) {
+        if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_prochaines_soirees', [
                 'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
-                'page' => $page + 1
+                'id'   => $soiree->getId(),
+                'page' => $page + 1,
             ]);
-        }else {
+        } else {
             $hasNextLink = null;
         }
 
-        $response = $this->render("TBNAgendaBundle:Hinclude:evenements_details.html.twig", [
-            "page" => $page,
-            "place" => $soiree->getPlace(),
-            "soirees" => $repo->findAllNext($soiree, $page, self::WIDGET_ITEM_LIMIT),
-            "current" => $current,
-            "count" => $count,
-            "hasNextLink" => $hasNextLink
+        $response = $this->render('TBNAgendaBundle:Hinclude:evenements_details.html.twig', [
+            'page'        => $page,
+            'place'       => $soiree->getPlace(),
+            'soirees'     => $repo->findAllNext($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            'current'     => $current,
+            'count'       => $count,
+            'hasNextLink' => $hasNextLink,
         ]);
 
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
 
         return $response
             ->setExpires(new \DateTime('+1 year'))
             ->setSharedMaxAge(31536000)
-            ->setPublic()
-            ;
+            ->setPublic();
     }
 
     public function soireesSimilairesAction($slug, $id = null, $page = 1)
@@ -139,43 +137,42 @@ class MenuDroitController extends Controller
         }
 
         $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page]);
-        if($result instanceof Response) {
+        if ($result instanceof Response) {
             return $result;
         }
         $soiree = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
         $count = $repo->findAllSimilairesCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
-        if($current < $count) {
+        if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_similaires', [
                 'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
-                'page' => $page + 1
+                'id'   => $soiree->getId(),
+                'page' => $page + 1,
             ]);
-        }else {
+        } else {
             $hasNextLink = null;
         }
 
-        $response = $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-            "soirees" => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
-            "current" => $current,
-            "count" => $count,
-            "hasNextLink" => $hasNextLink
+        $response = $this->render('TBNAgendaBundle:Hinclude:evenements.html.twig', [
+            'soirees'     => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            'current'     => $current,
+            'count'       => $count,
+            'hasNextLink' => $hasNextLink,
         ]);
 
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
 
         return $response
             ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-            ->setPublic()
-        ;
+            ->setPublic();
     }
 
     public function topSoireesAction($page = 1)
@@ -184,7 +181,7 @@ class MenuDroitController extends Controller
             $page = 1;
         }
 
-        $siteManager = $this->container->get("site_manager");
+        $siteManager = $this->container->get('site_manager');
         $site = $siteManager->getCurrentSite();
 
         $em = $this->getDoctrine()->getManager();
@@ -193,79 +190,78 @@ class MenuDroitController extends Controller
         $current = $page * self::WIDGET_ITEM_LIMIT;
         $count = $repo->findTopSoireeCount($site);
 
-        if($current < $count) {
+        if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_top_soirees', [
-                'page' => $page + 1
+                'page' => $page + 1,
             ]);
-        }else {
+        } else {
             $hasNextLink = null;
         }
 
-        $response = $this->render("TBNAgendaBundle:Hinclude:evenements.html.twig", [
-            "soirees" => $repo->findTopSoiree($site, $page, self::WIDGET_ITEM_LIMIT),
-            "hasNextLink" => $hasNextLink,
-            "current" => $current,
-            "count" => $count
+        $response = $this->render('TBNAgendaBundle:Hinclude:evenements.html.twig', [
+            'soirees'     => $repo->findTopSoiree($site, $page, self::WIDGET_ITEM_LIMIT),
+            'hasNextLink' => $hasNextLink,
+            'current'     => $current,
+            'count'       => $count,
         ]);
 
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
 
         return $response
             ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-            ->setPublic()
-        ;
+            ->setPublic();
     }
 
-    public function fbMembresAction($slug, $id = null, $page)
+    public function fbMembresAction($slug, $id, $page)
     {
         if ($page <= 1) {
             $page = 1;
         }
 
         $result = $this->checkEventUrl($slug, $id, 'tbn_agenda_soirees_membres', ['page' => $page]);
-        if($result instanceof Response) {
+        if ($result instanceof Response) {
             return $result;
         }
         $soiree = $result;
 
-        if(! $soiree->getFacebookEventId()) {
+        if (!$soiree->getFacebookEventId()) {
             return $this->redirectToRoute('tbn_agenda_details', ['slug' => $soiree->getSlug(), 'id' => $soiree->getId()]);
         }
 
-        $api = $this->get("tbn.social.facebook_admin");
+        $api = $this->get('tbn.social.facebook_admin');
         $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
         $membres = array_merge($retour['participations'], $retour['interets']);
-        if(count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
+        if (count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
                 'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
-                'page' => $page + 1
+                'id'   => $soiree->getId(),
+                'page' => $page + 1,
             ]);
-        }else {
+        } else {
             $hasNextLink = null;
         }
 
-        $response = $this->render("TBNAgendaBundle:Hinclude:fb_membres.html.twig", [
-            "event" => $soiree,
-            "page" => $page,
-            "membres" => $membres,
-            "hasNextLink" => $hasNextLink
+        $response = $this->render('TBNAgendaBundle:Hinclude:fb_membres.html.twig', [
+            'event'       => $soiree,
+            'page'        => $page,
+            'membres'     => $membres,
+            'hasNextLink' => $hasNextLink,
         ]);
 
         $now = new \DateTime();
         if ($soiree->getDateFin() < $now) {
-            $now->modify("+1 year");
+            $now->modify('+1 year');
             $response
                 ->setExpires($now)
                 ->setSharedMaxAge(31536000);
         } else {
-            if($hasNextLink) {
+            if ($hasNextLink) {
                 list($expires, $next2hours) = $this->getSecondsUntil(24);
-            }else {
+            } else {
                 list($expires, $next2hours) = $this->getSecondsUntil(2);
             }
 
@@ -277,7 +273,7 @@ class MenuDroitController extends Controller
         $this->get('fos_http_cache.handler.tag_handler')->addTags(['fb-membres']);
 
         $response->headers->add([
-           'X-No-Browser-Cache' => '1'
+           'X-No-Browser-Cache' => '1',
         ]);
 
         return $response->setPublic();
@@ -289,40 +285,39 @@ class MenuDroitController extends Controller
             $page = 1;
         }
 
-        $siteManager = $this->container->get("site_manager");
+        $siteManager = $this->container->get('site_manager');
         $site = $siteManager->getCurrentSite();
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNUserBundle:User");
+        $repo = $em->getRepository('TBNUserBundle:User');
 
         $count = $repo->findMembresCount($site);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
-        if($current < $count) {
+        if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_top_membres', [
-                'page' => $page + 1
+                'page' => $page + 1,
             ]);
-        }else {
+        } else {
             $hasNextLink = null;
         }
 
-        $response = $this->render("TBNAgendaBundle:Hinclude:membres.html.twig", [
-            "membres" => $repo->findTopMembres($site, $page, self::WIDGET_ITEM_LIMIT),
-            "hasNextLink" => $hasNextLink,
-            "current" => $current,
-            "count" => $count
+        $response = $this->render('TBNAgendaBundle:Hinclude:membres.html.twig', [
+            'membres'     => $repo->findTopMembres($site, $page, self::WIDGET_ITEM_LIMIT),
+            'hasNextLink' => $hasNextLink,
+            'current'     => $current,
+            'count'       => $count,
         ]);
 
         list($future, $seconds) = $this->getSecondsUntil(6);
 
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
 
         return $response
             ->setExpires($future)
             ->setSharedMaxAge($seconds)
-            ->setPublic()
-        ;
+            ->setPublic();
     }
 }

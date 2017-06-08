@@ -12,5 +12,4 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 abstract class AppCommand extends ContainerAwareCommand
 {
-
 }

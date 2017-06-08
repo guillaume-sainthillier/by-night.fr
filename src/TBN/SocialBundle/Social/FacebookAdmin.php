@@ -4,37 +4,31 @@ namespace TBN\SocialBundle\Social;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\Exceptions\FacebookResponseException;
+use Facebook\Exceptions\FacebookSDKException;
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphNode;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use JMS\Serializer\SerializerInterface;
-
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\App\AppManager;
 use TBN\MainBundle\Picture\EventProfilePicture;
+use TBN\MainBundle\Site\SiteManager;
 use TBN\MajDataBundle\Utils\Monitor;
 use TBN\UserBundle\Entity\SiteInfo;
-
-use TBN\MainBundle\Site\SiteManager;
 use TBN\UserBundle\Entity\User;
 
-
-use Facebook\Exceptions\FacebookSDKException;
-
 /**
- * Description of Facebook
+ * Description of Facebook.
  *
  * @author guillaume
  */
 class FacebookAdmin extends FacebookEvents
 {
-
     /**
-     *
      * @var SiteInfo
      */
     protected $siteInfo;
@@ -46,7 +40,6 @@ class FacebookAdmin extends FacebookEvents
     protected $pageAccessToken;
 
     /**
-     *
      * @var SerializerInterface
      */
     protected $serializer;
@@ -63,10 +56,11 @@ class FacebookAdmin extends FacebookEvents
         $this->pageAccessToken = null;
     }
 
-    protected function init() {
+    protected function init()
+    {
         parent::init();
 
-        if(! $this->_isInitialized) {
+        if (!$this->_isInitialized) {
             $this->siteInfo = $this->siteManager->getSiteInfo();
 
             if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
@@ -77,37 +71,42 @@ class FacebookAdmin extends FacebookEvents
         }
     }
 
-    protected function guessAppAccessToken() {
+    protected function guessAppAccessToken()
+    {
         $this->pageAccessToken = $this->client->getApp()->getAccessToken();
     }
 
-    protected function getAccessToken() {
+    protected function getAccessToken()
+    {
         return $this->pageAccessToken ?: ($this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null);
     }
 
-    protected function getPageAccessToken() {
+    protected function getPageAccessToken()
+    {
         $this->init();
 
         $accessToken = $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null;
-        $response = $this->client->get('/'.$this->appManager->getFacebookIdPage()."?fields=access_token", [], $accessToken);
+        $response = $this->client->get('/'.$this->appManager->getFacebookIdPage().'?fields=access_token', [], $accessToken);
         $datas = $response->getDecodedBody();
 
         return $datas['access_token'];
     }
 
-    public function postNews($title, $url, $imageUrl) {
+    public function postNews($title, $url, $imageUrl)
+    {
         //Authentification
         $accessToken = $this->getPageAccessToken();
 
-        $response = $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed/', [
-            'message' => $title,
-            'name' => "By Night Magazine",
-            'link' => $url,
-            'picture' => $imageUrl,
-            'description' => $title
+        $response = $this->client->post('/'.$this->appManager->getFacebookIdPage().'/feed/', [
+            'message'     => $title,
+            'name'        => 'By Night Magazine',
+            'link'        => $url,
+            'picture'     => $imageUrl,
+            'description' => $title,
         ], $accessToken);
 
         $post = $response->getGraphNode();
+
         return $post->getField('id');
     }
 
@@ -119,21 +118,21 @@ class FacebookAdmin extends FacebookEvents
             $dateFin = $this->getReadableDate($agenda->getDateFin());
             $date = $this->getDuree($dateDebut, $dateFin);
             $place = $agenda->getPlace();
-            $message = $user->getUsername() . ' présente : ' . $agenda->getNom() . ($place ? " @ " . $place->getNom() : '');
+            $message = $user->getUsername().' présente : '.$agenda->getNom().($place ? ' @ '.$place->getNom() : '');
 
             //Authentification
-            $request = $this->client->post('/' . $this->appManager->getFacebookIdPage() . '/feed', [
-                'message' => $message,
-                'name' => $agenda->getNom(),
-                'link' => $this->getLink($agenda),
-                'picture' => $this->getLinkPicture($agenda),
-                'description' => $date . '. ' . strip_tags($agenda->getDescriptif()),
-                'actions' => json_encode([
+            $request = $this->client->post('/'.$this->appManager->getFacebookIdPage().'/feed', [
+                'message'     => $message,
+                'name'        => $agenda->getNom(),
+                'link'        => $this->getLink($agenda),
+                'picture'     => $this->getLinkPicture($agenda),
+                'description' => $date.'. '.strip_tags($agenda->getDescriptif()),
+                'actions'     => json_encode([
                     [
-                        'name' => $user->getUsername() . ' sur ' . $user->getSite()->getNom() . ' By Night',
-                        'link' => $this->getMembreLink($user)
-                    ]
-                ])
+                        'name' => $user->getUsername().' sur '.$user->getSite()->getNom().' By Night',
+                        'link' => $this->getMembreLink($user),
+                    ],
+                ]),
             ], $accessToken);
 
             $post = $request->getGraphNode();
@@ -148,6 +147,7 @@ class FacebookAdmin extends FacebookEvents
         if ($site !== null && $this->siteInfo !== null) {
             try {
                 $page = $this->getPageFromId($this->appManager->getFacebookIdPage(), ['fields' => 'fan_count']);
+
                 return $page->getField('fan_count');
             } catch (FacebookSDKException $ex) {
                 $this->logger->error($ex);
@@ -157,7 +157,8 @@ class FacebookAdmin extends FacebookEvents
         return 0;
     }
 
-    private function getOjectsFromIds(array $ids, callable $requestFunction, callable $dataHandlerFunction, $idsPerRequest = 50, $requestPerBatch = 50) {
+    private function getOjectsFromIds(array $ids, callable $requestFunction, callable $dataHandlerFunction, $idsPerRequest = 50, $requestPerBatch = 50)
+    {
         $idsPerBatch = $requestPerBatch * $idsPerRequest;
         $nbBatchs = ceil(count($ids) / $idsPerBatch);
         $finalDatas = [];
@@ -179,12 +180,12 @@ class FacebookAdmin extends FacebookEvents
                     foreach ($responses as $response) {
                         if ($response->isError()) {
                             $e = $response->getThrownException();
-                            Monitor::writeln('<error>Erreur dans le batch de la récupération des objets FB : ' . ($e ? $e->getMessage() : 'Erreur Inconnue') . '</error>');
+                            Monitor::writeln('<error>Erreur dans le batch de la récupération des objets FB : '.($e ? $e->getMessage() : 'Erreur Inconnue').'</error>');
                         } else {
                             $datas = $this->findAssociativeEvents($response);
                             foreach ($datas as $data) {
                                 $currentDatas = $dataHandlerFunction($data);
-                                foreach($currentDatas as $key => $currentData) {
+                                foreach ($currentDatas as $key => $currentData) {
                                     $finalDatas[$key] = $currentData;
                                 }
                             }
@@ -192,7 +193,7 @@ class FacebookAdmin extends FacebookEvents
                     }
                 });
             } catch (FacebookSDKException $ex) {
-                Monitor::writeln('<error>Erreur dans la récupération détaillée des objets : ' . $ex->getMessage() . '</error>');
+                Monitor::writeln('<error>Erreur dans la récupération détaillée des objets : '.$ex->getMessage().'</error>');
             }
         }
 
@@ -202,38 +203,40 @@ class FacebookAdmin extends FacebookEvents
     public function getUserStatsFromIds(array $ids_users, $idsPerRequest = 50)
     {
         $this->init();
-        $requestFunction = function(array $current_ids) {
-              return $this->client->request('GET', '/', [
-                  'ids' => implode(',', $current_ids),
-                  'fields' => self::USERS_FIELDS
+        $requestFunction = function (array $current_ids) {
+            return $this->client->request('GET', '/', [
+                  'ids'    => implode(',', $current_ids),
+                  'fields' => self::USERS_FIELDS,
               ], $this->getAccessToken());
         };
 
-        $dataHandlerFunction = function(GraphNode $data) {
-            return [ $data->getField('id') => [
-                    'url' => $this->getPagePictureURL($data, false)
+        $dataHandlerFunction = function (GraphNode $data) {
+            return [$data->getField('id') => [
+                    'url' => $this->getPagePictureURL($data, false),
             ]];
         };
+
         return $this->getOjectsFromIds($ids_users, $requestFunction, $dataHandlerFunction, $idsPerRequest);
     }
 
     public function getEventStatsFromIds(array $ids_event, $idsPerRequest = 50)
     {
         $this->init();
-        $requestFunction = function(array $current_ids) {
-              return $this->client->request('GET', '/', [
-                  'ids' => implode(',', $current_ids),
-                  'fields' => self::STATS_FIELDS
+        $requestFunction = function (array $current_ids) {
+            return $this->client->request('GET', '/', [
+                  'ids'    => implode(',', $current_ids),
+                  'fields' => self::STATS_FIELDS,
               ], $this->getAccessToken());
         };
 
-        $dataHandlerFunction = function(GraphNode $data) {
-            return [ $data->getField('id') => [
+        $dataHandlerFunction = function (GraphNode $data) {
+            return [$data->getField('id') => [
                     'participations' => $data->getField('attending_count'),
-                    'interets' => $data->getField('maybe_count'),
-                    'url' => $this->getPagePictureURL($data)
+                    'interets'       => $data->getField('maybe_count'),
+                    'url'            => $this->getPagePictureURL($data),
             ]];
         };
+
         return $this->getOjectsFromIds($ids_event, $requestFunction, $dataHandlerFunction, $idsPerRequest);
     }
 
@@ -241,8 +244,9 @@ class FacebookAdmin extends FacebookEvents
     {
         $this->init();
         try {
-            $url = $id_event . '/' . ($isParticiper ? 'attending' : 'maybe');
+            $url = $id_event.'/'.($isParticiper ? 'attending' : 'maybe');
             $this->client->sendRequest('POST', $url, [], $userAccessToken);
+
             return true;
         } catch (FacebookSDKException $ex) {
             $this->logger->critical($ex);
@@ -257,11 +261,11 @@ class FacebookAdmin extends FacebookEvents
         $stats = ['participer' => false, 'interet' => false];
 
         try {
-            $url = '/' . $id_event . '/%s/' . $id_user;
-            $requests = array(
+            $url = '/'.$id_event.'/%s/'.$id_user;
+            $requests = [
                 $this->client->request('GET', sprintf($url, 'attending'), [], $userAccessToken),
-                $this->client->request('GET', sprintf($url, 'maybe'), [], $userAccessToken)
-            );
+                $this->client->request('GET', sprintf($url, 'maybe'), [], $userAccessToken),
+            ];
 
             $responses = $this->client->sendBatchRequest($requests, $userAccessToken);
             foreach ($responses as $i => $response) {
@@ -280,10 +284,10 @@ class FacebookAdmin extends FacebookEvents
     public function getEventFromId($id_event, $fields = null)
     {
         $this->init();
-        $key = 'events' . $id_event;
+        $key = 'events'.$id_event;
         if (!isset($this->cache[$key])) {
-            $request = $this->client->sendRequest('GET', '/' . $id_event, [
-                'fields' => $fields ?: self::FIELDS
+            $request = $this->client->sendRequest('GET', '/'.$id_event, [
+                'fields' => $fields ?: self::FIELDS,
             ], $this->getAccessToken());
 
             $this->cache[$key] = $request->getGraphEvent();
@@ -292,7 +296,7 @@ class FacebookAdmin extends FacebookEvents
         return $this->cache[$key];
     }
 
-    public function getEventsFromIds(& $ids_event, $idsPerRequest = 20, $limit = 1000)
+    public function getEventsFromIds(&$ids_event, $idsPerRequest = 20, $limit = 1000)
     {
         $this->init();
         $requestPerBatch = 50;
@@ -308,9 +312,9 @@ class FacebookAdmin extends FacebookEvents
                 for ($j = 0; $j < $nbIterations; $j++) {
                     $current_ids = array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
                     $requests[] = $this->client->request('GET', '/', [
-                        'ids' => implode(',', $current_ids),
+                        'ids'    => implode(',', $current_ids),
                         'fields' => self::FIELDS,
-                        'limit' => $limit
+                        'limit'  => $limit,
                     ], $this->getAccessToken());
                 }
 
@@ -323,7 +327,7 @@ class FacebookAdmin extends FacebookEvents
                     foreach ($responses as $response) {
                         if ($response->isError()) {
                             $e = $response->getThrownException();
-                            Monitor::writeln('<error>Erreur dans le batch de la recherche par IDS événements : ' . ($e ? $e->getMessage() : 'Erreur Inconnue') . '</error>');
+                            Monitor::writeln('<error>Erreur dans le batch de la recherche par IDS événements : '.($e ? $e->getMessage() : 'Erreur Inconnue').'</error>');
                         } else {
                             $datas = $this->findAssociativeEvents($response);
                             $fetchedEvents += count($datas);
@@ -333,7 +337,7 @@ class FacebookAdmin extends FacebookEvents
                     Monitor::writeln(sprintf('%d / %d : Récupération détaillée de <info>%d</info> événement(s)', $i + 1, $nbBatchs, $fetchedEvents));
                 });
             } catch (FacebookSDKException $ex) {
-                Monitor::writeln('<error>Erreur dans la récupération détaillée des événements : ' . $ex->getMessage() . '</error>');
+                Monitor::writeln('<error>Erreur dans la récupération détaillée des événements : '.$ex->getMessage().'</error>');
 
                 foreach ($batch_ids as $current_id) {
                     try {
@@ -353,10 +357,10 @@ class FacebookAdmin extends FacebookEvents
     public function getPageFromId($id_page, $params = [])
     {
         $this->init();
-        $key = 'pages.' . $id_page;
+        $key = 'pages.'.$id_page;
         if (!isset($this->cache[$key])) {
             $request = $this->client->sendRequest('GET',
-                '/' . $id_page,
+                '/'.$id_page,
                 $params,
                 $this->getAccessToken()
             );
@@ -375,63 +379,64 @@ class FacebookAdmin extends FacebookEvents
 
         try {
             $fields = str_replace(
-                ["%offset%", "%limit%"],
+                ['%offset%', '%limit%'],
                 [$offset, $limit],
                 self::MEMBERS_FIELDS
             );
 
-            $request = $this->client->sendRequest('GET', '/' . $id_event, [
-                'fields' => $fields
+            $request = $this->client->sendRequest('GET', '/'.$id_event, [
+                'fields' => $fields,
             ], $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null);
             $graph = $request->getGraphPage();
 
             $participations = $this->findPaginated($graph->getField('attending'), $limit);
             $interets = $this->findPaginated($graph->getField('maybe'), $limit);
-
         } catch (FacebookSDKException $ex) {
             $this->logger->error($ex);
         }
 
         return [
-            'interets' => $interets,
-            'participations' => $participations
+            'interets'       => $interets,
+            'participations' => $participations,
         ];
     }
 
     public function getEventCountStats($id_event)
     {
         $this->init();
-        $request = $this->client->sendRequest('GET', '/' . $id_event, [
-            'fields' => 'attending_count,maybe_count'
+        $request = $this->client->sendRequest('GET', '/'.$id_event, [
+            'fields' => 'attending_count,maybe_count',
         ], $this->getAccessToken());
 
         $graph = $request->getGraphPage();
 
         return [
             'participations' => $graph->getField('attending_count'),
-            'interets' => $graph->getField('maybe_count')
+            'interets'       => $graph->getField('maybe_count'),
         ];
     }
 
-    public function getIdsToMigrate() {
+    public function getIdsToMigrate()
+    {
         return $this->oldIds;
     }
 
-    private function handleResponseException(FacebookResponseException $e) {
-        if(preg_match("#ID (\d+) was migrated to \w+ ID (\d+)#i", $e->getMessage(), $matches)) {
+    private function handleResponseException(FacebookResponseException $e)
+    {
+        if (preg_match("#ID (\d+) was migrated to \w+ ID (\d+)#i", $e->getMessage(), $matches)) {
             $this->oldIds[$matches[1]] = $matches[2];
         }
     }
 
-    private function handleEdge(array $datas, $edge, callable $getParams, callable $responseToDatas, $idsPerRequest = 10, $requestsPerBatch = 50, $accessToken  = null) {
-        if(! $accessToken) {
+    private function handleEdge(array $datas, $edge, callable $getParams, callable $responseToDatas, $idsPerRequest = 10, $requestsPerBatch = 50, $accessToken = null)
+    {
+        if (!$accessToken) {
             $accessToken = $this->getAccessToken();
         }
 
         $idsPerBatch = $requestsPerBatch * $idsPerRequest;
         $nbBatchs = ceil(count($datas) / $idsPerBatch);
         $finalNodes = [];
-
 
         for ($i = 0; $i < $nbBatchs; $i++) {
             $requests = [];
@@ -453,7 +458,7 @@ class FacebookAdmin extends FacebookEvents
                 $fetchedNodes = 0;
                 foreach ($responses as $response) {
                     /**
-                     * @var FacebookResponse $response
+                     * @var FacebookResponse
                      */
                     if ($response->isError()) {
                         $e = $response->getThrownException();
@@ -463,7 +468,7 @@ class FacebookAdmin extends FacebookEvents
                             $e ? $e->getMessage() : 'Erreur Inconnue'
                         ));
 
-                        if($e instanceof FacebookResponseException) {
+                        if ($e instanceof FacebookResponseException) {
                             $this->handleResponseException($e);
                         }
                     } else {
@@ -491,14 +496,15 @@ class FacebookAdmin extends FacebookEvents
     public function getEventsFromUsers(array $id_users, \DateTime $since)
     {
         $this->init();
-        return $this->handleEdge($id_users, '/events', function(array $current_ids) use($since) {
+
+        return $this->handleEdge($id_users, '/events', function (array $current_ids) use ($since) {
             return [
-                'ids' => implode(',', $current_ids),
-                'since' => $since->format('Y-m-d'),
+                'ids'    => implode(',', $current_ids),
+                'since'  => $since->format('Y-m-d'),
                 'fields' => self::FIELDS,
-                'limit' => 1000
+                'limit'  => 1000,
             ];
-        }, function(FacebookResponse $response) {
+        }, function (FacebookResponse $response) {
             return $this->findPaginatedNodes($response);
         });
     }
@@ -506,29 +512,33 @@ class FacebookAdmin extends FacebookEvents
     public function getEventsFromPlaces(array $id_places, \DateTime $since)
     {
         $this->init();
-        return $this->handleEdge($id_places, '/events', function(array $current_ids) use($since) {
+
+        return $this->handleEdge($id_places, '/events', function (array $current_ids) use ($since) {
             return [
-                'ids' => implode(',', $current_ids),
-                'since' => $since->format('Y-m-d'),
+                'ids'    => implode(',', $current_ids),
+                'since'  => $since->format('Y-m-d'),
                 'fields' => self::FIELDS,
-                'limit' => 1000
+                'limit'  => 1000,
             ];
-        }, function(FacebookResponse $response) {
+        }, function (FacebookResponse $response) {
             return $this->findPaginatedNodes($response);
         });
     }
 
-    public function getEventsFromKeywords(array $keywords) {
+    public function getEventsFromKeywords(array $keywords)
+    {
         $this->init();
-        return $this->handleEdge($keywords, '/search', function(array $keywords) {
+
+        return $this->handleEdge($keywords, '/search', function (array $keywords) {
             $keyword = $keywords[0];
+
             return [
-                'q' => sprintf('"%s"', $keyword),
-                'type' => 'event',
+                'q'      => sprintf('"%s"', $keyword),
+                'type'   => 'event',
                 'fields' => self::FIELDS,
-                'limit' => 1000
+                'limit'  => 1000,
             ];
-        }, function(FacebookResponse $response) {
+        }, function (FacebookResponse $response) {
             return $this->findPaginated($response->getGraphEdge());
         }, 1, 50, $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null);
     }
@@ -536,17 +546,19 @@ class FacebookAdmin extends FacebookEvents
     public function getPlacesFromGPS(array $coordonnees)
     {
         $this->init();
-        return $this->handleEdge($coordonnees, '/search', function(array $coordonnees) {
+
+        return $this->handleEdge($coordonnees, '/search', function (array $coordonnees) {
             $coordonnee = $coordonnees[0];
+
             return [
-                'q' => '',
-                'type' => 'place',
-                'center' => sprintf("%s,%s", $coordonnee["latitude"], $coordonnee["longitude"]),
+                'q'        => '',
+                'type'     => 'place',
+                'center'   => sprintf('%s,%s', $coordonnee['latitude'], $coordonnee['longitude']),
                 'distance' => 4000,
-                'fields' => 'id',
-                'limit' => 1000
+                'fields'   => 'id',
+                'limit'    => 1000,
             ];
-        }, function(FacebookResponse $response) {
+        }, function (FacebookResponse $response) {
             return $this->findPaginated($response->getGraphEdge());
         }, 1);
     }

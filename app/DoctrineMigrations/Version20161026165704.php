@@ -27,6 +27,5 @@ class Version20161026165704 extends AbstractMigration
     public function down(Schema $schema)
     {
         // this down() migration is auto-generated, please modify it to your needs
-
     }
 }

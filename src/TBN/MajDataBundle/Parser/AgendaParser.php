@@ -2,7 +2,6 @@
 
 namespace TBN\MajDataBundle\Parser;
 
-
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use TBN\AgendaBundle\Entity\Agenda;
@@ -19,14 +18,13 @@ use TBN\UserBundle\Entity\SiteInfo;
 
 abstract class AgendaParser implements ParserInterface
 {
-
     /**
-     * Url du site à parser
+     * Url du site à parser.
      */
     protected $url;
 
     /**
-     * Urls du site à parser
+     * Urls du site à parser.
      */
     protected $urls;
 
@@ -36,13 +34,11 @@ abstract class AgendaParser implements ParserInterface
     protected $site;
 
     /**
-     *
      * @var SiteInfo
      */
     protected $siteInfo;
 
     /**
-     *
      * @var PropertyAccessorInterface
      */
     protected $propertyAccessor;
@@ -56,15 +52,17 @@ abstract class AgendaParser implements ParserInterface
         return $this;
     }
 
-    public abstract function getRawAgendas();
+    abstract public function getRawAgendas();
 
-    public function addUrl($url) {
+    public function addUrl($url)
+    {
         $this->urls[] = $url;
 
         return $this;
     }
 
-    public function getUrls() {
+    public function getUrls()
+    {
         return $this->urls;
     }
 
@@ -90,7 +88,7 @@ abstract class AgendaParser implements ParserInterface
 
     public function arrayToAgenda($infos)
     {
-        $agenda = new Agenda;
+        $agenda = new Agenda();
 
         foreach ($infos as $field => $value) {
             $this->propertyAccessor->setValue($agenda, $field, $value);
@@ -99,14 +97,13 @@ abstract class AgendaParser implements ParserInterface
         return $agenda;
     }
 
-
     protected function parseDate($date)
     {
         $tabMois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
-        return preg_replace_callback("/(.+)(\d{2}) (" . implode("|", $tabMois) . ") (\d{4})(.*)/iu",
+        return preg_replace_callback("/(.+)(\d{2}) (".implode('|', $tabMois).") (\d{4})(.*)/iu",
             function ($items) use ($tabMois) {
-                return $items[4] . "-" . (array_search($items[3], $tabMois) + 1) . "-" . $items[2];
+                return $items[4].'-'.(array_search($items[3], $tabMois) + 1).'-'.$items[2];
             }, $date);
     }
 
@@ -123,12 +120,14 @@ abstract class AgendaParser implements ParserInterface
     public function setSite(Site $site)
     {
         $this->site = $site;
+
         return $this;
     }
 
     public function setSiteInfo(SiteInfo $siteInfo)
     {
         $this->siteInfo = $siteInfo;
+
         return $this;
     }
 }

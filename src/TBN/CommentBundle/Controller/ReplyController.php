@@ -2,27 +2,25 @@
 
 namespace TBN\CommentBundle\Controller;
 
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-
-use TBN\CommentBundle\Form\Type\CommentType;
-use TBN\CommentBundle\Entity\Comment;
+use Symfony\Component\HttpFoundation\Request;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\CommentBundle\Entity\Comment;
+use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\CommentBundle\Repository\CommentRepository;
-
 
 class ReplyController extends Controller
 {
     /**
-     *
      * @return CommentRepository
      */
     protected function getCommentRepo()
     {
-        $repo = $this->getDoctrine()->getRepository("TBNCommentBundle:Comment");
+        $repo = $this->getDoctrine()->getRepository('TBNCommentBundle:Comment');
+
         return $repo;
     }
 
@@ -48,21 +46,22 @@ class ReplyController extends Controller
 
     public function detailsAction(Comment $comment)
     {
-        return $this->render("TBNCommentBundle:Reply:details.html.twig", [
-            "comment" => $comment,
-            "nb_reponses" => $this->getNbReponses($comment)
+        return $this->render('TBNCommentBundle:Reply:details.html.twig', [
+            'comment'     => $comment,
+            'nb_reponses' => $this->getNbReponses($comment),
         ]);
     }
 
     public function listAction(Comment $comment, $page)
     {
         $limit = 5;
+
         return $this->render('TBNCommentBundle:Reply:list.html.twig', [
-            'comments' => $this->getReponses($comment, $page, $limit),
-            "main_comment" => $comment,
-            "nb_comments" => $this->getNbReponses($comment),
-            "page" => $page,
-            "offset" => $limit
+            'comments'     => $this->getReponses($comment, $page, $limit),
+            'main_comment' => $comment,
+            'nb_comments'  => $this->getNbReponses($comment),
+            'page'         => $page,
+            'offset'       => $limit,
         ]);
     }
 
@@ -71,16 +70,16 @@ class ReplyController extends Controller
         $reponse = new Comment();
         $form = $this->getCreateForm($reponse, $comment);
 
-        if ($request->getMethod() == "POST") {
+        if ($request->getMethod() == 'POST') {
             $user = $this->getUser();
 
             if (!$user) {
                 $this->get('session')->getFlashBag()->add(
                     'warning',
-                    "Vous devez vous connecter pour répondre à cet utilisateur"
+                    'Vous devez vous connecter pour répondre à cet utilisateur'
                 );
 
-                return new RedirectResponse($this->generateUrl("fos_user_security_login"));
+                return new RedirectResponse($this->generateUrl('fos_user_security_login'));
             }
             $reponse->setUser($user);
             $reponse->setAgenda($comment->getAgenda());
@@ -94,42 +93,42 @@ class ReplyController extends Controller
                 $em->flush();
 
                 return new JsonResponse([
-                    "success" => true,
-                    "comment" => $this->container->get("templating")->render("TBNCommentBundle:Reply:details.html.twig", [
-                        "comment" => $reponse,
-                        "success_confirmation" => true,
+                    'success' => true,
+                    'comment' => $this->container->get('templating')->render('TBNCommentBundle:Reply:details.html.twig', [
+                        'comment'              => $reponse,
+                        'success_confirmation' => true,
                     ]),
-                    "nb_reponses" => $this->getNbReponses($comment)
+                    'nb_reponses' => $this->getNbReponses($comment),
                 ]);
             } else {
                 return new JsonResponse([
-                    "success" => false,
-                    "post" => $this->container->get("templating")->render("TBNCommentBundle:Reply:post.html.twig", [
-                        "comment" => $comment,
-                        "form" => $form->createView()
-                    ])
+                    'success' => false,
+                    'post'    => $this->container->get('templating')->render('TBNCommentBundle:Reply:post.html.twig', [
+                        'comment' => $comment,
+                        'form'    => $form->createView(),
+                    ]),
                 ]);
             }
         }
+
         return $this->render('TBNCommentBundle:Reply:post.html.twig', [
             'comment' => $comment,
-            'form' => $form->createView()
+            'form'    => $form->createView(),
         ]);
     }
-
 
     protected function getCreateForm(Comment $reponse, Comment $comment)
     {
         return $this->createForm(CommentType::class, $reponse, [
-            'action' => $this->generateUrl('tbn_comment_reponse_new', ["id" => $comment->getId()]),
-            'method' => 'POST'
+            'action' => $this->generateUrl('tbn_comment_reponse_new', ['id' => $comment->getId()]),
+            'method' => 'POST',
         ])
-            ->add("poster", SubmitType::class, [
-                "label" => "Répondre",
-                "attr" => [
-                    "class" => "btn btn-primary btn-submit btn-raised",
-                    "data-loading-text" => "En cours..."
-                ]
+            ->add('poster', SubmitType::class, [
+                'label' => 'Répondre',
+                'attr'  => [
+                    'class'             => 'btn btn-primary btn-submit btn-raised',
+                    'data-loading-text' => 'En cours...',
+                ],
             ]);
     }
 }

@@ -3,16 +3,16 @@
 namespace TBN\AgendaBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Symfony\Component\Validator\Constraints as Assert;
 use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
 use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Reject\Reject;
 
 /**
- * Place
+ * Place.
  *
  * @ORM\Table(name="Place", indexes={
  *   @ORM\Index(name="place_nom_idx", columns={"nom"}),
@@ -26,7 +26,7 @@ use TBN\MajDataBundle\Reject\Reject;
 class Place implements GeolocalizeInterface
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -119,27 +119,29 @@ class Place implements GeolocalizeInterface
      */
     protected $reject;
 
-    public function setReject(Reject $reject = null) {
+    public function setReject(Reject $reject = null)
+    {
         $this->reject = $reject;
 
         return $this;
     }
 
-    public function getReject() {
+    public function getReject()
+    {
         return $this->reject;
     }
-
 
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -147,9 +149,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set rue
+     * Set rue.
      *
      * @param string $rue
+     *
      * @return Place
      */
     public function setRue($rue)
@@ -160,7 +163,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get rue
+     * Get rue.
      *
      * @return string
      */
@@ -170,14 +173,15 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set latitude
+     * Set latitude.
      *
      * @param float $latitude
+     *
      * @return Place
      */
     public function setLatitude($latitude)
     {
-        if(! isset($this->i)) {
+        if (!isset($this->i)) {
             $this->i = 0;
         }
 
@@ -187,7 +191,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get latitude
+     * Get latitude.
      *
      * @return float
      */
@@ -197,9 +201,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set longitude
+     * Set longitude.
      *
      * @param float $longitude
+     *
      * @return Place
      */
     public function setLongitude($longitude)
@@ -210,7 +215,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get longitude
+     * Get longitude.
      *
      * @return float
      */
@@ -220,9 +225,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set nom
+     * Set nom.
      *
      * @param string $nom
+     *
      * @return Place
      */
     public function setNom($nom)
@@ -233,7 +239,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get nom
+     * Get nom.
      *
      * @return string
      */
@@ -243,9 +249,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
+     *
      * @return Place
      */
     public function setSlug($slug)
@@ -256,7 +263,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */
@@ -266,9 +273,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set path
+     * Set path.
      *
      * @param string $path
+     *
      * @return Place
      */
     public function setPath($path)
@@ -279,7 +287,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get path
+     * Get path.
      *
      * @return string
      */
@@ -289,9 +297,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return Place
      */
     public function setUrl($url)
@@ -302,7 +311,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string
      */
@@ -312,9 +321,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set ville
+     * Set ville.
      *
      * @param string $ville
+     *
      * @return Place
      */
     public function setVille($ville)
@@ -325,7 +335,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get ville
+     * Get ville.
      *
      * @return string
      */
@@ -335,9 +345,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set codePostal
+     * Set codePostal.
      *
      * @param string $codePostal
+     *
      * @return Place
      */
     public function setCodePostal($codePostal)
@@ -348,7 +359,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get codePostal
+     * Get codePostal.
      *
      * @return string
      */
@@ -358,9 +369,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set facebookId
+     * Set facebookId.
      *
      * @param string $facebookId
+     *
      * @return Place
      */
     public function setFacebookId($facebookId)
@@ -371,7 +383,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get facebookId
+     * Get facebookId.
      *
      * @return string
      */
@@ -381,9 +393,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set site
+     * Set site.
      *
      * @param Site $site
+     *
      * @return Place
      */
     public function setSite(Site $site)
@@ -394,7 +407,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get site
+     * Get site.
      *
      * @return \TBN\MainBundle\Entity\Site
      */
@@ -405,6 +418,6 @@ class Place implements GeolocalizeInterface
 
     public function __toString()
     {
-        return sprintf("#%s (%s)", $this->id ?: '?', $this->getNom());
+        return sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
     }
 }

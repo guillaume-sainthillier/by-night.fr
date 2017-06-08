@@ -5,7 +5,7 @@ namespace TBN\UserBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Info
+ * Info.
  *
  * @ORM\Table(name="Info",
  *             indexes={@ORM\Index(
@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class Info
 {
     /**
-     * @var integer
+     * @var int
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -28,14 +28,14 @@ abstract class Info
     protected $id;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="has_see_tuto", type="boolean")
      */
     protected $hasSeeTuto;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="has_see_asking_social", type="boolean")
      */
@@ -84,7 +84,6 @@ abstract class Info
      * @ORM\Column(name="facebook_profile_picture", type="string", length=255, nullable=true)
      */
     protected $facebook_profile_picture;
-
 
     /**
      * @ORM\Column(name="google_id", type="string", length=255, nullable=true)
@@ -140,7 +139,6 @@ abstract class Info
      */
     protected $twitter_access_token;
 
-
     /**
      * @ORM\Column(name="twitter_token_secret", type="string", length=255, nullable=true)
      */
@@ -176,7 +174,6 @@ abstract class Info
      */
     protected $twitter_profile_picture;
 
-
     public function __construct()
     {
         $this->hasSeeTuto = false;
@@ -184,9 +181,9 @@ abstract class Info
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -194,9 +191,10 @@ abstract class Info
     }
 
     /**
-     * Set hasSeeTuto
+     * Set hasSeeTuto.
      *
-     * @param boolean $hasSeeTuto
+     * @param bool $hasSeeTuto
+     *
      * @return Info
      */
     public function setHasSeeTuto($hasSeeTuto)
@@ -207,9 +205,9 @@ abstract class Info
     }
 
     /**
-     * Get hasSeeTuto
+     * Get hasSeeTuto.
      *
-     * @return boolean
+     * @return bool
      */
     public function getHasSeeTuto()
     {
@@ -217,9 +215,10 @@ abstract class Info
     }
 
     /**
-     * Set hasSeeAskingSocial
+     * Set hasSeeAskingSocial.
      *
-     * @param boolean $hasSeeAskingSocial
+     * @param bool $hasSeeAskingSocial
+     *
      * @return Info
      */
     public function setHasSeeAskingSocial($hasSeeAskingSocial)
@@ -230,9 +229,9 @@ abstract class Info
     }
 
     /**
-     * Get hasSeeAskingSocial
+     * Get hasSeeAskingSocial.
      *
-     * @return boolean
+     * @return bool
      */
     public function getHasSeeAskingSocial()
     {
@@ -240,9 +239,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_id
+     * Set facebook_id.
      *
      * @param string $facebookId
+     *
      * @return Info
      */
     public function setFacebookId($facebookId)
@@ -253,7 +253,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_id
+     * Get facebook_id.
      *
      * @return string
      */
@@ -263,9 +263,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_access_token
+     * Set facebook_access_token.
      *
      * @param string $facebookAccessToken
+     *
      * @return Info
      */
     public function setFacebookAccessToken($facebookAccessToken)
@@ -276,7 +277,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_access_token
+     * Get facebook_access_token.
      *
      * @return string
      */
@@ -286,9 +287,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_token_secret
+     * Set facebook_token_secret.
      *
      * @param string $facebookTokenSecret
+     *
      * @return Info
      */
     public function setFacebookTokenSecret($facebookTokenSecret)
@@ -299,7 +301,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_token_secret
+     * Get facebook_token_secret.
      *
      * @return string
      */
@@ -309,9 +311,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_email
+     * Set facebook_email.
      *
      * @param string $facebookEmail
+     *
      * @return Info
      */
     public function setFacebookEmail($facebookEmail)
@@ -322,7 +325,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_email
+     * Get facebook_email.
      *
      * @return string
      */
@@ -332,9 +335,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_nickname
+     * Set facebook_nickname.
      *
      * @param string $facebookNickname
+     *
      * @return Info
      */
     public function setFacebookNickname($facebookNickname)
@@ -345,7 +349,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_nickname
+     * Get facebook_nickname.
      *
      * @return string
      */
@@ -355,9 +359,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_realname
+     * Set facebook_realname.
      *
      * @param string $facebookRealname
+     *
      * @return Info
      */
     public function setFacebookRealname($facebookRealname)
@@ -368,7 +373,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_realname
+     * Get facebook_realname.
      *
      * @return string
      */
@@ -378,9 +383,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_profile_picture
+     * Set facebook_profile_picture.
      *
      * @param string $facebookProfilePicture
+     *
      * @return Info
      */
     public function setFacebookProfilePicture($facebookProfilePicture)
@@ -391,7 +397,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_profile_picture
+     * Get facebook_profile_picture.
      *
      * @return string
      */
@@ -401,9 +407,10 @@ abstract class Info
     }
 
     /**
-     * Set google_id
+     * Set google_id.
      *
      * @param string $googleId
+     *
      * @return Info
      */
     public function setGoogleId($googleId)
@@ -414,7 +421,7 @@ abstract class Info
     }
 
     /**
-     * Get google_id
+     * Get google_id.
      *
      * @return string
      */
@@ -424,9 +431,10 @@ abstract class Info
     }
 
     /**
-     * Set google_access_token
+     * Set google_access_token.
      *
      * @param string $googleAccessToken
+     *
      * @return Info
      */
     public function setGoogleAccessToken($googleAccessToken)
@@ -437,7 +445,7 @@ abstract class Info
     }
 
     /**
-     * Get google_access_token
+     * Get google_access_token.
      *
      * @return string
      */
@@ -447,9 +455,10 @@ abstract class Info
     }
 
     /**
-     * Set google_token_secret
+     * Set google_token_secret.
      *
      * @param string $googleTokenSecret
+     *
      * @return Info
      */
     public function setGoogleTokenSecret($googleTokenSecret)
@@ -460,7 +469,7 @@ abstract class Info
     }
 
     /**
-     * Get google_token_secret
+     * Get google_token_secret.
      *
      * @return string
      */
@@ -470,9 +479,10 @@ abstract class Info
     }
 
     /**
-     * Set google_email
+     * Set google_email.
      *
      * @param string $googleEmail
+     *
      * @return Info
      */
     public function setGoogleEmail($googleEmail)
@@ -483,7 +493,7 @@ abstract class Info
     }
 
     /**
-     * Get google_email
+     * Get google_email.
      *
      * @return string
      */
@@ -493,9 +503,10 @@ abstract class Info
     }
 
     /**
-     * Set google_nickname
+     * Set google_nickname.
      *
      * @param string $googleNickname
+     *
      * @return Info
      */
     public function setGoogleNickname($googleNickname)
@@ -506,7 +517,7 @@ abstract class Info
     }
 
     /**
-     * Get google_nickname
+     * Get google_nickname.
      *
      * @return string
      */
@@ -516,9 +527,10 @@ abstract class Info
     }
 
     /**
-     * Set google_realname
+     * Set google_realname.
      *
      * @param string $googleRealname
+     *
      * @return Info
      */
     public function setGoogleRealname($googleRealname)
@@ -529,7 +541,7 @@ abstract class Info
     }
 
     /**
-     * Get google_realname
+     * Get google_realname.
      *
      * @return string
      */
@@ -539,9 +551,10 @@ abstract class Info
     }
 
     /**
-     * Set google_profile_picture
+     * Set google_profile_picture.
      *
      * @param string $googleProfilePicture
+     *
      * @return Info
      */
     public function setGoogleProfilePicture($googleProfilePicture)
@@ -552,7 +565,7 @@ abstract class Info
     }
 
     /**
-     * Get google_profile_picture
+     * Get google_profile_picture.
      *
      * @return string
      */
@@ -562,9 +575,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_id
+     * Set twitter_id.
      *
      * @param string $twitterId
+     *
      * @return Info
      */
     public function setTwitterId($twitterId)
@@ -575,7 +589,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_id
+     * Get twitter_id.
      *
      * @return string
      */
@@ -585,9 +599,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_access_token
+     * Set twitter_access_token.
      *
      * @param string $twitterAccessToken
+     *
      * @return Info
      */
     public function setTwitterAccessToken($twitterAccessToken)
@@ -598,7 +613,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_access_token
+     * Get twitter_access_token.
      *
      * @return string
      */
@@ -608,9 +623,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_token_secret
+     * Set twitter_token_secret.
      *
      * @param string $twitterTokenSecret
+     *
      * @return Info
      */
     public function setTwitterTokenSecret($twitterTokenSecret)
@@ -621,7 +637,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_token_secret
+     * Get twitter_token_secret.
      *
      * @return string
      */
@@ -631,9 +647,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_email
+     * Set twitter_email.
      *
      * @param string $twitterEmail
+     *
      * @return Info
      */
     public function setTwitterEmail($twitterEmail)
@@ -644,7 +661,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_email
+     * Get twitter_email.
      *
      * @return string
      */
@@ -654,9 +671,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_nickname
+     * Set twitter_nickname.
      *
      * @param string $twitterNickname
+     *
      * @return Info
      */
     public function setTwitterNickname($twitterNickname)
@@ -667,7 +685,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_nickname
+     * Get twitter_nickname.
      *
      * @return string
      */
@@ -677,9 +695,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_realname
+     * Set twitter_realname.
      *
      * @param string $twitterRealname
+     *
      * @return Info
      */
     public function setTwitterRealname($twitterRealname)
@@ -690,7 +709,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_realname
+     * Get twitter_realname.
      *
      * @return string
      */
@@ -700,9 +719,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_profile_picture
+     * Set twitter_profile_picture.
      *
      * @param string $twitterProfilePicture
+     *
      * @return Info
      */
     public function setTwitterProfilePicture($twitterProfilePicture)
@@ -713,7 +733,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_profile_picture
+     * Get twitter_profile_picture.
      *
      * @return string
      */
@@ -723,9 +743,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_expires_in
+     * Set facebook_expires_in.
      *
      * @param string $facebookExpiresIn
+     *
      * @return Info
      */
     public function setFacebookExpiresIn($facebookExpiresIn)
@@ -736,7 +757,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_expires_in
+     * Get facebook_expires_in.
      *
      * @return string
      */
@@ -746,9 +767,10 @@ abstract class Info
     }
 
     /**
-     * Set google_expires_in
+     * Set google_expires_in.
      *
      * @param string $googleExpiresIn
+     *
      * @return Info
      */
     public function setGoogleExpiresIn($googleExpiresIn)
@@ -759,7 +781,7 @@ abstract class Info
     }
 
     /**
-     * Get google_expires_in
+     * Get google_expires_in.
      *
      * @return string
      */
@@ -769,9 +791,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_expires_in
+     * Set twitter_expires_in.
      *
      * @param string $twitterExpiresIn
+     *
      * @return Info
      */
     public function setTwitterExpiresIn($twitterExpiresIn)
@@ -782,7 +805,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_expires_in
+     * Get twitter_expires_in.
      *
      * @return string
      */
@@ -792,9 +815,10 @@ abstract class Info
     }
 
     /**
-     * Set facebook_refresh_token
+     * Set facebook_refresh_token.
      *
      * @param string $facebookRefreshToken
+     *
      * @return Info
      */
     public function setFacebookRefreshToken($facebookRefreshToken)
@@ -805,7 +829,7 @@ abstract class Info
     }
 
     /**
-     * Get facebook_refresh_token
+     * Get facebook_refresh_token.
      *
      * @return string
      */
@@ -815,9 +839,10 @@ abstract class Info
     }
 
     /**
-     * Set google_refresh_token
+     * Set google_refresh_token.
      *
      * @param string $googleRefreshToken
+     *
      * @return Info
      */
     public function setGoogleRefreshToken($googleRefreshToken)
@@ -828,7 +853,7 @@ abstract class Info
     }
 
     /**
-     * Get google_refresh_token
+     * Get google_refresh_token.
      *
      * @return string
      */
@@ -838,9 +863,10 @@ abstract class Info
     }
 
     /**
-     * Set twitter_refresh_token
+     * Set twitter_refresh_token.
      *
      * @param string $twitterRefreshToken
+     *
      * @return Info
      */
     public function setTwitterRefreshToken($twitterRefreshToken)
@@ -851,7 +877,7 @@ abstract class Info
     }
 
     /**
-     * Get twitter_refresh_token
+     * Get twitter_refresh_token.
      *
      * @return string
      */
@@ -862,6 +888,6 @@ abstract class Info
 
     public function __toString()
     {
-        return "#".$this->id ?: '?';
+        return '#'.$this->id ?: '?';
     }
 }

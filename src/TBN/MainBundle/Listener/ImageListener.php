@@ -2,13 +2,11 @@
 
 namespace TBN\MainBundle\Listener;
 
-
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Vich\UploaderBundle\Event\Event;
-
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Entity\Site;
 use TBN\UserBundle\Entity\User;
+use Vich\UploaderBundle\Event\Event;
 
 class ImageListener
 {
@@ -23,21 +21,21 @@ class ImageListener
     {
         $object = $event->getObject();
 
-        if($object instanceof User) {
+        if ($object instanceof User) {
             $filters = ['thumb_user_large', 'thumb_user_evenement', 'thumb_user', 'thumb_user_menu', 'thumb_user_50', 'thumb_user_115'];
-        }elseif($object instanceof Agenda) {
+        } elseif ($object instanceof Agenda) {
             $filters = ['thumbs_evenement', 'thumb_evenement'];
-        }elseif($object instanceof Site) {
+        } elseif ($object instanceof Site) {
             $filters = ['thumb_site', 'thumb_site_large'];
-        }else {
+        } else {
             $filters = [];
         }
 
         $prefix = $event->getMapping()->getUriPrefix();
-        $path = $prefix."/".$event->getMapping()->getFileName($object);
+        $path = $prefix.'/'.$event->getMapping()->getFileName($object);
 
-        foreach($filters as $filter) {
-            if($this->cacheManager->isStored($path, $filter)) {
+        foreach ($filters as $filter) {
+            if ($this->cacheManager->isStored($path, $filter)) {
                 $this->cacheManager->remove($path, $filter);
             }
         }

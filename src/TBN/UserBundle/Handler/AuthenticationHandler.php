@@ -2,19 +2,17 @@
 
 namespace TBN\UserBundle\Handler;
 
-use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use TBN\MainBundle\Site\SiteManager;
 
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
-
     protected $translator;
     protected $router;
     protected $session;
@@ -32,9 +30,10 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
     {
         if ($request->isXmlHttpRequest()) {
             $result = ['success' => true];
+
             return new JsonResponse($result);
         } else {
-            $key = '_security.main.target_path'; #where "main" is your firewall name
+            $key = '_security.main.target_path'; //where "main" is your firewall name
 
             if (($targetPath = $request->getSession()->get($key))) {
                 $url = $targetPath;
@@ -50,7 +49,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
                 } else {
                     $user = $token->getUser();
                     $subdomain = $user->getSite()->getSubdomain();
-                    $url = $this->router->generate("tbn_agenda_index", ["subdomain" => $subdomain]);
+                    $url = $this->router->generate('tbn_agenda_index', ['subdomain' => $subdomain]);
                 }
             }
 
@@ -63,7 +62,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
         if ($request->isXmlHttpRequest()) {
             $result = [
                 'success' => false,
-                'message' => $this->translator->trans($exception->getMessage(), [], 'FOSUserBundle')
+                'message' => $this->translator->trans($exception->getMessage(), [], 'FOSUserBundle'),
             ];
 
             return new JsonResponse($result);
@@ -75,5 +74,4 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
             return new RedirectResponse($url);
         }
     }
-
 }

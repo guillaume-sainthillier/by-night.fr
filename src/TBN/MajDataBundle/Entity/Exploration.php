@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use TBN\MajDataBundle\Reject\Reject;
 
 /**
- * Exploration
+ * Exploration.
  *
  * @ORM\Table(name="Exploration")
  * @ORM\Entity
@@ -15,7 +15,7 @@ use TBN\MajDataBundle\Reject\Reject;
 class Exploration
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="string", length=31)
      * @ORM\Id
@@ -30,7 +30,7 @@ class Exploration
     private $lastUpdated;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="reason", type="integer", nullable=false)
      */
@@ -48,26 +48,29 @@ class Exploration
      */
     private $reject;
 
-    public function setReject(Reject $reject) {
+    public function setReject(Reject $reject)
+    {
         $this->reject = $reject;
 
         return $this;
     }
 
-    public function getReject() {
+    public function getReject()
+    {
         return $this->reject;
     }
 
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
 
         return $this;
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -75,7 +78,7 @@ class Exploration
     }
 
     /**
-     * Set lastUpdated
+     * Set lastUpdated.
      *
      * @param \DateTime $lastUpdated
      *
@@ -89,7 +92,7 @@ class Exploration
     }
 
     /**
-     * Get lastUpdated
+     * Get lastUpdated.
      *
      * @return \DateTime
      */
@@ -99,9 +102,9 @@ class Exploration
     }
 
     /**
-     * Set reason
+     * Set reason.
      *
-     * @param integer $reason
+     * @param int $reason
      *
      * @return Exploration
      */
@@ -113,9 +116,9 @@ class Exploration
     }
 
     /**
-     * Get reason
+     * Get reason.
      *
-     * @return integer
+     * @return int
      */
     public function getReason()
     {
@@ -123,7 +126,7 @@ class Exploration
     }
 
     /**
-     * Set firewallVersion
+     * Set firewallVersion.
      *
      * @param string $firewallVersion
      *
@@ -137,7 +140,7 @@ class Exploration
     }
 
     /**
-     * Get firewallVersion
+     * Get firewallVersion.
      *
      * @return string
      */

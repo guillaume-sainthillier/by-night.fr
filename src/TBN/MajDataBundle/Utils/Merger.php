@@ -2,12 +2,11 @@
 
 namespace TBN\MajDataBundle\Utils;
 
-use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
-
+use TBN\AgendaBundle\Entity\Place;
 
 /**
- * Description of Merger
+ * Description of Merger.
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
@@ -39,7 +38,7 @@ class Merger
 //            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
-            'date_fin' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
+            'date_fin'   => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
             'descriptif',
             'horaires',
             'modification_derniere_minute',
@@ -55,7 +54,7 @@ class Merger
             'facebook_event_id',
             'facebook_owner_id',
             'fb_participations' => self::MERGE_MAX,
-            'fb_interets' => self::MERGE_MAX,
+            'fb_interets'       => self::MERGE_MAX,
             'fb_post_id',
             'fb_post_system_id',
             'tweet_post_id',
@@ -70,7 +69,7 @@ class Merger
             'system_path',
             'file' => self::MERGE_LEFT,
             'from_data',
-            'reject'
+            'reject',
         ]);
     }
 
@@ -80,46 +79,48 @@ class Merger
             'id' => self::FORCE_MERGE_LEFT,
 //            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
-            'latitude' => self::MERGE_LEFT,
+            'latitude'  => self::MERGE_LEFT,
             'longitude' => self::MERGE_LEFT,
-            'rue' => self::MERGE_LEFT,
+            'rue'       => self::MERGE_LEFT,
             'url',
-            'ville' => self::MERGE_LEFT,
-            'codePostal' => self::MERGE_LEFT,
+            'ville'       => self::MERGE_LEFT,
+            'codePostal'  => self::MERGE_LEFT,
             'facebook_id' => self::MERGE_LEFT,
-            'reject'
+            'reject',
         ]);
     }
 
     /**
-     * Merge les champs de b dans a s'ils sont jugés plus pertinents
+     * Merge les champs de b dans a s'ils sont jugés plus pertinents.
+     *
      * @param \stdClass $a
      * @param \stdClass $b
-     * @param array $fields
+     * @param array     $fields
+     *
      * @return \stdClass
      */
-    private function merge($a = null, $b = null, array $fields)
+    private function merge($a, $b, array $fields)
     {
         //Un ou les deux est nul, pas la peine de merger
         if ($a === null || $b === null) {
-            return ($a ?: $b); //Retourne l'objet non nul s'il existe
+            return $a ?: $b; //Retourne l'objet non nul s'il existe
         }
 
-        if($a === $b) {
+        if ($a === $b) {
             return $a;
         }
 
         foreach ($fields as $type => $field) {
-            if(is_numeric($type)) {
+            if (is_numeric($type)) {
                 $type = self::DEFAULT_MERGE;
-            }else {
+            } else {
                 $oldField = $field;
                 $field = $type;
                 $type = $oldField;
             }
 
-            $getter = 'get' . $this->skakeToCamel($field);
-            $setter = 'set' . $this->skakeToCamel($field);
+            $getter = 'get'.$this->skakeToCamel($field);
+            $setter = 'set'.$this->skakeToCamel($field);
 
             $valueA = $a->$getter();
             $valueB = $b->$getter();
@@ -133,11 +134,11 @@ class Merger
 
     protected function getBestContent($valueA, $valueB, $mergeType)
     {
-        if(is_callable($mergeType)) {
+        if (is_callable($mergeType)) {
             return call_user_func($mergeType, $valueA, $valueB);
         }
 
-        switch($mergeType) {
+        switch ($mergeType) {
             case self::MERGE_RIGHT:
                 return $valueB ?: $valueA;
             case self::MERGE_LEFT:
@@ -149,9 +150,10 @@ class Merger
             case self::MERGE_RIGHT_IF_DIFFERENT:
                 return $valueA != $valueB ? $valueB : $valueA;
             case self::MERGE_RIGHT_IF_DATE_DIFFERENT:
-                if($valueA && $valueB) {
-                    return $valueA->format('Y-m-d') != $valueB->format("Y-m-d") ? $valueB : $valueA;
+                if ($valueA && $valueB) {
+                    return $valueA->format('Y-m-d') != $valueB->format('Y-m-d') ? $valueB : $valueA;
                 }
+
                 return $this->getBestContent($valueA, $valueB, self::MERGE_RIGHT_IF_DIFFERENT);
             case self::MERGE_MAX:
                 return max($valueA, $valueB);
@@ -166,6 +168,7 @@ class Merger
         }
 
         $compareA = $this->comparator->sanitize($valueA);
+
         return isset($compareA[0]) ? ($valueA ?: null) : ($valueB ?: null);
     }
 

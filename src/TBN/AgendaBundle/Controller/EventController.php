@@ -2,25 +2,24 @@
 
 namespace TBN\AgendaBundle\Controller;
 
+use FOS\HttpCacheBundle\Configuration\Tag;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use SocialLinks\Page;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use TBN\AgendaBundle\Entity\Agenda;
+use TBN\AgendaBundle\Entity\Calendrier;
+use TBN\AgendaBundle\Entity\Place;
+use TBN\AgendaBundle\Form\Type\SearchType;
 use TBN\AgendaBundle\Repository\AgendaRepository;
+use TBN\AgendaBundle\Search\SearchAgenda;
 use TBN\CommentBundle\Entity\Comment;
 use TBN\CommentBundle\Form\Type\CommentType;
 use TBN\MainBundle\Controller\TBNController as Controller;
-use SocialLinks\Page;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use FOS\HttpCacheBundle\Configuration\Tag;
 use TBN\MainBundle\Entity\Site;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Calendrier;
-
-use TBN\AgendaBundle\Form\Type\SearchType;
-use TBN\AgendaBundle\Search\SearchAgenda;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use TBN\MainBundle\Invalidator\EventInvalidator;
 use TBN\UserBundle\Entity\User;
 
@@ -29,15 +28,15 @@ class EventController extends Controller
     protected function getCreateCommentForm(Comment $comment, Agenda $soiree)
     {
         return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('tbn_comment_new', ["id" => $soiree->getId()]),
-            'method' => 'POST'
+            'action' => $this->generateUrl('tbn_comment_new', ['id' => $soiree->getId()]),
+            'method' => 'POST',
         ])
-            ->add("poster", SubmitType::class, [
-                "label" => "Poster",
-                "attr" => [
-                    "class" => "btn btn-primary btn-submit btn-raised",
-                    "data-loading-text" => "En cours..."
-                ]
+            ->add('poster', SubmitType::class, [
+                'label' => 'Poster',
+                'attr'  => [
+                    'class'             => 'btn btn-primary btn-submit btn-raised',
+                    'data-loading-text' => 'En cours...',
+                ],
             ]);
     }
 
@@ -47,7 +46,7 @@ class EventController extends Controller
     public function detailsAction($slug, $id = null)
     {
         $result = $this->checkEventUrl($slug, $id);
-        if($result instanceof Response) {
+        if ($result instanceof Response) {
             return $result;
         }
         $agenda = $result;
@@ -58,9 +57,9 @@ class EventController extends Controller
         //Redirection vers le bon site
         if ($agenda->getSite() !== $site) {
             return new RedirectResponse($this->get('router')->generate('tbn_agenda_details', [
-                'slug' => $agenda->getSlug(),
-                'id' => $agenda->getId(),
-                'subdomain' => $agenda->getSite()->getSubdomain()
+                'slug'      => $agenda->getSlug(),
+                'id'        => $agenda->getId(),
+                'subdomain' => $agenda->getSite()->getSubdomain(),
             ]));
         }
 
@@ -69,22 +68,22 @@ class EventController extends Controller
         $nbComments = $agenda->getCommentaires()->count();
 
         $response = $this->render('TBNAgendaBundle:Agenda:details.html.twig', [
-            'soiree' => $agenda,
-            'form' => $form->createView(),
+            'soiree'      => $agenda,
+            'form'        => $form->createView(),
             'nb_comments' => $nbComments,
-            'stats' => $this->getAgendaStats($agenda)
+            'stats'       => $this->getAgendaStats($agenda),
         ]);
 
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
 
         $now = new \DateTime();
-        if($agenda->getDateFin() < $now) {
+        if ($agenda->getDateFin() < $now) {
             $expires = $now;
-            $expires->modify("+1 year");
+            $expires->modify('+1 year');
             $ttl = 31536000;
-        }else {
+        } else {
             list($expires, $ttl) = $this->getSecondsUntil(168);
         }
 
@@ -93,7 +92,7 @@ class EventController extends Controller
             ->setExpires($expires);
 
         $this->get('fos_http_cache.handler.tag_handler')->addTags([
-           EventInvalidator::getEventDetailTag($agenda)
+           EventInvalidator::getEventDetailTag($agenda),
         ]);
 
         return $response;
@@ -102,38 +101,40 @@ class EventController extends Controller
     /**
      * @param Agenda $agenda
      * @Cache(expires="+12 hours", smaxage="43200")
+     *
      * @return Response
      */
-    public function shareAction(Agenda $agenda) {
+    public function shareAction(Agenda $agenda)
+    {
         $link = $this->generateUrl('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
-            'id' => $agenda->getId(),
+            'id'   => $agenda->getId(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $eventProfile = $this->get('tbn.profile_picture.event')->getOriginalPictureUrl($agenda);
 
         $page = new Page([
-            'url' => $link,
+            'url'   => $link,
             'title' => $agenda->getNom(),
-            'text' => $agenda->getDescriptif(),
+            'text'  => $agenda->getDescriptif(),
             'image' => $eventProfile,
         ]);
 
         $page->shareCount(['twitter', 'facebook', 'plus']);
 
-        return $this->render("@TBNAgenda/Hinclude/shares.html.twig", [
-            "shares" => [
-                'facebook' => $page->facebook,
-                'twitter' => $page->twitter,
-                'google-plus' => $page->plus
-            ]
+        return $this->render('@TBNAgenda/Hinclude/shares.html.twig', [
+            'shares' => [
+                'facebook'    => $page->facebook,
+                'twitter'     => $page->twitter,
+                'google-plus' => $page->plus,
+            ],
         ]);
     }
 
     protected function getAgendaStats(Agenda $agenda)
     {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
         $participer = false;
         $interet = false;
@@ -141,7 +142,7 @@ class EventController extends Controller
         $user = $this->getUser();
         if ($user) {
             /**
-             * @var User $user
+             * @var User
              */
             $repoCalendrier = $em->getRepository('TBNAgendaBundle:Calendrier');
             $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
@@ -152,7 +153,7 @@ class EventController extends Controller
 
             if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
                 $cache = $this->get('memory_cache');
-                $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
+                $key = 'users.'.$user->getId().'.stats.'.$agenda->getId();
                 if (!$cache->contains($key)) {
                     $api = $this->get('tbn.social.facebook_admin');
                     $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
@@ -162,7 +163,7 @@ class EventController extends Controller
 
                 if ($stats['participer'] || $stats['interet']) {
                     if (null === $calendrier) {
-                        $calendrier = new Calendrier;
+                        $calendrier = new Calendrier();
                         $calendrier->setUser($user)->setAgenda($agenda);
                     }
 
@@ -180,12 +181,12 @@ class EventController extends Controller
         }
 
         return [
-            "tendancesParticipations" => $repo->findAllTendancesParticipations($agenda),
-            "tendancesInterets" => $repo->findAllTendancesInterets($agenda),
-            "count_participer" => $agenda->getParticipations() + $agenda->getFbParticipations(),
-            "count_interets" => $agenda->getInterets() + $agenda->getFbInterets(),
-            'participer' => $participer,
-            'interet' => $interet
+            'tendancesParticipations' => $repo->findAllTendancesParticipations($agenda),
+            'tendancesInterets'       => $repo->findAllTendancesInterets($agenda),
+            'count_participer'        => $agenda->getParticipations() + $agenda->getFbParticipations(),
+            'count_interets'          => $agenda->getInterets() + $agenda->getFbInterets(),
+            'participer'              => $participer,
+            'interet'                 => $interet,
         ];
     }
 
@@ -239,19 +240,19 @@ class EventController extends Controller
     {
         $siteManager = $this->get('site_manager');
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("TBNAgendaBundle:Agenda");
+        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
         $site = $siteManager->getCurrentSite();
-        $search = (new SearchAgenda)->setDu(null);
+        $search = (new SearchAgenda())->setDu(null);
         $topEvents = $repo->findTopSoiree($site, 1, 7);
 
         $response = $this->render('TBNAgendaBundle:Agenda:index.html.twig', [
             'topEvents' => $topEvents,
-            'nbEvents' => $repo->findCountWithSearch($site, $search)
+            'nbEvents'  => $repo->findCountWithSearch($site, $search),
         ]);
 
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
 
         return $response;
@@ -295,7 +296,7 @@ class EventController extends Controller
         $place = null;
         if ($slug !== null) {
             $place = $em->getRepository('TBNAgendaBundle:Place')->findOneBy(['slug' => $slug]);
-            if(! $place) {
+            if (!$place) {
                 return new RedirectResponse($this->generateUrl('tbn_agenda_agenda'));
             }
         }
@@ -308,10 +309,10 @@ class EventController extends Controller
 
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
-            'action' => $formAction,
-            'lieux' => $lieux,
+            'action'      => $formAction,
+            'lieux'       => $lieux,
             'types_manif' => $types_manif,
-            'communes' => $communes
+            'communes'    => $communes,
         ]);
 
         //Bind du formulaire avec la requête courante
@@ -333,25 +334,25 @@ class EventController extends Controller
         $soirees = $pagination;
 
         $response = $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
-            'villeName' => $ville,
-            'placeName' => (null !== $place) ? $place->getNom() : null,
-            'placeSlug' => (null !== $place) ? $place->getSlug() : null,
-            'place' => $place,
-            'tag' => $tag,
-            'type' => $type,
-            'soirees' => $soirees,
-            'nbEvents' => $nbSoireesTotales,
+            'villeName'   => $ville,
+            'placeName'   => (null !== $place) ? $place->getNom() : null,
+            'placeSlug'   => (null !== $place) ? $place->getSlug() : null,
+            'place'       => $place,
+            'tag'         => $tag,
+            'type'        => $type,
+            'soirees'     => $soirees,
+            'nbEvents'    => $nbSoireesTotales,
             'maxPerEvent' => $nbSoireeParPage,
-            'page' => $page,
-            'search' => $search,
-            'isPost' => $isPost,
-            'isAjax' => $isAjax,
+            'page'        => $page,
+            'search'      => $search,
+            'isPost'      => $isPost,
+            'isAjax'      => $isAjax,
             'paginateURL' => $paginateURL,
-            'form' => $form->createView()
+            'form'        => $form->createView(),
         ]);
 
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
 
         return $response;
@@ -360,7 +361,7 @@ class EventController extends Controller
     protected function getTypesEvenements(AgendaRepository $repo, Site $site)
     {
         $cache = $this->get('memory_cache');
-        $key = 'categories_evenements.' . $site->getSubdomain();
+        $key = 'categories_evenements.'.$site->getSubdomain();
 
         if (!$cache->contains($key)) {
             $soirees_type_manifestation = $repo->getTypesEvenements($site);
@@ -385,7 +386,7 @@ class EventController extends Controller
     protected function getVilles($repo, Site $site)
     {
         $cache = $this->get('memory_cache');
-        $key = 'villes.' . $site->getSubdomain();
+        $key = 'villes.'.$site->getSubdomain();
 
         if (!$cache->contains($key)) {
             $places = $repo->getAgendaVilles($site);
@@ -403,11 +404,11 @@ class EventController extends Controller
     protected function getPlaces($repo, Site $site)
     {
         $cache = $this->get('memory_cache');
-        $key = 'places.' . $site->getSubdomain();
+        $key = 'places.'.$site->getSubdomain();
 
         if (!$cache->contains($key)) {
             $places = $repo->getAgendaPlaces($site);
-            $lieux = array();
+            $lieux = [];
             foreach ($places as $place) {
                 $lieux[$place->getNom()] = $place->getId();
             }
@@ -417,5 +418,4 @@ class EventController extends Controller
 
         return $cache->fetch($key);
     }
-
 }

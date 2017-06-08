@@ -5,7 +5,7 @@ namespace TBN\UserBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * UserInfo
+ * UserInfo.
  *
  * @ORM\Table()
  * @ORM\Entity()

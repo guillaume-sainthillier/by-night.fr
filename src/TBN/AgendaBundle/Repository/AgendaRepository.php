@@ -1,62 +1,61 @@
 <?php
+
 namespace TBN\AgendaBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
-use Symfony\Component\Security\Core\User\UserInterface;
-
-
-use TBN\MainBundle\Entity\Site;
-use TBN\AgendaBundle\Entity\Agenda;
-use TBN\UserBundle\Entity\User;
-use TBN\AgendaBundle\Search\SearchAgenda;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Security\Core\User\UserInterface;
+use TBN\AgendaBundle\Entity\Agenda;
+use TBN\AgendaBundle\Search\SearchAgenda;
+use TBN\MainBundle\Entity\Site;
+use TBN\UserBundle\Entity\User;
 
 class AgendaRepository extends EntityRepository
 {
-
-    public function updateOlds(\DateTime $since) {
+    public function updateOlds(\DateTime $since)
+    {
         return $this->_em
-            ->createQuery("UPDATE TBNAgendaBundle:Agenda a
+            ->createQuery('UPDATE TBNAgendaBundle:Agenda a
             SET a.isArchive = TRUE
-            WHERE a.dateFin <= :date_fin")
-            ->setParameters(["date_fin" => $since->format('Y-m-d')])
-            ->execute()
-        ;
+            WHERE a.dateFin <= :date_fin')
+            ->setParameters(['date_fin' => $since->format('Y-m-d')])
+            ->execute();
     }
 
-    public function findOlds(\DateTime $since) {
+    public function findOlds(\DateTime $since)
+    {
         return $this
             ->createQueryBuilder('a')
             ->where('a.isArchive IS NULL OR a.isArchive = :archive')
-            ->andWhere("a.dateFin <= :date_fin")
-            ->setParameters(["archive" => false, ":date_fin" => $since->format('Y-m-d')])
+            ->andWhere('a.dateFin <= :date_fin')
+            ->setParameters(['archive' => false, ':date_fin' => $since->format('Y-m-d')])
             ->getQuery()
             ->getResult();
     }
 
-    public function findByInterval(\DateTime $from, \DateTime $to) {
-        $sites = $this->_em->getRepository("TBNMainBundle:Site")->findBy([], ['nom' => 'ASC']);
+    public function findByInterval(\DateTime $from, \DateTime $to)
+    {
+        $sites = $this->_em->getRepository('TBNMainBundle:Site')->findBy([], ['nom' => 'ASC']);
         $events = [];
-        foreach($sites as $site) {
+        foreach ($sites as $site) {
             $events[$site->getNom()] = $this
                 ->createQueryBuilder('a')
                 ->where('a.dateFin BETWEEN :debut AND :fin')
                 ->andWhere('a.site = :site')
-                ->orderBy("a.fbParticipations", "DESC")
+                ->orderBy('a.fbParticipations', 'DESC')
                 ->setMaxResults(3)
                 ->setParameters([
-                    ":debut" => $from->format('Y-m-d'),
-                    ":fin" => $to->format('Y-m-d'),
-                    ":site" => $site->getId()
+                    ':debut' => $from->format('Y-m-d'),
+                    ':fin'   => $to->format('Y-m-d'),
+                    ':site'  => $site->getId(),
                 ])
                 ->getQuery()
                 ->getResult();
-
         }
 
         return $events;
-        /**
+        /*
          * SELECT a.* FROM event AS a
         LEFT JOIN event AS a2
         ON a.site_id = a2.site_id AND a.participations <= a2.participations
@@ -82,12 +81,13 @@ class AgendaRepository extends EntityRepository
         $qb = parent::createQueryBuilder($alias, $indexBy);
 
         $qb->select($alias, 'p')
-            ->leftJoin($alias . '.place', 'p');
+            ->leftJoin($alias.'.place', 'p');
 
         return $qb;
     }
 
-    public function findAllByUser(UserInterface $user) {
+    public function findAllByUser(UserInterface $user)
+    {
         return $this
             ->createQueryBuilder('a')
             ->where('a.user = :user')
@@ -117,10 +117,10 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('a')
-            ->from('TBNAgendaBundle:Agenda', "a")
-            ->where("a.dateFin BETWEEN :date_debut AND :date_fin")
-            ->andWhere("a.facebookEventId IS NOT NULL")
-            ->setParameters([":date_debut" => $now->format('Y-m-d'), ":date_fin" => $now->add(new \DateInterval('P7D'))->format('Y-m-d')])
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->where('a.dateFin BETWEEN :date_debut AND :date_fin')
+            ->andWhere('a.facebookEventId IS NOT NULL')
+            ->setParameters([':date_debut' => $now->format('Y-m-d'), ':date_fin' => $now->add(new \DateInterval('P7D'))->format('Y-m-d')])
             ->getQuery()
             ->getResult();
     }
@@ -130,32 +130,34 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('MAX(c.lastDate) as last_date')
-            ->from('TBNAgendaBundle:Calendrier', "c")
-            ->leftJoin("TBNUserBundle:User", "u", "WITH", "u = c.user")
-            ->where("c.user = :user")
-            ->setParameters([":user" => $user->getId()])
+            ->from('TBNAgendaBundle:Calendrier', 'c')
+            ->leftJoin('TBNUserBundle:User', 'u', 'WITH', 'u = c.user')
+            ->where('c.user = :user')
+            ->setParameters([':user' => $user->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    public function getNextEvents(\DateTime $since, $page, $offset) {
+    public function getNextEvents(\DateTime $since, $page, $offset)
+    {
         return $this
             ->createQueryBuilder('a')
-            ->where("a.dateFin >= :since")
-            ->setParameters([":since" => $since->format('Y-m-d')])
+            ->where('a.dateFin >= :since')
+            ->setParameters([':since' => $since->format('Y-m-d')])
             ->setFirstResult($page * $offset)
             ->setMaxResults($offset)
             ->getQuery()
             ->getResult();
     }
 
-    public function getNextEventsFbIds(\DateTime $since) {
+    public function getNextEventsFbIds(\DateTime $since)
+    {
         $datas = $this->_em
             ->createQueryBuilder()
             ->select('DISTINCT(a.facebookEventId)')
             ->from('TBNAgendaBundle:Agenda', 'a')
-            ->where("a.dateFin >= :since")
-            ->setParameters([":since" => $since->format('Y-m-d')])
+            ->where('a.dateFin >= :since')
+            ->setParameters([':since' => $since->format('Y-m-d')])
             ->getQuery()
             ->getScalarResult();
 
@@ -168,8 +170,8 @@ class AgendaRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('count(a.id)')
             ->from('TBNAgendaBundle:Agenda', 'a')
-            ->where("a.dateFin >= :since")
-            ->setParameters([":since" => $since->format('Y-m-d')])
+            ->where('a.dateFin >= :since')
+            ->setParameters([':since' => $since->format('Y-m-d')])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -179,15 +181,15 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u) as nbEvents')
-            ->addSelect("a.dateDebut")
-            ->addSelect(($groupByDay ? "SUBSTRING(a.dateDebut, 6, 5)" : "SUBSTRING(a.dateDebut, 1, 7)") . " as date_event")
-            ->from('TBNAgendaBundle:Calendrier', "c")
-            ->leftJoin("TBNUserBundle:User", "u", "WITH", "u = c.user")
-            ->leftJoin("TBNAgendaBundle:Agenda", "a", "WITH", "a = c.agenda")
-            ->where("c.user = :user")
-            ->andWhere("a.dateDebut >= :date_fin")
-            ->groupBy("date_event")
-            ->setParameters([":user" => $user->getId(), "date_fin" => $dateFin])
+            ->addSelect('a.dateDebut')
+            ->addSelect(($groupByDay ? 'SUBSTRING(a.dateDebut, 6, 5)' : 'SUBSTRING(a.dateDebut, 1, 7)').' as date_event')
+            ->from('TBNAgendaBundle:Calendrier', 'c')
+            ->leftJoin('TBNUserBundle:User', 'u', 'WITH', 'u = c.user')
+            ->leftJoin('TBNAgendaBundle:Agenda', 'a', 'WITH', 'a = c.agenda')
+            ->where('c.user = :user')
+            ->andWhere('a.dateDebut >= :date_fin')
+            ->groupBy('date_event')
+            ->setParameters([':user' => $user->getId(), 'date_fin' => $dateFin])
             ->getQuery()
             ->getScalarResult();
     }
@@ -197,14 +199,14 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u) as nbEtablissements, p.nom')
-            ->from('TBNAgendaBundle:Calendrier', "c")
-            ->leftJoin("TBNUserBundle:User", "u", "WITH", "u = c.user")
-            ->leftJoin("TBNAgendaBundle:Agenda", "a", "WITH", "a = c.agenda")
-            ->leftJoin("TBNAgendaBundle:Place", "p", "WITH", "p = a.place")
-            ->where("c.user = :user")
-            ->groupBy("p.nom")
-            ->orderBy("nbEtablissements", "DESC")
-            ->setParameters([":user" => $user->getId()])
+            ->from('TBNAgendaBundle:Calendrier', 'c')
+            ->leftJoin('TBNUserBundle:User', 'u', 'WITH', 'u = c.user')
+            ->leftJoin('TBNAgendaBundle:Agenda', 'a', 'WITH', 'a = c.agenda')
+            ->leftJoin('TBNAgendaBundle:Place', 'p', 'WITH', 'p = a.place')
+            ->where('c.user = :user')
+            ->groupBy('p.nom')
+            ->orderBy('nbEtablissements', 'DESC')
+            ->setParameters([':user' => $user->getId()])
             ->setFirstResult(0)
             ->setMaxResults($limit)
             ->getQuery()
@@ -216,12 +218,12 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('a')
-            ->from('TBNAgendaBundle:Calendrier', "c")
-            ->leftJoin("TBNAgendaBundle:Agenda", "a", 'WITH', "c.agenda = a")
-            ->where("c.user = :user")
-            ->andWhere("a.dateFin " . ($isNext ? ">=" : "<") . " :date_debut")
-            ->orderBy("a.dateFin", $isNext ? "ASC" : "DESC")
-            ->setParameters([":user" => $user->getId(), "date_debut" => date("Y-m-d")])
+            ->from('TBNAgendaBundle:Calendrier', 'c')
+            ->leftJoin('TBNAgendaBundle:Agenda', 'a', 'WITH', 'c.agenda = a')
+            ->where('c.user = :user')
+            ->andWhere('a.dateFin '.($isNext ? '>=' : '<').' :date_debut')
+            ->orderBy('a.dateFin', $isNext ? 'ASC' : 'DESC')
+            ->setParameters([':user' => $user->getId(), 'date_debut' => date('Y-m-d')])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -233,11 +235,11 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u)')
-            ->from('TBNAgendaBundle:Calendrier', "c")
-            ->leftJoin("TBNUserBundle:User", "u", "WITH", "u = c.user")
-            ->where("c.user = :user")
-            ->andWhere(($isParticipation ? "c.participe" : "c.interet") . " = :vrai")
-            ->setParameters([":user" => $user->getId(), "vrai" => true])
+            ->from('TBNAgendaBundle:Calendrier', 'c')
+            ->leftJoin('TBNUserBundle:User', 'u', 'WITH', 'u = c.user')
+            ->where('c.user = :user')
+            ->andWhere(($isParticipation ? 'c.participe' : 'c.interet').' = :vrai')
+            ->setParameters([':user' => $user->getId(), 'vrai' => true])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -247,10 +249,10 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('MAX(c.lastDate) as last_date')
-            ->from('TBNAgendaBundle:Calendrier', "c")
-            ->leftJoin("TBNAgendaBundle:Agenda", "a", "WITH", "a = c.agenda")
-            ->where("a.site = :site")
-            ->setParameters([":site" => $site->getId()])
+            ->from('TBNAgendaBundle:Calendrier', 'c')
+            ->leftJoin('TBNAgendaBundle:Agenda', 'a', 'WITH', 'a = c.agenda')
+            ->where('a.site = :site')
+            ->setParameters([':site' => $site->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -270,11 +272,11 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u)')
-            ->from('TBNAgendaBundle:Calendrier', "c")
-            ->leftJoin("TBNUserBundle:User", "u", "WITH", "u = c.user")
-            ->where("c.agenda = :agenda")
-            ->andWhere(($isParticipation ? "c.participe" : "c.interet") . " = :vrai")
-            ->setParameters([":agenda" => $soiree->getId(), "vrai" => true])
+            ->from('TBNAgendaBundle:Calendrier', 'c')
+            ->leftJoin('TBNUserBundle:User', 'u', 'WITH', 'u = c.user')
+            ->where('c.agenda = :agenda')
+            ->andWhere(($isParticipation ? 'c.participe' : 'c.interet').' = :vrai')
+            ->setParameters([':agenda' => $soiree->getId(), 'vrai' => true])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -294,11 +296,11 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('u')
-            ->from('TBNAgendaBundle:Calendrier', "c")
-            ->leftJoin("TBNUserBundle:User", "u", "WITH", "u = c.user")
-            ->where("c.agenda = :agenda")
-            ->andWhere(($isParticipation ? "c.participe" : "c.interet") . " = :vrai")
-            ->setParameters([":agenda" => $soiree, "vrai" => true])
+            ->from('TBNAgendaBundle:Calendrier', 'c')
+            ->leftJoin('TBNUserBundle:User', 'u', 'WITH', 'u = c.user')
+            ->where('c.agenda = :agenda')
+            ->andWhere(($isParticipation ? 'c.participe' : 'c.interet').' = :vrai')
+            ->setParameters([':agenda' => $soiree, 'vrai' => true])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -321,8 +323,8 @@ class AgendaRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('MAX(a.dateModification)')
             ->from('TBNAgendaBundle:Agenda', 'a')
-            ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
-            ->setParameters([":date_debut" => $soiree->getDateDebut(), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
+            ->where('a.dateDebut = :date_debut AND a.id != :id AND a.site = :site')
+            ->setParameters([':date_debut' => $soiree->getDateDebut(), ':id' => $soiree->getId(), ':site' => $soiree->getSite()->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -331,9 +333,9 @@ class AgendaRepository extends EntityRepository
     {
         return $this
             ->createQueryBuilder('a')
-            ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
+            ->where('a.dateDebut = :date_debut AND a.id != :id AND a.site = :site')
             ->orderBy('a.nom', 'ASC')
-            ->setParameters([":date_debut" => $soiree->getDateDebut()->format('Y-m-d'), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
+            ->setParameters([':date_debut' => $soiree->getDateDebut()->format('Y-m-d'), ':id' => $soiree->getId(), ':site' => $soiree->getSite()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -344,10 +346,10 @@ class AgendaRepository extends EntityRepository
     {
         return $this
             ->createQueryBuilder('a')
-            ->where("a.dateFin >= :date_fin AND a.id != :id AND a.place = :place")
+            ->where('a.dateFin >= :date_fin AND a.id != :id AND a.place = :place')
             ->orderBy('a.dateFin', 'ASC')
             ->addOrderBy('a.fbParticipations', 'DESC')
-            ->setParameters([":date_fin" => $soiree->getDateFin()->format('Y-m-d'), ":id" => $soiree->getId(), ":place" => $soiree->getPlace()->getId()])
+            ->setParameters([':date_fin' => $soiree->getDateFin()->format('Y-m-d'), ':id' => $soiree->getId(), ':place' => $soiree->getPlace()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -360,8 +362,8 @@ class AgendaRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('count(a.id)')
             ->from('TBNAgendaBundle:Agenda', 'a')
-            ->where("a.dateDebut = :date_debut AND a.id != :id AND a.site = :site")
-            ->setParameters([":date_debut" => $soiree->getDateDebut()->format('Y-m-d'), ":id" => $soiree->getId(), ":site" => $soiree->getSite()->getId()])
+            ->where('a.dateDebut = :date_debut AND a.id != :id AND a.site = :site')
+            ->setParameters([':date_debut' => $soiree->getDateDebut()->format('Y-m-d'), ':id' => $soiree->getId(), ':site' => $soiree->getSite()->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -372,8 +374,8 @@ class AgendaRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('count(a.id)')
             ->from('TBNAgendaBundle:Agenda', 'a')
-            ->where("a.dateFin >= :date_fin AND a.id != :id AND a.place = :place")
-            ->setParameters([":date_fin" => $soiree->getDateFin()->format('Y-m-d'), ":id" => $soiree->getId(), ":place" => $soiree->getPlace()->getId()])
+            ->where('a.dateFin >= :date_fin AND a.id != :id AND a.place = :place')
+            ->setParameters([':date_fin' => $soiree->getDateFin()->format('Y-m-d'), ':id' => $soiree->getId(), ':place' => $soiree->getPlace()->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -387,9 +389,9 @@ class AgendaRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('count(a.id)')
             ->from('TBNAgendaBundle:Agenda', 'a')
-            ->where("a.site = :site")
-            ->andWhere("a.dateFin BETWEEN :du AND :au")
-            ->setParameters([":site" => $site->getId(), "du" => $du->format("Y-m-d"), "au" => $au->format("Y-m-d")])
+            ->where('a.site = :site')
+            ->andWhere('a.dateFin BETWEEN :du AND :au')
+            ->setParameters([':site' => $site->getId(), 'du' => $du->format('Y-m-d'), 'au' => $au->format('Y-m-d')])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -401,11 +403,11 @@ class AgendaRepository extends EntityRepository
 
         $soirees = $this
             ->createQueryBuilder('a')
-            ->where("a.site = :site")
-            ->andWhere("a.dateFin BETWEEN :du AND :au")
-            ->orderBy("a.fbParticipations", "DESC")
-            ->addOrderBy("a.fbInterets", "DESC")
-            ->setParameters([":site" => $site->getId(), "du" => $du->format("Y-m-d"), "au" => $au->format("Y-m-d")])
+            ->where('a.site = :site')
+            ->andWhere('a.dateFin BETWEEN :du AND :au')
+            ->orderBy('a.fbParticipations', 'DESC')
+            ->addOrderBy('a.fbInterets', 'DESC')
+            ->setParameters([':site' => $site->getId(), 'du' => $du->format('Y-m-d'), 'au' => $au->format('Y-m-d')])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -424,44 +426,43 @@ class AgendaRepository extends EntityRepository
 
     protected function makeQuery(QueryBuilder $qb, Site $site, SearchAgenda $search)
     {
-        $params = [":site" => $site->getId()];
-        $qb->where("a.site = :site");
+        $params = [':site' => $site->getId()];
+        $qb->where('a.site = :site');
 
         if ($search->getDu() !== null) {
-            $params[":du"] = $search->getDu()->format("Y-m-d");
+            $params[':du'] = $search->getDu()->format('Y-m-d');
             if ($search->getAu() === null) {
-                $qb->andWhere(":du BETWEEN a.dateDebut AND a.dateFin");
+                $qb->andWhere(':du BETWEEN a.dateDebut AND a.dateFin');
             } else {
                 $qb->andWhere('((a.dateDebut BETWEEN :du AND :au) '
-                    . 'OR (a.dateFin BETWEEN :du AND :au) '
-                    . 'OR (:du BETWEEN a.dateDebut AND a.dateFin)'
-                    . 'OR (:au BETWEEN a.dateDebut AND a.dateFin))');
+                    .'OR (a.dateFin BETWEEN :du AND :au) '
+                    .'OR (:du BETWEEN a.dateDebut AND a.dateFin)'
+                    .'OR (:au BETWEEN a.dateDebut AND a.dateFin))');
 
-                $params[":au"] = $search->getAu()->format("Y-m-d");
+                $params[':au'] = $search->getAu()->format('Y-m-d');
             }
         } else {
-            $qb->andWhere("a.dateDebut >= :now");
-            $params[":now"] = (new \DateTime)->format("Y-m-d");
+            $qb->andWhere('a.dateDebut >= :now');
+            $params[':now'] = (new \DateTime())->format('Y-m-d');
         }
 
-
         if (count($search->getTerms()) > 0) {
-            $qb->andWhere("(a.nom LIKE :mot_clefs OR a.descriptif LIKE :mot_clefs OR a.lieuNom LIKE :mot_clefs)");
-            $params[":mot_clefs"] = "%" . $search->getTerm() . "%";
+            $qb->andWhere('(a.nom LIKE :mot_clefs OR a.descriptif LIKE :mot_clefs OR a.lieuNom LIKE :mot_clefs)');
+            $params[':mot_clefs'] = '%'.$search->getTerm().'%';
         }
 
         if ($search->getTypeManifestation() !== null && count($search->getTypeManifestation()) > 0) {
-            $qb->andWhere("a.typeManifestation IN(:type_manifesation)");
-            $params[":type_manifesation"] = $search->getTypeManifestation();
+            $qb->andWhere('a.typeManifestation IN(:type_manifesation)');
+            $params[':type_manifesation'] = $search->getTypeManifestation();
         }
         if ($search->getCommune() !== null && count($search->getCommune()) > 0) {
-            $qb->andWhere("a.commune IN(:commune)");
-            $params[":commune"] = $search->getCommune();
+            $qb->andWhere('a.commune IN(:commune)');
+            $params[':commune'] = $search->getCommune();
         }
 
         if ($search->getLieux() !== null && count($search->getLieux()) > 0) {
-            $qb->andWhere("a.lieuNom IN(:lieux)");
-            $params[":lieux"] = $search->getLieux();
+            $qb->andWhere('a.lieuNom IN(:lieux)');
+            $params[':lieux'] = $search->getLieux();
         }
 
         return $qb
@@ -505,7 +506,7 @@ class AgendaRepository extends EntityRepository
     //Appelé par DoctrineEventParser
     public function findAllByDates(array $events)
     {
-        if(! count($events)) {
+        if (!count($events)) {
             return [];
         }
 
@@ -513,9 +514,9 @@ class AgendaRepository extends EntityRepository
         $query = $this->createQueryBuilder('a');
 
         $i = 0;
-        foreach($events as $event) {
+        foreach ($events as $event) {
             $i++;
-            /**
+            /*
              * @var Agenda $event
              */
             $query->orWhere("a.dateDebut = :date_debut_$i AND a.dateFin = :date_fin_$i AND a.site = :site_$i");
@@ -535,10 +536,10 @@ class AgendaRepository extends EntityRepository
     {
         $query = $this
             ->createQueryBuilder('a')
-            ->where("p.nom = :nom")
-            ->andWhere("a.dateDebut = :date_debut")
-            ->andWhere("a.dateFin = :date_fin")
-            ->setParameters([":nom" => $lieuNom, "date_debut" => $dateDebut->format("Y-m-d"), "date_fin" => $dateFin->format("Y-m-d")])
+            ->where('p.nom = :nom')
+            ->andWhere('a.dateDebut = :date_debut')
+            ->andWhere('a.dateFin = :date_fin')
+            ->setParameters([':nom' => $lieuNom, 'date_debut' => $dateDebut->format('Y-m-d'), 'date_fin' => $dateFin->format('Y-m-d')])
             ->getQuery()
             ->setMaxResults(1);
 
@@ -555,10 +556,10 @@ class AgendaRepository extends EntityRepository
     {
         return $this
             ->createQueryBuilder('a')
-            ->where("a.site = :site")
+            ->where('a.site = :site')
             ->andWhere("a.facebookOwnerId != ''")
-            ->groupBy("a.facebookOwnerId")
-            ->setParameters([":site" => $site->getId()])
+            ->groupBy('a.facebookOwnerId')
+            ->setParameters([':site' => $site->getId()])
             ->getQuery()
             ->execute();
     }
@@ -568,14 +569,14 @@ class AgendaRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('p')
-            ->from('TBNAgendaBundle:Agenda', "a")
-            ->leftJoin("TBNAgendaBundle:Place", "p", "WITH", "p = a.place")
-            ->where("a.site = :site")
+            ->from('TBNAgendaBundle:Agenda', 'a')
+            ->leftJoin('TBNAgendaBundle:Place', 'p', 'WITH', 'p = a.place')
+            ->where('a.site = :site')
             ->andWhere("p.nom != ''")
-            ->andWhere("a.dateDebut >= :today")
-            ->groupBy("p.nom")
-            ->orderBy("p.nom")
-            ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
+            ->andWhere('a.dateDebut >= :today')
+            ->groupBy('p.nom')
+            ->orderBy('p.nom')
+            ->setParameters([':site' => $site->getId(), 'today' => (new \DateTime())->format('Y-m-d')])
             ->getQuery()
             ->execute();
     }
@@ -586,13 +587,13 @@ class AgendaRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('p')
             ->from('TBNAgendaBundle:Agenda', 'a')
-            ->leftJoin("TBNAgendaBundle:Place", 'p', 'WITH', 'p = a.place')
-            ->where("a.site = :site")
+            ->leftJoin('TBNAgendaBundle:Place', 'p', 'WITH', 'p = a.place')
+            ->where('a.site = :site')
             ->andWhere("p.ville != ''")
-            ->andWhere("a.dateDebut >= :today")
-            ->groupBy("p.ville")
-            ->orderBy("p.ville")
-            ->setParameters([":site" => $site->getId(), "today" => (new \DateTime)->format("Y-m-d")])
+            ->andWhere('a.dateDebut >= :today')
+            ->groupBy('p.ville')
+            ->orderBy('p.ville')
+            ->setParameters([':site' => $site->getId(), 'today' => (new \DateTime())->format('Y-m-d')])
             ->getQuery()
             ->execute();
     }
@@ -601,12 +602,12 @@ class AgendaRepository extends EntityRepository
     {
         return $this
             ->createQueryBuilder('a')
-            ->where("a.site = :site")
+            ->where('a.site = :site')
             ->andWhere("a.categorieManifestation != ''")
             //->andWhere("a.dateDebut >= :today")
-            ->groupBy("a.categorieManifestation")
-            ->orderBy("a.categorieManifestation", "DESC")
-            ->setParameters([":site" => $site->getId()])
+            ->groupBy('a.categorieManifestation')
+            ->orderBy('a.categorieManifestation', 'DESC')
+            ->setParameters([':site' => $site->getId()])
             ->getQuery()
             ->execute();
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace TBN\MajDataBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;

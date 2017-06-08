@@ -2,14 +2,16 @@
 
 namespace TBN\AgendaBundle\Controller;
 
-use TBN\MainBundle\Controller\TBNController as Controller;
 use Symfony\Component\HttpFoundation\Response;
+use TBN\MainBundle\Controller\TBNController as Controller;
 
 class FeedController extends Controller
 {
     /**
-     * Generate the article feed
+     * Generate the article feed.
+     *
      * @param string $format
+     *
      * @return Response XML Feed
      */
     public function feedAction($format)

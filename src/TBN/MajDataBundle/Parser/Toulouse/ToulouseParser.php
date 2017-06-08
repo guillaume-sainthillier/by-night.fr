@@ -8,13 +8,12 @@ use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MajDataBundle\Parser\AgendaParser;
 
 /**
- * Description of ToulouseParser
+ * Description of ToulouseParser.
  *
  * @author guillaume
  */
 class ToulouseParser extends AgendaParser
 {
-
     public function getRawAgendas()
     {
         $fichier = $this->downloadCSV();
@@ -26,15 +25,15 @@ class ToulouseParser extends AgendaParser
     }
 
     /**
-     *
      * @param string $fichier le chemin absolu vers le fichier
+     *
      * @return Agenda[] les agendas parsés
      */
     protected function parseCSV($fichier)
     {
         $tab_agendas = [];
 
-        $fic = fopen($fichier, "r");
+        $fic = fopen($fichier, 'r');
         fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
 
         while ($cursor = fgetcsv($fic, 0, ';', '"', '"')) {
@@ -49,27 +48,27 @@ class ToulouseParser extends AgendaParser
                 $date_fin = new \DateTime($tab[6]);
 
                 $tab_agendas[] = [
-                    'nom' => $nom,
-                    'descriptif' => $tab[4],
-                    'date_debut' => $date_debut,
-                    'date_fin' => $date_fin,
-                    'horaires' => $tab[7],
+                    'nom'                          => $nom,
+                    'descriptif'                   => $tab[4],
+                    'date_debut'                   => $date_debut,
+                    'date_fin'                     => $date_fin,
+                    'horaires'                     => $tab[7],
                     'modification_derniere_minute' => $tab[9],
-                    'place.nom' => $tab[10],
-                    'place.rue' => $tab[12],
-                    'place.latitude' => $tab[20],
-                    'place.longitude' => $tab[21],
-                    'place.code_postal' => $tab[14],
-                    'place.ville' => $tab[15],
-                    'type_manifestation' => $tab[16],
-                    'categorie_manifestation' => $tab[17],
-                    'theme_manifestation' => $tab[18],
-                    'station_metro_tram' => $tab[19],
-                    'reservation_telephone' => $tab[22],
-                    'reservation_email' => $tab[23],
-                    'reservation_internet' => $tab[24],
-                    'tarif' => $tab[26],
-                    'source' => 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/export/'
+                    'place.nom'                    => $tab[10],
+                    'place.rue'                    => $tab[12],
+                    'place.latitude'               => $tab[20],
+                    'place.longitude'              => $tab[21],
+                    'place.code_postal'            => $tab[14],
+                    'place.ville'                  => $tab[15],
+                    'type_manifestation'           => $tab[16],
+                    'categorie_manifestation'      => $tab[17],
+                    'theme_manifestation'          => $tab[18],
+                    'station_metro_tram'           => $tab[19],
+                    'reservation_telephone'        => $tab[22],
+                    'reservation_email'            => $tab[23],
+                    'reservation_internet'         => $tab[24],
+                    'tarif'                        => $tab[26],
+                    'source'                       => 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/export/',
                 ];
             }
         }
@@ -78,7 +77,8 @@ class ToulouseParser extends AgendaParser
     }
 
     /**
-     * Télécharge un fichier CSV sur le repertoire TEMP depuis l'URI de l'Open Data Toulouse
+     * Télécharge un fichier CSV sur le repertoire TEMP depuis l'URI de l'Open Data Toulouse.
+     *
      * @return string le chemin absolu vers le fichier
      */
     protected function downloadCSV()
@@ -87,11 +87,12 @@ class ToulouseParser extends AgendaParser
         $path_file = sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());
         $fs = new Filesystem();
         $fs->dumpFile($path_file, $data);
+
         return $path_file;
     }
 
     public function getNomData()
     {
-        return "Toulouse";
+        return 'Toulouse';
     }
 }

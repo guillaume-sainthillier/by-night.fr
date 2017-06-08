@@ -6,13 +6,10 @@ use Symfony\Component\DomCrawler\Crawler;
 use TBN\MajDataBundle\Utils\Monitor;
 
 /**
- *
- *
  * @author Guillaume S. <guillaume@sainthillier.fr>
  */
 abstract class LinksParser extends AgendaParser
 {
-
     /*
      * @var Crawler $parser
      */
@@ -31,13 +28,13 @@ abstract class LinksParser extends AgendaParser
         return $this;
     }
 
-    public function parseContent($type = "HTML")
+    public function parseContent($type = 'HTML')
     {
         $this->parser->clear();
 
         try {
             $this->parser->addContent(\file_get_contents($this->url), $type);
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             Monitor::writeException($e);
         }
 
@@ -62,7 +59,7 @@ abstract class LinksParser extends AgendaParser
                 }
 
                 $agendas = array_merge($agendas, $infosAgenda);
-            }catch(\Exception $e) {
+            } catch (\Exception $e) {
                 Monitor::writeException($e);
             }
         }
@@ -73,7 +70,7 @@ abstract class LinksParser extends AgendaParser
     protected function getSilentNode(Crawler $node)
     {
         if ($node->count() === 0) {
-            return null;
+            return;
         }
 
         return $node;
@@ -92,18 +89,21 @@ abstract class LinksParser extends AgendaParser
     public function setBaseUrl($base_url)
     {
         $this->base_url = $base_url;
+
         return $this;
     }
 
     /**
-     * Retourne les infos d'un agenda depuis une url
+     * Retourne les infos d'un agenda depuis une url.
+     *
      * @return string[]
      */
-    protected abstract function getInfosAgenda();
+    abstract protected function getInfosAgenda();
 
     /**
-     * Retourne les liens depuis le feed.xml
+     * Retourne les liens depuis le feed.xml.
+     *
      * @return string[] le tableau des liens disponibles
      */
-    public abstract function getLinks();
+    abstract public function getLinks();
 }

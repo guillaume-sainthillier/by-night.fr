@@ -2,7 +2,6 @@
 
 namespace TBN\MainBundle\Listener;
 
-
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\MainBundle\Invalidator\EventInvalidator;
@@ -23,15 +22,18 @@ class EventListener
         $this->eventInvalidator = $eventInvalidator;
     }
 
-    public function postFlush() {
+    public function postFlush()
+    {
         $this->eventInvalidator->invalidateEvents();
     }
 
-    public function postUpdate(LifecycleEventArgs $args) {
+    public function postUpdate(LifecycleEventArgs $args)
+    {
         $entity = $args->getEntity();
 
-        if($entity instanceof User) {
+        if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);
+
             return;
         }
 
@@ -46,8 +48,9 @@ class EventListener
     {
         $entity = $args->getEntity();
 
-        if($entity instanceof User) {
+        if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);
+
             return;
         }
 
@@ -57,24 +60,23 @@ class EventListener
 
         $this->eventInvalidator->addEvent($entity);
 
-        if(!$entity->getFacebookEventId()) {
+        if (!$entity->getFacebookEventId()) {
             return;
         }
 
         $entityManager = $args->getEntityManager();
         $exploration = $entityManager->getRepository('TBNMajDataBundle:Exploration')->findOneBy([
-           'id' => $entity->getFacebookEventId()
+           'id' => $entity->getFacebookEventId(),
         ]);
 
-        if(! $exploration) {
-            $exploration = (new Exploration)->setId($entity->getFacebookEventId());
+        if (!$exploration) {
+            $exploration = (new Exploration())->setId($entity->getFacebookEventId());
         }
 
         $exploration
             ->setFirewallVersion(Firewall::VERSION)
             ->setLastUpdated($entity->getFbDateModification())
-            ->setReason(Reject::EVENT_DELETED)
-        ;
+            ->setReason(Reject::EVENT_DELETED);
 
         $entityManager->persist($exploration);
     }

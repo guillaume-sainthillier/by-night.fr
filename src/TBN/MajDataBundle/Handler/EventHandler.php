@@ -2,17 +2,16 @@
 
 namespace TBN\MajDataBundle\Handler;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use TBN\MajDataBundle\Utils\Cleaner;
 use TBN\MajDataBundle\Utils\Comparator;
 use TBN\MajDataBundle\Utils\Merger;
 use TBN\MajDataBundle\Utils\Monitor;
 
-
 /**
- * Description of EventHandler
+ * Description of EventHandler.
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
@@ -31,21 +30,23 @@ class EventHandler
         $this->tempPath = $tempPath;
     }
 
-    public function hasToDownloadImage($newURL, Agenda $agenda) {
+    public function hasToDownloadImage($newURL, Agenda $agenda)
+    {
         return $newURL && (
-            ! $agenda->getSystemPath() ||
+            !$agenda->getSystemPath() ||
             $agenda->getUrl() != $newURL
         );
     }
 
-    public function uploadFile(Agenda $agenda, $content) {
-        if(! $content) {
+    public function uploadFile(Agenda $agenda, $content)
+    {
+        if (!$content) {
             $agenda->setUrl(null);
-        }else {
+        } else {
             //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = preg_replace("/(\?|_)(.*)$/", "", pathinfo($agenda->getUrl(), PATHINFO_EXTENSION));
+            $ext = preg_replace("/(\?|_)(.*)$/", '', pathinfo($agenda->getUrl(), PATHINFO_EXTENSION));
 
-            $filename = sha1(uniqid(mt_rand(), true)) . "." . $ext;
+            $filename = sha1(uniqid(mt_rand(), true)).'.'.$ext;
 
             $tempPath = $this->tempPath.'/'.$filename;
             $octets = file_put_contents($tempPath, $content);
@@ -54,27 +55,30 @@ class EventHandler
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);
                 $agenda->setSystemPath($filename);
                 $agenda->setSystemFile($file);
-            }else {
+            } else {
                 $agenda->setSystemFile(null)->setSystemPath(null);
             }
         }
     }
 
-    public function cleanPlace(Place $place) {
+    public function cleanPlace(Place $place)
+    {
         $this->cleaner->cleanPlace($place);
     }
 
-    public function cleanEvent(Agenda $event) {
+    public function cleanEvent(Agenda $event)
+    {
         $this->cleaner->cleanEvent($event);
-        if($event->getPlace()) {
+        if ($event->getPlace()) {
             $this->cleaner->cleanPlace($event->getPlace());
         }
     }
 
     /**
-     * @param array $persistedEvents
-     * @param array $persistedPlaces
+     * @param array  $persistedEvents
+     * @param array  $persistedPlaces
      * @param Agenda $event
+     *
      * @return mixed|null
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Agenda $event)
