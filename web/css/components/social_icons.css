@@ -9,7 +9,7 @@
   width: 80px;
   height: 80px;
   line-height: 80px;
-  background-image: url("../../img/icons/social-icons-set@2x.png");
+  background-image: url("../img/icons/social-icons-set@2x.png");
   border: 1px solid lightgray;
 }
 [class^="social-"].big-social.social-twitter,
