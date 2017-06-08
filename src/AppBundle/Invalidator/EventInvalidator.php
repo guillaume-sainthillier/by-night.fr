@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 29/12/2016
- * Time: 17:53
+ * Time: 17:53.
  */
 
 namespace AppBundle\Invalidator;
-
 
 use FOS\HttpCacheBundle\Handler\TagHandler;
 use Psr\Log\LoggerInterface;
@@ -39,9 +38,9 @@ class EventInvalidator
     public function __construct(TagHandler $tagHandler, LoggerInterface $logger)
     {
         $this->tagHandler = $tagHandler;
-        $this->logger = $logger;
-        $this->eventTags = [];
-        $this->userTags = [];
+        $this->logger     = $logger;
+        $this->eventTags  = [];
+        $this->userTags   = [];
     }
 
     public static function getEventDetailTag(Agenda $event)

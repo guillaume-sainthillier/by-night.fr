@@ -6,7 +6,7 @@ use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use AppBundle\Entity\User;
 
 /**
- * Description of Facebook
+ * Description of Facebook.
  *
  * @author guillaume
  */
@@ -27,9 +27,9 @@ class FacebookListEvents extends Facebook
         $this->client->setDefaultAccessToken($userInfo->getFacebookAccessToken());
 
         $request = $this->client->sendRequest('GET', '/' . $userInfo->getFacebookId() . '/events', [
-            'type' => "created",
+            'type'   => 'created',
             'fields' => self::FIELDS,
-            'limit' => $limit
+            'limit'  => $limit,
         ]);
 
         return $this->findPaginated($request->getGraphEdge());
@@ -37,13 +37,13 @@ class FacebookListEvents extends Facebook
 
     public function connectUser(User $user, UserResponseInterface $response)
     {
-        $user->addRole("ROLE_FACEBOOK_LIST_EVENTS");
+        $user->addRole('ROLE_FACEBOOK_LIST_EVENTS');
         parent::connectUser($user, $response);
     }
 
     public function disconnectUser(User $user)
     {
-        $user->removeRole("ROLE_FACEBOOK_LIST_EVENTS");
+        $user->removeRole('ROLE_FACEBOOK_LIST_EVENTS');
         parent::disconnectUser($user);
     }
 }

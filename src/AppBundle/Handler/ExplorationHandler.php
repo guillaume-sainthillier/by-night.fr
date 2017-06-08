@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 01/12/2016
- * Time: 20:32
+ * Time: 20:32.
  */
 
 namespace AppBundle\Handler;
-
 
 use AppBundle\Entity\HistoriqueMaj;
 
@@ -19,10 +18,10 @@ class ExplorationHandler
     public function __construct()
     {
         $this->stats = [
-            'nbBlacklists' => 0,
-            'nbInserts' => 0,
-            'nbUpdates' => 0,
-            'nbExplorations' => 0
+            'nbBlacklists'   => 0,
+            'nbInserts'      => 0,
+            'nbUpdates'      => 0,
+            'nbExplorations' => 0,
         ];
 
         $this->historique = null;
@@ -50,7 +49,8 @@ class ExplorationHandler
 
     protected function add($key)
     {
-        $this->stats[$key]++;
+        ++$this->stats[$key];
+
         return $this;
     }
 
@@ -84,13 +84,13 @@ class ExplorationHandler
 
     /**
      * @param string $parserName
+     *
      * @return HistoriqueMaj
      */
     public function stop($parserName)
     {
-
         $this->historique
-            ->setDateFin(new \DateTime)
+            ->setDateFin(new \DateTime())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNouvellesSoirees($this->getNbInserts())
             ->setUpdateSoirees($this->getNbUpdates())
@@ -102,6 +102,6 @@ class ExplorationHandler
     public function start()
     {
         $this->historique = (new HistoriqueMaj())
-            ->setDateDebut(new \DateTime);
+            ->setDateDebut(new \DateTime());
     }
 }

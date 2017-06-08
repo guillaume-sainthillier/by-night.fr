@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation\Expose;
 use AppBundle\Geolocalize\BoundaryInterface;
 
 /**
- * Site
+ * Site.
  *
  * @ORM\Table(name="Site",
  *      indexes={@ORM\Index(name="recherche_site_idx", columns={"subdomain"})})
@@ -18,7 +18,7 @@ use AppBundle\Geolocalize\BoundaryInterface;
 class Site implements BoundaryInterface
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -56,7 +56,7 @@ class Site implements BoundaryInterface
     protected $twitterURLWidget;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="is_actif", type="boolean")
      */
@@ -89,9 +89,9 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -99,9 +99,10 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Set subdomain
+     * Set subdomain.
      *
      * @param string $subdomain
+     *
      * @return Site
      */
     public function setSubdomain($subdomain)
@@ -112,7 +113,7 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get subdomain
+     * Get subdomain.
      *
      * @return string
      */
@@ -122,9 +123,10 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Set nom
+     * Set nom.
      *
      * @param string $nom
+     *
      * @return Site
      */
     public function setNom($nom)
@@ -135,7 +137,7 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get nom
+     * Get nom.
      *
      * @return string
      */
@@ -145,7 +147,7 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get twitterIdWidget
+     * Get twitterIdWidget.
      *
      * @return string
      */
@@ -155,9 +157,10 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Set twitterURLWidget
+     * Set twitterURLWidget.
      *
      * @param string $twitterURLWidget
+     *
      * @return Site
      */
     public function setTwitterURLWidget($twitterURLWidget)
@@ -168,7 +171,7 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get twitterURLWidget
+     * Get twitterURLWidget.
      *
      * @return string
      */
@@ -178,9 +181,10 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Set isActif
+     * Set isActif.
      *
-     * @param boolean $isActif
+     * @param bool $isActif
+     *
      * @return Site
      */
     public function setActif($isActif)
@@ -196,9 +200,9 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get isActif
+     * Get isActif.
      *
-     * @return boolean
+     * @return bool
      */
     public function isActif()
     {
@@ -206,9 +210,10 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Set distanceMax
+     * Set distanceMax.
      *
      * @param float $distanceMax
+     *
      * @return Site
      */
     public function setDistanceMax($distanceMax)
@@ -219,7 +224,7 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get distanceMax
+     * Get distanceMax.
      *
      * @return float
      */
@@ -229,9 +234,10 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Set latitude
+     * Set latitude.
      *
      * @param float $latitude
+     *
      * @return Site
      */
     public function setLatitude($latitude)
@@ -242,7 +248,7 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get latitude
+     * Get latitude.
      *
      * @return float
      */
@@ -252,9 +258,10 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Set longitude
+     * Set longitude.
      *
      * @param float $longitude
+     *
      * @return Site
      */
     public function setLongitude($longitude)
@@ -265,7 +272,7 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get longitude
+     * Get longitude.
      *
      * @return float
      */
@@ -276,11 +283,11 @@ class Site implements BoundaryInterface
 
     public function __toString()
     {
-        return sprintf("#%s (%s)", $this->id ?: '?', $this->getNom());
+        return sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
     }
 
     /**
-     * Set twitterIdWidget
+     * Set twitterIdWidget.
      *
      * @param string $twitterIdWidget
      *
@@ -294,9 +301,9 @@ class Site implements BoundaryInterface
     }
 
     /**
-     * Get isActif
+     * Get isActif.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsActif()
     {

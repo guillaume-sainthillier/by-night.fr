@@ -5,7 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * News
+ * News.
  *
  * @ORM\Table(name="news")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\NewsRepository")
@@ -63,9 +63,8 @@ class News
      */
     private $fbPostId;
 
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -75,7 +74,7 @@ class News
     }
 
     /**
-     * Set dateDebut
+     * Set dateDebut.
      *
      * @param \DateTime $dateDebut
      *
@@ -89,7 +88,7 @@ class News
     }
 
     /**
-     * Get dateDebut
+     * Get dateDebut.
      *
      * @return \DateTime
      */
@@ -99,7 +98,7 @@ class News
     }
 
     /**
-     * Set dateFin
+     * Set dateFin.
      *
      * @param \DateTime $dateFin
      *
@@ -113,7 +112,7 @@ class News
     }
 
     /**
-     * Get dateFin
+     * Get dateFin.
      *
      * @return \DateTime
      */
@@ -123,9 +122,9 @@ class News
     }
 
     /**
-     * Set numeroEdition
+     * Set numeroEdition.
      *
-     * @param integer $numeroEdition
+     * @param int $numeroEdition
      *
      * @return News
      */
@@ -137,7 +136,7 @@ class News
     }
 
     /**
-     * Get numeroEdition
+     * Get numeroEdition.
      *
      * @return int
      */
@@ -147,9 +146,9 @@ class News
     }
 
     /**
-     * Set wordpressPostId
+     * Set wordpressPostId.
      *
-     * @param integer $wordpressPostId
+     * @param int $wordpressPostId
      *
      * @return News
      */
@@ -161,9 +160,9 @@ class News
     }
 
     /**
-     * Get wordpressPostId
+     * Get wordpressPostId.
      *
-     * @return integer
+     * @return int
      */
     public function getWordpressPostId()
     {
@@ -171,7 +170,7 @@ class News
     }
 
     /**
-     * Set tweetPostId
+     * Set tweetPostId.
      *
      * @param string $tweetPostId
      *
@@ -185,7 +184,7 @@ class News
     }
 
     /**
-     * Get tweetPostId
+     * Get tweetPostId.
      *
      * @return string
      */
@@ -195,7 +194,7 @@ class News
     }
 
     /**
-     * Set fbPostId
+     * Set fbPostId.
      *
      * @param string $fbPostId
      *
@@ -209,7 +208,7 @@ class News
     }
 
     /**
-     * Get fbPostId
+     * Get fbPostId.
      *
      * @return string
      */

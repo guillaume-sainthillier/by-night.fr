@@ -12,7 +12,7 @@ use AppBundle\Parser\ParserInterface;
  * Created by PhpStorm.
  * User: guillaume
  * Date: 26/11/2016
- * Time: 13:17
+ * Time: 13:17.
  */
 class EventFetcher
 {
@@ -35,11 +35,12 @@ class EventFetcher
     {
         $this->parserManager = $parserManager;
         $this->entityManager = $entityManager;
-        $this->siteManager = $siteManager;
+        $this->siteManager   = $siteManager;
     }
 
     /**
      * @param ParserInterface $parser
+     *
      * @return array
      */
     public function fetchEvents(ParserInterface $parser)
@@ -62,7 +63,7 @@ class EventFetcher
         $siteInfo = $this->siteManager->getSiteInfo();
 
         if (!$siteInfo) {
-            throw new \RuntimeException("Aucun site info enregistré");
+            throw new \RuntimeException('Aucun site info enregistré');
         }
 
         if (!$siteInfo->getFacebookAccessToken()) {

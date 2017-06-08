@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 17/12/2016
- * Time: 14:28
+ * Time: 14:28.
  */
 
 namespace AppBundle\Updater;
@@ -29,8 +29,7 @@ class UserUpdater extends Updater
 
     public function update()
     {
-
-        $repo = $this->entityManager->getRepository('AppBundle:User');
+        $repo  = $this->entityManager->getRepository('AppBundle:User');
         $fbIds = $repo->getUserFbIds();
         $count = count($fbIds);
 
@@ -40,7 +39,7 @@ class UserUpdater extends Updater
         $nbBatchs = ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
-        for ($i = 0; $i < $nbBatchs; $i++) {
+        for ($i = 0; $i < $nbBatchs; ++$i) {
             $users = $repo->getUsersWithInfo($i, self::PAGINATION_SIZE);
             $this->doUpdate($users, $fbStats);
             $this->doFlush();
@@ -53,7 +52,7 @@ class UserUpdater extends Updater
         $downloadUrls = [];
         foreach ($users as $user) {
             /**
-             * @var User $user
+             * @var User
              */
             $userInfo = $user->getInfo();
             $imageURL = null;

@@ -12,7 +12,6 @@
 namespace SocialBundle\Controller;
 
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
-
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Symfony\Component\Form\Test\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,18 +22,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
- * ConnectController
+ * ConnectController.
  *
  * @author Alexander <iam.asm89@gmail.com>
  */
 class ConnectController extends BaseController
 {
-
     /**
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
-     * @param Request $request The active request.
-     * @param string $service Name of the resource owner to connect to.
+     * @param Request $request the active request
+     * @param string  $service name of the resource owner to connect to
      *
      * @throws \Exception
      *
@@ -59,7 +57,7 @@ class ConnectController extends BaseController
         $resourceOwner = $this->getResourceOwnerByName($service);
 
         $session = $request->getSession();
-        $key = $request->query->get('key', time());
+        $key     = $request->query->get('key', time());
 
         if ($resourceOwner->handles($request)) {
             $accessToken = $resourceOwner->getAccessToken(
@@ -97,19 +95,17 @@ class ConnectController extends BaseController
             show_confirmation_page:
 
             $session = $this->container->get('session');
-            if ($session->has('connect_site')) // On veut connecter le site et non l'utilisateur
-            {
+            if ($session->has('connect_site')) { // On veut connecter le site et non l'utilisateur
                 $session->remove('connect_site');
                 $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
 
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($this->container->get("site_manager")->getSiteInfo());
+                $em->persist($this->container->get('site_manager')->getSiteInfo());
                 $em->flush();
-            } else // On connecte normalement l'utilisateur*/
-            {
+            } else { // On connecte normalement l'utilisateur*/
                 /** @var $currentToken OAuthToken */
                 $currentToken = $this->get('security.token_storage')->getToken();
-                $currentUser = $currentToken->getUser();
+                $currentUser  = $currentToken->getUser();
 
                 $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
 
@@ -131,7 +127,7 @@ class ConnectController extends BaseController
 
                 return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), array(
                     'userInformation' => $userInformation,
-                    'service' => $service,
+                    'service'         => $service,
                 ));
             }
 
@@ -141,9 +137,9 @@ class ConnectController extends BaseController
         }
 
         return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_confirm.html.' . $this->getTemplatingEngine(), [
-            'key' => $key,
-            'service' => $service,
-            'form' => $form->createView(),
+            'key'             => $key,
+            'service'         => $service,
+            'form'            => $form->createView(),
             'userInformation' => $userInformation,
         ]);
     }
@@ -171,5 +167,4 @@ class ConnectController extends BaseController
         $userManager->reloadUser($user);
         $this->container->get('security.token_storage')->getToken()->setAuthenticated(false);
     }
-
 }

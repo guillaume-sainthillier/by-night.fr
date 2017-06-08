@@ -6,24 +6,17 @@ use AppBundle\Entity\City;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
 use AppBundle\Entity\Comment;
 use AppBundle\Form\Type\CommentType;
 use AppBundle\Controller\TBNController as Controller;
 use SocialLinks\Page;
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Symfony\Component\Routing\Annotation\Route;
-
 use AppBundle\Configuration\BrowserCache;
-
 use AppBundle\Entity\Site;
 use AppBundle\Entity\Agenda;
-
 use AppBundle\Entity\Calendrier;
-
-
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use AppBundle\Invalidator\EventInvalidator;
 use AppBundle\Entity\User;
@@ -33,15 +26,15 @@ class EventController extends Controller
     protected function getCreateCommentForm(Comment $comment, Agenda $soiree)
     {
         return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('tbn_comment_new', ["id" => $soiree->getId()]),
-            'method' => 'POST'
+            'action' => $this->generateUrl('tbn_comment_new', ['id' => $soiree->getId()]),
+            'method' => 'POST',
         ])
-            ->add("poster", SubmitType::class, [
-                "label" => "Poster",
-                "attr" => [
-                    "class" => "btn btn-primary btn-submit btn-raised",
-                    "data-loading-text" => "En cours..."
-                ]
+            ->add('poster', SubmitType::class, [
+                'label' => 'Poster',
+                'attr'  => [
+                    'class'             => 'btn btn-primary btn-submit btn-raised',
+                    'data-loading-text' => 'En cours...',
+                ],
             ]);
     }
 
@@ -63,27 +56,27 @@ class EventController extends Controller
         if ($agenda->getPlace()->getCity() !== $city) {
             return new RedirectResponse($this->get('router')->generate('tbn_agenda_details', [
                 'slug' => $agenda->getSlug(),
-                'id' => $agenda->getId(),
-                'city' => $agenda->getPlace()->getCity()->getSlug()
+                'id'   => $agenda->getId(),
+                'city' => $agenda->getPlace()->getCity()->getSlug(),
             ]));
         }
 
-        $comment = new Comment();
-        $form = $this->getCreateCommentForm($comment, $agenda);
+        $comment    = new Comment();
+        $form       = $this->getCreateCommentForm($comment, $agenda);
         $nbComments = $agenda->getCommentaires()->count();
 
         $response = $this->render('City/Agenda/details.html.twig', [
-            'city' => $city,
-            'soiree' => $agenda,
-            'form' => $form->createView(),
+            'city'        => $city,
+            'soiree'      => $agenda,
+            'form'        => $form->createView(),
             'nb_comments' => $nbComments,
-            'stats' => $this->getAgendaStats($agenda)
+            'stats'       => $this->getAgendaStats($agenda),
         ]);
 
         $now = new \DateTime();
         if ($agenda->getDateFin() < $now) {
             $expires = $now;
-            $expires->modify("+1 year");
+            $expires->modify('+1 year');
             $ttl = 31536000;
         } else {
             list($expires, $ttl) = $this->getSecondsUntil(168);
@@ -94,7 +87,7 @@ class EventController extends Controller
             ->setExpires($expires);
 
         $this->get('fos_http_cache.handler.tag_handler')->addTags([
-            EventInvalidator::getEventDetailTag($agenda)
+            EventInvalidator::getEventDetailTag($agenda),
         ]);
 
         return $response;
@@ -102,62 +95,64 @@ class EventController extends Controller
 
     /**
      * @Cache(expires="+12 hours", smaxage="43200")
+     *
      * @param Agenda $agenda
+     *
      * @return Response
      */
     public function shareAction(Agenda $agenda)
     {
         $link = $this->generateUrl('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
-            'id' => $agenda->getId(),
-            'city' => $agenda->getPlace()->getCity()->getSlug()
+            'id'   => $agenda->getId(),
+            'city' => $agenda->getPlace()->getCity()->getSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $eventProfile = $this->get('tbn.profile_picture.event')->getOriginalPictureUrl($agenda);
 
         $page = new Page([
-            'url' => $link,
+            'url'   => $link,
             'title' => $agenda->getNom(),
-            'text' => $agenda->getDescriptif(),
+            'text'  => $agenda->getDescriptif(),
             'image' => $eventProfile,
         ]);
 
         $page->shareCount(['twitter', 'facebook', 'plus']);
 
-        return $this->render("City/Hinclude/shares.html.twig", [
-            "shares" => [
-                'facebook' => $page->facebook,
-                'twitter' => $page->twitter,
-                'google-plus' => $page->plus
-            ]
+        return $this->render('City/Hinclude/shares.html.twig', [
+            'shares' => [
+                'facebook'    => $page->facebook,
+                'twitter'     => $page->twitter,
+                'google-plus' => $page->plus,
+            ],
         ]);
     }
 
     protected function getAgendaStats(Agenda $agenda)
     {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("AppBundle:Agenda");
+        $em   = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('AppBundle:Agenda');
 
         $participer = false;
-        $interet = false;
+        $interet    = false;
 
         $user = $this->getUser();
         if ($user) {
             /**
-             * @var User $user
+             * @var User
              */
             $repoCalendrier = $em->getRepository('AppBundle:Calendrier');
-            $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
+            $calendrier     = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
             if ($calendrier !== null) {
                 $participer = $calendrier->getParticipe();
-                $interet = $calendrier->getInteret();
+                $interet    = $calendrier->getInteret();
             }
 
             if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
                 $cache = $this->get('memory_cache');
-                $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
+                $key   = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
                 if (!$cache->contains($key)) {
-                    $api = $this->get('tbn.social.facebook_admin');
+                    $api   = $this->get('tbn.social.facebook_admin');
                     $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
                     $cache->save($key, $stats);
                 }
@@ -165,12 +160,12 @@ class EventController extends Controller
 
                 if ($stats['participer'] || $stats['interet']) {
                     if (null === $calendrier) {
-                        $calendrier = new Calendrier;
+                        $calendrier = new Calendrier();
                         $calendrier->setUser($user)->setAgenda($agenda);
                     }
 
                     $participer = $calendrier->getParticipe() || $stats['participer'];
-                    $interet = $calendrier->getInteret() || $stats['interet'];
+                    $interet    = $calendrier->getInteret() || $stats['interet'];
 
                     $calendrier
                         ->setParticipe($participer)
@@ -183,12 +178,12 @@ class EventController extends Controller
         }
 
         return [
-            "tendancesParticipations" => $repo->findAllTendancesParticipations($agenda),
-            "tendancesInterets" => $repo->findAllTendancesInterets($agenda),
-            "count_participer" => $agenda->getParticipations() + $agenda->getFbParticipations(),
-            "count_interets" => $agenda->getInterets() + $agenda->getFbInterets(),
-            'participer' => $participer,
-            'interet' => $interet
+            'tendancesParticipations' => $repo->findAllTendancesParticipations($agenda),
+            'tendancesInterets'       => $repo->findAllTendancesInterets($agenda),
+            'count_participer'        => $agenda->getParticipations() + $agenda->getFbParticipations(),
+            'count_interets'          => $agenda->getInterets() + $agenda->getFbInterets(),
+            'participer'              => $participer,
+            'interet'                 => $interet,
         ];
     }
 }

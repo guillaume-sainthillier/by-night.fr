@@ -6,13 +6,12 @@ use AppBundle\Entity\Place;
 use AppBundle\Entity\Agenda;
 
 /**
- * Description of Merger
+ * Description of Merger.
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
 class Cleaner
 {
-
     private $util;
 
     public function __construct(Util $util)

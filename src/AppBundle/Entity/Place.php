@@ -8,11 +8,10 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use AppBundle\Geolocalize\GeolocalizeInterface;
-
 use AppBundle\Reject\Reject;
 
 /**
- * Place
+ * Place.
  *
  * @ORM\Table(name="Place", indexes={
  *   @ORM\Index(name="place_nom_idx", columns={"nom"}),
@@ -26,7 +25,7 @@ use AppBundle\Reject\Reject;
 class Place implements GeolocalizeInterface
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -163,18 +162,20 @@ class Place implements GeolocalizeInterface
         return $this->reject;
     }
 
-
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
     /**
      * @param $country
+     *
      * @return Place
      */
-    public function setCountryName($country) {
+    public function setCountryName($country)
+    {
         $this->countryName = $country;
 
         return $this;
@@ -183,14 +184,15 @@ class Place implements GeolocalizeInterface
     /**
      * @return string
      */
-    public function getCountryName() {
+    public function getCountryName()
+    {
         return $this->countryName;
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -198,9 +200,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set rue
+     * Set rue.
      *
      * @param string $rue
+     *
      * @return Place
      */
     public function setRue($rue)
@@ -211,7 +214,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get rue
+     * Get rue.
      *
      * @return string
      */
@@ -221,9 +224,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set latitude
+     * Set latitude.
      *
      * @param float $latitude
+     *
      * @return Place
      */
     public function setLatitude($latitude)
@@ -234,7 +238,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get latitude
+     * Get latitude.
      *
      * @return float
      */
@@ -244,9 +248,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set longitude
+     * Set longitude.
      *
      * @param float $longitude
+     *
      * @return Place
      */
     public function setLongitude($longitude)
@@ -257,7 +262,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get longitude
+     * Get longitude.
      *
      * @return float
      */
@@ -267,9 +272,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set nom
+     * Set nom.
      *
      * @param string $nom
+     *
      * @return Place
      */
     public function setNom($nom)
@@ -280,7 +286,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get nom
+     * Get nom.
      *
      * @return string
      */
@@ -290,9 +296,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
+     *
      * @return Place
      */
     public function setSlug($slug)
@@ -303,7 +310,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */
@@ -313,9 +320,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set path
+     * Set path.
      *
      * @param string $path
+     *
      * @return Place
      */
     public function setPath($path)
@@ -326,7 +334,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get path
+     * Get path.
      *
      * @return string
      */
@@ -336,9 +344,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return Place
      */
     public function setUrl($url)
@@ -349,7 +358,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string
      */
@@ -359,9 +368,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set ville
+     * Set ville.
      *
      * @param string $ville
+     *
      * @return Place
      */
     public function setVille($ville)
@@ -372,7 +382,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get ville
+     * Get ville.
      *
      * @return string
      */
@@ -382,9 +392,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set codePostal
+     * Set codePostal.
      *
      * @param string $codePostal
+     *
      * @return Place
      */
     public function setCodePostal($codePostal)
@@ -395,7 +406,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get codePostal
+     * Get codePostal.
      *
      * @return string
      */
@@ -405,9 +416,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set facebookId
+     * Set facebookId.
      *
      * @param string $facebookId
+     *
      * @return Place
      */
     public function setFacebookId($facebookId)
@@ -418,7 +430,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get facebookId
+     * Get facebookId.
      *
      * @return string
      */
@@ -428,9 +440,10 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set site
+     * Set site.
      *
      * @param Site $site
+     *
      * @return Place
      */
     public function setSite(Site $site)
@@ -441,7 +454,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get site
+     * Get site.
      *
      * @return \AppBundle\Entity\Site
      */
@@ -452,11 +465,11 @@ class Place implements GeolocalizeInterface
 
     public function __toString()
     {
-        return sprintf("#%s (%s)", $this->id ?: '?', $this->getNom());
+        return sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
     }
 
     /**
-     * Set city
+     * Set city.
      *
      * @param \AppBundle\Entity\City $city
      *
@@ -470,7 +483,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get city
+     * Get city.
      *
      * @return \AppBundle\Entity\City
      */
@@ -480,7 +493,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set zipCity
+     * Set zipCity.
      *
      * @param \AppBundle\Entity\ZipCity $zipCity
      *
@@ -494,7 +507,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get zipCity
+     * Get zipCity.
      *
      * @return \AppBundle\Entity\ZipCity
      */
@@ -504,7 +517,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set country
+     * Set country.
      *
      * @param \AppBundle\Entity\Country $country
      *
@@ -518,7 +531,7 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get country
+     * Get country.
      *
      * @return \AppBundle\Entity\Country
      */
@@ -528,9 +541,9 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set isJunk
+     * Set isJunk.
      *
-     * @param boolean $isJunk
+     * @param bool $isJunk
      *
      * @return Place
      */
@@ -542,9 +555,9 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get isJunk
+     * Get isJunk.
      *
-     * @return boolean
+     * @return bool
      */
     public function IsJunk()
     {

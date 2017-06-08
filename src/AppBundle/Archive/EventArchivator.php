@@ -9,7 +9,7 @@ use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
  * Created by PhpStorm.
  * User: guillaume
  * Date: 13/12/2016
- * Time: 19:08
+ * Time: 19:08.
  */
 class EventArchivator
 {
@@ -25,7 +25,7 @@ class EventArchivator
 
     public function __construct(EntityManager $entityManager, ObjectPersisterInterface $objectPersister)
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager   = $entityManager;
         $this->objectPersister = $objectPersister;
     }
 

@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
 
 /**
- * News
+ * News.
  *
  * @ORM\Table(name="country")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CountryRepository")
@@ -54,9 +54,8 @@ class Country
      */
     private $capital;
 
-
     /**
-     * Set id
+     * Set id.
      *
      * @param string $id
      *
@@ -70,7 +69,7 @@ class Country
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return string
      */
@@ -80,7 +79,7 @@ class Country
     }
 
     /**
-     * Set locale
+     * Set locale.
      *
      * @param string $locale
      *
@@ -94,7 +93,7 @@ class Country
     }
 
     /**
-     * Get locale
+     * Get locale.
      *
      * @return string
      */
@@ -104,7 +103,7 @@ class Country
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -118,7 +117,7 @@ class Country
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -128,7 +127,7 @@ class Country
     }
 
     /**
-     * Set capital
+     * Set capital.
      *
      * @param string $capital
      *
@@ -142,7 +141,7 @@ class Country
     }
 
     /**
-     * Get capital
+     * Get capital.
      *
      * @return string
      */
@@ -152,7 +151,7 @@ class Country
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
      *
@@ -166,7 +165,7 @@ class Country
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */

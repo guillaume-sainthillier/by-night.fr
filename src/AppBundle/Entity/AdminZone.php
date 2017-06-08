@@ -8,10 +8,10 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
 
 /**
- * Info
+ * Info.
  *
  * @ORM\Table(name="admin_zone", indexes={
-        @ORM\Index(name="admin_zone_type_name_idx", columns={"type", "name"})
+ @ORM\Index(name="admin_zone_type_name_idx", columns={"type", "name"})
  * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
@@ -23,7 +23,7 @@ use JMS\Serializer\Annotation\Exclude;
 abstract class AdminZone
 {
     /**
-     * @var integer
+     * @var int
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      */
@@ -55,7 +55,7 @@ abstract class AdminZone
     protected $longitude;
 
     /**
-     * @var integer
+     * @var int
      * @ORM\Column(name="population", type="integer")
      */
     protected $population;
@@ -81,9 +81,9 @@ abstract class AdminZone
     protected $admin2Code;
 
     /**
-     * Set id
+     * Set id.
      *
-     * @param integer $id
+     * @param int $id
      *
      * @return AdminZone
      */
@@ -95,9 +95,9 @@ abstract class AdminZone
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -105,7 +105,7 @@ abstract class AdminZone
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -119,7 +119,7 @@ abstract class AdminZone
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -129,7 +129,7 @@ abstract class AdminZone
     }
 
     /**
-     * Set latitude
+     * Set latitude.
      *
      * @param float $latitude
      *
@@ -143,7 +143,7 @@ abstract class AdminZone
     }
 
     /**
-     * Get latitude
+     * Get latitude.
      *
      * @return float
      */
@@ -153,7 +153,7 @@ abstract class AdminZone
     }
 
     /**
-     * Set longitude
+     * Set longitude.
      *
      * @param float $longitude
      *
@@ -167,7 +167,7 @@ abstract class AdminZone
     }
 
     /**
-     * Get longitude
+     * Get longitude.
      *
      * @return float
      */
@@ -177,7 +177,7 @@ abstract class AdminZone
     }
 
     /**
-     * Set admin1Code
+     * Set admin1Code.
      *
      * @param string $admin1Code
      *
@@ -191,7 +191,7 @@ abstract class AdminZone
     }
 
     /**
-     * Get admin1Code
+     * Get admin1Code.
      *
      * @return string
      */
@@ -201,7 +201,7 @@ abstract class AdminZone
     }
 
     /**
-     * Set admin2Code
+     * Set admin2Code.
      *
      * @param string $admin2Code
      *
@@ -215,7 +215,7 @@ abstract class AdminZone
     }
 
     /**
-     * Get admin2Code
+     * Get admin2Code.
      *
      * @return string
      */
@@ -225,7 +225,7 @@ abstract class AdminZone
     }
 
     /**
-     * Set country
+     * Set country.
      *
      * @param \AppBundle\Entity\Country $country
      *
@@ -239,7 +239,7 @@ abstract class AdminZone
     }
 
     /**
-     * Get country
+     * Get country.
      *
      * @return \AppBundle\Entity\Country
      */
@@ -249,7 +249,7 @@ abstract class AdminZone
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
      *
@@ -263,7 +263,7 @@ abstract class AdminZone
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */
@@ -273,9 +273,9 @@ abstract class AdminZone
     }
 
     /**
-     * Set population
+     * Set population.
      *
-     * @param integer $population
+     * @param int $population
      *
      * @return AdminZone
      */
@@ -287,9 +287,9 @@ abstract class AdminZone
     }
 
     /**
-     * Get population
+     * Get population.
      *
-     * @return integer
+     * @return int
      */
     public function getPopulation()
     {

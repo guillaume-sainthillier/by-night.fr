@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 05/05/2017
- * Time: 20:06
+ * Time: 20:06.
  */
 
 namespace AppBundle\Listener;
@@ -19,12 +19,12 @@ class RegistrationListener implements EventSubscriberInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
         return [
-            FOSUserEvents::REGISTRATION_INITIALIZE => 'onRegistrationInitialize'
+            FOSUserEvents::REGISTRATION_INITIALIZE => 'onRegistrationInitialize',
         ];
     }
 

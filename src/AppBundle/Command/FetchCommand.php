@@ -10,7 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Parser\ParserInterface;
 use AppBundle\Utils\Monitor;
 
-
 class FetchCommand extends AppCommand
 {
     protected function configure()

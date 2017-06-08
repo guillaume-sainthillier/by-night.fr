@@ -2,7 +2,6 @@
 
 namespace AppBundle\Listener;
 
-
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use AppBundle\Entity\Agenda;
 use AppBundle\Invalidator\EventInvalidator;
@@ -26,7 +25,7 @@ class EventListener
     public function __construct(EventInvalidator $eventInvalidator, $debug)
     {
         $this->eventInvalidator = $eventInvalidator;
-        $this->debug = $debug;
+        $this->debug            = $debug;
     }
 
     public function postFlush()
@@ -36,7 +35,7 @@ class EventListener
 
     public function postUpdate(LifecycleEventArgs $args)
     {
-        if($this->debug) {
+        if ($this->debug) {
             return;
         }
 
@@ -44,6 +43,7 @@ class EventListener
 
         if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);
+
             return;
         }
 
@@ -56,11 +56,12 @@ class EventListener
 
     public function preRemove(LifecycleEventArgs $args)
     {
-        if(! $this->debug) {
+        if (!$this->debug) {
             $entity = $args->getEntity();
 
             if ($entity instanceof User) {
                 $this->eventInvalidator->addUser($entity);
+
                 return;
             }
 
@@ -76,10 +77,10 @@ class EventListener
         }
 
         $entityManager = $args->getEntityManager();
-        $exploration = $entityManager->getRepository('AppBundle:Exploration')->find($entity->getFacebookEventId());
+        $exploration   = $entityManager->getRepository('AppBundle:Exploration')->find($entity->getFacebookEventId());
 
         if (!$exploration) {
-            $exploration = (new Exploration)->setId($entity->getFacebookEventId());
+            $exploration = (new Exploration())->setId($entity->getFacebookEventId());
         }
 
         $exploration

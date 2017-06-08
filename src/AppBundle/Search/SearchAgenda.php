@@ -3,94 +3,84 @@
 namespace AppBundle\Search;
 
 use AppBundle\Entity\City;
-use AppBundle\Entity\Site;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Description of SearchAgenda
+ * Description of SearchAgenda.
  *
  * @author Guillaume S. <guillaume@sainthillier.fr>
  */
 class SearchAgenda
 {
-
     /**
-     *
      * @var \DateTime
      * @Assert\Date()
      */
     protected $du;
 
     /**
-     *
      * @var \DateTime
      * @Assert\Date()
      */
     protected $au;
 
     /**
-     *
      * @var string
      */
     protected $tag;
 
     /**
-     *
      * @var array
      */
     protected $type_manifestation;
 
     /**
-     *
      * @var array
      */
     protected $lieux;
 
     /**
-     *
      * @var array
      */
     protected $commune;
 
     /**
-     *
      * @var string
      */
     protected $term;
 
     /**
-     *
-     * @var integer
+     * @var int
      */
     protected $page;
 
     /**
-     *
      * @var City
      */
     protected $city;
 
-
     public function __construct()
     {
         $this->page = 1;
-        $this->du = new \DateTime;
+        $this->du   = new \DateTime();
     }
 
     public function getTerms()
     {
-        return array_unique(array_filter(explode(" ", $this->getTerm())));
+        return array_unique(array_filter(explode(' ', $this->getTerm())));
     }
 
     /**
      * @return City
      */
-    public function getSite() {
+    public function getSite()
+    {
         return $this->city;
     }
 
     /**
      * @param string $tag
+     *
      * @return $this
      */
     public function setTag($tag)
@@ -150,60 +140,73 @@ class SearchAgenda
 
     /**
      * @param City $city
+     *
      * @return $this
      */
-    public function setCity(City $city) {
+    public function setCity(City $city)
+    {
         $this->city = $city;
+
         return $this;
     }
 
     /**
      * @param \DateTime|null $du
+     *
      * @return $this
      */
     public function setDu(\DateTime $du = null)
     {
         $this->du = $du;
+
         return $this;
     }
 
     /**
      * @param \DateTime|null $au
+     *
      * @return $this
      */
     public function setAu(\DateTime $au = null)
     {
         $this->au = $au;
+
         return $this;
     }
 
     /**
      * @param $type_manifestation
+     *
      * @return $this
      */
     public function setTypeManifestation($type_manifestation)
     {
         $this->type_manifestation = $type_manifestation;
+
         return $this;
     }
 
     /**
      * @param $lieux
+     *
      * @return $this
      */
     public function setLieux($lieux)
     {
         $this->lieux = $lieux;
+
         return $this;
     }
 
     /**
      * @param $term
+     *
      * @return $this
      */
     public function setTerm($term)
     {
         $this->term = $term;
+
         return $this;
     }
 
@@ -217,11 +220,13 @@ class SearchAgenda
 
     /**
      * @param $commune
+     *
      * @return $this
      */
     public function setCommune($commune)
     {
         $this->commune = $commune;
+
         return $this;
     }
 
@@ -235,11 +240,13 @@ class SearchAgenda
 
     /**
      * @param $page
+     *
      * @return $this
      */
     public function setPage($page)
     {
         $this->page = $page;
+
         return $this;
     }
 }

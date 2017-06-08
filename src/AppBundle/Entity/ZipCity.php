@@ -6,17 +6,17 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * ZipCity
+ * ZipCity.
  *
  * @ORM\Table(name="zip_city", indexes={
-        @ORM\Index(name="zip_city_postal_code_name_idx", columns={"name", "postal_code"})
+ @ORM\Index(name="zip_city_postal_code_name_idx", columns={"name", "postal_code"})
  * })
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ZipCityRepository", readOnly=true)
  */
 class ZipCity
 {
     /**
-     * @var integer
+     * @var int
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue("AUTO")
@@ -78,9 +78,9 @@ class ZipCity
     protected $parent;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -89,15 +89,18 @@ class ZipCity
 
     /**
      * @param int $id
+     *
      * @return $this
      */
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
+
         return $this;
     }
 
     /**
-     * Set postalCode
+     * Set postalCode.
      *
      * @param string $postalCode
      *
@@ -111,7 +114,7 @@ class ZipCity
     }
 
     /**
-     * Get postalCode
+     * Get postalCode.
      *
      * @return string
      */
@@ -121,7 +124,7 @@ class ZipCity
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -135,7 +138,7 @@ class ZipCity
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -145,7 +148,7 @@ class ZipCity
     }
 
     /**
-     * Set latitude
+     * Set latitude.
      *
      * @param float $latitude
      *
@@ -159,7 +162,7 @@ class ZipCity
     }
 
     /**
-     * Get latitude
+     * Get latitude.
      *
      * @return float
      */
@@ -169,7 +172,7 @@ class ZipCity
     }
 
     /**
-     * Set longitude
+     * Set longitude.
      *
      * @param float $longitude
      *
@@ -183,7 +186,7 @@ class ZipCity
     }
 
     /**
-     * Get longitude
+     * Get longitude.
      *
      * @return float
      */
@@ -193,7 +196,7 @@ class ZipCity
     }
 
     /**
-     * Set admin1Code
+     * Set admin1Code.
      *
      * @param string $admin1Code
      *
@@ -207,7 +210,7 @@ class ZipCity
     }
 
     /**
-     * Get admin1Code
+     * Get admin1Code.
      *
      * @return string
      */
@@ -217,7 +220,7 @@ class ZipCity
     }
 
     /**
-     * Set admin2Code
+     * Set admin2Code.
      *
      * @param string $admin2Code
      *
@@ -231,7 +234,7 @@ class ZipCity
     }
 
     /**
-     * Get admin2Code
+     * Get admin2Code.
      *
      * @return string
      */
@@ -241,7 +244,7 @@ class ZipCity
     }
 
     /**
-     * Set country
+     * Set country.
      *
      * @param \AppBundle\Entity\Country $country
      *
@@ -255,7 +258,7 @@ class ZipCity
     }
 
     /**
-     * Get country
+     * Get country.
      *
      * @return \AppBundle\Entity\Country
      */
@@ -265,7 +268,7 @@ class ZipCity
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
      *
@@ -279,7 +282,7 @@ class ZipCity
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */
@@ -289,7 +292,7 @@ class ZipCity
     }
 
     /**
-     * Set parent
+     * Set parent.
      *
      * @param \AppBundle\Entity\City $parent
      *
@@ -303,7 +306,7 @@ class ZipCity
     }
 
     /**
-     * Get parent
+     * Get parent.
      *
      * @return \AppBundle\Entity\City
      */

@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 26/10/2016
- * Time: 22:24
+ * Time: 22:24.
  */
 
 namespace AppBundle\Validator\Constraints;

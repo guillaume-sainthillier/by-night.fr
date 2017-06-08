@@ -8,14 +8,12 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Doctrine\Common\Collections\ArrayCollection;
-
-
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * User
+ * User.
  *
  * @ORM\Table(name="User", indexes={@ORM\Index(name="user_nom_idx", columns={"nom"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
@@ -115,21 +113,21 @@ class User extends BaseUser
     protected $website;
 
     /**
-     *
      * @Vich\UploadableField(mapping="user_image", fileNameProperty="path")
      * @Assert\Valid()
      * @Assert\File(maxSize = "6M")
      * @Assert\Image()
+     *
      * @var File
      */
     private $imageFile;
 
     /**
-     *
      * @Vich\UploadableField(mapping="user_system_image", fileNameProperty="systemPath")
      * @Assert\Valid()
      * @Assert\File(maxSize = "6M")
      * @Assert\Image()
+     *
      * @var File
      */
     private $imageSystemFile;
@@ -156,9 +154,8 @@ class User extends BaseUser
      */
     private $updatedAt;
 
-
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -168,8 +165,8 @@ class User extends BaseUser
         $this->setFromLogin(false);
         $this->setShowSocials(true);
         $this->date_creation = new \DateTime();
-        $this->calendriers = new ArrayCollection();
-        $this->info = new UserInfo();
+        $this->calendriers   = new ArrayCollection();
+        $this->info          = new UserInfo();
     }
 
     /**
@@ -241,11 +238,10 @@ class User extends BaseUser
         return ucfirst(parent::getUsername());
     }
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -253,9 +249,10 @@ class User extends BaseUser
     }
 
     /**
-     * Set nom
+     * Set nom.
      *
      * @param string $nom
+     *
      * @return User
      */
     public function setNom($nom)
@@ -266,7 +263,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get nom
+     * Get nom.
      *
      * @return string
      */
@@ -276,9 +273,10 @@ class User extends BaseUser
     }
 
     /**
-     * Set firstname
+     * Set firstname.
      *
      * @param string $firstname
+     *
      * @return User
      */
     public function setFirstname($firstname)
@@ -289,7 +287,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get firstname
+     * Get firstname.
      *
      * @return string
      */
@@ -299,9 +297,10 @@ class User extends BaseUser
     }
 
     /**
-     * Set lastname
+     * Set lastname.
      *
      * @param string $lastname
+     *
      * @return User
      */
     public function setLastname($lastname)
@@ -312,7 +311,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get lastname
+     * Get lastname.
      *
      * @return string
      */
@@ -322,9 +321,10 @@ class User extends BaseUser
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
+     *
      * @return User
      */
     public function setDescription($description)
@@ -335,7 +335,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get description
+     * Get description.
      *
      * @return string
      */
@@ -345,9 +345,10 @@ class User extends BaseUser
     }
 
     /**
-     * Set from_login
+     * Set from_login.
      *
-     * @param boolean $fromLogin
+     * @param bool $fromLogin
+     *
      * @return User
      */
     public function setFromLogin($fromLogin)
@@ -358,9 +359,9 @@ class User extends BaseUser
     }
 
     /**
-     * Get from_login
+     * Get from_login.
      *
-     * @return boolean
+     * @return bool
      */
     public function getFromLogin()
     {
@@ -368,9 +369,10 @@ class User extends BaseUser
     }
 
     /**
-     * Set date_creation
+     * Set date_creation.
      *
      * @param \DateTime $dateCreation
+     *
      * @return User
      */
     public function setDateCreation($dateCreation)
@@ -381,7 +383,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get date_creation
+     * Get date_creation.
      *
      * @return \DateTime
      */
@@ -391,9 +393,10 @@ class User extends BaseUser
     }
 
     /**
-     * Set info
+     * Set info.
      *
      * @param UserInfo $info
+     *
      * @return User
      */
     public function setInfo(UserInfo $info = null)
@@ -404,7 +407,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get info
+     * Get info.
      *
      * @return \AppBundle\Entity\UserInfo
      */
@@ -414,9 +417,10 @@ class User extends BaseUser
     }
 
     /**
-     * Add calendriers
+     * Add calendriers.
      *
      * @param Calendrier $calendriers
+     *
      * @return User
      */
     public function addCalendrier(Calendrier $calendriers)
@@ -427,7 +431,7 @@ class User extends BaseUser
     }
 
     /**
-     * Remove calendriers
+     * Remove calendriers.
      *
      * @param Calendrier $calendriers
      */
@@ -437,7 +441,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get calendriers
+     * Get calendriers.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -447,9 +451,10 @@ class User extends BaseUser
     }
 
     /**
-     * Set site
+     * Set site.
      *
      * @param Site $site
+     *
      * @return User
      */
     public function setSite(Site $site)
@@ -460,7 +465,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get site
+     * Get site.
      *
      * @return \AppBundle\Entity\Site
      */
@@ -470,9 +475,9 @@ class User extends BaseUser
     }
 
     /**
-     * Set showSocials
+     * Set showSocials.
      *
-     * @param boolean $showSocials
+     * @param bool $showSocials
      *
      * @return User
      */
@@ -484,9 +489,9 @@ class User extends BaseUser
     }
 
     /**
-     * Get showSocials
+     * Get showSocials.
      *
-     * @return boolean
+     * @return bool
      */
     public function getShowSocials()
     {
@@ -494,7 +499,7 @@ class User extends BaseUser
     }
 
     /**
-     * Set website
+     * Set website.
      *
      * @param string $website
      *
@@ -508,7 +513,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get website
+     * Get website.
      *
      * @return string
      */
@@ -519,11 +524,11 @@ class User extends BaseUser
 
     public function __toString()
     {
-        return sprintf("#%s (%s)", $this->id ?: '?', $this->getUsername());
+        return sprintf('#%s (%s)', $this->id ?: '?', $this->getUsername());
     }
 
     /**
-     * Set path
+     * Set path.
      *
      * @param string $path
      *
@@ -537,7 +542,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get path
+     * Get path.
      *
      * @return string
      */
@@ -547,7 +552,7 @@ class User extends BaseUser
     }
 
     /**
-     * Set updatedAt
+     * Set updatedAt.
      *
      * @param \DateTime $updatedAt
      *
@@ -561,7 +566,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get updatedAt
+     * Get updatedAt.
      *
      * @return \DateTime
      */
@@ -571,7 +576,7 @@ class User extends BaseUser
     }
 
     /**
-     * Set systemPath
+     * Set systemPath.
      *
      * @param string $systemPath
      *
@@ -585,7 +590,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get systemPath
+     * Get systemPath.
      *
      * @return string
      */
@@ -595,7 +600,7 @@ class User extends BaseUser
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
      *
@@ -609,7 +614,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */

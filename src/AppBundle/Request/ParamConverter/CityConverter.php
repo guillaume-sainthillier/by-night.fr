@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 03/05/2017
- * Time: 19:13
+ * Time: 19:13.
  */
 
 namespace AppBundle\Request\ParamConverter;
-
 
 use AppBundle\App\CityManager;
 use AppBundle\Entity\City;
@@ -31,7 +30,7 @@ class CityConverter implements ParamConverterInterface
 
     public function __construct(AbstractManagerRegistry $registry, CityManager $cityManager)
     {
-        $this->registry = $registry;
+        $this->registry    = $registry;
         $this->cityManager = $cityManager;
     }
 
@@ -39,23 +38,23 @@ class CityConverter implements ParamConverterInterface
     {
         $city = $request->attributes->get('city');
 
-        if (null === $city && ! $configuration->isOptional()) {
+        if (null === $city && !$configuration->isOptional()) {
             throw new \InvalidArgumentException('Route attribute is missing');
-        }elseif(null === $city) {
+        } elseif (null === $city) {
             return;
         }
 
-        if($this->cityManager->getCurrentCity()) {
+        if ($this->cityManager->getCurrentCity()) {
             $entity = $this->cityManager->getCurrentCity();
-        }else {
+        } else {
             $entity = $this
                 ->registry
                 ->getManager()
-                ->getRepository("AppBundle:City")
+                ->getRepository('AppBundle:City')
                 ->findBySlug($city);
         }
 
-        if(! $entity) {
+        if (!$entity) {
             throw new NotFoundHttpException(sprintf(
                 "La ville '%s' est introuvable",
                 $city
@@ -63,7 +62,7 @@ class CityConverter implements ParamConverterInterface
         }
 
         $this->cityManager->setCurrentCity($entity);
-        $request->attributes->set("_current_city", $entity->getSlug());
+        $request->attributes->set('_current_city', $entity->getSlug());
         $request->attributes->set($configuration->getName(), $entity);
     }
 

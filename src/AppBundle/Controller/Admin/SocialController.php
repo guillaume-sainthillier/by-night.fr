@@ -4,7 +4,6 @@ namespace AppBundle\Controller\Admin;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
 use AppBundle\Social\Social;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -18,20 +17,20 @@ class SocialController extends Controller
      */
     public function connectInfoAction($service)
     {
-        $session = $this->container->get("session");
-        $session->set("connect_site", true);
+        $session = $this->container->get('session');
+        $session->set('connect_site', true);
 
-        $url = $this->get("router")->generate("hwi_oauth_service_redirect", ["service" => $service === "facebook" ? "facebook_admin" : $service]);
+        $url = $this->get('router')->generate('hwi_oauth_service_redirect', ['service' => $service === 'facebook' ? 'facebook_admin' : $service]);
+
         return $this->redirect($url);
     }
-
 
     /**
      * @Route("/deconnexion", name="tbn_administration_disconnect_service")
      */
     public function disconnectSiteAction($service)
     {
-        $serviceName = "tbn.social." . ($service === "facebook" ? "facebook_events" : $service);
+        $serviceName = 'tbn.social.' . ($service === 'facebook' ? 'facebook_events' : $service);
 
         /** @var Social $social */
         $social = $this->container->get($serviceName);
@@ -41,7 +40,7 @@ class SocialController extends Controller
         $em->persist($this->get('site_manager')->getSiteInfo());
         $em->flush();
 
-        return new JsonResponse(["success" => true]);
+        return new JsonResponse(['success' => true]);
     }
 
     /**
@@ -50,8 +49,8 @@ class SocialController extends Controller
     public function disconnectConfirmAction($service)
     {
         return $this->render('Social/confirm.html.twig', [
-            "service" => $service,
-            "url" => $this->generateUrl("tbn_administration_disconnect_service", ["service" => $service])
+            'service' => $service,
+            'url'     => $this->generateUrl('tbn_administration_disconnect_service', ['service' => $service]),
         ]);
     }
 }

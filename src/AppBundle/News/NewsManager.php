@@ -38,11 +38,11 @@ class NewsManager
 
     public function __construct(EntityManager $em, \Twig_Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
     {
-        $this->em = $em;
-        $this->twig = $twig;
+        $this->em       = $em;
+        $this->twig     = $twig;
         $this->facebook = $facebook;
-        $this->twitter = $twitter;
-        $this->logger = $logger;
+        $this->twitter  = $twitter;
+        $this->logger   = $logger;
     }
 
     public function postNews(News $news, $wordpressPostId, $shortTitle, $longTitle, $url, $imageUrl)
@@ -84,7 +84,7 @@ class NewsManager
         foreach ($datas as $site => $events) {
             $participants[$site] = 0;
             foreach ($events as $event) {
-                /**
+                /*
                  * @var Agenda $event
                  */
                 $participants[$site] += $event->getFbInterets() + $event->getFbParticipations();
@@ -96,27 +96,27 @@ class NewsManager
 
         $news = $this->em->getRepository('AppBundle:News')->findOneBy([
             'dateDebut' => $from,
-            'dateFin' => $to
+            'dateFin'   => $to,
         ]);
 
         if (!$news) {
             $nextEdition = $this->em->getRepository('AppBundle:News')->findNextEdition();
-            $news = (new News())
+            $news        = (new News())
                 ->setDateDebut($from)
                 ->setDateFin($to)
                 ->setNumeroEdition($nextEdition);
         }
 
-        $content = $this->twig->render("News/news.html.twig", [
-            'datas' => $datas,
+        $content = $this->twig->render('News/news.html.twig', [
+            'datas'           => $datas,
             'topParticipants' => array_slice($participants, 0, 5),
-            'participants' => $totalPartcipants,
+            'participants'    => $totalPartcipants,
         ]);
 
         return [
             'content' => $content,
-            'events' => $datas,
-            'news' => $news
+            'events'  => $datas,
+            'news'    => $news,
         ];
     }
 }

@@ -3,14 +3,12 @@
 namespace AppBundle\Handler;
 
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use AppBundle\Site\SiteManager;
@@ -18,7 +16,6 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
-
     /**
      * @var TranslatorInterface
      */
@@ -41,29 +38,30 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
     public function __construct($translator, $router, $session, SiteManager $site_manager)
     {
-        $this->translator = $translator;
-        $this->router = $router;
-        $this->session = $session;
+        $this->translator   = $translator;
+        $this->router       = $router;
+        $this->session      = $session;
         $this->site_manager = $site_manager;
     }
 
     /**
-     * @param Request $request
+     * @param Request        $request
      * @param TokenInterface $token
+     *
      * @return JsonResponse|RedirectResponse
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
         if ($request->isXmlHttpRequest()) {
             $result = ['success' => true];
+
             return new JsonResponse($result);
         } else {
-            $key = '_security.main.target_path'; #where "main" is your firewall name
+            $key = '_security.main.target_path'; //where "main" is your firewall name
 
             if (($targetPath = $request->getSession()->get($key))) {
                 $url = $targetPath;
             } else {
-
                 //check if the referer session key has been set
                 if ($this->session->has($key)) {
                     //set the url based on the link they were trying to access before being authenticated
@@ -72,9 +70,9 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
                     //remove the session key
                     $this->session->remove($key);
                 } else {
-                    $user = $token->getUser();
+                    $user      = $token->getUser();
                     $subdomain = $user->getSite()->getSubdomain();
-                    $url = $this->router->generate("tbn_agenda_index", ["city" => $subdomain]);
+                    $url       = $this->router->generate('tbn_agenda_index', ['city' => $subdomain]);
                 }
             }
 
@@ -83,8 +81,9 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
     }
 
     /**
-     * @param Request $request
+     * @param Request                 $request
      * @param AuthenticationException $exception
+     *
      * @return JsonResponse|RedirectResponse
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
@@ -92,7 +91,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
         if ($request->isXmlHttpRequest()) {
             $result = [
                 'success' => false,
-                'message' => $this->translator->trans($exception->getMessage(), [], 'FOSUserBundle')
+                'message' => $this->translator->trans($exception->getMessage(), [], 'FOSUserBundle'),
             ];
 
             return new JsonResponse($result);
@@ -103,5 +102,4 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
             return new RedirectResponse($url);
         }
     }
-
 }

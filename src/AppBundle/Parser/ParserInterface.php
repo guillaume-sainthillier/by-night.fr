@@ -5,13 +5,12 @@ namespace AppBundle\Parser;
 use AppBundle\Entity\Agenda;
 
 /**
- * Description of ParserInterface
+ * Description of ParserInterface.
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
 interface ParserInterface
 {
-
     /**
      * @return Agenda[] un tableau d'Agenda parsé
      */
