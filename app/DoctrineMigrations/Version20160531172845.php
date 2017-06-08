@@ -21,8 +21,8 @@ class Version20160531172845 extends AbstractMigration
         $this->addSql('DROP TABLE BlackList');
         $this->addSql('ALTER TABLE User ADD show_socials TINYINT(1) DEFAULT 1, ADD website VARCHAR(255) DEFAULT NULL');
 
-        $this->addSql("UPDATE User SET from_login = 1 WHERE CHAR_LENGTH(password) > 25");
-        $this->addSql("UPDATE User SET from_login = 0 WHERE CHAR_LENGTH(password) <= 25");
+        $this->addSql('UPDATE User SET from_login = 1 WHERE CHAR_LENGTH(password) > 25');
+        $this->addSql('UPDATE User SET from_login = 0 WHERE CHAR_LENGTH(password) <= 25');
     }
 
     /**

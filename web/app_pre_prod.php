@@ -1,9 +1,10 @@
 <?php
-use Symfony\Component\HttpFoundation\Request;
+
 use Symfony\Component\Debug\Debug;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @var Composer\Autoload\ClassLoader $loader
+ * @var Composer\Autoload\ClassLoader
  */
 $loader = require __DIR__.'/../app/autoload.php';
 Debug::enable();

@@ -2,11 +2,11 @@
 
 namespace TBN\MainBundle\Listener;
 
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 use TBN\MainBundle\Site\SiteManager;
-use Doctrine\ORM\EntityManager;
 
 class SubDomainListener
 {
@@ -45,10 +45,10 @@ class SubDomainListener
             $currentHost = $request->getHttpHost();
 
             $subdomain = \str_replace([
-                '.' . $this->baseHost . ':' . $this->basePort,
-                'www.' . $this->baseHost . ':' . $this->basePort,
-                '.' . $this->baseHost,
-                'www.' . $this->baseHost
+                '.'.$this->baseHost.':'.$this->basePort,
+                'www.'.$this->baseHost.':'.$this->basePort,
+                '.'.$this->baseHost,
+                'www.'.$this->baseHost,
             ], '', $currentHost);
 
             if ($subdomain === $this->baseHost || (

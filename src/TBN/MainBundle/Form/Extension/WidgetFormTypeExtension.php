@@ -2,15 +2,13 @@
 
 namespace TBN\MainBundle\Form\Extension;
 
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- *
- *
  * @author Guillaume Sainthillier
  */
 class WidgetFormTypeExtension extends AbstractTypeExtension
@@ -32,12 +30,12 @@ class WidgetFormTypeExtension extends AbstractTypeExtension
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'group_class' => 'form-group',
-            'base_class' => 'form-control',
+        $resolver->setDefaults([
+            'group_class'  => 'form-group',
+            'base_class'   => 'form-control',
             'widget_class' => null,
-            'label_attr' => array('class' => 'control-label')
-        ));
+            'label_attr'   => ['class' => 'control-label'],
+        ]);
     }
 
     /**

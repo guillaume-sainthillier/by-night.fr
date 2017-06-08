@@ -2,18 +2,17 @@
 
 namespace TBN\MajDataBundle\Parser\Common;
 
+use ForceUTF8\Encoding;
 use Symfony\Component\DomCrawler\Crawler;
 use TBN\MajDataBundle\Parser\LinksParser;
-use \ForceUTF8\Encoding;
 
 /**
- * Description of SoonNightParser
+ * Description of SoonNightParser.
  *
  * @author guillaume
  */
 class SoonNightParser extends LinksParser
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -22,7 +21,8 @@ class SoonNightParser extends LinksParser
     }
 
     /**
-     * Retourne les infos d'un agenda depuis une url
+     * Retourne les infos d'un agenda depuis une url.
+     *
      * @return string[]
      */
     protected function getInfosAgenda()
@@ -30,8 +30,8 @@ class SoonNightParser extends LinksParser
         $tab_retour = [];
 
         //Date & Nom
-        $date_lieu = preg_split("/-/", $this->parser->filter(".soiree_fiche h2.sous_titre")->text());
-        $nom = preg_replace("/\&(\d+);/i", "&#$1;", $this->parser->filter("h1.titre_principal")->text()) . " @ " . $date_lieu[1];
+        $date_lieu = preg_split('/-/', $this->parser->filter('.soiree_fiche h2.sous_titre')->text());
+        $nom = preg_replace("/\&(\d+);/i", '&#$1;', $this->parser->filter('h1.titre_principal')->text()).' @ '.$date_lieu[1];
         $tab_retour['nom'] = $this->decodeNumCharacter($nom);
         $date = $this->parseDate($date_lieu[0]);
 
@@ -47,7 +47,7 @@ class SoonNightParser extends LinksParser
         $lieux = $this->parser->filter('.adresse');
         if ($lieux->count()) {
             $infosGPS = array_map('trim', explode(',', $lieux->attr('longlat')));
-            if(count($infosGPS) > 1) {
+            if (count($infosGPS) > 1) {
                 $lat = $infosGPS[0];
                 $long = $infosGPS[1];
             }
@@ -65,20 +65,19 @@ class SoonNightParser extends LinksParser
         $tab_retour['place.code_postal'] = $code_postal;
         $tab_retour['place.ville'] = $ville;
 
-
         //Tarifs
         $node_tarif = $this->getSibling($this->parser->filter('.row_bloc .icon-euro'), '.texte');
         $tab_retour['tarif'] = $node_tarif ? trim($node_tarif->text()) : null;
 
         //Description
-        $descriptif_long = $this->parser->filter(".description_soiree");
+        $descriptif_long = $this->parser->filter('.description_soiree');
         $descriptif = null;
 
         //Suppression des foutues pubs
         foreach ($descriptif_long as $node) {
             foreach ($node->childNodes as $children) {
                 if ($children->nodeType === XML_TEXT_NODE || !in_array($children->nodeName, ['span', 'div'])) {
-                    $descriptif .= ($children->nodeName === 'br' ? '<br>' : $children->textContent . ' ');
+                    $descriptif .= ($children->nodeName === 'br' ? '<br>' : $children->textContent.' ');
                 }
             }
         }
@@ -86,12 +85,12 @@ class SoonNightParser extends LinksParser
         $black_list = [
             "Toute l'équipe répond à vos questions au ",
             "Réservation et complément d'information au ",
-            "réservation simple et rapide au ",
-            "Appelez le   *",
-            "Mise en relation",
-            "Afficher le numéro du service de mise en relation"
+            'réservation simple et rapide au ',
+            'Appelez le   *',
+            'Mise en relation',
+            'Afficher le numéro du service de mise en relation',
         ];
-        $clean_descriptif = $this->decodeNumCharacter(str_replace($black_list, "", $descriptif));
+        $clean_descriptif = $this->decodeNumCharacter(str_replace($black_list, '', $descriptif));
         $tab_retour['descriptif'] = $clean_descriptif;
 
         //Catégorie & Thème
@@ -111,7 +110,8 @@ class SoonNightParser extends LinksParser
         return $tab_retour;
     }
 
-    public function normalizeAddress($adresse) {
+    public function normalizeAddress($adresse)
+    {
         $infos = array_values(array_filter(array_map('trim', explode(',', $adresse))));
 
         $rue = null;
@@ -124,15 +124,15 @@ class SoonNightParser extends LinksParser
          * Canal de l'Ourcq - Parc de la Villette, 59 Boulevard Macdonald, 75019 Paris
          * Escale de Passy, parking Passy face à la maison de la radio, 75016 Paris
          */
-        if(count($infos) > 2) {
-            if(is_numeric($infos[0])) {
+        if (count($infos) > 2) {
+            if (is_numeric($infos[0])) {
                 $infos[0] = sprintf(
-                    "%s %s",
+                    '%s %s',
                     $infos[0],
                     $infos[1]
                 );
                 $infos[1] = $infos[2];
-            }elseif(! preg_match("#^\d{5} #", $infos[1])) {
+            } elseif (!preg_match("#^\d{5} #", $infos[1])) {
                 $infos[0] = $infos[1];
                 $infos[1] = $infos[2];
             }
@@ -141,10 +141,10 @@ class SoonNightParser extends LinksParser
 
         $infosRue = array_values(array_filter(array_map('trim', explode('-', $infos[0]))));
         $rue = $infosRue[count($infosRue) - 1];
-        if(count($infos) > 1) {
+        if (count($infos) > 1) {
             $infosVille = array_map('trim', explode(' ', $infos[1]));
             $code_postal = $infosVille[0];
-            if(count($infosVille) > 0) {
+            if (count($infosVille) > 0) {
                 $ville = implode(' ', array_slice($infosVille, 1, count($infosVille)));
             }
         }
@@ -155,11 +155,11 @@ class SoonNightParser extends LinksParser
     public function getLinks()
     {
         $urls = [];
-        foreach($this->urls as $url) {
+        foreach ($this->urls as $url) {
             $this->setURL($url);
             $this->parseContent('HTML');
             $currentUrls = $this->parser->filter('div.soiree_liste .col_left a.titre')->each(function (Crawler $item) {
-                return $this->base_url . $item->attr('href');
+                return $this->base_url.$item->attr('href');
             });
 
             $urls = array_merge($urls, $currentUrls);
@@ -177,9 +177,9 @@ class SoonNightParser extends LinksParser
     {
         $tabMois = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
 
-        return preg_replace_callback("/(.+)(\d{2}) (" . implode("|", $tabMois) . ") (\d{4})(.+)/iu",
+        return preg_replace_callback("/(.+)(\d{2}) (".implode('|', $tabMois).") (\d{4})(.+)/iu",
             function ($items) use ($tabMois) {
-                return $items[4] . "-" . (array_search(strtolower($items[3]), $tabMois) + 1) . "-" . $items[2];
+                return $items[4].'-'.(array_search(strtolower($items[3]), $tabMois) + 1).'-'.$items[2];
             }, $date);
     }
 
@@ -188,18 +188,17 @@ class SoonNightParser extends LinksParser
         return Encoding::UTF8FixWin1252Chars(Encoding::fixUTF8($t));
     }
 
-    protected function getSibling(Crawler $node, $filter) {
-        if($node->count()) {
+    protected function getSibling(Crawler $node, $filter)
+    {
+        if ($node->count()) {
             $parents = $node->parents();
-            if($parents->count()) {
+            if ($parents->count()) {
                 $sibling = $parents->filter($filter);
-                if($sibling->count()) {
+                if ($sibling->count()) {
                     return $sibling->eq(0);
                 }
             }
         }
-
-        return null;
     }
 
     protected function getNodeFromHeading(Crawler $heading)

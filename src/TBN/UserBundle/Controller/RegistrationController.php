@@ -11,26 +11,24 @@
 
 namespace TBN\UserBundle\Controller;
 
-use FOS\UserBundle\FOSUserEvents;
+use FOS\UserBundle\Controller\RegistrationController as BaseController;
+use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseUserEvent;
-use FOS\UserBundle\Event\FilterUserResponseEvent;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use FOS\UserBundle\FOSUserEvents;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-use FOS\UserBundle\Controller\RegistrationController as BaseController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use TBN\MainBundle\Site\SiteManager;
 
 /**
- * Controller managing the registration
+ * Controller managing the registration.
  *
  * @author Thibault Duplessis <thibault.duplessis@gmail.com>
  * @author Christophe Coevoet <stof@notk.org>
  */
 class RegistrationController extends BaseController
 {
-
     public function registerAction(Request $request)
     {
         /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
@@ -42,7 +40,6 @@ class RegistrationController extends BaseController
 
         $user = $userManager->createUser();
         $user->setEnabled(true);
-
 
         /** @var $siteManager SiteManager */
         $siteManager = $this->container->get('site_manager');
@@ -67,8 +64,8 @@ class RegistrationController extends BaseController
 
             if (null === $response = $event->getResponse()) {
                 if ($request->isXmlHttpRequest()) {
-                    $response = new JsonResponse(["success" => true]);
-                }else {
+                    $response = new JsonResponse(['success' => true]);
+                } else {
                     $url = $this->generateUrl('fos_user_registration_confirmed');
                     $response = new RedirectResponse($url);
                 }
@@ -79,8 +76,8 @@ class RegistrationController extends BaseController
             return $response;
         }
 
-        return $this->render('FOSUserBundle:Registration:register.html.twig', array(
-            'form' => $form->createView()
-        ));
+        return $this->render('FOSUserBundle:Registration:register.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }

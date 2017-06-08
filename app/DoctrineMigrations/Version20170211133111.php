@@ -30,7 +30,7 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
         $em = $this->container->get('doctrine')->getManager();
 
         $users = $em->getRepository('TBNUserBundle:User')->findAll();
-        foreach($users as $user){
+        foreach ($users as $user) {
             // need this so we force the generation of a new slug
             $user->setSlug(null);
             $em->persist($user);

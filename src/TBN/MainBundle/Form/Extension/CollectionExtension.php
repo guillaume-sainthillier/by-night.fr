@@ -2,16 +2,14 @@
 
 namespace TBN\MainBundle\Form\Extension;
 
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- *
- *
  * @author Guillaume Sainthillier
  */
 class CollectionExtension extends AbstractTypeExtension
@@ -31,27 +29,25 @@ class CollectionExtension extends AbstractTypeExtension
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-
-        $resolver->setDefaults(array(
-            'allow_add' => true,
-            'group_class' => null,
-            'allow_delete' => true,
-            'prototype' => true,
+        $resolver->setDefaults([
+            'allow_add'      => true,
+            'group_class'    => null,
+            'allow_delete'   => true,
+            'prototype'      => true,
             'prototype_name' => '__name__',
-            'widget_class' => 'widget_collection',
-            'base_class' => null,
-            'by_reference' => false, //GARANTIE D'APPEL de addXXX sur l'objet parent de la collection
-        ));
+            'widget_class'   => 'widget_collection',
+            'base_class'     => null,
+            'by_reference'   => false, //GARANTIE D'APPEL de addXXX sur l'objet parent de la collection
+        ]);
 
         $resolver->setNormalizer('block_name', function (Options $options, $value) {
             return $value;
         });
     }
-
 
     /**
      * {@inheritdoc}

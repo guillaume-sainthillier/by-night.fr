@@ -45,25 +45,26 @@ class NewsManager
         $this->logger = $logger;
     }
 
-    public function postNews(News $news, $wordpressPostId, $shortTitle, $longTitle, $url, $imageUrl) {
+    public function postNews(News $news, $wordpressPostId, $shortTitle, $longTitle, $url, $imageUrl)
+    {
         $success = true;
-        if(!$news->getFbPostId()) {
+        if (!$news->getFbPostId()) {
             try {
                 $postId = $this->facebook->postNews($longTitle, $url, $imageUrl);
                 $news->setTweetPostId($postId);
                 $success = $success && true;
-            }catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $success = false;
                 $this->logger->critical($e);
             }
         }
 
-        if(!$news->getTweetPostId()) {
+        if (!$news->getTweetPostId()) {
             try {
                 $postId = $this->twitter->postNews($shortTitle, $url);
                 $news->setTweetPostId($postId);
                 $success = $success && true;
-            }catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $success = false;
                 $this->logger->critical($e);
             }
@@ -75,14 +76,15 @@ class NewsManager
         return $success;
     }
 
-    public function getNewsDatas(\DateTime $from, \DateTime $to) {
+    public function getNewsDatas(\DateTime $from, \DateTime $to)
+    {
         $datas = $this->em->getRepository('TBNAgendaBundle:Agenda')->findByInterval($from, $to);
 
         $participants = [];
-        foreach($datas as $site => $events) {
+        foreach ($datas as $site => $events) {
             $participants[$site] = 0;
-            foreach($events as $event) {
-                /**
+            foreach ($events as $event) {
+                /*
                  * @var Agenda $event
                  */
                 $participants[$site] += $event->getFbInterets() + $event->getFbParticipations();
@@ -94,28 +96,27 @@ class NewsManager
 
         $news = $this->em->getRepository('TBNAgendaBundle:News')->findOneBy([
             'dateDebut' => $from,
-            'dateFin' => $to
+            'dateFin'   => $to,
         ]);
 
-        if(! $news) {
+        if (!$news) {
             $nextEdition = $this->em->getRepository('TBNAgendaBundle:News')->findNextEdition();
             $news = (new News())
                 ->setDateDebut($from)
                 ->setDateFin($to)
-                ->setNumeroEdition($nextEdition)
-            ;
+                ->setNumeroEdition($nextEdition);
         }
 
-        $content = $this->twig->render("@TBNAgenda/News/news.html.twig", [
-            'datas' => $datas,
-            'topParticipants' => array_slice($participants, 0,  5),
-            'participants' => $totalPartcipants,
+        $content = $this->twig->render('@TBNAgenda/News/news.html.twig', [
+            'datas'           => $datas,
+            'topParticipants' => array_slice($participants, 0, 5),
+            'participants'    => $totalPartcipants,
         ]);
 
         return [
             'content' => $content,
-            'events' => $datas,
-            'news' => $news
+            'events'  => $datas,
+            'news'    => $news,
         ];
     }
 }

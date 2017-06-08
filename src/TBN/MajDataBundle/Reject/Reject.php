@@ -6,7 +6,7 @@ namespace TBN\MajDataBundle\Reject;
  * Created by PhpStorm.
  * User: guillaume
  * Date: 26/11/2016
- * Time: 23:01
+ * Time: 23:01.
  */
 class Reject
 {
@@ -33,92 +33,114 @@ class Reject
         $this->reason = self::VALID;
     }
 
-    public function getReason() {
+    public function getReason()
+    {
         return $this->reason;
     }
 
-    public function setReason($reason) {
-        if(null === $reason) {
-            throw new \LogicException("Reason must be integer");
+    public function setReason($reason)
+    {
+        if (null === $reason) {
+            throw new \LogicException('Reason must be integer');
         }
         $this->reason = $reason;
+
         return $this;
     }
 
-    public function removeReason($reason) {
+    public function removeReason($reason)
+    {
         $this->reason &= ~$reason;
+
         return $this;
     }
 
-    public function setValid() {
+    public function setValid()
+    {
         $this->reason = self::VALID;
 
         return $this;
     }
 
-    public function addReason($reason) {
+    public function addReason($reason)
+    {
         $this->reason |= $reason;
 
         return $this;
     }
 
-    public function isValid() {
+    public function isValid()
+    {
         return $this->reason === self::VALID;
     }
 
-    public function isEventDeleted() {
+    public function isEventDeleted()
+    {
         return self::EVENT_DELETED === (self::EVENT_DELETED & $this->reason);
     }
 
-    public function isBadUser() {
+    public function isBadUser()
+    {
         return self::BAD_USER === (self::BAD_USER & $this->reason);
     }
 
-    public function hasNoPlaceLocationProvided() {
+    public function hasNoPlaceLocationProvided()
+    {
         return self::NO_PLACE_LOCATION_PROVIDED === (self::NO_PLACE_LOCATION_PROVIDED & $this->reason);
     }
 
-    public function hasNoPlaceProvided() {
+    public function hasNoPlaceProvided()
+    {
         return self::NO_PLACE_PROVIDED === (self::NO_PLACE_PROVIDED & $this->reason);
     }
 
-    public function isBadPlaceCityPostalCode() {
+    public function isBadPlaceCityPostalCode()
+    {
         return self::BAD_PLACE_CITY_POSTAL_CODE === (self::BAD_PLACE_CITY_POSTAL_CODE & $this->reason);
     }
 
-    public function isBadPlaceCityName() {
+    public function isBadPlaceCityName()
+    {
         return self::BAD_PLACE_CITY_NAME === (self::BAD_PLACE_CITY_NAME & $this->reason);
     }
 
-    public function isBadPlaceLocation() {
+    public function isBadPlaceLocation()
+    {
         return self::BAD_PLACE_LOCATION === (self::BAD_PLACE_LOCATION & $this->reason);
     }
 
-    public function isBadPlaceName() {
+    public function isBadPlaceName()
+    {
         return self::BAD_PLACE_NAME === (self::BAD_PLACE_NAME & $this->reason);
     }
 
-    public function hasNoNeedToUpdate() {
+    public function hasNoNeedToUpdate()
+    {
         return self::NO_NEED_TO_UPDATE === (self::NO_NEED_TO_UPDATE & $this->reason);
     }
 
-    public function isBadEventDescription() {
+    public function isBadEventDescription()
+    {
         return self::BAD_EVENT_DESCRIPTION === (self::BAD_EVENT_DESCRIPTION & $this->reason);
     }
 
-    public function isBadEventName() {
+    public function isBadEventName()
+    {
         return self::BAD_EVENT_NAME === (self::BAD_EVENT_NAME & $this->reason);
     }
 
-    public function isBadEventDate() {
+    public function isBadEventDate()
+    {
         return self::BAD_EVENT_DATE === (self::BAD_EVENT_DATE & $this->reason);
     }
 
-    public function isBadEventDateInterval() {
+    public function isBadEventDateInterval()
+    {
         return self::BAD_EVENT_DATE_INTERVAL === (self::BAD_EVENT_DATE_INTERVAL & $this->reason);
     }
 
-    public function isSpamEventDescription() {
+    public function isSpamEventDescription()
+    {
         return self::SPAM_EVENT_DESCRIPTION === (self::SPAM_EVENT_DESCRIPTION & $this->reason);
     }
 }

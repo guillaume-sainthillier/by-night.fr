@@ -6,18 +6,14 @@
 
 namespace TBN\MajDataBundle\Parser\Manager;
 
-
-
 use TBN\MajDataBundle\Parser\ParserInterface;
 use TBN\MajDataBundle\Utils\Monitor;
 
 /**
- *
  * @author Guillaume SAINTHILLIER
  */
 class ParserManager
 {
-
     protected $parsers;
 
     public function __construct()
@@ -38,14 +34,14 @@ class ParserManager
 
         foreach ($this->parsers as $parser) {
             Monitor::writeln(sprintf(
-                "Lancement de <info>%s</info>",
+                'Lancement de <info>%s</info>',
                 $parser->getNomData()
             ));
             $agendas = $parser->parse();
 
             if (count($this->parsers) > 1) {
                 Monitor::writeln(sprintf(
-                    "<info>%d</info> événements à traiter pour <info>%s</info>",
+                    '<info>%d</info> événements à traiter pour <info>%s</info>',
                     count($agendas),
                     $parser->getNomData()
                 ));
@@ -59,9 +55,10 @@ class ParserManager
         }
 
         Monitor::writeln(sprintf(
-            "<info>%d</info> événements à traiter au total",
+            '<info>%d</info> événements à traiter au total',
             count($full_agendas)
         ));
+
         return $full_agendas;
     }
 }

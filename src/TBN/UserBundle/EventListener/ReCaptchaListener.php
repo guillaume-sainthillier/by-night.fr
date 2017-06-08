@@ -3,24 +3,25 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 26/10/2016
- * Time: 23:28
+ * Time: 23:28.
  */
 
 namespace TBN\UserBundle\EventListener;
 
 use FOS\UserBundle\Controller\RegistrationController;
-
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 class ReCaptchaListener
 {
     private $formName;
     private $field;
+
     public function __construct($formName, $field)
     {
         $this->formName = $formName;
         $this->field = $field;
     }
+
     public function onKernelController(FilterControllerEvent $event)
     {
         $controller = $event->getController();

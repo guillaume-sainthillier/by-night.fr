@@ -3,16 +3,14 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 01/12/2016
- * Time: 20:22
+ * Time: 20:22.
  */
 
 namespace TBN\MajDataBundle\Handler;
 
-
 use Doctrine\ORM\EntityManagerInterface;
 use TBN\AgendaBundle\Entity\Agenda;
 use TBN\AgendaBundle\Entity\Place;
-
 
 class EchantillonHandler
 {
@@ -27,124 +25,133 @@ class EchantillonHandler
     private $fbAgendas;
     private $newAgendas;
 
-    public function __construct(EntityManagerInterface $em) {
+    public function __construct(EntityManagerInterface $em)
+    {
         $this->repoAgenda = $em->getRepository('TBNAgendaBundle:Agenda');
         $this->repoPlace = $em->getRepository('TBNAgendaBundle:Place');
 
         $this->init();
     }
 
-    protected function initEvents() {
+    protected function initEvents()
+    {
         $this->agendas = [];
         $this->fbAgendas = [];
         $this->newAgendas = [];
     }
 
-    protected function initPlaces() {
+    protected function initPlaces()
+    {
         $this->places = [];
         $this->fbPlaces = [];
         $this->newPlaces = [];
     }
 
-    protected function init() {
+    protected function init()
+    {
         $this->initEvents();
         $this->initPlaces();
     }
 
-    public function flushEvents() {
+    public function flushEvents()
+    {
         unset($this->agendas, $this->newAgendas, $this->fbAgendas);
         $this->initEvents();
     }
 
-    public function flushPlaces() {
+    public function flushPlaces()
+    {
         unset($this->fbPlaces, $this->newPlaces, $this->places);
         $this->initPlaces();
     }
 
-    public function prefetchPlaceEchantillons(array $events) {
-        $places = array_map(function(Agenda $event) {
+    public function prefetchPlaceEchantillons(array $events)
+    {
+        $places = array_map(function (Agenda $event) {
             return $event->getPlace();
         }, $events);
 
         $byFbIdPlaces = [];
         $bySitePlaces = [];
 
-        foreach($places as $place) {
+        foreach ($places as $place) {
             /**
-             * @var Place $place
+             * @var Place
              */
-            if($place->getFacebookId()) {
+            if ($place->getFacebookId()) {
                 $byFbIdPlaces[$place->getFacebookId()] = $place->getFacebookId();
             }
         }
 
-        if(count($byFbIdPlaces) > 0) {
+        if (count($byFbIdPlaces) > 0) {
             $fbPlaces = $this->repoPlace->findBy([
-                'facebookId' => $byFbIdPlaces
+                'facebookId' => $byFbIdPlaces,
             ]);
 
-            foreach($fbPlaces as $place) {
+            foreach ($fbPlaces as $place) {
                 $this->addFbPlace($place);
             }
         }
 
-        foreach($places as $place) {
-            if(! $place->getFacebookId() || !isset($this->fbPlaces[$place->getFacebookId()])) {
+        foreach ($places as $place) {
+            if (!$place->getFacebookId() || !isset($this->fbPlaces[$place->getFacebookId()])) {
                 $key = $place->getSite()->getId();
                 $bySitePlaces[$key] = $key;
             }
         }
 
-        if(count($bySitePlaces)) {
+        if (count($bySitePlaces)) {
             $sitePlaces = $this->repoPlace->findBy([
-                'site' => $bySitePlaces
+                'site' => $bySitePlaces,
             ]);
 
-            foreach($sitePlaces as $place) {
+            foreach ($sitePlaces as $place) {
                 $this->addPlace($place);
             }
         }
     }
 
-    public function prefetchEventEchantillons(array $events) {
+    public function prefetchEventEchantillons(array $events)
+    {
         $byFbIdEvents = [];
         $byDateEvents = [];
-        foreach($events as $event) {
+        foreach ($events as $event) {
             /**
-             * @var Agenda $event
+             * @var Agenda
              */
-            if($event->getFacebookEventId()) {
+            if ($event->getFacebookEventId()) {
                 $byFbIdEvents[$event->getFacebookEventId()] = $event->getFacebookEventId();
             }
         }
 
-        if(count($byFbIdEvents) > 0) {
+        if (count($byFbIdEvents) > 0) {
             $fbEvents = $this->repoAgenda->findBy([
-                'facebookEventId' => $byFbIdEvents
+                'facebookEventId' => $byFbIdEvents,
             ]);
 
-            foreach($fbEvents as $event) {
+            foreach ($fbEvents as $event) {
                 $this->addFbEvent($event);
             }
         }
 
-        foreach($events as $event) {
-            if(! $event->getFacebookEventId() || !isset($this->fbAgendas[$event->getFacebookEventId()])) {
+        foreach ($events as $event) {
+            if (!$event->getFacebookEventId() || !isset($this->fbAgendas[$event->getFacebookEventId()])) {
                 $key = $this->getAgendaCacheKey($event);
                 $byDateEvents[$key] = $event;
             }
         }
 
-        if(count($byDateEvents)) {
+        if (count($byDateEvents)) {
             $dateEvents = $this->repoAgenda->findAllByDates($byDateEvents);
-            foreach($dateEvents as $event) {
+            foreach ($dateEvents as $event) {
                 $this->addEvent($event);
             }
         }
     }
 
-    public function getPlaceEchantillons(Place $place) {
-        if($place->getFacebookId() && isset($this->fbPlaces[$place->getFacebookId()])) {
+    public function getPlaceEchantillons(Place $place)
+    {
+        if ($place->getFacebookId() && isset($this->fbPlaces[$place->getFacebookId()])) {
             return [$this->fbPlaces[$place->getFacebookId()]];
         }
 
@@ -154,8 +161,9 @@ class EchantillonHandler
         );
     }
 
-    public function getEventEchantillons(Agenda $event) {
-        if($event->getFacebookEventId() && isset($this->fbAgendas[$event->getFacebookEventId()])) {
+    public function getEventEchantillons(Agenda $event)
+    {
+        if ($event->getFacebookEventId() && isset($this->fbAgendas[$event->getFacebookEventId()])) {
             return [$this->fbAgendas[$event->getFacebookEventId()]];
         }
 
@@ -165,38 +173,41 @@ class EchantillonHandler
         );
     }
 
-    protected function addFbEvent(Agenda $event) {
+    protected function addFbEvent(Agenda $event)
+    {
         $this->fbAgendas[$event->getFacebookEventId()] = $event;
     }
 
-    protected function addEvent(Agenda $event) {
+    protected function addEvent(Agenda $event)
+    {
         $key = $this->getAgendaCacheKey($event);
-        if(! isset($this->agendas[$key])) {
+        if (!isset($this->agendas[$key])) {
             $this->agendas[$key] = [];
         }
         $this->agendas[$key][$event->getId()] = $event;
     }
 
-    protected function getEvents(Agenda $event) {
+    protected function getEvents(Agenda $event)
+    {
         $key = $this->getAgendaCacheKey($event);
-        if(! isset($this->agendas[$key])) {
+        if (!isset($this->agendas[$key])) {
             return [];
         }
 
         return $this->agendas[$key];
-
     }
 
-    public function addNewEvent(Agenda $event) {
-        if($event->getFacebookEventId()) {
+    public function addNewEvent(Agenda $event)
+    {
+        if ($event->getFacebookEventId()) {
             $this->fbAgendas[$event->getFacebookEventId()] = $event;
         }
 
         $key = $this->getAgendaCacheKey($event);
-        if($event->getId()) {
+        if ($event->getId()) {
             $this->agendas[$key][$event->getId()] = $event;
-        }else {
-            if(! isset($this->newAgendas[$key])) {
+        } else {
+            if (!isset($this->newAgendas[$key])) {
                 $this->newAgendas[$key] = [];
             }
 
@@ -207,46 +218,51 @@ class EchantillonHandler
         $this->addNewPlace($event->getPlace());
     }
 
-    protected function getNewEvents(Agenda $event) {
+    protected function getNewEvents(Agenda $event)
+    {
         $key = $this->getAgendaCacheKey($event);
-        if(! isset($this->newAgendas[$key])) {
+        if (!isset($this->newAgendas[$key])) {
             return [];
         }
 
         return $this->newAgendas[$key];
     }
 
-    protected function addFbPlace(Place $place) {
+    protected function addFbPlace(Place $place)
+    {
         $this->fbPlaces[$place->getFacebookId()] = $place;
     }
 
-    protected function addPlace(Place $place) {
+    protected function addPlace(Place $place)
+    {
         $key = $place->getSite()->getId();
-        if(! isset($this->places[$key])) {
+        if (!isset($this->places[$key])) {
             $this->places[$key] = [];
         }
         $this->places[$key][$place->getId()] = $place;
     }
 
-    protected function getPlaces(Place $place) {
+    protected function getPlaces(Place $place)
+    {
         $key = $place->getSite()->getId();
-        if(! isset($this->places[$key])) {
+        if (!isset($this->places[$key])) {
             return [];
         }
 
         return $this->places[$key];
     }
 
-    public function addNewPlace(Place $place) {
-        if($place->getFacebookId()) {
+    public function addNewPlace(Place $place)
+    {
+        if ($place->getFacebookId()) {
             $this->fbPlaces[$place->getFacebookId()] = $place;
         }
 
         $key = $place->getSite()->getId();
-        if($place->getId()) {
+        if ($place->getId()) {
             $this->places[$place->getId()] = $place;
-        }else {
-            if(! isset($this->newPlaces[$key])) {
+        } else {
+            if (!isset($this->newPlaces[$key])) {
                 $this->newPlaces[$key] = [];
             }
 
@@ -255,9 +271,10 @@ class EchantillonHandler
         }
     }
 
-    protected function getNewPlaces(Place $place) {
+    protected function getNewPlaces(Place $place)
+    {
         $key = $place->getSite()->getId();
-        if(isset($this->newPlaces[$key])) {
+        if (isset($this->newPlaces[$key])) {
             return $this->newPlaces[$key];
         }
 
@@ -267,7 +284,7 @@ class EchantillonHandler
     protected function getAgendaCacheKey(Agenda $agenda)
     {
         return sprintf(
-            "%s.%s.%s",
+            '%s.%s.%s',
             $agenda->getSite()->getId(),
             $agenda->getDateDebut()->format('Y-m-d'),
             $agenda->getDateFin()->format('Y-m-d')

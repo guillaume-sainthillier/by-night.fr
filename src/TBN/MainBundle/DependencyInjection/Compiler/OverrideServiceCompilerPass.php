@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 20/04/2016
- * Time: 19:45
+ * Time: 19:45.
  */
 
 namespace TBN\MainBundle\DependencyInjection\Compiler;

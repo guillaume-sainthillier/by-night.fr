@@ -2,10 +2,10 @@
 
 namespace TBN\MainBundle;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use TBN\MainBundle\DependencyInjection\Compiler\OverrideServiceCompilerPass;
 
@@ -41,7 +41,7 @@ class TBNMainBundle extends Bundle
                 if (null === $site) {
                     $routes = [
                         'tbn_main_index',
-                        'tbn_main_cookie'
+                        'tbn_main_cookie',
                     ];
                 } else {
                     $params['subdomain'] = $site->getSubdomain();
@@ -50,15 +50,15 @@ class TBNMainBundle extends Bundle
                         'tbn_agenda_agenda',
                         'tbn_agenda_mention_legales',
                         'tbn_agenda_about',
-                        'tbn_agenda_plus'
+                        'tbn_agenda_plus',
                     ];
 
                     $agendas = $em->getRepository('TBNAgendaBundle:Agenda')->findBy(['site' => $site->getId()]);
                     foreach ($agendas as $agenda) {
                         $url = $router->generate('tbn_agenda_details', [
                             'subdomain' => $site->getSubdomain(),
-                            'slug' => $agenda->getSlug(),
-                            'id' => $agenda->getId()
+                            'slug'      => $agenda->getSlug(),
+                            'id'        => $agenda->getId(),
                         ], UrlGeneratorInterface::ABSOLUTE_URL);
                         $event->getUrlContainer()->addUrl(
                             new UrlConcrete(

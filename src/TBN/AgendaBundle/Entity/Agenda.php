@@ -2,28 +2,25 @@
 
 namespace TBN\AgendaBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use \Doctrine\Common\Collections\ArrayCollection;
-
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
-use TBN\UserBundle\Validator\Constraints\EventConstraint;
-
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 use TBN\AgendaBundle\Geolocalize\GeolocalizeInterface;
 use TBN\CommentBundle\Entity\Comment;
 use TBN\MainBundle\Entity\Site;
 use TBN\MajDataBundle\Reject\Reject;
 use TBN\UserBundle\Entity\User;
+use TBN\UserBundle\Validator\Constraints\EventConstraint;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * Agenda
+ * Agenda.
  *
  * @ORM\Table(name="Agenda", indexes={
  *   @ORM\Index(name="agenda_slug_idx", columns={"slug"}),
@@ -45,7 +42,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Agenda implements GeolocalizeInterface
 {
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -129,12 +125,11 @@ class Agenda implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="ville", type="string", length=255, nullable=true)
-     *
      */
     protected $ville;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="rue", type="string", length=255, nullable=true)
      */
@@ -174,7 +169,6 @@ class Agenda implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="lieu_nom", type="string", length=255, nullable=true)
-     *
      */
     protected $lieuNom;
 
@@ -297,7 +291,6 @@ class Agenda implements GeolocalizeInterface
      */
     protected $url;
 
-
     /**
      * @ORM\ManyToOne(targetEntity="TBN\UserBundle\Entity\User")
      * @ORM\JoinColumn(nullable=true)
@@ -305,57 +298,56 @@ class Agenda implements GeolocalizeInterface
     protected $user;
 
     /**
-     *
-     * @var boolean $isEnabled
+     * @var bool
      *
      * @ORM\Column(name="isBrouillon", type="boolean", nullable=true)
      */
     protected $isBrouillon;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="tweet_post_id", type="string", length=256, nullable=true)
      */
     protected $tweetPostId;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="facebook_event_id", type="string", length=256, nullable=true)
      */
     protected $facebookEventId;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="tweet_post_system_id", type="string", length=256, nullable=true)
      */
     protected $tweetPostSystemId;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="fb_post_id", type="string", length=256, nullable=true)
      */
     protected $fbPostId;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="fb_post_system_id", type="string", length=256, nullable=true)
      */
     protected $fbPostSystemId;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="google_post_id", type="string", length=256, nullable=true)
      */
     protected $googlePostId;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="google_post_system_id", type="string", length=256, nullable=true)
      */
@@ -380,14 +372,14 @@ class Agenda implements GeolocalizeInterface
     protected $commentaires;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="facebook_owner_id", type="string", length=256, nullable=true)
      */
     protected $facebookOwnerId;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="fb_participations", type="integer", nullable=true)
      * @Expose
@@ -395,29 +387,28 @@ class Agenda implements GeolocalizeInterface
     protected $fbParticipations;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="fb_interets",type="integer", nullable=true)
      */
     protected $fbInterets;
 
-
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="participations", type="integer", nullable=true)
      */
     protected $participations;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="interets", type="integer", nullable=true)
      */
     protected $interets;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="source", type="string", length=256, nullable=true)
      */
@@ -437,25 +428,27 @@ class Agenda implements GeolocalizeInterface
     protected $reject;
 
     /**
-     *
-     * @var boolean $isArchive
+     * @var bool
      *
      * @ORM\Column(name="is_archive", type="boolean", nullable=true)
      */
     protected $isArchive;
 
-    public function setReject(Reject $reject = null) {
+    public function setReject(Reject $reject = null)
+    {
         $this->reject = $reject;
 
         return $this;
     }
 
-    public function getReject() {
+    public function getReject()
+    {
         return $this->reject;
     }
 
-    public function isIndexable() {
-        $now = new \DateTime;
+    public function isIndexable()
+    {
+        $now = new \DateTime();
         $now->modify('-6 months');
 
         return $this->dateFin >= $now;
@@ -542,13 +535,13 @@ class Agenda implements GeolocalizeInterface
      */
     public function preDateModification()
     {
-        $this->dateModification = new \DateTime;
+        $this->dateModification = new \DateTime();
     }
 
     public function __construct()
     {
-        $this->setDateDebut(new \DateTime);
-        $this->place = new Place;
+        $this->setDateDebut(new \DateTime());
+        $this->place = new Place();
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->isArchive = false;
@@ -556,14 +549,15 @@ class Agenda implements GeolocalizeInterface
 
     public function getDistinctTags()
     {
-        $tags = $this->getCategorieManifestation() . ',' . $this->getTypeManifestation() . ',' . $this->getThemeManifestation();
+        $tags = $this->getCategorieManifestation().','.$this->getTypeManifestation().','.$this->getThemeManifestation();
+
         return array_unique(array_map('trim', array_map('ucfirst', array_filter(explode(',', $tags)))));
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -571,9 +565,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
+     *
      * @return Agenda
      */
     public function setSlug($slug)
@@ -584,7 +579,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */
@@ -594,9 +589,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set nom
+     * Set nom.
      *
      * @param string $nom
+     *
      * @return Agenda
      */
     public function setNom($nom)
@@ -607,7 +603,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get nom
+     * Get nom.
      *
      * @return string
      */
@@ -617,9 +613,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set descriptif
+     * Set descriptif.
      *
      * @param string $descriptif
+     *
      * @return Agenda
      */
     public function setDescriptif($descriptif)
@@ -630,7 +627,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get descriptif
+     * Get descriptif.
      *
      * @return string
      */
@@ -640,9 +637,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set dateModification
+     * Set dateModification.
      *
      * @param \DateTime $dateModification
+     *
      * @return Agenda
      */
     public function setDateModification($dateModification)
@@ -653,7 +651,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get dateModification
+     * Get dateModification.
      *
      * @return \DateTime
      */
@@ -663,9 +661,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set dateDebut
+     * Set dateDebut.
      *
      * @param \DateTime $dateDebut
+     *
      * @return Agenda
      */
     public function setDateDebut($dateDebut)
@@ -676,7 +675,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get dateDebut
+     * Get dateDebut.
      *
      * @return \DateTime
      */
@@ -686,9 +685,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set dateFin
+     * Set dateFin.
      *
      * @param \DateTime $dateFin
+     *
      * @return Agenda
      */
     public function setDateFin($dateFin)
@@ -699,7 +699,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get dateFin
+     * Get dateFin.
      *
      * @return \DateTime
      */
@@ -709,9 +709,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set horaires
+     * Set horaires.
      *
      * @param string $horaires
+     *
      * @return Agenda
      */
     public function setHoraires($horaires)
@@ -722,7 +723,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get horaires
+     * Get horaires.
      *
      * @return string
      */
@@ -732,9 +733,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set modificationDerniereMinute
+     * Set modificationDerniereMinute.
      *
      * @param string $modificationDerniereMinute
+     *
      * @return Agenda
      */
     public function setModificationDerniereMinute($modificationDerniereMinute)
@@ -745,7 +747,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get modificationDerniereMinute
+     * Get modificationDerniereMinute.
      *
      * @return string
      */
@@ -755,9 +757,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set ville
+     * Set ville.
      *
      * @param string $ville
+     *
      * @return Agenda
      */
     public function setVille($ville)
@@ -768,7 +771,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get ville
+     * Get ville.
      *
      * @return string
      */
@@ -778,9 +781,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set rue
+     * Set rue.
      *
      * @param string $rue
+     *
      * @return Agenda
      */
     public function setRue($rue)
@@ -791,7 +795,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get rue
+     * Get rue.
      *
      * @return string
      */
@@ -801,9 +805,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set codePostal
+     * Set codePostal.
      *
      * @param string $codePostal
+     *
      * @return Agenda
      */
     public function setCodePostal($codePostal)
@@ -814,7 +819,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get codePostal
+     * Get codePostal.
      *
      * @return string
      */
@@ -824,9 +829,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set latitude
+     * Set latitude.
      *
      * @param float $latitude
+     *
      * @return Agenda
      */
     public function setLatitude($latitude)
@@ -837,7 +843,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get latitude
+     * Get latitude.
      *
      * @return float
      */
@@ -847,9 +853,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set longitude
+     * Set longitude.
      *
      * @param float $longitude
+     *
      * @return Agenda
      */
     public function setLongitude($longitude)
@@ -860,7 +867,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get longitude
+     * Get longitude.
      *
      * @return float
      */
@@ -870,9 +877,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set commune
+     * Set commune.
      *
      * @param string $commune
+     *
      * @return Agenda
      */
     public function setCommune($commune)
@@ -883,7 +891,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get commune
+     * Get commune.
      *
      * @return string
      */
@@ -893,9 +901,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set lieuNom
+     * Set lieuNom.
      *
      * @param string $lieuNom
+     *
      * @return Agenda
      */
     public function setLieuNom($lieuNom)
@@ -906,7 +915,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get lieuNom
+     * Get lieuNom.
      *
      * @return string
      */
@@ -916,9 +925,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set typeManifestation
+     * Set typeManifestation.
      *
      * @param string $typeManifestation
+     *
      * @return Agenda
      */
     public function setTypeManifestation($typeManifestation)
@@ -929,7 +939,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get typeManifestation
+     * Get typeManifestation.
      *
      * @return string
      */
@@ -939,9 +949,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set categorieManifestation
+     * Set categorieManifestation.
      *
      * @param string $categorieManifestation
+     *
      * @return Agenda
      */
     public function setCategorieManifestation($categorieManifestation)
@@ -952,7 +963,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get categorieManifestation
+     * Get categorieManifestation.
      *
      * @return string
      */
@@ -962,9 +973,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set themeManifestation
+     * Set themeManifestation.
      *
      * @param string $themeManifestation
+     *
      * @return Agenda
      */
     public function setThemeManifestation($themeManifestation)
@@ -975,7 +987,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get themeManifestation
+     * Get themeManifestation.
      *
      * @return string
      */
@@ -985,9 +997,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set stationMetroTram
+     * Set stationMetroTram.
      *
      * @param string $stationMetroTram
+     *
      * @return Agenda
      */
     public function setStationMetroTram($stationMetroTram)
@@ -998,7 +1011,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get stationMetroTram
+     * Get stationMetroTram.
      *
      * @return string
      */
@@ -1008,9 +1021,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set reservationTelephone
+     * Set reservationTelephone.
      *
      * @param string $reservationTelephone
+     *
      * @return Agenda
      */
     public function setReservationTelephone($reservationTelephone)
@@ -1021,7 +1035,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get reservationTelephone
+     * Get reservationTelephone.
      *
      * @return string
      */
@@ -1031,9 +1045,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set reservationEmail
+     * Set reservationEmail.
      *
      * @param string $reservationEmail
+     *
      * @return Agenda
      */
     public function setReservationEmail($reservationEmail)
@@ -1044,7 +1059,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get reservationEmail
+     * Get reservationEmail.
      *
      * @return string
      */
@@ -1054,9 +1069,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set reservationInternet
+     * Set reservationInternet.
      *
      * @param string $reservationInternet
+     *
      * @return Agenda
      */
     public function setReservationInternet($reservationInternet)
@@ -1067,7 +1083,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get reservationInternet
+     * Get reservationInternet.
      *
      * @return string
      */
@@ -1077,9 +1093,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set tarif
+     * Set tarif.
      *
      * @param string $tarif
+     *
      * @return Agenda
      */
     public function setTarif($tarif)
@@ -1090,7 +1107,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get tarif
+     * Get tarif.
      *
      * @return string
      */
@@ -1100,9 +1117,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set trancheAge
+     * Set trancheAge.
      *
      * @param string $trancheAge
+     *
      * @return Agenda
      */
     public function setTrancheAge($trancheAge)
@@ -1113,7 +1131,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get trancheAge
+     * Get trancheAge.
      *
      * @return string
      */
@@ -1123,9 +1141,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set fromData
+     * Set fromData.
      *
      * @param string $fromData
+     *
      * @return Agenda
      */
     public function setFromData($fromData)
@@ -1136,7 +1155,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get fromData
+     * Get fromData.
      *
      * @return string
      */
@@ -1146,9 +1165,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return Agenda
      */
     public function setName($name)
@@ -1159,7 +1179,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -1169,9 +1189,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set path
+     * Set path.
      *
      * @param string $path
+     *
      * @return Agenda
      */
     public function setPath($path)
@@ -1182,7 +1203,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get path
+     * Get path.
      *
      * @return string
      */
@@ -1191,11 +1212,11 @@ class Agenda implements GeolocalizeInterface
         return $this->path;
     }
 
-
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return Agenda
      */
     public function setUrl($url)
@@ -1206,7 +1227,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string
      */
@@ -1216,9 +1237,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set isBrouillon
+     * Set isBrouillon.
      *
-     * @param boolean $isBrouillon
+     * @param bool $isBrouillon
+     *
      * @return Agenda
      */
     public function setBrouillon($isBrouillon)
@@ -1229,9 +1251,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set isBrouillon
+     * Set isBrouillon.
      *
-     * @param boolean $isBrouillon
+     * @param bool $isBrouillon
+     *
      * @return Agenda
      */
     public function setIsBrouillon($isBrouillon)
@@ -1242,9 +1265,9 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get isBrouillon
+     * Get isBrouillon.
      *
-     * @return boolean
+     * @return bool
      */
     public function isBrouillon()
     {
@@ -1252,9 +1275,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set tweetPostId
+     * Set tweetPostId.
      *
      * @param string $tweetPostId
+     *
      * @return Agenda
      */
     public function setTweetPostId($tweetPostId)
@@ -1265,7 +1289,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get tweetPostId
+     * Get tweetPostId.
      *
      * @return string
      */
@@ -1275,9 +1299,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set facebookEventId
+     * Set facebookEventId.
      *
      * @param string $facebookEventId
+     *
      * @return Agenda
      */
     public function setFacebookEventId($facebookEventId)
@@ -1288,7 +1313,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get facebookEventId
+     * Get facebookEventId.
      *
      * @return string
      */
@@ -1298,9 +1323,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set tweetPostSystemId
+     * Set tweetPostSystemId.
      *
      * @param string $tweetPostSystemId
+     *
      * @return Agenda
      */
     public function setTweetPostSystemId($tweetPostSystemId)
@@ -1311,7 +1337,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get tweetPostSystemId
+     * Get tweetPostSystemId.
      *
      * @return string
      */
@@ -1321,9 +1347,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set fbPostId
+     * Set fbPostId.
      *
      * @param string $fbPostId
+     *
      * @return Agenda
      */
     public function setFbPostId($fbPostId)
@@ -1334,7 +1361,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get fbPostId
+     * Get fbPostId.
      *
      * @return string
      */
@@ -1344,9 +1371,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set fbPostSystemId
+     * Set fbPostSystemId.
      *
      * @param string $fbPostSystemId
+     *
      * @return Agenda
      */
     public function setFbPostSystemId($fbPostSystemId)
@@ -1357,7 +1385,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get fbPostSystemId
+     * Get fbPostSystemId.
      *
      * @return string
      */
@@ -1367,9 +1395,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set googlePostId
+     * Set googlePostId.
      *
      * @param string $googlePostId
+     *
      * @return Agenda
      */
     public function setGooglePostId($googlePostId)
@@ -1380,7 +1409,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get googlePostId
+     * Get googlePostId.
      *
      * @return string
      */
@@ -1390,9 +1419,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set googleSystemPostId
+     * Set googleSystemPostId.
      *
      * @param string $googleSystemPostId
+     *
      * @return Agenda
      */
     public function setGoogleSystemPostId($googleSystemPostId)
@@ -1403,7 +1433,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get googleSystemPostId
+     * Get googleSystemPostId.
      *
      * @return string
      */
@@ -1413,9 +1443,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set user
+     * Set user.
      *
      * @param User $user
+     *
      * @return Agenda
      */
     public function setUser(User $user = null)
@@ -1426,7 +1457,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get user
+     * Get user.
      *
      * @return \TBN\UserBundle\Entity\User
      */
@@ -1436,9 +1467,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Add calendriers
+     * Add calendriers.
      *
      * @param Calendrier $calendriers
+     *
      * @return Agenda
      */
     public function addCalendrier(Calendrier $calendriers)
@@ -1449,7 +1481,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Remove calendriers
+     * Remove calendriers.
      *
      * @param Calendrier $calendriers
      */
@@ -1459,7 +1491,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get calendriers
+     * Get calendriers.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -1469,9 +1501,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set site
+     * Set site.
      *
      * @param Site $site
+     *
      * @return Agenda
      */
     public function setSite(Site $site)
@@ -1482,7 +1515,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get site
+     * Get site.
      *
      * @return \TBN\MainBundle\Entity\Site
      */
@@ -1492,9 +1525,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Add commentaires
+     * Add commentaires.
      *
      * @param Comment $commentaires
+     *
      * @return Agenda
      */
     public function addCommentaire(Comment $commentaires)
@@ -1505,7 +1539,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Remove commentaires
+     * Remove commentaires.
      *
      * @param Comment $commentaires
      */
@@ -1515,7 +1549,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get commentaires
+     * Get commentaires.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -1525,9 +1559,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set fbParticipations
+     * Set fbParticipations.
      *
      * @param int $fbParticipations
+     *
      * @return Agenda
      */
     public function setFbParticipations($fbParticipations)
@@ -1538,7 +1573,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get fbParticipations
+     * Get fbParticipations.
      *
      * @return int
      */
@@ -1548,9 +1583,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set fbInterets
+     * Set fbInterets.
      *
      * @param int $fbInterets
+     *
      * @return Agenda
      */
     public function setFbInterets($fbInterets)
@@ -1561,7 +1597,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get fbInterets
+     * Get fbInterets.
      *
      * @return int
      */
@@ -1571,9 +1607,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set participations
+     * Set participations.
      *
      * @param int $participations
+     *
      * @return Agenda
      */
     public function setParticipations($participations)
@@ -1584,7 +1621,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get participations
+     * Get participations.
      *
      * @return int
      */
@@ -1594,9 +1631,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set interets
+     * Set interets.
      *
      * @param int $interets
+     *
      * @return Agenda
      */
     public function setInterets($interets)
@@ -1607,7 +1645,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get interets
+     * Get interets.
      *
      * @return int
      */
@@ -1617,9 +1655,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set facebookOwnerId
+     * Set facebookOwnerId.
      *
      * @param string $facebookOwnerId
+     *
      * @return Agenda
      */
     public function setFacebookOwnerId($facebookOwnerId)
@@ -1630,7 +1669,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get facebookOwnerId
+     * Get facebookOwnerId.
      *
      * @return string
      */
@@ -1640,9 +1679,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set adresse
+     * Set adresse.
      *
      * @param string $adresse
+     *
      * @return Agenda
      */
     public function setAdresse($adresse)
@@ -1653,7 +1693,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get adresse
+     * Get adresse.
      *
      * @return string
      */
@@ -1663,9 +1703,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set source
+     * Set source.
      *
      * @param string $source
+     *
      * @return Agenda
      */
     public function setSource($source)
@@ -1676,7 +1717,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get source
+     * Get source.
      *
      * @return string
      */
@@ -1686,9 +1727,10 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set place
+     * Set place.
      *
      * @param Place $place
+     *
      * @return Agenda
      */
     public function setPlace(Place $place = null)
@@ -1699,7 +1741,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get place
+     * Get place.
      *
      * @return Place
      */
@@ -1708,17 +1750,18 @@ class Agenda implements GeolocalizeInterface
         return $this->place;
     }
 
-
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
     /**
-     * Set fbDateModification
+     * Set fbDateModification.
      *
      * @param \DateTime $fbDateModification
+     *
      * @return Agenda
      */
     public function setFbDateModification($fbDateModification)
@@ -1729,7 +1772,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get fbDateModification
+     * Get fbDateModification.
      *
      * @return \DateTime
      */
@@ -1740,13 +1783,13 @@ class Agenda implements GeolocalizeInterface
 
     public function __toString()
     {
-        return "#".$this->id ?: '?';
+        return '#'.$this->id ?: '?';
     }
 
     /**
-     * Get isBrouillon
+     * Get isBrouillon.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsBrouillon()
     {
@@ -1754,9 +1797,9 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set isArchive
+     * Set isArchive.
      *
-     * @param boolean $isArchive
+     * @param bool $isArchive
      *
      * @return Agenda
      */
@@ -1768,9 +1811,9 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get isArchive
+     * Get isArchive.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsArchive()
     {
@@ -1778,7 +1821,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Set systemPath
+     * Set systemPath.
      *
      * @param string $systemPath
      *
@@ -1792,7 +1835,7 @@ class Agenda implements GeolocalizeInterface
     }
 
     /**
-     * Get systemPath
+     * Get systemPath.
      *
      * @return string
      */

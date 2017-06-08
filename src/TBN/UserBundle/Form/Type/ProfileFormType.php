@@ -11,18 +11,17 @@
 
 namespace TBN\UserBundle\Form\Type;
 
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use FOS\UserBundle\Form\Type\ProfileFormType as BaseType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ProfileFormType extends BaseType
 {
-
     public function getName()
     {
         return 'tbn_user_profile';
@@ -39,38 +38,37 @@ class ProfileFormType extends BaseType
      * Builds the embedded form representing the user.
      *
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     protected function buildUserForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('username', TextType::class, [
-                'label' => 'profile.show.username',
-                'translation_domain' => 'FOSUserBundle'
+                'label'              => 'profile.show.username',
+                'translation_domain' => 'FOSUserBundle',
             ])
             ->add('email', EmailType::class, ['label' => 'profile.show.email', 'translation_domain' => 'FOSUserBundle'])
             ->add('firstname', TextType::class, ['required' => false, 'label' => 'Prénom'])
             ->add('lastname', TextType::class, ['required' => false, 'label' => 'Nom'])
             ->add('description', TextareaType::class, [
                 'required' => false,
-                'label' => 'Description',
-                "attr" => [
-                    "placeholder" => "Écrivez une courte description"
-                ]
+                'label'    => 'Description',
+                'attr'     => [
+                    'placeholder' => 'Écrivez une courte description',
+                ],
             ])
             ->add('website', UrlType::class, [
                 'required' => false,
-                'label' => 'Site Web'
+                'label'    => 'Site Web',
             ])
             ->add('showSocials', CheckboxType::class, [
                 'required' => false,
-                'label' => 'Afficher un lien vers mes réseaux sociaux'
+                'label'    => 'Afficher un lien vers mes réseaux sociaux',
             ])
             ->add('imageFile', VichImageType::class, [
-                'required' => false,
-                'label' => 'Photo de profil',
+                'required'     => false,
+                'label'        => 'Photo de profil',
                 'image_filter' => 'thumb_user_large',
-            ])
-            ;
+            ]);
     }
 }

@@ -6,18 +6,17 @@ use TBN\MainBundle\Controller\TBNController as Controller;
 
 class OldEventController extends Controller
 {
-
     public function detailsAction($slug)
     {
         return $this->redirectToRoute('tbn_agenda_details_old', [
-            'slug' => $slug
+            'slug' => $slug,
         ]);
     }
 
     public function tendancesAction($slug)
     {
         return $this->redirectToRoute('tbn_agenda_details_old', [
-            'slug' => $slug
+            'slug' => $slug,
         ]);
     }
 
@@ -25,7 +24,7 @@ class OldEventController extends Controller
     {
         return $this->redirectToRoute('tbn_agenda_soirees_membres_old', [
             'slug' => $slug,
-            'page' => $page
+            'page' => $page,
         ]);
     }
 
@@ -33,14 +32,14 @@ class OldEventController extends Controller
     {
         return $this->redirectToRoute('tbn_agenda_soirees_similaires_old', [
             'slug' => $slug,
-            'page' => $page
+            'page' => $page,
         ]);
     }
 
     public function listAction($page)
     {
         return $this->redirectToRoute('tbn_agenda_pagination', [
-            'page' => $page
+            'page' => $page,
         ]);
     }
 }

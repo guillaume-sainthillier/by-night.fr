@@ -3,16 +3,13 @@
 namespace TBN\MajDataBundle\Parser\Toulouse;
 
 use Symfony\Component\DomCrawler\Crawler;
-
 use TBN\MajDataBundle\Parser\LinksParser;
 
 /**
- *
  * @author Guillaume SAINTHILLIER
  */
 class BikiniParser extends LinksParser
 {
-
     private $cache;
 
     public function __construct()
@@ -24,7 +21,8 @@ class BikiniParser extends LinksParser
     }
 
     /**
-     * Retourne les infos d'un agenda depuis une url
+     * Retourne les infos d'un agenda depuis une url.
+     *
      * @return string[]
      */
     protected function getInfosAgenda()
@@ -57,23 +55,27 @@ class BikiniParser extends LinksParser
             $ville = preg_replace('/\d/i', '', $ville);
         }
 
-        $tab_retour['place.rue'] = preg_replace("#^(\d+), #", "$1 ", $full_adresse[0]);
+        $tab_retour['place.rue'] = preg_replace("#^(\d+), #", '$1 ', $full_adresse[0]);
         $tab_retour['place.code_postal'] = isset($this->cache[$this->url]) ? $this->cache[$this->url] : null;
         $tab_retour['place.ville'] = $ville;
 
         $this->parser->filter('#blocContenu')->children()->each(function (Crawler $sibling) use (&$tab_retour) {
             if ($sibling->attr('id') === 'prix') {
                 $tab_retour['tarif'] = trim($sibling->text());
+
                 return $sibling;
             }
+
             return false;
         });
         $this->parser->filter('#blocContenu')->children()->each(function (Crawler $sibling) use (&$tab_retour) {
             if ($sibling->attr('id') === 'type') {
                 $tab_retour['theme_manifestation'] = preg_replace('/style\s?:\s?/i', '', trim($sibling->text()));
                 $tab_retour['theme_manifestation'] = implode(',', explode('/', $tab_retour['theme_manifestation']));
+
                 return $sibling;
             }
+
             return false;
         });
 
@@ -81,12 +83,14 @@ class BikiniParser extends LinksParser
     }
 
     /**
-     * Retourne les liens depuis le feed.xml
+     * Retourne les liens depuis le feed.xml.
+     *
      * @return string[] le tableau des liens disponibles
      */
     public function getLinks()
     {
         $this->parseContent('XML');
+
         return array_filter($this->parser->filter('item')->each(function (Crawler $item) {
             if (preg_match('/<link>(.+)<description>(.+)(\d{5}).*<\/description>/im', preg_replace('/\n/', '', $item->html()), $matches)) {
                 $this->cache[$matches[1]] = $matches[3];

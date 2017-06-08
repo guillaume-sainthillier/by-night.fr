@@ -2,17 +2,16 @@
 
 namespace TBN\MajDataBundle\Utils;
 
-use TBN\AgendaBundle\Entity\Place;
 use TBN\AgendaBundle\Entity\Agenda;
+use TBN\AgendaBundle\Entity\Place;
 
 /**
- * Description of Merger
+ * Description of Merger.
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
 class Cleaner
 {
-
     private $util;
 
     public function __construct(Util $util)
@@ -22,20 +21,20 @@ class Cleaner
 
     public function cleanEvent(Agenda $agenda)
     {
-        if (! $agenda->getDateFin() instanceof \DateTime) {
+        if (!$agenda->getDateFin() instanceof \DateTime) {
             $agenda->setDateFin($agenda->getDateDebut());
         }
 
         $agenda->setNom($this->clean($agenda->getNom()) ?: null)
             ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
-            ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127)  ?: null)
-            ->setReservationTelephone(substr($agenda->getReservationTelephone(), 0, 127)  ?: null)
+            ->setReservationEmail(substr($agenda->getReservationEmail(), 0, 127) ?: null)
+            ->setReservationTelephone(substr($agenda->getReservationTelephone(), 0, 127) ?: null)
             ->setReservationInternet(substr($agenda->getReservationInternet(), 0, 511) ?: null)
             ->setAdresse(substr($agenda->getAdresse(), 0, 255) ?: null)
             ->setCategorieManifestation(substr($agenda->getCategorieManifestation(), 0, 128) ?: null)
             ->setThemeManifestation(substr($agenda->getThemeManifestation(), 0, 128) ?: null)
             ->setTypeManifestation(substr($agenda->getTypeManifestation(), 0, 128) ?: null)
-            ->setHoraires(substr($agenda->getHoraires(), 0, 255)  ?: null);
+            ->setHoraires(substr($agenda->getHoraires(), 0, 255) ?: null);
     }
 
     public function cleanPlace(Place $place)

@@ -8,39 +8,37 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace TBN\SocialBundle\Controller;
 
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
-
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use Symfony\Component\Form\Test\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
- * ConnectController
+ * ConnectController.
  *
  * @author Alexander <iam.asm89@gmail.com>
  */
 class ConnectController extends BaseController
 {
-
     /**
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
      * @param Request $request The active request.
-     * @param string $service Name of the resource owner to connect to.
+     * @param string  $service Name of the resource owner to connect to.
      *
      * @throws \Exception
-     *
-     * @return Response
-     *
      * @throws NotFoundHttpException if `connect` functionality was not enabled
      * @throws AccessDeniedException if no user is authenticated
+     *
+     * @return Response
      */
     public function connectServiceAction(Request $request, $service)
     {
@@ -67,9 +65,9 @@ class ConnectController extends BaseController
             );
 
             // save in session
-            $session->set('_hwi_oauth.connect_confirmation.' . $key, $accessToken);
+            $session->set('_hwi_oauth.connect_confirmation.'.$key, $accessToken);
         } else {
-            $accessToken = $session->get('_hwi_oauth.connect_confirmation.' . $key);
+            $accessToken = $session->get('_hwi_oauth.connect_confirmation.'.$key);
         }
 
         // Redirect to the login path if the token is empty (Eg. User cancelled auth)
@@ -96,20 +94,18 @@ class ConnectController extends BaseController
             show_confirmation_page:
 
             $session = $this->container->get('session');
-            if ($session->has('connect_site')) // On veut connecter le site et non l'utilisateur
-            {
+            if ($session->has('connect_site')) { // On veut connecter le site et non l'utilisateur
                 $session->remove('connect_site');
-                $siteManager = $this->container->get("site_manager");
+                $siteManager = $this->container->get('site_manager');
                 $currentSite = $siteManager->getCurrentSite();
 
                 $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
 
-                $em = $this->container->get("doctrine.orm.entity_manager");
+                $em = $this->container->get('doctrine.orm.entity_manager');
 
                 $em->persist($currentSite);
                 $em->flush();
-            } else // On connecte normalement l'utilisateur*/
-            {
+            } else { // On connecte normalement l'utilisateur*/
                 /** @var $currentToken OAuthToken */
                 $currentToken = $this->get('security.token_storage')->getToken();
                 $currentUser = $currentToken->getUser();
@@ -124,7 +120,7 @@ class ConnectController extends BaseController
                             $accessToken : $currentToken->getRawToken();
 
                     $this->authenticateUser($request, $currentUser, $service, $newToken, false);
-                }else {
+                } else {
                     $this->refreshUser($currentUser);
                 }
 
@@ -132,21 +128,21 @@ class ConnectController extends BaseController
                     return $this->redirect($targetPath);
                 }
 
-                return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), array(
+                return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.'.$this->getTemplatingEngine(), [
                     'userInformation' => $userInformation,
-                    'service' => $service,
-                ));
+                    'service'         => $service,
+                ]);
             }
 
-            return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), [
+            return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.'.$this->getTemplatingEngine(), [
                 'userInformation' => $userInformation,
             ]);
         }
 
-        return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_confirm.html.' . $this->getTemplatingEngine(), [
-            'key' => $key,
-            'service' => $service,
-            'form' => $form->createView(),
+        return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_confirm.html.'.$this->getTemplatingEngine(), [
+            'key'             => $key,
+            'service'         => $service,
+            'form'            => $form->createView(),
             'userInformation' => $userInformation,
         ]);
     }
@@ -164,14 +160,12 @@ class ConnectController extends BaseController
                 return $session->get($sessionKey);
             }
         }
-
-        return null;
     }
 
-    protected function refreshUser(UserInterface $user) {
+    protected function refreshUser(UserInterface $user)
+    {
         $userManager = $this->container->get('fos_user.user_manager');
         $userManager->reloadUser($user);
         $this->container->get('security.token_storage')->getToken()->setAuthenticated(false);
     }
-
 }

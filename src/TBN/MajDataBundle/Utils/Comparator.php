@@ -3,17 +3,15 @@
 namespace TBN\MajDataBundle\Utils;
 
 use Doctrine\Common\Cache\ArrayCache;
-use TBN\AgendaBundle\Entity\Place;
-use TBN\AgendaBundle\Entity\Agenda;
 use Doctrine\Common\Cache\Cache;
+use TBN\AgendaBundle\Entity\Agenda;
+use TBN\AgendaBundle\Entity\Place;
 
 /**
- *
  * @author guillaume
  */
 class Comparator
 {
-
     /**
      * @var ArrayCache
      */
@@ -30,7 +28,8 @@ class Comparator
         $this->cache = $cache;
     }
 
-    public function deleteCache() {
+    public function deleteCache()
+    {
         $this->cache->deleteAll();
     }
 
@@ -65,7 +64,7 @@ class Comparator
     public function getMatchingScorePlace(Place $a = null, Place $b = null)
     {
         if ($a !== null && $b !== null) {
-            if($this->getStrictMatchingPlace($a, $b)) {
+            if ($this->getStrictMatchingPlace($a, $b)) {
                 return 100;
             }
 
@@ -118,7 +117,7 @@ class Comparator
         $placeA = $a->getPlace();
         $placeB = $b->getPlace();
         if ($this->getMatchingScorePlace($placeA, $placeB) >= 80) {
-            if($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
+            if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
                 $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75) {
                 return 90;
             }
@@ -134,7 +133,7 @@ class Comparator
     private function getBest(array $items, callable $machingFunction, $testedItem = null, $minScore = 75)
     {
         if (null === $testedItem) {
-            return null;
+            return;
         }
 
         $bestScore = 0;
@@ -150,6 +149,7 @@ class Comparator
                 $bestScore = $score;
             }
         }
+
         return $bestItem;
     }
 
@@ -192,7 +192,7 @@ class Comparator
     {
         $hashA = md5($a);
         $hashB = md5($b);
-        $keys = ['getDiffPourcentage.' . $hashA . '.' . $hashB, 'getDiffPourcentage.' . $hashB . '.' . $hashA];
+        $keys = ['getDiffPourcentage.'.$hashA.'.'.$hashB, 'getDiffPourcentage.'.$hashB.'.'.$hashA];
 
         foreach ($keys as $key) {
             if ($this->cache->contains($key)) {
@@ -265,15 +265,17 @@ class Comparator
         return $this->sanitize(strip_tags($string));
     }
 
-    public function sanitizeVille($string) {
-        $string = preg_replace("#-(\s*)st(\s*)-#i", "saint", $string);
+    public function sanitizeVille($string)
+    {
+        $string = preg_replace("#-(\s*)st(\s*)-#i", 'saint', $string);
+
         return $this->sanitize($string);
     }
 
     public function sanitize($string)
     {
         return Monitor::bench('Sanitize', function () use ($string) {
-            $key = 'sanitize' . $string;
+            $key = 'sanitize'.$string;
             if (!$this->cache->contains($key)) {
                 $step1 = $this->util->utf8LowerCase($string);
                 $step2 = $this->util->replaceAccents($step1);
@@ -283,6 +285,7 @@ class Comparator
                 $step6 = trim($step5);
                 $this->cache->save($key, $step6);
             }
+
             return $this->cache->fetch($key);
         });
     }
@@ -305,6 +308,7 @@ class Comparator
         } elseif ($minPourcentage < 100) {
             $pourcentage = 0;
             similar_text($a, $b, $pourcentage);
+
             return $pourcentage >= $minPourcentage;
         }
 

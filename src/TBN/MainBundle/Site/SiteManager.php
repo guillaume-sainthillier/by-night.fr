@@ -9,13 +9,11 @@ use TBN\UserBundle\Entity\SiteInfo;
 class SiteManager
 {
     /**
-     *
      * @var Site
      */
     protected $currentSite;
 
     /**
-     *
      * @var SiteInfo
      */
     protected $siteInfo;
@@ -35,8 +33,9 @@ class SiteManager
         $this->entityManager = $entityManager;
     }
 
-    protected function init() {
-        if(! $this->isInitialized) {
+    protected function init()
+    {
+        if (!$this->isInitialized) {
             $siteInfo = $this->entityManager
                 ->getRepository('TBNUserBundle:SiteInfo')
                 ->findOneBy([]);
@@ -47,18 +46,18 @@ class SiteManager
     }
 
     /**
-     *
      * @return SiteInfo
      */
     public function getSiteInfo()
     {
         $this->init();
+
         return $this->siteInfo;
     }
 
     /**
-     *
      * @param SiteInfo $siteInfo
+     *
      * @return SiteManager
      */
     public function setSiteInfo(SiteInfo $siteInfo = null)
@@ -69,7 +68,6 @@ class SiteManager
     }
 
     /**
-     *
      * @return Site
      */
     public function getCurrentSite()
@@ -78,8 +76,8 @@ class SiteManager
     }
 
     /**
-     *
      * @param Site $currentSite
+     *
      * @return SiteManager
      */
     public function setCurrentSite(Site $currentSite = null)

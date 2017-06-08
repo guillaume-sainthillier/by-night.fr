@@ -9,8 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use TBN\MajDataBundle\Parser\ParserInterface;
 use TBN\MajDataBundle\Utils\Monitor;
 
-
-class FetchCommand  extends AppCommand
+class FetchCommand extends AppCommand
 {
     protected function configure()
     {
@@ -18,14 +17,13 @@ class FetchCommand  extends AppCommand
             ->setName('tbn:events:fetch')
             ->setDescription('Récupérer des nouveaux sur By Night')
             ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer')
-            ->addOption('monitor', 'm', InputOption::VALUE_NONE)
-         ;
+            ->addOption('monitor', 'm', InputOption::VALUE_NONE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $parser = $input->getArgument('parser');
-        if(! $this->getContainer()->has($parser)) {
+        if (!$this->getContainer()->has($parser)) {
             throw new \LogicException(sprintf(
                 'Le service "%s" est introuvable',
                 $parser
@@ -33,7 +31,7 @@ class FetchCommand  extends AppCommand
         }
 
         $service = $this->getContainer()->get($parser);
-        if(! $service instanceof ParserInterface) {
+        if (!$service instanceof ParserInterface) {
             throw new \LogicException(sprintf(
                 'Le service "%s" doit être une instance de ParserInterface',
                 $service

@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 14/12/2016
- * Time: 22:23
+ * Time: 22:23.
  */
 
 namespace TBN\MainBundle\Controller;
@@ -14,49 +14,51 @@ class CommonController extends TBNController
 {
     const LIFE_TIME_CACHE = 86400; // 3600*24
 
-    public function headerAction() {
+    public function headerAction()
+    {
         $response = $this->render('::menu.html.twig');
-        
-        $tomorrow = new \DateTime("tomorrow");
+
+        $tomorrow = new \DateTime('tomorrow');
+
         return $response
             ->setExpires($tomorrow)
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-            ;
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
-    public function footerAction() {
+    public function footerAction()
+    {
         $cache = $this->get('memory_cache');
         $siteManager = $this->get('site_manager');
         $currentSite = $siteManager->getCurrentSite();
 
         $socials = [
             'facebook' => $this->get('tbn.social.facebook_admin'),
-            'twitter' => $this->get('tbn.social.twitter'),
-            'google' => $this->get('tbn.social.google')
+            'twitter'  => $this->get('tbn.social.twitter'),
+            'google'   => $this->get('tbn.social.google'),
         ];
 
         $params = [];
         foreach ($socials as $name => $social) {
-            $key = 'tbn.counts.' . $name;
+            $key = 'tbn.counts.'.$name;
             if (!$cache->contains($key)) {
-                if($social instanceof FacebookAdmin) {
+                if ($social instanceof FacebookAdmin) {
                     $social->setSiteInfo($siteManager->getSiteInfo());
                 }
                 $cache->save($key, $social->getNumberOfCount(), self::LIFE_TIME_CACHE);
             }
 
-            $params['count_' . $name] = $cache->fetch($key);
+            $params['count_'.$name] = $cache->fetch($key);
         }
 
-        $repo = $this->getDoctrine()->getRepository("TBNMainBundle:Site");
+        $repo = $this->getDoctrine()->getRepository('TBNMainBundle:Site');
         $params['sites'] = $repo->findRandomNames($currentSite);
 
         $response = $this->render('TBNAgendaBundle::footer.html.twig', $params);
 
-        $tomorrow = new \DateTime("tomorrow");
+        $tomorrow = new \DateTime('tomorrow');
+
         return $response
             ->setExpires($tomorrow)
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-        ;
+            ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 }
