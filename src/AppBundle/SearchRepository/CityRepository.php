@@ -8,9 +8,9 @@ use FOS\ElasticaBundle\Repository;
 
 class CityRepository extends Repository
 {
-
     /**
      * @param string $q
+     *
      * @return \Pagerfanta\Pagerfanta
      */
     public function findWithSearch($q)

@@ -42,11 +42,11 @@ class DefaultController extends Controller
 //        $form = $this->createForm(PlaceAutocompleteType::class);
 
         return $this->render('Default/index.html.twig', [
-            "concerts" => $concerts,
-            "spectacles" => $spectacles,
-            "etudiants" => $etudiants,
-            "familles" => $familles,
-            "autocomplete_form" => $form->createView()
+            'concerts'          => $concerts,
+            'spectacles'        => $spectacles,
+            'etudiants'         => $etudiants,
+            'familles'          => $familles,
+            'autocomplete_form' => $form->createView(),
         ]);
     }
 
@@ -54,26 +54,31 @@ class DefaultController extends Controller
      * @Route("/change-city", name="app_change_city")
      * @Method("POST")
      */
-    public function changeCityAction(Request $request) {
+    public function changeCityAction(Request $request)
+    {
         $form = $this->createForm(CityAutocompleteType::class);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $datas = $form->getData();
+
             return $this->redirectToRoute('tbn_agenda_index', ['city' => $datas['city']]);
         }
 
         $this->addFlash('error', 'Veuillez seléctionner une ville');
+
         return $this->redirectToRoute('tbn_main_index');
     }
 
-    private function getResults(SearchAgenda $search) {
+    private function getResults(SearchAgenda $search)
+    {
         $paginator = $this->get('knp_paginator');
         /**
-         * @var AgendaRepository $repo
+         * @var AgendaRepository
          */
-        $repo = $this->get('fos_elastica.manager')->getRepository("AppBundle:Agenda");
+        $repo    = $this->get('fos_elastica.manager')->getRepository('AppBundle:Agenda');
         $results = $repo->findWithSearch($search);
+
         return $paginator->paginate($results, 1, self::EVENT_PER_CATEGORY);
     }
 }

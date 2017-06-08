@@ -11,17 +11,17 @@ class CommentType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('commentaire', TextareaType::class, [
-                "label" => false,
-                "attr" => [
-                    "placeholder" => "Laissez un message",
-                    "rows" => 4
-                ]
+                'label' => false,
+                'attr'  => [
+                    'placeholder' => 'Laissez un message',
+                    'rows'        => 4,
+                ],
             ]);
     }
 
@@ -31,7 +31,7 @@ class CommentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'AppBundle\Entity\Comment'
+            'data_class' => 'AppBundle\Entity\Comment',
         ]);
     }
 

@@ -2,13 +2,13 @@
 
 namespace AppBundle\Social;
 
-use \Google_Client;
+use Google_Client;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\User;
 
 /**
- * Description of Twitter
+ * Description of Twitter.
  *
  * @author guillaume
  */
@@ -17,16 +17,15 @@ class Google extends Social
     protected $key;
 
     /**
-     *
-     * @var Google_Client $client
+     * @var Google_Client
      */
     protected $client;
 
     public function constructClient()
     {
-        $api_id = $this->id;
+        $api_id     = $this->id;
         $api_secret = $this->secret;
-        $this->key = $this->config['key'];
+        $this->key  = $this->config['key'];
 
         $this->client = new Google_Client();
         $this->client->setClientId($api_id);
@@ -38,7 +37,7 @@ class Google extends Social
             'https://www.googleapis.com/auth/plus.me',
             'https://www.googleapis.com/auth/plus.login',
             'https://www.googleapis.com/auth/plus.stream.read',
-            'https://www.googleapis.com/auth/plus.stream.write'
+            'https://www.googleapis.com/auth/plus.stream.write',
         ]);
     }
 
@@ -48,9 +47,9 @@ class Google extends Social
         $router = $this->router;
 
         try {
-            $url = $router->generate("tbn_main_index", [], UrlGenerator::ABSOLUTE_URL);
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "https://clients6.google.com/rpc");
+            $url = $router->generate('tbn_main_index', [], UrlGenerator::ABSOLUTE_URL);
+            $ch  = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://clients6.google.com/rpc');
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_POSTFIELDS, '[{"method":"pos.plusones.get","id":"p",
@@ -81,12 +80,10 @@ class Google extends Social
 
     protected function getName()
     {
-        return "Google";
+        return 'Google';
     }
 
     protected function afterPost(User $user, Agenda $agenda)
     {
-
     }
-
 }

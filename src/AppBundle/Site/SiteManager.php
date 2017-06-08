@@ -9,13 +9,11 @@ use AppBundle\Entity\SiteInfo;
 class SiteManager
 {
     /**
-     *
      * @var Site
      */
     protected $currentSite;
 
     /**
-     *
      * @var SiteInfo
      */
     protected $siteInfo;
@@ -29,8 +27,8 @@ class SiteManager
 
     public function __construct(EntityManager $entityManager)
     {
-        $this->currentSite = null;
-        $this->siteInfo = null;
+        $this->currentSite   = null;
+        $this->siteInfo      = null;
         $this->isInitialized = false;
         $this->entityManager = $entityManager;
     }
@@ -48,18 +46,18 @@ class SiteManager
     }
 
     /**
-     *
      * @return SiteInfo
      */
     public function getSiteInfo()
     {
         $this->init();
+
         return $this->siteInfo;
     }
 
     /**
-     *
      * @param SiteInfo $siteInfo
+     *
      * @return SiteManager
      */
     public function setSiteInfo(SiteInfo $siteInfo = null)
@@ -70,7 +68,6 @@ class SiteManager
     }
 
     /**
-     *
      * @return Site
      */
     public function getCurrentSite()
@@ -79,8 +76,8 @@ class SiteManager
     }
 
     /**
-     *
      * @param Site $currentSite
+     *
      * @return SiteManager
      */
     public function setCurrentSite(Site $currentSite = null)

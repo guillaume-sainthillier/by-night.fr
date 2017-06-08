@@ -4,14 +4,9 @@ namespace AppBundle\Controller\Social;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-
 use AppBundle\Social\Social;
-
-
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use FOS\UserBundle\Model\UserInterface;
-
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -27,12 +22,12 @@ class DefaultController extends BaseController
         $user = $this->getUser();
 
         /** @var Social $social */
-        $social = $this->container->get("tbn.social." . strtolower($service === "facebook" ? "facebook_events" : $service));
+        $social = $this->container->get('tbn.social.' . strtolower($service === 'facebook' ? 'facebook_events' : $service));
         $social->disconnectUser($user);
 
         $this->authenticateBasicUser($user);
 
-        return new JsonResponse(["success" => true]);
+        return new JsonResponse(['success' => true]);
     }
 
     /**
@@ -41,13 +36,13 @@ class DefaultController extends BaseController
     public function disconnectConfirmAction($service)
     {
         return $this->render('Social/confirm.html.twig', [
-            "service" => $service,
-            "url" => $this->generateUrl("tbn_disconnect_service", ["service" => $service])
+            'service' => $service,
+            'url'     => $this->generateUrl('tbn_disconnect_service', ['service' => $service]),
         ]);
     }
 
     /**
-     * Authenticate a user with Symfony Security
+     * Authenticate a user with Symfony Security.
      *
      * @param UserInterface $user
      */

@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 03/05/2017
- * Time: 20:29
+ * Time: 20:29.
  */
 
 namespace AppBundle\EventListener;
-
 
 use AppBundle\Configuration\BrowserCache;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -31,7 +30,7 @@ class BrowserCacheListener implements EventSubscriberInterface
         $request = $event->getRequest();
 
         /**
-         * @var BrowserCache|null $browserCache
+         * @var BrowserCache|null
          */
         $browserCache = $request->attributes->get('_browser_cache');
         if (null === $browserCache || $browserCache->hasToUseCache()) {
@@ -40,7 +39,7 @@ class BrowserCacheListener implements EventSubscriberInterface
 
         $response = $event->getResponse();
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
     }
 }

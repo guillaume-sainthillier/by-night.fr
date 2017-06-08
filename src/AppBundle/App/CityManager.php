@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 03/06/2017
- * Time: 15:20
+ * Time: 15:20.
  */
 
 namespace AppBundle\App;
-
 
 use AppBundle\Entity\City;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,23 +37,27 @@ class CityManager
     public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack)
     {
         $this->entityManager = $entityManager;
-        $this->requestStack = $requestStack;
-        $this->currentCity = null;
-        $this->cookieCity = false;
+        $this->requestStack  = $requestStack;
+        $this->currentCity   = null;
+        $this->cookieCity    = false;
     }
 
     /**
      * @param City $city
+     *
      * @return $this
      */
-    public function setCurrentCity(City $city) {
+    public function setCurrentCity(City $city)
+    {
         $this->currentCity = $city;
+
         return $this;
     }
 
-    public function computeCityFromCookie() {
+    public function computeCityFromCookie()
+    {
         $currentRequest = $this->requestStack->getCurrentRequest();
-        if($currentRequest->cookies->has('app_city')) {
+        if ($currentRequest->cookies->has('app_city')) {
             $this->cookieCity = $this->entityManager->getRepository('AppBundle:City')->findBySlug($currentRequest->cookies->get('app_city'));
         }
     }
@@ -62,15 +65,17 @@ class CityManager
     /**
      * @return City|null
      */
-    public function getCurrentCity() {
+    public function getCurrentCity()
+    {
         return $this->currentCity;
     }
 
     /**
      * @return City|null
      */
-    public function getCookieCity() {
-        if($this->cookieCity === false) {
+    public function getCookieCity()
+    {
+        if ($this->cookieCity === false) {
             $this->computeCityFromCookie();
         }
 
@@ -80,7 +85,8 @@ class CityManager
     /**
      * @return City|null
      */
-    public function getCity() {
+    public function getCity()
+    {
         return $this->getCookieCity() ?: $this->getCookieCity();
     }
 }

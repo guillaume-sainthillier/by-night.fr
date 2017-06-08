@@ -7,10 +7,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Utils\Monitor;
 
-
 class CountryCommand extends AppCommand
 {
-
     protected function configure()
     {
         $this
@@ -26,7 +24,7 @@ class CountryCommand extends AppCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         Monitor::$output = $output;
-        $importer = $this->getContainer()->get('app.importer.country_importer');
+        $importer        = $this->getContainer()->get('app.importer.country_importer');
 
         $importer->import(
             $input->getArgument('id'),

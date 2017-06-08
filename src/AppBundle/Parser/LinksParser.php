@@ -6,13 +6,10 @@ use Symfony\Component\DomCrawler\Crawler;
 use AppBundle\Utils\Monitor;
 
 /**
- *
- *
  * @author Guillaume S. <guillaume@sainthillier.fr>
  */
 abstract class LinksParser extends AgendaParser
 {
-
     /*
      * @var Crawler $parser
      */
@@ -24,14 +21,14 @@ abstract class LinksParser extends AgendaParser
     {
         parent::__construct();
 
-        $this->url = null;
+        $this->url      = null;
         $this->base_url = null;
-        $this->parser = new Crawler();
+        $this->parser   = new Crawler();
 
         return $this;
     }
 
-    public function parseContent($type = "HTML")
+    public function parseContent($type = 'HTML')
     {
         $this->parser->clear();
 
@@ -92,18 +89,21 @@ abstract class LinksParser extends AgendaParser
     public function setBaseUrl($base_url)
     {
         $this->base_url = $base_url;
+
         return $this;
     }
 
     /**
-     * Retourne les infos d'un agenda depuis une url
+     * Retourne les infos d'un agenda depuis une url.
+     *
      * @return string[]
      */
-    protected abstract function getInfosAgenda();
+    abstract protected function getInfosAgenda();
 
     /**
-     * Retourne les liens depuis le feed.xml
+     * Retourne les liens depuis le feed.xml.
+     *
      * @return string[] le tableau des liens disponibles
      */
-    public abstract function getLinks();
+    abstract public function getLinks();
 }

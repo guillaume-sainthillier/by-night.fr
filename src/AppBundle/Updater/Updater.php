@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 20/12/2016
- * Time: 18:55
+ * Time: 18:55.
  */
 
 namespace AppBundle\Updater;
@@ -12,7 +12,6 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
-
 use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ResponseInterface;
 use AppBundle\Social\FacebookAdmin;
@@ -20,7 +19,7 @@ use AppBundle\Social\FacebookAdmin;
 abstract class Updater
 {
     const PAGINATION_SIZE = 200;
-    const POOL_SIZE = 10;
+    const POOL_SIZE       = 10;
 
     /**
      * @var Client
@@ -43,7 +42,7 @@ abstract class Updater
         $this->facebookAdmin = $facebookAdmin;
 
         $this->client = new Client([
-            'verify' => false
+            'verify' => false,
         ]);
     }
 
@@ -55,12 +54,12 @@ abstract class Updater
         }
 
         $responses = [];
-        $pool = new Pool($this->client, $requests, [
+        $pool      = new Pool($this->client, $requests, [
             'concurrency' => self::POOL_SIZE,
-            'fulfilled' => function (ResponseInterface $response, $index) use (& $responses) {
-                $responses[$index] = (string)$response->getBody();
+            'fulfilled'   => function (ResponseInterface $response, $index) use (&$responses) {
+                $responses[$index] = (string) $response->getBody();
             },
-            'rejected' => function (RequestException $reason, $index) use (& $responses) {
+            'rejected' => function (RequestException $reason, $index) use (&$responses) {
                 $responses[$index] = null;
             },
         ]);

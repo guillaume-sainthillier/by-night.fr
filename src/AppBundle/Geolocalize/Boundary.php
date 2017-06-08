@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 25/05/2017
- * Time: 14:13
+ * Time: 14:13.
  */
 
 namespace AppBundle\Geolocalize;
-
 
 class Boundary implements BoundaryInterface
 {
@@ -15,9 +14,10 @@ class Boundary implements BoundaryInterface
     private $lng;
     private $distanceMax;
 
-    public function __construct($lat, $lng, $distanceMax = 5.0) {
-        $this->lat = $lat;
-        $this->lng = $lng;
+    public function __construct($lat, $lng, $distanceMax = 5.0)
+    {
+        $this->lat         = $lat;
+        $this->lng         = $lng;
         $this->distanceMax = $distanceMax;
     }
 

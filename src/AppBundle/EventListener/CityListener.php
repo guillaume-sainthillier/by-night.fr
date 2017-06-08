@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 03/05/2017
- * Time: 20:29
+ * Time: 20:29.
  */
 
 namespace AppBundle\EventListener;
-
 
 use AppBundle\Configuration\BrowserCache;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -31,13 +30,13 @@ class CityListener implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        if($request->attributes->has('_current_city') && $request->attributes->get('_current_city') !== $request->cookies->get('app_city')) {
-            $cookie = new Cookie('app_city', $request->attributes->get('_current_city'), "+1 year");
+        if ($request->attributes->has('_current_city') && $request->attributes->get('_current_city') !== $request->cookies->get('app_city')) {
+            $cookie = new Cookie('app_city', $request->attributes->get('_current_city'), '+1 year');
             $event->getResponse()->headers->setCookie($cookie);
         }
 
         /**
-         * @var BrowserCache|null $browserCache
+         * @var BrowserCache|null
          */
         $browserCache = $request->attributes->get('_browser_cache');
         if (null === $browserCache || $browserCache->hasToUseCache()) {
@@ -46,7 +45,7 @@ class CityListener implements EventSubscriberInterface
 
         $response = $event->getResponse();
         $response->headers->add([
-            'X-No-Browser-Cache' => '1'
+            'X-No-Browser-Cache' => '1',
         ]);
     }
 }

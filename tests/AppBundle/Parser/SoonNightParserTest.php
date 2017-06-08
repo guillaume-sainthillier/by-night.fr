@@ -3,10 +3,7 @@
 namespace Tests\AppBundle\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-
-
 use AppBundle\Parser\Common\SoonNightParser;
-
 
 class SoonNightParserTest extends KernelTestCase
 {

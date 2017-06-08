@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 17/05/2017
- * Time: 21:01
+ * Time: 21:01.
  */
 
 namespace AppBundle\Cache;
@@ -26,18 +26,18 @@ class LocationCacheProvider extends CacheProvider
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em = $em;
+        $this->em   = $em;
         $this->repo = $em->getRepository('AppBundle:Location');
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doFetch($id)
     {
         $location = $this->repo->find($id);
 
-        if(! $location) {
+        if (!$location) {
             return false;
         }
 
@@ -45,7 +45,7 @@ class LocationCacheProvider extends CacheProvider
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doContains($id)
     {
@@ -53,7 +53,7 @@ class LocationCacheProvider extends CacheProvider
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doSave($id, $data, $lifeTime = 0)
     {
@@ -64,16 +64,17 @@ class LocationCacheProvider extends CacheProvider
 
         $this->em->persist($location);
         $this->em->flush();
+
         return true;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doDelete($id)
     {
         $location = $this->repo->find($id);
-        if($location) {
+        if ($location) {
             $this->em->remove($location);
             $this->em->flush();
         }
@@ -82,7 +83,7 @@ class LocationCacheProvider extends CacheProvider
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doFlush()
     {
@@ -92,7 +93,7 @@ class LocationCacheProvider extends CacheProvider
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function doGetStats()
     {

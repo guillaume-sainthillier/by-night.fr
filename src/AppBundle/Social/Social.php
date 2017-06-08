@@ -1,6 +1,5 @@
 <?php
 
-
 namespace AppBundle\Social;
 
 /*
@@ -25,70 +24,59 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Description of Twitter
+ * Description of Twitter.
  *
  * @author guillaume
  */
 abstract class Social
 {
-
     /**
-     *
-     * @var string $id
+     * @var string
      */
     protected $id;
 
     /**
-     *
-     * @var array $config
+     * @var array
      */
     protected $config;
 
     /**
-     *
-     * @var string $secret
+     * @var string
      */
     protected $secret;
 
     /**
-     *
-     * @var SiteManager $siteManager
+     * @var SiteManager
      */
     protected $siteManager;
 
     /**
-     *
-     * @var TokenStorageInterface $tokenStorage
+     * @var TokenStorageInterface
      */
     protected $tokenStorage;
 
     /**
-     *
-     * @var RouterInterface $router
+     * @var RouterInterface
      */
     protected $router;
 
     /**
-     *
-     * @var SessionInterface $session
+     * @var SessionInterface
      */
     protected $session;
 
     /**
-     *
-     * @var RequestStack $requestStack
+     * @var RequestStack
      */
     protected $requestStack;
 
     /**
-     *
-     * @var LoggerInterface $logger
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
-     *
-     * @var EventProfilePicture $eventProfilePicture
+     * @var EventProfilePicture
      */
     protected $eventProfilePicture;
 
@@ -101,26 +89,26 @@ abstract class Social
 
     public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, AppManager $appManager)
     {
-        if (!isset($config["id"])) {
+        if (!isset($config['id'])) {
             throw new SocialException("Le paramètre 'id' est absent");
         }
 
-        if (!isset($config["secret"])) {
+        if (!isset($config['secret'])) {
             throw new SocialException("Le paramètre 'secret' est absent");
         }
 
-        $this->id = $config["id"];
-        $this->secret = $config["secret"];
-        $this->config = $config;
-        $this->siteManager = $siteManager;
-        $this->tokenStorage = $tokenStorage;
-        $this->router = $router;
-        $this->session = $session;
-        $this->requestStack = $requestStack;
-        $this->logger = $logger;
+        $this->id                  = $config['id'];
+        $this->secret              = $config['secret'];
+        $this->config              = $config;
+        $this->siteManager         = $siteManager;
+        $this->tokenStorage        = $tokenStorage;
+        $this->router              = $router;
+        $this->session             = $session;
+        $this->requestStack        = $requestStack;
+        $this->logger              = $logger;
         $this->eventProfilePicture = $eventProfilePicture;
-        $this->appManager = $appManager;
-        $this->isInitialized = false;
+        $this->appManager          = $appManager;
+        $this->isInitialized       = false;
     }
 
     protected function init()
@@ -131,21 +119,19 @@ abstract class Social
         }
     }
 
-
     public function disconnectUser(User $user)
     {
-        $social_name = $this->getName();//On récupère le nom du child (Twitter, Google, Facebook)
+        $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->removeRole("ROLE_" . strtolower($social_name));//Suppression du role ROLE_TWITTER
+        $user->removeRole('ROLE_' . strtolower($social_name)); //Suppression du role ROLE_TWITTER
         $this->disconnectInfo($user->getInfo());
     }
-
 
     protected function disconnectInfo(Info $info)
     {
         if ($info !== null) {
-            $social_name = $this->getName();//On récupère le nom du child (Twitter, Google, Facebook)
-            $methods = ["Id", "AccessToken", "RefreshToken", "TokenSecret", "Nickname", "RealName", "Email", "ProfilePicture"];
+            $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
+            $methods     = ['Id', 'AccessToken', 'RefreshToken', 'TokenSecret', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
                 $setter = 'set' . ucfirst($social_name) . ucfirst($methode);
                 $info->$setter(null);
@@ -160,11 +146,11 @@ abstract class Social
 
     protected function connectInfo(Info $info, UserResponseInterface $response)
     {
-        $social_name = $this->getName();//On récupère le nom du child (Twitter, Google, Facebook)
+        $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
         if ($info !== null) {
-            $methods = ["AccessToken", "RefreshToken", "TokenSecret", "ExpiresIn", "Nickname", "RealName", "Email", "ProfilePicture"];
+            $methods = ['AccessToken', 'RefreshToken', 'TokenSecret', 'ExpiresIn', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
-                $setter = 'set' . ucfirst($social_name) . ucfirst($methode);// setSocialUsername
+                $setter = 'set' . ucfirst($social_name) . ucfirst($methode); // setSocialUsername
                 $getter = 'get' . ucfirst($methode); //getSocialUsername
 
                 $info->$setter($response->$getter());
@@ -177,9 +163,9 @@ abstract class Social
 
     public function connectUser(User $user, UserResponseInterface $response)
     {
-        $social_name = $this->getName();//On récupère le nom du child (Twitter, Google, Facebook)
+        $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->addRole("ROLE_" . strtolower($social_name));//Ajout du role ROLE_TWITTER
+        $user->addRole('ROLE_' . strtolower($social_name)); //Ajout du role ROLE_TWITTER
         $this->connectInfo($user->getInfo(), $response);
     }
 
@@ -197,15 +183,14 @@ abstract class Social
             $this->post($user, $agenda);
             $this->afterPost($user, $agenda);
         } catch (\Exception $ex) {
-
-            $type = "error";
+            $type = 'error';
             if ($ex instanceof SocialException) {
                 $type = $ex->getType();
             }
 
             $this->session->getFlashBag()->add(
                 $type,
-                sprintf("Une erreur est survenue sur <b>%s</b> : %s", $this->getName(), $ex->getMessage())
+                sprintf('Une erreur est survenue sur <b>%s</b> : %s', $this->getName(), $ex->getMessage())
             );
         }
     }
@@ -217,31 +202,31 @@ abstract class Social
 
     protected function getLink(Agenda $agenda)
     {
-        return $this->router->generate("tbn_agenda_details", [
-            "slug" => $agenda->getSlug(),
-            "id" => $agenda->getSlug(),
-            "city" => $agenda->getSite()->getSubdomain()
+        return $this->router->generate('tbn_agenda_details', [
+            'slug' => $agenda->getSlug(),
+            'id'   => $agenda->getSlug(),
+            'city' => $agenda->getSite()->getSubdomain(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     protected function getMembreLink(User $user)
     {
-        return $this->router->generate("tbn_user_details", ["id" => $user->getId(), "slug" => $user->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->router->generate('tbn_user_details', ['id' => $user->getId(), 'slug' => $user->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
-    public abstract function getNumberOfCount();
+    abstract public function getNumberOfCount();
 
-    protected abstract function constructClient();
+    abstract protected function constructClient();
 
-    protected abstract function getName();
+    abstract protected function getName();
 
     /**
-     * @param User $user
+     * @param User   $user
      * @param Agenda $agenda La soirée concernée
+     *
      * @throws SocialException si une erreur est survenue
      */
-    protected abstract function post(User $user, Agenda $agenda);
+    abstract protected function post(User $user, Agenda $agenda);
 
-    protected abstract function afterPost(User $user, Agenda $agenda);
-
+    abstract protected function afterPost(User $user, Agenda $agenda);
 }

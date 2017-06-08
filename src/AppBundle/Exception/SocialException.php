@@ -7,8 +7,9 @@
  */
 
 namespace AppBundle\Exception;
+
 /**
- * Description of SocialException
+ * Description of SocialException.
  *
  * @author guillaume
  */
@@ -19,7 +20,7 @@ class SocialException extends \Exception
      */
     protected $type;
 
-    public function __construct($message, $type = "warning", $code = 500, \Exception $previous = null)
+    public function __construct($message, $type = 'warning', $code = 500, \Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->type = $type;

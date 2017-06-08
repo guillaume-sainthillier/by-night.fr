@@ -2,15 +2,12 @@
 
 namespace AppBundle\Command;
 
-
 use AppBundle\Entity\Place;
 use AppBundle\Reject\Reject;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use AppBundle\Utils\Monitor;
-
 
 class MigrateCommand extends AppCommand
 {
@@ -28,31 +25,30 @@ class MigrateCommand extends AppCommand
         Monitor::$output = $output;
 
         $firewall = $this->getContainer()->get('tbn.doctrine_event_handler');
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $places = $em->getRepository("AppBundle:Place")->findBy(['city' => null]);
-        $france = $em->getRepository("AppBundle:Country")->find("FR");
+        $em       = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $places   = $em->getRepository('AppBundle:Place')->findBy(['city' => null]);
+        $france   = $em->getRepository('AppBundle:Country')->find('FR');
         Monitor::createProgressBar(count($places));
 
         $migratedPlaces = [];
-        foreach($places as $i => $place) {
-            /**
+        foreach ($places as $i => $place) {
+            /*
              * @var Place $place
              */
             $place->setReject(new Reject())->setCountry($france);
-            if($place->getZipCity() && $place->getZipCity()->getParent()) {
+            if ($place->getZipCity() && $place->getZipCity()->getParent()) {
                 $place->setCity($place->getZipCity()->getParent());
             }
 
             $firewall->guessEventLocation($place);
             $place = $em->merge($place);
 
-
             $migratedPlaces[] = $place;
             Monitor::advanceProgressBar();
 
-            if($i % 500 === 0) {
+            if ($i % 500 === 0) {
                 $em->flush();
-                foreach($migratedPlaces as $migratedPlace) {
+                foreach ($migratedPlaces as $migratedPlace) {
                     $em->detach($migratedPlace);
                 }
                 $migratedPlaces = [];
@@ -61,37 +57,37 @@ class MigrateCommand extends AppCommand
         $em->flush();
 
         $mapping = [
-            "basse-terre" => "basse-terre",
-            "bordeaux" => "bordeaux",
-            "brest" => "brest",
-            "caen" => "caen",
-            "cayenne" => "cayenne",
-            "dijon" => "dijon",
-            "fort-de-france" => "fort-de-france",
-            "grenoble" => "grenoble",
-            "le-havre" => "le-havre",
-            "lille" => "lille",
-            "lyon" => "lyon",
-            "mamoudzou" => "mamoudzou",
-            "marseille" => "marseille",
-            "montpellier" => "montpellier",
-            "nantes" => "nantes",
-            "narbonne" => "narbonne",
-            "nice" => "nice",
-            "paris" => "paris",
-            "perpignan" => "perpignan",
-            "poitiers" => "poitiers",
-            "reims" => "reims",
-            "rennes" => "rennes",
-            "rouen" => "rouen",
-            "saint-denis" => "saint-denis-8",
-            "strasbourg" => "strasbourg",
-            "toulouse" => "toulouse",
+            'basse-terre'    => 'basse-terre',
+            'bordeaux'       => 'bordeaux',
+            'brest'          => 'brest',
+            'caen'           => 'caen',
+            'cayenne'        => 'cayenne',
+            'dijon'          => 'dijon',
+            'fort-de-france' => 'fort-de-france',
+            'grenoble'       => 'grenoble',
+            'le-havre'       => 'le-havre',
+            'lille'          => 'lille',
+            'lyon'           => 'lyon',
+            'mamoudzou'      => 'mamoudzou',
+            'marseille'      => 'marseille',
+            'montpellier'    => 'montpellier',
+            'nantes'         => 'nantes',
+            'narbonne'       => 'narbonne',
+            'nice'           => 'nice',
+            'paris'          => 'paris',
+            'perpignan'      => 'perpignan',
+            'poitiers'       => 'poitiers',
+            'reims'          => 'reims',
+            'rennes'         => 'rennes',
+            'rouen'          => 'rouen',
+            'saint-denis'    => 'saint-denis-8',
+            'strasbourg'     => 'strasbourg',
+            'toulouse'       => 'toulouse',
         ];
 
-        $places = $em->getRepository("AppBundle:Place")->findBy(['city' => null]);
-        foreach($places as $place) {
-            $newCity = $em->getRepository("AppBundle:City")->findBySlug($mapping[$place->getSite()->getSubdomain()]);
+        $places = $em->getRepository('AppBundle:Place')->findBy(['city' => null]);
+        foreach ($places as $place) {
+            $newCity = $em->getRepository('AppBundle:City')->findBySlug($mapping[$place->getSite()->getSubdomain()]);
             $place->setCity($newCity)->setJunk(true);
             $em->persist($place);
         }

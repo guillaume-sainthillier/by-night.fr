@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 11/10/2016
- * Time: 18:48
+ * Time: 18:48.
  */
 
 namespace AppBundle\Picture;
-
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use AppBundle\Entity\User;
@@ -16,18 +15,18 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 class UserProfilePicture
 {
     /**
-     * @var CacheManager $cacheManager
+     * @var CacheManager
      */
     private $cacheManager;
 
-    /** @var UploaderHelper $cacheManager
+    /** @var UploaderHelper
      */
     private $helper;
 
     public function __construct(CacheManager $cacheManager, UploaderHelper $helper)
     {
         $this->cacheManager = $cacheManager;
-        $this->helper = $helper;
+        $this->helper       = $helper;
     }
 
     public function getProfilePicture(User $user, $thumb = 'thumb_user')

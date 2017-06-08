@@ -7,20 +7,19 @@ use AppBundle\Entity\Agenda;
 use AppBundle\Geolocalize\BoundaryInterface;
 use AppBundle\Geolocalize\GeolocalizeInterface;
 use AppBundle\Entity\Exploration;
-
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use AppBundle\Reject\Reject;
 use AppBundle\Repository\ExplorationRepository;
 use AppBundle\Entity\User;
 
 /**
- * Description of Firewall
+ * Description of Firewall.
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
 class Firewall
 {
-    const VERSION = "1.1";
+    const VERSION = '1.1';
 
     protected $toSaveExplorations;
     protected $explorations;
@@ -39,11 +38,11 @@ class Firewall
 
     public function __construct(Registry $doctrine, Comparator $comparator)
     {
-        $this->om = $doctrine->getManager();
+        $this->om              = $doctrine->getManager();
         $this->repoExploration = $this->om->getRepository('AppBundle:Exploration');
-        $this->comparator = $comparator;
-        $this->places = [];
-        $this->explorations = [];
+        $this->comparator      = $comparator;
+        $this->places          = [];
+        $this->explorations    = [];
     }
 
     public function loadExplorations(array $ids)
@@ -70,7 +69,7 @@ class Firewall
 
     public function hasEventToBeUpdated(Exploration $exploration, Agenda $event)
     {
-        $explorationDate = $exploration->getLastUpdated();
+        $explorationDate       = $exploration->getLastUpdated();
         $eventDateModification = $event->getFbDateModification();
 
         if (!$explorationDate || !$eventDateModification) {
@@ -91,7 +90,7 @@ class Firewall
 
     public function isPersisted($object)
     {
-        return ($object !== null && $object->getId() !== null);
+        return $object !== null && $object->getId() !== null;
     }
 
     public function filterEventIntegrity(Agenda $event, User $oldEventUser = null)
@@ -117,9 +116,9 @@ class Firewall
 
     public function filterEventLocation(Agenda $event)
     {
-        $place = $event->getPlace();
+        $place  = $event->getPlace();
         $reject = $place->getReject();
-        if(! $reject->isValid()) {
+        if (!$reject->isValid()) {
             $event->getReject()->addReason($reject->getReason());
         }
     }
@@ -134,7 +133,7 @@ class Firewall
         }
 
         $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration);
-        $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
+        $hasToBeUpdated            = $this->hasEventToBeUpdated($exploration, $event);
 
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
@@ -179,7 +178,7 @@ class Firewall
         if ($place->getFacebookId()) {
             $exploration = $this->getExploration($place->getFacebookId());
             if (!$exploration) {
-                $exploration = (new Exploration)
+                $exploration = (new Exploration())
                     ->setId($place->getFacebookId())
                     ->setReject($place->getReject())
                     ->setReason($place->getReject()->getReason())
@@ -230,7 +229,7 @@ class Firewall
         if ($event->getFacebookEventId()) {
             $exploration = $this->getExploration($event->getFacebookEventId());
             if (!$exploration) {
-                $exploration = (new Exploration)
+                $exploration = (new Exploration())
                     ->setId($event->getFacebookEventId())
                     ->setLastUpdated($event->getFbDateModification())
                     ->setReject($event->getReject())
@@ -266,7 +265,7 @@ class Firewall
     private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
     {
         $theta = $entity->getLongitude() - $boundary->getLongitude();
-        $dist = sin(deg2rad($entity->getLatitude())) *
+        $dist  = sin(deg2rad($entity->getLatitude())) *
             sin(deg2rad($boundary->getLatitude())) +
             cos(deg2rad($entity->getLatitude())) *
             cos(deg2rad($boundary->getLatitude())) *
@@ -283,8 +282,8 @@ class Firewall
     }
 
     /**
-     *
      * @param int $fbId
+     *
      * @return Exploration|null
      */
     public function getExploration($fbId)
@@ -299,15 +298,15 @@ class Firewall
     private function isSPAMContent($content)
     {
         $black_list = [
-            "Buy && sell tickets at", "Please join", "Invite Friends", "Buy Tickets",
-            "Find Local Concerts", "reverbnation.com", "pastaparty.com", "evrd.us",
-            "farishams.com", "ty-segall.com",
-            "fritzkalkbrenner.com", "campusfm.fr", "polyamour.info", "parislanuit.fr",
-            "Please find the agenda", "Fore More Details like our Page & Massage us"
+            'Buy && sell tickets at', 'Please join', 'Invite Friends', 'Buy Tickets',
+            'Find Local Concerts', 'reverbnation.com', 'pastaparty.com', 'evrd.us',
+            'farishams.com', 'ty-segall.com',
+            'fritzkalkbrenner.com', 'campusfm.fr', 'polyamour.info', 'parislanuit.fr',
+            'Please find the agenda', 'Fore More Details like our Page & Massage us',
         ];
 
-        foreach($black_list as $black_word) {
-            if(strstr($content, $black_word)) {
+        foreach ($black_list as $black_word) {
+            if (strstr($content, $black_word)) {
                 return true;
             }
         }

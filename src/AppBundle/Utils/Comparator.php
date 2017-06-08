@@ -10,12 +10,10 @@ use AppBundle\Entity\Agenda;
 use Doctrine\Common\Cache\Cache;
 
 /**
- *
  * @author guillaume
  */
 class Comparator
 {
-
     /**
      * @var ArrayCache
      */
@@ -28,7 +26,7 @@ class Comparator
 
     public function __construct(Util $util, Cache $cache)
     {
-        $this->util = $util;
+        $this->util  = $util;
         $this->cache = $cache;
     }
 
@@ -122,7 +120,7 @@ class Comparator
         }
 
         $bestScore = 0;
-        $bestItem = null;
+        $bestItem  = null;
 
         foreach ($items as $item) {
             $score = call_user_func($machingFunction, $item, $testedItem);
@@ -130,18 +128,18 @@ class Comparator
             if ($score >= 100) {
                 return $item;
             } elseif ($score >= $minScore && $score > $bestScore) {
-                $bestItem = $item;
+                $bestItem  = $item;
                 $bestScore = $score;
             }
         }
+
         return $bestItem;
     }
 
     public function isSubInSub($str1, $str2)
     {
-        if($this->isSubstrInStr($str1, $str2) || $this->isSubstrInStr($str2, $str1)) {
+        if ($this->isSubstrInStr($str1, $str2) || $this->isSubstrInStr($str2, $str1)) {
             return true;
-
         }
         $sanitized1 = $this->sanitize($str1);
         $sanitized2 = $this->sanitize($str2);
@@ -151,7 +149,7 @@ class Comparator
 
     protected function isSubstrInStr($needle, $haystack)
     {
-        if(! $needle) {
+        if (!$needle) {
             return false;
         }
 
@@ -184,7 +182,7 @@ class Comparator
     {
         $hashA = md5($a);
         $hashB = md5($b);
-        $keys = ['getDiffPourcentage.' . $hashA . '.' . $hashB, 'getDiffPourcentage.' . $hashB . '.' . $hashA];
+        $keys  = ['getDiffPourcentage.' . $hashA . '.' . $hashB, 'getDiffPourcentage.' . $hashB . '.' . $hashA];
 
         foreach ($keys as $key) {
             if ($this->cache->contains($key)) {
@@ -201,7 +199,7 @@ class Comparator
 
     protected function getMatchingScoreRue($a, $b)
     {
-        if($a === $b) {
+        if ($a === $b) {
             return 100;
         }
 
@@ -213,7 +211,7 @@ class Comparator
 
     protected function getMatchingScoreHTML($a, $b)
     {
-        if($a === $b) {
+        if ($a === $b) {
             return 100;
         }
 
@@ -225,19 +223,19 @@ class Comparator
 
     protected function getMatchingScoreTextWithoutCity($a, City $cityA = null, ZipCity $zipCityA = null, $b = null, City $cityB = null, ZipCity $zipCityB = null)
     {
-        if($a === $b) {
+        if ($a === $b) {
             return 100;
         }
 
-        if($cityA) {
+        if ($cityA) {
             $a = str_ireplace($cityA->getName(), '', $a);
-        }elseif($zipCityA) {
+        } elseif ($zipCityA) {
             $a = str_ireplace($zipCityA->getName(), '', $a);
         }
 
-        if($cityB) {
+        if ($cityB) {
             $b = str_ireplace($cityB->getName(), '', $b);
-        }elseif($zipCityB) {
+        } elseif ($zipCityB) {
             $b = str_ireplace($zipCityB->getName(), '', $b);
         }
 
@@ -249,7 +247,7 @@ class Comparator
 
     protected function getMatchingScoreText($a, $b)
     {
-        if($a === $b) {
+        if ($a === $b) {
             return 100;
         }
 
@@ -295,7 +293,8 @@ class Comparator
 
     public function sanitizeVille($string)
     {
-        $string = preg_replace("#-(\s*)st(\s*)-#i", "saint", $string);
+        $string = preg_replace("#-(\s*)st(\s*)-#i", 'saint', $string);
+
         return $this->sanitize($string);
     }
 
@@ -313,6 +312,7 @@ class Comparator
                 $string = trim($string);
                 $this->cache->save($key, $string);
             }
+
             return $this->cache->fetch($key);
         });
     }
@@ -335,6 +335,7 @@ class Comparator
         } elseif ($minPourcentage < 100) {
             $pourcentage = 0;
             similar_text($a, $b, $pourcentage);
+
             return $pourcentage >= $minPourcentage;
         }
 
