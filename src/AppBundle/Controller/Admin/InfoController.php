@@ -16,16 +16,16 @@ class InfoController extends Controller
      */
     public function listAction()
     {
-        $info = $this->get("site_manager")->getSiteInfo();
+        $info = $this->get('site_manager')->getSiteInfo();
 
         if ($info === null) {
-            $info = new SiteInfo;
-            $em = $this->getDoctrine()->getManager();
+            $info = new SiteInfo();
+            $em   = $this->getDoctrine()->getManager();
             $em->persist($info);
             $em->flush();
         }
 
-        return $this->redirect($this->get("router")->generate("tbn_administration_info_edit", ["id" => $info->getId()]));
+        return $this->redirect($this->get('router')->generate('tbn_administration_info_edit', ['id' => $info->getId()]));
     }
 
     /**
@@ -34,7 +34,7 @@ class InfoController extends Controller
     public function viewAction(SiteInfo $info)
     {
         return $this->render('Admin/Info/view.html.twig', [
-            'info' => $info
+            'info' => $info,
         ]);
     }
 }

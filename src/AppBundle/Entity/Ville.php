@@ -8,9 +8,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 
-
 /**
- * Ville
+ * Ville.
  *
  * @ORM\Table(name="Ville", indexes={
  *   @ORM\Index(name="ville_nom_idx", columns={"nom"}),
@@ -22,7 +21,7 @@ use JMS\Serializer\Annotation\Expose;
 class Ville
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -75,11 +74,10 @@ class Ville
      */
     protected $site;
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -87,9 +85,10 @@ class Ville
     }
 
     /**
-     * Set nom
+     * Set nom.
      *
      * @param string $nom
+     *
      * @return Ville
      */
     public function setNom($nom)
@@ -100,7 +99,7 @@ class Ville
     }
 
     /**
-     * Get nom
+     * Get nom.
      *
      * @return string
      */
@@ -110,9 +109,10 @@ class Ville
     }
 
     /**
-     * Set codePostal
+     * Set codePostal.
      *
      * @param string $codePostal
+     *
      * @return Ville
      */
     public function setCodePostal($codePostal)
@@ -123,7 +123,7 @@ class Ville
     }
 
     /**
-     * Get codePostal
+     * Get codePostal.
      *
      * @return string
      */
@@ -133,9 +133,10 @@ class Ville
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
+     *
      * @return Ville
      */
     public function setSlug($slug)
@@ -146,7 +147,7 @@ class Ville
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */
@@ -156,9 +157,10 @@ class Ville
     }
 
     /**
-     * Set path
+     * Set path.
      *
      * @param string $path
+     *
      * @return Ville
      */
     public function setPath($path)
@@ -169,7 +171,7 @@ class Ville
     }
 
     /**
-     * Get path
+     * Get path.
      *
      * @return string
      */
@@ -179,9 +181,10 @@ class Ville
     }
 
     /**
-     * Set url
+     * Set url.
      *
      * @param string $url
+     *
      * @return Ville
      */
     public function setUrl($url)
@@ -192,7 +195,7 @@ class Ville
     }
 
     /**
-     * Get url
+     * Get url.
      *
      * @return string
      */
@@ -202,9 +205,10 @@ class Ville
     }
 
     /**
-     * Set site
+     * Set site.
      *
      * @param Site $site
+     *
      * @return Ville
      */
     public function setSite(Site $site)
@@ -215,7 +219,7 @@ class Ville
     }
 
     /**
-     * Get site
+     * Get site.
      *
      * @return \AppBundle\Entity\Site
      */
@@ -227,6 +231,7 @@ class Ville
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -238,14 +243,14 @@ class Ville
     public function toArray()
     {
         return [
-            'nom' => $this->nom,
+            'nom'        => $this->nom,
             'codePostal' => $this->codePostal,
-            'site' => $this->getSite() ? $this->getSite()->toArray() : null
+            'site'       => $this->getSite() ? $this->getSite()->toArray() : null,
         ];
     }
 
     public function __toString()
     {
-        return "#" . $this->id ?: '?';
+        return '#' . $this->id ?: '?';
     }
 }

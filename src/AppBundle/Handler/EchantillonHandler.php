@@ -3,16 +3,14 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 01/12/2016
- * Time: 20:22
+ * Time: 20:22.
  */
 
 namespace AppBundle\Handler;
 
-
 use Doctrine\ORM\EntityManagerInterface;
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\Place;
-
 
 class EchantillonHandler
 {
@@ -59,22 +57,22 @@ class EchantillonHandler
     public function __construct(EntityManagerInterface $em)
     {
         $this->repoAgenda = $em->getRepository('AppBundle:Agenda');
-        $this->repoPlace = $em->getRepository('AppBundle:Place');
+        $this->repoPlace  = $em->getRepository('AppBundle:Place');
 
         $this->init();
     }
 
     protected function initEvents()
     {
-        $this->agendas = [];
-        $this->fbAgendas = [];
+        $this->agendas    = [];
+        $this->fbAgendas  = [];
         $this->newAgendas = [];
     }
 
     protected function initPlaces()
     {
-        $this->places = [];
-        $this->fbPlaces = [];
+        $this->places    = [];
+        $this->fbPlaces  = [];
         $this->newPlaces = [];
     }
 
@@ -109,7 +107,7 @@ class EchantillonHandler
 
         foreach ($places as $place) {
             /**
-             * @var Place $place
+             * @var Place
              */
             if ($place->getFacebookId()) {
                 $byFbIdPlaces[$place->getFacebookId()] = true;
@@ -120,7 +118,7 @@ class EchantillonHandler
         //On prend toutes les places déjà connues par leur ID FB
         if (count($byFbIdPlaces) > 0) {
             $fbPlaces = $this->repoPlace->findBy([
-                'facebookId' => $byFbIdPlaces
+                'facebookId' => $byFbIdPlaces,
             ]);
 
             foreach ($fbPlaces as $place) {
@@ -130,7 +128,7 @@ class EchantillonHandler
 
         //On prend ensuite toutes les places selon leur localisation
         foreach ($places as $place) {
-            $key = $place->getCity()->getId();
+            $key                = $place->getCity()->getId();
             $byCityPlaces[$key] = true;
         }
 
@@ -152,7 +150,7 @@ class EchantillonHandler
         $byDateEvents = [];
         foreach ($events as $event) {
             /**
-             * @var Agenda $event
+             * @var Agenda
              */
             if ($event->getFacebookEventId()) {
                 $byFbIdEvents[$event->getFacebookEventId()] = true;
@@ -162,7 +160,7 @@ class EchantillonHandler
 
         if (count($byFbIdEvents) > 0) {
             $fbEvents = $this->repoAgenda->findBy([
-                'facebookEventId' => $byFbIdEvents
+                'facebookEventId' => $byFbIdEvents,
             ]);
 
             foreach ($fbEvents as $event) {
@@ -171,8 +169,8 @@ class EchantillonHandler
         }
 
         foreach ($events as $event) {
-            if(!$event->getFacebookEventId()) {
-                $key = $this->getAgendaCacheKey($event);
+            if (!$event->getFacebookEventId()) {
+                $key                = $this->getAgendaCacheKey($event);
                 $byDateEvents[$key] = $event;
             }
         }
@@ -187,6 +185,7 @@ class EchantillonHandler
 
     /**
      * @param Place $place
+     *
      * @return Place[]
      */
     public function getPlaceEchantillons(Place $place)
@@ -202,11 +201,10 @@ class EchantillonHandler
         );
     }
 
-
     public function getEventEchantillons(Agenda $event)
     {
         if ($event->getFacebookEventId()) {
-            if(isset($this->fbAgendas[$event->getFacebookEventId()])) {
+            if (isset($this->fbAgendas[$event->getFacebookEventId()])) {
                 return [$this->fbAgendas[$event->getFacebookEventId()]];
             }
 
@@ -239,17 +237,16 @@ class EchantillonHandler
         }
 
         return $this->agendas[$key];
-
     }
 
     public function addNewEvent(Agenda $event)
     {
         if ($event->getFacebookEventId()) {
             $this->addFbEvent($event);
-        }elseif ($event->getId()) {
+        } elseif ($event->getId()) {
             $this->agendas[$event->getId()] = $event;
         } else {
-            $key = spl_object_hash($event);
+            $key                    = spl_object_hash($event);
             $this->newAgendas[$key] = $event;
         }
 
@@ -290,10 +287,10 @@ class EchantillonHandler
     {
         if ($place->getFacebookId()) {
             $this->fbPlaces[$place->getFacebookId()] = $place;
-        }elseif($place->getId()) {
+        } elseif ($place->getId()) {
             $this->places[$place->getId()] = $place;
-        }else {
-            $key = spl_object_hash($place);
+        } else {
+            $key                   = spl_object_hash($place);
             $this->newPlaces[$key] = $place;
         }
     }
@@ -311,7 +308,7 @@ class EchantillonHandler
     protected function getAgendaCacheKey(Agenda $agenda)
     {
         return sprintf(
-            "%s.%s",
+            '%s.%s',
             $agenda->getDateDebut()->format('Y-m-d'),
             $agenda->getDateFin()->format('Y-m-d')
         );

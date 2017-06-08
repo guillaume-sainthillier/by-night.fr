@@ -6,9 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 /**
- * Comment
+ * Comment.
  *
  * @ORM\Table(name="Comment")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CommentRepository")
@@ -17,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Comment
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -35,7 +34,7 @@ class Comment
     protected $commentaire;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="is_approuve", type="boolean")
      */
@@ -56,7 +55,6 @@ class Comment
     protected $dateModification;
 
     /**
-     *
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
@@ -65,7 +63,6 @@ class Comment
     protected $user;
 
     /**
-     *
      * @var Agenda
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Agenda", inversedBy="commentaires")
@@ -74,7 +71,6 @@ class Comment
     protected $agenda;
 
     /**
-     *
      * @var Comment
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comment", inversedBy="reponses")
@@ -106,9 +102,9 @@ class Comment
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -116,7 +112,7 @@ class Comment
     }
 
     /**
-     * Set commentaire
+     * Set commentaire.
      *
      * @param string $commentaire
      *
@@ -130,7 +126,7 @@ class Comment
     }
 
     /**
-     * Get commentaire
+     * Get commentaire.
      *
      * @return string
      */
@@ -140,9 +136,9 @@ class Comment
     }
 
     /**
-     * Set isApprouve
+     * Set isApprouve.
      *
-     * @param boolean $isApprouve
+     * @param bool $isApprouve
      *
      * @return Comment
      */
@@ -154,9 +150,9 @@ class Comment
     }
 
     /**
-     * Get isApprouve
+     * Get isApprouve.
      *
-     * @return boolean
+     * @return bool
      */
     public function isApprouve()
     {
@@ -164,7 +160,7 @@ class Comment
     }
 
     /**
-     * Set dateCreation
+     * Set dateCreation.
      *
      * @param \DateTime $dateCreation
      *
@@ -178,7 +174,7 @@ class Comment
     }
 
     /**
-     * Get dateCreation
+     * Get dateCreation.
      *
      * @return \DateTime
      */
@@ -188,7 +184,7 @@ class Comment
     }
 
     /**
-     * Set dateModification
+     * Set dateModification.
      *
      * @param \DateTime $dateModification
      *
@@ -202,7 +198,7 @@ class Comment
     }
 
     /**
-     * Get dateModification
+     * Get dateModification.
      *
      * @return \DateTime
      */
@@ -211,9 +207,8 @@ class Comment
         return $this->dateModification;
     }
 
-
     /**
-     * Set user
+     * Set user.
      *
      * @param User $user
      *
@@ -226,9 +221,8 @@ class Comment
         return $this;
     }
 
-
     /**
-     * Get user
+     * Get user.
      *
      * @return \AppBundle\Entity\User
      */
@@ -238,7 +232,7 @@ class Comment
     }
 
     /**
-     * Set agenda
+     * Set agenda.
      *
      * @param Agenda $agenda
      *
@@ -252,7 +246,7 @@ class Comment
     }
 
     /**
-     * Get agenda
+     * Get agenda.
      *
      * @return \AppBundle\Entity\Agenda
      */
@@ -262,7 +256,7 @@ class Comment
     }
 
     /**
-     * Set parent
+     * Set parent.
      *
      * @param Comment $parent
      *
@@ -276,7 +270,7 @@ class Comment
     }
 
     /**
-     * Get parent
+     * Get parent.
      *
      * @return \AppBundle\Entity\Comment
      */
@@ -286,7 +280,7 @@ class Comment
     }
 
     /**
-     * Add reponses
+     * Add reponses.
      *
      * @param Comment $reponses
      *
@@ -300,7 +294,7 @@ class Comment
     }
 
     /**
-     * Remove reponses
+     * Remove reponses.
      *
      * @param Comment $reponses
      */
@@ -310,7 +304,7 @@ class Comment
     }
 
     /**
-     * Get reponses
+     * Get reponses.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -321,13 +315,13 @@ class Comment
 
     public function __toString()
     {
-        return sprintf("#%s", $this->id ?: '?');
+        return sprintf('#%s', $this->id ?: '?');
     }
 
     /**
-     * Set isApprouve
+     * Set isApprouve.
      *
-     * @param boolean $isApprouve
+     * @param bool $isApprouve
      *
      * @return Comment
      */
@@ -339,9 +333,9 @@ class Comment
     }
 
     /**
-     * Get isApprouve
+     * Get isApprouve.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsApprouve()
     {

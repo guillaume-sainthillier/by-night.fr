@@ -4,9 +4,8 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
 /**
- * HistoriqueMaj
+ * HistoriqueMaj.
  *
  * @ORM\Table(name="HistoriqueMaj")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\HistoriqueMajRepository")
@@ -15,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class HistoriqueMaj
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -36,7 +35,6 @@ class HistoriqueMaj
      */
     private $dateDebut;
 
-
     /**
      * @var string
      *
@@ -52,30 +50,29 @@ class HistoriqueMaj
     private $dateFin;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="nouvelles_soirees", type="integer")
      */
     private $nouvellesSoirees;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="update_soirees", type="integer")
      */
     private $updateSoirees;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="explorations", type="integer")
      */
     private $explorations;
 
-
     public function __construct()
     {
-        $this->dateDebut = new \DateTime;
+        $this->dateDebut = new \DateTime();
     }
 
     /**
@@ -83,13 +80,13 @@ class HistoriqueMaj
      */
     public function majDateFin()
     {
-        $this->dateFin = new \DateTime;
+        $this->dateFin = new \DateTime();
     }
 
     /**
-     * Get duree
+     * Get duree.
      *
-     * @return integer
+     * @return int
      */
     public function getDuree()
     {
@@ -97,9 +94,9 @@ class HistoriqueMaj
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -107,7 +104,7 @@ class HistoriqueMaj
     }
 
     /**
-     * Set dateDebut
+     * Set dateDebut.
      *
      * @param \DateTime $dateDebut
      *
@@ -121,7 +118,7 @@ class HistoriqueMaj
     }
 
     /**
-     * Get dateDebut
+     * Get dateDebut.
      *
      * @return \DateTime
      */
@@ -131,7 +128,7 @@ class HistoriqueMaj
     }
 
     /**
-     * Set fromData
+     * Set fromData.
      *
      * @param string $fromData
      *
@@ -145,7 +142,7 @@ class HistoriqueMaj
     }
 
     /**
-     * Get fromData
+     * Get fromData.
      *
      * @return string
      */
@@ -155,7 +152,7 @@ class HistoriqueMaj
     }
 
     /**
-     * Set dateFin
+     * Set dateFin.
      *
      * @param \DateTime $dateFin
      *
@@ -169,7 +166,7 @@ class HistoriqueMaj
     }
 
     /**
-     * Get dateFin
+     * Get dateFin.
      *
      * @return \DateTime
      */
@@ -179,9 +176,9 @@ class HistoriqueMaj
     }
 
     /**
-     * Set nouvellesSoirees
+     * Set nouvellesSoirees.
      *
-     * @param integer $nouvellesSoirees
+     * @param int $nouvellesSoirees
      *
      * @return HistoriqueMaj
      */
@@ -193,9 +190,9 @@ class HistoriqueMaj
     }
 
     /**
-     * Get nouvellesSoirees
+     * Get nouvellesSoirees.
      *
-     * @return integer
+     * @return int
      */
     public function getNouvellesSoirees()
     {
@@ -203,9 +200,9 @@ class HistoriqueMaj
     }
 
     /**
-     * Set updateSoirees
+     * Set updateSoirees.
      *
-     * @param integer $updateSoirees
+     * @param int $updateSoirees
      *
      * @return HistoriqueMaj
      */
@@ -217,9 +214,9 @@ class HistoriqueMaj
     }
 
     /**
-     * Get updateSoirees
+     * Get updateSoirees.
      *
-     * @return integer
+     * @return int
      */
     public function getUpdateSoirees()
     {
@@ -227,9 +224,9 @@ class HistoriqueMaj
     }
 
     /**
-     * Set explorations
+     * Set explorations.
      *
-     * @param integer $explorations
+     * @param int $explorations
      *
      * @return HistoriqueMaj
      */
@@ -241,9 +238,9 @@ class HistoriqueMaj
     }
 
     /**
-     * Get explorations
+     * Get explorations.
      *
-     * @return integer
+     * @return int
      */
     public function getExplorations()
     {
@@ -251,7 +248,7 @@ class HistoriqueMaj
     }
 
     /**
-     * Set site
+     * Set site.
      *
      * @param Site $site
      *
@@ -265,7 +262,7 @@ class HistoriqueMaj
     }
 
     /**
-     * Get site
+     * Get site.
      *
      * @return \AppBundle\Entity\Site
      */

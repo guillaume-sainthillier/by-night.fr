@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 20/05/2017
- * Time: 14:04
+ * Time: 14:04.
  */
 
 namespace AppBundle\Importer;
@@ -15,7 +15,6 @@ use AppBundle\Entity\City;
 use AppBundle\Entity\Country;
 use AppBundle\Entity\ZipCity;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\ResultSetMapping;
 
 class CountryImporter
 {
@@ -31,16 +30,17 @@ class CountryImporter
 
     public function __construct(EntityManagerInterface $em, $dataDir)
     {
-        $this->em = $em;
+        $this->em      = $em;
         $this->dataDir = $dataDir;
     }
 
-    public function import($id, $name = null, $capital = null, $locale = null) {
+    public function import($id, $name = null, $capital = null, $locale = null)
+    {
         /**
-         * @var Country $country
+         * @var Country
          */
         $country = $this->em->getRepository('AppBundle:Country')->find($id);
-        if(! $country) {
+        if (!$country) {
             $country = new Country();
             $country
                 ->setId($id)
@@ -50,7 +50,7 @@ class CountryImporter
 
             $this->em->persist($country);
             $this->em->flush();
-        }else {
+        } else {
             $this->deleteRelatedDatas($country);
         }
 
@@ -60,13 +60,15 @@ class CountryImporter
         $this->deleteEmptyDatas($country);
     }
 
-    private function deleteEmptyDatas(Country $country) {
-        $this->em->createQuery(" DELETE FROM AppBundle:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country")->execute([
-            'country' => $country->getId()
+    private function deleteEmptyDatas(Country $country)
+    {
+        $this->em->createQuery(' DELETE FROM AppBundle:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
+            'country' => $country->getId(),
         ]);
     }
 
-    private function cleanDatas(Country $country) {
+    private function cleanDatas(Country $country)
+    {
         $this->em->getConnection()->executeUpdate('
             update admin_zone SET parent_id = NULL
             WHERE country_id = :country
@@ -151,9 +153,10 @@ class CountryImporter
         $this->fixDatas($country);
     }
 
-    private function fixDatas(Country $country) {
-        switch($country->getId()) {
-            case "BE":
+    private function fixDatas(Country $country)
+    {
+        switch ($country->getId()) {
+            case 'BE':
                 $this->em->getConnection()->executeUpdate('
                    update zip_city as zc
                     inner join admin_zone c ON (
@@ -168,39 +171,39 @@ class CountryImporter
                     AND zc.country_id = :country
                 ', ['country' => $country->getId()]);
                 $this->manualAssociation([
-                    "fontaine-leveque",
-                    "la-roche",
-                    "les-bons-villers",
-                    "libramont",
-                    "spiere",
-                    "wortegem",
-                    "amel" => "ambleve-1",
-                    "brunehaut" => "brunehault",
-                    "brainele-chateau" => "braine-le-chateau",
-                    "bruxelles" => "brussels",
-                    "bullingen" => "bullange",
-                    "comines-warneton" => "comines-1",
-                    "erpe-" => "erpe",
-                    "estinnes" => "estinnes-au-val",
-                    "ecaussinnes" => "ecaussinnes-denghien",
-                    "honnelles" => "onnezies",
-                    "kelmis" => "la-calamine",
-                    "kluisbergen" => "kruienberg",
-                    "bruyere" => "bruyere-8",
-                    "la-louviere" => "la-louviere-1",
-                    "roeulx" => "roeulx-1",
-                    "leuze" => "leuze-1",
-                    "lierde" => "sint-maria-lierde",
-                    "lo-reninge" => "reninge",
-                    "maarkedal" => "maarke-kerkem",
-                    "montignyl-e-tilleul" => "montigny-le-tilleul",
-                    "morlanwelz" => "morlanwelz-mariemont",
-                    "quevy-quevy-le-petit" => "quevy-le-petit",
-                    "quevy" => "quevy-le-grand",
-                    "sankt-vith" => "saint-vith",
-                    "vleteren" => "oostvleteren",
-                    "oostende" => "mariakerke",
-                    "mont-de-lenclus" => "orroir",
+                    'fontaine-leveque',
+                    'la-roche',
+                    'les-bons-villers',
+                    'libramont',
+                    'spiere',
+                    'wortegem',
+                    'amel'                 => 'ambleve-1',
+                    'brunehaut'            => 'brunehault',
+                    'brainele-chateau'     => 'braine-le-chateau',
+                    'bruxelles'            => 'brussels',
+                    'bullingen'            => 'bullange',
+                    'comines-warneton'     => 'comines-1',
+                    'erpe-'                => 'erpe',
+                    'estinnes'             => 'estinnes-au-val',
+                    'ecaussinnes'          => 'ecaussinnes-denghien',
+                    'honnelles'            => 'onnezies',
+                    'kelmis'               => 'la-calamine',
+                    'kluisbergen'          => 'kruienberg',
+                    'bruyere'              => 'bruyere-8',
+                    'la-louviere'          => 'la-louviere-1',
+                    'roeulx'               => 'roeulx-1',
+                    'leuze'                => 'leuze-1',
+                    'lierde'               => 'sint-maria-lierde',
+                    'lo-reninge'           => 'reninge',
+                    'maarkedal'            => 'maarke-kerkem',
+                    'montignyl-e-tilleul'  => 'montigny-le-tilleul',
+                    'morlanwelz'           => 'morlanwelz-mariemont',
+                    'quevy-quevy-le-petit' => 'quevy-le-petit',
+                    'quevy'                => 'quevy-le-grand',
+                    'sankt-vith'           => 'saint-vith',
+                    'vleteren'             => 'oostvleteren',
+                    'oostende'             => 'mariakerke',
+                    'mont-de-lenclus'      => 'orroir',
                 ], $country);
                 $this->em->getConnection()->executeUpdate("
                     UPDATE zip_city zc 
@@ -216,57 +219,58 @@ class CountryImporter
                 ");
 
                 break;
-            case "MC":
+            case 'MC':
                 $this->manualAssociation([
-                    "moneghetti",
-                    "monte-carlo",
-                    "fontvieille" => "fontvieille-1",
-                    "condamine" => "la-condamine",
-                    "98000-" => "monaco"
+                    'moneghetti',
+                    'monte-carlo',
+                    'fontvieille' => 'fontvieille-1',
+                    'condamine'   => 'la-condamine',
+                    '98000-'      => 'monaco',
                 ], $country);
                 break;
-            case "FR":
+            case 'FR':
                 $this->em->createQuery(" UPDATE AppBundle:AdminZone2 c SET c.slug = 'paris-temp' WHERE c.slug = 'paris'")->execute();
                 $this->em->createQuery(" UPDATE AppBundle:City c SET c.slug = 'paris' WHERE c.slug = 'paris-1'")->execute();
                 $this->em->createQuery(" UPDATE AppBundle:AdminZone2 c SET c.slug = 'paris-1' WHERE c.slug = 'paris-temp'")->execute();
                 $this->insertCity(2995599, 'Marne-la-Vallée', 0, 48.83333, 2.63333, 11, 77, $country);
                 $this->manualAssociation([
-                    "la-defense",
-                    "percy",
-                    "moyon",
-                    "montcuq",
-                    "esplantas",
-                    "les-abrets",
-                    "montrevault",
-                    "beaupreau",
-                    "marne-la-vallee",
-                    "epagny-2" => "epagny",
-                    "futuroscope" => "chasseneuil-du-poitou",
-                    "chemille-en-anjou" => "chemille-melay",
-                    "courtaboeuf" => "villebon-sur-yvette",
-                    "ay-champagne" => "chalons-en-champagne",
-                    "bagnoles-de-lorne-normandie" => "bagnoles-de-lorne",
-                    "boulazac" => "boulazac-1",
-                    "la-plagne" => "la-plagne-2",
-                    "carentan-les-marais" => "carentan",
-                    "castelnau-dauzan-labarrere" => "castelnau-dauzan",
-                    "charny-oree-de-puisaye" => "charny-2",
-                    "chemery-chehery" => "chemery-sur-bar",
-                    "conde-en-normandie" => "conde-sur-noireau",
-                    "eurocentre" => "fronton",
-                    "gennes-val-de-loire" => "gennes",
-                    "groslee-saint-benoit" => "groslee",
-                    "juvigny-val-dandaine" => "juvigny-sous-andaine",
-                    "la-chailleuse" => "chailleuse",
-                    "la-haye" => "la-haye-du-puits",
-                    "le-bas-segala" => "la-bastide-leveque"
+                    'la-defense',
+                    'percy',
+                    'moyon',
+                    'montcuq',
+                    'esplantas',
+                    'les-abrets',
+                    'montrevault',
+                    'beaupreau',
+                    'marne-la-vallee',
+                    'epagny-2'                    => 'epagny',
+                    'futuroscope'                 => 'chasseneuil-du-poitou',
+                    'chemille-en-anjou'           => 'chemille-melay',
+                    'courtaboeuf'                 => 'villebon-sur-yvette',
+                    'ay-champagne'                => 'chalons-en-champagne',
+                    'bagnoles-de-lorne-normandie' => 'bagnoles-de-lorne',
+                    'boulazac'                    => 'boulazac-1',
+                    'la-plagne'                   => 'la-plagne-2',
+                    'carentan-les-marais'         => 'carentan',
+                    'castelnau-dauzan-labarrere'  => 'castelnau-dauzan',
+                    'charny-oree-de-puisaye'      => 'charny-2',
+                    'chemery-chehery'             => 'chemery-sur-bar',
+                    'conde-en-normandie'          => 'conde-sur-noireau',
+                    'eurocentre'                  => 'fronton',
+                    'gennes-val-de-loire'         => 'gennes',
+                    'groslee-saint-benoit'        => 'groslee',
+                    'juvigny-val-dandaine'        => 'juvigny-sous-andaine',
+                    'la-chailleuse'               => 'chailleuse',
+                    'la-haye'                     => 'la-haye-du-puits',
+                    'le-bas-segala'               => 'la-bastide-leveque',
                 ], $country);
                 break;
         }
     }
 
-    private function insertCity($id, $name, $population, $latitude, $longitude, $adminCode1, $adminCode2, Country $country) {
-        $city = new City();
+    private function insertCity($id, $name, $population, $latitude, $longitude, $adminCode1, $adminCode2, Country $country)
+    {
+        $city                          = new City();
         list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($adminCode1, $adminCode2);
         $city
             ->setId($id)
@@ -282,13 +286,14 @@ class CountryImporter
         $this->em->flush();
     }
 
-    private function manualAssociation(array $associations, Country $country) {
-        foreach($associations as $zipSlug => $citySlug) {
-            if(is_numeric($zipSlug)) {
+    private function manualAssociation(array $associations, Country $country)
+    {
+        foreach ($associations as $zipSlug => $citySlug) {
+            if (is_numeric($zipSlug)) {
                 $zipSlug = $citySlug;
             }
 
-            $this->em->getConnection()->executeUpdate("
+            $this->em->getConnection()->executeUpdate('
                 UPDATE zip_city zc 
                 SET zc.parent_id = ( 
                   SELECT id 
@@ -298,31 +303,32 @@ class CountryImporter
                 WHERE zc.parent_id IS NULL 
                 AND zc.slug LIKE :zip_slug
                 AND zc.country_id = :country
-            ", [
-                "country" => $country->getId(),
-                "city_slug" => $citySlug,
-                "zip_slug" => "%".$zipSlug."%",
+            ', [
+                'country'   => $country->getId(),
+                'city_slug' => $citySlug,
+                'zip_slug'  => '%'.$zipSlug.'%',
             ]);
         }
     }
 
-    private function createZipCities(Country $country) {
+    private function createZipCities(Country $country)
+    {
         $fd = fopen($this->dataDir . '/'. $country->getId().'/zip.csv', 'r');
-        if($fd === false) {
+        if ($fd === false) {
             return;
         }
 
         $i = 0;
         while (($data = fgetcsv($fd, 1000, "\t")) !== false) {
-            if(! $data[4] || ! $data[6]) {
+            if (!$data[4] || !$data[6]) {
                 continue;
             }
-            $i++;
+            ++$i;
 
             $city = new ZipCity();
 
-            $data[1] = explode(" ", $data[1])[0];
-            $data[2] = preg_replace("/ (\d+)$/", "", $data[2]);
+            $data[1] = explode(' ', $data[1])[0];
+            $data[2] = preg_replace("/ (\d+)$/", '', $data[2]);
 
             list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($data[4], $data[6]);
 
@@ -331,12 +337,12 @@ class CountryImporter
                 ->setName($data[2])
                 ->setAdmin1Code($adminCode1)
                 ->setAdmin2Code($adminCode2)
-                ->setLatitude((float)$data[9])
-                ->setLongitude((float)$data[10])
+                ->setLatitude((float) $data[9])
+                ->setLongitude((float) $data[10])
                 ->setCountry($country);
 
             $this->em->persist($city);
-            if($i === 500) {
+            if ($i === 500) {
                 $this->em->flush();
                 $this->em->clear(ZipCity::class);
                 $i = 0;
@@ -346,38 +352,39 @@ class CountryImporter
         fclose($fd);
     }
 
-    private function createAdminZones(Country $country) {
+    private function createAdminZones(Country $country)
+    {
         $fd = fopen($this->dataDir . '/'. $country->getId().'/cities.csv', 'r');
-        if($fd === false) {
+        if ($fd === false) {
             return;
         }
 
         $i = 0;
         while (($data = fgetcsv($fd, 3000, "\t")) !== false) {
-            if(! (
-                in_array($data[7], ['ADM1', 'ADM2']) || $data[6] === "P"
+            if (!(
+                in_array($data[7], ['ADM1', 'ADM2']) || $data[6] === 'P'
 //                ($data[6] === "P" && $data[14] > 0)
             )) {
                 continue;
             }
-            $i++;
+            ++$i;
 
-            if($data[6] === "P") {
+            if ($data[6] === 'P') {
                 $entity = new City();
-            }elseif($data[7] === 'ADM1') {
+            } elseif ($data[7] === 'ADM1') {
                 $entity = new AdminZone1();
-            }else {
+            } else {
                 $entity = new AdminZone2();
             }
 
             list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($data[10], $data[11]);
 
             $entity
-                ->setId((int)$data[0])
+                ->setId((int) $data[0])
                 ->setName($data[1])
-                ->setPopulation((int)$data[14])
-                ->setLatitude((float)$data[4])
-                ->setLongitude((float)$data[5])
+                ->setPopulation((int) $data[14])
+                ->setLatitude((float) $data[4])
+                ->setLongitude((float) $data[5])
                 ->setAdmin1Code($adminCode1)
                 ->setAdmin2Code($adminCode2)
                 ->setCountry($country);
@@ -385,7 +392,7 @@ class CountryImporter
             $this->sanitizeAdminZone($entity);
 
             $this->em->persist($entity);
-            if($i === 50) {
+            if ($i === 50) {
                 $this->em->flush();
                 $this->em->clear(City::class);
                 $this->em->clear(AdminZone::class);
@@ -398,18 +405,19 @@ class CountryImporter
         fclose($fd);
     }
 
-    private function sanitizeAdminZone(AdminZone $entity) {
-        switch($entity->getCountry()->getId()) {
-            case "FR":
-                if($entity instanceof AdminZone2) {
+    private function sanitizeAdminZone(AdminZone $entity)
+    {
+        switch ($entity->getCountry()->getId()) {
+            case 'FR':
+                if ($entity instanceof AdminZone2) {
                     $entity->setName(str_replace([
                             "Département d'",
                             "Département de l'",
-                            "Département de la ",
-                            "Département des ",
-                            "Département de ",
-                            "Département du ",
-                            "Territoire de ",
+                            'Département de la ',
+                            'Département des ',
+                            'Département de ',
+                            'Département du ',
+                            'Territoire de ',
                         ], '', $entity->getName())
                     );
                 }
@@ -417,28 +425,31 @@ class CountryImporter
         }
     }
 
-    private function formatAdminZoneCodes($code1, $code2) {
+    private function formatAdminZoneCodes($code1, $code2)
+    {
         return [
             $this->formatAdminZoneCode($code1),
             $this->formatAdminZoneCode($code2),
         ];
     }
 
-    private function formatAdminZoneCode($code) {
-        if($code === "0" || $code === "00") {
+    private function formatAdminZoneCode($code)
+    {
+        if ($code === '0' || $code === '00') {
             return $code;
         }
 
         $code = ltrim($code, '0');
 
-        if($code === "") {
+        if ($code === '') {
             return null;
         }
 
         return $code;
     }
 
-    private function deleteRelatedDatas(Country $country) {
+    private function deleteRelatedDatas(Country $country)
+    {
         $this->em->createQuery('
             UPDATE AppBundle:Place p
             SET p.zipCity = NULL

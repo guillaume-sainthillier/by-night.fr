@@ -9,7 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Router extends BaseRouter
 {
-
     private $cache;
     private $siteManager;
     private $subdomain;
@@ -18,17 +17,17 @@ class Router extends BaseRouter
      * Constructor.
      *
      * @param ContainerInterface $container A ContainerInterface instance
-     * @param mixed $resource The main resource to load
-     * @param array $options An array of options
-     * @param RequestContext $context The context
+     * @param mixed              $resource  The main resource to load
+     * @param array              $options   An array of options
+     * @param RequestContext     $context   The context
      */
     public function __construct(ContainerInterface $container, $resource, array $options = array(), RequestContext $context = null)
     {
         parent::__construct($container, $resource, $options, $context);
 
-        $this->subdomain = null;
+        $this->subdomain   = null;
         $this->siteManager = $container->get('site_manager');
-        $this->cache = $container->get('array_cache');
+        $this->cache       = $container->get('array_cache');
     }
 
     /**
@@ -44,14 +43,15 @@ class Router extends BaseRouter
 
         $key = 'routes.' . $name;
         try {
-//            if ($this->cache->contains($key) && !isset($parameters) && $this->subdomain) {
+            //            if ($this->cache->contains($key) && !isset($parameters) && $this->subdomain) {
 //                $parameters['subdomain'] = $this->subdomain;
 //            }
             return parent::generate($name, $parameters, $referenceType);
         } catch (MissingMandatoryParametersException $e) {
-//            $this->cache->save($key, true);
+            //            $this->cache->save($key, true);
             if ($this->subdomain) {
-                $parameters["city"] = $this->subdomain;
+                $parameters['city'] = $this->subdomain;
+
                 return parent::generate($name, $parameters, $referenceType);
             }
 

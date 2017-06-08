@@ -6,10 +6,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Utils\Monitor;
 
-
 class ArchiveCommand extends AppCommand
 {
-
     protected function configure()
     {
         $this

@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 31/05/2016
- * Time: 19:26
+ * Time: 19:26.
  */
 
 namespace UserBundle\Controller;
@@ -19,7 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use \FOS\UserBundle\Controller\ProfileController as BaseController;
+use FOS\UserBundle\Controller\ProfileController as BaseController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use FOS\UserBundle\Form\Factory\FactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,10 +27,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProfileController extends BaseController
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function showAction() {
-        return $this->redirectToRoute("fos_user_profile_edit");
+    public function showAction()
+    {
+        return $this->redirectToRoute('fos_user_profile_edit');
     }
 
     /**
@@ -53,7 +54,7 @@ class ProfileController extends BaseController
             $em = $this->get('doctrine.orm.entity_manager');
 
             $deleteEvents = $form->get('delete_events')->getData();
-            $events = $this->getDoctrine()->getRepository('AppBundle:Agenda')->findBy([
+            $events       = $this->getDoctrine()->getRepository('AppBundle:Agenda')->findBy([
                 'user' => $user,
             ]);
 
@@ -86,6 +87,7 @@ class ProfileController extends BaseController
             $userManager->deleteUser($user);
 
             $this->addFlash('info', 'Votre compte a bien été supprimé. A bientôt sur By Night !');
+
             return $this->redirectToRoute('tbn_main_index');
         } else {
             $errors = $form->getErrors(true);
@@ -98,7 +100,7 @@ class ProfileController extends BaseController
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function editAction(Request $request)
     {
@@ -127,7 +129,7 @@ class ProfileController extends BaseController
 
         /** @var $formFactory FactoryInterface */
         $formFactory = $this->get('fos_user.profile.form.factory');
-        $form = $formFactory->createForm();
+        $form        = $formFactory->createForm();
         $form->setData($user);
 
         $form->handleRequest($request);
@@ -142,7 +144,7 @@ class ProfileController extends BaseController
             $userManager->updateUser($user);
 
             if (null === $response = $event->getResponse()) {
-                $url = $this->generateUrl('fos_user_profile_show');
+                $url      = $this->generateUrl('fos_user_profile_show');
                 $response = new RedirectResponse($url);
             }
 
@@ -152,9 +154,9 @@ class ProfileController extends BaseController
         }
 
         return $this->render('FOSUserBundle:Profile:edit.html.twig', array(
-            'form' => $form->createView(),
+            'form'               => $form->createView(),
             'formChangePassword' => $formChangePassword->createView(),
-            'formDelete' => $formDelete->createView(),
+            'formDelete'         => $formDelete->createView(),
         ));
     }
 

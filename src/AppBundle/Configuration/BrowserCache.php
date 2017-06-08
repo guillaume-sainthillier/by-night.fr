@@ -11,9 +11,7 @@
 
 namespace AppBundle\Configuration;
 
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
-
 
 /**
  * @Annotation

@@ -3,16 +3,14 @@
 namespace Tests\AppBundle\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-
 use AppBundle\Entity\Place;
 use AppBundle\Entity\Agenda;
 use AppBundle\Utils\Merger;
 
-
 class MergerTest extends KernelTestCase
 {
     /**
-     * @var Merger $merger
+     * @var Merger
      */
     protected $merger;
 
@@ -25,27 +23,27 @@ class MergerTest extends KernelTestCase
 
     public function testPlaceMerge()
     {
-        $oldPlace = (new Place)->setId(1)->setNom('Dynamo')->setVille('Toulouse')->setCodePostal('31000');
+        $oldPlace = (new Place())->setId(1)->setNom('Dynamo')->setVille('Toulouse')->setCodePostal('31000');
 
-        $newPlace = (new Place)->setNom('La Dynamo')->setVille('Toulouse')->setCodePostal('31000')->setLatitude(43.6);
+        $newPlace = (new Place())->setNom('La Dynamo')->setVille('Toulouse')->setCodePostal('31000')->setLatitude(43.6);
 
         $this->merger->mergePlace($oldPlace, $newPlace);
 
         $this->assertEquals($oldPlace->getId(), 1);
-        $this->assertEquals($oldPlace->getNom(), "Dynamo");
+        $this->assertEquals($oldPlace->getNom(), 'Dynamo');
         $this->assertEquals($oldPlace->getLatitude(), 43.6);
     }
 
     public function testSimpleMerge()
     {
-        $oldEvent = (new Agenda)
+        $oldEvent = (new Agenda())
             ->setId(1)
-            ->setNom("Lorem Ipsum")
-            ->setDateDebut(\DateTime::createFromFormat("Y-m-d", "2016-29-11"));
+            ->setNom('Lorem Ipsum')
+            ->setDateDebut(\DateTime::createFromFormat('Y-m-d', '2016-29-11'));
 
-        $newEvent = (new Agenda)
-            ->setNom("New Lorem Ipsum")
-            ->setDateDebut(\DateTime::createFromFormat("Y-m-d", "2016-29-11"));
+        $newEvent = (new Agenda())
+            ->setNom('New Lorem Ipsum')
+            ->setDateDebut(\DateTime::createFromFormat('Y-m-d', '2016-29-11'));
 
         $this->merger->mergeEvent($oldEvent, $newEvent);
 

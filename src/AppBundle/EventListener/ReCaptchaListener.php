@@ -3,13 +3,12 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 26/10/2016
- * Time: 23:28
+ * Time: 23:28.
  */
 
 namespace AppBundle\EventListener;
 
 use FOS\UserBundle\Controller\RegistrationController;
-
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 class ReCaptchaListener
@@ -20,7 +19,7 @@ class ReCaptchaListener
     public function __construct($formName, $field)
     {
         $this->formName = $formName;
-        $this->field = $field;
+        $this->field    = $field;
     }
 
     public function onKernelController(FilterControllerEvent $event)
@@ -36,7 +35,7 @@ class ReCaptchaListener
 
             $captchaResponse = $request->get('g-recaptcha-response');
             if ($captchaResponse) {
-                $formData = $request->get($this->formName);
+                $formData               = $request->get($this->formName);
                 $formData[$this->field] = $captchaResponse;
                 $request->set($this->formName, $formData);
                 $request->remove('g-recaptcha-response');

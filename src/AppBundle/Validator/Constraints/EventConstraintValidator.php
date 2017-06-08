@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 26/10/2016
- * Time: 22:24
+ * Time: 22:24.
  */
 
 namespace AppBundle\Validator\Constraints;
@@ -25,7 +25,7 @@ class EventConstraintValidator extends ConstraintValidator
 
     public function __construct(Router $router)
     {
-        $this->router = $router;
+        $this->router        = $router;
         $this->checkIfUpdate = true;
     }
 
@@ -37,14 +37,14 @@ class EventConstraintValidator extends ConstraintValidator
     public function validate($event, Constraint $constraint)
     {
         /**
-         * @var Agenda $event
+         * @var Agenda
          */
         /**
-         * @var Reject $reject
+         * @var Reject
          */
         $reject = $event->getReject();
 
-        /**
+        /*
          * @var EventConstraint $constraint
          */
 
@@ -54,6 +54,7 @@ class EventConstraintValidator extends ConstraintValidator
 
         if ($reject->isEventDeleted()) {
             $this->context->buildViolation($constraint->eventDeleted)->addViolation();
+
             return;
         }
 
@@ -106,17 +107,17 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         if ($reject->isBadUser()) {
-            $link = $this->router->generate("tbn_agenda_details", [
+            $link = $this->router->generate('tbn_agenda_details', [
                 'slug' => $event->getSlug(),
-                "id" => $event->getId(),
-                "city" => $event->getSite()->getSubdomain()
+                'id'   => $event->getId(),
+                'city' => $event->getSite()->getSubdomain(),
             ]);
             $message = str_replace([
-                "[link]",
-                "[/link]"
+                '[link]',
+                '[/link]',
             ], [
                 sprintf('<a href="%s">', $link),
-                "</a>"
+                '</a>',
             ], $constraint->badUser);
             $this->context->buildViolation($message)->addViolation();
         }

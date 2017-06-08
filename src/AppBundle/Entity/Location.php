@@ -5,7 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * City
+ * City.
  *
  * @ORM\Table()
  * @ORM\Entity(readOnly=true)
@@ -25,7 +25,7 @@ class Location
     protected $values;
 
     /**
-     * Set id
+     * Set id.
      *
      * @param string $id
      *
@@ -39,7 +39,7 @@ class Location
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return string
      */
@@ -49,7 +49,7 @@ class Location
     }
 
     /**
-     * Set values
+     * Set values.
      *
      * @param array $values
      *
@@ -63,7 +63,7 @@ class Location
     }
 
     /**
-     * Get values
+     * Get values.
      *
      * @return array
      */

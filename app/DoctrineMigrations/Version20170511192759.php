@@ -26,7 +26,6 @@ class Version20170511192759 extends AbstractMigration
             SET t1.parent_id = t2.id
             WHERE t1.type = 'PPL';");
 
-
         $this->addSql("update admin_zone as t1
             inner join admin_zone t2 ON (
                 t2.type = 'ADM1'
@@ -45,6 +44,6 @@ class Version20170511192759 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql("UPDATE admin_zone SET parent_id = NULL");
+        $this->addSql('UPDATE admin_zone SET parent_id = NULL');
     }
 }

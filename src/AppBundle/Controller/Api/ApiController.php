@@ -26,30 +26,30 @@ class ApiController extends Controller
     public function cityAutocompleteAction(Request $request)
     {
         $term = trim($request->get('q'));
-        if(!$term) {
+        if (!$term) {
             $results = [];
-        }else {
+        } else {
             $paginator = $this->get('knp_paginator');
 
             /**
-             * @var CityRepository $repo
+             * @var CityRepository
              */
-            $repo = $this->get('fos_elastica.manager')->getRepository("AppBundle:City");
+            $repo    = $this->get('fos_elastica.manager')->getRepository('AppBundle:City');
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }
 
         $jsonResults = [];
-        foreach($results as $result) {
+        foreach ($results as $result) {
             /**
-             * @var City $result
+             * @var City
              */
-            if(! $result->getParent()) {
+            if (!$result->getParent()) {
                 continue;
             }
             $jsonResults[] = [
-                "slug" => $result->getSlug(),
-                "name" => sprintf("%s (%s, %s)", $result->getName(), $result->getParent()->getName(), $result->getCountry()->getName())
+                'slug' => $result->getSlug(),
+                'name' => sprintf('%s (%s, %s)', $result->getName(), $result->getParent()->getName(), $result->getCountry()->getName()),
             ];
         }
 

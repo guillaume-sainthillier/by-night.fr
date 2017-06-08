@@ -10,9 +10,8 @@ use AppBundle\Utils\Comparator;
 use AppBundle\Utils\Merger;
 use AppBundle\Utils\Monitor;
 
-
 /**
- * Description of EventHandler
+ * Description of EventHandler.
  *
  * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  */
@@ -25,10 +24,10 @@ class EventHandler
 
     public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, $tempPath)
     {
-        $this->cleaner = $cleaner;
+        $this->cleaner    = $cleaner;
         $this->comparator = $comparator;
-        $this->merger = $merger;
-        $this->tempPath = $tempPath;
+        $this->merger     = $merger;
+        $this->tempPath   = $tempPath;
     }
 
     public function hasToDownloadImage($newURL, Agenda $agenda)
@@ -45,12 +44,12 @@ class EventHandler
             $agenda->setUrl(null);
         } else {
             //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = preg_replace("/(\?|_)(.*)$/", "", pathinfo($agenda->getUrl(), PATHINFO_EXTENSION));
+            $ext = preg_replace("/(\?|_)(.*)$/", '', pathinfo($agenda->getUrl(), PATHINFO_EXTENSION));
 
-            $filename = sha1(uniqid(mt_rand(), true)) . "." . $ext;
+            $filename = sha1(uniqid(mt_rand(), true)) . '.' . $ext;
 
             $tempPath = $this->tempPath . '/' . $filename;
-            $octets = file_put_contents($tempPath, $content);
+            $octets   = file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);
@@ -76,9 +75,10 @@ class EventHandler
     }
 
     /**
-     * @param array $persistedEvents
-     * @param array $persistedPlaces
+     * @param array  $persistedEvents
+     * @param array  $persistedPlaces
      * @param Agenda $event
+     *
      * @return Agenda
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Agenda $event)
@@ -123,7 +123,8 @@ class EventHandler
     /**
      * @return Comparator
      */
-    public function getComparator() {
+    public function getComparator()
+    {
         return $this->comparator;
     }
 }

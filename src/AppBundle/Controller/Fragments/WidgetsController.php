@@ -2,21 +2,19 @@
 
 namespace AppBundle\Controller\Fragments;
 
-
-
 use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use AppBundle\Configuration\BrowserCache;
 
 /**
- * Description of MenuDroitController
+ * Description of MenuDroitController.
  *
  * @author guillaume
  */
 class WidgetsController extends Controller
 {
-    const FB_MEMBERS_LIMIT = 100;
-    const TWEET_LIMIT = 25;
+    const FB_MEMBERS_LIMIT  = 100;
+    const TWEET_LIMIT       = 25;
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
@@ -24,11 +22,11 @@ class WidgetsController extends Controller
      */
     public function programmeTVAction()
     {
-        $parser = $this->get("tbn.programmetv");
+        $parser     = $this->get('tbn.programmetv');
         $programmes = $parser->getProgrammesTV();
 
-        $response = $this->render("City/Hinclude/programme_tv.html.twig", [
-            "programmes" => $programmes
+        $response = $this->render('City/Hinclude/programme_tv.html.twig', [
+            'programmes' => $programmes,
         ]);
 
         return $response
@@ -47,25 +45,25 @@ class WidgetsController extends Controller
             $page = 1;
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository("AppBundle:User");
+        $em   = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('AppBundle:User');
 
-        $count = $repo->findMembresCount();
+        $count   = $repo->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_top_membres', [
-                'page' => $page + 1
+                'page' => $page + 1,
             ]);
         } else {
             $hasNextLink = null;
         }
 
-        $response = $this->render("City/Hinclude/membres.html.twig", [
-            "membres" => $repo->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
-            "hasNextLink" => $hasNextLink,
-            "current" => $current,
-            "count" => $count
+        $response = $this->render('City/Hinclude/membres.html.twig', [
+            'membres'     => $repo->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
+            'hasNextLink' => $hasNextLink,
+            'current'     => $current,
+            'count'       => $count,
         ]);
 
         list($future, $seconds) = $this->getSecondsUntil(6);

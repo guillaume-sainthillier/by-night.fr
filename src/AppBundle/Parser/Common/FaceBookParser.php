@@ -4,7 +4,6 @@ namespace AppBundle\Parser\Common;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
-
 use AppBundle\Repository\SiteRepository;
 use AppBundle\Utils\Monitor;
 use AppBundle\Social\FacebookAdmin;
@@ -12,30 +11,28 @@ use AppBundle\Parser\AgendaParser;
 use AppBundle\Utils\Firewall;
 
 /**
- * Classe de parsing des événéments FB
+ * Classe de parsing des événéments FB.
+ *
  * @author Guillaume SAINTHILLIER
  */
 class FaceBookParser extends AgendaParser
 {
     /**
-     * @var FacebookAdmin $api
+     * @var FacebookAdmin
      */
     protected $api;
 
     /**
-     *
      * @var ObjectManager
      */
     protected $om;
 
     /**
-     *
      * @var SiteRepository
      */
     protected $repoSite;
 
     /**
-     *
      * @var Firewall
      */
     protected $firewall;
@@ -45,8 +42,8 @@ class FaceBookParser extends AgendaParser
         parent::__construct();
 
         $this->firewall = $firewall;
-        $this->api = $api;
-        $this->om = $om;
+        $this->api      = $api;
+        $this->om       = $om;
     }
 
     protected function getPlaces()
@@ -79,10 +76,10 @@ class FaceBookParser extends AgendaParser
         $users = array_unique(array_merge($users, $additional_users));
 
         //Récupération des événements depuis les lieux trouvés
-        Monitor::writeln("Recherche des événements associés aux users ...");
+        Monitor::writeln('Recherche des événements associés aux users ...');
         $events = $this->api->getEventsFromUsers($users, $now);
         Monitor::writeln(sprintf(
-            "<info>%d</info> événements trouvés",
+            '<info>%d</info> événements trouvés',
             count($events)
         ));
 
@@ -95,10 +92,10 @@ class FaceBookParser extends AgendaParser
 
         //Récupération des places depuis les GPS
         $locations = $this->getSiteLocations();
-        Monitor::writeln("Recherche des places associés aux sites ...");
+        Monitor::writeln('Recherche des places associés aux sites ...');
         $gps_places = $this->api->getPlacesFromGPS($locations);
         Monitor::writeln(sprintf(
-            "<info>%d</info> places trouvées",
+            '<info>%d</info> places trouvées',
             count($gps_places)
         ));
 
@@ -109,10 +106,10 @@ class FaceBookParser extends AgendaParser
         $places = array_unique(array_filter(array_merge($places, $gps_places)));
 
 //        Récupération des événements depuis les lieux trouvés
-        Monitor::writeln("Recherche des événements associés aux places ...");
+        Monitor::writeln('Recherche des événements associés aux places ...');
         $events = $this->api->getEventsFromPlaces($places, $now);
         Monitor::writeln(sprintf(
-            "<info>%d</info> événements trouvés",
+            '<info>%d</info> événements trouvés',
             count($events)
         ));
 
@@ -128,7 +125,7 @@ class FaceBookParser extends AgendaParser
         $cities = array_slice($cities, 0, 100);
         $events = $this->api->getEventsFromKeywords($cities, $now);
         Monitor::writeln(sprintf(
-            "<info>%d</info> événements trouvés",
+            '<info>%d</info> événements trouvés',
             count($events)
         ));
 
@@ -139,13 +136,14 @@ class FaceBookParser extends AgendaParser
     {
         return array_filter(array_map(function (GraphNode $node) {
             $owner = $node->getField('owner');
+
             return $owner ? $owner->getField('id') : null;
         }, $nodes));
     }
 
     public function getRawAgendas()
     {
-        $now = new \DateTime;
+        $now = new \DateTime();
 
 //        $events = $this->api->getEventsFromIds(["830234333792674", "1538235536480501"]);
 //        $events = $this->api->getEventsFromIds(["1752921201640362", "1538235536480501", "248556222222718"]);
@@ -153,7 +151,7 @@ class FaceBookParser extends AgendaParser
 
         //Recherche d'événements de l'API en fonction des lieux
         $place_events = $this->getEventsFromPlaces($now);
-        $place_users = $this->getOwners($place_events);
+        $place_users  = $this->getOwners($place_events);
 
         //Recherche d'événements de l'API en fonction des users
         $user_events = $this->getEventsFromUsers($place_users, $now);
@@ -189,32 +187,34 @@ class FaceBookParser extends AgendaParser
     }
 
     /**
-     * Retourne les informations d'un événement en fonction de l'ID de cet événement sur Facebook
+     * Retourne les informations d'un événement en fonction de l'ID de cet événement sur Facebook.
+     *
      * @param $event
+     *
      * @return array l'agenda parsé
      */
     public function getInfoAgenda(GraphNode $event)
     {
         $tab_retour = [];
 
-        $tab_retour['nom'] = $event->getField('name');
-        $tab_retour['facebook_event_id'] = $event->getField('id');
-        $tab_retour['descriptif'] = nl2br($event->getField('description'));
-        $tab_retour['date_debut'] = $event->getField('start_time');
-        $tab_retour['date_fin'] = $event->getField('end_time');
+        $tab_retour['nom']                  = $event->getField('name');
+        $tab_retour['facebook_event_id']    = $event->getField('id');
+        $tab_retour['descriptif']           = nl2br($event->getField('description'));
+        $tab_retour['date_debut']           = $event->getField('start_time');
+        $tab_retour['date_fin']             = $event->getField('end_time');
         $tab_retour['fb_date_modification'] = $event->getField('updated_time');
-        $tab_retour['fb_participations'] = $event->getField('attending_count');
-        $tab_retour['fb_interets'] = $event->getField('maybe_count');
+        $tab_retour['fb_participations']    = $event->getField('attending_count');
+        $tab_retour['fb_interets']          = $event->getField('maybe_count');
 
         //Horaires
         $dateDebut = $tab_retour['date_debut'];
-        $dateFin = $tab_retour['date_fin'];
-        $horaires = null;
+        $dateFin   = $tab_retour['date_fin'];
+        $horaires  = null;
 
         if ($dateDebut instanceof \DateTime && $dateFin instanceof \DateTime) {
             $horaires = sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
         } elseif ($dateDebut instanceof \DateTime) {
-            $horaires = sprintf("A %s", $dateDebut->format("H\hi"));
+            $horaires = sprintf('A %s', $dateDebut->format("H\hi"));
         }
 
         $tab_retour['horaires'] = $horaires;
@@ -228,18 +228,17 @@ class FaceBookParser extends AgendaParser
         //Place
         $place = $event->getField('place');
         if ($place) {
-
-            $tab_retour['place.nom'] = $place->getField('name');
+            $tab_retour['place.nom']        = $place->getField('name');
             $tab_retour['place.facebookId'] = $place->getField('id');
 
             //Location
             $location = $place->getField('location');
             if ($location) {
-                $tab_retour['place.rue'] = $this->api->ensureGoodValue($location->getField('street'));
-                $tab_retour['place.latitude'] = $this->api->ensureGoodValue($location->getField('latitude'));
-                $tab_retour['place.longitude'] = $this->api->ensureGoodValue($location->getField('longitude'));
-                $tab_retour['place.code_postal'] = $this->api->ensureGoodValue($location->getField('zip'));
-                $tab_retour['place.ville'] = $this->api->ensureGoodValue($location->getField('city'));
+                $tab_retour['place.rue']          = $this->api->ensureGoodValue($location->getField('street'));
+                $tab_retour['place.latitude']     = $this->api->ensureGoodValue($location->getField('latitude'));
+                $tab_retour['place.longitude']    = $this->api->ensureGoodValue($location->getField('longitude'));
+                $tab_retour['place.code_postal']  = $this->api->ensureGoodValue($location->getField('zip'));
+                $tab_retour['place.ville']        = $this->api->ensureGoodValue($location->getField('city'));
                 $tab_retour['place.country_name'] = $this->api->ensureGoodValue($location->getField('country'));
             }
         }
@@ -247,13 +246,13 @@ class FaceBookParser extends AgendaParser
         //Propriétaire de l'événement
         $owner = $event->getField('owner');
         if ($owner) {
-            $tab_retour['facebook_owner_id'] = $owner->getField('id');
-            $tab_retour['reservation_internet'] = $this->api->ensureGoodValue($owner->getField('website'));
-            $tab_retour['reservation_telephone'] = $this->api->ensureGoodValue($owner->getField("phone"));
-            $fbCategory = $this->api->ensureGoodValue($owner->getField("category"));
-            list($categorie, $type) = $this->guessTypeEventFromCategory($fbCategory);
+            $tab_retour['facebook_owner_id']       = $owner->getField('id');
+            $tab_retour['reservation_internet']    = $this->api->ensureGoodValue($owner->getField('website'));
+            $tab_retour['reservation_telephone']   = $this->api->ensureGoodValue($owner->getField('phone'));
+            $fbCategory                            = $this->api->ensureGoodValue($owner->getField('category'));
+            list($categorie, $type)                = $this->guessTypeEventFromCategory($fbCategory);
             $tab_retour['categorie_manifestation'] = $categorie;
-            $tab_retour['type_manifestation'] = $type;
+            $tab_retour['type_manifestation']      = $type;
         }
 
         return $tab_retour;
@@ -262,35 +261,35 @@ class FaceBookParser extends AgendaParser
     private function guessTypeEventFromCategory($category)
     {
         $list = [
-            'Album' => ['type' => 'Musique', 'categorie' => ''],
-            'Arts' => ['type' => 'Art', 'categorie' => ''],
-            'Athlete' => ['type' => 'Sport', 'categorie' => ''],
-            'Artist' => ['type' => 'Concert', 'categorie' => ''],
-            'Bar' => ['type' => 'Soirée', 'categorie' => 'Bar'],
-            'Cafe' => ['type' => 'Café', 'categorie' => ''],
-            'Club' => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
-            'Comedian' => ['type' => 'Spectacle', 'categorie' => 'Comédie'],
-            'Concert' => ['type' => 'Concert', 'categorie' => ''],
+            'Album'        => ['type' => 'Musique', 'categorie' => ''],
+            'Arts'         => ['type' => 'Art', 'categorie' => ''],
+            'Athlete'      => ['type' => 'Sport', 'categorie' => ''],
+            'Artist'       => ['type' => 'Concert', 'categorie' => ''],
+            'Bar'          => ['type' => 'Soirée', 'categorie' => 'Bar'],
+            'Cafe'         => ['type' => 'Café', 'categorie' => ''],
+            'Club'         => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
+            'Comedian'     => ['type' => 'Spectacle', 'categorie' => 'Comédie'],
+            'Concert'      => ['type' => 'Concert', 'categorie' => ''],
             'Just For Fun' => ['type' => 'Détente', 'categorie' => ''],
-            'Gallery' => ['type' => 'Art', 'categorie' => 'Galerie'],
-            'Groove' => ['type' => 'Musique', 'categorie' => ''],
-            'Library' => ['type' => 'Culture', 'categorie' => ''],
-            'Museum' => ['type' => 'Culture', 'categorie' => 'Musée'],
-            'Music' => ['type' => 'Musique', 'categorie' => ''],
-            'Night' => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
-            'Political' => ['type' => 'Politique', 'categorie' => ''],
+            'Gallery'      => ['type' => 'Art', 'categorie' => 'Galerie'],
+            'Groove'       => ['type' => 'Musique', 'categorie' => ''],
+            'Library'      => ['type' => 'Culture', 'categorie' => ''],
+            'Museum'       => ['type' => 'Culture', 'categorie' => 'Musée'],
+            'Music'        => ['type' => 'Musique', 'categorie' => ''],
+            'Night'        => ['type' => 'Soirée', 'categorie' => 'Boîte de nuit'],
+            'Political'    => ['type' => 'Politique', 'categorie' => ''],
             'Record Label' => ['type' => 'Musique', 'categorie' => ''],
-            'Restaurant' => ['type' => 'Restaurant', 'categorie' => ''],
-            'Sport' => ['type' => 'Art', 'categorie' => ''],
-            'Travel' => ['type' => 'Culture', 'categorie' => ''],
-            'University' => ['type' => 'Etudiant', 'categorie' => ''],
+            'Restaurant'   => ['type' => 'Restaurant', 'categorie' => ''],
+            'Sport'        => ['type' => 'Art', 'categorie' => ''],
+            'Travel'       => ['type' => 'Culture', 'categorie' => ''],
+            'University'   => ['type' => 'Etudiant', 'categorie' => ''],
         ];
 
-        $types = [];
+        $types      = [];
         $categories = [];
         foreach ($list as $subStr => $group) {
             if (false !== strstr($category, $subStr)) {
-                $types[] = $group['type'];
+                $types[]      = $group['type'];
                 $categories[] = $group['categorie'];
             }
         }

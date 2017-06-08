@@ -5,18 +5,17 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * AdminZone1
+ * AdminZone1.
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZone1Repository", readOnly=true)
  */
 class AdminZone1 extends AdminZone
 {
-
     /**
-     * Set id
+     * Set id.
      *
-     * @param integer $id
+     * @param int $id
      *
      * @return AdminZone1
      */
@@ -28,9 +27,9 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -38,7 +37,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -52,7 +51,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -62,7 +61,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Set latitude
+     * Set latitude.
      *
      * @param float $latitude
      *
@@ -76,7 +75,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get latitude
+     * Get latitude.
      *
      * @return float
      */
@@ -86,7 +85,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Set longitude
+     * Set longitude.
      *
      * @param float $longitude
      *
@@ -100,7 +99,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get longitude
+     * Get longitude.
      *
      * @return float
      */
@@ -110,7 +109,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Set admin1Code
+     * Set admin1Code.
      *
      * @param string $admin1Code
      *
@@ -124,7 +123,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get admin1Code
+     * Get admin1Code.
      *
      * @return string
      */
@@ -134,7 +133,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Set admin2Code
+     * Set admin2Code.
      *
      * @param string $admin2Code
      *
@@ -148,7 +147,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get admin2Code
+     * Get admin2Code.
      *
      * @return string
      */
@@ -158,7 +157,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Set country
+     * Set country.
      *
      * @param \AppBundle\Entity\Country $country
      *
@@ -172,7 +171,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get country
+     * Get country.
      *
      * @return \AppBundle\Entity\Country
      */
@@ -182,7 +181,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Set slug
+     * Set slug.
      *
      * @param string $slug
      *
@@ -196,7 +195,7 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get slug
+     * Get slug.
      *
      * @return string
      */
@@ -206,9 +205,9 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Set population
+     * Set population.
      *
-     * @param integer $population
+     * @param int $population
      *
      * @return AdminZone1
      */
@@ -220,9 +219,9 @@ class AdminZone1 extends AdminZone
     }
 
     /**
-     * Get population
+     * Get population.
      *
-     * @return integer
+     * @return int
      */
     public function getPopulation()
     {

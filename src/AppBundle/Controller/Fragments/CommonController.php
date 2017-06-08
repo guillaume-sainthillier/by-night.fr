@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 14/12/2016
- * Time: 22:23
+ * Time: 22:23.
  */
 
 namespace AppBundle\Controller\Fragments;
@@ -27,10 +27,11 @@ class CommonController extends TBNController
     public function headerAction(City $city = null)
     {
         $response = $this->render('menu.html.twig', [
-            'city' => $city
+            'city' => $city,
         ]);
 
-        $tomorrow = new \DateTime("tomorrow");
+        $tomorrow = new \DateTime('tomorrow');
+
         return $response
             ->setExpires($tomorrow)
             ->setSharedMaxAge($this->getSecondsUntilTomorrow());
@@ -42,8 +43,8 @@ class CommonController extends TBNController
 
         $socials = [
             'facebook' => $this->get('tbn.social.facebook_admin'),
-            'twitter' => $this->get('tbn.social.twitter'),
-            'google' => $this->get('tbn.social.google')
+            'twitter'  => $this->get('tbn.social.twitter'),
+            'google'   => $this->get('tbn.social.google'),
         ];
 
         $params = [];
@@ -56,11 +57,11 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo = $this->getDoctrine()->getRepository("AppBundle:Site");
+        $repo            = $this->getDoctrine()->getRepository('AppBundle:Site');
         $params['sites'] = $repo->findRandomNames();
-        $response = $this->render('City/footer.html.twig', $params);
+        $response        = $this->render('City/footer.html.twig', $params);
 
-        $tomorrow = new \DateTime("tomorrow");
+        $tomorrow = new \DateTime('tomorrow');
 
         return $response
             ->setExpires($tomorrow)

@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 11/10/2016
- * Time: 18:48
+ * Time: 18:48.
  */
 
 namespace AppBundle\Picture;
-
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
@@ -18,15 +17,15 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 class EventProfilePicture
 {
     /**
-     * @var CacheManager $cacheManager
+     * @var CacheManager
      */
     private $cacheManager;
 
-    /** @var UploaderHelper $cacheManager
+    /** @var UploaderHelper
      */
     private $helper;
 
-    /** @var Packages $packages
+    /** @var Packages
      */
     private $packages;
 
@@ -37,9 +36,9 @@ class EventProfilePicture
     public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages, Router $router)
     {
         $this->cacheManager = $cacheManager;
-        $this->helper = $helper;
-        $this->packages = $packages;
-        $this->router = $router;
+        $this->helper       = $helper;
+        $this->packages     = $packages;
+        $this->router       = $router;
     }
 
     public function getOriginalPictureUrl(Agenda $agenda)
@@ -89,6 +88,7 @@ class EventProfilePicture
         if ($agenda->getPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
             $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
+
             return $this->packages->getUrl(
                 $webPath
             );
@@ -97,6 +97,7 @@ class EventProfilePicture
         if ($agenda->getSystemPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
             $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
+
             return $this->packages->getUrl(
                 $webPath
             );
@@ -108,6 +109,7 @@ class EventProfilePicture
 
         $webPath = $this->cacheManager->getBrowserPath('img/empty_event.png', $thumb);
         $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
+
         return $this->packages->getUrl(
             $webPath
         );

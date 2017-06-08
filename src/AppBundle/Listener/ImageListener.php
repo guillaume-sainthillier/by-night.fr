@@ -2,10 +2,8 @@
 
 namespace AppBundle\Listener;
 
-
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Vich\UploaderBundle\Event\Event;
-
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\Site;
 use AppBundle\Entity\User;
@@ -34,7 +32,7 @@ class ImageListener
         }
 
         $prefix = $event->getMapping()->getUriPrefix();
-        $path = $prefix . "/" . $event->getMapping()->getFileName($object);
+        $path   = $prefix . '/' . $event->getMapping()->getFileName($object);
 
         foreach ($filters as $filter) {
             if ($this->cacheManager->isStored($path, $filter)) {

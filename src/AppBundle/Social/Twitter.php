@@ -1,39 +1,35 @@
 <?php
 
-
 namespace AppBundle\Social;
 
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\City;
-use AppBundle\Entity\Site;
 use AppBundle\Entity\User;
 use TwitterOAuth\Auth\SingleUserAuth;
-/**
+/*
  * Serializer Namespace
  */
 use TwitterOAuth\Serializer\ArraySerializer;
 
-
 /**
- * Description of Twitter
+ * Description of Twitter.
  *
  * @author guillaume
  */
 class Twitter extends Social
 {
     /**
-     *
-     * @var SingleUserAuth $client
+     * @var SingleUserAuth
      */
     protected $client;
 
     public function constructClient()
     {
         $config = [
-            'consumer_key' => $this->id,
-            'consumer_secret' => $this->secret,
-            'oauth_token' => '',
-            'oauth_token_secret' => ''
+            'consumer_key'       => $this->id,
+            'consumer_secret'    => $this->secret,
+            'oauth_token'        => '',
+            'oauth_token_secret' => '',
         ];
 
         $this->client = new SingleUserAuth($config, new ArraySerializer());
@@ -59,10 +55,10 @@ class Twitter extends Social
         $this->init();
         try {
             $params = [
-                'q' => sprintf('#%s filter:safe', $city->getName()),
-                'lang' => 'fr',
+                'q'           => sprintf('#%s filter:safe', $city->getName()),
+                'lang'        => 'fr',
                 'result_type' => 'recent',
-                'count' => $limit
+                'count'       => $limit,
             ];
 
             if ($max_id) {
@@ -82,16 +78,16 @@ class Twitter extends Social
         $info = $this->siteManager->getSiteInfo();
         if ($info->getTwitterAccessToken() !== null) {
             $config = [
-                'consumer_key' => $this->id,
-                'consumer_secret' => $this->secret,
-                'oauth_token' => $info->getTwitterAccessToken(),
-                'oauth_token_secret' => $info->getTwitterTokenSecret()
+                'consumer_key'       => $this->id,
+                'consumer_secret'    => $this->secret,
+                'oauth_token'        => $info->getTwitterAccessToken(),
+                'oauth_token_secret' => $info->getTwitterTokenSecret(),
             ];
 
             $client = new SingleUserAuth($config, new ArraySerializer());
 
             $reponse = $client->post('statuses/update', [
-                'status' => sprintf("%s : %s", $title, $url)
+                'status' => sprintf('%s : %s', $title, $url),
             ]);
 
             if (isset($reponse->id_str)) {
@@ -105,22 +101,22 @@ class Twitter extends Social
     protected function post(User $user, Agenda $agenda)
     {
         $info = $user->getInfo();
-        if ($user->hasRole("ROLE_TWITTER") && $agenda->getTweetPostId() === null && $info !== null && $info->getTwitterAccessToken() !== null) {
+        if ($user->hasRole('ROLE_TWITTER') && $agenda->getTweetPostId() === null && $info !== null && $info->getTwitterAccessToken() !== null) {
             $config = [
-                'consumer_key' => $this->id,
-                'consumer_secret' => $this->secret,
-                'oauth_token' => $info->getTwitterAccessToken(),
-                'oauth_token_secret' => $info->getTwitterTokenSecret()
+                'consumer_key'       => $this->id,
+                'consumer_secret'    => $this->secret,
+                'oauth_token'        => $info->getTwitterAccessToken(),
+                'oauth_token_secret' => $info->getTwitterTokenSecret(),
             ];
 
             $client = new SingleUserAuth($config, new ArraySerializer());
 
-            $ads = " " . $this->getLink($agenda) . " #" . $this->siteManager->getCurrentSite()->getNom() . "ByNight";
+            $ads = ' ' . $this->getLink($agenda) . ' #' . $this->siteManager->getCurrentSite()->getNom() . 'ByNight';
 
             $status = substr($agenda->getNom(), 0, 140 - strlen($ads)) . $ads;
 
             $reponse = $client->post('statuses/update', [
-                'status' => $status
+                'status' => $status,
             ]);
 
             if (isset($reponse->id_str)) {
@@ -132,21 +128,21 @@ class Twitter extends Social
     protected function afterPost(User $user, Agenda $agenda)
     {
         $info = $this->siteManager->getSiteInfo();
-        if ($user->hasRole("ROLE_TWITTER") && $agenda->getTweetPostSystemId() === null && $agenda->getTweetPostId() !== null && $info->getTwitterAccessToken() !== null) {
+        if ($user->hasRole('ROLE_TWITTER') && $agenda->getTweetPostSystemId() === null && $agenda->getTweetPostId() !== null && $info->getTwitterAccessToken() !== null) {
             $config = [
-                'consumer_key' => $this->id,
-                'consumer_secret' => $this->secret,
-                'oauth_token' => $info->getTwitterAccessToken(),
-                'oauth_token_secret' => $info->getTwitterTokenSecret()
+                'consumer_key'       => $this->id,
+                'consumer_secret'    => $this->secret,
+                'oauth_token'        => $info->getTwitterAccessToken(),
+                'oauth_token_secret' => $info->getTwitterTokenSecret(),
             ];
 
             $client = new SingleUserAuth($config, new ArraySerializer());
-            $ads = sprintf(" %s #%sByNight", $this->getLink($agenda), $this->siteManager->getCurrentSite()->getNom());
-            $titre = sprintf("%s présente %s", $user->getUsername(), $agenda->getNom());
+            $ads    = sprintf(' %s #%sByNight', $this->getLink($agenda), $this->siteManager->getCurrentSite()->getNom());
+            $titre  = sprintf('%s présente %s', $user->getUsername(), $agenda->getNom());
             $status = substr($titre, 0, 140 - strlen($ads)) . $ads;
 
             $reponse = $client->post('statuses/update', [
-                'status' => $status
+                'status' => $status,
             ]);
 
             if (isset($reponse->id_str)) {
@@ -157,6 +153,6 @@ class Twitter extends Social
 
     protected function getName()
     {
-        return "Twitter";
+        return 'Twitter';
     }
 }

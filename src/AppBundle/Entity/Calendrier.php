@@ -4,9 +4,8 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-
 /**
- * Calendrier
+ * Calendrier.
  *
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CalendrierRepository")
  * @ORM\Table(name="Calendrier",
@@ -18,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Calendrier
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -27,14 +26,14 @@ class Calendrier
     protected $id;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="participe", type="boolean")
      */
     protected $participe;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="interet", type="boolean")
      */
@@ -60,13 +59,13 @@ class Calendrier
     protected $lastDate;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->lastDate = new \DateTime();
+        $this->lastDate  = new \DateTime();
         $this->participe = false;
-        $this->interet = false;
+        $this->interet   = false;
     }
 
     /**
@@ -75,24 +74,23 @@ class Calendrier
      */
     public function preUpload()
     {
-        $this->lastDate = new \DateTime;
+        $this->lastDate = new \DateTime();
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
         return $this->id;
     }
 
-
     /**
-     * Set participe
+     * Set participe.
      *
-     * @param boolean $participe
+     * @param bool $participe
      *
      * @return Calendrier
      */
@@ -104,9 +102,9 @@ class Calendrier
     }
 
     /**
-     * Get participe
+     * Get participe.
      *
-     * @return boolean
+     * @return bool
      */
     public function getParticipe()
     {
@@ -114,9 +112,9 @@ class Calendrier
     }
 
     /**
-     * Set interet
+     * Set interet.
      *
-     * @param boolean $interet
+     * @param bool $interet
      *
      * @return Calendrier
      */
@@ -128,18 +126,17 @@ class Calendrier
     }
 
     /**
-     * Get interet
+     * Get interet.
      *
-     * @return boolean
+     * @return bool
      */
     public function getInteret()
     {
         return $this->interet;
     }
 
-
     /**
-     * Set user
+     * Set user.
      *
      * @param User $user
      *
@@ -153,7 +150,7 @@ class Calendrier
     }
 
     /**
-     * Get user
+     * Get user.
      *
      * @return \AppBundle\Entity\User
      */
@@ -163,7 +160,7 @@ class Calendrier
     }
 
     /**
-     * Set agenda
+     * Set agenda.
      *
      * @param Agenda $agenda
      *
@@ -177,7 +174,7 @@ class Calendrier
     }
 
     /**
-     * Get agenda
+     * Get agenda.
      *
      * @return \AppBundle\Entity\Agenda
      */
@@ -187,9 +184,10 @@ class Calendrier
     }
 
     /**
-     * Set lastDate
+     * Set lastDate.
      *
      * @param \DateTime $lastDate
+     *
      * @return Calendrier
      */
     public function setLastDate($lastDate)
@@ -200,7 +198,7 @@ class Calendrier
     }
 
     /**
-     * Get lastDate
+     * Get lastDate.
      *
      * @return \DateTime
      */
@@ -211,6 +209,6 @@ class Calendrier
 
     public function __toString()
     {
-        return "#" . $this->id ?: '?';
+        return '#' . $this->id ?: '?';
     }
 }

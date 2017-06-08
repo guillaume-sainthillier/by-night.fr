@@ -9,7 +9,7 @@ use Symfony\Component\Debug\Debug;
 //umask(0000);
 
 /**
- * @var Composer\Autoload\ClassLoader $loader
+ * @var Composer\Autoload\ClassLoader
  */
 $loader = require __DIR__.'/../vendor/autoload.php';
 Debug::enable();
@@ -17,7 +17,7 @@ Debug::enable();
 $kernel = new AppKernel('dev', true);
 //$kernel = new AppCache($kernel);
 
-$request = Request::createFromGlobals();
+$request  = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);
