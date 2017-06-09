@@ -10,8 +10,8 @@ module.exports = function (grunt) {
         sprite: {
             all: {
                 src: '<%= pkg.baseCss %>/img/programmes/*.png',
-                dest: '<%= pkg.baseCss %>/img/spritesheet.png',
-                destCss: '<%= pkg.baseCss %>/sprites.css'
+                dest: '<%= pkg.baseDist %>/img/spritesheet.png',
+                destCss: '<%= pkg.baseDist %>/css/sprites.css'
             }
         },
 
@@ -209,11 +209,11 @@ module.exports = function (grunt) {
         //Watch des fichiers js / css
         watch: {
             css: {
-                files: ['<%= pkg.baseCss %>/*.css', '<%= pkg.baseCss %>/*/*.css', '!<%= pkg.baseCss %>/sprites.css'],
+                files: ['<%= pkg.baseCss %>/*.css'],
                 tasks: ['css']
             },
             javascript: {
-                files: ['<%= pkg.baseJs %>/*.js', '<%= pkg.baseJs %>/*/*.js'],
+                files: ['<%= pkg.baseJs %>/*.js'],
                 tasks: ['js']
             }
         },
@@ -395,7 +395,7 @@ module.exports = function (grunt) {
                 options: {
                     jsonOutput: true,
                     jsonOutputFilename: '<%= pkg.baseDist %>/images_mapping.json',
-                    assets: [ '<%= pkg.baseDist %>/**/*.{jpg,jpeg,png,gif}', '!<%= pkg.baseDist %>/**/programmes/*.{jpg,jpeg,png,gif}' ]
+                    assets: [ '<%= pkg.baseDist %>/*.{jpg,jpeg,png,gif}', '!<%= pkg.baseDist %>/**/programmes/*.{jpg,jpeg,png,gif}' ]
                 },
                 src: ['<%= pkg.baseDist %>/**/*.min.*.css']
             },
@@ -427,10 +427,10 @@ module.exports = function (grunt) {
         grunt.file.write('app/config/mapping_assets.yml', content);
     });
 
-    grunt.registerTask('default', ['css', 'js', 'cache']);
+    grunt.registerTask('default', ['css', 'js', 'symlink', 'cache']);
     grunt.registerTask('css', ['concat', 'cssmin']);
     grunt.registerTask('cache', ['clean', 'cacheBust', 'merge-json', 'convert_mapping']);
     grunt.registerTask('js', ['uglify']);
     grunt.registerTask('assets:install', ['symlink']);
-    grunt.registerTask('deploy', ['symlink', 'sprite', 'default']);
+    grunt.registerTask('deploy', ['sprite', 'default']);
 };
