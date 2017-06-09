@@ -106,7 +106,7 @@ class EchantillonHandler
         $byCityPlaces = [];
 
         foreach ($places as $place) {
-            /**
+            /*
              * @var Place
              */
             if ($place->getFacebookId()) {
@@ -149,7 +149,7 @@ class EchantillonHandler
         $byFbIdEvents = [];
         $byDateEvents = [];
         foreach ($events as $event) {
-            /**
+            /*
              * @var Agenda
              */
             if ($event->getFacebookEventId()) {

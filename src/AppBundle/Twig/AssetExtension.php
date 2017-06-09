@@ -21,8 +21,8 @@ class AssetExtension extends \Twig_Extension
     public function __construct(BaseAssetExtension $assetExtension, array $mappingAssets, $env)
     {
         $this->assetExtension = $assetExtension;
-        $this->env = $env;
-        $this->mappingAssets = $mappingAssets;
+        $this->env            = $env;
+        $this->mappingAssets  = $mappingAssets;
     }
 
     public function getFunctions()
@@ -32,12 +32,13 @@ class AssetExtension extends \Twig_Extension
         ];
     }
 
-    public function appAsset($path, $packageName = null) {
-        if($this->env !== 'dev') {
+    public function appAsset($path, $packageName = null)
+    {
+        if ($this->env !== 'dev') {
             return $this->assetExtension->getAssetUrl($path, $packageName);
         }
 
-        if(isset($this->mappingAssets[$path])) {
+        if (isset($this->mappingAssets[$path])) {
             $path = $this->mappingAssets[$path];
         }
 
