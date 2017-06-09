@@ -12,7 +12,7 @@
 
 
 # Bower & NPM
-/web/bower/*
+/front/bower/*
 /npm-debug.log
 
 # ElasticSearch

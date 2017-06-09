@@ -11,7 +11,7 @@
 
         <!-- Chrome mobile -->
         <meta name="theme-color" content="#3f51b5">
-        <link rel="icon" sizes="192x192" href="{{ asset('img/by-night_192x192.png') }}">
+        <link rel="icon" sizes="192x192" href="{{ app_asset('img/by-night_192x192.png') }}">
         <!-- ./Chrome mobile -->
 
         <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
@@ -26,7 +26,7 @@
         <meta property="og:type" content="{% spaceless %}{% block og_type %}website{% endblock %}{% endspaceless %}">
         <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('tbn_main_index') }}{% endblock %}{% endspaceless %}">
         <meta property="og:locale" content="fr" />
-        <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
+        <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(app_asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
         <!-- ./OpenGraph -->
 
         <!-- IE10+ -->
@@ -67,9 +67,9 @@
         
         <!-- CSS -->
         <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400%7CRoboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="{{ app_asset('prod/main/css/style.min.css', 'asset') }}" type="text/css" >
+        <link rel="stylesheet" href="{{ app_asset('main/css/style.min.css', 'asset') }}" type="text/css" >
         {% block css %}{% endblock %}
-        <link rel="stylesheet" href="{{ app_asset('prod/css/print.min.css', 'asset') }}" type="text/css" media="print">
+        <link rel="stylesheet" href="{{ app_asset('css/print.min.css', 'asset') }}" type="text/css" media="print">
         <!-- ./CSS -->
         
         <!--[if lt IE 9]>
@@ -189,7 +189,7 @@
         </a>
         
         <!-- JS -->
-        <script type="text/javascript" src="{{ app_asset('prod/main/js/scripts.min.js', 'asset') }}"></script>
+        <script type="text/javascript" src="{{ app_asset('main/js/scripts.min.js', 'asset') }}"></script>
         {%- block js -%}{%- endblock -%}
         <script type="text/javascript"> 
             $(document).ready(function(){

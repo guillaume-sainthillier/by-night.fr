@@ -18,15 +18,21 @@ module.exports = function (grunt) {
         //Symlink pour liens relatifs dans les CSS
         symlink: {
             options: {
-                overwrite: true
+                overwrite: false
             },
             expanded: {
                 files: [
                     {
                         expand: true,
+                        src: ['**/*.*'],
+                        dest: '<%= pkg.baseDist %>/img',
+                        cwd: '<%= pkg.baseImg %>'
+                    },
+                    {
+                        expand: true,
                         src: ['*'],
                         dest: '<%= pkg.baseDist %>/evenements/font',
-                        cwd: 'web/fonts'
+                        cwd: '<%= pkg.baseFont %>'
                     },
                     {
                         expand: true,
@@ -50,19 +56,19 @@ module.exports = function (grunt) {
                         expand: true,
                         src: ['*'],
                         dest: '<%= pkg.baseDist %>/evenements/images',
-                        cwd: 'web/img'
+                        cwd: '<%= pkg.baseImg %>'
                     },
                     {
                         expand: true,
                         src: ['*'],
                         dest: '<%= pkg.baseDist %>/widgets/images',
-                        cwd: 'web/img'
+                        cwd: '<%= pkg.baseDist %>/img'
                     },
                     {
                         expand: true,
                         src: ['*'],
                         dest: '<%= pkg.baseDist %>/main/img/icons',
-                        cwd: 'web/img/icons'
+                        cwd: '<%= pkg.baseImg %>/icons'
                     },
                     {
                         expand: true,
@@ -362,24 +368,56 @@ module.exports = function (grunt) {
             }
         },
         clean: {
-            js: ['<%= pkg.baseDist %>/**/*.*.js', '!<%= pkg.baseDist %>/**/*.min.js'],
-            css: ['<%= pkg.baseDist %>/**/*.*.css', '!<%= pkg.baseDist %>/**/*.min.css'],
+            js: ['<%= pkg.baseDist %>/**/*.*.js', '<%= pkg.baseDist %>/**/*.js', '!<%= pkg.baseDist %>/**/*.min.js'],
+            css: ['<%= pkg.baseDist %>/**/*.*.css', '<%= pkg.baseDist %>/**/*.css', '!<%= pkg.baseDist %>/**/*.min.css'],
+            images: ['<%= pkg.baseDist %>/**/*.*.{jpg,jpeg,png,gif}'],
+            fonts: ['<%= pkg.baseDist %>/**/*.*.{otf,eot,svg,ttf,woff,woff2}'],
+            mappings: ['<%= pkg.baseDist %>/*.json'],
         },
         cacheBust: {
             js: {
                 options: {
                     jsonOutput: true,
-                    jsonOutputFilename: 'assets_mapping.json',
-                    assets: ['<%= pkg.baseDist %>/**/*.min.js', '<%= pkg.baseDist %>/**/*.min.css']
+                    jsonOutputFilename: '<%= pkg.baseDist %>/js_mapping.json',
+                    assets: [ '<%= pkg.baseDist %>/**/*.min.js' ]
                 },
                 src: []
+            },
+            css: {
+                options: {
+                    jsonOutput: true,
+                    jsonOutputFilename: '<%= pkg.baseDist %>/css_mapping.json',
+                    assets: [ '<%= pkg.baseDist %>/**/*.min.css' ]
+                },
+                src: []
+            },
+            images: {
+                options: {
+                    jsonOutput: true,
+                    jsonOutputFilename: '<%= pkg.baseDist %>/images_mapping.json',
+                    assets: [ '<%= pkg.baseDist %>/**/*.{jpg,jpeg,png,gif}', '!<%= pkg.baseDist %>/**/programmes/*.{jpg,jpeg,png,gif}' ]
+                },
+                src: ['<%= pkg.baseDist %>/**/*.min.*.css']
+            },
+            fonts: {
+                options: {
+                    assets: [ '<%= pkg.baseDist %>/**/*.{otf,eot,svg,ttf,woff,woff2}' ]
+                },
+                src: ['<%= pkg.baseDist %>/**/*.min.*.css']
+            }
+        },
+        "merge-json": {
+            "mapping": {
+                files: {
+                    "<%= pkg.baseDist %>/mapping.json": [ "<%= pkg.baseDist %>/*_mapping.json" ],
+                }
             }
         }
     });
 
     // Default task(s).
     grunt.registerTask('convert_mapping', 'Converti le fichier issu de cache pour intégration dans Symfony ', function() {
-        var mapping = grunt.file.readJSON(grunt.config('cacheBust.js.options.jsonOutputFilename'));
+        var mapping = grunt.file.readJSON(grunt.config.get('pkg.baseDist') + "/mapping.json");
         var config = {
             'parameters': {
                 'mapping_assets': mapping
@@ -389,9 +427,9 @@ module.exports = function (grunt) {
         grunt.file.write('app/config/mapping_assets.yml', content);
     });
 
-    grunt.registerTask('default', ['css', 'js']);
+    grunt.registerTask('default', ['css', 'js', 'cache']);
     grunt.registerTask('css', ['concat', 'cssmin']);
-    grunt.registerTask('cache', ['clean', 'cacheBust', 'convert_mapping']);
+    grunt.registerTask('cache', ['clean', 'cacheBust', 'merge-json', 'convert_mapping']);
     grunt.registerTask('js', ['uglify']);
     grunt.registerTask('assets:install', ['symlink']);
     grunt.registerTask('deploy', ['symlink', 'sprite', 'default']);

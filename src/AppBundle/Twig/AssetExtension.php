@@ -6,6 +6,7 @@ use Symfony\Bridge\Twig\Extension\AssetExtension as BaseAssetExtension;
 
 class AssetExtension extends \Twig_Extension
 {
+    const ASSET_PREFIX = 'prod/';
     /**
      * @var BaseAssetExtension
      */
@@ -16,6 +17,9 @@ class AssetExtension extends \Twig_Extension
      */
     private $env;
 
+    /**
+     * @var array
+     */
     private $mappingAssets;
 
     public function __construct(BaseAssetExtension $assetExtension, array $mappingAssets, $env)
@@ -34,7 +38,8 @@ class AssetExtension extends \Twig_Extension
 
     public function appAsset($path, $packageName = null)
     {
-        if ($this->env !== 'dev') {
+        $path = self::ASSET_PREFIX.$path;
+        if ($this->env === 'dev') {
             return $this->assetExtension->getAssetUrl($path, $packageName);
         }
 

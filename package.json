@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "author": "Guillaume Sainthillier <guillaume@sainthillier.fr>",
   "private": true,
-  "baseVendor": "web/bower",
-  "baseJs": "web/js",
-  "baseCss": "web/css",
+  "baseVendor": "front/bower",
+  "baseJs": "front/js",
+  "baseCss": "front/css",
+  "baseImg": "front/img",
+  "baseFont": "front/fonts",
   "baseDist": "web/prod",
   "dependencies": {
     "grunt": "^0.4.5",
@@ -17,6 +19,7 @@
     "grunt-contrib-symlink": "^0.3.0",
     "grunt-contrib-uglify": "^0.2.7",
     "grunt-contrib-watch": "^0.4.4",
+    "grunt-merge-json": "^0.9.5",
     "grunt-spritesmith": "^6.4.0",
     "load-grunt-tasks": "^3.5.2",
     "yamljs": "^0.2.10"
