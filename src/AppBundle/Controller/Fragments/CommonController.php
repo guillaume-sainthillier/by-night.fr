@@ -57,8 +57,8 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo            = $this->getDoctrine()->getRepository('AppBundle:Site');
-        $params['sites'] = $repo->findRandomNames();
+        $repo            = $this->getDoctrine()->getRepository('AppBundle:City');
+        $params['cities'] = $repo->findRandomNames();
         $response        = $this->render('City/footer.html.twig', $params);
 
         $tomorrow = new \DateTime('tomorrow');

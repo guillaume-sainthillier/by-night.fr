@@ -12,6 +12,21 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class CityRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findRandomNames($limit = 5)
+    {
+        $results = $this
+            ->createQueryBuilder('c')
+            ->select('c.name, c.slug')
+            ->orderBy('c.population', 'DESC')
+            ->setMaxResults(50)
+            ->getQuery()
+            ->getScalarResult();
+
+        shuffle($results);
+
+        return array_slice($results, 0, $limit);
+    }
+
     public function findLocations()
     {
         $results = $this->createQueryBuilder('c')
@@ -59,6 +74,7 @@ class CityRepository extends \Doctrine\ORM\EntityRepository
             ->setMaxResults($maxResults)
             ->getQuery()
             ->setCacheable(true)
+            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
             ->useResultCache(true)
             ->useQueryCache(true)
             ->getResult();
@@ -71,6 +87,8 @@ class CityRepository extends \Doctrine\ORM\EntityRepository
             ->where('c.slug = :slug')
             ->setParameter('slug', $slug)
             ->getQuery()
+            ->setCacheable(true)
+            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
             ->useResultCache(true)
             ->useQueryCache(true)
             ->getOneOrNullResult();
