@@ -9,7 +9,7 @@ module.exports = function (grunt) {
         //Génération de sprites pour le programme TV
         sprite: {
             all: {
-                src: '<%= pkg.baseCss %>/img/programmes/*.png',
+                src: '<%= pkg.baseImg %>/programmes/*.png',
                 dest: '<%= pkg.baseDist %>/img/spritesheet.png',
                 destCss: '<%= pkg.baseDist %>/css/sprites.css'
             }
@@ -24,7 +24,7 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
-                        src: ['**/*.*'],
+                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*'],
                         dest: '<%= pkg.baseDist %>/img',
                         cwd: '<%= pkg.baseImg %>'
                     },
@@ -54,19 +54,25 @@ module.exports = function (grunt) {
                     },
                     {
                         expand: true,
-                        src: ['*'],
+                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*'],
                         dest: '<%= pkg.baseDist %>/evenements/images',
                         cwd: '<%= pkg.baseImg %>'
                     },
                     {
                         expand: true,
-                        src: ['*'],
+                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*', '!**/spritesheet.png'],
                         dest: '<%= pkg.baseDist %>/widgets/images',
                         cwd: '<%= pkg.baseDist %>/img'
                     },
                     {
                         expand: true,
-                        src: ['*'],
+                        src: ['spritesheet.png'],
+                        dest: '<%= pkg.baseDist %>/widgets/img',
+                        cwd: '<%= pkg.baseDist %>/img'
+                    },
+                    {
+                        expand: true,
+                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*'],
                         dest: '<%= pkg.baseDist %>/main/img/icons',
                         cwd: '<%= pkg.baseImg %>/icons'
                     },
@@ -150,7 +156,7 @@ module.exports = function (grunt) {
             widgetCss: {
                 src: [
                     '<%= pkg.baseCss %>/components/widgets.css',
-                    '<%= pkg.baseCss %>/sprites.css'
+                    '<%= pkg.baseDist %>/css/sprites.css'
                 ],
                 dest: '<%= pkg.baseDist %>/widgets/css/widgets.css',
                 nonull: true
@@ -369,7 +375,7 @@ module.exports = function (grunt) {
         },
         clean: {
             js: ['<%= pkg.baseDist %>/**/*.*.js', '<%= pkg.baseDist %>/**/*.js', '!<%= pkg.baseDist %>/**/*.min.js'],
-            css: ['<%= pkg.baseDist %>/**/*.*.css', '<%= pkg.baseDist %>/**/*.css', '!<%= pkg.baseDist %>/**/*.min.css'],
+            css: ['<%= pkg.baseDist %>/**/*.*.css', '<%= pkg.baseDist %>/**/*.css', '!<%= pkg.baseDist %>/**/*.min.css', '!<%= pkg.baseDist %>/css/sprites.css'],
             images: ['<%= pkg.baseDist %>/**/*.*.{jpg,jpeg,png,gif}'],
             fonts: ['<%= pkg.baseDist %>/**/*.*.{otf,eot,svg,ttf,woff,woff2}'],
             mappings: ['<%= pkg.baseDist %>/*.json'],
@@ -395,7 +401,7 @@ module.exports = function (grunt) {
                 options: {
                     jsonOutput: true,
                     jsonOutputFilename: '<%= pkg.baseDist %>/images_mapping.json',
-                    assets: [ '<%= pkg.baseDist %>/*.{jpg,jpeg,png,gif}', '!<%= pkg.baseDist %>/**/programmes/*.{jpg,jpeg,png,gif}' ]
+                    assets: [ '<%= pkg.baseDist %>/**/*.{jpg,jpeg,png,gif}', '!<%= pkg.baseDist %>/**/programmes/*.{jpg,jpeg,png,gif}' ]
                 },
                 src: ['<%= pkg.baseDist %>/**/*.min.*.css']
             },
