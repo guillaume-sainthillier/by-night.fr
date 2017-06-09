@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
     var YAML = require('yamljs');
-
+    
     // Configuration du projet
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -370,7 +370,7 @@ module.exports = function (grunt) {
                 options: {
                     jsonOutput: true,
                     jsonOutputFilename: 'assets_mapping.json',
-                    assets: ['<%= pkg.baseDist %>/**/*.min.js', '<%= pkg.baseDist %>/**/*.min.css']
+                    assets: ['<%= pkg.baseDist %>/**/*.js', '<%= pkg.baseDist %>/**/*.css']
                 },
                 src: []
             }
