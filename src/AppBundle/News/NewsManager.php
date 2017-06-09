@@ -8,6 +8,7 @@ use AppBundle\Entity\Agenda;
 use AppBundle\Entity\News;
 use AppBundle\Social\FacebookAdmin;
 use AppBundle\Social\Twitter;
+use Twig\Environment;
 
 class NewsManager
 {
@@ -17,7 +18,7 @@ class NewsManager
     private $em;
 
     /**
-     * @var \Twig_Environment
+     * @var Environment
      */
     private $twig;
 
@@ -36,7 +37,7 @@ class NewsManager
      */
     private $twitter;
 
-    public function __construct(EntityManager $em, \Twig_Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
+    public function __construct(EntityManager $em, Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
     {
         $this->em       = $em;
         $this->twig     = $twig;
