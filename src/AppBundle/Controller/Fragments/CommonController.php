@@ -10,7 +10,6 @@ namespace AppBundle\Controller\Fragments;
 
 use AppBundle\Controller\TBNController;
 use AppBundle\Entity\City;
-use AppBundle\Entity\Site;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -57,9 +56,9 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo            = $this->getDoctrine()->getRepository('AppBundle:City');
+        $repo             = $this->getDoctrine()->getRepository('AppBundle:City');
         $params['cities'] = $repo->findRandomNames();
-        $response        = $this->render('City/footer.html.twig', $params);
+        $response         = $this->render('City/footer.html.twig', $params);
 
         $tomorrow = new \DateTime('tomorrow');
 
