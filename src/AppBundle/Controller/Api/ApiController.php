@@ -41,7 +41,7 @@ class ApiController extends Controller
 
         $jsonResults = [];
         foreach ($results as $result) {
-            /**
+            /*
              * @var City
              */
             if (!$result->getParent()) {
