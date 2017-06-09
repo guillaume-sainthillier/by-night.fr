@@ -298,11 +298,11 @@
 {%- endblock %}
 
 {% block css %}
-    <link rel="stylesheet" href="{{ asset('prod/widgets/css/widgets.min.css', 'asset') }}" type="text/css">
-    <link rel="stylesheet" href="{{ asset('prod/evenements/css/details.min.css', 'asset') }}" type="text/css">
+    <link rel="stylesheet" href="{{ app_asset('prod/widgets/css/widgets.min.css', 'asset') }}" type="text/css">
+    <link rel="stylesheet" href="{{ app_asset('prod/evenements/css/details.min.css', 'asset') }}" type="text/css">
 {% endblock %}
         
 {% block js %}
-    <script src="{{ asset('prod/widgets/js/widgets.min.js', 'asset') }}" type="text/javascript"></script>
-    <script src="{{ asset('prod/evenements/js/details.min.js', 'asset') }}" type="text/javascript"></script>
+    <script src="{{ app_asset('prod/widgets/js/widgets.min.js', 'asset') }}" type="text/javascript"></script>
+    <script src="{{ app_asset('prod/evenements/js/details.min.js', 'asset') }}" type="text/javascript"></script>
 {% endblock %}

@@ -53,9 +53,9 @@
 {% endblock %}
 
 {% block js -%}
-    <script src="{{ asset('prod/search/js/search.min.js', 'asset') }}" type="text/javascript"></script>
+    <script src="{{ app_asset('prod/search/js/search.min.js', 'asset') }}" type="text/javascript"></script>
 {%- endblock %}
 
 {% block css -%}
-    <link rel="stylesheet" href="{{ asset('prod/search/css/search.min.css', 'asset') }}" type="text/css">
+    <link rel="stylesheet" href="{{ app_asset('prod/search/css/search.min.css', 'asset') }}" type="text/css">
 {%- endblock %}

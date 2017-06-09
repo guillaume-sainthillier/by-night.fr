@@ -2,7 +2,7 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-#    - { resource: "@AppBundle/Resources/config/services.yml" }
+    - { resource: mapping_assets.yml, ignore_errors: true }
     - { resource: sem_var.yml, ignore_errors: true }
 
 framework:

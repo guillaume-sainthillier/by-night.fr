@@ -133,6 +133,12 @@ services:
         tags:
             - { name: twig.extension }
 
+    app.asset_extension:
+        class: AppBundle\Twig\AssetExtension
+        arguments: [ "@twig.extension.assets", "%mapping_assets%", "%kernel.environment%" ]
+        tags:
+            - { name: twig.extension }
+
     #Forms
     #Collections
     tbn.collections:
