@@ -161,14 +161,6 @@ class Firewall
             $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
         }
 
-//        if (!$this->checkMinLengthValidity($place->getVille(), 2) && (
-//                !$place->getLatitude() ||
-//                !$place->getLongitude()
-//            )
-//        ) {
-//            $place->getReject()->addReason(Reject::NO_PLACE_LOCATION_PROVIDED);
-//        }
-
         $codePostal = $this->comparator->sanitizeNumber($place->getCodePostal());
         if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
             $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
@@ -327,7 +319,6 @@ class Firewall
     public function checkMinLengthValidity($str, $min)
     {
         return isset(trim($str)[$min]);
-//        return isset($this->comparator->sanitize($str)[$min]);
     }
 
     public function addExploration(Exploration $exploration)
