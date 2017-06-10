@@ -377,9 +377,9 @@ services:
             - "@fos_user.user_manager.default"
             - {facebook: facebook_id, google: google_id, twitter: twitter_id}
             - "@tbn.city_manager"
-            - "@doctrine"
+            - "@doctrine.orm.entity_manager"
             - {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook_list_events: "@tbn.social.facebook_list_events", facebook: "@tbn.social.facebook"}
 
     authentication_handler:
         class: AppBundle\Handler\AuthenticationHandler
-        arguments: ["@translator", "@router", "@session", "@site_manager"]
+        arguments: ["@translator", "@router", "@session"]

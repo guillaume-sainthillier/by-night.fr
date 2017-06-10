@@ -59,7 +59,6 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     public function getGlobals()
     {
         return [
-//            "site" => $this->siteManager->getCurrentSite(),
             'siteInfo' => $this->siteManager->getSiteInfo(),
         ];
     }

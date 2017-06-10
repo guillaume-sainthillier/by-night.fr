@@ -31,17 +31,11 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
      */
     protected $session;
 
-    /**
-     * @var SiteManager
-     */
-    protected $site_manager;
-
-    public function __construct($translator, $router, $session, SiteManager $site_manager)
+    public function __construct($translator, $router, $session)
     {
         $this->translator   = $translator;
         $this->router       = $router;
         $this->session      = $session;
-        $this->site_manager = $site_manager;
     }
 
     /**

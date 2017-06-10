@@ -157,8 +157,8 @@ class FOSUBUserProvider extends BaseClass
             $user->setInfo(new UserInfo());
         }
 
-        if ($user->getCity() === null && $this->siteManager->getCurrentSite()) {
-            $user->setSite($this->siteManager->getCurrentSite());
+        if ($user->getCity() === null && $this->cityManager->getCurrentCity()) {
+            $user->setCity($this->cityManager->getCurrentCity());
         }
 
         if ($user->getEmail() === null) {

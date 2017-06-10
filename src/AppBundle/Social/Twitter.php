@@ -111,7 +111,7 @@ class Twitter extends Social
 
             $client = new SingleUserAuth($config, new ArraySerializer());
 
-            $ads = ' ' . $this->getLink($agenda) . ' #' . $this->siteManager->getCurrentSite()->getNom() . 'ByNight';
+            $ads = ' ' . $this->getLink($agenda) . ' #ByNight';
 
             $status = substr($agenda->getNom(), 0, 140 - strlen($ads)) . $ads;
 
@@ -137,7 +137,7 @@ class Twitter extends Social
             ];
 
             $client = new SingleUserAuth($config, new ArraySerializer());
-            $ads    = sprintf(' %s #%sByNight', $this->getLink($agenda), $this->siteManager->getCurrentSite()->getNom());
+            $ads    = sprintf(' %s #ByNight', $this->getLink($agenda));
             $titre  = sprintf('%s présente %s', $user->getUsername(), $agenda->getNom());
             $status = substr($titre, 0, 140 - strlen($ads)) . $ads;
 
