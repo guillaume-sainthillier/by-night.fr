@@ -55,10 +55,10 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function getGlobals()
     {
-        if($this->requestStack->getCurrentRequest() === null) {
+        if ($this->requestStack->getCurrentRequest() === null) {
             return [];
         }
-        
+
         return [
             'siteInfo' => $this->siteManager->getSiteInfo(),
         ];
