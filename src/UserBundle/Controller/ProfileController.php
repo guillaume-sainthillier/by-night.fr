@@ -8,7 +8,6 @@
 
 namespace UserBundle\Controller;
 
-use AppBundle\Entity\Agenda;
 use AppBundle\Entity\Calendrier;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;

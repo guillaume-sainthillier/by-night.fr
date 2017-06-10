@@ -8,7 +8,6 @@
 
 namespace AppBundle\Handler;
 
-use AppBundle\Entity\ZipCity;
 use AppBundle\Geocoder\PlaceGeocoder;
 use Doctrine\ORM\EntityManagerInterface;
 use AppBundle\Entity\Agenda;
