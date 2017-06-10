@@ -29,16 +29,11 @@ class EventProfilePicture
      */
     private $packages;
 
-    /** @var Router
-     */
-    private $router;
-
-    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages, Router $router)
+    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages)
     {
         $this->cacheManager = $cacheManager;
         $this->helper       = $helper;
         $this->packages     = $packages;
-        $this->router       = $router;
     }
 
     public function getOriginalPictureUrl(Agenda $agenda)

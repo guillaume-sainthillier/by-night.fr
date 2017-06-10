@@ -321,24 +321,4 @@ class Comparator
     {
         return $a->format('Y-m-d') === $b->format('Y-m-d');
     }
-
-    private function isSameText($a, $b, $minPourcentage = 100, $nullAreSame = false)
-    {
-        $trimedA = $this->sanitize($a);
-        $trimedB = $this->sanitize($b);
-
-        // = strlen > 0
-        if (!isset($trimedA[0]) || !isset($trimedB[0])) {
-            return $nullAreSame;
-        } elseif ($trimedA === $trimedB) {
-            return true;
-        } elseif ($minPourcentage < 100) {
-            $pourcentage = 0;
-            similar_text($a, $b, $pourcentage);
-
-            return $pourcentage >= $minPourcentage;
-        }
-
-        return false;
-    }
 }

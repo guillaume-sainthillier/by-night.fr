@@ -13,16 +13,6 @@ use AppBundle\Utils\Util;
 
 class EventSEO
 {
-    /**
-     * @var Util
-     */
-    private $util;
-
-    public function __construct(Util $util)
-    {
-        $this->util = $util;
-    }
-
     public function getEventDate(Agenda $event)
     {
         if (!$event->getDateFin() || $event->getDateDebut() === $event->getDateFin()) {

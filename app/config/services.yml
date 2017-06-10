@@ -27,7 +27,6 @@ services:
             - "@ivory.google_map.place_search"
             - "@ivory.google_map.place_detail"
             - "@ivory.google_map.geocoder"
-            - "@ivory.serializer"
             - "@tbn.firewall"
     app.importer.country_importer:
         class: AppBundle\Importer\CountryImporter
@@ -63,7 +62,6 @@ services:
 
     tbn.event_seo:
         class: AppBundle\SEO\EventSEO
-        arguments: [ "@tbn.util" ]
 
     app.city_converter:
         class: AppBundle\Request\ParamConverter\CityConverter
@@ -110,7 +108,7 @@ services:
 
     tbn.profile_picture.event:
         class: AppBundle\Picture\EventProfilePicture
-        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper", "@assets.packages", "@router" ]
+        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper", "@assets.packages"]
 
     tbn.profile_picture.user:
         class: AppBundle\Picture\UserProfilePicture
@@ -128,7 +126,7 @@ services:
 
     tbn.twig.main_extension:
         class: AppBundle\Twig\MainExtension
-        arguments: [ "@site_manager", "@service_container" ]
+        arguments: [ "@site_manager", "@request_stack" ]
         tags:
             - { name: twig.extension }
 

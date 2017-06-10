@@ -19,7 +19,6 @@ use AppBundle\Site\SiteManager;
  */
 class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
-    private $router;
     /**
      * @var RequestStack
      */
@@ -30,10 +29,9 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
      */
     private $siteManager;
 
-    public function __construct(SiteManager $manager, ContainerInterface $container)
+    public function __construct(SiteManager $manager, RequestStack $requestStack)
     {
-        $this->router       = $container->get('router');
-        $this->requestStack = $container->get('request_stack');
+        $this->requestStack = $requestStack;
         $this->siteManager  = $manager;
     }
 

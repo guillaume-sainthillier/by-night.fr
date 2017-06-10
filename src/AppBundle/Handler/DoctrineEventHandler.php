@@ -58,16 +58,6 @@ class DoctrineEventHandler
     private $firewall;
 
     /**
-     * @var array
-     */
-    private $sites;
-
-    /**
-     * @var array
-     */
-    private $villes;
-
-    /**
      * @var EchantillonHandler
      */
     private $echantillonHandler;
@@ -95,11 +85,7 @@ class DoctrineEventHandler
         $this->echantillonHandler = $echantillonHandler;
         $this->geocoder           = $geocoder;
         $this->explorationHandler = new ExplorationHandler();
-
         $this->output = null;
-
-        $this->villes = [];
-        $this->sites  = [];
         $this->stats  = [];
     }
 
