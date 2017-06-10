@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use AppBundle\Site\SiteManager;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
@@ -66,9 +65,9 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
                 } else {
                     $user      = $token->getUser();
 
-                    if($user->getCity()) {
+                    if ($user->getCity()) {
                         $url       = $this->router->generate('tbn_agenda_index', ['city' => $user->getCity()->getSlug()]);
-                    }else {
+                    } else {
                         $url       = $this->router->generate('tbn_main_index');
                     }
                 }

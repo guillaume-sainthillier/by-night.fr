@@ -9,7 +9,6 @@ use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
 use Symfony\Component\Security\Core\User\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 use AppBundle\Entity\UserInfo;
-use AppBundle\Site\SiteManager;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 
 class FOSUBUserProvider extends BaseClass
@@ -33,9 +32,9 @@ class FOSUBUserProvider extends BaseClass
     {
         parent::__construct($userManager, $properties);
 
-        $this->cityManager = $cityManager;
+        $this->cityManager      = $cityManager;
         $this->entityManager    = $entityManager;
-        $this->socials     = $socials;
+        $this->socials          = $socials;
     }
 
     public function connectSite(UserResponseInterface $response)
