@@ -2,7 +2,6 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Entity\Place;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,7 +42,7 @@ class FetchCommand extends AppCommand
         Monitor::$output = $output;
         Monitor::createProgressBar(10000);
         $fetcher = $this->getContainer()->get('tbn.event_fetcher');
-        $events = $fetcher->fetchEvents($service);
+        $events  = $fetcher->fetchEvents($service);
         $this->getContainer()->get('tbn.doctrine_event_handler')->handleManyCLI($events, $service);
     }
 }
