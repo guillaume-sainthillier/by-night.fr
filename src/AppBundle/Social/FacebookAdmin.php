@@ -141,7 +141,7 @@ class FacebookAdmin extends FacebookEvents
                 'description' => $date . '. ' . strip_tags($agenda->getDescriptif()),
                 'actions'     => json_encode([
                     [
-                        'name' => $user->getUsername() . ' sur ' . $user->getSite()->getNom() . ' By Night',
+                        'name' => $user->getUsername() . ' sur By Night',
                         'link' => $this->getMembreLink($user),
                     ],
                 ]),

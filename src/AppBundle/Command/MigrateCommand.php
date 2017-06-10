@@ -92,5 +92,13 @@ class MigrateCommand extends AppCommand
             $em->persist($place);
         }
         $em->flush();
+
+        $users = $em->getRepository('AppBundle:User')->findBy(['city' => null]);
+        foreach ($users as $user) {
+            $city = $em->getRepository('AppBundle:City')->findBySlug($mapping[$user->getSite()->getSubdomain()]);
+            $user->setCity($city);
+            $em->persist($user);
+        }
+        $em->flush();
     }
 }

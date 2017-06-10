@@ -23,9 +23,7 @@
 
 {% set totalCount = count_participations + count_interets %}
 {% block meta_description -%}
-    {{ username }} est en relation avec {{ totalCount }} événement{{ totalCount > 1 ? "s" : "" }}
-    {% if user.site %} à {{ user.site.nom }}{% endif %}
-    .
+    {{ username }} participe ou est intéressé par {{ totalCount }} événement{{ totalCount > 1 ? "s" : "" }}.
 {%- endblock %}
 
 

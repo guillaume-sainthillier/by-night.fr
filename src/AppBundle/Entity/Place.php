@@ -563,4 +563,28 @@ class Place implements GeolocalizeInterface
     {
         return $this->isJunk;
     }
+
+    /**
+     * Set isJunk
+     *
+     * @param boolean $isJunk
+     *
+     * @return Place
+     */
+    public function setIsJunk($isJunk)
+    {
+        $this->isJunk = $isJunk;
+
+        return $this;
+    }
+
+    /**
+     * Get isJunk
+     *
+     * @return boolean
+     */
+    public function getIsJunk()
+    {
+        return $this->isJunk;
+    }
 }

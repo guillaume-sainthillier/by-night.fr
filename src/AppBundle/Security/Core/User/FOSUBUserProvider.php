@@ -2,6 +2,8 @@
 
 namespace AppBundle\Security\Core\User;
 
+use AppBundle\App\CityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -12,16 +14,27 @@ use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 
 class FOSUBUserProvider extends BaseClass
 {
+    /**
+     * @var array
+     */
     private $socials;
-    private $doctrine;
-    private $siteManager;
 
-    public function __construct(UserManagerInterface $userManager, array $properties, SiteManager $siteManager, $doctrine, array $socials)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
+     * @var CityManager
+     */
+    private $cityManager;
+
+    public function __construct(UserManagerInterface $userManager, array $properties, CityManager $cityManager, EntityManagerInterface $entityManager, array $socials)
     {
         parent::__construct($userManager, $properties);
 
-        $this->siteManager = $siteManager;
-        $this->doctrine    = $doctrine;
+        $this->cityManager = $cityManager;
+        $this->entityManager    = $entityManager;
         $this->socials     = $socials;
     }
 
@@ -74,12 +87,11 @@ class FOSUBUserProvider extends BaseClass
 
     protected function findUserBySocialInfo(UserResponseInterface $cle, $valeur)
     {
-        $em   = $this->doctrine->getManager();
-        $repo = $em->getRepository('AppBundle:Info');
+        $repo = $this->entityManager->getRepository('AppBundle:Info');
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
         if ($info !== null) {
-            return $em->getRepository('AppBundle:User')->findOneByInfo($info);
+            return $this->entityManager->getRepository('AppBundle:User')->findOneByInfo($info);
         }
 
         return null;
@@ -145,7 +157,7 @@ class FOSUBUserProvider extends BaseClass
             $user->setInfo(new UserInfo());
         }
 
-        if ($user->getSite() === null && $this->siteManager->getCurrentSite()) {
+        if ($user->getCity() === null && $this->siteManager->getCurrentSite()) {
             $user->setSite($this->siteManager->getCurrentSite());
         }
 

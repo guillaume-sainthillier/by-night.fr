@@ -90,6 +90,13 @@ class User extends BaseUser
     protected $site;
 
     /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City")
+     * @ORM\JoinColumn(nullable=true)
+     * @Expose
+     */
+    protected $city;
+
+    /**
      * @ORM\Column(name="from_login", type="boolean", nullable=true)
      */
     protected $from_login;
@@ -621,5 +628,29 @@ class User extends BaseUser
     public function getSlug()
     {
         return $this->slug;
+    }
+
+    /**
+     * Set city
+     *
+     * @param \AppBundle\Entity\City $city
+     *
+     * @return User
+     */
+    public function setCity(\AppBundle\Entity\City $city = null)
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * Get city
+     *
+     * @return \AppBundle\Entity\City
+     */
+    public function getCity()
+    {
+        return $this->city;
     }
 }

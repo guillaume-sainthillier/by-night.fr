@@ -61,7 +61,7 @@
                             <i class="fa fa-pencil"></i>
                         </a>
                     </td>
-                    <td><a href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.site.subdomain}) }}"
+                    <td><a href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug}) }}"
                            title="Accéder à l'événement">{{ soiree.nom }}</a></td>
                     <td>{{ soiree.place ? soiree.place.nom : '' }}</td>
                     <td>{{ soiree.place ? soiree.place.ville : '' }}</td>

@@ -71,8 +71,12 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
                     $this->session->remove($key);
                 } else {
                     $user      = $token->getUser();
-                    $subdomain = $user->getSite()->getSubdomain();
-                    $url       = $this->router->generate('tbn_agenda_index', ['city' => $subdomain]);
+
+                    if($user->getCity()) {
+                        $url       = $this->router->generate('tbn_agenda_index', ['city' => $user->getCity()->getSlug()]);
+                    }else {
+                        $url       = $this->router->generate('tbn_main_index');
+                    }
                 }
             }
 

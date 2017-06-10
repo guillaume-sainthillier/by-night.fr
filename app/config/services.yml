@@ -1,5 +1,4 @@
 parameters:
-    my_user_provider.class: AppBundle\Security\Core\User\FOSUBUserProvider
     class.guzzle.response: Guzzle\Http\Message\Response
     class.guzzle.client: Guzzle\Http\Client
     class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
@@ -373,9 +372,13 @@ services:
           - { name: validator.constraint_validator, alias: recaptcha_response_validator }
 
     my_user_provider:
-        class: "%my_user_provider.class%"
-        #this is the place where the properties are passed to the UserProvider - see config.yml
-        arguments: ["@fos_user.user_manager", {facebook: facebook_id, google: google_id, twitter: twitter_id}, "@site_manager", "@doctrine", {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook_list_events: "@tbn.social.facebook_list_events", facebook: "@tbn.social.facebook"}]
+        class: AppBundle\Security\Core\User\FOSUBUserProvider
+        arguments:
+            - "@fos_user.user_manager.default"
+            - {facebook: facebook_id, google: google_id, twitter: twitter_id}
+            - "@tbn.city_manager"
+            - "@doctrine"
+            - {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook_list_events: "@tbn.social.facebook_list_events", facebook: "@tbn.social.facebook"}
 
     authentication_handler:
         class: AppBundle\Handler\AuthenticationHandler
