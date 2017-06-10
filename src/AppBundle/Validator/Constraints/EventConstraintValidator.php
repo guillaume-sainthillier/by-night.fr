@@ -8,7 +8,6 @@
 
 namespace AppBundle\Validator\Constraints;
 
-use AppBundle\Entity\Agenda;
 use Symfony\Component\Routing\Router;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -37,7 +36,7 @@ class EventConstraintValidator extends ConstraintValidator
     public function validate($event, Constraint $constraint)
     {
         /**
-         * @var Reject $reject
+         * @var Reject
          */
         $reject = $event->getReject();
 

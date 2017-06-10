@@ -145,6 +145,7 @@ class EventController extends Controller
         }
 
         $formDelete = $this->createDeleteForm($agenda);
+
         return $this->render('EspacePerso/edit.html.twig', [
             'form'        => $form->createView(),
             'agenda'      => $agenda,
@@ -171,7 +172,7 @@ class EventController extends Controller
         foreach ($fb_events as $fb_event) {
             $array_event = $parser->getInfoAgenda($fb_event);
             $event       = $parser->arrayToAgenda($array_event);
-            $events[] = $event->setUser($user);
+            $events[]    = $event->setUser($user);
         }
 
         $events = $handler->handleMany($events);
@@ -266,13 +267,13 @@ class EventController extends Controller
         $form->handleRequest($request);
         $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
         /**
-         * @var Agenda $agenda
+         * @var Agenda
          */
         $agenda      = $form->getData();
         $isNewAgenda = $agenda->getId() !== null;
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $agenda = $em->merge($agenda);
+            $em          = $this->getDoctrine()->getManager();
+            $agenda      = $em->merge($agenda);
             $found       = false;
             $calendriers = $agenda->getCalendriers();
             foreach ($calendriers as $calendrier) {
@@ -363,6 +364,7 @@ class EventController extends Controller
 
     /**
      * @param Agenda $agenda
+     *
      * @return \Symfony\Component\Form\FormInterface
      */
     protected function createCreateForm(Agenda $agenda)
