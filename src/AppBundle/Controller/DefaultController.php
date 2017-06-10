@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use AppBundle\Form\Type\CityAutocompleteType;
 use AppBundle\Search\SearchAgenda;
 use AppBundle\SearchRepository\AgendaRepository;
-use Ivory\GoogleMapBundle\Form\Type\PlaceAutocompleteType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
