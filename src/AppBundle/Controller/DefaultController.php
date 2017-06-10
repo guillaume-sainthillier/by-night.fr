@@ -39,7 +39,6 @@ class DefaultController extends Controller
         $familles = $this->getResults($search);
 
         $form = $this->createForm(CityAutocompleteType::class);
-//        $form = $this->createForm(PlaceAutocompleteType::class);
 
         return $this->render('Default/index.html.twig', [
             'concerts'          => $concerts,
