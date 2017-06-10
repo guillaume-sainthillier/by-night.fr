@@ -118,11 +118,11 @@ class EventController extends Controller
 
         $this->checkIfOwner($agenda);
         $form       = $this->createEditForm($agenda);
-        $formDelete = $this->createDeleteForm($agenda);
 
         $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $agenda->getPlace()->getCity()->getName();
             $this->postSocial($agenda, $form);
 
             try {
@@ -138,9 +138,13 @@ class EventController extends Controller
             } catch (FileException $exception) {
                 $this->get('logger')->critical($exception);
                 $this->addFlash('error', 'Un problème a eu lieu avec l\'envoi de votre pièce jointe');
+            } catch (\Exception $exception) {
+                $this->get('logger')->critical($exception);
+                $this->addFlash('error', 'Un problème a eu lieu avec l\'enregistrement de votre événement');
             }
         }
 
+        $formDelete = $this->createDeleteForm($agenda);
         return $this->render('EspacePerso/edit.html.twig', [
             'form'        => $form->createView(),
             'agenda'      => $agenda,
@@ -167,12 +171,10 @@ class EventController extends Controller
         foreach ($fb_events as $fb_event) {
             $array_event = $parser->getInfoAgenda($fb_event);
             $event       = $parser->arrayToAgenda($array_event);
-
             $events[] = $event->setUser($user);
         }
 
         $events = $handler->handleMany($events);
-
         $this->addImportMessage($handler->getExplorationHandler());
         $validator = $this->get('validator');
         foreach ($events as $event) {
@@ -261,20 +263,16 @@ class EventController extends Controller
             ->setParticipations(1);
 
         $form = $this->createCreateForm($agenda);
-
         $form->handleRequest($request);
-        /*
+        $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
+        /**
          * @var Agenda $agenda
          */
-
-        $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
         $agenda      = $form->getData();
         $isNewAgenda = $agenda->getId() !== null;
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-
             $agenda = $em->merge($agenda);
-
             $found       = false;
             $calendriers = $agenda->getCalendriers();
             foreach ($calendriers as $calendrier) {
@@ -363,6 +361,10 @@ class EventController extends Controller
         ];
     }
 
+    /**
+     * @param Agenda $agenda
+     * @return \Symfony\Component\Form\FormInterface
+     */
     protected function createCreateForm(Agenda $agenda)
     {
         $options = array_merge($this->getAgendaOptions(), [
@@ -381,11 +383,14 @@ class EventController extends Controller
 
     protected function postSocial(Agenda $agenda, $form)
     {
-        $config = $this->container->getParameter('tbn_user.social');
-        foreach ($config as $social => $options) {
-            $want_post = $form->get('share_' . $social)->getData();
+        $services = [
+            'facebook' => ['nom' => 'Facebook'],
+            'twitter'  => ['nom' => 'Twitter'],
+        ];
+        foreach ($services as $id => $infos) {
+            $want_post = $form->get('share_' . $id)->getData();
             if ($want_post) {
-                $service = $this->getServiceByName($social);
+                $service = $this->getServiceByName($id);
                 $service->poster($agenda);
             }
         }

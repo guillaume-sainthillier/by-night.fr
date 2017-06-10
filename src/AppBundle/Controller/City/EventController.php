@@ -52,15 +52,6 @@ class EventController extends Controller
         }
         $agenda = $result;
 
-        //Redirection vers le bon site
-        if ($agenda->getPlace()->getCity() !== $city) {
-            return new RedirectResponse($this->get('router')->generate('tbn_agenda_details', [
-                'slug' => $agenda->getSlug(),
-                'id'   => $agenda->getId(),
-                'city' => $agenda->getPlace()->getCity()->getSlug(),
-            ]));
-        }
-
         $comment    = new Comment();
         $form       = $this->getCreateCommentForm($comment, $agenda);
         $nbComments = $agenda->getCommentaires()->count();

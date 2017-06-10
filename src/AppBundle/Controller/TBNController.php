@@ -41,11 +41,14 @@ class TBNController extends Controller
         }
 
         $requestStack = $this->get('request_stack');
-        if ($requestStack->getParentRequest() === null && (!$id || $event->getSlug() !== $slug)) {
+        dump($event->getPlace()->getCity()->getSlug());
+        dump($city->getSlug());
+
+        if ($requestStack->getParentRequest() === null && (!$id || $event->getSlug() !== $slug || $event->getPlace()->getCity()->getSlug() !== $city->getSlug())) {
             $routeParams = array_merge([
                 'id'   => $event->getId(),
                 'slug' => $event->getSlug(),
-                'city' => $city->getSlug(),
+                'city' => $event->getPlace()->getCity()->getSlug(),
             ], $extraParams);
 
             return new RedirectResponse($this->generateUrl($routeName, $routeParams));

@@ -37,10 +37,7 @@ class EventConstraintValidator extends ConstraintValidator
     public function validate($event, Constraint $constraint)
     {
         /**
-         * @var Agenda
-         */
-        /**
-         * @var Reject
+         * @var Reject $reject
          */
         $reject = $event->getReject();
 

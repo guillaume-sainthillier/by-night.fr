@@ -553,11 +553,6 @@ class DoctrineEventHandler
             return;
         }
 
-        //Pas non plus besoin de trouver à nouveau un lieu déjà calculé
-        if ($place->getCity()) {
-            return;
-        }
-
         //On tente d'abord de trouver la ville via pays/cp/nom
         if ($place->getCountry() && ($place->getCodePostal() || $place->getVille())) {
             $this->guessEventCity($place);
