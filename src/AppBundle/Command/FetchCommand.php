@@ -41,30 +41,8 @@ class FetchCommand extends AppCommand
 
         Monitor::enableMonitoring($input->getOption('monitor'));
         Monitor::$output = $output;
-
         Monitor::createProgressBar(10000);
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $em->getConnection()->getConfiguration()->setSQLLogger(null);
-//        for($i = 1;$i <= 10000; $i++) {
-//            $place = $em->getRepository('AppBundle:Place')->findOneBy(['id' => $i]);
-//            if($place) {
-//                $em->merge($place);
-//            }
-//
-//            if($i % 50 === 0) {
-//                dump($em->getUnitOfWork()->getIdentityMap());
-//                $em->flush();
-//                dump($em->getUnitOfWork()->getIdentityMap());
-//                die;
-//                $em->clear();
-//            }
-//            Monitor::advanceProgressBar();
-//        }
-//        Monitor::finishProgressBar();
-//        die;
-
         $fetcher = $this->getContainer()->get('tbn.event_fetcher');
-
         $events = $fetcher->fetchEvents($service);
         $this->getContainer()->get('tbn.doctrine_event_handler')->handleManyCLI($events, $service);
     }
