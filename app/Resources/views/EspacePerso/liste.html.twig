@@ -43,11 +43,11 @@
         <table class="table table-striped bg-white component">
             <thead>
             <tr>
+                <th>Actions</th>
                 <th>Nom</th>
                 <th>Lieu</th>
                 <th>Ville</th>
                 <th>Date</th>
-                <th>Actions</th>
                 <th>Visible</th>
                 <th>Annulé</th>
             </tr>
@@ -55,18 +55,18 @@
             <tbody>
             {% for soiree in soirees %}
                 <tr>
+                    <td>
+                        <a class="btn btn-primary" href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"
+                           title="Corriger l'événement">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                    </td>
                     <td><a href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.site.subdomain}) }}"
                            title="Accéder à l'événement">{{ soiree.nom }}</a></td>
                     <td>{{ soiree.place ? soiree.place.nom : '' }}</td>
                     <td>{{ soiree.place ? soiree.place.ville : '' }}</td>
                     <td>
                         {{ macros.dates(soiree.dateDebut, soiree.dateFin) }}
-                    </td>
-                    <td>
-                        <a class="btn btn-primary" href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"
-                           title="Corriger l'événement">
-                            <i class="fa fa-pencil"></i>
-                        </a>
                     </td>
                     <td>
                         <div class="togglebutton">
