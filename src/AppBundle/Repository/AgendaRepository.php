@@ -310,18 +310,6 @@ class AgendaRepository extends EntityRepository
         return $this->findAllTendances($soiree, $page, $limit, false);
     }
 
-    public function getLastDateAutreSoirees(Agenda $soiree)
-    {
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('MAX(a.dateModification)')
-            ->from('AppBundle:Agenda', 'a')
-            ->where('a.dateDebut = :date_debut AND a.id != :id AND a.site = :site')
-            ->setParameters([':date_debut' => $soiree->getDateDebut(), ':id' => $soiree->getId(), ':site' => $soiree->getSite()->getId()])
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
     public function findAllSimilaires(Agenda $soiree, $page = 1, $limit = 7)
     {
         return $this
