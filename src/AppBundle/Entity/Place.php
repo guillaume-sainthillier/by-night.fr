@@ -559,7 +559,7 @@ class Place implements GeolocalizeInterface
      *
      * @return bool
      */
-    public function IsJunk()
+    public function isJunk()
     {
         return $this->isJunk;
     }
