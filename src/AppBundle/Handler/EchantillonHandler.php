@@ -62,21 +62,21 @@ class EchantillonHandler
         $this->init();
     }
 
-    protected function initEvents()
+    private function initEvents()
     {
         $this->agendas    = [];
         $this->fbAgendas  = [];
         $this->newAgendas = [];
     }
 
-    protected function initPlaces()
+    private function initPlaces()
     {
         $this->places    = [];
         $this->fbPlaces  = [];
         $this->newPlaces = [];
     }
 
-    protected function init()
+    private function init()
     {
         $this->initEvents();
         $this->initPlaces();
@@ -219,24 +219,14 @@ class EchantillonHandler
         );
     }
 
-    protected function addFbEvent(Agenda $event)
+    private function addFbEvent(Agenda $event)
     {
         $this->fbAgendas[$event->getFacebookEventId()] = $event;
     }
 
-    protected function addEvent(Agenda $event)
+    private function addEvent(Agenda $event)
     {
         $this->agendas[$event->getId()] = $event;
-    }
-
-    protected function getEvents(Agenda $event)
-    {
-        $key = $this->getAgendaCacheKey($event);
-        if (!isset($this->agendas[$key])) {
-            return [];
-        }
-
-        return $this->agendas[$key];
     }
 
     public function addNewEvent(Agenda $event)
@@ -253,34 +243,14 @@ class EchantillonHandler
         $this->addNewPlace($event->getPlace());
     }
 
-    protected function getNewEvents(Agenda $event)
-    {
-        $key = $this->getAgendaCacheKey($event);
-        if (!isset($this->newAgendas[$key])) {
-            return [];
-        }
-
-        return $this->newAgendas[$key];
-    }
-
-    protected function addFbPlace(Place $place)
+    private function addFbPlace(Place $place)
     {
         $this->fbPlaces[$place->getFacebookId()] = $place;
     }
 
-    protected function addPlace(Place $place)
+    private function addPlace(Place $place)
     {
         $this->places[$place->getId()] = $place;
-    }
-
-    protected function getPlaces(Place $place)
-    {
-        $key = $place->getSite()->getId();
-        if (!isset($this->places[$key])) {
-            return [];
-        }
-
-        return $this->places[$key];
     }
 
     public function addNewPlace(Place $place)
@@ -295,17 +265,7 @@ class EchantillonHandler
         }
     }
 
-    protected function getNewPlaces(Place $place)
-    {
-        $key = $place->getSite()->getId();
-        if (isset($this->newPlaces[$key])) {
-            return $this->newPlaces[$key];
-        }
-
-        return [];
-    }
-
-    protected function getAgendaCacheKey(Agenda $agenda)
+    private function getAgendaCacheKey(Agenda $agenda)
     {
         return sprintf(
             '%s.%s',

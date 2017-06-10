@@ -71,14 +71,6 @@ class SearchAgenda
     }
 
     /**
-     * @return City
-     */
-    public function getSite()
-    {
-        return $this->city;
-    }
-
-    /**
      * @param string $tag
      *
      * @return $this
@@ -148,6 +140,15 @@ class SearchAgenda
         $this->city = $city;
 
         return $this;
+    }
+
+    /**
+     *
+     * @return City
+     */
+    public function getCity()
+    {
+        return $this->city;
     }
 
     /**

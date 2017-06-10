@@ -106,7 +106,7 @@ class EventConstraintValidator extends ConstraintValidator
             $link = $this->router->generate('tbn_agenda_details', [
                 'slug' => $event->getSlug(),
                 'id'   => $event->getId(),
-                'city' => $event->getSite()->getSubdomain(),
+                'city' => $event->getPlace()->getCity()->getSlug(),
             ]);
             $message = str_replace([
                 '[link]',

@@ -107,21 +107,9 @@ abstract class AgendaParser implements ParserInterface
             }, $date);
     }
 
-    public function getSite()
-    {
-        return $this->site;
-    }
-
     public function getSiteInfo()
     {
         return $this->siteInfo;
-    }
-
-    public function setSite(Site $site)
-    {
-        $this->site = $site;
-
-        return $this;
     }
 
     public function setSiteInfo(SiteInfo $siteInfo)

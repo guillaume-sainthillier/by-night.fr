@@ -205,7 +205,7 @@ abstract class Social
         return $this->router->generate('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
             'id'   => $agenda->getSlug(),
-            'city' => $agenda->getSite()->getSubdomain(),
+            'city' => $agenda->getPlace()->getCity()->getSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 

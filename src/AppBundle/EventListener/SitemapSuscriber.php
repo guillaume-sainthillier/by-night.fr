@@ -92,7 +92,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         $places = $this->manager->getRepository('AppBundle:Place')->findAll();
         foreach ($places as $place) {
-            $this->addUrl($section, 'tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $place->getSite()->getSubdomain()]);
+            $this->addUrl($section, 'tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $place->getCity()->getSlug()]);
         }
 
         $events = [];

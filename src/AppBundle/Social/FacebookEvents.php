@@ -33,7 +33,7 @@ class FacebookEvents extends FacebookListEvents
                 //'privacy' => json_encode(['value' => 'SELF']),
                 'actions' => json_encode([
                     [
-                        'name' => $user->getUsername() . ' sur ' . $agenda->getSite()->getNom() . ' By Night',
+                        'name' => $user->getUsername() . ' sur ' . $agenda->getPlace()->getCity()->getName() . ' By Night',
                         'link' => $this->getMembreLink($user),
                     ],
                 ]),

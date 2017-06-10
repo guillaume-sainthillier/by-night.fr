@@ -30,9 +30,9 @@ class AgendaRepository extends Repository
     {
         $mainQuery = new BoolQuery();
 
-        if ($search->getSite()) {
+        if ($search->getCity()) {
             $mainQuery->addMust(
-                new Term(['site.id' => $search->getSite()->getId()])
+                new Term(['place.city.id' => $search->getCity()->getId()])
             );
         }
 

@@ -23,12 +23,6 @@ class HistoriqueMaj
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"}, fetch="EAGER")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    protected $site;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="date_debut", type="datetime")
@@ -245,29 +239,5 @@ class HistoriqueMaj
     public function getExplorations()
     {
         return $this->explorations;
-    }
-
-    /**
-     * Set site.
-     *
-     * @param Site $site
-     *
-     * @return HistoriqueMaj
-     */
-    public function setSite(Site $site = null)
-    {
-        $this->site = $site;
-
-        return $this;
-    }
-
-    /**
-     * Get site.
-     *
-     * @return \AppBundle\Entity\Site
-     */
-    public function getSite()
-    {
-        return $this->site;
     }
 }
