@@ -631,7 +631,7 @@ class User extends BaseUser
     }
 
     /**
-     * Set city
+     * Set city.
      *
      * @param \AppBundle\Entity\City $city
      *
@@ -645,7 +645,7 @@ class User extends BaseUser
     }
 
     /**
-     * Get city
+     * Get city.
      *
      * @return \AppBundle\Entity\City
      */

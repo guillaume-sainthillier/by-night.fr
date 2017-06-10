@@ -143,7 +143,6 @@ class SearchAgenda
     }
 
     /**
-     *
      * @return City
      */
     public function getCity()

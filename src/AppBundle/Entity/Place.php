@@ -565,9 +565,9 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Set isJunk
+     * Set isJunk.
      *
-     * @param boolean $isJunk
+     * @param bool $isJunk
      *
      * @return Place
      */
@@ -579,9 +579,9 @@ class Place implements GeolocalizeInterface
     }
 
     /**
-     * Get isJunk
+     * Get isJunk.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsJunk()
     {
