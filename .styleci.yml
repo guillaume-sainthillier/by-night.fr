@@ -3,6 +3,12 @@ preset: symfony
 enabled:
     - align_double_arrow
     - align_equals
+    - combine_consecutive_unsets
+    - modernize_types_casting
+    - native_function_invocation
+    - php_unit_construct
+    - pow_to_exponentiation
+    - protected_to_private
     
 disabled:
     - unalign_double_arrow
