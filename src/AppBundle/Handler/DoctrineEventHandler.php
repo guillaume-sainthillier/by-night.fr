@@ -84,8 +84,8 @@ class DoctrineEventHandler
         $this->echantillonHandler = $echantillonHandler;
         $this->geocoder           = $geocoder;
         $this->explorationHandler = new ExplorationHandler();
-        $this->output = null;
-        $this->stats  = [];
+        $this->output             = null;
+        $this->stats              = [];
     }
 
     /**

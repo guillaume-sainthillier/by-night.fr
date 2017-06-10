@@ -22,7 +22,6 @@ use Ivory\GoogleMap\Service\Place\Detail\PlaceDetailService;
 use Ivory\GoogleMap\Service\Place\Detail\Request\PlaceDetailRequest;
 use Ivory\GoogleMap\Service\Place\Search\PlaceSearchService;
 use Ivory\GoogleMap\Service\Place\Search\Request\TextPlaceSearchRequest;
-use Ivory\Serializer\SerializerInterface;
 
 class PlaceGeocoder
 {

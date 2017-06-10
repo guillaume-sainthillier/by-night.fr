@@ -8,7 +8,6 @@
 
 namespace AppBundle\Twig;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use AppBundle\Site\SiteManager;
 

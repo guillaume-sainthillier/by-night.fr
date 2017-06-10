@@ -9,7 +9,6 @@
 namespace AppBundle\SEO;
 
 use AppBundle\Entity\Agenda;
-use AppBundle\Utils\Util;
 
 class EventSEO
 {
