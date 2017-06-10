@@ -17,7 +17,7 @@ class AppExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        if(! $container->hasParameter('mapping_assets')) {
+        if (!$container->hasParameter('mapping_assets')) {
             $container->setParameter('mapping_assets', []);
         }
     }
