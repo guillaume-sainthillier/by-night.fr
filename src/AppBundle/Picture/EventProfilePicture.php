@@ -10,7 +10,6 @@ namespace AppBundle\Picture;
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\Routing\Router;
 use AppBundle\Entity\Agenda;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
