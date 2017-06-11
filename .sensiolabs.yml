@@ -1,0 +1,15 @@
+php_version: 7.1
+
+rules:
+    composer.unfixed_dependency_version:
+        enabled: false
+    doctrine.use_flush_in_loop:
+        enabled: false
+    symfony.controller.action_method_too_long:
+        enabled: false
+    symfony.controller.too_many_template_variables:
+        enabled: true
+        max_count: 10
+        threshold: 5
+    symfony.request.session_cookie_default_name:
+        enabled: true
