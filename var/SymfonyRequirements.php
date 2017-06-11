@@ -49,11 +49,11 @@ class Requirement
      */
     public function __construct($fulfilled, $testMessage, $helpHtml, $helpText = null, $optional = false)
     {
-        $this->fulfilled = (bool) $fulfilled;
+        $this->fulfilled   = (bool) $fulfilled;
         $this->testMessage = (string) $testMessage;
-        $this->helpHtml = (string) $helpHtml;
-        $this->helpText = null === $helpText ? strip_tags($this->helpHtml) : (string) $helpText;
-        $this->optional = (bool) $optional;
+        $this->helpHtml    = (string) $helpHtml;
+        $this->helpText    = null === $helpText ? strip_tags($this->helpHtml) : (string) $helpText;
+        $this->optional    = (bool) $optional;
     }
 
     /**
@@ -380,7 +380,7 @@ class RequirementCollection implements IteratorAggregate
 class SymfonyRequirements extends RequirementCollection
 {
     const LEGACY_REQUIRED_PHP_VERSION = '5.3.3';
-    const REQUIRED_PHP_VERSION = '5.5.9';
+    const REQUIRED_PHP_VERSION        = '5.5.9';
 
     /**
      * Constructor that initializes the requirements.
@@ -390,7 +390,7 @@ class SymfonyRequirements extends RequirementCollection
         /* mandatory requirements follow */
 
         $installedPhpVersion = phpversion();
-        $requiredPhpVersion = $this->getPhpRequiredVersion();
+        $requiredPhpVersion  = $this->getPhpRequiredVersion();
 
         $this->addRecommendation(
             $requiredPhpVersion,
