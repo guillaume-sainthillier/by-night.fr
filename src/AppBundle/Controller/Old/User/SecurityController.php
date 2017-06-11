@@ -9,6 +9,7 @@
 namespace AppBundle\Controller\Old\User;
 
 use FOS\UserBundle\Controller\ProfileController as BaseController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SecurityController extends BaseController
