@@ -56,7 +56,6 @@ class PlaceGeocoder
         $this->geocoder        = $geocoder;
         $this->placeGeocoder   = $placeGeocoder;
         $this->reverseGeocoder = $reverseGeocoder;
-        $this->serializer      = $serializer;
         $this->firewall        = $firewall;
     }
 
