@@ -12,7 +12,7 @@ class CountryCommand extends AppCommand
     protected function configure()
     {
         $this
-            ->setName('tbn:country:add')
+            ->setName('tbn:country:import')
             ->setDescription('Ajoute un pays sur By Night')
             ->addArgument('id', InputArgument::REQUIRED)
             ->addArgument('name', InputArgument::OPTIONAL)
