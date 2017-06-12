@@ -34,7 +34,7 @@ class ZipCityRepository extends \Doctrine\ORM\EntityRepository
 
         if ($city) {
             $cities   = [];
-            $city     = preg_replace("#(^|\s)st\s#i", 'saint', $city);
+            $city     = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
             $city     = str_replace('’', "'", $city);
             $cities[] = $city;
             $cities[] = str_replace(' ', '-', $city);

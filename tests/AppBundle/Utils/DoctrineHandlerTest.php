@@ -69,10 +69,10 @@ class DoctrineHandlerTest extends KernelTestCase
         $this->assertCountry($place->getCountry(), 'FR');
         $this->assertTrue($place->getReject()->isValid());
 
-        //Bonnes coordonnées + mauyvais pays
+        //Bonnes coordonnées + mauvais pays
         $reject = new Reject();
         $place  = (new Place())->setNom('10, Av Princesse Grace')->setLongitude(7.4314023071828)->setLatitude(43.743460394373)->setReject($reject)->setCountryName('France')
-            ->setCountry((new Country())->setId('FR'))
+            ->setCountry((new Country())->setId('FR')->setName('France'))
         ;
         $this->doctrineHandler->guessEventLocation($place);
         $this->assertZipCity($place->getZipCity(), '98000', 'Monaco');

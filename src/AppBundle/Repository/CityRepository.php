@@ -44,7 +44,7 @@ class CityRepository extends \Doctrine\ORM\EntityRepository
     public function findByName($city, $country)
     {
         $cities   = [];
-        $city     = preg_replace("#(^|\s)st\s#i", 'saint', $city);
+        $city     = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
         $city     = str_replace('’', "'", $city);
         $cities[] = $city;
         $cities[] = str_replace(' ', '-', $city);
