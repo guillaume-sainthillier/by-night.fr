@@ -218,10 +218,6 @@ class PlaceGeocoder
         if (isset($gmapPlace['postal_code'])) {
             $place->setCodePostal($gmapPlace['postal_code']);
         }
-
-        if (isset($gmapPlace['rue']) && !$place->getRue()) {
-            $place->setRue($gmapPlace['rue']);
-        }
     }
 
     /**
