@@ -14,7 +14,7 @@
             <ul class="nav navbar-nav">
                 {% if city %}
                 <li>
-                    <a href="{{ path('tbn_agenda_index', {'city': city.slug}) }}" title="{{ city.name }} ({{ city.parent.name }}, {{ city.parent.parent.name }}, {{ city.country.name }})"><strong>{{ city.name }}</strong></a>
+                    <a href="{{ path('tbn_agenda_index', {'city': city.slug}) }}" title="{{ city.fullName }})"><strong>{{ city.name }}</strong></a>
                 </li>
                     <li>
                     <a href="{{ path('tbn_agenda_agenda', {'city': city.slug}) }}" title="L'agenda des sorties à {{ city.name }}, c'est par ici !">Agenda</a>

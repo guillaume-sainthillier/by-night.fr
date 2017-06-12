@@ -44,12 +44,9 @@ class ApiController extends Controller
             /*
              * @var City
              */
-            if (!$result->getParent()) {
-                continue;
-            }
             $jsonResults[] = [
                 'slug' => $result->getSlug(),
-                'name' => sprintf('%s (%s, %s)', $result->getName(), $result->getParent()->getName(), $result->getCountry()->getName()),
+                'name' => $result->getFullName(),
             ];
         }
 
