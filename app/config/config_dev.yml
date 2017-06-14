@@ -11,10 +11,6 @@ web_profiler:
     toolbar: true
     intercept_redirects: false
 
-doctrine:
-    orm:
-        auto_generate_proxy_classes: false
-
 doctrine_cache:
     providers:
         memcache:
@@ -45,4 +41,3 @@ monolog:
                 VERBOSITY_VERY_VERBOSE: NOTICE
                 VERBOSITY_DEBUG: DEBUG
             channels: ["doctrine"]
-

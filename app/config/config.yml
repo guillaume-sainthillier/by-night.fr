@@ -19,19 +19,24 @@ framework:
     validation:      { enable_annotations: true }
     templating:
         engines: ['twig']
-    assets:
-        base_urls: ['http://static.%base_host%']
-        packages:
-            asset:
-                base_urls: ['http://static.%base_host%']
     default_locale:  "%locale%"
     trusted_hosts:   ~
     session:
         handler_id: session.handler.native_file
         save_path: "%kernel.root_dir%/../var/sessions/%kernel.environment%"
+    assets:
+        base_urls: ['http://static.%base_host%']
+        packages:
+            asset:
+                base_urls: ['http://static.%base_host%']
     fragments:       { path: /_fragment }
     http_method_override: true
-    
+    php_errors:
+        log: true
+    cache:
+        app: cache.adapter.doctrine
+        default_doctrine_provider: memory_cache
+
 doctrine_cache:
     custom_providers:
         location:
@@ -95,12 +100,12 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
-        metadata_cache_driver: apcu
-        query_cache_driver: apcu
-        result_cache_driver: apcu
-        second_level_cache:
-            enabled:      true
-            log_enabled: "%kernel.debug%"
+#        metadata_cache_driver: apcu
+#        query_cache_driver: apcu
+#        result_cache_driver: apcu
+#        second_level_cache:
+#            enabled:      true
+#            log_enabled: "%kernel.debug%"
 
 #HTTP Cache
 fos_http_cache:
