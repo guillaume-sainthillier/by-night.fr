@@ -395,7 +395,7 @@ class Agenda implements GeolocalizeInterface
         $now = new \DateTime();
         $now->modify('-1 month');
 
-        return $this->dateFin >= $now && $this->dateFin <= $now->modify('+1 year');
+        return $this->dateFin >= $now;
     }
 
     /**
