@@ -14,7 +14,9 @@ doctrine:
     orm:
         metadata_cache_driver: apcu
         query_cache_driver: apcu
-        result_cache_driver: apcu
+        result_cache_driver:
+            type: service
+            id: memory_cache
 
 monolog:
     use_microseconds: false
