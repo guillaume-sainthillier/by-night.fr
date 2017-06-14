@@ -100,12 +100,6 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
-#        metadata_cache_driver: apcu
-#        query_cache_driver: apcu
-#        result_cache_driver: apcu
-#        second_level_cache:
-#            enabled:      true
-#            log_enabled: "%kernel.debug%"
 
 #HTTP Cache
 fos_http_cache:
