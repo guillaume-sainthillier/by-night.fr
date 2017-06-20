@@ -1585,12 +1585,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSElasticaBundle.git",
-                "reference": "e2f665a1591fbb80a3f96f62dfbe5d4847448644"
+                "reference": "9d55dc256dc424ce936b4a725c2e1fd1d0da5972"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSElasticaBundle/zipball/e2f665a1591fbb80a3f96f62dfbe5d4847448644",
-                "reference": "e2f665a1591fbb80a3f96f62dfbe5d4847448644",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSElasticaBundle/zipball/9d55dc256dc424ce936b4a725c2e1fd1d0da5972",
+                "reference": "9d55dc256dc424ce936b4a725c2e1fd1d0da5972",
                 "shasum": ""
             },
             "require": {
@@ -1668,7 +1668,7 @@
                 "propel",
                 "search"
             ],
-            "time": "2017-06-07 21:06:43"
+            "time": "2017-06-15 07:39:15"
         },
         {
             "name": "friendsofsymfony/http-cache",
@@ -6344,12 +6344,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/whiteoctober/WhiteOctoberPagerfantaBundle.git",
-                "reference": "040d2372db1535c37e9cf92ee979f5cae590ef2d"
+                "reference": "2f024c9e066a767a4458f536b7bbadbe1d5200c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/040d2372db1535c37e9cf92ee979f5cae590ef2d",
-                "reference": "040d2372db1535c37e9cf92ee979f5cae590ef2d",
+                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/2f024c9e066a767a4458f536b7bbadbe1d5200c9",
+                "reference": "2f024c9e066a767a4458f536b7bbadbe1d5200c9",
                 "shasum": ""
             },
             "require": {
@@ -6388,7 +6388,7 @@
                 "page",
                 "paging"
             ],
-            "time": "2017-05-23 16:03:01"
+            "time": "2017-06-13 14:58:04"
         },
         {
             "name": "whiteoctober/breadcrumbs-bundle",
