@@ -22,9 +22,10 @@ class City extends AdminZone
      */
     protected $parent;
 
-    public function getFullName() {
+    public function getFullName()
+    {
         $parts = [];
-        if($this->getParent()) {
+        if ($this->getParent()) {
             $parts[] = $this->getParent()->getName();
         }
         $parts[] = $this->getCountry()->getName();
