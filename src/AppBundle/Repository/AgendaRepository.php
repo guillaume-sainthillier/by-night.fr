@@ -74,7 +74,9 @@ class AgendaRepository extends EntityRepository
         $qb = parent::createQueryBuilder($alias, $indexBy);
 
         $qb->select($alias, 'p')
-            ->innerJoin($alias . '.place', 'p');
+            ->join($alias . '.place', 'p')
+            ->join('p.city', 'c')
+        ;
 
         return $qb;
     }
