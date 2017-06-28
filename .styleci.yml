@@ -14,3 +14,7 @@ disabled:
     - unalign_double_arrow
     - unalign_equals
     - concat_without_spaces
+
+finder:
+    not-path:
+        - "var/SymfonyRequirements.php"
