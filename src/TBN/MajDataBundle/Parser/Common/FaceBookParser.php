@@ -90,21 +90,6 @@ class FaceBookParser extends AgendaParser
     {
         $places = $this->getPlaces();
 
-        //Récupération des places depuis les GPS
-        $locations = $this->getSiteLocations();
-        Monitor::writeln('Recherche des places associés aux sites ...');
-        $gps_places = $this->api->getPlacesFromGPS($locations);
-        Monitor::writeln(sprintf(
-            '<info>%d</info> places trouvées',
-            count($gps_places)
-        ));
-
-        $gps_places = array_map(function (GraphNode $node) {
-            return $node->getField('id');
-        }, $gps_places);
-
-        $places = array_unique(array_filter(array_merge($places, $gps_places)));
-
 //        Récupération des événements depuis les lieux trouvés
         Monitor::writeln('Recherche des événements associés aux places ...');
         $events = $this->api->getEventsFromPlaces($places, $now);

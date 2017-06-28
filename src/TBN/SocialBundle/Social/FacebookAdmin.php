@@ -472,9 +472,17 @@ class FacebookAdmin extends FacebookEvents
                             $this->handleResponseException($e);
                         }
                     } else {
-                        $datas = call_user_func($responseToDatas, $response);
-                        $fetchedNodes += count($datas);
-                        $currentNodes = array_merge($currentNodes, $datas);
+                        try {
+                            $datas = call_user_func($responseToDatas, $response);
+                            $fetchedNodes += count($datas);
+                            $currentNodes = array_merge($currentNodes, $datas);
+                        }catch(\Exception $e) {
+                            Monitor::writeln(sprintf(
+                                "<error>Erreur dans le parcours de l'edge %s : %s</error>",
+                                $edge,
+                                $e->getMessage()
+                            ));
+                        }
                     }
                 }
                 Monitor::writeln(sprintf(
