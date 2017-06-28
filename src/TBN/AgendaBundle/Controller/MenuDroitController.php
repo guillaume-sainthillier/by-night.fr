@@ -215,7 +215,7 @@ class MenuDroitController extends Controller
             ->setPublic();
     }
 
-    public function fbMembresAction($slug, $id, $page)
+    public function fbMembresAction($slug, $id = null, $page = 1)
     {
         if ($page <= 1) {
             $page = 1;
