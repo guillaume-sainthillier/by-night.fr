@@ -41,7 +41,7 @@ class SearchController extends Controller
     private function searchEvents(RepositoryManager $rm, Site $site, $q)
     {
         $repoSearch = $rm->getRepository('TBNAgendaBundle:Agenda');
-        $search = (new SearchAgenda())->setTerm($q);
+        $search     = (new SearchAgenda())->setTerm($q);
 
         return $repoSearch->findWithSearch($site, $search);
     }
@@ -62,13 +62,13 @@ class SearchController extends Controller
 
     public function searchAction(Request $request)
     {
-        $q = trim($request->get('q', null));
-        $type = $request->get('type', null);
-        $page = intval($request->get('page', 1));
-        $rm = $this->get('fos_elastica.manager');
+        $q           = trim($request->get('q', null));
+        $type        = $request->get('type', null);
+        $page        = intval($request->get('page', 1));
+        $rm          = $this->get('fos_elastica.manager');
         $siteManager = $this->get('site_manager');
-        $site = $siteManager->getCurrentSite();
-        $maxItems = 20;
+        $site        = $siteManager->getCurrentSite();
+        $maxItems    = 20;
 
         if ($page <= 0) {
             $page = 1;
@@ -79,17 +79,17 @@ class SearchController extends Controller
         }
 
         $nbSoirees = 0;
-        $soirees = [];
-        $nbUsers = 0;
-        $users = [];
+        $soirees   = [];
+        $nbUsers   = 0;
+        $users     = [];
 
         if ($q) {
             if (!$type || $type === 'evenements') { //Recherche d'événements
-                $query = $this->searchEvents($rm, $site, $q);
-                $paginator = $this->get('knp_paginator');
+                $query      = $this->searchEvents($rm, $site, $q);
+                $paginator  = $this->get('knp_paginator');
                 $pagination = $paginator->paginate($query, $page, $maxItems);
-                $nbSoirees = $pagination->getTotalItemCount();
-                $soirees = $pagination;
+                $nbSoirees  = $pagination->getTotalItemCount();
+                $soirees    = $pagination;
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('TBNMainBundle:Search:content_events.html.twig', [
@@ -103,11 +103,11 @@ class SearchController extends Controller
             }
 
             if (!$type || $type === 'membres') { //Recherche de membres
-                $query = $this->searchUsers($rm, $site, $q);
-                $paginator = $this->get('knp_paginator');
+                $query      = $this->searchUsers($rm, $site, $q);
+                $paginator  = $this->get('knp_paginator');
                 $pagination = $paginator->paginate($query, $page, $maxItems);
-                $nbUsers = $pagination->getTotalItemCount();
-                $users = $pagination;
+                $nbUsers    = $pagination->getTotalItemCount();
+                $users      = $pagination;
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('TBNMainBundle:Search:content_users.html.twig', [

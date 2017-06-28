@@ -28,22 +28,22 @@ class EchantillonHandler
     public function __construct(EntityManagerInterface $em)
     {
         $this->repoAgenda = $em->getRepository('TBNAgendaBundle:Agenda');
-        $this->repoPlace = $em->getRepository('TBNAgendaBundle:Place');
+        $this->repoPlace  = $em->getRepository('TBNAgendaBundle:Place');
 
         $this->init();
     }
 
     protected function initEvents()
     {
-        $this->agendas = [];
-        $this->fbAgendas = [];
+        $this->agendas    = [];
+        $this->fbAgendas  = [];
         $this->newAgendas = [];
     }
 
     protected function initPlaces()
     {
-        $this->places = [];
-        $this->fbPlaces = [];
+        $this->places    = [];
+        $this->fbPlaces  = [];
         $this->newPlaces = [];
     }
 
@@ -75,7 +75,7 @@ class EchantillonHandler
         $bySitePlaces = [];
 
         foreach ($places as $place) {
-            /**
+            /*
              * @var Place
              */
             if ($place->getFacebookId()) {
@@ -95,7 +95,7 @@ class EchantillonHandler
 
         foreach ($places as $place) {
             if (!$place->getFacebookId() || !isset($this->fbPlaces[$place->getFacebookId()])) {
-                $key = $place->getSite()->getId();
+                $key                = $place->getSite()->getId();
                 $bySitePlaces[$key] = $key;
             }
         }
@@ -116,7 +116,7 @@ class EchantillonHandler
         $byFbIdEvents = [];
         $byDateEvents = [];
         foreach ($events as $event) {
-            /**
+            /*
              * @var Agenda
              */
             if ($event->getFacebookEventId()) {
@@ -136,7 +136,7 @@ class EchantillonHandler
 
         foreach ($events as $event) {
             if (!$event->getFacebookEventId() || !isset($this->fbAgendas[$event->getFacebookEventId()])) {
-                $key = $this->getAgendaCacheKey($event);
+                $key                = $this->getAgendaCacheKey($event);
                 $byDateEvents[$key] = $event;
             }
         }
@@ -211,7 +211,7 @@ class EchantillonHandler
                 $this->newAgendas[$key] = [];
             }
 
-            $id = spl_object_hash($event);
+            $id                          = spl_object_hash($event);
             $this->newAgendas[$key][$id] = $event;
         }
 
@@ -266,7 +266,7 @@ class EchantillonHandler
                 $this->newPlaces[$key] = [];
             }
 
-            $id = spl_object_hash($place);
+            $id                         = spl_object_hash($place);
             $this->newPlaces[$key][$id] = $place;
         }
     }

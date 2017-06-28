@@ -27,7 +27,7 @@ class UserController extends Controller
 
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
     {
-        $em = $this->getDoctrine()->getManager();
+        $em       = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository('TBNUserBundle:User');
 
         if (!$id) {
@@ -57,7 +57,7 @@ class UserController extends Controller
         }
         $user = $result;
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
         $siteManager = $this->get('site_manager');
@@ -88,8 +88,8 @@ class UserController extends Controller
         }
         $user = $result;
 
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
+        $em       = $this->getDoctrine()->getManager();
+        $repo     = $em->getRepository('TBNAgendaBundle:Agenda');
         $str_date = $repo->getLastDateStatsUser($user);
 
         $response = $this->cacheVerif($str_date);
@@ -135,8 +135,8 @@ class UserController extends Controller
 
     protected function getDataOfWeek($repo, User $user)
     {
-        $now = new \DateTime();
-        $date = $this->calculDate('P1W');
+        $now   = new \DateTime();
+        $date  = $this->calculDate('P1W');
         $datas = $repo->getStatsUser($user, $date);
 
         $final_datas = [
@@ -145,7 +145,7 @@ class UserController extends Controller
             'full_categories',
         ];
 
-        for ($i = 1; $date <= $now; $i++) {
+        for ($i = 1; $date <= $now; ++$i) {
             $nb_events = 0;
             foreach ($datas as $data) {
                 if ($data['date_event'] == $date->format('m-d')) {
@@ -153,10 +153,10 @@ class UserController extends Controller
                 }
             }
 
-            $cle = ucfirst($this->getDayName($date->format('N')));
+            $cle                              = ucfirst($this->getDayName($date->format('N')));
             $final_datas['full_categories'][] = $cle.' '.$date->format('d').' '.$this->getMonthName($date->format('m')).' '.$date->format('Y');
-            $final_datas['categories'][] = $cle;
-            $final_datas['data'][] = intval($nb_events);
+            $final_datas['categories'][]      = $cle;
+            $final_datas['data'][]            = intval($nb_events);
 
             $date->add(new \DateInterval('P1D'));
         }
@@ -166,8 +166,8 @@ class UserController extends Controller
 
     protected function getDataOfMonth($repo, User $user)
     {
-        $now = new \DateTime();
-        $date = $this->calculDate('P1M');
+        $now   = new \DateTime();
+        $date  = $this->calculDate('P1M');
         $datas = $repo->getStatsUser($user, $date);
 
         $final_datas = [
@@ -176,7 +176,7 @@ class UserController extends Controller
             'full_categories',
         ];
 
-        for ($i = 1; $date <= $now; $i++) {
+        for ($i = 1; $date <= $now; ++$i) {
             $nb_events = 0;
             foreach ($datas as $data) {
                 if ($data['date_event'] == $date->format('m-d')) {
@@ -187,8 +187,8 @@ class UserController extends Controller
             $cle = ucfirst($this->getDayName($date->format('N'))).' '.$date->format('d');
 
             $final_datas['full_categories'][] = ucfirst($this->getDayName($date->format('N'))).' '.$date->format('d').' '.$this->getMonthName($date->format('m')).' '.$date->format('Y');
-            $final_datas['categories'][] = $cle;
-            $final_datas['data'][] = intval($nb_events);
+            $final_datas['categories'][]      = $cle;
+            $final_datas['data'][]            = intval($nb_events);
 
             $date->add(new \DateInterval('P1D'));
         }
@@ -198,8 +198,8 @@ class UserController extends Controller
 
     protected function getDataOfYear($repo, User $user)
     {
-        $now = new \DateTime();
-        $date = $this->calculDate('P1Y');
+        $now   = new \DateTime();
+        $date  = $this->calculDate('P1Y');
         $datas = $repo->getStatsUser($user, $date, false);
 
         $final_datas = [
@@ -208,7 +208,7 @@ class UserController extends Controller
             'full_categories',
         ];
 
-        for ($i = 1; $date <= $now; $i++) {
+        for ($i = 1; $date <= $now; ++$i) {
             $nb_events = 0;
             foreach ($datas as $data) {
                 if ($data['date_event'] == $date->format('Y-m')) {
@@ -216,10 +216,10 @@ class UserController extends Controller
                 }
             }
 
-            $cle = ucfirst(utf8_encode(substr(utf8_decode($this->getMonthName($date->format('m'))), 0, 3)));
+            $cle                              = ucfirst(utf8_encode(substr(utf8_decode($this->getMonthName($date->format('m'))), 0, 3)));
             $final_datas['full_categories'][] = ucfirst($this->getMonthName($date->format('m'))).' '.$date->format('Y');
-            $final_datas['categories'][] = $cle;
-            $final_datas['data'][] = intval($nb_events);
+            $final_datas['categories'][]      = $cle;
+            $final_datas['data'][]            = intval($nb_events);
 
             $date->add(new \DateInterval('P1M'));
         }

@@ -66,7 +66,7 @@ class RegistrationController extends BaseController
                 if ($request->isXmlHttpRequest()) {
                     $response = new JsonResponse(['success' => true]);
                 } else {
-                    $url = $this->generateUrl('fos_user_registration_confirmed');
+                    $url      = $this->generateUrl('fos_user_registration_confirmed');
                     $response = new RedirectResponse($url);
                 }
             }

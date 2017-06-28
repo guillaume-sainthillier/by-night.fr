@@ -11,7 +11,7 @@ Debug::enable();
 
 $kernel = new AppKernel('pre_prod', true);
 
-$request = Request::createFromGlobals();
+$request  = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);

@@ -33,10 +33,10 @@ class EventUpdater extends Updater
             $since = new \DateTime();
         }
 
-        $repo = $this->entityManager->getRepository('TBNAgendaBundle:Agenda');
+        $repo  = $this->entityManager->getRepository('TBNAgendaBundle:Agenda');
         $count = $repo->getNextEventsCount($since);
 
-        $fbIds = $repo->getNextEventsFbIds($since);
+        $fbIds   = $repo->getNextEventsFbIds($since);
         $fbStats = $this->facebookAdmin->getEventStatsFromIds($fbIds);
 
         unset($fbIds);
@@ -44,7 +44,7 @@ class EventUpdater extends Updater
         $nbBatchs = ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
-        for ($i = 0; $i < $nbBatchs; $i++) {
+        for ($i = 0; $i < $nbBatchs; ++$i) {
             $events = $repo->getNextEvents($since, $i, self::PAGINATION_SIZE);
             $this->doUpdate($events, $fbStats);
             $this->doFlush();

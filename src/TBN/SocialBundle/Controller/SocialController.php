@@ -24,7 +24,7 @@ class SocialController extends BaseController
     public function disconnectSiteAction($service)
     {
         /** @var Social */
-        $social = $this->container->get('tbn.social.'.strtolower($service === 'facebook' ? 'facebook_events' : $service));
+        $social      = $this->container->get('tbn.social.'.strtolower($service === 'facebook' ? 'facebook_events' : $service));
         $siteManager = $this->container->get('site_manager');
         $currentSite = $siteManager->getCurrentSite();
         $social->disconnectSite($currentSite); //On enlève le profil social du site

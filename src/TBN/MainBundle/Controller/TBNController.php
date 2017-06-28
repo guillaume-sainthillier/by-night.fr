@@ -25,7 +25,7 @@ class TBNController extends Controller
      */
     protected function checkEventUrl($slug, $id, $routeName = 'tbn_agenda_details', array $extraParams = [])
     {
-        $em = $this->getDoctrine()->getManager();
+        $em       = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository('TBNAgendaBundle:Agenda');
 
         if (!$id) {
@@ -50,9 +50,9 @@ class TBNController extends Controller
 
     protected function getSecondsUntil($hours)
     {
-        $time = time();
-        $now = new \DateTime();
-        $minutes = $now->format('i');
+        $time     = time();
+        $now      = new \DateTime();
+        $minutes  = $now->format('i');
         $secondes = $now->format('s');
 
         $string = $hours == 1 ? '+1 hour' : sprintf('+%d hours', $hours);

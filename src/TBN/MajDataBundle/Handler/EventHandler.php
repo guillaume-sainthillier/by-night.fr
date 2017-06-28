@@ -24,10 +24,10 @@ class EventHandler
 
     public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, $tempPath)
     {
-        $this->cleaner = $cleaner;
+        $this->cleaner    = $cleaner;
         $this->comparator = $comparator;
-        $this->merger = $merger;
-        $this->tempPath = $tempPath;
+        $this->merger     = $merger;
+        $this->tempPath   = $tempPath;
     }
 
     public function hasToDownloadImage($newURL, Agenda $agenda)
@@ -49,7 +49,7 @@ class EventHandler
             $filename = sha1(uniqid(mt_rand(), true)).'.'.$ext;
 
             $tempPath = $this->tempPath.'/'.$filename;
-            $octets = file_put_contents($tempPath, $content);
+            $octets   = file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);

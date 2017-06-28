@@ -97,18 +97,18 @@ abstract class Social
             throw new SocialException("Le paramètre 'secret' est absent");
         }
 
-        $this->id = $config['id'];
-        $this->secret = $config['secret'];
-        $this->config = $config;
-        $this->siteManager = $siteManager;
-        $this->tokenStorage = $tokenStorage;
-        $this->router = $router;
-        $this->session = $session;
-        $this->requestStack = $requestStack;
-        $this->logger = $logger;
+        $this->id                  = $config['id'];
+        $this->secret              = $config['secret'];
+        $this->config              = $config;
+        $this->siteManager         = $siteManager;
+        $this->tokenStorage        = $tokenStorage;
+        $this->router              = $router;
+        $this->session             = $session;
+        $this->requestStack        = $requestStack;
+        $this->logger              = $logger;
         $this->eventProfilePicture = $eventProfilePicture;
-        $this->appManager = $appManager;
-        $this->isInitialized = false;
+        $this->appManager          = $appManager;
+        $this->isInitialized       = false;
     }
 
     protected function init()
@@ -131,7 +131,7 @@ abstract class Social
     {
         if ($info !== null) {
             $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
-            $methods = ['Id', 'AccessToken', 'RefreshToken', 'TokenSecret', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
+            $methods     = ['Id', 'AccessToken', 'RefreshToken', 'TokenSecret', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
                 $setter = 'set'.ucfirst($social_name).ucfirst($methode);
                 $info->$setter(null);

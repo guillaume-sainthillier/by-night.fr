@@ -18,8 +18,8 @@ class FacebookEvents extends FacebookListEvents
         $info = $user->getInfo();
         if ($agenda->getFbPostId() === null && $info !== null && $info->getFacebookAccessToken() !== null) {
             $dateDebut = $this->getReadableDate($agenda->getDateDebut());
-            $dateFin = $this->getReadableDate($agenda->getDateFin());
-            $date = $this->getDuree($dateDebut, $dateFin);
+            $dateFin   = $this->getReadableDate($agenda->getDateFin());
+            $date      = $this->getDuree($dateDebut, $dateFin);
 
             $place = $agenda->getPlace();
 

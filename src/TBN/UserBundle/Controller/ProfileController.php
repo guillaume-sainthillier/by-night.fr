@@ -53,7 +53,7 @@ class ProfileController extends BaseController
             $em = $this->get('doctrine.orm.entity_manager');
 
             $deleteEvents = $form->get('delete_events')->getData();
-            $events = $this->getDoctrine()->getRepository('TBNAgendaBundle:Agenda')->findBy([
+            $events       = $this->getDoctrine()->getRepository('TBNAgendaBundle:Agenda')->findBy([
                 'user' => $user,
             ]);
 
@@ -141,7 +141,7 @@ class ProfileController extends BaseController
             $userManager->updateUser($user);
 
             if (null === $response = $event->getResponse()) {
-                $url = $this->generateUrl('fos_user_profile_show');
+                $url      = $this->generateUrl('fos_user_profile_show');
                 $response = new RedirectResponse($url);
             }
 

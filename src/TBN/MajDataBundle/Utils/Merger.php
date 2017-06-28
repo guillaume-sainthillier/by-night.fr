@@ -12,14 +12,14 @@ use TBN\AgendaBundle\Entity\Place;
  */
 class Merger
 {
-    const MERGE_LEFT = 'do_merge_left';
-    const MERGE_RIGHT = 'do_merge_right';
-    const MERGE_MAX = 'do_merge_max';
-    const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
+    const MERGE_LEFT                    = 'do_merge_left';
+    const MERGE_RIGHT                   = 'do_merge_right';
+    const MERGE_MAX                     = 'do_merge_max';
+    const MERGE_RIGHT_IF_DIFFERENT      = 'do_merge_right_if_different';
     const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
-    const FORCE_MERGE_LEFT = 'do_force_merge_left';
-    const FORCE_MERGE_RIGHT = 'do_force_merge_right';
-    const DEFAULT_MERGE = self::MERGE_RIGHT;
+    const FORCE_MERGE_LEFT              = 'do_force_merge_left';
+    const FORCE_MERGE_RIGHT             = 'do_force_merge_right';
+    const DEFAULT_MERGE                 = self::MERGE_RIGHT;
 
     /**
      * @var Comparator
@@ -115,8 +115,8 @@ class Merger
                 $type = self::DEFAULT_MERGE;
             } else {
                 $oldField = $field;
-                $field = $type;
-                $type = $oldField;
+                $field    = $type;
+                $type     = $oldField;
             }
 
             $getter = 'get'.$this->skakeToCamel($field);
@@ -124,7 +124,7 @@ class Merger
 
             $valueA = $a->$getter();
             $valueB = $b->$getter();
-            $value = $this->getBestContent($valueA, $valueB, $type);
+            $value  = $this->getBestContent($valueA, $valueB, $type);
 
             $a->$setter($value);
         }

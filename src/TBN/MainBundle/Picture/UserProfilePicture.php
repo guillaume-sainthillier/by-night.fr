@@ -26,7 +26,7 @@ class UserProfilePicture
     public function __construct(CacheManager $cacheManager, UploaderHelper $helper)
     {
         $this->cacheManager = $cacheManager;
-        $this->helper = $helper;
+        $this->helper       = $helper;
     }
 
     public function getProfilePicture(User $user, $thumb = 'thumb_user')

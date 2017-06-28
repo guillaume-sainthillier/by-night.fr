@@ -23,9 +23,9 @@ class EventInvalidator
     public function __construct(TagHandler $tagHandler, LoggerInterface $logger)
     {
         $this->tagHandler = $tagHandler;
-        $this->logger = $logger;
-        $this->eventTags = [];
-        $this->userTags = [];
+        $this->logger     = $logger;
+        $this->eventTags  = [];
+        $this->userTags   = [];
     }
 
     public static function getEventDetailTag(Agenda $event)

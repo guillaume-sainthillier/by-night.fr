@@ -36,7 +36,7 @@ class AgendaRepository extends EntityRepository
 
     public function findByInterval(\DateTime $from, \DateTime $to)
     {
-        $sites = $this->_em->getRepository('TBNMainBundle:Site')->findBy([], ['nom' => 'ASC']);
+        $sites  = $this->_em->getRepository('TBNMainBundle:Site')->findBy([], ['nom' => 'ASC']);
         $events = [];
         foreach ($sites as $site) {
             $events[$site->getNom()] = $this
@@ -511,18 +511,18 @@ class AgendaRepository extends EntityRepository
         }
 
         $params = [];
-        $query = $this->createQueryBuilder('a');
+        $query  = $this->createQueryBuilder('a');
 
         $i = 0;
         foreach ($events as $event) {
-            $i++;
+            ++$i;
             /*
              * @var Agenda $event
              */
             $query->orWhere("a.dateDebut = :date_debut_$i AND a.dateFin = :date_fin_$i AND a.site = :site_$i");
             $params["date_debut_$i"] = $event->getDateDebut()->format('Y-m-d');
-            $params["date_fin_$i"] = $event->getDateFin()->format('Y-m-d');
-            $params["site_$i"] = $event->getSite()->getId();
+            $params["date_fin_$i"]   = $event->getDateFin()->format('Y-m-d');
+            $params["site_$i"]       = $event->getSite()->getId();
         }
 
         return $query

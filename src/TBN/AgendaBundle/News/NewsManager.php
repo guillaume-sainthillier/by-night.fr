@@ -38,11 +38,11 @@ class NewsManager
 
     public function __construct(EntityManager $em, \Twig_Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
     {
-        $this->em = $em;
-        $this->twig = $twig;
+        $this->em       = $em;
+        $this->twig     = $twig;
         $this->facebook = $facebook;
-        $this->twitter = $twitter;
-        $this->logger = $logger;
+        $this->twitter  = $twitter;
+        $this->logger   = $logger;
     }
 
     public function postNews(News $news, $wordpressPostId, $shortTitle, $longTitle, $url, $imageUrl)
@@ -101,7 +101,7 @@ class NewsManager
 
         if (!$news) {
             $nextEdition = $this->em->getRepository('TBNAgendaBundle:News')->findNextEdition();
-            $news = (new News())
+            $news        = (new News())
                 ->setDateDebut($from)
                 ->setDateFin($to)
                 ->setNumeroEdition($nextEdition);

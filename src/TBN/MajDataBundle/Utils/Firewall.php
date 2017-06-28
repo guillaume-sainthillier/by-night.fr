@@ -34,11 +34,11 @@ class Firewall
 
     public function __construct(Registry $doctrine, Comparator $comparator)
     {
-        $this->om = $doctrine->getManager();
+        $this->om              = $doctrine->getManager();
         $this->repoExploration = $this->om->getRepository('TBNMajDataBundle:Exploration');
-        $this->comparator = $comparator;
-        $this->places = [];
-        $this->explorations = [];
+        $this->comparator      = $comparator;
+        $this->places          = [];
+        $this->explorations    = [];
     }
 
     public function loadExplorations(array $ids)
@@ -65,7 +65,7 @@ class Firewall
 
     public function hasEventToBeUpdated(Exploration $exploration, Agenda $event)
     {
-        $explorationDate = $exploration->getLastUpdated();
+        $explorationDate       = $exploration->getLastUpdated();
         $eventDateModification = $event->getFbDateModification();
 
         if (!$explorationDate || !$eventDateModification) {
@@ -127,7 +127,7 @@ class Firewall
         }
 
         $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration);
-        $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
+        $hasToBeUpdated            = $this->hasEventToBeUpdated($exploration, $event);
 
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
@@ -250,7 +250,7 @@ class Firewall
     private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
     {
         $theta = $entity->getLongitude() - $boundary->getLongitude();
-        $dist = sin(deg2rad($entity->getLatitude())) *
+        $dist  = sin(deg2rad($entity->getLatitude())) *
             sin(deg2rad($boundary->getLatitude())) +
                 cos(deg2rad($entity->getLatitude())) *
                 cos(deg2rad($boundary->getLatitude())) *

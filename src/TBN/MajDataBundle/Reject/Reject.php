@@ -10,21 +10,21 @@ namespace TBN\MajDataBundle\Reject;
  */
 class Reject
 {
-    const VALID = 1;
-    const BAD_EVENT_NAME = 2;
-    const BAD_EVENT_DATE = 4;
-    const BAD_EVENT_DATE_INTERVAL = 8;
-    const SPAM_EVENT_DESCRIPTION = 16;
-    const BAD_EVENT_DESCRIPTION = 32;
-    const NO_NEED_TO_UPDATE = 64;
-    const NO_PLACE_PROVIDED = 128;
+    const VALID                      = 1;
+    const BAD_EVENT_NAME             = 2;
+    const BAD_EVENT_DATE             = 4;
+    const BAD_EVENT_DATE_INTERVAL    = 8;
+    const SPAM_EVENT_DESCRIPTION     = 16;
+    const BAD_EVENT_DESCRIPTION      = 32;
+    const NO_NEED_TO_UPDATE          = 64;
+    const NO_PLACE_PROVIDED          = 128;
     const NO_PLACE_LOCATION_PROVIDED = 256;
-    const BAD_PLACE_NAME = 512;
-    const BAD_PLACE_LOCATION = 1024;
-    const BAD_PLACE_CITY_NAME = 2048;
+    const BAD_PLACE_NAME             = 512;
+    const BAD_PLACE_LOCATION         = 1024;
+    const BAD_PLACE_CITY_NAME        = 2048;
     const BAD_PLACE_CITY_POSTAL_CODE = 4096;
-    const BAD_USER = 8192;
-    const EVENT_DELETED = 16384;
+    const BAD_USER                   = 8192;
+    const EVENT_DELETED              = 16384;
 
     protected $reason;
 

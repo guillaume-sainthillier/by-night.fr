@@ -24,13 +24,13 @@ class Facebook extends Social
      */
     protected $client;
 
-    const FIELDS = 'id,name,updated_time,place,start_time,end_time,owner{category,website,phone,picture.type(large).redirect(false)},cover,ticket_uri,description,picture.type(large).redirect(false),attending_count,maybe_count';
-    const USERS_FIELDS = 'id,picture.type(large).redirect(false),cover';
-    const STATS_FIELDS = 'id,picture.type(large).redirect(false),cover,attending_count,maybe_count';
+    const FIELDS            = 'id,name,updated_time,place,start_time,end_time,owner{category,website,phone,picture.type(large).redirect(false)},cover,ticket_uri,description,picture.type(large).redirect(false),attending_count,maybe_count';
+    const USERS_FIELDS      = 'id,picture.type(large).redirect(false),cover';
+    const STATS_FIELDS      = 'id,picture.type(large).redirect(false),cover,attending_count,maybe_count';
     const FULL_STATS_FIELDS = 'id,picture.type(large).redirect(false),cover,attending_count,maybe_count,attending.limit(500){name,picture.type(square).redirect(false)},maybe.limit(500){name,picture.type(square).redirect(false)}';
-    const MEMBERS_FIELDS = 'id,attending.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)},maybe.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)}';
-    const ATTENDING_FIELDS = 'id,name,picture.type(square).redirect(false)';
-    const MIN_EVENT_FIELDS = 'id,updated_time,owner{id}';
+    const MEMBERS_FIELDS    = 'id,attending.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)},maybe.offset(%offset%).limit(%limit%){name,picture.type(square).redirect(false)}';
+    const ATTENDING_FIELDS  = 'id,name,picture.type(square).redirect(false)';
+    const MIN_EVENT_FIELDS  = 'id,updated_time,owner{id}';
 
     protected function constructClient()
     {
@@ -51,8 +51,8 @@ class Facebook extends Social
                     $graph = null;
                 } else {
                     $currentData = $graph->all();
-                    $datas = array_merge($datas, $currentData);
-                    $graph = $this->client->next($graph);
+                    $datas       = array_merge($datas, $currentData);
+                    $graph       = $this->client->next($graph);
                 }
             } catch (FacebookSDKException $ex) {
                 $graph = null;
@@ -65,7 +65,7 @@ class Facebook extends Social
 
     protected function findAssociativeEvents(FacebookResponse $response)
     {
-        $graph = $response->getGraphNode();
+        $graph   = $response->getGraphNode();
         $indexes = $graph->getFieldNames();
 
         return array_map(function ($index) use ($graph) {
@@ -75,12 +75,12 @@ class Facebook extends Social
 
     protected function findPaginatedNodes(FacebookResponse $response)
     {
-        $datas = [];
-        $graph = $response->getGraphNode();
+        $datas   = [];
+        $graph   = $response->getGraphNode();
         $indexes = $graph->getFieldNames();
         foreach ($indexes as $index) {
             $subGraph = $graph->getField($index);
-            $datas = array_merge($datas, $this->next($subGraph));
+            $datas    = array_merge($datas, $this->next($subGraph));
         }
 
         return $datas;
@@ -92,7 +92,7 @@ class Facebook extends Social
             return [];
         }
 
-        $datas = $graph->all();
+        $datas       = $graph->all();
         $nextRequest = $graph->getNextPageRequest();
 
         if (!$nextRequest) {
@@ -101,7 +101,7 @@ class Facebook extends Social
 
         try {
             $response = $this->client->getClient()->sendRequest($nextRequest);
-            $nodes = $response->getGraphNode();
+            $nodes    = $response->getGraphNode();
             foreach ($nodes as $node) {
                 $datas = array_merge($datas, $this->next($node));
             }
@@ -114,12 +114,12 @@ class Facebook extends Social
 
     protected function findAssociativePaginated(FacebookResponse $response)
     {
-        $datas = [];
-        $graph = $response->getGraphNode();
+        $datas   = [];
+        $graph   = $response->getGraphNode();
         $indexes = $graph->getFieldNames();
         foreach ($indexes as $index) {
             $subGraph = $graph->getField($index);
-            $datas = array_merge($datas, $this->findPaginated($subGraph));
+            $datas    = array_merge($datas, $this->findPaginated($subGraph));
         }
 
         return $datas;

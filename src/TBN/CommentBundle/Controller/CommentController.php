@@ -66,7 +66,7 @@ class CommentController extends Controller
     public function newAction(Request $request, Agenda $soiree)
     {
         $comment = new Comment();
-        $form = $this->getCreateForm($comment, $soiree);
+        $form    = $this->getCreateForm($comment, $soiree);
 
         $user = $this->getUser();
 
@@ -92,7 +92,6 @@ class CommentController extends Controller
                     'comment'              => $comment,
                     'success_confirmation' => true,
                     'nb_reponses'          => 0,
-
                 ]),
                 'header' => $this->container->get('templating')->render('TBNCommentBundle:Comment:header.html.twig', [
                     'nb_comments' => $this->getNbComments($soiree),
@@ -132,9 +131,9 @@ class CommentController extends Controller
      */
     public function listAction(Agenda $soiree, $page)
     {
-        $offset = 10;
+        $offset  = 10;
         $comment = new Comment();
-        $form = $this->getCreateForm($comment, $soiree);
+        $form    = $this->getCreateForm($comment, $soiree);
 
         $response = $this->render('TBNCommentBundle:Comment:list.html.twig', [
             'nb_comments' => $this->getNbComments($soiree),

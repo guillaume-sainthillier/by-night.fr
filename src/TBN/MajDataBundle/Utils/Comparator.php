@@ -24,7 +24,7 @@ class Comparator
 
     public function __construct(Util $util, Cache $cache)
     {
-        $this->util = $util;
+        $this->util  = $util;
         $this->cache = $cache;
     }
 
@@ -69,7 +69,6 @@ class Comparator
             }
 
             if ($this->getMatchingScoreVille($a, $b) >= 75) {
-
                 //~ Même ville et même rue
                 if ($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100) {
                     if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 80) {
@@ -137,7 +136,7 @@ class Comparator
         }
 
         $bestScore = 0;
-        $bestItem = null;
+        $bestItem  = null;
 
         foreach ($items as $item) {
             $score = call_user_func($machingFunction, $item, $testedItem);
@@ -145,7 +144,7 @@ class Comparator
             if ($score >= 100) {
                 return $item;
             } elseif ($score >= $minScore && $score > $bestScore) {
-                $bestItem = $item;
+                $bestItem  = $item;
                 $bestScore = $score;
             }
         }
@@ -192,7 +191,7 @@ class Comparator
     {
         $hashA = md5($a);
         $hashB = md5($b);
-        $keys = ['getDiffPourcentage.'.$hashA.'.'.$hashB, 'getDiffPourcentage.'.$hashB.'.'.$hashA];
+        $keys  = ['getDiffPourcentage.'.$hashA.'.'.$hashB, 'getDiffPourcentage.'.$hashB.'.'.$hashA];
 
         foreach ($keys as $key) {
             if ($this->cache->contains($key)) {

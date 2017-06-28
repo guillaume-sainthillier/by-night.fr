@@ -21,9 +21,9 @@ abstract class LinksParser extends AgendaParser
     {
         parent::__construct();
 
-        $this->url = null;
+        $this->url      = null;
         $this->base_url = null;
-        $this->parser = new Crawler();
+        $this->parser   = new Crawler();
 
         return $this;
     }

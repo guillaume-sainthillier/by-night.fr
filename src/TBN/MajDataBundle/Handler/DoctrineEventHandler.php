@@ -44,20 +44,20 @@ class DoctrineEventHandler
 
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler)
     {
-        $this->em = $em;
-        $this->repoAgenda = $em->getRepository('TBNAgendaBundle:Agenda');
-        $this->repoPlace = $em->getRepository('TBNAgendaBundle:Place');
-        $this->repoSite = $em->getRepository('TBNMainBundle:Site');
-        $this->handler = $handler;
-        $this->firewall = $firewall;
+        $this->em                 = $em;
+        $this->repoAgenda         = $em->getRepository('TBNAgendaBundle:Agenda');
+        $this->repoPlace          = $em->getRepository('TBNAgendaBundle:Place');
+        $this->repoSite           = $em->getRepository('TBNMainBundle:Site');
+        $this->handler            = $handler;
+        $this->firewall           = $firewall;
         $this->echantillonHandler = $echantillonHandler;
         $this->explorationHandler = new ExplorationHandler();
 
         $this->output = null;
 
         $this->villes = [];
-        $this->sites = [];
-        $this->stats = [];
+        $this->sites  = [];
+        $this->stats  = [];
     }
 
     /**
@@ -125,12 +125,12 @@ class DoctrineEventHandler
         $this->doFilter($events);
         $this->flushExplorations();
 
-        $allowedEvents = $this->getAllowedEvents($events);
+        $allowedEvents    = $this->getAllowedEvents($events);
         $notAllowedEvents = $this->getNotAllowedEvents($events);
         unset($events);
 
         $nbNotAllowedEvents = count($notAllowedEvents);
-        for ($i = 0; $i < $nbNotAllowedEvents; $i++) {
+        for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
             $this->explorationHandler->addBlackList();
         }
 
@@ -244,7 +244,7 @@ class DoctrineEventHandler
                     $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
 
                     $oldUser = $event->getUser();
-                    $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
+                    $event   = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
                     $this->firewall->filterEventIntegrity($event, $oldUser);
                     if (!$this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
@@ -297,7 +297,7 @@ class DoctrineEventHandler
     {
         $villes = $this->em->getRepository('TBNAgendaBundle:Place')->findAllVilles();
         foreach ($villes as $ville) {
-            $key = $this->firewall->getVilleHash($ville['ville']);
+            $key                = $this->firewall->getVilleHash($ville['ville']);
             $this->villes[$key] = $ville['id'];
         }
     }
@@ -306,7 +306,7 @@ class DoctrineEventHandler
     {
         $sites = $this->em->getRepository('TBNMainBundle:Site')->findAll();
         foreach ($sites as $site) {
-            $key = $this->firewall->getVilleHash($site->getNom());
+            $key               = $this->firewall->getVilleHash($site->getNom());
             $this->sites[$key] = $site;
         }
     }
@@ -327,7 +327,7 @@ class DoctrineEventHandler
         $batchSize = 100;
         $nbBatches = ceil(count($explorations) / $batchSize);
 
-        for ($i = 0; $i < $nbBatches; $i++) {
+        for ($i = 0; $i < $nbBatches; ++$i) {
             $currentExplorations = array_slice($explorations, $i * $batchSize, $batchSize);
             foreach ($currentExplorations as $exploration) {
                 $exploration->setReason($exploration->getReject()->getReason());
@@ -419,7 +419,7 @@ class DoctrineEventHandler
     {
         $fbIds = [];
         foreach ($events as $event) {
-            /**
+            /*
              * @var Agenda
              */
             if ($event->getFacebookEventId()) {

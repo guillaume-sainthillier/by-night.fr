@@ -93,7 +93,7 @@ class Monitor
                 'total'      => 0,
             ];
         }
-        $somme = array_sum($stat['time']);
+        $somme       = array_sum($stat['time']);
         $sommeMemory = array_sum($stat['memory']);
 
         return [
@@ -136,7 +136,7 @@ class Monitor
 
     public static function displayTable(array $datas)
     {
-        $datas = isset($datas[0]) ? $datas[0] : [$datas];
+        $datas   = isset($datas[0]) ? $datas[0] : [$datas];
         $headers = array_keys($datas[0]);
 
         (new Table(self::$output))
@@ -182,7 +182,7 @@ class Monitor
         if (self::$enableMonitoring) {
             $event = $stopwatch->stop($message);
 
-            self::$stats[$message]['time'][] = $event->getDuration();
+            self::$stats[$message]['time'][]   = $event->getDuration();
             self::$stats[$message]['memory'][] = $event->getMemory();
         }
 

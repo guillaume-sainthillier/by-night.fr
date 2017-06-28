@@ -40,7 +40,7 @@ class FetchCommand extends AppCommand
 
         Monitor::enableMonitoring($input->getOption('monitor'));
         Monitor::$output = $output;
-        $fetcher = $this->getContainer()->get('tbn.event_fetcher');
+        $fetcher         = $this->getContainer()->get('tbn.event_fetcher');
 
         $events = $fetcher->fetchEvents($service);
         $this->getContainer()->get('tbn.doctrine_event_handler')->handleManyCLI($events, $service);

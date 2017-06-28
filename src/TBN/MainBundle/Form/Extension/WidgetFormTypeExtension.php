@@ -20,8 +20,8 @@ class WidgetFormTypeExtension extends AbstractTypeExtension
     {
         parent::buildView($view, $form, $options);
 
-        $view->vars['group_class'] = $options['group_class'];
-        $view->vars['base_class'] = $options['base_class'];
+        $view->vars['group_class']  = $options['group_class'];
+        $view->vars['base_class']   = $options['base_class'];
         $view->vars['widget_class'] = $options['widget_class'];
     }
 

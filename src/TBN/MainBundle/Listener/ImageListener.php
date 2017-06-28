@@ -32,7 +32,7 @@ class ImageListener
         }
 
         $prefix = $event->getMapping()->getUriPrefix();
-        $path = $prefix.'/'.$event->getMapping()->getFileName($object);
+        $path   = $prefix.'/'.$event->getMapping()->getFileName($object);
 
         foreach ($filters as $filter) {
             if ($this->cacheManager->isStored($path, $filter)) {

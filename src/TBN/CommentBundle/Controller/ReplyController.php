@@ -68,7 +68,7 @@ class ReplyController extends Controller
     public function newAction(Request $request, Comment $comment)
     {
         $reponse = new Comment();
-        $form = $this->getCreateForm($reponse, $comment);
+        $form    = $this->getCreateForm($reponse, $comment);
 
         if ($request->getMethod() == 'POST') {
             $user = $this->getUser();

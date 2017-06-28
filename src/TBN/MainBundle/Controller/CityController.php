@@ -13,8 +13,8 @@ class CityController extends Controller
     public function indexAction()
     {
         $doctrine = $this->getDoctrine();
-        $repo = $doctrine->getRepository('TBNMainBundle:Site');
-        $sites = $repo->findStats();
+        $repo     = $doctrine->getRepository('TBNMainBundle:Site');
+        $sites    = $repo->findStats();
 
         $villes = array_map(function (array $site) {
             return $site['nom'];
