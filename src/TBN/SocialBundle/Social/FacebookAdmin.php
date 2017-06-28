@@ -178,7 +178,7 @@ class FacebookAdmin extends FacebookEvents
                         $responses = $this->client->sendBatchRequest($requests, $this->getAccessToken());
                     } catch (\Exception $e) {
                         Monitor::writeln(sprintf(
-                            "<error>Erreur dans le batch de la récupération des objets FB : %s</error>",
+                            '<error>Erreur dans le batch de la récupération des objets FB : %s</error>',
                             $e->getMessage()
                         ));
                         $responses = [];
