@@ -66,10 +66,6 @@ doctrine_cache:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
-    paths:
-        '%kernel.project_dir%/templates/TwigBundle': Twig
-        '%kernel.project_dir%/templates/HWIOAuthBundle': "HWIOAuthBundle"
-        '%kernel.project_dir%/templates': ~
     form_themes:
             - 'VichUploaderBundle:Form:fields.html.twig'
             - ':Form:fields.html.twig'
