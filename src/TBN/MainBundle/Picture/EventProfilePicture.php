@@ -36,9 +36,9 @@ class EventProfilePicture
     public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages, Router $router)
     {
         $this->cacheManager = $cacheManager;
-        $this->helper = $helper;
-        $this->packages = $packages;
-        $this->router = $router;
+        $this->helper       = $helper;
+        $this->packages     = $packages;
+        $this->router       = $router;
     }
 
     private function getAppUrl()

@@ -31,17 +31,17 @@ class SubDomainListener
     public function __construct(SiteManager $siteManager, EntityManager $em, RouterInterface $router, $baseHost, $basePort)
     {
         $this->siteManager = $siteManager;
-        $this->router = $router;
-        $this->em = $em;
-        $this->baseHost = $baseHost;
-        $this->basePort = $basePort;
+        $this->router      = $router;
+        $this->em          = $em;
+        $this->baseHost    = $baseHost;
+        $this->basePort    = $basePort;
     }
 
     public function onDomainParse(GetResponseEvent $event)
     {
         //Chargement du site
         if ($this->siteManager->getCurrentSite() === null) {
-            $request = $event->getRequest();
+            $request     = $event->getRequest();
             $currentHost = $request->getHttpHost();
 
             $subdomain = \str_replace([

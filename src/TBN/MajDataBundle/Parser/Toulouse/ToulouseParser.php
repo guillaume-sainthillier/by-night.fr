@@ -45,7 +45,7 @@ class ToulouseParser extends AgendaParser
                 $nom = $tab[1] ?: $tab[2];
 
                 $date_debut = new \DateTime($tab[5]);
-                $date_fin = new \DateTime($tab[6]);
+                $date_fin   = new \DateTime($tab[6]);
 
                 $tab_agendas[] = [
                     'nom'                          => $nom,
@@ -83,9 +83,9 @@ class ToulouseParser extends AgendaParser
      */
     protected function downloadCSV()
     {
-        $data = file_get_contents($this->getURL());
+        $data      = file_get_contents($this->getURL());
         $path_file = sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());
-        $fs = new Filesystem();
+        $fs        = new Filesystem();
         $fs->dumpFile($path_file, $data);
 
         return $path_file;

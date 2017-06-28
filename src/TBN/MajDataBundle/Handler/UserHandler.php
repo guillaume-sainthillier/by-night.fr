@@ -44,7 +44,7 @@ class UserHandler
             $filename = sha1(uniqid(mt_rand(), true)).'.'.$ext;
 
             $tempPath = $this->tempPath.'/'.$filename;
-            $octets = file_put_contents($tempPath, $content);
+            $octets   = file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);

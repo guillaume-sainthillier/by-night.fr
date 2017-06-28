@@ -142,8 +142,8 @@ class Twitter extends Social
             ];
 
             $client = new SingleUserAuth($config, new ArraySerializer());
-            $ads = sprintf(' %s #%sByNight', $this->getLink($agenda), $this->siteManager->getCurrentSite()->getNom());
-            $titre = sprintf('%s présente %s', $user->getUsername(), $agenda->getNom());
+            $ads    = sprintf(' %s #%sByNight', $this->getLink($agenda), $this->siteManager->getCurrentSite()->getNom());
+            $titre  = sprintf('%s présente %s', $user->getUsername(), $agenda->getNom());
             $status = substr($titre, 0, 140 - strlen($ads)).$ads;
 
             $reponse = $client->post('statuses/update', [

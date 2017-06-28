@@ -27,7 +27,7 @@ class CommonController extends TBNController
 
     public function footerAction()
     {
-        $cache = $this->get('memory_cache');
+        $cache       = $this->get('memory_cache');
         $siteManager = $this->get('site_manager');
         $currentSite = $siteManager->getCurrentSite();
 
@@ -50,7 +50,7 @@ class CommonController extends TBNController
             $params['count_'.$name] = $cache->fetch($key);
         }
 
-        $repo = $this->getDoctrine()->getRepository('TBNMainBundle:Site');
+        $repo            = $this->getDoctrine()->getRepository('TBNMainBundle:Site');
         $params['sites'] = $repo->findRandomNames($currentSite);
 
         $response = $this->render('TBNAgendaBundle::footer.html.twig', $params);

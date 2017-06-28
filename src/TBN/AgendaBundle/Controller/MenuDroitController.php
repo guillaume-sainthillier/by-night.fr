@@ -12,13 +12,13 @@ use TBN\MainBundle\Controller\TBNController as Controller;
  */
 class MenuDroitController extends Controller
 {
-    const FB_MEMBERS_LIMIT = 100;
-    const TWEET_LIMIT = 25;
+    const FB_MEMBERS_LIMIT  = 100;
+    const TWEET_LIMIT       = 25;
     const WIDGET_ITEM_LIMIT = 7;
 
     public function programmeTVAction()
     {
-        $parser = $this->get('tbn.programmetv');
+        $parser     = $this->get('tbn.programmetv');
         $programmes = $parser->getProgrammesTV();
 
         $response = $this->render('TBNAgendaBundle:Hinclude:programme_tv.html.twig', [
@@ -95,10 +95,10 @@ class MenuDroitController extends Controller
             ]);
         }
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
-        $count = $repo->findAllNextCount($soiree);
+        $count   = $repo->findAllNextCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -142,10 +142,10 @@ class MenuDroitController extends Controller
         }
         $soiree = $result;
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
-        $count = $repo->findAllSimilairesCount($soiree);
+        $count   = $repo->findAllSimilairesCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -182,13 +182,13 @@ class MenuDroitController extends Controller
         }
 
         $siteManager = $this->container->get('site_manager');
-        $site = $siteManager->getCurrentSite();
+        $site        = $siteManager->getCurrentSite();
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
         $current = $page * self::WIDGET_ITEM_LIMIT;
-        $count = $repo->findTopSoireeCount($site);
+        $count   = $repo->findTopSoireeCount($site);
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_top_soirees', [
@@ -231,7 +231,7 @@ class MenuDroitController extends Controller
             return $this->redirectToRoute('tbn_agenda_details', ['slug' => $soiree->getSlug(), 'id' => $soiree->getId()]);
         }
 
-        $api = $this->get('tbn.social.facebook_admin');
+        $api    = $this->get('tbn.social.facebook_admin');
         $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
         $membres = array_merge($retour['participations'], $retour['interets']);
@@ -286,12 +286,12 @@ class MenuDroitController extends Controller
         }
 
         $siteManager = $this->container->get('site_manager');
-        $site = $siteManager->getCurrentSite();
+        $site        = $siteManager->getCurrentSite();
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('TBNUserBundle:User');
 
-        $count = $repo->findMembresCount($site);
+        $count   = $repo->findMembresCount($site);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {

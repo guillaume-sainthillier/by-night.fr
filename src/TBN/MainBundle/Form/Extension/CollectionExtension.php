@@ -23,8 +23,8 @@ class CollectionExtension extends AbstractTypeExtension
             $view->vars['prototype'] = $form->getConfig()->getAttribute('prototype')->createView($view);
         }
 
-        $view->vars['group_class'] = $options['group_class'];
-        $view->vars['base_class'] = $options['base_class'];
+        $view->vars['group_class']  = $options['group_class'];
+        $view->vars['base_class']   = $options['base_class'];
         $view->vars['widget_class'] = $options['widget_class'];
     }
 

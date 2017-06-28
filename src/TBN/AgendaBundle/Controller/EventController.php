@@ -52,7 +52,7 @@ class EventController extends Controller
         $agenda = $result;
 
         $siteManager = $this->container->get('site_manager');
-        $site = $siteManager->getCurrentSite();
+        $site        = $siteManager->getCurrentSite();
 
         //Redirection vers le bon site
         if ($agenda->getSite() !== $site) {
@@ -63,8 +63,8 @@ class EventController extends Controller
             ]));
         }
 
-        $comment = new Comment();
-        $form = $this->getCreateCommentForm($comment, $agenda);
+        $comment    = new Comment();
+        $form       = $this->getCreateCommentForm($comment, $agenda);
         $nbComments = $agenda->getCommentaires()->count();
 
         $response = $this->render('TBNAgendaBundle:Agenda:details.html.twig', [
@@ -133,11 +133,11 @@ class EventController extends Controller
 
     protected function getAgendaStats(Agenda $agenda)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
         $participer = false;
-        $interet = false;
+        $interet    = false;
 
         $user = $this->getUser();
         if ($user) {
@@ -145,17 +145,17 @@ class EventController extends Controller
              * @var User
              */
             $repoCalendrier = $em->getRepository('TBNAgendaBundle:Calendrier');
-            $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
+            $calendrier     = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
             if ($calendrier !== null) {
                 $participer = $calendrier->getParticipe();
-                $interet = $calendrier->getInteret();
+                $interet    = $calendrier->getInteret();
             }
 
             if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
                 $cache = $this->get('memory_cache');
-                $key = 'users.'.$user->getId().'.stats.'.$agenda->getId();
+                $key   = 'users.'.$user->getId().'.stats.'.$agenda->getId();
                 if (!$cache->contains($key)) {
-                    $api = $this->get('tbn.social.facebook_admin');
+                    $api   = $this->get('tbn.social.facebook_admin');
                     $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
                     $cache->save($key, $stats);
                 }
@@ -168,7 +168,7 @@ class EventController extends Controller
                     }
 
                     $participer = $calendrier->getParticipe() || $stats['participer'];
-                    $interet = $calendrier->getInteret() || $stats['interet'];
+                    $interet    = $calendrier->getInteret() || $stats['interet'];
 
                     $calendrier
                         ->setParticipe($participer)
@@ -239,11 +239,11 @@ class EventController extends Controller
     public function indexAction()
     {
         $siteManager = $this->get('site_manager');
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
+        $em          = $this->getDoctrine()->getManager();
+        $repo        = $em->getRepository('TBNAgendaBundle:Agenda');
 
-        $site = $siteManager->getCurrentSite();
-        $search = (new SearchAgenda())->setDu(null);
+        $site      = $siteManager->getCurrentSite();
+        $search    = (new SearchAgenda())->setDu(null);
         $topEvents = $repo->findTopSoiree($site, 1, 7);
 
         $response = $this->render('TBNAgendaBundle:Agenda:index.html.twig', [
@@ -264,8 +264,8 @@ class EventController extends Controller
     public function listAction(Request $request, $page, $type, $tag, $ville, $slug, $paginateRoute = 'tbn_agenda_pagination')
     {
         //État de la page
-        $isAjax = $request->isXmlHttpRequest();
-        $isPost = $request->isMethod('POST');
+        $isAjax           = $request->isXmlHttpRequest();
+        $isPost           = $request->isMethod('POST');
         $isUserPostSearch = $isPost && !$isAjax;
 
         $routeParams = ['page' => $page + 1];
@@ -285,15 +285,15 @@ class EventController extends Controller
 
         //Gestion du site courant
         $siteManager = $this->container->get('site_manager');
-        $site = $siteManager->getCurrentSite();
+        $site        = $siteManager->getCurrentSite();
 
         //Récupération du repo des événéments
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('TBNAgendaBundle:Agenda');
 
         //Recherche des événements
         $search = new SearchAgenda();
-        $place = null;
+        $place  = null;
         if ($slug !== null) {
             $place = $em->getRepository('TBNAgendaBundle:Place')->findOneBy(['slug' => $slug]);
             if (!$place) {
@@ -303,9 +303,9 @@ class EventController extends Controller
         $formAction = $this->handleSearch($search, $type, $tag, $ville, $place);
 
         //Récupération des lieux, types événéments et villes
-        $lieux = $this->getPlaces($repo, $site);
+        $lieux       = $this->getPlaces($repo, $site);
         $types_manif = $this->getTypesEvenements($repo, $site);
-        $communes = $this->getVilles($repo, $site);
+        $communes    = $this->getVilles($repo, $site);
 
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
@@ -325,13 +325,13 @@ class EventController extends Controller
 
         //Recherche ElasticSearch
         $repositoryManager = $this->get('fos_elastica.manager');
-        $repository = $repositoryManager->getRepository('TBNAgendaBundle:Agenda');
-        $results = $repository->findWithSearch($site, $search); //100ms
+        $repository        = $repositoryManager->getRepository('TBNAgendaBundle:Agenda');
+        $results           = $repository->findWithSearch($site, $search); //100ms
 
-        $paginator = $this->get('knp_paginator');
-        $pagination = $paginator->paginate($results, $page, $nbSoireeParPage);
+        $paginator        = $this->get('knp_paginator');
+        $pagination       = $paginator->paginate($results, $page, $nbSoireeParPage);
         $nbSoireesTotales = $pagination->getTotalItemCount();
-        $soirees = $pagination;
+        $soirees          = $pagination;
 
         $response = $this->render('TBNAgendaBundle:Agenda:soirees.html.twig', [
             'villeName'   => $ville,
@@ -361,11 +361,11 @@ class EventController extends Controller
     protected function getTypesEvenements(AgendaRepository $repo, Site $site)
     {
         $cache = $this->get('memory_cache');
-        $key = 'categories_evenements.'.$site->getSubdomain();
+        $key   = 'categories_evenements.'.$site->getSubdomain();
 
         if (!$cache->contains($key)) {
             $soirees_type_manifestation = $repo->getTypesEvenements($site);
-            $type_manifestation = [];
+            $type_manifestation         = [];
 
             foreach ($soirees_type_manifestation as $soiree) {//
                 $types_manifestation = preg_split('/,/', $soiree->getCategorieManifestation());
@@ -386,10 +386,10 @@ class EventController extends Controller
     protected function getVilles($repo, Site $site)
     {
         $cache = $this->get('memory_cache');
-        $key = 'villes.'.$site->getSubdomain();
+        $key   = 'villes.'.$site->getSubdomain();
 
         if (!$cache->contains($key)) {
-            $places = $repo->getAgendaVilles($site);
+            $places     = $repo->getAgendaVilles($site);
             $tab_villes = [];
             foreach ($places as $place) {
                 $tab_villes[$place->getVille()] = $place->getVille();
@@ -404,11 +404,11 @@ class EventController extends Controller
     protected function getPlaces($repo, Site $site)
     {
         $cache = $this->get('memory_cache');
-        $key = 'places.'.$site->getSubdomain();
+        $key   = 'places.'.$site->getSubdomain();
 
         if (!$cache->contains($key)) {
             $places = $repo->getAgendaPlaces($site);
-            $lieux = [];
+            $lieux  = [];
             foreach ($places as $place) {
                 $lieux[$place->getNom()] = $place->getId();
             }

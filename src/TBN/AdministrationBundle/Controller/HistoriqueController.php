@@ -8,7 +8,7 @@ class HistoriqueController extends Controller
 {
     public function listAction()
     {
-        $repo = $this->getDoctrine()->getRepository('TBNMajDataBundle:HistoriqueMaj');
+        $repo        = $this->getDoctrine()->getRepository('TBNMajDataBundle:HistoriqueMaj');
         $historiques = $repo->findBy([], ['id' => 'DESC'], 100);
 
         return $this->render('TBNAdministrationBundle:Historique:list.html.twig', [

@@ -21,7 +21,7 @@ class AgendaController extends Controller
     {
         $this->checkIfOwner($agenda);
 
-        $annuler = $request->get('annuler', 'true');
+        $annuler                    = $request->get('annuler', 'true');
         $modificationDerniereMinute = ($annuler === 'true' ? 'ANNULÉ' : null);
 
         $em = $this->getDoctrine()->getManager();
@@ -36,7 +36,7 @@ class AgendaController extends Controller
     {
         $this->checkIfOwner($agenda);
 
-        $brouillon = $request->get('brouillon', 'true');
+        $brouillon   = $request->get('brouillon', 'true');
         $isBrouillon = ($brouillon === 'true');
 
         $em = $this->getDoctrine()->getManager();
@@ -49,7 +49,7 @@ class AgendaController extends Controller
 
     public function listAction()
     {
-        $user = $this->getUser();
+        $user    = $this->getUser();
         $soirees = $this->getRepo('TBNAgendaBundle:Agenda')->findAllByUser($user);
 
         $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
@@ -81,7 +81,7 @@ class AgendaController extends Controller
         $em->detach($agenda);
 
         $this->checkIfOwner($agenda);
-        $form = $this->createEditForm($agenda);
+        $form       = $this->createEditForm($agenda);
         $formDelete = $this->createDeleteForm($agenda);
 
         $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
@@ -120,16 +120,16 @@ class AgendaController extends Controller
     public function importAction()
     {
         $importer = $this->get('tbn.social.facebook_list_events');
-        $parser = $this->get('tbn.parser.abstracts.facebook');
-        $handler = $this->get('tbn.doctrine_event_handler');
+        $parser   = $this->get('tbn.parser.abstracts.facebook');
+        $handler  = $this->get('tbn.doctrine_event_handler');
 
-        $user = $this->getUser();
+        $user      = $this->getUser();
         $fb_events = $importer->getUserEvents($user);
 
         $events = [];
         foreach ($fb_events as $fb_event) {
             $array_event = $parser->getInfoAgenda($fb_event);
-            $event = $parser->arrayToAgenda($array_event);
+            $event       = $parser->arrayToAgenda($array_event);
 
             $events[] = $event->setUser($user);
         }
@@ -169,11 +169,11 @@ class AgendaController extends Controller
     protected function addImportMessage(ExplorationHandler $explorationHandler)
     {
         if ($explorationHandler->getNbInserts() > 0 || $explorationHandler->getNbUpdates() > 0) {
-            $plurielInsert = $explorationHandler->getNbInserts() > 1 ? 's' : '';
-            $plurielUpdate = $explorationHandler->getNbUpdates() > 1 ? 's' : '';
+            $plurielInsert   = $explorationHandler->getNbInserts() > 1 ? 's' : '';
+            $plurielUpdate   = $explorationHandler->getNbUpdates() > 1 ? 's' : '';
             $indicatifInsert = $explorationHandler->getNbInserts() == 1 ? 'a' : 'ont';
             $indicatifUpdate = $explorationHandler->getNbUpdates() == 1 ? 'a' : 'ont';
-            $message = null;
+            $message         = null;
             if ($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
                 $message = sprintf(
                     '<strong>%d</strong> événément%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !',
@@ -211,7 +211,7 @@ class AgendaController extends Controller
 
     public function newAction(Request $request)
     {
-        $user = $this->getUser();
+        $user   = $this->getUser();
         $agenda = (new Agenda())
             ->setUser($user)
             ->setParticipations(1);
@@ -224,14 +224,14 @@ class AgendaController extends Controller
          */
 
         $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
-        $agenda = $form->getData();
+        $agenda      = $form->getData();
         $isNewAgenda = $agenda->getId() !== null;
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
             $agenda = $em->merge($agenda);
 
-            $found = false;
+            $found       = false;
             $calendriers = $agenda->getCalendriers();
             foreach ($calendriers as $calendrier) {
                 if ($calendrier->getUser()->getId() === $user->getId()) {
@@ -310,9 +310,9 @@ class AgendaController extends Controller
 
     protected function getAgendaOptions()
     {
-        $user = $this->getUser();
+        $user     = $this->getUser();
         $siteInfo = $this->get('site_manager')->getSiteInfo();
-        $config = $this->container->getParameter('tbn_user.social');
+        $config   = $this->container->getParameter('tbn_user.social');
 
         return [
             'site_info' => $siteInfo,
@@ -351,7 +351,7 @@ class AgendaController extends Controller
 
     protected function checkIfOwner(Agenda $agenda)
     {
-        $user_agenda = $agenda->getUser();
+        $user_agenda  = $agenda->getUser();
         $current_user = $this->getUser();
 
         if (!$current_user->hasRole('ROLE_ADMIN') && $user_agenda !== $current_user) {

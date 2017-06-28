@@ -29,8 +29,8 @@ class ImageCleaner
     public function __construct(EntityManager $entityManager, CacheManager $cacheManager, $webDir)
     {
         $this->entityManager = $entityManager;
-        $this->webDir = $webDir;
-        $this->cacheManager = $cacheManager;
+        $this->webDir        = $webDir;
+        $this->cacheManager  = $cacheManager;
     }
 
     public function clean()
@@ -55,7 +55,7 @@ class ImageCleaner
     protected function cleanPaths(array $paths, array $filters, $uri_prefix)
     {
         $finder = new Finder();
-        $files = $finder->in($this->webDir.$uri_prefix);
+        $files  = $finder->in($this->webDir.$uri_prefix);
         foreach ($files as $file) {
             if (!$file->getFilename()) {
                 continue;

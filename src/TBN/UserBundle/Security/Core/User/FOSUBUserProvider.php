@@ -21,8 +21,8 @@ class FOSUBUserProvider extends BaseClass
         parent::__construct($userManager, $properties);
 
         $this->siteManager = $siteManager;
-        $this->doctrine = $doctrine;
-        $this->socials = $socials;
+        $this->doctrine    = $doctrine;
+        $this->socials     = $socials;
     }
 
     public function connectSite(UserResponseInterface $response)
@@ -74,7 +74,7 @@ class FOSUBUserProvider extends BaseClass
 
     protected function findUserBySocialInfo(UserResponseInterface $cle, $valeur)
     {
-        $em = $this->doctrine->getManager();
+        $em   = $this->doctrine->getManager();
         $repo = $em->getRepository('TBNUserBundle:Info');
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
@@ -98,7 +98,7 @@ class FOSUBUserProvider extends BaseClass
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         $username = $response->getUsername();
-        $service = $response->getResourceOwner()->getName();
+        $service  = $response->getResourceOwner()->getName();
 
         // Recherche de l'user par son id sur les réseaux sociaux (facebook_id)
         $user = $this->findUserBySocialInfo($response, $username);

@@ -167,8 +167,8 @@ class User extends BaseUser
         $this->setFromLogin(false);
         $this->setShowSocials(true);
         $this->date_creation = new \DateTime();
-        $this->calendriers = new ArrayCollection();
-        $this->info = new UserInfo();
+        $this->calendriers   = new ArrayCollection();
+        $this->info          = new UserInfo();
     }
 
     /**

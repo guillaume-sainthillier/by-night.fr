@@ -13,9 +13,9 @@ class CalendrierController extends Controller
     private function updateFBEvent(Agenda $agenda, User $user, Calendrier $calendrier)
     {
         if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookAccessToken()) {
-            $key = 'users.'.$user->getId().'.stats.'.$agenda->getId();
+            $key   = 'users.'.$user->getId().'.stats.'.$agenda->getId();
             $cache = $this->get('memory_cache');
-            $api = $this->get('tbn.social.facebook_admin');
+            $api   = $this->get('tbn.social.facebook_admin');
             $api->updateEventStatut(
                 $agenda->getFacebookEventId(),
                 $user->getInfo()->getFacebookAccessToken(),
@@ -38,7 +38,7 @@ class CalendrierController extends Controller
          */
         $user = $this->get('security.token_storage')->getToken()->getUser();
 
-        $em = $this->getDoctrine()->getManager();
+        $em         = $this->getDoctrine()->getManager();
         $calendrier = $em->getRepository('TBNAgendaBundle:Calendrier')->findOneBy(['user' => $user, 'agenda' => $agenda]);
 
         if ($calendrier === null) {
@@ -51,9 +51,9 @@ class CalendrierController extends Controller
         $em->persist($calendrier);
         $em->flush();
 
-        $repo = $em->getRepository('TBNAgendaBundle:Agenda');
+        $repo           = $em->getRepository('TBNAgendaBundle:Agenda');
         $participations = $repo->getCountTendancesParticipation($agenda);
-        $interets = $repo->getCountTendancesInterets($agenda);
+        $interets       = $repo->getCountTendancesInterets($agenda);
 
         $agenda->setParticipations($participations)->setInterets($interets);
         $em->flush();

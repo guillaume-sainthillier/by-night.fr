@@ -27,8 +27,8 @@ class SiteManager
 
     public function __construct(EntityManager $entityManager)
     {
-        $this->currentSite = null;
-        $this->siteInfo = null;
+        $this->currentSite   = null;
+        $this->siteInfo      = null;
         $this->isInitialized = false;
         $this->entityManager = $entityManager;
     }

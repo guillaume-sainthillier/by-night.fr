@@ -23,11 +23,11 @@ class HandlerTest extends KernelTestCase
     {
         $now = new \DateTime();
 
-        $oclub = (new Place())->setId(1)->setNom('Oclub')->setRue('101 Route d\'Agde')->setVille('Toulouse')->setCodePostal('31500');
+        $oclub      = (new Place())->setId(1)->setNom('Oclub')->setRue('101 Route d\'Agde')->setVille('Toulouse')->setCodePostal('31500');
         $oclubEvent = (new Agenda())->setId(1)->setNom('Super Event')->setDateDebut($now)->setDateFin($now)->setPlace($oclub);
 
         //Evenement à des lieux différents -> nouvel événément
-        $opium = (new Place())->setNom('Opium Club')->setRue('20 Rue Denfert Rochereau')->setVille('Toulouse')->setCodePostal('31000');
+        $opium      = (new Place())->setNom('Opium Club')->setRue('20 Rue Denfert Rochereau')->setVille('Toulouse')->setCodePostal('31000');
         $opiumEvent = (new Agenda())->setNom('Super Event')->setDateDebut($now)->setDateFin($now)->setPlace($opium);
         $opiumEvent = $this->handler->handleEvent([$oclubEvent], $opiumEvent);
         $this->assertEquals($opiumEvent->getId(), null);
@@ -45,9 +45,9 @@ class HandlerTest extends KernelTestCase
         //Mêmes événéments FB -> pas de nouvel événément
         $tomorrow = clone $now;
         $tomorrow->modify('+1 day');
-        $oclub = (new Place())->setId(1)->setNom('Oclub')->setRue('101 Route d\'Agde')->setVille('Toulouse')->setCodePostal('31500');
-        $opium = (new Place())->setNom('Opium Club')->setRue('20 Rue Denfert Rochereau')->setVille('Toulouse')->setCodePostal('31000');
-        $fbEvent = $oclubEvent = (new Agenda())->setId(1)->setNom('Super Event')->setDateDebut($now)->setDateFin($now)->setPlace($oclub)->setFacebookEventId(1);
+        $oclub      = (new Place())->setId(1)->setNom('Oclub')->setRue('101 Route d\'Agde')->setVille('Toulouse')->setCodePostal('31500');
+        $opium      = (new Place())->setNom('Opium Club')->setRue('20 Rue Denfert Rochereau')->setVille('Toulouse')->setCodePostal('31000');
+        $fbEvent    = $oclubEvent    = (new Agenda())->setId(1)->setNom('Super Event')->setDateDebut($now)->setDateFin($now)->setPlace($oclub)->setFacebookEventId(1);
         $newFbEvent = $oclubEvent = (new Agenda())->setNom('Mon Mega Event')->setDateDebut($tomorrow)->setDateFin($tomorrow)->setPlace($opium)->setFacebookEventId(1);
         $newFbEvent = $this->handler->handleEvent([$fbEvent], $newFbEvent);
         $this->assertEquals($newFbEvent->getId(), 1);
@@ -60,9 +60,9 @@ class HandlerTest extends KernelTestCase
     public function testHandlePlace()
     {
         //Construction des places
-        $dynamo = (new Place())->setId(1)->setNom('Dynamo')->setRue('6 rue Amélie')->setVille('Toulouse')->setCodePostal('31000');
-        $bikini = (new Place())->setId(2)->setNom('Le bikini')->setVille('Toulouse')->setCodePostal('31000');
-        $moloko = (new Place())->setId(3)->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setVille('Toulouse')->setCodePostal('31000');
+        $dynamo          = (new Place())->setId(1)->setNom('Dynamo')->setRue('6 rue Amélie')->setVille('Toulouse')->setCodePostal('31000');
+        $bikini          = (new Place())->setId(2)->setNom('Le bikini')->setVille('Toulouse')->setCodePostal('31000');
+        $moloko          = (new Place())->setId(3)->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setVille('Toulouse')->setCodePostal('31000');
         $persistedPlaces = [$dynamo, $bikini, $moloko];
 
         $place = (new Place())->setNom('Dynamo')->setRue('6 rue Amélie')->setVille('Toulouse')->setCodePostal('31000');

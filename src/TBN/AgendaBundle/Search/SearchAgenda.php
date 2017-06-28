@@ -56,7 +56,7 @@ class SearchAgenda
     public function __construct()
     {
         $this->page = 1;
-        $this->du = new \DateTime();
+        $this->du   = new \DateTime();
     }
 
     public function getTerms()

@@ -65,7 +65,7 @@ class EventListener
         }
 
         $entityManager = $args->getEntityManager();
-        $exploration = $entityManager->getRepository('TBNMajDataBundle:Exploration')->findOneBy([
+        $exploration   = $entityManager->getRepository('TBNMajDataBundle:Exploration')->findOneBy([
            'id' => $entity->getFacebookEventId(),
         ]);
 

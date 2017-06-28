@@ -23,9 +23,9 @@ class Google extends Social
 
     public function constructClient()
     {
-        $api_id = $this->id;
+        $api_id     = $this->id;
         $api_secret = $this->secret;
-        $this->key = $this->config['key'];
+        $this->key  = $this->config['key'];
 
         $this->client = new Google_Client();
         $this->client->setClientId($api_id);
@@ -44,13 +44,13 @@ class Google extends Social
     public function getNumberOfCount()
     {
         $this->init();
-        $site = $this->siteManager->getCurrentSite();
+        $site   = $this->siteManager->getCurrentSite();
         $router = $this->router;
 
         if ($site !== null) {
             try {
                 $url = $router->generate('tbn_main_index', [], UrlGenerator::ABSOLUTE_URL);
-                $ch = curl_init();
+                $ch  = curl_init();
                 curl_setopt($ch, CURLOPT_URL, 'https://clients6.google.com/rpc');
                 curl_setopt($ch, CURLOPT_POST, 1);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

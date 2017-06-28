@@ -48,11 +48,11 @@ class FacebookAdmin extends FacebookEvents
     {
         parent::__construct($config, $siteManager, $tokenStorage, $router, $session, $requestStack, $logger, $eventProfilePicture, $appManager);
 
-        $this->om = $om;
-        $this->serializer = $serializer;
-        $this->cache = [];
-        $this->oldIds = [];
-        $this->_isInitialized = false;
+        $this->om              = $om;
+        $this->serializer      = $serializer;
+        $this->cache           = [];
+        $this->oldIds          = [];
+        $this->_isInitialized  = false;
         $this->pageAccessToken = null;
     }
 
@@ -86,8 +86,8 @@ class FacebookAdmin extends FacebookEvents
         $this->init();
 
         $accessToken = $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null;
-        $response = $this->client->get('/'.$this->appManager->getFacebookIdPage().'?fields=access_token', [], $accessToken);
-        $datas = $response->getDecodedBody();
+        $response    = $this->client->get('/'.$this->appManager->getFacebookIdPage().'?fields=access_token', [], $accessToken);
+        $datas       = $response->getDecodedBody();
 
         return $datas['access_token'];
     }
@@ -114,11 +114,11 @@ class FacebookAdmin extends FacebookEvents
     {
         if ($agenda->getFbPostSystemId() === null) {
             $accessToken = $this->getPageAccessToken();
-            $dateDebut = $this->getReadableDate($agenda->getDateDebut());
-            $dateFin = $this->getReadableDate($agenda->getDateFin());
-            $date = $this->getDuree($dateDebut, $dateFin);
-            $place = $agenda->getPlace();
-            $message = $user->getUsername().' présente : '.$agenda->getNom().($place ? ' @ '.$place->getNom() : '');
+            $dateDebut   = $this->getReadableDate($agenda->getDateDebut());
+            $dateFin     = $this->getReadableDate($agenda->getDateFin());
+            $date        = $this->getDuree($dateDebut, $dateFin);
+            $place       = $agenda->getPlace();
+            $message     = $user->getUsername().' présente : '.$agenda->getNom().($place ? ' @ '.$place->getNom() : '');
 
             //Authentification
             $request = $this->client->post('/'.$this->appManager->getFacebookIdPage().'/feed', [
@@ -160,16 +160,16 @@ class FacebookAdmin extends FacebookEvents
     private function getOjectsFromIds(array $ids, callable $requestFunction, callable $dataHandlerFunction, $idsPerRequest = 50, $requestPerBatch = 50)
     {
         $idsPerBatch = $requestPerBatch * $idsPerRequest;
-        $nbBatchs = ceil(count($ids) / $idsPerBatch);
-        $finalDatas = [];
-        for ($i = 0; $i < $nbBatchs; $i++) {
-            $requests = [];
-            $batch_ids = array_slice($ids, $i * $idsPerBatch, $idsPerBatch);
+        $nbBatchs    = ceil(count($ids) / $idsPerBatch);
+        $finalDatas  = [];
+        for ($i = 0; $i < $nbBatchs; ++$i) {
+            $requests     = [];
+            $batch_ids    = array_slice($ids, $i * $idsPerBatch, $idsPerBatch);
             $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
             try {
-                for ($j = 0; $j < $nbIterations; $j++) {
+                for ($j = 0; $j < $nbIterations; ++$j) {
                     $current_ids = array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
-                    $requests[] = $requestFunction($current_ids);
+                    $requests[]  = $requestFunction($current_ids);
                 }
 
                 //Exécution du batch
@@ -261,7 +261,7 @@ class FacebookAdmin extends FacebookEvents
         $stats = ['participer' => false, 'interet' => false];
 
         try {
-            $url = '/'.$id_event.'/%s/'.$id_user;
+            $url      = '/'.$id_event.'/%s/'.$id_user;
             $requests = [
                 $this->client->request('GET', sprintf($url, 'attending'), [], $userAccessToken),
                 $this->client->request('GET', sprintf($url, 'maybe'), [], $userAccessToken),
@@ -270,7 +270,7 @@ class FacebookAdmin extends FacebookEvents
             $responses = $this->client->sendBatchRequest($requests, $userAccessToken);
             foreach ($responses as $i => $response) {
                 if (!$response->isError()) {
-                    $isXXX = $response->getGraphEdge()->count() > 0;
+                    $isXXX                                      = $response->getGraphEdge()->count() > 0;
                     $stats[$i === 0 ? 'participer' : 'interet'] = $isXXX;
                 }
             }
@@ -300,18 +300,18 @@ class FacebookAdmin extends FacebookEvents
     {
         $this->init();
         $requestPerBatch = 50;
-        $idsPerBatch = $requestPerBatch * $idsPerRequest;
-        $nbBatchs = ceil(count($ids_event) / $idsPerBatch);
-        $finalEvents = [];
+        $idsPerBatch     = $requestPerBatch * $idsPerRequest;
+        $nbBatchs        = ceil(count($ids_event) / $idsPerBatch);
+        $finalEvents     = [];
 
-        for ($i = 0; $i < $nbBatchs; $i++) {
-            $requests = [];
-            $batch_ids = array_slice($ids_event, $i * $idsPerBatch, $idsPerBatch);
+        for ($i = 0; $i < $nbBatchs; ++$i) {
+            $requests     = [];
+            $batch_ids    = array_slice($ids_event, $i * $idsPerBatch, $idsPerBatch);
             $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
             try {
-                for ($j = 0; $j < $nbIterations; $j++) {
+                for ($j = 0; $j < $nbIterations; ++$j) {
                     $current_ids = array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
-                    $requests[] = $this->client->request('GET', '/', [
+                    $requests[]  = $this->client->request('GET', '/', [
                         'ids'    => implode(',', $current_ids),
                         'fields' => self::FIELDS,
                         'limit'  => $limit,
@@ -375,7 +375,7 @@ class FacebookAdmin extends FacebookEvents
     {
         $this->init();
         $participations = [];
-        $interets = [];
+        $interets       = [];
 
         try {
             $fields = str_replace(
@@ -390,7 +390,7 @@ class FacebookAdmin extends FacebookEvents
             $graph = $request->getGraphPage();
 
             $participations = $this->findPaginated($graph->getField('attending'), $limit);
-            $interets = $this->findPaginated($graph->getField('maybe'), $limit);
+            $interets       = $this->findPaginated($graph->getField('maybe'), $limit);
         } catch (FacebookSDKException $ex) {
             $this->logger->error($ex);
         }
@@ -435,18 +435,18 @@ class FacebookAdmin extends FacebookEvents
         }
 
         $idsPerBatch = $requestsPerBatch * $idsPerRequest;
-        $nbBatchs = ceil(count($datas) / $idsPerBatch);
-        $finalNodes = [];
+        $nbBatchs    = ceil(count($datas) / $idsPerBatch);
+        $finalNodes  = [];
 
-        for ($i = 0; $i < $nbBatchs; $i++) {
-            $requests = [];
-            $batch_datas = array_slice($datas, $i * $idsPerBatch, $idsPerBatch);
+        for ($i = 0; $i < $nbBatchs; ++$i) {
+            $requests     = [];
+            $batch_datas  = array_slice($datas, $i * $idsPerBatch, $idsPerBatch);
             $nbIterations = ceil(count($batch_datas) / $idsPerRequest);
 
-            for ($j = 0; $j < $nbIterations; $j++) {
+            for ($j = 0; $j < $nbIterations; ++$j) {
                 $current_datas = array_slice($batch_datas, $j * $idsPerRequest, $idsPerRequest);
-                $params = call_user_func($getParams, $current_datas);
-                $requests[] = $this->client->request('GET', $edge, $params, $accessToken);
+                $params        = call_user_func($getParams, $current_datas);
+                $requests[]    = $this->client->request('GET', $edge, $params, $accessToken);
             }
 
             //Exécution du batch
@@ -457,7 +457,7 @@ class FacebookAdmin extends FacebookEvents
                 //Traitement des réponses
                 $fetchedNodes = 0;
                 foreach ($responses as $response) {
-                    /**
+                    /*
                      * @var FacebookResponse
                      */
                     if ($response->isError()) {
@@ -476,7 +476,7 @@ class FacebookAdmin extends FacebookEvents
                             $datas = call_user_func($responseToDatas, $response);
                             $fetchedNodes += count($datas);
                             $currentNodes = array_merge($currentNodes, $datas);
-                        }catch(\Exception $e) {
+                        } catch (\Exception $e) {
                             Monitor::writeln(sprintf(
                                 "<error>Erreur dans le parcours de l'edge %s : %s</error>",
                                 $edge,

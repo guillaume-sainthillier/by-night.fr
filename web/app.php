@@ -7,7 +7,7 @@ $loader = require __DIR__.'/../app/autoload.php';
 
 $kernel = new AppKernel('prod', false);
 
-$request = Request::createFromGlobals();
+$request  = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);

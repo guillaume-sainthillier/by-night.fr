@@ -541,10 +541,10 @@ class Agenda implements GeolocalizeInterface
     public function __construct()
     {
         $this->setDateDebut(new \DateTime());
-        $this->place = new Place();
-        $this->calendriers = new ArrayCollection();
+        $this->place        = new Place();
+        $this->calendriers  = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
-        $this->isArchive = false;
+        $this->isArchive    = false;
     }
 
     public function getDistinctTags()

@@ -20,9 +20,9 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
     public function __construct($translator, $router, $session, SiteManager $site_manager)
     {
-        $this->translator = $translator;
-        $this->router = $router;
-        $this->session = $session;
+        $this->translator   = $translator;
+        $this->router       = $router;
+        $this->session      = $session;
         $this->site_manager = $site_manager;
     }
 
@@ -38,7 +38,6 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
             if (($targetPath = $request->getSession()->get($key))) {
                 $url = $targetPath;
             } else {
-
                 //check if the referer session key has been set
                 if ($this->session->has($key)) {
                     //set the url based on the link they were trying to access before being authenticated
@@ -47,9 +46,9 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
                     //remove the session key
                     $this->session->remove($key);
                 } else {
-                    $user = $token->getUser();
+                    $user      = $token->getUser();
                     $subdomain = $user->getSite()->getSubdomain();
-                    $url = $this->router->generate('tbn_agenda_index', ['subdomain' => $subdomain]);
+                    $url       = $this->router->generate('tbn_agenda_index', ['subdomain' => $subdomain]);
                 }
             }
 

@@ -32,9 +32,9 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function __construct(SiteManager $manager, ContainerInterface $container)
     {
-        $this->router = $container->get('router');
+        $this->router       = $container->get('router');
         $this->requestStack = $container->get('request_stack');
-        $this->siteManager = $manager;
+        $this->siteManager  = $manager;
     }
 
     public function getFunctions()
@@ -83,8 +83,8 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function tweet($tweet)
     {
-        $linkified = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
-        $hashified = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
+        $linkified    = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
+        $hashified    = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
         $mentionified = '/(^|[\n\s])@([^\s"\t\n\r<:]*)/is';
 
         $prettyTweet = preg_replace(
@@ -189,7 +189,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     {
         $replaced_text = str_replace('&#13;', '<br>', $texte);
         $stripped_text = strip_tags($replaced_text);
-        $shorted_text = substr($stripped_text, 0, 250);
+        $shorted_text  = substr($stripped_text, 0, 250);
 
         //striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
         $linked_text = preg_replace("

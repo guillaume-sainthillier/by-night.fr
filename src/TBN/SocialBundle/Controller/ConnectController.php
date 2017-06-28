@@ -31,8 +31,8 @@ class ConnectController extends BaseController
     /**
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
-     * @param Request $request The active request.
-     * @param string  $service Name of the resource owner to connect to.
+     * @param Request $request the active request
+     * @param string  $service name of the resource owner to connect to
      *
      * @throws \Exception
      * @throws NotFoundHttpException if `connect` functionality was not enabled
@@ -56,7 +56,7 @@ class ConnectController extends BaseController
         $resourceOwner = $this->getResourceOwnerByName($service);
 
         $session = $request->getSession();
-        $key = $request->query->get('key', time());
+        $key     = $request->query->get('key', time());
 
         if ($resourceOwner->handles($request)) {
             $accessToken = $resourceOwner->getAccessToken(
@@ -108,7 +108,7 @@ class ConnectController extends BaseController
             } else { // On connecte normalement l'utilisateur*/
                 /** @var $currentToken OAuthToken */
                 $currentToken = $this->get('security.token_storage')->getToken();
-                $currentUser = $currentToken->getUser();
+                $currentUser  = $currentToken->getUser();
 
                 $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
 

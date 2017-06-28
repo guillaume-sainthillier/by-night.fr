@@ -25,7 +25,7 @@ class EventArchivator
 
     public function __construct(EntityManager $entityManager, ObjectPersisterInterface $objectPersister)
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager   = $entityManager;
         $this->objectPersister = $objectPersister;
     }
 

@@ -20,10 +20,10 @@ class TBNMainBundle extends Bundle
 
     public function boot()
     {
-        $router = $this->container->get('router');
-        $event = $this->container->get('event_dispatcher');
+        $router      = $this->container->get('router');
+        $event       = $this->container->get('event_dispatcher');
         $siteManager = $this->container->get('site_manager');
-        $em = $this->container->get('doctrine');
+        $em          = $this->container->get('doctrine');
 
         //listen presta_sitemap.populate event
         $event->addListener(

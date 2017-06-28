@@ -12,7 +12,7 @@ class SiteController extends Controller
 {
     public function listAction()
     {
-        $repo = $this->getDoctrine()->getRepository('TBNMainBundle:Site');
+        $repo  = $this->getDoctrine()->getRepository('TBNMainBundle:Site');
         $sites = $repo->findAll();
 
         return $this->render('TBNAdministrationBundle:Site:list.html.twig', [

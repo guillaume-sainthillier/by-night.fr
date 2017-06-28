@@ -31,8 +31,8 @@ class AgendaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $siteInfo = $options['site_info'];
-        $user = $options['user'];
-        $configs = $options['config'];
+        $user     = $options['user'];
+        $configs  = $options['config'];
 
         $builder
             ->add('nom', TextType::class, [
@@ -80,18 +80,18 @@ class AgendaType extends AbstractType
             ]);
 
         foreach ($configs as $service => $config) {
-            $nomService = $config['nom'];
+            $nomService    = $config['nom'];
             $accessService = ucfirst($service);
             if ($nomService === '') {
                 $nomService = $accessService;
             }
 
-            $getter = 'get'.$accessService.'AccessToken';
+            $getter       = 'get'.$accessService.'AccessToken';
             $is_api_ready = ($config['enabled'] && $siteInfo && $siteInfo->$getter());
 
             if (!$is_api_ready) {
-                $message = "L'accès à ".$nomService.' est momentanément désactivé';
-                $post_checked = false;
+                $message       = "L'accès à ".$nomService.' est momentanément désactivé';
+                $post_checked  = false;
                 $post_disabled = true;
             } else {
                 if ($service === 'facebook') {
@@ -100,11 +100,11 @@ class AgendaType extends AbstractType
                     $role = 'ROLE_'.strtoupper($service);
                 }
                 $post_disabled = false;
-                $post_checked = $user->hasRole($role);
+                $post_checked  = $user->hasRole($role);
 
                 if ($post_checked) {
-                    $info = $user->getInfo();
-                    $getter = 'get'.$accessService.'Nickname';
+                    $info    = $user->getInfo();
+                    $getter  = 'get'.$accessService.'Nickname';
                     $message = 'Connecté sous '.($service === 'twitter' ? '@' : '').$info->$getter();
                 } else {
                     $message = 'Connectez vous à '.$nomService;
