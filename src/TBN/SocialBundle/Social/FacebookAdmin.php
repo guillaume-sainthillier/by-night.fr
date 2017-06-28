@@ -174,7 +174,15 @@ class FacebookAdmin extends FacebookEvents
 
                 //Exécution du batch
                 Monitor::bench('fb::getOjectsFromIds', function () use (&$requests, &$finalDatas, $dataHandlerFunction) {
-                    $responses = $this->client->sendBatchRequest($requests, $this->getAccessToken());
+                    try {
+                        $responses = $this->client->sendBatchRequest($requests, $this->getAccessToken());
+                    } catch (\Exception $e) {
+                        Monitor::writeln(sprintf(
+                            "<error>Erreur dans le batch de la récupération des objets FB : %s</error>",
+                            $e->getMessage()
+                        ));
+                        $responses = [];
+                    }
 
                     //Traitement des réponses
                     foreach ($responses as $response) {
@@ -451,7 +459,16 @@ class FacebookAdmin extends FacebookEvents
 
             //Exécution du batch
             $currentNodes = Monitor::bench(sprintf('fb::handleEdge (%s)', $edge), function () use ($requests, $responseToDatas, $edge, $i, $nbBatchs, $accessToken) {
-                $responses = $this->client->sendBatchRequest($requests, $accessToken);
+                try {
+                    $responses = $this->client->sendBatchRequest($requests, $accessToken);
+                } catch (\Exception $e) {
+                    Monitor::writeln(sprintf(
+                        "<error>Erreur dans le parcours de l'edge %s : %s</error>",
+                        $edge,
+                        $e->getMessage()
+                    ));
+                    $responses = [];
+                }
 
                 $currentNodes = [];
                 //Traitement des réponses
