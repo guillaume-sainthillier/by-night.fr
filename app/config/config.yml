@@ -363,7 +363,8 @@ fos_elastica:
           host: localhost
           port: 9200
           compression: true
-    serializer: ~
+    serializer:
+        serializer: "jms_serializer"
     indexes:
         by-night:
             index_name: "by-night"
