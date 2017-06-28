@@ -44,7 +44,7 @@
     "lexik/maintenance-bundle": "dev-master",
     "google/recaptcha": "^1.1",
     "knplabs/knp-paginator-bundle": "2.*",
-    "friendsofsymfony/http-cache-bundle": "1.*",
+    "friendsofsymfony/http-cache-bundle": "2.*",
     "guzzlehttp/guzzle": "6.*",
     "egeloen/google-map-bundle": "^3.0",
     "php-http/httplug-bundle": "^1.5",

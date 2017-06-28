@@ -8,6 +8,7 @@
 
 namespace AppBundle\Invalidator;
 
+use FOS\HttpCacheBundle\CacheManager;
 use FOS\HttpCacheBundle\Handler\TagHandler;
 use Psr\Log\LoggerInterface;
 use AppBundle\Entity\Agenda;
@@ -35,7 +36,7 @@ class EventInvalidator
      */
     private $userTags;
 
-    public function __construct(TagHandler $tagHandler, LoggerInterface $logger)
+    public function __construct(CacheManager $tagHandler, LoggerInterface $logger)
     {
         $this->tagHandler = $tagHandler;
         $this->logger     = $logger;

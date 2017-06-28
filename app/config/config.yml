@@ -107,13 +107,15 @@ fos_http_cache:
         enabled: true
     proxy_client:
         varnish:
-            servers:
-                - 127.0.0.1:80
-            base_url: "%base_host%"
+            http:
+                servers:
+                    - 127.0.0.1:80
+                base_url: "%base_host%"
         symfony:
-            servers:
-                - 127.0.0.1
-            base_url: "%base_host%"
+            http:
+                servers:
+                    - 127.0.0.1
+                base_url: "%base_host%"
 
 # Swiftmailer Configuration
 swiftmailer:

@@ -276,7 +276,7 @@ class WidgetsController extends Controller
                 ->setSharedMaxAge($next2hours);
         }
 
-        $this->get('fos_http_cache.handler.tag_handler')->addTags(['fb-membres']);
+        $this->get('fos_http_cache.http.symfony_response_tagger')->addTags(['fb-membres']);
 
         return $response->setPublic();
     }

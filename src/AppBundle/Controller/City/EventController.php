@@ -75,7 +75,7 @@ class EventController extends Controller
             ->setSharedMaxAge($ttl)
             ->setExpires($expires);
 
-        $this->get('fos_http_cache.handler.tag_handler')->addTags([
+        $this->get('fos_http_cache.http.symfony_response_tagger')->addTags([
             EventInvalidator::getEventDetailTag($agenda),
         ]);
 

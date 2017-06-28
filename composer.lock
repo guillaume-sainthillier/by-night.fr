@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1e9b883c5228fa552f9b17615c9988a",
+    "content-hash": "a333efc71f733eef3a724f7a24537f9d",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1672,43 +1672,49 @@
         },
         {
             "name": "friendsofsymfony/http-cache",
-            "version": "1.4.2",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSHttpCache.git",
-                "reference": "783f3918d85263e444db02a9e42d0f42aa7c1f43"
+                "reference": "ecc458282b8a6f75387c3cb4705615b0f5b6d6a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSHttpCache/zipball/783f3918d85263e444db02a9e42d0f42aa7c1f43",
-                "reference": "783f3918d85263e444db02a9e42d0f42aa7c1f43",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSHttpCache/zipball/ecc458282b8a6f75387c3cb4705615b0f5b6d6a8",
+                "reference": "ecc458282b8a6f75387c3cb4705615b0f5b6d6a8",
                 "shasum": ""
             },
             "require": {
-                "guzzle/guzzle": "~3.8",
-                "php": ">=5.3.3",
+                "php": "^5.6||^7.0.0",
+                "php-http/client-common": "^1.1.0",
+                "php-http/client-implementation": "^1.0.0",
+                "php-http/discovery": "^1.0",
+                "php-http/message": "^1.0.0",
                 "symfony/event-dispatcher": "^2.3||^3.0",
-                "symfony/options-resolver": "^2.3||^3.0"
+                "symfony/options-resolver": "^2.7||^3.0"
             },
             "require-dev": {
-                "mockery/mockery": "~0.9.1",
-                "monolog/monolog": "~1.0",
+                "mockery/mockery": "~0.9.5",
+                "monolog/monolog": "^1.0",
+                "php-http/guzzle6-adapter": "^1.0.0",
+                "php-http/mock-client": "^0.3.2",
+                "phpunit/phpunit": "^4.5.0 || ^5.0.0 <5.4",
                 "symfony/http-kernel": "^2.3||^3.0",
                 "symfony/process": "^2.3||^3.0"
             },
             "suggest": {
+                "friendsofsymfony/http-cache-bundle": "For integration with the Symfony framework",
                 "monolog/monolog": "For logging issues while invalidating"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "FOS\\HttpCache\\": "src/",
-                    "FOS\\HttpCache\\Tests\\": "tests/"
+                    "FOS\\HttpCache\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1730,7 +1736,7 @@
                     "homepage": "https://github.com/friendsofsymfony/FOSHttpCache/contributors"
                 }
             ],
-            "description": "Tools to manage cache invalidation",
+            "description": "Tools to manage HTTP caching proxies with PHP",
             "homepage": "https://github.com/friendsofsymfony/FOSHttpCache",
             "keywords": [
                 "caching",
@@ -1740,26 +1746,27 @@
                 "purge",
                 "varnish"
             ],
-            "time": "2016-02-02T12:07:34+00:00"
+            "time": "2017-06-23T14:19:04+00:00"
         },
         {
             "name": "friendsofsymfony/http-cache-bundle",
-            "version": "1.3.10",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSHttpCacheBundle.git",
-                "reference": "d5ccceeb0c6ce806b0b1f7fcc4f7a752fc85cf87"
+                "reference": "d2b20e411fe5284450c0d98ddfda73cfd26c2b2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSHttpCacheBundle/zipball/d5ccceeb0c6ce806b0b1f7fcc4f7a752fc85cf87",
-                "reference": "d5ccceeb0c6ce806b0b1f7fcc4f7a752fc85cf87",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSHttpCacheBundle/zipball/d2b20e411fe5284450c0d98ddfda73cfd26c2b2f",
+                "reference": "d2b20e411fe5284450c0d98ddfda73cfd26c2b2f",
                 "shasum": ""
             },
             "require": {
-                "friendsofsymfony/http-cache": "~1.4",
-                "php": ">=5.3.3",
-                "symfony/framework-bundle": "^2.3||^3.0"
+                "friendsofsymfony/http-cache": "^2.0.0",
+                "php": "^5.6.0||^7.0.0",
+                "symfony/framework-bundle": "^2.8||^3.0",
+                "symfony/http-foundation": "~2.8.13||^3.1.6"
             },
             "conflict": {
                 "twig/twig": "<1.12.0"
@@ -1768,12 +1775,15 @@
                 "matthiasnoback/symfony-dependency-injection-test": "^0.7.4",
                 "mockery/mockery": "0.9.*",
                 "monolog/monolog": "*",
+                "php-http/guzzle6-adapter": "^1.0",
+                "php-http/message": "^1.0",
+                "phpunit/phpunit": "^5.5.0",
                 "polishsymfonycommunity/symfony-mocker-container": "^1.0",
-                "sensio/framework-extra-bundle": "^2.3||^3.0",
+                "sensio/framework-extra-bundle": "^3.0",
                 "symfony/expression-language": "^2.4||^3.0",
                 "symfony/monolog-bundle": "^2.3||^3.0",
                 "symfony/phpunit-bridge": "^2.7||^3.0",
-                "symfony/symfony": "^2.3.4||^3.0"
+                "symfony/symfony": "^2.8||^3.0"
             },
             "suggest": {
                 "sensio/framework-extra-bundle": "For Tagged Cache Invalidation",
@@ -1783,12 +1793,12 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.3.x-dev"
+                    "dev-master": "2.1.x-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "FOS\\HttpCacheBundle\\": ""
+                    "FOS\\HttpCacheBundle\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1820,7 +1830,7 @@
                 "purge",
                 "varnish"
             ],
-            "time": "2017-01-06T14:39:18+00:00"
+            "time": "2017-06-23T13:17:40+00:00"
         },
         {
             "name": "friendsofsymfony/user-bundle",
@@ -2165,99 +2175,6 @@
                 "spam"
             ],
             "time": "2017-03-09T18:44:34+00:00"
-        },
-        {
-            "name": "guzzle/guzzle",
-            "version": "v3.8.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "4de0618a01b34aa1c8c33a3f13f396dcd3882eba"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/4de0618a01b34aa1c8c33a3f13f396dcd3882eba",
-                "reference": "4de0618a01b34aa1c8c33a3f13f396dcd3882eba",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "php": ">=5.3.3",
-                "symfony/event-dispatcher": ">=2.1"
-            },
-            "replace": {
-                "guzzle/batch": "self.version",
-                "guzzle/cache": "self.version",
-                "guzzle/common": "self.version",
-                "guzzle/http": "self.version",
-                "guzzle/inflection": "self.version",
-                "guzzle/iterator": "self.version",
-                "guzzle/log": "self.version",
-                "guzzle/parser": "self.version",
-                "guzzle/plugin": "self.version",
-                "guzzle/plugin-async": "self.version",
-                "guzzle/plugin-backoff": "self.version",
-                "guzzle/plugin-cache": "self.version",
-                "guzzle/plugin-cookie": "self.version",
-                "guzzle/plugin-curlauth": "self.version",
-                "guzzle/plugin-error-response": "self.version",
-                "guzzle/plugin-history": "self.version",
-                "guzzle/plugin-log": "self.version",
-                "guzzle/plugin-md5": "self.version",
-                "guzzle/plugin-mock": "self.version",
-                "guzzle/plugin-oauth": "self.version",
-                "guzzle/service": "self.version",
-                "guzzle/stream": "self.version"
-            },
-            "require-dev": {
-                "doctrine/cache": "*",
-                "monolog/monolog": "1.*",
-                "phpunit/phpunit": "3.7.*",
-                "psr/log": "1.0.*",
-                "symfony/class-loader": "*",
-                "zendframework/zend-cache": "<2.3",
-                "zendframework/zend-log": "<2.3"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.8-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Guzzle": "src/",
-                    "Guzzle\\Tests": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
-                },
-                {
-                    "name": "Guzzle Community",
-                    "homepage": "https://github.com/guzzle/guzzle/contributors"
-                }
-            ],
-            "description": "Guzzle is a PHP HTTP client library and framework for building RESTful web service clients",
-            "homepage": "http://guzzlephp.org/",
-            "keywords": [
-                "client",
-                "curl",
-                "framework",
-                "http",
-                "http client",
-                "rest",
-                "web service"
-            ],
-            "abandoned": "guzzlehttp/guzzle",
-            "time": "2014-01-28T22:29:15+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
