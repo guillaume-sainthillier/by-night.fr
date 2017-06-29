@@ -32,7 +32,7 @@ services:
         class: AppBundle\Importer\CountryImporter
         arguments:
             - '@doctrine.orm.entity_manager'
-            - "%kernel.root_dir%/datas"
+            - "%kernel.project_dir%/datas"
 
     app.location_cache_provider:
         class:     AppBundle\Cache\LocationCacheProvider
@@ -306,10 +306,10 @@ services:
         arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler", "@app.geocoder.place_geocoder"]
     tbn.event_handler:
         class: AppBundle\Handler\EventHandler
-        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.root_dir%/../web/uploads/temp"]
+        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.project_dir%/../web/uploads/temp"]
     tbn.user_handler:
         class: AppBundle\Handler\UserHandler
-        arguments: ["%kernel.root_dir%/../web/uploads/temp"]
+        arguments: ["%kernel.project_dir%/../web/uploads/temp"]
     tbn.comparator:
         class: AppBundle\Utils\Comparator
         arguments: ["@tbn.util", "@comparator_cache"]
@@ -326,7 +326,7 @@ services:
     #Cleaner
     tbn.image_cleaner:
         class: AppBundle\Cleaner\ImageCleaner
-        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "%kernel.root_dir%/../web"]
+        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "%kernel.project_dir%/../web"]
 
     tbn.social.twitter:
         class:        AppBundle\Social\Twitter

@@ -30,4 +30,4 @@ parameters:
     google_id_page:         "113344346320536654292"
     twitter_id_page:        "By__Night"
 
-    data_root: %kernel.root_dir%/../web/
+    data_root: %kernel.project_dir%/../web/

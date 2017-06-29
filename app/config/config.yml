@@ -12,7 +12,7 @@ framework:
         logging:    false
     secret:         "%secret%"
     router:
-        resource: "%kernel.root_dir%/config/routing.yml"
+        resource: "%kernel.project_dir%/app/config/routing.yml"
         strict_requirements: ~
     form:            ~
     csrf_protection: ~
@@ -23,7 +23,7 @@ framework:
     trusted_hosts:   ~
     session:
         handler_id: session.handler.native_file
-        save_path: "%kernel.root_dir%/../var/sessions/%kernel.environment%"
+        save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"
     assets:
         base_urls: ['http://static.%base_host%']
         packages:
@@ -133,7 +133,7 @@ vich_uploader:
     mappings:
         user_image:
             uri_prefix:         /uploads/users
-            upload_destination: "%kernel.root_dir%/../web/uploads/users"
+            upload_destination: "%kernel.project_dir%/web/uploads/users"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
@@ -143,7 +143,7 @@ vich_uploader:
                 options: {chars_per_dir: 3, dirs: 3} # will create directory "a/b" for "abcdef.jpg"
         user_system_image:
             uri_prefix:         /uploads/users
-            upload_destination: "%kernel.root_dir%/../web/uploads/users"
+            upload_destination: "%kernel.project_dir%/web/uploads/users"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
@@ -153,7 +153,7 @@ vich_uploader:
                 options: {chars_per_dir: 3, dirs: 3} # will create directory "a/b" for "abcdef.jpg"
         event_image:
             uri_prefix:         /uploads/documents
-            upload_destination: "%kernel.root_dir%/../web/uploads/documents"
+            upload_destination: "%kernel.project_dir%/web/uploads/documents"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
@@ -163,7 +163,7 @@ vich_uploader:
                 options: {chars_per_dir: 3, dirs: 3} # will create directory "a/b" for "abcdef.jpg"
         event_system_image:
             uri_prefix:         /uploads/documents
-            upload_destination: "%kernel.root_dir%/../web/uploads/documents"
+            upload_destination: "%kernel.project_dir%/web/uploads/documents"
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
@@ -454,7 +454,7 @@ jms_serializer:
         directories:
             FOSUserBundle:
                 namespace_prefix: "FOS\\UserBundle"
-                path: "%kernel.root_dir%/config/serializer/fos"
+                path: "%kernel.project_dir%/app/config/serializer/fos"
 
 presta_sitemap:
     route_annotation_listener: false
