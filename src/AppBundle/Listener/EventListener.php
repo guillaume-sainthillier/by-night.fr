@@ -56,9 +56,8 @@ class EventListener
 
     public function preRemove(LifecycleEventArgs $args)
     {
+        $entity = $args->getEntity();
         if (!$this->debug) {
-            $entity = $args->getEntity();
-
             if ($entity instanceof User) {
                 $this->eventInvalidator->addUser($entity);
 
