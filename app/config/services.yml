@@ -32,7 +32,7 @@ services:
         class: AppBundle\Importer\CountryImporter
         arguments:
             - '@doctrine.orm.entity_manager'
-            - "%kernel.project_dir%/datas"
+            - "%kernel.project_dir%/app/datas"
 
     app.location_cache_provider:
         class:     AppBundle\Cache\LocationCacheProvider
