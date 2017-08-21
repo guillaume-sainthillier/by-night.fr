@@ -5,7 +5,7 @@ services:
         image: mysql:latest
         volumes:
             - db-data:/var/lib/mysql
-            - ./mysql/app.cnf:/etc/mysql/conf.d/app.cnf
+            - ${DOCKER_PATH}/mysql/app.cnf:/etc/mysql/conf.d/app.cnf
         environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -26,27 +26,30 @@ services:
         ports:
             - 8001:80
         volumes:
-            - ./phpmyadmin/nginx.conf:/etc/nginx/conf.d/overrides.conf
-            - ./phpmyadmin/php.conf:/etc/php7/conf.d/99-overrides.conf
+            - ${DOCKER_PATH}/phpmyadmin/nginx.conf:/etc/nginx/conf.d/overrides.conf
+            - ${DOCKER_PATH}/phpmyadmin/php.conf:/etc/php7/conf.d/99-overrides.conf
         networks:
             - backend
         restart: always
     php:
-        build: ./php-fpm
+        build: ${DOCKER_PATH}/php-fpm
         links:
-            - db:mysqldb
-            - redis:redis
             - elk:elasticsearch
         depends_on:
             - db
         volumes:
             - ${SYMFONY_APP_PATH}:/var/www/symfony
-            - ../logs/symfony:/var/www/symfony/app/logs
+            - ${SYMFONY_APP_PATH}/var/logs/symfony:/var/www/symfony/var/logs
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         restart: always
         networks:
-            - backend        
+            - backend  
     nginx:
-        build: nginx
+        build: ${DOCKER_PATH}/nginx
         ports:
             - 8000:80
         links:
@@ -58,7 +61,7 @@ services:
             - php
             - redis
         volumes:
-            - ../var/logs/nginx/:/var/log/nginx
+            - ${SYMFONY_APP_PATH}/var/logs/nginx/:/var/log/nginx
         restart: always
         networks:
             - frontend
@@ -71,10 +74,10 @@ services:
             - 9301:9300
             - 5045:5044
         volumes:
-            - ./elk/logstash:/etc/logstash
-            - ./elk/logstash/patterns:/opt/logstash/patterns
-            - ../var/logs:/var/www/symfony/var/logs
-            - ../var/logs/nginx:/var/log/nginx
+            - ${DOCKER_PATH}/elk/logstash:/etc/logstash
+            - ${DOCKER_PATH}/elk/logstash/patterns:/opt/logstash/patterns
+            - ${SYMFONY_APP_PATH}/var/logs:/var/www/symfony/var/logs
+            - ${SYMFONY_APP_PATH}/var/logs/nginx:/var/log/nginx
             - elk-data:/var/lib/elasticsearch
         networks:
             - backend
