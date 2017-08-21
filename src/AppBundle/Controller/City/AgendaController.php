@@ -38,18 +38,23 @@ class AgendaController extends Controller
             switch ($type) {
                 case 'exposition':
                     $term = \AppBundle\SearchRepository\AgendaRepository::EXPO_TERMS;
+
                     break;
                 case 'concert':
                     $term = \AppBundle\SearchRepository\AgendaRepository::CONCERT_TERMS;
+
                     break;
                 case 'famille':
                     $term = \AppBundle\SearchRepository\AgendaRepository::FAMILY_TERMS;
+
                     break;
                 case 'spectacle':
                     $term = \AppBundle\SearchRepository\AgendaRepository::SHOW_TERMS;
+
                     break;
                 case 'etudiant':
                     $term = \AppBundle\SearchRepository\AgendaRepository::STUDENT_TERMS;
+
                     break;
             }
         } else {

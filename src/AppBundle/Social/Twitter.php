@@ -38,6 +38,7 @@ class Twitter extends Social
     public function getNumberOfCount()
     {
         $this->init();
+
         try {
             $page = $this->client->get('users/show', ['screen_name' => $this->appManager->getTwitterIdPage()]);
             if (isset($page['followers_count'])) {
@@ -53,6 +54,7 @@ class Twitter extends Social
     public function getTimeline(City $city, $max_id, $limit)
     {
         $this->init();
+
         try {
             $params = [
                 'q'           => sprintf('#%s filter:safe', $city->getName()),

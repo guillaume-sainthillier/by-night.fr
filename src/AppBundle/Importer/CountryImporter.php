@@ -227,6 +227,7 @@ class CountryImporter
                     'condamine'   => 'la-condamine',
                     '98000-'      => 'monaco',
                 ], $country);
+
                 break;
             case 'FR':
                 $this->em->createQuery(" UPDATE AppBundle:AdminZone2 c SET c.slug = 'paris-temp' WHERE c.slug = 'paris'")->execute();
@@ -264,6 +265,7 @@ class CountryImporter
                     'la-haye'                     => 'la-haye-du-puits',
                     'le-bas-segala'               => 'la-bastide-leveque',
                 ], $country);
+
                 break;
         }
     }
@@ -421,6 +423,7 @@ class CountryImporter
                         ], '', $entity->getName())
                     );
                 }
+
                 break;
         }
     }

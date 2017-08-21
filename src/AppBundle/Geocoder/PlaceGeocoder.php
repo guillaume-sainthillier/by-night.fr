@@ -84,6 +84,7 @@ class PlaceGeocoder
 
             foreach ($response->getResults() as $result) {
                 $data = $this->getPlaceInfos($result->getAddressComponents());
+
                 break;
             }
         }
@@ -145,6 +146,7 @@ class PlaceGeocoder
                     $data['results'][] = $result;
                 }
                 $this->cache->save($nom, $data);
+
                 break;
             }
         }
@@ -163,6 +165,7 @@ class PlaceGeocoder
                 $placeCoordinate     = new Boundary($place->getLatitude(), $place->getLongitude());
                 if ($this->firewall->isLocationBounded($candidateCoordinate, $placeCoordinate)) {
                     $candidatePlace = $result;
+
                     break;
                 }
             }
