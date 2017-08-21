@@ -18,8 +18,8 @@ class Version20170519195139 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP INDEX agenda_participations ON agenda');
-        $this->addSql('CREATE INDEX agenda_participations ON agenda (fb_participations, fb_interets)');
+        $this->addSql('DROP INDEX agenda_participations ON Agenda');
+        $this->addSql('CREATE INDEX agenda_participations ON Agenda (fb_participations, fb_interets)');
     }
 
     /**

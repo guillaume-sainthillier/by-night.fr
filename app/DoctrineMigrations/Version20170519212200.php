@@ -18,17 +18,15 @@ class Version20170519212200 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('DROP INDEX test ON agenda');
-        $this->addSql('DROP INDEX test2 ON agenda');
-        $this->addSql('DROP INDEX agenda_slug_idx ON agenda');
-        $this->addSql('DROP INDEX agenda_nom_idx ON agenda');
-        $this->addSql('DROP INDEX agenda_date_debut_idx ON agenda');
-        $this->addSql('DROP INDEX agenda_fb_idx ON agenda');
-        $this->addSql('DROP INDEX agenda_search2_idx ON agenda');
-        $this->addSql('DROP INDEX agenda_search_idx ON agenda');
-        $this->addSql('CREATE INDEX agenda_search_idx ON agenda (date_fin, date_debut, place_id)');
-        $this->addSql('DROP INDEX agenda_participations ON agenda');
-        $this->addSql('CREATE INDEX agenda_fb_participations ON agenda (fb_participations, fb_interets)');
+        $this->addSql('DROP INDEX agenda_slug_idx ON Agenda');
+        $this->addSql('DROP INDEX agenda_nom_idx ON Agenda');
+        $this->addSql('DROP INDEX agenda_date_debut_idx ON Agenda');
+        $this->addSql('DROP INDEX agenda_fb_idx ON Agenda');
+        $this->addSql('DROP INDEX agenda_search2_idx ON Agenda');
+        $this->addSql('DROP INDEX agenda_search_idx ON Agenda');
+        $this->addSql('CREATE INDEX agenda_search_idx ON Agenda (date_fin, date_debut, place_id)');
+        $this->addSql('DROP INDEX agenda_participations ON Agenda');
+        $this->addSql('CREATE INDEX agenda_fb_participations ON Agenda (fb_participations, fb_interets)');
     }
 
     /**
@@ -40,8 +38,6 @@ class Version20170519212200 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX agenda_search_idx ON Agenda');
-        $this->addSql('CREATE INDEX test ON Agenda (date_debut, date_fin, place_id)');
-        $this->addSql('CREATE INDEX test2 ON Agenda (place_id, date_fin, date_debut)');
         $this->addSql('CREATE INDEX agenda_slug_idx ON Agenda (slug)');
         $this->addSql('CREATE INDEX agenda_nom_idx ON Agenda (nom)');
         $this->addSql('CREATE INDEX agenda_date_debut_idx ON Agenda (date_debut)');
