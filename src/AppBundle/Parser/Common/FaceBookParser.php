@@ -105,7 +105,7 @@ class FaceBookParser extends AgendaParser
 
         $places = array_unique(array_filter(array_merge($places, $gps_places)));
 
-//        Récupération des événements depuis les lieux trouvés
+        //        Récupération des événements depuis les lieux trouvés
         Monitor::writeln('Recherche des événements associés aux places ...');
         $events = $this->api->getEventsFromPlaces($places, $now);
         Monitor::writeln(sprintf(
@@ -145,9 +145,9 @@ class FaceBookParser extends AgendaParser
     {
         $now = new \DateTime();
 
-//        $events = $this->api->getEventsFromIds(["830234333792674", "1538235536480501"]);
-//        $events = $this->api->getEventsFromIds(["1752921201640362", "1538235536480501", "248556222222718"]);
-//        return array_map([$this, 'getInfoAgenda'], $events);
+        //        $events = $this->api->getEventsFromIds(["830234333792674", "1538235536480501"]);
+        //        $events = $this->api->getEventsFromIds(["1752921201640362", "1538235536480501", "248556222222718"]);
+        //        return array_map([$this, 'getInfoAgenda'], $events);
 
         //Recherche d'événements de l'API en fonction des lieux
         $place_events = $this->getEventsFromPlaces($now);

@@ -155,6 +155,7 @@ class FacebookAdmin extends FacebookEvents
     public function getNumberOfCount()
     {
         $this->init();
+
         try {
             $page = $this->getPageFromId($this->appManager->getFacebookIdPage(), ['fields' => 'fan_count']);
 
@@ -175,6 +176,7 @@ class FacebookAdmin extends FacebookEvents
             $requests     = [];
             $batch_ids    = array_slice($ids, $i * $idsPerBatch, $idsPerBatch);
             $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
+
             try {
                 for ($j = 0; $j < $nbIterations; ++$j) {
                     $current_ids = array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
@@ -252,6 +254,7 @@ class FacebookAdmin extends FacebookEvents
     public function updateEventStatut($id_event, $userAccessToken, $isParticiper)
     {
         $this->init();
+
         try {
             $url = $id_event . '/' . ($isParticiper ? 'attending' : 'maybe');
             $this->client->sendRequest('POST', $url, [], $userAccessToken);
@@ -317,6 +320,7 @@ class FacebookAdmin extends FacebookEvents
             $requests     = [];
             $batch_ids    = array_slice($ids_event, $i * $idsPerBatch, $idsPerBatch);
             $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
+
             try {
                 for ($j = 0; $j < $nbIterations; ++$j) {
                     $current_ids = array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
@@ -447,7 +451,7 @@ class FacebookAdmin extends FacebookEvents
         $nbBatchs    = ceil(count($datas) / $idsPerBatch);
         $finalNodes  = [];
 
-//        $nbBatchs = min($nbBatchs, 5); //TODO: Supprimer ça
+        //        $nbBatchs = min($nbBatchs, 5); //TODO: Supprimer ça
         for ($i = 0; $i < $nbBatchs; ++$i) {
             $requests     = [];
             $batch_datas  = array_slice($datas, $i * $idsPerBatch, $idsPerBatch);

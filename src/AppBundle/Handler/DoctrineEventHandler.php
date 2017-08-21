@@ -416,6 +416,7 @@ class DoctrineEventHandler
                     //Celle-ci a déjà conduit à l'élimination de l'événement
                     if (!$reject->isValid()) {
                         $event->getReject()->setReason($reject->getReason());
+
                         continue;
                     }
                 }
@@ -428,6 +429,7 @@ class DoctrineEventHandler
                 if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration) && !$exploration->getReject()->isValid()) {
                     $event->getReject()->addReason($exploration->getReject()->getReason());
                     $event->getPlace()->getReject()->setReason($exploration->getReject()->getReason());
+
                     continue;
                 }
             }
@@ -510,6 +512,7 @@ class DoctrineEventHandler
                 $cities = $this->repoCity->findByName($try, $place->getCountry()->getId());
                 if (count($cities) === 1) {
                     $city = $cities[0];
+
                     break;
                 }
             }
