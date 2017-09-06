@@ -1,5 +1,6 @@
 #Sécurité
 .env
+.docker-sync/*
 
 #SiteMaps
 /web/sitemap/*
