@@ -1,3 +1,6 @@
+#Sécurité
+.env
+
 #SiteMaps
 /web/sitemap/*
 /.idea/
