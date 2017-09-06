@@ -2054,16 +2054,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.20",
+            "version": "v0.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client-services.git",
-                "reference": "c1a6e6ac716c6563ca6c240120cde69fde49af4f"
+                "reference": "f3cc7456ec878086ee6b53591e979a022e24ac27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/c1a6e6ac716c6563ca6c240120cde69fde49af4f",
-                "reference": "c1a6e6ac716c6563ca6c240120cde69fde49af4f",
+                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/f3cc7456ec878086ee6b53591e979a022e24ac27",
+                "reference": "f3cc7456ec878086ee6b53591e979a022e24ac27",
                 "shasum": ""
             },
             "require": {
@@ -2087,7 +2087,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2017-08-20T00:20:36+00:00"
+            "time": "2017-09-02T00:25:09+00:00"
         },
         {
             "name": "google/auth",
@@ -3034,32 +3034,32 @@
         },
         {
             "name": "jms/serializer-bundle",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/JMSSerializerBundle.git",
-                "reference": "90373f0ed225b204bed66cc3f6837746c5902ac5"
+                "reference": "a612724ec70d9cbb744316365d88ec9440f81ac9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/JMSSerializerBundle/zipball/90373f0ed225b204bed66cc3f6837746c5902ac5",
-                "reference": "90373f0ed225b204bed66cc3f6837746c5902ac5",
+                "url": "https://api.github.com/repos/schmittjoh/JMSSerializerBundle/zipball/a612724ec70d9cbb744316365d88ec9440f81ac9",
+                "reference": "a612724ec70d9cbb744316365d88ec9440f81ac9",
                 "shasum": ""
             },
             "require": {
                 "jms/serializer": "^1.7",
-                "php": ">=5.4.0",
+                "php": "^5.4|^7.0",
                 "phpoption/phpoption": "^1.1.0",
-                "symfony/framework-bundle": "~2.3|~3.0"
+                "symfony/framework-bundle": "~2.3|~3.0|~4.0"
             },
             "require-dev": {
                 "doctrine/doctrine-bundle": "*",
                 "doctrine/orm": "*",
-                "phpunit/phpunit": "^4.2|^5.0",
+                "phpunit/phpunit": "^4.8.35|^5.4.3|^6.0",
                 "symfony/browser-kit": "*",
                 "symfony/class-loader": "*",
                 "symfony/css-selector": "*",
-                "symfony/expression-language": "~2.6|~3.0",
+                "symfony/expression-language": "~2.6|~3.0|~4.0",
                 "symfony/finder": "*",
                 "symfony/form": "*",
                 "symfony/process": "*",
@@ -3108,7 +3108,7 @@
                 "serialization",
                 "xml"
             ],
-            "time": "2017-05-17T10:26:43+00:00"
+            "time": "2017-08-31T10:41:30+00:00"
         },
         {
             "name": "knplabs/knp-components",
@@ -5134,16 +5134,16 @@
         },
         {
             "name": "sensio/distribution-bundle",
-            "version": "v5.0.20",
+            "version": "v5.0.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "4b019d4c0bd64438c42e4b6b0726085b409be8d9"
+                "reference": "eb6266b3b472e4002538610b28a0a04bcf94891a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/4b019d4c0bd64438c42e4b6b0726085b409be8d9",
-                "reference": "4b019d4c0bd64438c42e4b6b0726085b409be8d9",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/eb6266b3b472e4002538610b28a0a04bcf94891a",
+                "reference": "eb6266b3b472e4002538610b28a0a04bcf94891a",
                 "shasum": ""
             },
             "require": {
@@ -5182,42 +5182,42 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2017-05-11T16:21:03+00:00"
+            "time": "2017-08-25T16:55:44+00:00"
         },
         {
             "name": "sensio/framework-extra-bundle",
-            "version": "v3.0.26",
+            "version": "v3.0.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioFrameworkExtraBundle.git",
-                "reference": "6d6cbe971554f0a2cc84965850481eb04a2a0059"
+                "reference": "2651d2c70c5fec10beaa670c61fd8ff1e8b3869a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/6d6cbe971554f0a2cc84965850481eb04a2a0059",
-                "reference": "6d6cbe971554f0a2cc84965850481eb04a2a0059",
+                "url": "https://api.github.com/repos/sensiolabs/SensioFrameworkExtraBundle/zipball/2651d2c70c5fec10beaa670c61fd8ff1e8b3869a",
+                "reference": "2651d2c70c5fec10beaa670c61fd8ff1e8b3869a",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "~2.2",
-                "symfony/dependency-injection": "~2.3|~3.0",
-                "symfony/framework-bundle": "~2.3|~3.0"
+                "symfony/dependency-injection": "~2.3|~3.0|~4.0",
+                "symfony/framework-bundle": "~2.3|~3.0|~4.0"
             },
             "require-dev": {
                 "doctrine/doctrine-bundle": "~1.5",
                 "doctrine/orm": "~2.4,>=2.4.5",
-                "symfony/asset": "~2.7|~3.0",
-                "symfony/browser-kit": "~2.3|~3.0",
-                "symfony/dom-crawler": "~2.3|~3.0",
-                "symfony/expression-language": "~2.4|~3.0",
-                "symfony/finder": "~2.3|~3.0",
-                "symfony/phpunit-bridge": "~3.2",
-                "symfony/psr-http-message-bridge": "^0.3",
-                "symfony/security-bundle": "~2.4|~3.0",
-                "symfony/templating": "~2.3|~3.0",
-                "symfony/translation": "~2.3|~3.0",
-                "symfony/twig-bundle": "~2.3|~3.0",
-                "symfony/yaml": "~2.3|~3.0",
+                "symfony/asset": "~2.7|~3.0|~4.0",
+                "symfony/browser-kit": "~2.3|~3.0|~4.0",
+                "symfony/dom-crawler": "~2.3|~3.0|~4.0",
+                "symfony/expression-language": "~2.4|~3.0|~4.0",
+                "symfony/finder": "~2.3|~3.0|~4.0",
+                "symfony/phpunit-bridge": "~3.2|~4.0",
+                "symfony/psr-http-message-bridge": "^0.3|^1.0",
+                "symfony/security-bundle": "~2.4|~3.0|~4.0",
+                "symfony/templating": "~2.3|~3.0|~4.0",
+                "symfony/translation": "~2.3|~3.0|~4.0",
+                "symfony/twig-bundle": "~2.3|~3.0|~4.0",
+                "symfony/yaml": "~2.3|~3.0|~4.0",
                 "twig/twig": "~1.12|~2.0",
                 "zendframework/zend-diactoros": "^1.3"
             },
@@ -5252,20 +5252,20 @@
                 "annotations",
                 "controllers"
             ],
-            "time": "2017-05-11T17:01:57+00:00"
+            "time": "2017-08-23T12:40:59+00:00"
         },
         {
             "name": "sensiolabs/security-checker",
-            "version": "v4.1.4",
+            "version": "v4.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/security-checker.git",
-                "reference": "72f4238707071459a6680854c8c74a0ebb999549"
+                "reference": "55553c3ad6ae2121c1b1475d4c880d71b31b8f68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/security-checker/zipball/72f4238707071459a6680854c8c74a0ebb999549",
-                "reference": "72f4238707071459a6680854c8c74a0ebb999549",
+                "url": "https://api.github.com/repos/sensiolabs/security-checker/zipball/55553c3ad6ae2121c1b1475d4c880d71b31b8f68",
+                "reference": "55553c3ad6ae2121c1b1475d4c880d71b31b8f68",
                 "shasum": ""
             },
             "require": {
@@ -5297,7 +5297,7 @@
                 }
             ],
             "description": "A security checker for your composer.lock",
-            "time": "2017-08-14T18:42:49+00:00"
+            "time": "2017-08-22T22:18:16+00:00"
         },
         {
             "name": "social-links/social-links",
@@ -5305,12 +5305,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/oscarotero/social-links.git",
-                "reference": "890c9956702808ecb5dc30249f40a6fafd386c59"
+                "reference": "55677b91224586ec58eb2d665538165759963ec4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oscarotero/social-links/zipball/890c9956702808ecb5dc30249f40a6fafd386c59",
-                "reference": "890c9956702808ecb5dc30249f40a6fafd386c59",
+                "url": "https://api.github.com/repos/oscarotero/social-links/zipball/55677b91224586ec58eb2d665538165759963ec4",
+                "reference": "55677b91224586ec58eb2d665538165759963ec4",
                 "shasum": ""
             },
             "require": {
@@ -5346,7 +5346,7 @@
                 "twitter",
                 "twittercards"
             ],
-            "time": "2017-04-24T17:45:23+00:00"
+            "time": "2017-09-04T20:21:50+00:00"
         },
         {
             "name": "stof/doctrine-extensions-bundle",
@@ -6285,12 +6285,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/whiteoctober/WhiteOctoberPagerfantaBundle.git",
-                "reference": "8d51df5552628824db1de7d5016e495b15f13cc4"
+                "reference": "8877a896ff5a3af7642a3c13be21e876f8e3a9eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/8d51df5552628824db1de7d5016e495b15f13cc4",
-                "reference": "8d51df5552628824db1de7d5016e495b15f13cc4",
+                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/8877a896ff5a3af7642a3c13be21e876f8e3a9eb",
+                "reference": "8877a896ff5a3af7642a3c13be21e876f8e3a9eb",
                 "shasum": ""
             },
             "require": {
@@ -6329,7 +6329,7 @@
                 "page",
                 "paging"
             ],
-            "time": "2017-08-11T08:41:14+00:00"
+            "time": "2017-08-24T08:29:58+00:00"
         },
         {
             "name": "whiteoctober/breadcrumbs-bundle",
@@ -6775,22 +6775,22 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "v1.7.0",
+            "version": "v1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "93d39f1f7f9326d746203c7c056f300f7f126073"
+                "reference": "c9b8c6088acd19d769d4cc0ffa60a9fe34344bd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/93d39f1f7f9326d746203c7c056f300f7f126073",
-                "reference": "93d39f1f7f9326d746203c7c056f300f7f126073",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/c9b8c6088acd19d769d4cc0ffa60a9fe34344bd6",
+                "reference": "c9b8c6088acd19d769d4cc0ffa60a9fe34344bd6",
                 "shasum": ""
             },
             "require": {
                 "doctrine/instantiator": "^1.0.2",
                 "php": "^5.3|^7.0",
-                "phpdocumentor/reflection-docblock": "^2.0|^3.0.2",
+                "phpdocumentor/reflection-docblock": "^2.0|^3.0.2|^4.0",
                 "sebastian/comparator": "^1.1|^2.0",
                 "sebastian/recursion-context": "^1.0|^2.0|^3.0"
             },
@@ -6801,7 +6801,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6.x-dev"
+                    "dev-master": "1.7.x-dev"
                 }
             },
             "autoload": {
@@ -6834,7 +6834,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2017-03-02T20:05:34+00:00"
+            "time": "2017-09-04T11:05:03+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -7844,16 +7844,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v3.3.6",
+            "version": "v3.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "c2c124b7f9de79f4a64dc011f041a3a2c768b913"
+                "reference": "13db89f6617d512df9ba6b6416fbc2cbbb5c9784"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/c2c124b7f9de79f4a64dc011f041a3a2c768b913",
-                "reference": "c2c124b7f9de79f4a64dc011f041a3a2c768b913",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/13db89f6617d512df9ba6b6416fbc2cbbb5c9784",
+                "reference": "13db89f6617d512df9ba6b6416fbc2cbbb5c9784",
                 "shasum": ""
             },
             "require": {
@@ -7902,7 +7902,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2017-06-12T13:35:45+00:00"
+            "time": "2017-08-28T11:33:29+00:00"
         },
         {
             "name": "theseer/tokenizer",
