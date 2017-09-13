@@ -43,12 +43,18 @@ RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
     && printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8707\n" > $PHP_INI_DIR/conf.d/blackfire.ini
 
 
-# Add symfony cli shortcut
-RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
-
 COPY php.ini /usr/local/etc/php/php.ini
 
 # Permission fix
-RUN usermod -u 1000 www-data  
+RUN chmod 777 /var/www
+RUN usermod -u 1000 www-data
+
+# Set www-data as current user (for using composer)
+USER www-data
+
+# Add some shortcuts
+RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
+RUN echo 'alias ls="ls --color=auto"' >> ~/.bashrc
+RUN echo 'alias ll="ls -alF"' >> ~/.bashrc
 
 WORKDIR /var/www/symfony
