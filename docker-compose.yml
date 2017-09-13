@@ -30,6 +30,8 @@ services:
         image: rabbitmq:management
         ports:
             - 15672:15672
+        volumes:
+            - queue-data:/var/lib/rabbitmq
         restart: always
         networks:
             - backend
@@ -81,6 +83,21 @@ services:
         networks:
             - frontend
             - backend
+    varnish:
+        image: million12/varnish
+        ports:
+            - 8080:80
+        depends_on:
+            - nginx
+        environment:
+            CACHE_SIZE: "1G"
+        volumes:
+          - ${DOCKER_PATH}/varnish/default.vcl:/etc/varnish/default.vcl
+          - varnish-data:/var/lib/varnish
+        restart: always
+        networks:
+            - frontend
+            - backend
     blackfire:
         image: blackfire/blackfire
         environment:
@@ -106,6 +123,10 @@ volumes:
     db-data:
         driver: local
     elk-data:
+        driver: local
+    queue-data:
+        driver: local
+    varnish-data:
         driver: local
 
 networks:
