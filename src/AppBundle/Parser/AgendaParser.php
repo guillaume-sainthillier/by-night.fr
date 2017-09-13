@@ -2,6 +2,7 @@
 
 namespace AppBundle\Parser;
 
+use AppBundle\Factory\EventFactory;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use AppBundle\Entity\Agenda;
@@ -33,25 +34,6 @@ abstract class AgendaParser implements ParserInterface
      */
     protected $site;
 
-    /**
-     * @var SiteInfo
-     */
-    protected $siteInfo;
-
-    /**
-     * @var PropertyAccessorInterface
-     */
-    protected $propertyAccessor;
-
-    public function __construct()
-    {
-        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
-        $this->site             = null;
-        $this->siteInfo         = null;
-
-        return $this;
-    }
-
     abstract public function getRawAgendas();
 
     public function addUrl($url)
@@ -81,20 +63,7 @@ abstract class AgendaParser implements ParserInterface
     public function parse()
     {
         //Tableau des informations récoltées
-        $raw = $this->getRawAgendas();
-
-        return array_map([$this, 'arrayToAgenda'], $raw);
-    }
-
-    public function arrayToAgenda($infos)
-    {
-        $agenda = new Agenda();
-
-        foreach ($infos as $field => $value) {
-            $this->propertyAccessor->setValue($agenda, $field, $value);
-        }
-
-        return $agenda;
+        return $this->getRawAgendas();
     }
 
     protected function parseDate($date)
@@ -105,17 +74,5 @@ abstract class AgendaParser implements ParserInterface
             function ($items) use ($tabMois) {
                 return $items[4] . '-' . (array_search($items[3], $tabMois) + 1) . '-' . $items[2];
             }, $date);
-    }
-
-    public function getSiteInfo()
-    {
-        return $this->siteInfo;
-    }
-
-    public function setSiteInfo(SiteInfo $siteInfo)
-    {
-        $this->siteInfo = $siteInfo;
-
-        return $this;
     }
 }

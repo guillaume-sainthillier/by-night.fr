@@ -116,18 +116,13 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[]        $events
-     * @param ParserInterface $parser
-     *
      * @return Agenda[]
      */
-    public function handleManyCLI(array $events, ParserInterface $parser)
+    public function handleManyCLI(array $events)
     {
         $events = $this->handleMany($events);
-        if ($parser instanceof FaceBookParser) {
-            $this->handleIdsToMigrate($parser);
-        }
 
-        $historique = $this->explorationHandler->stop($parser->getNomData());
+        $historique = $this->explorationHandler->stop();
         $this->em->persist($historique);
         $this->em->flush();
 
@@ -145,7 +140,6 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
-     *
      * @return Agenda[]
      */
     public function handleMany(array $events)
@@ -177,10 +171,8 @@ class DoctrineEventHandler
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
     }
 
-    private function handleIdsToMigrate(FaceBookParser $parser)
+    public function handleIdsToMigrate(array $ids)
     {
-        $ids = $parser->getIdsToMigrate();
-
         if (!count($ids)) {
             return;
         }
@@ -195,8 +187,8 @@ class DoctrineEventHandler
 
         $events = array_merge($events, $eventOwners);
         foreach ($events as $event) {
-            /*
-             * @var Agenda
+            /**
+             * @var Agenda $event
              */
             if (isset($ids[$event->getFacebookEventId()])) {
                 $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
@@ -224,7 +216,6 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
-     *
      * @return Agenda[]
      */
     private function getAllowedEvents(array $events)
@@ -234,7 +225,6 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
-     *
      * @return Agenda[]
      */
     private function getNotAllowedEvents(array $events)
@@ -246,7 +236,6 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
-     *
      * @return array
      */
     private function getChunks(array $events)
@@ -266,7 +255,6 @@ class DoctrineEventHandler
 
     /**
      * @param array $chunks
-     *
      * @return Agenda[]
      */
     private function unChunk(array $chunks)
@@ -281,7 +269,6 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
-     *
      * @return Agenda[]
      */
     private function mergeWithDatabase(array $events)

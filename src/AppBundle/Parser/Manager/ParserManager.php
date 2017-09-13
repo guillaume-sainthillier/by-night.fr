@@ -7,6 +7,7 @@
 namespace AppBundle\Parser\Manager;
 
 use AppBundle\Parser\ParserInterface;
+use AppBundle\Entity\Agenda;
 use AppBundle\Utils\Monitor;
 
 /**
@@ -33,6 +34,9 @@ class ParserManager
         $full_agendas = [];
 
         foreach ($this->parsers as $parser) {
+            /**
+             * @var ParserInterface $parser
+             */
             Monitor::writeln(sprintf(
                 'Lancement de <info>%s</info>',
                 $parser->getNomData()
@@ -48,7 +52,7 @@ class ParserManager
             }
 
             foreach ($agendas as $agenda) {
-                $agenda->setFromData($parser->getNomData());
+                $agenda['from_data'] = $parser->getNomData();
             }
 
             $full_agendas = array_merge($full_agendas, $agendas);

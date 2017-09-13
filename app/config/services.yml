@@ -20,6 +20,17 @@ parameters:
 
 
 services:
+    app.consumer.add_event:
+        class: AppBundle\Consumer\AddEventConsumer
+        arguments:
+            - "@app.event_factory"
+            - "@tbn.doctrine_event_handler"
+
+    app.consumer.update_fb_id:
+        class: AppBundle\Consumer\UpdateFBId
+        arguments:
+            - "@tbn.doctrine_event_handler"
+
     app.geocoder.place_geocoder:
         class: AppBundle\Geocoder\PlaceGeocoder
         arguments:
@@ -194,14 +205,9 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-#    ville_listener:
-#        class: AppBundle\Listener\CityListener
-#        arguments:
-#          - "@site_manager"
-#          - "@doctrine.orm.entity_manager"
-#          - "@router"
-#        tags:
-#           - { name: kernel.event_listener, event: kernel.request, method: onDomainParse, priority: 100}
+    app.event_factory:
+        class: AppBundle\Factory\EventFactory
+
     tbn.event_updater:
             class: AppBundle\Updater\EventUpdater
             arguments:
@@ -239,7 +245,10 @@ services:
 
     tbn.parser.abstracts.facebook:
         class: AppBundle\Parser\Common\FaceBookParser
-        arguments: ["@doctrine.orm.entity_manager", "@tbn.firewall", "@tbn.social.facebook_admin"]
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@tbn.firewall"
+            - "@tbn.social.facebook_admin"
     #Toulouse
     tbn.parser.toulouse.bikini:
         class: AppBundle\Parser\Toulouse\BikiniParser
@@ -279,7 +288,7 @@ services:
     tbn.parser.montpellier.facebook:
         parent: tbn.parser.abstracts.facebook
 
-    #Alises
+    #Aliases
     tbn.facebook_parser:
         alias: tbn.parser.abstracts.facebook
     tbn.soonnight_parser:

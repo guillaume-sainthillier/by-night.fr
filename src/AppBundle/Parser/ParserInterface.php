@@ -2,8 +2,6 @@
 
 namespace AppBundle\Parser;
 
-use AppBundle\Entity\Agenda;
-
 /**
  * Description of ParserInterface.
  *
@@ -12,7 +10,7 @@ use AppBundle\Entity\Agenda;
 interface ParserInterface
 {
     /**
-     * @return Agenda[] un tableau d'Agenda parsé
+     * @return array un tableau d'Agenda
      */
     public function parse();
 

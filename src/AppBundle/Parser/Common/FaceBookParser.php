@@ -2,6 +2,7 @@
 
 namespace AppBundle\Parser\Common;
 
+use AppBundle\Factory\EventFactory;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 use AppBundle\Repository\SiteRepository;
@@ -39,8 +40,6 @@ class FaceBookParser extends AgendaParser
 
     public function __construct(ObjectManager $om, Firewall $firewall, FacebookAdmin $api)
     {
-        parent::__construct();
-
         $this->firewall = $firewall;
         $this->api      = $api;
         $this->om       = $om;

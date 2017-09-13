@@ -162,6 +162,7 @@ class EventController extends Controller
     public function importAction()
     {
         $importer = $this->get('tbn.social.facebook_list_events');
+        $eventFactory = $this->get('app.event_factory');
         $parser   = $this->get('tbn.parser.abstracts.facebook');
         $handler  = $this->get('tbn.doctrine_event_handler');
 
@@ -171,7 +172,7 @@ class EventController extends Controller
         $events = [];
         foreach ($fb_events as $fb_event) {
             $array_event = $parser->getInfoAgenda($fb_event);
-            $event       = $parser->arrayToAgenda($array_event);
+            $event       = $eventFactory->fromArray($array_event);
             $events[]    = $event->setUser($user);
         }
 

@@ -25,10 +25,10 @@ framework:
         handler_id: session.handler.native_file
         save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"
     assets:
-        base_urls: ['http://static.%base_host%']
+        base_urls: "%asset_urls%"
         packages:
             asset:
-                base_urls: ['http://static.%base_host%']
+                base_urls: "%asset_urls%"
     fragments:       { path: /_fragment }
     http_method_override: true
     php_errors:
@@ -42,8 +42,11 @@ doctrine_cache:
         location:
             prototype:  "app.location_cache_provider"
     providers:
-        memcache:
+        redis:
             type: redis
+            redis:
+                host: "%redis_host%"
+                port: "%redis_port%"
             namespace: memory_cache_ns
             aliases:
                 - memory_cache
@@ -87,7 +90,7 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        server_version: 5.5
+        server_version: "%database_version%"
         driver:   "%database_driver%"
         host:     "%database_host%"
         port:     "%database_port%"
@@ -109,7 +112,7 @@ fos_http_cache:
         varnish:
             http:
                 servers:
-                    - 127.0.0.1:80
+                    - 127.0.0.1
                 base_url: "%base_host%"
         symfony:
             http:
@@ -126,6 +129,50 @@ swiftmailer:
     port:      "%mailer_port%"
     sender_address: "%mailer_user%"
     spool:     { type: memory }
+
+#RabbitMQ
+old_sound_rabbit_mq:
+    connections:
+        default:
+            host:     "%rabbitmq_host%"
+            port:     "%rabbitmq_port%"
+            user:     "%rabbitmq_user%"
+            password: "%rabbitmq_password%"
+
+    producers:
+        add_event:
+            connection:       default
+            exchange_options: {name: 'add-event', type: direct}
+        update_fb_id:
+            connection:       default
+            exchange_options: {name: 'update-fb-id', type: direct}
+
+    consumers:
+        add_event:
+            connection:       default
+            exchange_options: {name: 'add-event', type: direct}
+            queue_options:    {name: 'add-event'}
+            callback:         app.consumer.add_event
+
+    batch_consumers:
+        add_event:
+            connection:       default
+            exchange_options: {name: 'add-event', type: fanout}
+            queue_options:    {name: 'add-event'}
+            callback:         app.consumer.add_event
+            qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
+            timeout_wait:     5
+            auto_setup_fabric: false
+            idle_timeout_exit_code: -2
+        update_fb_id:
+            connection:       default
+            exchange_options: {name: 'update-fb-id', type: fanout}
+            queue_options:    {name: 'update-fb-id'}
+            callback:         app.consumer.update_fb_id
+            qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
+            timeout_wait:     180
+            auto_setup_fabric: false
+            idle_timeout_exit_code: -2
 
 vich_uploader:
     db_driver: orm
@@ -272,6 +319,7 @@ hwi_oauth:
             client_id:           "%api_facebook_id%"
             client_secret:       "%api_facebook_secret%"
             scope:               email, user_posts
+            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
@@ -283,6 +331,7 @@ hwi_oauth:
             client_id:           "%api_facebook_id%"
             client_secret:       "%api_facebook_secret%"
             scope:               email, user_events
+            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
@@ -374,8 +423,8 @@ liip_imagine:
 fos_elastica:
     clients:
         default:
-            host: localhost
-            port: 9200
+            host: "%es_host%"
+            port: "%es_port%"
             compression: true
     serializer:
         serializer: "jms_serializer"

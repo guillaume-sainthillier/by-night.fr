@@ -45,31 +45,8 @@ class EventFetcher
      */
     public function fetchEvents(ParserInterface $parser)
     {
-        if ($parser instanceof FaceBookParser) {
-            $siteInfo = $this->getSiteInfo();
-            $parser->setSiteInfo($siteInfo);
-        }
-
         $this->parserManager->add($parser);
 
         return $this->parserManager->getAgendas();
-    }
-
-    /**
-     * @return \AppBundle\Entity\SiteInfo
-     */
-    protected function getSiteInfo()
-    {
-        $siteInfo = $this->siteManager->getSiteInfo();
-
-        if (!$siteInfo) {
-            throw new \RuntimeException('Aucun site info enregistré');
-        }
-
-        if (!$siteInfo->getFacebookAccessToken()) {
-            throw new \RuntimeException("Le site info n'est pas configuré avec Facebook");
-        }
-
-        return $siteInfo;
     }
 }

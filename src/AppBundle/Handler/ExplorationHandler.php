@@ -83,18 +83,17 @@ class ExplorationHandler
     }
 
     /**
-     * @param string $parserName
-     *
      * @return HistoriqueMaj
      */
-    public function stop($parserName)
+    public function stop()
     {
-        $this->historique
+        $this->getHistorique()
             ->setDateFin(new \DateTime())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNouvellesSoirees($this->getNbInserts())
             ->setUpdateSoirees($this->getNbUpdates())
-            ->setFromData($parserName);
+            ->setFromData('?')
+        ;
 
         return $this->getHistorique();
     }

@@ -7,10 +7,10 @@ services:
             - db-data:/var/lib/mysql
             - ${DOCKER_PATH}/mysql/app.cnf:/etc/mysql/conf.d/app.cnf
         environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_DATABASE
+            - MYSQL_USER
+            - MYSQL_PASSWORD
         restart: always
         networks:
             - backend
@@ -27,7 +27,10 @@ services:
     #     networks:
     #         - backend
     rabbitmq:
-        image: rabbitmq:latest
+        image: rabbitmq:management
+        ports:
+            - 15672
+            - 15671
         restart: always
         networks:
             - backend
@@ -52,10 +55,10 @@ services:
         volumes:
              - ${SYMFONY_APP_PATH}:/var/www/symfony
         environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_DATABASE
+            - MYSQL_USER
+            - MYSQL_PASSWORD
         restart: always
         networks:
             - backend
@@ -82,18 +85,16 @@ services:
     blackfire:
         image: blackfire/blackfire
         environment:
-            BLACKFIRE_SERVER_ID: ${BLACKFIRE_SERVER_ID}
-            BLACKFIRE_SERVER_TOKEN: ${BLACKFIRE_SERVER_TOKEN}
+            - BLACKFIRE_SERVER_ID
+            - BLACKFIRE_SERVER_TOKEN
         networks:
             - backend
         restart: always
     elk:
         image: sebp/elk:latest
         ports:
-            - 5602:5601
-            - 9201:9200
-            - 9301:9300
-            - 5045:5044
+            - 5601
+            - 9200
         volumes:
             - ${SYMFONY_APP_PATH}/var/logs:/var/www/symfony/var/logs
             - ${SYMFONY_APP_PATH}/var/logs/nginx:/var/log/nginx

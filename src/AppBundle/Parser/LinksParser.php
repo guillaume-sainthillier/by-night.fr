@@ -2,6 +2,7 @@
 
 namespace AppBundle\Parser;
 
+use AppBundle\Factory\EventFactory;
 use Symfony\Component\DomCrawler\Crawler;
 use AppBundle\Utils\Monitor;
 
@@ -19,8 +20,6 @@ abstract class LinksParser extends AgendaParser
 
     public function __construct()
     {
-        parent::__construct();
-
         $this->url      = null;
         $this->base_url = null;
         $this->parser   = new Crawler();
