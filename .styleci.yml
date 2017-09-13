@@ -16,5 +16,5 @@ disabled:
     - concat_without_spaces
 
 finder:
-    not-path:
+    not-name:
         - "var/SymfonyRequirements.php"
