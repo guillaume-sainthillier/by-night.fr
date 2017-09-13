@@ -19,13 +19,13 @@ services:
         restart: always
         networks:
             - backend
-    node:
-        image: node:6
-        restart: always
-        volumes_from:
-            - php
-        networks:
-            - backend
+    # node:
+    #     image: node:6
+    #     restart: always
+    #     volumes_from:
+    #         - php
+    #     networks:
+    #         - backend
     rabbitmq:
         image: rabbitmq:latest
         restart: always
@@ -50,16 +50,15 @@ services:
         depends_on:
             - db
         volumes:
-            # - ${SYMFONY_APP_PATH}:/var/www/symfony
-            - app-unison-sync:/var/www/symfony:nocopy
+             - ${SYMFONY_APP_PATH}:/var/www/symfony
         environment:
-            - MYSQL_ROOT_PASSWORD
-            - MYSQL_DATABASE
-            - MYSQL_USER
-            - MYSQL_PASSWORD
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         restart: always
         networks:
-            - backend  
+            - backend
     nginx:
         build: ${DOCKER_PATH}/nginx
         ports:
@@ -83,8 +82,8 @@ services:
     blackfire:
         image: blackfire/blackfire
         environment:
-            - BLACKFIRE_SERVER_ID
-            - BLACKFIRE_SERVER_TOKEN
+            BLACKFIRE_SERVER_ID: ${BLACKFIRE_SERVER_ID}
+            BLACKFIRE_SERVER_TOKEN: ${BLACKFIRE_SERVER_TOKEN}
         networks:
             - backend
         restart: always
@@ -108,8 +107,6 @@ volumes:
         driver: local
     elk-data:
         driver: local
-    app-unison-sync:
-        external: true
 
 networks:
     frontend:
