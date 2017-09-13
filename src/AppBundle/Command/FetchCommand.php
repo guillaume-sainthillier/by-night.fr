@@ -41,12 +41,11 @@ class FetchCommand extends AppCommand
         $fetcher = $this->getContainer()->get('tbn.event_fetcher');
         $events  = $fetcher->fetchEvents($service);
         foreach ($events as $event) {
-//            $this->getContainer()->get('old_sound_rabbit_mq.add_event_producer')->publish(serialize($event));
+            $this->getContainer()->get('old_sound_rabbit_mq.add_event_producer')->publish(serialize($event));
         }
 
         if ($service instanceof FaceBookParser) {
             foreach ($service->getIdsToMigrate() as $oldValue => $newValue) {
-                dump(serialize(['old' => $oldValue, 'new' => $newValue]));
                 $this->getContainer()->get('old_sound_rabbit_mq.update_fb_id_producer')->publish(serialize(['old' => $oldValue, 'new' => $newValue]));
             }
         }
