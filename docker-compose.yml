@@ -29,8 +29,7 @@ services:
     rabbitmq:
         image: rabbitmq:management
         ports:
-            - 15672
-            - 15671
+            - 15672:15672
         restart: always
         networks:
             - backend
@@ -93,8 +92,8 @@ services:
     elk:
         image: sebp/elk:latest
         ports:
-            - 5601
-            - 9200
+            - 5601:5601
+            - 9200:9200
         volumes:
             - ${SYMFONY_APP_PATH}/var/logs:/var/www/symfony/var/logs
             - ${SYMFONY_APP_PATH}/var/logs/nginx:/var/log/nginx
