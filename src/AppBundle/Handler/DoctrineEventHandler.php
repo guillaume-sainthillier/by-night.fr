@@ -187,7 +187,7 @@ class DoctrineEventHandler
 
         $events = array_merge($events, $eventOwners);
         foreach ($events as $event) {
-            /**
+            /*
              * @var Agenda
              */
             if (isset($ids[$event->getFacebookEventId()])) {
