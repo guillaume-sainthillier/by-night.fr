@@ -2,12 +2,7 @@
 
 namespace AppBundle\Parser;
 
-use AppBundle\Factory\EventFactory;
-use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use AppBundle\Entity\Agenda;
 use AppBundle\Entity\Site;
-use AppBundle\Entity\SiteInfo;
 
 /*
  * Classe abstraite représentant le parse des données d'un site Internet

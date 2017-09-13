@@ -3,12 +3,11 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 06/09/2017
- * Time: 19:32
+ * Time: 19:32.
  */
 
 namespace AppBundle\Consumer;
 
-use AppBundle\Factory\EventFactory;
 use AppBundle\Handler\DoctrineEventHandler;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -26,13 +25,14 @@ class UpdateFBId implements BatchConsumerInterface
         $this->doctrineEventHandler = $doctrineEventHandler;
     }
 
-    public function batchExecute(array $messages) {
+    public function batchExecute(array $messages)
+    {
         dump('OK');
         $ids = [];
 
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {
-            $data = unserialize($message->body);
+            $data              = unserialize($message->body);
             $ids[$data['old']] = $ids[$data['new']];
         }
 

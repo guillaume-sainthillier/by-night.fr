@@ -14,8 +14,6 @@ use AppBundle\Entity\Agenda;
 use AppBundle\Entity\Place;
 use AppBundle\Entity\Site;
 use AppBundle\Entity\Exploration;
-use AppBundle\Parser\Common\FaceBookParser;
-use AppBundle\Parser\ParserInterface;
 use AppBundle\Reject\Reject;
 use AppBundle\Utils\Firewall;
 use AppBundle\Utils\Monitor;
@@ -115,7 +113,8 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[]        $events
+     * @param Agenda[] $events
+     *
      * @return Agenda[]
      */
     public function handleManyCLI(array $events)
@@ -140,6 +139,7 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
+     *
      * @return Agenda[]
      */
     public function handleMany(array $events)
@@ -188,7 +188,7 @@ class DoctrineEventHandler
         $events = array_merge($events, $eventOwners);
         foreach ($events as $event) {
             /**
-             * @var Agenda $event
+             * @var Agenda
              */
             if (isset($ids[$event->getFacebookEventId()])) {
                 $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
@@ -216,6 +216,7 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
+     *
      * @return Agenda[]
      */
     private function getAllowedEvents(array $events)
@@ -225,6 +226,7 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
+     *
      * @return Agenda[]
      */
     private function getNotAllowedEvents(array $events)
@@ -236,6 +238,7 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
+     *
      * @return array
      */
     private function getChunks(array $events)
@@ -255,6 +258,7 @@ class DoctrineEventHandler
 
     /**
      * @param array $chunks
+     *
      * @return Agenda[]
      */
     private function unChunk(array $chunks)
@@ -269,6 +273,7 @@ class DoctrineEventHandler
 
     /**
      * @param Agenda[] $events
+     *
      * @return Agenda[]
      */
     private function mergeWithDatabase(array $events)

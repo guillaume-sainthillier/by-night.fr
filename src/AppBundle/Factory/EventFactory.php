@@ -3,10 +3,11 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 13/09/2017
- * Time: 18:57
+ * Time: 18:57.
  */
 
 namespace AppBundle\Factory;
+
 use AppBundle\Entity\Agenda;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -25,9 +26,11 @@ class EventFactory
 
     /**
      * @param array $datas
+     *
      * @return Agenda
      */
-    public function fromArray(array $datas) {
+    public function fromArray(array $datas)
+    {
         $agenda = new Agenda();
 
         foreach ($datas as $field => $value) {

@@ -2,7 +2,6 @@
 
 namespace AppBundle\Parser;
 
-use AppBundle\Factory\EventFactory;
 use Symfony\Component\DomCrawler\Crawler;
 use AppBundle\Utils\Monitor;
 

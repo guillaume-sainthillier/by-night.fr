@@ -161,10 +161,10 @@ class EventController extends Controller
      */
     public function importAction()
     {
-        $importer = $this->get('tbn.social.facebook_list_events');
+        $importer     = $this->get('tbn.social.facebook_list_events');
         $eventFactory = $this->get('app.event_factory');
-        $parser   = $this->get('tbn.parser.abstracts.facebook');
-        $handler  = $this->get('tbn.doctrine_event_handler');
+        $parser       = $this->get('tbn.parser.abstracts.facebook');
+        $handler      = $this->get('tbn.doctrine_event_handler');
 
         $user      = $this->getUser();
         $fb_events = $importer->getUserEvents($user);

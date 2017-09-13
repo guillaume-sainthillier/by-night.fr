@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: guillaume
  * Date: 06/09/2017
- * Time: 19:32
+ * Time: 19:32.
  */
 
 namespace AppBundle\Consumer;
@@ -30,11 +30,12 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 
     public function __construct(EventFactory $eventFactory, DoctrineEventHandler $doctrineEventHandler)
     {
-        $this->eventFactory = $eventFactory;
+        $this->eventFactory         = $eventFactory;
         $this->doctrineEventHandler = $doctrineEventHandler;
     }
 
-    public function execute(AMQPMessage $msg) {
+    public function execute(AMQPMessage $msg)
+    {
         $datas = unserialize($msg->body);
         $event = $this->eventFactory->fromArray($datas);
         dump($event);
@@ -42,9 +43,10 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
         return ConsumerInterface::MSG_ACK;
     }
 
-    public function batchExecute(array $messages) {
+    public function batchExecute(array $messages)
+    {
         Monitor::$output = new ConsoleOutput();
-        $events = [];
+        $events          = [];
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {
             $events[] = $this->eventFactory->fromArray(unserialize($message->body));
