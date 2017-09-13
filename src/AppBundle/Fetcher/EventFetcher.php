@@ -4,7 +4,6 @@ namespace AppBundle\Fetcher;
 
 use AppBundle\Site\SiteManager;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Parser\Common\FaceBookParser;
 use AppBundle\Parser\Manager\ParserManager;
 use AppBundle\Parser\ParserInterface;
 

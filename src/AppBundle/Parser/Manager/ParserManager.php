@@ -7,7 +7,6 @@
 namespace AppBundle\Parser\Manager;
 
 use AppBundle\Parser\ParserInterface;
-use AppBundle\Entity\Agenda;
 use AppBundle\Utils\Monitor;
 
 /**
@@ -34,7 +33,7 @@ class ParserManager
         $full_agendas = [];
 
         foreach ($this->parsers as $parser) {
-            /**
+            /*
              * @var ParserInterface $parser
              */
             Monitor::writeln(sprintf(
