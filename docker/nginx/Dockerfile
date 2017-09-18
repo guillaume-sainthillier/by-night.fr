@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install -y \
 
 ADD nginx.conf /etc/nginx/
 ADD symfony.conf /etc/nginx/sites-available/
-ADD assets.conf /etc/nginx/sites-available/
 
 RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
 RUN ln -s /etc/nginx/sites-available/assets.conf /etc/nginx/sites-enabled/assets
