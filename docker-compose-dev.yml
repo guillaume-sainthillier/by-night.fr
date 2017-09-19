@@ -1,10 +1,10 @@
 version: "2"
 services:
-  php:
-    volumes:
-      - app-unison-sync:/var/www/symfony:nocopy
+    php:
+        volumes:
+            - app-unison-sync:/var/www/symfony:nocopy
 
 # that the important thing
 volumes:
-  app-unison-sync:
-    external: true
+    app-unison-sync:
+        external: true
