@@ -19,13 +19,11 @@ services:
         restart: always
         networks:
             - backend
-    # node:
-    #     image: node:6
-    #     restart: always
-    #     volumes_from:
-    #         - php
-    #     networks:
-    #         - backend
+#    node:
+#        build: ${DOCKER_PATH}/node
+#        volumes:
+#            - ${SYMFONY_APP_PATH}/front:/app/front
+#            - ${SYMFONY_APP_PATH}/web/prod:/app/dist
     rabbitmq:
         image: rabbitmq:management
         ports:

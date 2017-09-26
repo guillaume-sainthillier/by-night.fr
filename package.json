@@ -10,8 +10,8 @@
   "baseFont": "front/fonts",
   "baseDist": "web/prod",
   "dependencies": {
-    "grunt": "^0.5.6",
-    "grunt-cache-bust": "^1.7.1",
+    "grunt": "^0.4.5",
+    "grunt-cache-bust": "^1.6.0",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-cssmin": "^0.14.0",
@@ -23,9 +23,5 @@
     "grunt-spritesmith": "^6.4.0",
     "load-grunt-tasks": "^3.5.2",
     "yamljs": "^0.2.10"
-  },
-  "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-cli": "^1.2.0"
   }
 }
