@@ -16,7 +16,7 @@ class Version20170517174910 extends AbstractMigration
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Place ADD country_id VARCHAR(2) DEFAULT NULL');
         $this->addSql('ALTER TABLE Place ADD CONSTRAINT FK_B5DC7CC9F92F3E70 FOREIGN KEY (country_id) REFERENCES country (id)');
@@ -29,7 +29,7 @@ class Version20170517174910 extends AbstractMigration
     public function down(Schema $schema)
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Place DROP FOREIGN KEY FK_B5DC7CC9F92F3E70');
         $this->addSql('DROP INDEX IDX_B5DC7CC9F92F3E70 ON Place');

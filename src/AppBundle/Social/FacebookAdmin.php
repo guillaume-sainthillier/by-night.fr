@@ -124,7 +124,7 @@ class FacebookAdmin extends FacebookEvents
 
     protected function afterPost(User $user, Agenda $agenda)
     {
-        if ($agenda->getFbPostSystemId() === null) {
+        if (null === $agenda->getFbPostSystemId()) {
             $accessToken = $this->getPageAccessToken();
             $dateDebut   = $this->getReadableDate($agenda->getDateDebut());
             $dateFin     = $this->getReadableDate($agenda->getDateFin());
@@ -283,7 +283,7 @@ class FacebookAdmin extends FacebookEvents
             foreach ($responses as $i => $response) {
                 if (!$response->isError()) {
                     $isXXX                                      = $response->getGraphEdge()->count() > 0;
-                    $stats[$i === 0 ? 'participer' : 'interet'] = $isXXX;
+                    $stats[0 === $i ? 'participer' : 'interet'] = $isXXX;
                 }
             }
         } catch (FacebookSDKException $ex) {

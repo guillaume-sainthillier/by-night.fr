@@ -49,7 +49,7 @@ class ReplyController extends Controller
         $reponse = new Comment();
         $form    = $this->getCreateForm($reponse, $comment);
 
-        if ($request->getMethod() == 'POST') {
+        if ('POST' == $request->getMethod()) {
             $user = $this->getUser();
 
             if (!$user) {

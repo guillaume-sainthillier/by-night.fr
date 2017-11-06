@@ -39,7 +39,7 @@ class AssetExtension extends \Twig_Extension
     public function appAsset($path, $packageName = null)
     {
         $path = self::ASSET_PREFIX.$path;
-        if ($this->env === 'dev') {
+        if ('dev' === $this->env) {
             return $this->assetExtension->getAssetUrl($path, $packageName);
         }
 

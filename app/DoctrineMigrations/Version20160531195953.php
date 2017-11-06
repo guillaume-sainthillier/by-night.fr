@@ -16,7 +16,7 @@ class Version20160531195953 extends AbstractMigration
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Image DROP FOREIGN KEY FK_4FC2B5BF6BD1646');
         $this->addSql('DROP INDEX IDX_4FC2B5BF6BD1646 ON Image');
@@ -32,7 +32,7 @@ class Version20160531195953 extends AbstractMigration
     public function down(Schema $schema)
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Image ADD site_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE Image ADD CONSTRAINT FK_4FC2B5BF6BD1646 FOREIGN KEY (site_id) REFERENCES Site (id)');

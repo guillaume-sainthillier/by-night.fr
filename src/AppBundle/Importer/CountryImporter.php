@@ -316,12 +316,12 @@ class CountryImporter
     private function createZipCities(Country $country)
     {
         $fd = fopen($this->dataDir . '/'. $country->getId().'/zip.csv', 'r');
-        if ($fd === false) {
+        if (false === $fd) {
             return;
         }
 
         $i = 0;
-        while (($data = fgetcsv($fd, 1000, "\t")) !== false) {
+        while (false !== ($data = fgetcsv($fd, 1000, "\t"))) {
             if (!$data[4] || !$data[6]) {
                 continue;
             }
@@ -344,7 +344,7 @@ class CountryImporter
                 ->setCountry($country);
 
             $this->em->persist($city);
-            if ($i === 500) {
+            if (500 === $i) {
                 $this->em->flush();
                 $this->em->clear(ZipCity::class);
                 $i = 0;
@@ -357,23 +357,23 @@ class CountryImporter
     private function createAdminZones(Country $country)
     {
         $fd = fopen($this->dataDir . '/'. $country->getId().'/cities.csv', 'r');
-        if ($fd === false) {
+        if (false === $fd) {
             return;
         }
 
         $i = 0;
-        while (($data = fgetcsv($fd, 3000, "\t")) !== false) {
+        while (false !== ($data = fgetcsv($fd, 3000, "\t"))) {
             if (!(
-                in_array($data[7], ['ADM1', 'ADM2']) || $data[6] === 'P'
+                in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6]
 //                ($data[6] === "P" && $data[14] > 0)
             )) {
                 continue;
             }
             ++$i;
 
-            if ($data[6] === 'P') {
+            if ('P' === $data[6]) {
                 $entity = new City();
-            } elseif ($data[7] === 'ADM1') {
+            } elseif ('ADM1' === $data[7]) {
                 $entity = new AdminZone1();
             } else {
                 $entity = new AdminZone2();
@@ -394,7 +394,7 @@ class CountryImporter
             $this->sanitizeAdminZone($entity);
 
             $this->em->persist($entity);
-            if ($i === 50) {
+            if (50 === $i) {
                 $this->em->flush();
                 $this->em->clear(City::class);
                 $this->em->clear(AdminZone::class);
@@ -438,13 +438,13 @@ class CountryImporter
 
     private function formatAdminZoneCode($code)
     {
-        if ($code === '0' || $code === '00') {
+        if ('0' === $code || '00' === $code) {
             return $code;
         }
 
         $code = ltrim($code, '0');
 
-        if ($code === '') {
+        if ('' === $code) {
             return null;
         }
 

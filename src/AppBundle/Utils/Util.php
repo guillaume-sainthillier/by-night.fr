@@ -73,7 +73,7 @@ class Util
 
     public function deleteMultipleSpaces($string)
     {
-        while (strpos($string, '  ') !== false) {
+        while (false !== strpos($string, '  ')) {
             $string = str_replace('  ', ' ', $string);
         }
 

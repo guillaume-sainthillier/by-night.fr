@@ -132,7 +132,7 @@ class EventController extends Controller
              */
             $repoCalendrier = $em->getRepository('AppBundle:Calendrier');
             $calendrier     = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
-            if ($calendrier !== null) {
+            if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();
                 $interet    = $calendrier->getInteret();
             }

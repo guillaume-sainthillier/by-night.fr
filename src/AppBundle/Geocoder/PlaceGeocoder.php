@@ -63,7 +63,7 @@ class PlaceGeocoder
     {
         $key  = sprintf('%f.%f', round($place->getLatitude(), 6), round($place->getLongitude(), 6));
         $data = $this->cache->fetch($key);
-        if ($data === false) {
+        if (false === $data) {
             $request  = new GeocoderCoordinateRequest(new Coordinate($place->getLatitude(), $place->getLongitude()));
             $response = $this->reverseGeocoder->geocode($request);
             $data     = [];
@@ -106,7 +106,7 @@ class PlaceGeocoder
         }
 
         $data = $this->cache->fetch($nom);
-        if ($data === false) {
+        if (false === $data) {
             $request  = new TextPlaceSearchRequest($nom);
             $response = $this->geocoder->process($request);
             $data     = [];
@@ -178,7 +178,7 @@ class PlaceGeocoder
         }
 
         $gmapPlace = $this->cache->fetch($candidatePlace['placeId']);
-        if ($gmapPlace === false) {
+        if (false === $gmapPlace) {
             $request  = new PlaceDetailRequest($candidatePlace['placeId']);
             $response = $this->placeGeocoder->process($request);
             switch ($response->getStatus()) {

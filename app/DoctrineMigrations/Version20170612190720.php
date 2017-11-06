@@ -16,7 +16,7 @@ class Version20170612190720 extends AbstractMigration
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX agenda_fb_participations ON Agenda');
         $this->addSql('CREATE INDEX agenda_fb_participations ON Agenda (date_fin, fb_participations, fb_interets)');
@@ -28,7 +28,7 @@ class Version20170612190720 extends AbstractMigration
     public function down(Schema $schema)
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX agenda_fb_participations ON Agenda');
         $this->addSql('CREATE INDEX agenda_fb_participations ON Agenda (fb_participations, fb_interets)');

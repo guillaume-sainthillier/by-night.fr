@@ -18,7 +18,7 @@ class InfoController extends Controller
     {
         $info = $this->get('site_manager')->getSiteInfo();
 
-        if ($info === null) {
+        if (null === $info) {
             $info = new SiteInfo();
             $em   = $this->getDoctrine()->getManager();
             $em->persist($info);

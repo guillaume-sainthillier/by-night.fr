@@ -16,7 +16,7 @@ class Version20170511203747 extends AbstractMigration
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE zip_city ADD slug VARCHAR(201) NOT NULL');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_FBE2D3F4989D9B62 ON zip_city (slug)');
@@ -28,7 +28,7 @@ class Version20170511203747 extends AbstractMigration
     public function down(Schema $schema)
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX UNIQ_FBE2D3F4989D9B62 ON zip_city');
         $this->addSql('ALTER TABLE zip_city DROP slug');

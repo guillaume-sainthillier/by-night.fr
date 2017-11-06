@@ -95,7 +95,7 @@ class AgendaType extends AbstractType
                 $post_checked  = false;
                 $post_disabled = true;
             } else {
-                if ($service === 'facebook') {
+                if ('facebook' === $service) {
                     $role = 'ROLE_FACEBOOK_EVENTS';
                 } else {
                     $role = 'ROLE_' . strtoupper($service);
@@ -106,7 +106,7 @@ class AgendaType extends AbstractType
                 if ($post_checked) {
                     $info    = $user->getInfo();
                     $getter  = 'get' . $accessService . 'Nickname';
-                    $message = 'Connecté sous ' . ($service === 'twitter' ? '@' : '') . $info->$getter();
+                    $message = 'Connecté sous ' . ('twitter' === $service ? '@' : '') . $info->$getter();
                 } else {
                     $message = 'Connectez vous à ' . $nomService;
                 }

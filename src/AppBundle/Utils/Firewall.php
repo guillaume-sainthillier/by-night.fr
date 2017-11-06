@@ -55,7 +55,7 @@ class Firewall
 
     protected function hasExplorationToBeUpdated(Exploration $exploration)
     {
-        if ($exploration->getFirewallVersion() !== self::VERSION) {
+        if (self::VERSION !== $exploration->getFirewallVersion()) {
             return true;
         }
 
@@ -90,7 +90,7 @@ class Firewall
 
     public function isPersisted($object)
     {
-        return $object !== null && $object->getId() !== null;
+        return null !== $object && null !== $object->getId();
     }
 
     public function filterEventIntegrity(Agenda $event, User $oldEventUser = null)

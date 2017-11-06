@@ -55,7 +55,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function getGlobals()
     {
-        if ($this->requestStack->getCurrentRequest() === null) {
+        if (null === $this->requestStack->getCurrentRequest()) {
             return [];
         }
 
@@ -184,7 +184,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     public function partialExtendsFilter($template, $suffix = '.partial')
     {
         $request = $this->requestStack->getCurrentRequest();
-        if ($request === null) {
+        if (null === $request) {
             return $template;
         }
 

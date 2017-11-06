@@ -75,7 +75,7 @@ class CityManager
      */
     public function getCookieCity()
     {
-        if ($this->cookieCity === false) {
+        if (false === $this->cookieCity) {
             $this->computeCityFromCookie();
         }
 
