@@ -21,19 +21,19 @@ class AgendaController extends Controller
     protected function handleSearch(SearchAgenda $search, City $city, $type, $tag, $ville, Place $place = null)
     {
         $term = null;
-        if ($ville !== null) {
+        if (null !== $ville) {
             $term = null;
             $search->setCommune([$ville]);
             $formAction = $this->generateUrl('tbn_agenda_ville', ['ville' => $ville, 'city' => $city->getSlug()]);
-        } elseif ($place !== null) {
+        } elseif (null !== $place) {
             $term = null;
             $search->setLieux([$place->getId()]);
             $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $city->getSlug()]);
-        } elseif ($tag !== null) {
+        } elseif (null !== $tag) {
             $term = null;
             $search->setTag($tag);
             $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag, 'city' => $city->getSlug()]);
-        } elseif ($type !== null) {
+        } elseif (null !== $type) {
             $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type, 'city' => $city->getSlug()]);
             switch ($type) {
                 case 'exposition':
@@ -89,13 +89,13 @@ class AgendaController extends Controller
             'page' => $page + 1,
             'city' => $city->getSlug(),
         ];
-        if ($paginateRoute === 'tbn_agenda_sortir_pagination') {
+        if ('tbn_agenda_sortir_pagination' === $paginateRoute) {
             $routeParams['type'] = $type;
-        } elseif ($paginateRoute === 'tbn_agenda_tags_pagination') {
+        } elseif ('tbn_agenda_tags_pagination' === $paginateRoute) {
             $routeParams['tag'] = $tag;
-        } elseif ($paginateRoute === 'tbn_agenda_place_pagination') {
+        } elseif ('tbn_agenda_place_pagination' === $paginateRoute) {
             $routeParams['slug'] = $slug;
-        } elseif ($paginateRoute === 'tbn_agenda_ville_pagination') {
+        } elseif ('tbn_agenda_ville_pagination' === $paginateRoute) {
             $routeParams['ville'] = $ville;
         }
         $paginateURL = $this->generateUrl($paginateRoute, $routeParams);
@@ -108,7 +108,7 @@ class AgendaController extends Controller
         $search = new SearchAgenda();
         $search->setCity($city);
         $place = null;
-        if ($slug !== null) {
+        if (null !== $slug) {
             $place = $em->getRepository('AppBundle:Place')->findOneBy(['slug' => $slug]);
             if (!$place) {
                 return new RedirectResponse($this->generateUrl('tbn_agenda_agenda', ['city' => $city->getSlug()]));
@@ -180,7 +180,7 @@ class AgendaController extends Controller
                 $types_manifestation = preg_split('/,/', $soiree->getCategorieManifestation());
                 foreach ($types_manifestation as $type) {
                     $type = array_map('trim', explode('//', $type))[0];
-                    if (!in_array($type, $type_manifestation) && $type != '') {
+                    if (!in_array($type, $type_manifestation) && '' != $type) {
                         $type_manifestation[$type] = $type;
                     }
                 }

@@ -16,7 +16,7 @@ class Version20170610095927 extends AbstractMigration
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP TABLE Ville');
         $this->addSql('DROP INDEX agenda_fb_participations ON Agenda');
@@ -35,7 +35,7 @@ class Version20170610095927 extends AbstractMigration
     public function down(Schema $schema)
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE Ville (id INT AUTO_INCREMENT NOT NULL, site_id INT NOT NULL, nom VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, code_postal VARCHAR(10) DEFAULT NULL COLLATE utf8_unicode_ci, slug VARCHAR(255) NOT NULL COLLATE utf8_unicode_ci, path VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, url VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, INDEX IDX_8202F6C7F6BD1646 (site_id), INDEX ville_nom_idx (nom), INDEX ville_slug_idx (slug), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
         $this->addSql('ALTER TABLE Ville ADD CONSTRAINT FK_8202F6C7F6BD1646 FOREIGN KEY (site_id) REFERENCES site (id)');

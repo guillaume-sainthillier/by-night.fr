@@ -32,9 +32,9 @@ class ToulouseTourismeParser extends LinksParser
         //Dates
         $nodes_date = $this->parser->filter('.localisation');
 
-        if ($nodes_date->count() === 3) { // 2 description + 1 date
+        if (3 === $nodes_date->count()) { // 2 description + 1 date
             $node_date = $nodes_date->eq(2);
-        } elseif ($nodes_date->count() === 2) { // 1 description + 1 date
+        } elseif (2 === $nodes_date->count()) { // 1 description + 1 date
             $node_date = $nodes_date->eq(1);
         } else {
             $node_date = $nodes_date->eq(0);
@@ -63,7 +63,7 @@ class ToulouseTourismeParser extends LinksParser
         //Tarifs
         $tarifs = $this->parser->filter('.tarifs .main_info');
         $tarif  = $tarifs->count() ? $tarifs->text() : null;
-        if ($tarif === 'Gratuit') {
+        if ('Gratuit' === $tarif) {
             $tarif = null;
         }
 
@@ -78,7 +78,7 @@ class ToulouseTourismeParser extends LinksParser
 
         foreach ($infos_resa as $info_resa) {
             $info_resa = trim($info_resa);
-            if (strpos($info_resa, '@') !== false) {
+            if (false !== strpos($info_resa, '@')) {
                 $resa_email[] = preg_replace('#https?:://#i', '', $info_resa);
             } elseif (filter_var('http://' . $info_resa, FILTER_VALIDATE_URL)) {
                 $resa_internet[] = $info_resa;
@@ -99,10 +99,10 @@ class ToulouseTourismeParser extends LinksParser
         if ($lieux->count() > 0) {
             $lieu = $lieux->eq(0)->text();
         }
-        if ($lieux->count() === 5) { //La Rue est renseignée
+        if (5 === $lieux->count()) { //La Rue est renseignée
             $rue      = $lieux->eq(1)->text();
             $cp_ville = $lieux->eq(3)->text();
-        } elseif ($lieux->count() === 4) { //La Rue est renseignée
+        } elseif (4 === $lieux->count()) { //La Rue est renseignée
             $rue      = $lieux->eq(1)->text();
             $cp_ville = $lieux->eq(2)->text();
         } elseif ($lieux->count() > 1) {
@@ -140,7 +140,7 @@ class ToulouseTourismeParser extends LinksParser
         $this->parseContent('HTML');
 
         $urls = [];
-        while ($this->url !== null) {
+        while (null !== $this->url) {
             $events = $this->parser->filter('.list_results .link_parent');
             $urls   = array_merge($urls, $events->each(function (Crawler $item) {
                 return $this->getBaseUrl() . $item->filter('a.link_block')->attr('href');

@@ -32,9 +32,9 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
     public function __construct($translator, $router, $session)
     {
-        $this->translator   = $translator;
-        $this->router       = $router;
-        $this->session      = $session;
+        $this->translator = $translator;
+        $this->router     = $router;
+        $this->session    = $session;
     }
 
     /**
@@ -63,12 +63,12 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
                     //remove the session key
                     $this->session->remove($key);
                 } else {
-                    $user      = $token->getUser();
+                    $user = $token->getUser();
 
                     if ($user->getCity()) {
-                        $url       = $this->router->generate('tbn_agenda_index', ['city' => $user->getCity()->getSlug()]);
+                        $url = $this->router->generate('tbn_agenda_index', ['city' => $user->getCity()->getSlug()]);
                     } else {
-                        $url       = $this->router->generate('tbn_main_index');
+                        $url = $this->router->generate('tbn_main_index');
                     }
                 }
             }

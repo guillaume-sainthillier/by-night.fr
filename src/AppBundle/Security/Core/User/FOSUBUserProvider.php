@@ -32,9 +32,9 @@ class FOSUBUserProvider extends BaseClass
     {
         parent::__construct($userManager, $properties);
 
-        $this->cityManager      = $cityManager;
-        $this->entityManager    = $entityManager;
-        $this->socials          = $socials;
+        $this->cityManager   = $cityManager;
+        $this->entityManager = $entityManager;
+        $this->socials       = $socials;
     }
 
     public function connectSite(UserResponseInterface $response)
@@ -89,7 +89,7 @@ class FOSUBUserProvider extends BaseClass
         $repo = $this->entityManager->getRepository('AppBundle:Info');
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
-        if ($info !== null) {
+        if (null !== $info) {
             return $this->entityManager->getRepository('AppBundle:User')->findOneByInfo($info);
         }
 
@@ -152,19 +152,19 @@ class FOSUBUserProvider extends BaseClass
 
     protected function hydrateUser(UserInterface $user, UserResponseInterface $response, $service)
     {
-        if ($user->getInfo() === null) {
+        if (null === $user->getInfo()) {
             $user->setInfo(new UserInfo());
         }
 
-        if ($user->getCity() === null && $this->cityManager->getCurrentCity()) {
+        if (null === $user->getCity() && $this->cityManager->getCurrentCity()) {
             $user->setCity($this->cityManager->getCurrentCity());
         }
 
-        if ($user->getEmail() === null) {
-            $user->setEmail($response->getEmail() === null ? $response->getNickname() . '@' . $service . '.fr' : $response->getEmail());
+        if (null === $user->getEmail()) {
+            $user->setEmail(null === $response->getEmail() ? $response->getNickname() . '@' . $service . '.fr' : $response->getEmail());
         }
 
-        if ($user->getFirstname() === null && $user->getLastname() === null) {
+        if (null === $user->getFirstname() && null === $user->getLastname()) {
             $nom_prenoms = preg_split('/ /', $response->getRealName());
             $user->setFirstname($nom_prenoms[0]);
             if (count($nom_prenoms) > 0) {
@@ -172,7 +172,7 @@ class FOSUBUserProvider extends BaseClass
             }
         }
 
-        if ($user->getUsername() === null || $user->getUsername() === '') {
+        if (null === $user->getUsername() || '' === $user->getUsername()) {
             $user->setUsername($response->getNickname());
         }
 

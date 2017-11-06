@@ -410,9 +410,9 @@ class AgendaRepository extends EntityRepository
         $params = [':city' => $city->getId()];
         $qb->where('p.city = :city');
 
-        if ($search->getDu() !== null) {
+        if (null !== $search->getDu()) {
             $params[':du'] = $search->getDu()->format('Y-m-d');
-            if ($search->getAu() === null) {
+            if (null === $search->getAu()) {
                 $qb->andWhere(':du BETWEEN a.dateDebut AND a.dateFin');
             } else {
                 $qb->andWhere('((a.dateDebut BETWEEN :du AND :au) '
@@ -432,16 +432,16 @@ class AgendaRepository extends EntityRepository
             $params[':mot_clefs'] = '%' . $search->getTerm() . '%';
         }
 
-        if ($search->getTypeManifestation() !== null && count($search->getTypeManifestation()) > 0) {
+        if (null !== $search->getTypeManifestation() && count($search->getTypeManifestation()) > 0) {
             $qb->andWhere('a.typeManifestation IN(:type_manifesation)');
             $params[':type_manifesation'] = $search->getTypeManifestation();
         }
-        if ($search->getCommune() !== null && count($search->getCommune()) > 0) {
+        if (null !== $search->getCommune() && count($search->getCommune()) > 0) {
             $qb->andWhere('a.commune IN(:commune)');
             $params[':commune'] = $search->getCommune();
         }
 
-        if ($search->getLieux() !== null && count($search->getLieux()) > 0) {
+        if (null !== $search->getLieux() && count($search->getLieux()) > 0) {
             $qb->andWhere('a.lieuNom IN(:lieux)');
             $params[':lieux'] = $search->getLieux();
         }
@@ -474,7 +474,7 @@ class AgendaRepository extends EntityRepository
 
         $soirees = $this->makeQuery($qb, $city, $search);
 
-        if ($page !== false && $limit !== false) {
+        if (false !== $page && false !== $limit) {
             $soirees = $soirees
                 ->setFirstResult(($page - 1) * $limit)
                 ->setMaxResults($limit);

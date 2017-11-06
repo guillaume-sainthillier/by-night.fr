@@ -106,7 +106,7 @@ class DoctrineEventHandler
 
     private function pingConnection()
     {
-        if ($this->em->getConnection()->ping() === false) {
+        if (false === $this->em->getConnection()->ping()) {
             $this->em->getConnection()->close();
             $this->em->getConnection()->connect();
         }
@@ -472,7 +472,7 @@ class DoctrineEventHandler
         //Ville
         if (!$zipCity && $place->getVille()) {
             $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
-            if (count($zipCities) === 0) {
+            if (0 === count($zipCities)) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_CITY_NAME);
             } elseif (count($zipCities) > 1) {
                 $place->getReject()->addReason(Reject::AMBIGOUS_CITY);
@@ -484,7 +484,7 @@ class DoctrineEventHandler
         //CP
         if (!$zipCity && !$place->getCodePostal() && $place->getCodePostal()) {
             $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
-            if (count($zipCities) === 0) {
+            if (0 === count($zipCities)) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
             } elseif (count($zipCities) > 1) {
                 $place->getReject()->addReason(Reject::AMBIGOUS_ZIP);
@@ -502,7 +502,7 @@ class DoctrineEventHandler
             $tries = array_filter([$place->getVille(), $place->getNom()]);
             foreach ($tries as $try) {
                 $cities = $this->repoCity->findByName($try, $place->getCountry()->getId());
-                if (count($cities) === 1) {
+                if (1 === count($cities)) {
                     $city = $cities[0];
 
                     break;

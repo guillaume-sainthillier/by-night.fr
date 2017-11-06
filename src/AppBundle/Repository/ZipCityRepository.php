@@ -64,7 +64,7 @@ class ZipCityRepository extends \Doctrine\ORM\EntityRepository
     public function findByPostalCodeAndCity($postalCode, $city, $country)
     {
         $cities = $this->findByPostalCodeOrCity($postalCode, $city, $country);
-        if (count($cities) === 1) {
+        if (1 === count($cities)) {
             return $cities[0];
         }
 

@@ -83,7 +83,7 @@ class DoctrineHandlerTest extends KernelTestCase
 
     private function assertCity(City $city = null, $name = null)
     {
-        if ($name === null) {
+        if (null === $name) {
             $this->assertEquals($city, null);
         } else {
             $this->assertNotEquals($city, null);
@@ -93,7 +93,7 @@ class DoctrineHandlerTest extends KernelTestCase
 
     private function assertZipCity(ZipCity $zipCity = null, $postalCode = null, $city = null)
     {
-        if ($postalCode === null && $city === null) {
+        if (null === $postalCode && null === $city) {
             $this->assertEquals($zipCity, null);
         } else {
             $this->assertNotEquals($zipCity, null);
@@ -104,7 +104,7 @@ class DoctrineHandlerTest extends KernelTestCase
 
     private function assertCountry(Country $country = null, $value = null)
     {
-        if ($value === null) {
+        if (null === $value) {
             $this->assertEquals($country, null);
         } else {
             $this->assertNotEquals($country, null);

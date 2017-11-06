@@ -111,8 +111,7 @@ class ConnectController extends BaseController
 
                 if ($currentToken instanceof OAuthToken) {
                     // Update user token with new details
-                    $newToken =
-                        is_array($accessToken) &&
+                    $newToken = is_array($accessToken) &&
                         (isset($accessToken['access_token']) || isset($accessToken['oauth_token'])) ?
                             $accessToken : $currentToken->getRawToken();
 

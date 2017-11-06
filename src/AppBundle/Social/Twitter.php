@@ -78,7 +78,7 @@ class Twitter extends Social
     public function postNews($title, $url)
     {
         $info = $this->siteManager->getSiteInfo();
-        if ($info->getTwitterAccessToken() !== null) {
+        if (null !== $info->getTwitterAccessToken()) {
             $config = [
                 'consumer_key'       => $this->id,
                 'consumer_secret'    => $this->secret,
@@ -101,7 +101,7 @@ class Twitter extends Social
     protected function post(User $user, Agenda $agenda)
     {
         $info = $user->getInfo();
-        if ($user->hasRole('ROLE_TWITTER') && $agenda->getTweetPostId() === null && $info !== null && $info->getTwitterAccessToken() !== null) {
+        if ($user->hasRole('ROLE_TWITTER') && null === $agenda->getTweetPostId() && null !== $info && null !== $info->getTwitterAccessToken()) {
             $config = [
                 'consumer_key'       => $this->id,
                 'consumer_secret'    => $this->secret,
@@ -128,7 +128,7 @@ class Twitter extends Social
     protected function afterPost(User $user, Agenda $agenda)
     {
         $info = $this->siteManager->getSiteInfo();
-        if ($user->hasRole('ROLE_TWITTER') && $agenda->getTweetPostSystemId() === null && $agenda->getTweetPostId() !== null && $info->getTwitterAccessToken() !== null) {
+        if ($user->hasRole('ROLE_TWITTER') && null === $agenda->getTweetPostSystemId() && null !== $agenda->getTweetPostId() && null !== $info->getTwitterAccessToken()) {
             $config = [
                 'consumer_key'       => $this->id,
                 'consumer_secret'    => $this->secret,

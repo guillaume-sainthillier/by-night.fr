@@ -49,7 +49,7 @@ class LocationCacheProvider extends CacheProvider
      */
     protected function doContains($id)
     {
-        return $this->doFetch($id) !== false;
+        return false !== $this->doFetch($id);
     }
 
     /**

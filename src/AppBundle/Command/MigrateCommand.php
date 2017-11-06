@@ -46,7 +46,7 @@ class MigrateCommand extends AppCommand
             $migratedPlaces[] = $place;
             Monitor::advanceProgressBar();
 
-            if ($i % 500 === 0) {
+            if (0 === $i % 500) {
                 $em->flush();
                 foreach ($migratedPlaces as $migratedPlace) {
                     $em->detach($migratedPlace);

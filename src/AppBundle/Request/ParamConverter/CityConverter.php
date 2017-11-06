@@ -68,6 +68,6 @@ class CityConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return $configuration->getClass() === City::class;
+        return City::class === $configuration->getClass();
     }
 }

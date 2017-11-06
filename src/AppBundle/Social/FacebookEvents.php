@@ -16,7 +16,7 @@ class FacebookEvents extends FacebookListEvents
     protected function post(User $user, Agenda $agenda)
     {
         $info = $user->getInfo();
-        if ($agenda->getFbPostId() === null && $info !== null && $info->getFacebookAccessToken() !== null) {
+        if (null === $agenda->getFbPostId() && null !== $info && null !== $info->getFacebookAccessToken()) {
             $dateDebut = $this->getReadableDate($agenda->getDateDebut());
             $dateFin   = $this->getReadableDate($agenda->getDateFin());
             $date      = $this->getDuree($dateDebut, $dateFin);

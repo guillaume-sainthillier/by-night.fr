@@ -32,7 +32,7 @@ class EventController extends Controller
         $this->checkIfOwner($agenda);
 
         $annuler                    = $request->get('annuler', 'true');
-        $modificationDerniereMinute = ($annuler === 'true' ? 'ANNULÉ' : null);
+        $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
 
         $em = $this->getDoctrine()->getManager();
         $agenda->setModificationDerniereMinute($modificationDerniereMinute)->setDateModification(new \DateTime());
@@ -55,7 +55,7 @@ class EventController extends Controller
         $this->checkIfOwner($agenda);
 
         $brouillon   = $request->get('brouillon', 'true');
-        $isBrouillon = ($brouillon === 'true');
+        $isBrouillon = ('true' === $brouillon);
 
         $em = $this->getDoctrine()->getManager();
         $agenda->setBrouillon($isBrouillon)->setDateModification(new \DateTime());
@@ -117,7 +117,7 @@ class EventController extends Controller
         $em->detach($agenda);
 
         $this->checkIfOwner($agenda);
-        $form       = $this->createEditForm($agenda);
+        $form = $this->createEditForm($agenda);
 
         $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
@@ -212,8 +212,8 @@ class EventController extends Controller
         if ($explorationHandler->getNbInserts() > 0 || $explorationHandler->getNbUpdates() > 0) {
             $plurielInsert   = $explorationHandler->getNbInserts() > 1 ? 's' : '';
             $plurielUpdate   = $explorationHandler->getNbUpdates() > 1 ? 's' : '';
-            $indicatifInsert = $explorationHandler->getNbInserts() == 1 ? 'a' : 'ont';
-            $indicatifUpdate = $explorationHandler->getNbUpdates() == 1 ? 'a' : 'ont';
+            $indicatifInsert = 1 == $explorationHandler->getNbInserts() ? 'a' : 'ont';
+            $indicatifUpdate = 1 == $explorationHandler->getNbUpdates() ? 'a' : 'ont';
             $message         = null;
             if ($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
                 $message = sprintf(
@@ -243,7 +243,7 @@ class EventController extends Controller
             }
 
             $this->addFlash('success', $message);
-        } elseif ($explorationHandler->getNbBlackLists() === 0) {
+        } elseif (0 === $explorationHandler->getNbBlackLists()) {
             $message = "Aucun événément n'a été retrouvé sur votre compte.";
 
             $this->addFlash('info', $message);
@@ -271,7 +271,7 @@ class EventController extends Controller
          * @var Agenda
          */
         $agenda      = $form->getData();
-        $isNewAgenda = $agenda->getId() !== null;
+        $isNewAgenda = null !== $agenda->getId();
         if ($form->isSubmitted() && $form->isValid()) {
             $em          = $this->getDoctrine()->getManager();
             $agenda      = $em->merge($agenda);
@@ -314,7 +314,7 @@ class EventController extends Controller
 
     protected function getServiceByName($service)
     {
-        return $this->get('tbn.social.' . strtolower($service === 'facebook' ? 'facebook_admin' : $service));
+        return $this->get('tbn.social.' . strtolower('facebook' === $service ? 'facebook_admin' : $service));
     }
 
     protected function createDeleteForm(Agenda $agenda)
@@ -441,7 +441,7 @@ class EventController extends Controller
         $em         = $this->getDoctrine()->getManager();
         $calendrier = $em->getRepository('AppBundle:Calendrier')->findOneBy(['user' => $user, 'agenda' => $agenda]);
 
-        if ($calendrier === null) {
+        if (null === $calendrier) {
             $calendrier = new Calendrier();
             $calendrier->setUser($user)->setAgenda($agenda);
         }

@@ -43,7 +43,7 @@ class WidgetsController extends Controller
             $results['statuses'] = [];
         }
 
-        if (!count($results['statuses']) && $this->get('request_stack')->getParentRequest() === null) {
+        if (!count($results['statuses']) && null === $this->get('request_stack')->getParentRequest()) {
             return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()]);
         }
 
@@ -52,7 +52,7 @@ class WidgetsController extends Controller
             'hasNextLink' => $nextLink,
         ]);
 
-        if (!$max_id || count($results['statuses']) !== self::TWEET_LIMIT) {
+        if (!$max_id || self::TWEET_LIMIT !== count($results['statuses'])) {
             list($expire, $ttl) = $this->getSecondsUntil(1);
         } else {
             $expire = new \DateTime();
@@ -239,7 +239,7 @@ class WidgetsController extends Controller
         $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
         $membres = array_merge($retour['participations'], $retour['interets']);
-        if (count($retour['interets']) == self::FB_MEMBERS_LIMIT || count($retour['participations']) == self::FB_MEMBERS_LIMIT) {
+        if (self::FB_MEMBERS_LIMIT == count($retour['interets']) || self::FB_MEMBERS_LIMIT == count($retour['participations'])) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
                 'city' => $soiree->getPlace()->getCity()->getSlug(),
                 'slug' => $soiree->getSlug(),

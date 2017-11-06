@@ -20,7 +20,7 @@ class SocialController extends Controller
         $session = $this->container->get('session');
         $session->set('connect_site', true);
 
-        $url = $this->get('router')->generate('hwi_oauth_service_redirect', ['service' => $service === 'facebook' ? 'facebook_admin' : $service]);
+        $url = $this->get('router')->generate('hwi_oauth_service_redirect', ['service' => 'facebook' === $service ? 'facebook_admin' : $service]);
 
         return $this->redirect($url);
     }
@@ -30,7 +30,7 @@ class SocialController extends Controller
      */
     public function disconnectSiteAction($service)
     {
-        $serviceName = 'tbn.social.' . ($service === 'facebook' ? 'facebook_events' : $service);
+        $serviceName = 'tbn.social.' . ('facebook' === $service ? 'facebook_events' : $service);
 
         /** @var Social $social */
         $social = $this->container->get($serviceName);
