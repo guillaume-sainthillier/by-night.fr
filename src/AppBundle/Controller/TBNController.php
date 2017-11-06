@@ -41,8 +41,6 @@ class TBNController extends Controller
         }
 
         $requestStack = $this->get('request_stack');
-        dump($event->getPlace()->getCity()->getSlug());
-        dump($city->getSlug());
 
         if ($requestStack->getParentRequest() === null && (!$id || $event->getSlug() !== $slug || $event->getPlace()->getCity()->getSlug() !== $city->getSlug())) {
             $routeParams = array_merge([
