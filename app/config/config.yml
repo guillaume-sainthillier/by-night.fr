@@ -42,6 +42,9 @@ doctrine_cache:
             namespace: memory_cache_ns
             aliases:
                 - memory_cache
+            redis:
+                host: "%redis_host%"
+                port: "%redis_port%"
         array:
             type: array
             namespace: array_cache_ns

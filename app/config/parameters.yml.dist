@@ -31,3 +31,6 @@ parameters:
     twitter_id_page:        "By__Night"
 
     data_root: %kernel.root_dir%/../web/
+
+    redis_host: 'localhost'
+    redis_port: 6379
