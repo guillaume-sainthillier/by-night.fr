@@ -44,7 +44,7 @@ class Facebook extends Social
     {
         $datas = [];
 
-        while ($graph !== null && $graph->count() > 0 && count($datas) < $maxItems) {
+        while (null !== $graph && $graph->count() > 0 && count($datas) < $maxItems) {
             try {
                 if ($graph->getField('error_code')) {
                     Monitor::writeln(sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
@@ -127,7 +127,7 @@ class Facebook extends Social
 
     public function ensureGoodValue($value)
     {
-        return $value !== '<<not-applicable>>' ? $value : null;
+        return '<<not-applicable>>' !== $value ? $value : null;
     }
 
     public function getPagePictureURL(GraphNode $object, $testCover = true, $testPicture = true)
@@ -138,7 +138,7 @@ class Facebook extends Social
         }
 
         $picture = $object->getField('picture');
-        if ($testPicture && $picture && $picture->getField('url') && $picture->getField('is_silhouette') === false) {
+        if ($testPicture && $picture && $picture->getField('url') && false === $picture->getField('is_silhouette')) {
             return $this->ensureGoodValue($picture->getField('url'));
         }
     }

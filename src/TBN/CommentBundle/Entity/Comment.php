@@ -264,7 +264,7 @@ class Comment
      *
      * @return Comment
      */
-    public function setParent(Comment $parent)
+    public function setParent(self $parent)
     {
         $this->parent = $parent;
 
@@ -288,7 +288,7 @@ class Comment
      *
      * @return Comment
      */
-    public function addReponse(Comment $reponses)
+    public function addReponse(self $reponses)
     {
         $this->reponses[] = $reponses;
 
@@ -300,7 +300,7 @@ class Comment
      *
      * @param Comment $reponses
      */
-    public function removeReponse(Comment $reponses)
+    public function removeReponse(self $reponses)
     {
         $this->reponses->removeElement($reponses);
     }

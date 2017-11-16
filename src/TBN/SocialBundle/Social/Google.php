@@ -47,7 +47,7 @@ class Google extends Social
         $site   = $this->siteManager->getCurrentSite();
         $router = $this->router;
 
-        if ($site !== null) {
+        if (null !== $site) {
             try {
                 $url = $router->generate('tbn_main_index', [], UrlGenerator::ABSOLUTE_URL);
                 $ch  = curl_init();

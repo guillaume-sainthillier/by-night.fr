@@ -78,7 +78,7 @@ class FOSUBUserProvider extends BaseClass
         $repo = $em->getRepository('TBNUserBundle:Info');
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
-        if ($info !== null) {
+        if (null !== $info) {
             return $em->getRepository('TBNUserBundle:User')->findOneByInfo($info);
         }
     }
@@ -139,19 +139,19 @@ class FOSUBUserProvider extends BaseClass
 
     protected function hydrateUser(UserInterface $user, UserResponseInterface $response, $service)
     {
-        if ($user->getInfo() === null) {
+        if (null === $user->getInfo()) {
             $user->setInfo(new UserInfo());
         }
 
-        if ($user->getSite() === null && $this->siteManager->getCurrentSite()) {
+        if (null === $user->getSite() && $this->siteManager->getCurrentSite()) {
             $user->setSite($this->siteManager->getCurrentSite());
         }
 
-        if ($user->getEmail() === null) {
-            $user->setEmail($response->getEmail() === null ? $response->getNickname().'@'.$service.'.fr' : $response->getEmail());
+        if (null === $user->getEmail()) {
+            $user->setEmail(null === $response->getEmail() ? $response->getNickname().'@'.$service.'.fr' : $response->getEmail());
         }
 
-        if ($user->getFirstname() === null && $user->getLastname() === null) {
+        if (null === $user->getFirstname() && null === $user->getLastname()) {
             $nom_prenoms = preg_split('/ /', $response->getRealName());
             $user->setFirstname($nom_prenoms[0]);
             if (count($nom_prenoms) > 0) {
@@ -159,7 +159,7 @@ class FOSUBUserProvider extends BaseClass
             }
         }
 
-        if ($user->getUsername() === null || $user->getUsername() === '') {
+        if (null === $user->getUsername() || '' === $user->getUsername()) {
             $user->setUsername($response->getNickname());
         }
 

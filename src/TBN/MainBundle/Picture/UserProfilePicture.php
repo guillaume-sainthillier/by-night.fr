@@ -41,11 +41,11 @@ class UserProfilePicture
 
         $info = $user->getInfo();
         if ($info) {
-            if ($info->getFacebookProfilePicture() !== null) {
+            if (null !== $info->getFacebookProfilePicture()) {
                 return $info->getFacebookProfilePicture();
-            } elseif ($info->getTwitterProfilePicture() !== null) {
+            } elseif (null !== $info->getTwitterProfilePicture()) {
                 return $info->getTwitterProfilePicture();
-            } elseif ($info->getGoogleProfilePicture() !== null) {
+            } elseif (null !== $info->getGoogleProfilePicture()) {
                 return $info->getGoogleProfilePicture();
             }
         }

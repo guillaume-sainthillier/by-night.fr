@@ -37,10 +37,11 @@ class Twitter extends Social
     public function getNumberOfCount()
     {
         $this->init();
+
         try {
             $site = $this->siteManager->getCurrentSite();
 
-            if ($site !== null) {
+            if (null !== $site) {
                 $page = $this->client->get('users/show', ['screen_name' => $this->appManager->getTwitterIdPage()]);
                 if (isset($page['followers_count'])) {
                     return $page['followers_count'];
@@ -56,10 +57,11 @@ class Twitter extends Social
     public function getTimeline($max_id, $limit)
     {
         $this->init();
+
         try {
             $site = $this->siteManager->getCurrentSite();
 
-            if ($site !== null) {
+            if (null !== $site) {
                 $params = [
                     'q'           => sprintf('#%s filter:safe', $site->getNom()),
                     'lang'        => 'fr',
@@ -83,7 +85,7 @@ class Twitter extends Social
     public function postNews($title, $url)
     {
         $info = $this->siteManager->getSiteInfo();
-        if ($info->getTwitterAccessToken() !== null) {
+        if (null !== $info->getTwitterAccessToken()) {
             $config = [
                 'consumer_key'       => $this->id,
                 'consumer_secret'    => $this->secret,
@@ -106,7 +108,7 @@ class Twitter extends Social
     protected function post(User $user, Agenda $agenda)
     {
         $info = $user->getInfo();
-        if ($user->hasRole('ROLE_TWITTER') && $agenda->getTweetPostId() === null && $info !== null && $info->getTwitterAccessToken() !== null) {
+        if ($user->hasRole('ROLE_TWITTER') && null === $agenda->getTweetPostId() && null !== $info && null !== $info->getTwitterAccessToken()) {
             $config = [
                 'consumer_key'       => $this->id,
                 'consumer_secret'    => $this->secret,
@@ -133,7 +135,7 @@ class Twitter extends Social
     protected function afterPost(User $user, Agenda $agenda)
     {
         $info = $this->siteManager->getSiteInfo();
-        if ($user->hasRole('ROLE_TWITTER') && $agenda->getTweetPostSystemId() === null && $agenda->getTweetPostId() !== null && $info->getTwitterAccessToken() !== null) {
+        if ($user->hasRole('ROLE_TWITTER') && null === $agenda->getTweetPostSystemId() && null !== $agenda->getTweetPostId() && null !== $info->getTwitterAccessToken()) {
             $config = [
                 'consumer_key'       => $this->id,
                 'consumer_secret'    => $this->secret,

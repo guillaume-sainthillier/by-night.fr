@@ -93,7 +93,7 @@ class UserController extends Controller
         $str_date = $repo->getLastDateStatsUser($user);
 
         $response = $this->cacheVerif($str_date);
-        if ($response !== null) {
+        if (null !== $response) {
             // Vérifie que l'objet Response n'est pas modifié
             // pour un objet Request donné
             if ($response->isNotModified($request)) {
@@ -106,12 +106,15 @@ class UserController extends Controller
         switch ($type) {
             case 'semaine':
                 $datas = $this->getDataOfWeek($repo, $user);
+
                 break;
             case 'mois':
                 $datas = $this->getDataOfMonth($repo, $user);
+
                 break;
             case 'annee':
                 $datas = $this->getDataOfYear($repo, $user);
+
                 break;
         }
 
@@ -122,7 +125,7 @@ class UserController extends Controller
     {
         $response = new JsonResponse();
 
-        if ($str_date !== null) {
+        if (null !== $str_date) {
             //2014-05-08 11:49:21
             if (($date = \DateTime::createFromFormat('Y-m-d H:i:s', $str_date))) {
                 $response->setPublic(); //Afin d'être partagée avec tout le monde

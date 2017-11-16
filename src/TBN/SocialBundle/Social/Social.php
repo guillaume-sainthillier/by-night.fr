@@ -129,7 +129,7 @@ abstract class Social
 
     protected function disconnectInfo(Info $info)
     {
-        if ($info !== null) {
+        if (null !== $info) {
             $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
             $methods     = ['Id', 'AccessToken', 'RefreshToken', 'TokenSecret', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
@@ -147,7 +147,7 @@ abstract class Social
     protected function connectInfo(Info $info, UserResponseInterface $response)
     {
         $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
-        if ($info !== null) {
+        if (null !== $info) {
             $methods = ['AccessToken', 'RefreshToken', 'TokenSecret', 'ExpiresIn', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
                 $setter = 'set'.ucfirst($social_name).ucfirst($methode); // setSocialUsername

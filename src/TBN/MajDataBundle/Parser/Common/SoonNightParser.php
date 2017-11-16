@@ -76,8 +76,8 @@ class SoonNightParser extends LinksParser
         //Suppression des foutues pubs
         foreach ($descriptif_long as $node) {
             foreach ($node->childNodes as $children) {
-                if ($children->nodeType === XML_TEXT_NODE || !in_array($children->nodeName, ['span', 'div'])) {
-                    $descriptif .= ($children->nodeName === 'br' ? '<br>' : $children->textContent.' ');
+                if (XML_TEXT_NODE === $children->nodeType || !in_array($children->nodeName, ['span', 'div'])) {
+                    $descriptif .= ('br' === $children->nodeName ? '<br>' : $children->textContent.' ');
                 }
             }
         }
@@ -96,7 +96,7 @@ class SoonNightParser extends LinksParser
         //Catégorie & Thème
         $node_categorie                        = $this->getNodeFromHeading($this->parser->filter('.fiche_soiree_top .info .type'));
         $tab_retour['categorie_manifestation'] = $node_categorie ? trim($node_categorie->text()) : null;
-        $tab_retour['categorie_manifestation'] = strstr($tab_retour['categorie_manifestation'], 'After Work') !== false ? 'After Work' : $tab_retour['categorie_manifestation'];
+        $tab_retour['categorie_manifestation'] = false !== strstr($tab_retour['categorie_manifestation'], 'After Work') ? 'After Work' : $tab_retour['categorie_manifestation'];
 
         $node_musique                      = $this->getSibling($this->parser->filter('.icon-music'), '.texte');
         $tab_retour['theme_manifestation'] = $node_musique ? trim($node_musique->text()) : null;

@@ -363,6 +363,7 @@ class DoctrineEventHandler
                     //Celle-ci a déjà conduit à l'élimination de l'événement
                     if (!$reject->isValid()) {
                         $event->getReject()->setReason($reject->getReason());
+
                         continue;
                     }
                 }
@@ -375,6 +376,7 @@ class DoctrineEventHandler
                 if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration) && !$exploration->getReject()->isValid()) {
                     $event->getReject()->addReason($exploration->getReject()->getReason());
                     $event->getPlace()->getReject()->setReason($exploration->getReject()->getReason());
+
                     continue;
                 }
             }
@@ -401,9 +403,11 @@ class DoctrineEventHandler
             foreach ($this->sites as $testSite) {
                 if ($this->firewall->isLocationBounded($event->getPlace(), $testSite)) {
                     $site = $this->em->getReference(Site::class, $testSite->getId());
+
                     break;
                 } elseif ($this->firewall->isLocationBounded($event, $testSite)) {
                     $site = $this->em->getReference(Site::class, $testSite->getId());
+
                     break;
                 }
             }

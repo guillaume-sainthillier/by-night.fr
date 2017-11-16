@@ -112,7 +112,7 @@ class FacebookAdmin extends FacebookEvents
 
     protected function afterPost(User $user, Agenda $agenda)
     {
-        if ($agenda->getFbPostSystemId() === null) {
+        if (null === $agenda->getFbPostSystemId()) {
             $accessToken = $this->getPageAccessToken();
             $dateDebut   = $this->getReadableDate($agenda->getDateDebut());
             $dateFin     = $this->getReadableDate($agenda->getDateFin());
@@ -144,7 +144,7 @@ class FacebookAdmin extends FacebookEvents
     {
         $this->init();
         $site = $this->siteManager->getCurrentSite();
-        if ($site !== null && $this->siteInfo !== null) {
+        if (null !== $site && null !== $this->siteInfo) {
             try {
                 $page = $this->getPageFromId($this->appManager->getFacebookIdPage(), ['fields' => 'fan_count']);
 
@@ -166,6 +166,7 @@ class FacebookAdmin extends FacebookEvents
             $requests     = [];
             $batch_ids    = array_slice($ids, $i * $idsPerBatch, $idsPerBatch);
             $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
+
             try {
                 for ($j = 0; $j < $nbIterations; ++$j) {
                     $current_ids = array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
@@ -251,6 +252,7 @@ class FacebookAdmin extends FacebookEvents
     public function updateEventStatut($id_event, $userAccessToken, $isParticiper)
     {
         $this->init();
+
         try {
             $url = $id_event.'/'.($isParticiper ? 'attending' : 'maybe');
             $this->client->sendRequest('POST', $url, [], $userAccessToken);
@@ -279,7 +281,7 @@ class FacebookAdmin extends FacebookEvents
             foreach ($responses as $i => $response) {
                 if (!$response->isError()) {
                     $isXXX                                      = $response->getGraphEdge()->count() > 0;
-                    $stats[$i === 0 ? 'participer' : 'interet'] = $isXXX;
+                    $stats[0 === $i ? 'participer' : 'interet'] = $isXXX;
                 }
             }
         } catch (FacebookSDKException $ex) {
@@ -316,6 +318,7 @@ class FacebookAdmin extends FacebookEvents
             $requests     = [];
             $batch_ids    = array_slice($ids_event, $i * $idsPerBatch, $idsPerBatch);
             $nbIterations = ceil(count($batch_ids) / $idsPerRequest);
+
             try {
                 for ($j = 0; $j < $nbIterations; ++$j) {
                     $current_ids = array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);

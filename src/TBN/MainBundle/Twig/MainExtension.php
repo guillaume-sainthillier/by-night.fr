@@ -206,7 +206,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
     public function partialExtendsFilter($template, $suffix = '.partial')
     {
         $request = $this->requestStack->getCurrentRequest();
-        if ($request === null) {
+        if (null === $request) {
             return $template;
         }
 

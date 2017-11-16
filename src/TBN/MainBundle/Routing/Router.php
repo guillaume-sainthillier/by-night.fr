@@ -40,6 +40,7 @@ class Router extends BaseRouter
         }
 
         $key = 'routes.'.$name;
+
         try {
             if ($this->cache->contains($key) && !isset($parameters) && $this->subdomain) {
                 $parameters['subdomain'] = $this->subdomain;
