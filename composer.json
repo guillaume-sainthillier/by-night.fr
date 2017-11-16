@@ -68,6 +68,7 @@
     ]
   },
   "config": {
+    "bin-dir": "bin",
     "platform": {
       "php": "7.0"
     },
