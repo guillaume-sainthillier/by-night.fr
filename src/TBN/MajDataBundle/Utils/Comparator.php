@@ -36,7 +36,7 @@ class Comparator
     public function getMatchingScoreVille(Place $a = null, Place $b = null)
     {
         $pourcentage = 0;
-        if ($a !== null && $b !== null) {
+        if (null !== $a && null !== $b) {
             $isMatchingCP = ($a->getCodePostal() && $b->getCodePostal()) ? $this->isSameText($a->getCodePostal(), $b->getCodePostal()) : false;
             //Même CP -> fortement identiques
             if ($isMatchingCP) {
@@ -63,7 +63,7 @@ class Comparator
 
     public function getMatchingScorePlace(Place $a = null, Place $b = null)
     {
-        if ($a !== null && $b !== null) {
+        if (null !== $a && null !== $b) {
             if ($this->getStrictMatchingPlace($a, $b)) {
                 return 100;
             }
@@ -162,7 +162,7 @@ class Comparator
 
     protected function isSubstrInStr($needle, $haystack)
     {
-        return strpos($haystack, $needle) !== false;
+        return false !== strpos($haystack, $needle);
     }
 
     protected function getMatchingScore($a, $b)
@@ -243,7 +243,7 @@ class Comparator
         $dateFinA = $a->getDateFin();
         $dateFinB = $b->getDateFin();
 
-        if ($dateDebutA === false || $dateDebutB === false) {
+        if (false === $dateDebutA || false === $dateDebutB) {
             return false;
         }
 

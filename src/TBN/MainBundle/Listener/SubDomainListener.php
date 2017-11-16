@@ -40,7 +40,7 @@ class SubDomainListener
     public function onDomainParse(GetResponseEvent $event)
     {
         //Chargement du site
-        if ($this->siteManager->getCurrentSite() === null) {
+        if (null === $this->siteManager->getCurrentSite()) {
             $request     = $event->getRequest();
             $currentHost = $request->getHttpHost();
 
@@ -52,7 +52,7 @@ class SubDomainListener
             ], '', $currentHost);
 
             if ($subdomain === $this->baseHost || (
-                $subdomain === 'static' && strpos($event->getRequest()->getPathInfo(), '/media') === 0
+                'static' === $subdomain && 0 === strpos($event->getRequest()->getPathInfo(), '/media')
                 )) {
                 return;
             }

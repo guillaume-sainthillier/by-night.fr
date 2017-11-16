@@ -39,7 +39,7 @@ class TBNController extends Controller
         }
 
         $requestStack = $this->get('request_stack');
-        if ($requestStack->getParentRequest() === null && (!$id || $event->getSlug() !== $slug)) {
+        if (null === $requestStack->getParentRequest() && (!$id || $event->getSlug() !== $slug)) {
             $routeParams = array_merge(['id' => $event->getId(), 'slug' => $event->getSlug()], $extraParams);
 
             return new RedirectResponse($this->generateUrl($routeName, $routeParams));
@@ -55,7 +55,7 @@ class TBNController extends Controller
         $minutes  = $now->format('i');
         $secondes = $now->format('s');
 
-        $string = $hours == 1 ? '+1 hour' : sprintf('+%d hours', $hours);
+        $string = 1 == $hours ? '+1 hour' : sprintf('+%d hours', $hours);
         $now->modify($string);
 
         if ($minutes > 0) {

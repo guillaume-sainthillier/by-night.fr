@@ -68,7 +68,7 @@ class Monitor
 
     private static function convertMemory($size)
     {
-        if ($size == 0) {
+        if (0 == $size) {
             return '0 b';
         }
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
@@ -80,7 +80,7 @@ class Monitor
     {
         $nbItems = count($stat['time']);
 
-        if ($nbItems === 0) {
+        if (0 === $nbItems) {
             return [
                 'avg'        => 0,
                 'min'        => 0,

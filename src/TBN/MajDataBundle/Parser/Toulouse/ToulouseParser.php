@@ -17,7 +17,7 @@ class ToulouseParser extends AgendaParser
     public function getRawAgendas()
     {
         $fichier = $this->downloadCSV();
-        if ($fichier !== null) {
+        if (null !== $fichier) {
             return $this->parseCSV($fichier);
         }
 

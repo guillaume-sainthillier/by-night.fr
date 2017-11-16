@@ -146,7 +146,7 @@ class EventController extends Controller
              */
             $repoCalendrier = $em->getRepository('TBNAgendaBundle:Calendrier');
             $calendrier     = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
-            if ($calendrier !== null) {
+            if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();
                 $interet    = $calendrier->getInteret();
             }
@@ -193,35 +193,40 @@ class EventController extends Controller
     protected function handleSearch(SearchAgenda $search, $type, $tag, $ville, Place $place = null)
     {
         $term = null;
-        if ($ville !== null) {
+        if (null !== $ville) {
             $term = null;
             $search->setCommune([$ville]);
             $formAction = $this->generateUrl('tbn_agenda_ville', ['ville' => $ville]);
-        } elseif ($place !== null) {
+        } elseif (null !== $place) {
             $term = null;
             $search->setLieux([$place->getId()]);
             $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug()]);
-        } elseif ($tag !== null) {
+        } elseif (null !== $tag) {
             $term = null;
             $search->setTag($tag);
             $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag]);
-        } elseif ($type !== null) {
+        } elseif (null !== $type) {
             $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type]);
             switch ($type) {
                 case 'exposition':
                     $term = 'expo, exposition';
+
                     break;
                 case 'concert':
                     $term = 'concert, musique, artiste';
+
                     break;
                 case 'famille':
                     $term = 'famille, enfant';
+
                     break;
                 case 'spectacle':
                     $term = 'spectacle, exposition, théâtre';
+
                     break;
                 case 'etudiant':
                     $term = 'soirée, étudiant, bar, discothèque, boîte de nuit, after';
+
                     break;
             }
         } else {
@@ -269,13 +274,13 @@ class EventController extends Controller
         $isUserPostSearch = $isPost && !$isAjax;
 
         $routeParams = ['page' => $page + 1];
-        if ($paginateRoute === 'tbn_agenda_sortir_pagination') {
+        if ('tbn_agenda_sortir_pagination' === $paginateRoute) {
             $routeParams['type'] = $type;
-        } elseif ($paginateRoute === 'tbn_agenda_tags_pagination') {
+        } elseif ('tbn_agenda_tags_pagination' === $paginateRoute) {
             $routeParams['tag'] = $tag;
-        } elseif ($paginateRoute === 'tbn_agenda_place_pagination') {
+        } elseif ('tbn_agenda_place_pagination' === $paginateRoute) {
             $routeParams['slug'] = $slug;
-        } elseif ($paginateRoute === 'tbn_agenda_ville_pagination') {
+        } elseif ('tbn_agenda_ville_pagination' === $paginateRoute) {
             $routeParams['ville'] = $ville;
         }
         $paginateURL = $this->generateUrl($paginateRoute, $routeParams);
@@ -294,7 +299,7 @@ class EventController extends Controller
         //Recherche des événements
         $search = new SearchAgenda();
         $place  = null;
-        if ($slug !== null) {
+        if (null !== $slug) {
             $place = $em->getRepository('TBNAgendaBundle:Place')->findOneBy(['slug' => $slug]);
             if (!$place) {
                 return new RedirectResponse($this->generateUrl('tbn_agenda_agenda'));
@@ -371,7 +376,7 @@ class EventController extends Controller
                 $types_manifestation = preg_split('/,/', $soiree->getCategorieManifestation());
                 foreach ($types_manifestation as $type) {
                     $type = array_map('trim', explode('//', $type))[0];
-                    if (!in_array($type, $type_manifestation) && $type != '') {
+                    if (!in_array($type, $type_manifestation) && '' != $type) {
                         $type_manifestation[$type] = $type;
                     }
                 }

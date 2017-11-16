@@ -102,7 +102,7 @@ class Merger
     private function merge($a, $b, array $fields)
     {
         //Un ou les deux est nul, pas la peine de merger
-        if ($a === null || $b === null) {
+        if (null === $a || null === $b) {
             return $a ?: $b; //Retourne l'objet non nul s'il existe
         }
 

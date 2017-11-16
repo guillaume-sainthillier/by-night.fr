@@ -41,7 +41,7 @@ class CalendrierController extends Controller
         $em         = $this->getDoctrine()->getManager();
         $calendrier = $em->getRepository('TBNAgendaBundle:Calendrier')->findOneBy(['user' => $user, 'agenda' => $agenda]);
 
-        if ($calendrier === null) {
+        if (null === $calendrier) {
             $calendrier = new Calendrier();
             $calendrier->setUser($user)->setAgenda($agenda);
         }

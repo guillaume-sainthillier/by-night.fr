@@ -69,7 +69,7 @@ abstract class LinksParser extends AgendaParser
 
     protected function getSilentNode(Crawler $node)
     {
-        if ($node->count() === 0) {
+        if (0 === $node->count()) {
             return;
         }
 

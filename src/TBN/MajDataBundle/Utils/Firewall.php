@@ -51,7 +51,7 @@ class Firewall
 
     protected function hasExplorationToBeUpdated(Exploration $exploration)
     {
-        if ($exploration->getFirewallVersion() !== self::VERSION) {
+        if (self::VERSION !== $exploration->getFirewallVersion()) {
             return true;
         }
 
@@ -86,7 +86,7 @@ class Firewall
 
     public function isPersisted($object)
     {
-        return $object !== null && $object->getId() !== null;
+        return null !== $object && null !== $object->getId();
     }
 
     public function filterEventIntegrity(Agenda $event, User $oldEventUser = null)
@@ -132,7 +132,7 @@ class Firewall
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-        //L'événement a changé -> valide
+            //L'événement a changé -> valide
         } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }

@@ -60,7 +60,7 @@ class BikiniParser extends LinksParser
         $tab_retour['place.ville']       = $ville;
 
         $this->parser->filter('#blocContenu')->children()->each(function (Crawler $sibling) use (&$tab_retour) {
-            if ($sibling->attr('id') === 'prix') {
+            if ('prix' === $sibling->attr('id')) {
                 $tab_retour['tarif'] = trim($sibling->text());
 
                 return $sibling;
@@ -69,7 +69,7 @@ class BikiniParser extends LinksParser
             return false;
         });
         $this->parser->filter('#blocContenu')->children()->each(function (Crawler $sibling) use (&$tab_retour) {
-            if ($sibling->attr('id') === 'type') {
+            if ('type' === $sibling->attr('id')) {
                 $tab_retour['theme_manifestation'] = preg_replace('/style\s?:\s?/i', '', trim($sibling->text()));
                 $tab_retour['theme_manifestation'] = implode(',', explode('/', $tab_retour['theme_manifestation']));
 

@@ -84,7 +84,7 @@ class SearchController extends Controller
         $users     = [];
 
         if ($q) {
-            if (!$type || $type === 'evenements') { //Recherche d'événements
+            if (!$type || 'evenements' === $type) { //Recherche d'événements
                 $query      = $this->searchEvents($rm, $site, $q);
                 $paginator  = $this->get('knp_paginator');
                 $pagination = $paginator->paginate($query, $page, $maxItems);
@@ -102,7 +102,7 @@ class SearchController extends Controller
                 }
             }
 
-            if (!$type || $type === 'membres') { //Recherche de membres
+            if (!$type || 'membres' === $type) { //Recherche de membres
                 $query      = $this->searchUsers($rm, $site, $q);
                 $paginator  = $this->get('knp_paginator');
                 $pagination = $paginator->paginate($query, $page, $maxItems);

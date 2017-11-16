@@ -71,7 +71,7 @@ class Reject
 
     public function isValid()
     {
-        return $this->reason === self::VALID;
+        return self::VALID === $this->reason;
     }
 
     public function isEventDeleted()
