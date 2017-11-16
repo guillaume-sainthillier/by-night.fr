@@ -1,19 +1,8 @@
 {% for fbUser in membres -%}
     {% set picture = fbUser.getProperty('picture') %}
     {% if picture is not null %}
-        <a href="https://www.facebook.com/{{ fbUser.getProperty('id') }}"
-           rel="nofollow"
-           itemprop="attendee"
-           itemscope
-           itemtype="http://schema.org/Person"
-           title="{{ fbUser.getProperty('name') }}"
-        >
-            <meta itemprop="name" content="{{ fbUser.getProperty('name') }}"/>
-            <img itemprop="image"
-                 width="50"
-                 height="50"
-                 src="{{ fbUser.getProperty('picture').getProperty('url') }}"
-                 alt="{{ fbUser.getProperty('name') }}"/>
+        <a href="https://www.facebook.com/{{ fbUser.getProperty('id') }}">
+            <img width="50" height="50" src="{{ fbUser.getProperty('picture').getProperty('url') }}" />
         </a>
     {% endif %}
 {%- endfor %}
