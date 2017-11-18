@@ -11,13 +11,13 @@ web_profiler:
     toolbar: true
     intercept_redirects: false
 
-doctrine_cache:
-    providers:
-        memcache:
-            type: apcu
-            namespace: memory_cache_ns
-            aliases:
-                - memory_cache
+#doctrine_cache:
+#    providers:
+#        memcache:
+#            type: apcu
+#            namespace: memory_cache_ns
+#            aliases:
+#                - memory_cache
 
 monolog:
     handlers:

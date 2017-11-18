@@ -49,11 +49,11 @@ class Requirement
      */
     public function __construct($fulfilled, $testMessage, $helpHtml, $helpText = null, $optional = false)
     {
-        $this->fulfilled   = (bool) $fulfilled;
+        $this->fulfilled = (bool) $fulfilled;
         $this->testMessage = (string) $testMessage;
-        $this->helpHtml    = (string) $helpHtml;
-        $this->helpText    = null === $helpText ? strip_tags($this->helpHtml) : (string) $helpText;
-        $this->optional    = (bool) $optional;
+        $this->helpHtml = (string) $helpHtml;
+        $this->helpText = null === $helpText ? strip_tags($this->helpHtml) : (string) $helpText;
+        $this->optional = (bool) $optional;
     }
 
     /**
@@ -260,7 +260,7 @@ class RequirementCollection implements IteratorAggregate
      *
      * @param RequirementCollection $collection A RequirementCollection instance
      */
-    public function addCollection(self $collection)
+    public function addCollection(RequirementCollection $collection)
     {
         $this->requirements = array_merge($this->requirements, $collection->all());
     }
@@ -380,7 +380,7 @@ class RequirementCollection implements IteratorAggregate
 class SymfonyRequirements extends RequirementCollection
 {
     const LEGACY_REQUIRED_PHP_VERSION = '5.3.3';
-    const REQUIRED_PHP_VERSION        = '5.5.9';
+    const REQUIRED_PHP_VERSION = '5.5.9';
 
     /**
      * Constructor that initializes the requirements.
@@ -390,7 +390,7 @@ class SymfonyRequirements extends RequirementCollection
         /* mandatory requirements follow */
 
         $installedPhpVersion = phpversion();
-        $requiredPhpVersion  = $this->getPhpRequiredVersion();
+        $requiredPhpVersion = $this->getPhpRequiredVersion();
 
         $this->addRecommendation(
             $requiredPhpVersion,
@@ -711,7 +711,8 @@ class SymfonyRequirements extends RequirementCollection
             );
         }
 
-        $accelerator = (extension_loaded('eaccelerator') && ini_get('eaccelerator.enable'))
+        $accelerator =
+            (extension_loaded('eaccelerator') && ini_get('eaccelerator.enable'))
             ||
             (extension_loaded('apc') && ini_get('apc.enabled'))
             ||
@@ -730,7 +731,7 @@ class SymfonyRequirements extends RequirementCollection
             'Install and/or enable a <strong>PHP accelerator</strong> (highly recommended).'
         );
 
-        if ('WIN' === strtoupper(substr(PHP_OS, 0, 3))) {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $this->addRecommendation(
                 $this->getRealpathCacheSize() >= 5 * 1024 * 1024,
                 'realpath_cache_size should be at least 5M in php.ini',

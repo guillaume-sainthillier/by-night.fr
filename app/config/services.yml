@@ -3,7 +3,6 @@ parameters:
     class.guzzle.client: Guzzle\Http\Client
     class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
     twitter.baseurl: https://api.twitter.com/1.1
-    twitter.config:
     consumer_key: "%twitter_app_id%"
     consumer_secret: "%twitter_app_secret%"
     url_soonnight_tlse: http://www.soonnight.com/midi-pyrenees/sortir-midi-pyrenees,4.html?id_dept=15

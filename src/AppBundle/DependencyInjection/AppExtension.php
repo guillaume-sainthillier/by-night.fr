@@ -23,7 +23,7 @@ class AppExtension extends Extension
             $container->setParameter('mapping_assets', []);
         }
 
-        $container->registerExtension(new OldSoundRabbitMqExtension());
-        $container->addCompilerPass(new RegisterPartsPass());
+//        $container->registerExtension(new OldSoundRabbitMqExtension());
+//        $container->addCompilerPass(new RegisterPartsPass());
     }
 }

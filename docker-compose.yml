@@ -61,19 +61,10 @@ services:
         restart: always
         networks:
             - backend
-#    proxy:
-#        image: jwilder/nginx-proxy
-#        ports:
-#          - 7000:80
-#        restart: always
-#        volumes:
-#          - /var/run/docker.sock:/tmp/docker.sock:ro
-#        networks:
-#            - frontend
-#            - backend
     nginx:
         build: ${DOCKER_PATH}/nginx
         ports:
+#            - 8000:80
             - 8000:80
         volumes_from:
             - php
@@ -84,8 +75,6 @@ services:
             - redis
         volumes:
             - ${SYMFONY_APP_PATH}/var/logs/nginx/:/var/log/nginx
-#        environment:
-#            VIRTUAL_HOST: by-night.local
         restart: always
         networks:
             - frontend

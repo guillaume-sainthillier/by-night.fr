@@ -22,39 +22,39 @@
     "doctrine/orm": "^2.5",
     "egeloen/google-map-bundle": "^3.0",
     "egeloen/serializer-bundle": "^1.0",
-    "facebook/graph-sdk": "^5.4",
+    "facebook/graph-sdk": "5.*",
     "friendsofsymfony/elastica-bundle": "dev-master",
     "friendsofsymfony/http-cache-bundle": "2.*",
-    "friendsofsymfony/user-bundle": "~2.0",
+    "friendsofsymfony/user-bundle": "2.*",
     "google/apiclient": "^2.0.0@RC",
-    "google/recaptcha": "^1.1",
+    "google/recaptcha": "^1.1.3",
     "guzzlehttp/guzzle": "6.*",
     "hwi/oauth-bundle": "0.5.*",
     "incenteev/composer-parameter-handler": "^2.0",
     "javiereguiluz/easyadmin-bundle": "1.*",
     "jms/serializer-bundle": "2.*",
     "knplabs/knp-paginator-bundle": "2.*",
-    "lexik/maintenance-bundle": "dev-master",
-    "liip/imagine-bundle": "dev-master",
-    "neitanod/forceutf8": "dev-master",
-    "php-amqplib/rabbitmq-bundle": "^1.13",
-    "php-http/guzzle6-adapter": "^1.1",
-    "php-http/httplug-bundle": "^1.5",
+    "lexik/maintenance-bundle": "2.*",
+    "liip/imagine-bundle": "1.*",
+    "neitanod/forceutf8": "2.*",
+    "php-amqplib/rabbitmq-bundle": "1.*",
+    "php-http/guzzle6-adapter": "1.*",
+    "php-http/httplug-bundle": "1.*",
     "presta/sitemap-bundle": "dev-master",
     "ricardoper/twitteroauth": "2.*",
     "sensio/distribution-bundle": "^5.0.19",
-    "sensio/framework-extra-bundle": "^3.0.2",
-    "social-links/social-links": "dev-master",
-    "stof/doctrine-extensions-bundle": "dev-master",
+    "sensio/framework-extra-bundle": "^5.0.0",
+    "social-links/social-links": "1.*",
+    "stof/doctrine-extensions-bundle": "1.*",
     "symfony/monolog-bundle": "^3.1.0",
     "symfony/polyfill-apcu": "^1.0",
-    "symfony/swiftmailer-bundle": "^2.3.10",
-    "symfony/symfony": "3.3.*",
+    "symfony/swiftmailer-bundle": "^2.6.4",
+    "symfony/symfony": "v3.4.0-BETA4",
     "twig/extensions": "1.*",
     "twig/twig": "^1.0||^2.0",
     "vich/uploader-bundle": "1.*",
-    "white-october/pagerfanta-bundle": "dev-master",
-    "whiteoctober/breadcrumbs-bundle": "dev-master"
+    "white-october/pagerfanta-bundle": "1.*",
+    "whiteoctober/breadcrumbs-bundle": "1.*"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
@@ -78,8 +78,9 @@
     ]
   },
   "config": {
+    "bin-dir": "bin",
     "platform": {
-      "php": "7.1"
+      "php": "7.1.3"
     },
     "sort-packages": true
   },
@@ -94,7 +95,7 @@
       "file": "app/config/parameters.yml"
     },
     "branch-alias": {
-      "dev-master": "3.3-dev"
+      "dev-master": "3.4-dev"
     }
   }
 }

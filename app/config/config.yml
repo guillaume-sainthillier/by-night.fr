@@ -33,9 +33,9 @@ framework:
     http_method_override: true
     php_errors:
         log: true
-    cache:
-        app: cache.adapter.doctrine
-        default_doctrine_provider: memory_cache
+#    cache:
+#        app: cache.adapter.doctrine
+#        default_doctrine_provider: memory_cache
 
 doctrine_cache:
     custom_providers:

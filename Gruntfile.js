@@ -237,6 +237,7 @@ module.exports = function (grunt) {
                         '<%= pkg.baseVendor %>/jquery.scrollTo/jquery.scrollTo.min.js',
                         '<%= pkg.baseVendor %>/jquery-unveil/jquery.unveil.min.js',
                         '<%= pkg.baseVendor %>/fancybox/dist/jquery.fancybox.js',
+                        '<%= pkg.baseVendor %>/typeahead.js/dist/bloodhound.min.js',
                         '<%= pkg.baseVendor %>/typeahead.js/dist/typeahead.bundle.min.js',
                         '<%= pkg.baseVendor %>/typeahead-addresspicker/dist/typeahead-addresspicker.min.js',
                         '<%= pkg.baseJs %>/overrides.js',
