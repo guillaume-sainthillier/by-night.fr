@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
 #    nodejs \
 #    npm \
     python \
-    unzip
+    unzip \
+    wget
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -58,6 +59,12 @@ RUN apt-get install -y nodejs
 RUN npm install -g bower
 RUN npm install -g grunt-cli
 #RUN npm install grunt --save-dev
+
+#PHPUnit
+RUN wget https://phar.phpunit.de/phpunit-6.4.phar
+RUN chmod +x phpunit-6.4.phar
+RUN sudo mv phpunit-6.4.phar /usr/local/bin/phpunit
+
 
 # Permission fix
 RUN chmod 777 /var/www
