@@ -55,9 +55,15 @@ fos_user_profile:
     resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
     prefix: /profile
 
-app.user_profile:
-    resource: "@UserBundle/Controller"
-    prefix:   /profile
+#Profile override
+app_user_profile:
+    resource: "@AppBundle/Controller/User/ProfileController.php"
+    prefix: /profile
+    type:     annotation
+
+#app.user_profile:
+#    resource: "@UserBundle/Controller"
+#    prefix:   /profile
 
 #Inscription
 fos_user_register:

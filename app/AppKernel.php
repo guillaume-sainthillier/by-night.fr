@@ -21,7 +21,6 @@ class AppKernel extends Kernel
             //App
             new AppBundle\AppBundle(),
             new SocialBundle\SocialBundle(),
-            new UserBundle\UserBundle(),
 
             //Vendors
             new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),

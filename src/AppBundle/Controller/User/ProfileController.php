@@ -6,7 +6,7 @@
  * Time: 19:26.
  */
 
-namespace UserBundle\Controller;
+namespace AppBundle\Controller\User;
 
 use AppBundle\Entity\Calendrier;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProfileController extends BaseController
 {
     /**
-     * {@inheritdoc}
+     * @Route("/show", name="fos_user_profile_show")
      */
     public function showAction()
     {
@@ -100,7 +100,7 @@ class ProfileController extends BaseController
     }
 
     /**
-     * {@inheritdoc}
+     * @Route("/edit", name="fos_user_profile_edit")
      */
     public function editAction(Request $request)
     {
