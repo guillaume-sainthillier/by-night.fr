@@ -1,6 +1,6 @@
 FROM debian:jessie
 
-ENV FILEBEAT_VERSION 5.5.1
+ENV FILEBEAT_VERSION 6.0.0
 
 RUN apt-get update && apt-get install -y \
     curl \
