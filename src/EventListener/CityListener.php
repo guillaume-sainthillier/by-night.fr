@@ -8,7 +8,6 @@
 
 namespace AppBundle\EventListener;
 
-use AppBundle\Configuration\BrowserCache;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -28,7 +27,7 @@ class CityListener implements EventSubscriberInterface
 
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        if(! $event->isMasterRequest()) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
