@@ -28,8 +28,11 @@ class CityListener implements EventSubscriberInterface
 
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        $request = $event->getRequest();
+        if(! $event->isMasterRequest()) {
+            return;
+        }
 
+        $request = $event->getRequest();
         if ($request->attributes->has('_current_city') && $request->attributes->get('_current_city') !== $request->cookies->get('app_city')) {
             $cookie = new Cookie('app_city', $request->attributes->get('_current_city'), '+1 year');
             $event->getResponse()->headers->setCookie($cookie);
