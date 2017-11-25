@@ -26,6 +26,8 @@ RUN rm /var/log/nginx/access.log /var/log/nginx/error.log
 ### configure Filebeat
 
 # config file
+ADD filebeat.template.json /etc/filebeat/filebeat.template.json
+RUN chmod 644 /etc/filebeat/filebeat.template.json
 ADD filebeat.yml /etc/filebeat/filebeat.yml
 RUN chmod 644 /etc/filebeat/filebeat.yml
 
