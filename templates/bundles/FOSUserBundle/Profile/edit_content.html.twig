@@ -29,8 +29,7 @@
                 <h2 class="modal-title">Profil</h2>
             </div>
             <div class="panel-body">
-                <form action="{{ path('fos_user_profile_edit') }}" enctype="multipart/form-data" method="post"
-                      class="form-horizontal">
+                {{ form_start(form, { 'action': path('fos_user_profile_edit'), 'attr': { 'class': 'form-horizontal', 'enctype': 'multipart/form-data'} }) }}
                     <div class="form-group">
                         {{ form_label(form.imageFile, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
                         <div class="col-md-8">
@@ -101,7 +100,7 @@
                         </div>
                     </div>
                     {{ form_rest(form) }}
-                </form>
+                {{ form_end(form) }}
             </div>
         </div>
         <div id="password" class="panel panel-default">
@@ -158,4 +157,4 @@
         </div>
     </div>
 </div>
-{% include "FOSUserBundle:Profile:modalDelete.html.twig" %}
+{% include "@FOSUser/Profile/modalDelete.html.twig" %}

@@ -20,8 +20,7 @@
 <br/>
 
 <div class="no-margin-form">
-    <form action="{{ path('fos_user_registration_register') }}" method="post"
-          class="fos_user_registration_register">
+    {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
         {% if error is defined and error %}
             <div class="alert alert-danger">
                 <i class="fa fa-warning"></i>
@@ -101,5 +100,5 @@
                 Connectez-vous!
             </a>
         </p>
-    </form>
+    {{ form_end(form) }}
 </div>

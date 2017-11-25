@@ -18,15 +18,10 @@
 </div>
 <br/>
 <br/>
-<form action="{{ path('fos_user_security_check') }}" method="post" role="form">
-    {% if error is defined and error %}
-        <div class="alert alert-danger">
-            <i class="fa fa-warning"></i>
-            {{ error }}
-        </div>
+<form action="{{ path('fos_user_security_check') }}" method="post">
+    {% if csrf_token %}
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
     {% endif %}
-
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
 
     <div class="form-group form-group-lg label-static">
         <label for="username" class="control-label">{{ 'security.login.username'|trans }}</label>

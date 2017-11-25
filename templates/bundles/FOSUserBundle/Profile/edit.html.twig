@@ -1,23 +1,18 @@
-{% extends "FOSUserBundle::layout.html.twig" %}
+{% extends "@FOSUser/layout.html.twig" %}
 
 {% block start_container -%}
 <div class="container" id="container">
 {%- endblock %}
 
-{% block titre -%}
-    {{ app.user.username }}
-{%- endblock %}
-
-{% block title -%}
-    {{ app.user.username }}
-{%- endblock %}
+{% block titre -%}{{ app.user.username }}{%- endblock %}
+{% block title -%}{{ app.user.username }}{%- endblock %}
 
 {% block breadcrumb_content -%}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_edit')) %}
 {%- endblock %}
 
 {% block body -%}
-    {% include "FOSUserBundle:Profile:edit_content.html.twig" %}
+    {% include "@FOSUser/Profile/edit_content.html.twig" %}
 {%- endblock %}
 
 {% block css -%}

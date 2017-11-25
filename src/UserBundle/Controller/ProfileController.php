@@ -14,6 +14,7 @@ use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Model\UserInterface;
+use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -119,22 +120,15 @@ class ProfileController extends BaseController
         }
 
         /** @var $formFactory FactoryInterface */
-        $formChangePasswordFactory = $this->get('fos_user.change_password.form.factory');
-
-        $formChangePassword = $formChangePasswordFactory->createForm();
-        $formChangePassword->setData($user);
-
-        $formDelete = $this->createDeleteForm();
-
-        /** @var $formFactory FactoryInterface */
         $formFactory = $this->get('fos_user.profile.form.factory');
-        $form        = $formFactory->createForm();
+
+        $form = $formFactory->createForm();
         $form->setData($user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
+            /** @var $userManager UserManagerInterface */
             $userManager = $this->get('fos_user.user_manager');
 
             $event = new FormEvent($form, $request);
@@ -143,7 +137,7 @@ class ProfileController extends BaseController
             $userManager->updateUser($user);
 
             if (null === $response = $event->getResponse()) {
-                $url      = $this->generateUrl('fos_user_profile_show');
+                $url = $this->generateUrl('fos_user_profile_edit');
                 $response = new RedirectResponse($url);
             }
 
@@ -152,7 +146,12 @@ class ProfileController extends BaseController
             return $response;
         }
 
-        return $this->render('FOSUserBundle:Profile:edit.html.twig', array(
+        /** @var $formFactory FactoryInterface */
+        $formChangePasswordFactory = $this->get('fos_user.change_password.form.factory');
+        $formChangePassword = $formChangePasswordFactory->createForm();
+        $formChangePassword->setData($user);
+        $formDelete = $this->createDeleteForm();
+        return $this->render('@FOSUser/Profile/edit.html.twig', array(
             'form'               => $form->createView(),
             'formChangePassword' => $formChangePassword->createView(),
             'formDelete'         => $formDelete->createView(),
