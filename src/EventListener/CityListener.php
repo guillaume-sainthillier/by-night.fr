@@ -37,18 +37,5 @@ class CityListener implements EventSubscriberInterface
             $cookie = new Cookie('app_city', $request->attributes->get('_current_city'), '+1 year');
             $event->getResponse()->headers->setCookie($cookie);
         }
-
-        /**
-         * @var BrowserCache|null
-         */
-        $browserCache = $request->attributes->get('_browser_cache');
-        if (null === $browserCache || $browserCache->hasToUseCache()) {
-            return;
-        }
-
-        $response = $event->getResponse();
-        $response->headers->add([
-            'X-No-Browser-Cache' => '1',
-        ]);
     }
 }
