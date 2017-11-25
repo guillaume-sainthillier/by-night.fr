@@ -137,7 +137,7 @@ class ProfileController extends BaseController
             $userManager->updateUser($user);
 
             if (null === $response = $event->getResponse()) {
-                $url = $this->generateUrl('fos_user_profile_edit');
+                $url      = $this->generateUrl('fos_user_profile_edit');
                 $response = new RedirectResponse($url);
             }
 
@@ -148,9 +148,10 @@ class ProfileController extends BaseController
 
         /** @var $formFactory FactoryInterface */
         $formChangePasswordFactory = $this->get('fos_user.change_password.form.factory');
-        $formChangePassword = $formChangePasswordFactory->createForm();
+        $formChangePassword        = $formChangePasswordFactory->createForm();
         $formChangePassword->setData($user);
         $formDelete = $this->createDeleteForm();
+
         return $this->render('@FOSUser/Profile/edit.html.twig', array(
             'form'               => $form->createView(),
             'formChangePassword' => $formChangePassword->createView(),
