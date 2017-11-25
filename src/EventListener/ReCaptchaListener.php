@@ -30,7 +30,7 @@ class ReCaptchaListener
 
         $controller = $event->getController();
 
-        if (!is_array($controller)) {
+        if (!\is_array($controller)) {
             return;
         }
 

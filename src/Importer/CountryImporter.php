@@ -291,7 +291,7 @@ class CountryImporter
     private function manualAssociation(array $associations, Country $country)
     {
         foreach ($associations as $zipSlug => $citySlug) {
-            if (is_numeric($zipSlug)) {
+            if (\is_numeric($zipSlug)) {
                 $zipSlug = $citySlug;
             }
 
@@ -315,13 +315,13 @@ class CountryImporter
 
     private function createZipCities(Country $country)
     {
-        $fd = fopen($this->dataDir . '/'. $country->getId().'/zip.csv', 'r');
+        $fd = \fopen($this->dataDir . '/'. $country->getId().'/zip.csv', 'r');
         if (false === $fd) {
             return;
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 1000, "\t"))) {
+        while (false !== ($data = \fgetcsv($fd, 1000, "\t"))) {
             if (!$data[4] || !$data[6]) {
                 continue;
             }
@@ -329,8 +329,8 @@ class CountryImporter
 
             $city = new ZipCity();
 
-            $data[1] = explode(' ', $data[1])[0];
-            $data[2] = preg_replace("/ (\d+)$/", '', $data[2]);
+            $data[1] = \explode(' ', $data[1])[0];
+            $data[2] = \preg_replace("/ (\d+)$/", '', $data[2]);
 
             list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($data[4], $data[6]);
 
@@ -351,20 +351,20 @@ class CountryImporter
             }
         }
         $this->em->flush();
-        fclose($fd);
+        \fclose($fd);
     }
 
     private function createAdminZones(Country $country)
     {
-        $fd = fopen($this->dataDir . '/'. $country->getId().'/cities.csv', 'r');
+        $fd = \fopen($this->dataDir . '/'. $country->getId().'/cities.csv', 'r');
         if (false === $fd) {
             return;
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 3000, "\t"))) {
+        while (false !== ($data = \fgetcsv($fd, 3000, "\t"))) {
             if (!(
-                in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6]
+                \in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6]
 //                ($data[6] === "P" && $data[14] > 0)
             )) {
                 continue;
@@ -404,7 +404,7 @@ class CountryImporter
             }
         }
         $this->em->flush();
-        fclose($fd);
+        \fclose($fd);
     }
 
     private function sanitizeAdminZone(AdminZone $entity)
@@ -412,7 +412,7 @@ class CountryImporter
         switch ($entity->getCountry()->getId()) {
             case 'FR':
                 if ($entity instanceof AdminZone2) {
-                    $entity->setName(str_replace([
+                    $entity->setName(\str_replace([
                             "Département d'",
                             "Département de l'",
                             'Département de la ',
@@ -442,7 +442,7 @@ class CountryImporter
             return $code;
         }
 
-        $code = ltrim($code, '0');
+        $code = \ltrim($code, '0');
 
         if ('' === $code) {
             return null;

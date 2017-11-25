@@ -43,7 +43,7 @@ class ImageCleaner
             ->createQuery('SELECT a.path, a.systemPath FROM AppBundle:Agenda a WHERE a.path IS NOT NULL OR a.systemPath IS NOT NULL')
             ->getScalarResult();
 
-        $paths = array_unique(array_filter(array_merge(array_column($result, 'path'), array_column($result, 'systemPath'))));
+        $paths = \array_unique(\array_filter(\array_merge(\array_column($result, 'path'), \array_column($result, 'systemPath'))));
         $this->cleanPaths($paths, ['thumbs_evenement', 'thumb_evenement'], '/uploads/documents');
 
         $result = $this
@@ -51,7 +51,7 @@ class ImageCleaner
             ->createQuery('SELECT u.path, u.systemPath FROM AppBundle:User u WHERE u.path IS NOT NULL OR u.systemPath IS NOT NULL')
             ->getScalarResult();
 
-        $paths = array_unique(array_filter(array_merge(array_column($result, 'path'), array_column($result, 'systemPath'))));
+        $paths = \array_unique(\array_filter(\array_merge(\array_column($result, 'path'), \array_column($result, 'systemPath'))));
         $this->cleanPaths($paths, ['thumb_user_large', 'thumb_user_evenement', 'thumb_user', 'thumb_user_menu', 'thumb_user_50', 'thumb_user_115'], '/uploads/users');
     }
 
@@ -64,7 +64,7 @@ class ImageCleaner
                 continue;
             }
 
-            if (!in_array($file->getFilename(), $paths)) {
+            if (!\in_array($file->getFilename(), $paths)) {
                 $path = $uri_prefix . '/' . $file->getFilename();
                 foreach ($filters as $filter) {
                     if ($this->cacheManager->isStored($path, $filter)) {

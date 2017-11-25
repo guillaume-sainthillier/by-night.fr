@@ -55,7 +55,7 @@ class CityConverter implements ParamConverterInterface
         }
 
         if (!$entity) {
-            throw new NotFoundHttpException(sprintf(
+            throw new NotFoundHttpException(\sprintf(
                 "La ville '%s' est introuvable",
                 $city
             ));

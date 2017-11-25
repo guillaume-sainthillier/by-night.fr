@@ -33,11 +33,11 @@ class ToulouseParser extends AgendaParser
     {
         $tab_agendas = [];
 
-        $fic = fopen($fichier, 'r');
-        fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
+        $fic = \fopen($fichier, 'r');
+        \fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
 
-        while ($cursor = fgetcsv($fic, 0, ';', '"', '"')) {
-            $tab = array_map(function ($e) {
+        while ($cursor = \fgetcsv($fic, 0, ';', '"', '"')) {
+            $tab = \array_map(function ($e) {
                 return Encoding::toUTF8($e);
             }, $cursor);
 
@@ -83,8 +83,8 @@ class ToulouseParser extends AgendaParser
      */
     protected function downloadCSV()
     {
-        $data      = file_get_contents($this->getURL());
-        $path_file = sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());
+        $data      = \file_get_contents($this->getURL());
+        $path_file = \sprintf('%s/data_manifestations/agenda.csv', \sys_get_temp_dir());
         $fs        = new Filesystem();
         $fs->dumpFile($path_file, $data);
 

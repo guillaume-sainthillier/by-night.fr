@@ -123,7 +123,7 @@ abstract class Social
     {
         $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->removeRole('ROLE_' . strtolower($social_name)); //Suppression du role ROLE_TWITTER
+        $user->removeRole('ROLE_' . \strtolower($social_name)); //Suppression du role ROLE_TWITTER
         $this->disconnectInfo($user->getInfo());
     }
 
@@ -133,7 +133,7 @@ abstract class Social
             $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
             $methods     = ['Id', 'AccessToken', 'RefreshToken', 'TokenSecret', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
-                $setter = 'set' . ucfirst($social_name) . ucfirst($methode);
+                $setter = 'set' . \ucfirst($social_name) . \ucfirst($methode);
                 $info->$setter(null);
             }
         }
@@ -150,13 +150,13 @@ abstract class Social
         if (null !== $info) {
             $methods = ['AccessToken', 'RefreshToken', 'TokenSecret', 'ExpiresIn', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
-                $setter = 'set' . ucfirst($social_name) . ucfirst($methode); // setSocialUsername
-                $getter = 'get' . ucfirst($methode); //getSocialUsername
+                $setter = 'set' . \ucfirst($social_name) . \ucfirst($methode); // setSocialUsername
+                $getter = 'get' . \ucfirst($methode); //getSocialUsername
 
                 $info->$setter($response->$getter());
             }
 
-            $setter_id = 'set' . ucfirst($social_name) . 'Id';
+            $setter_id = 'set' . \ucfirst($social_name) . 'Id';
             $info->$setter_id($response->getUsername());
         }
     }
@@ -165,7 +165,7 @@ abstract class Social
     {
         $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->addRole('ROLE_' . strtolower($social_name)); //Ajout du role ROLE_TWITTER
+        $user->addRole('ROLE_' . \strtolower($social_name)); //Ajout du role ROLE_TWITTER
         $this->connectInfo($user->getInfo(), $response);
     }
 
@@ -190,7 +190,7 @@ abstract class Social
 
             $this->session->getFlashBag()->add(
                 $type,
-                sprintf('Une erreur est survenue sur <b>%s</b> : %s', $this->getName(), $ex->getMessage())
+                \sprintf('Une erreur est survenue sur <b>%s</b> : %s', $this->getName(), $ex->getMessage())
             );
         }
     }

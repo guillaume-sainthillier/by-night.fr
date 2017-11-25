@@ -15,7 +15,7 @@ class CountryRepository extends \Doctrine\ORM\EntityRepository
         return $this
             ->createQueryBuilder('c')
             ->andWhere('LOWER(c.name) = :country')
-            ->setParameter('country', strtolower($country))
+            ->setParameter('country', \strtolower($country))
             ->getQuery()
             ->useResultCache(true)
             ->useQueryCache(true)

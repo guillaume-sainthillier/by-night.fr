@@ -146,7 +146,7 @@ class DoctrineEventHandler
     {
         $this->explorationHandler->start();
 
-        if (!count($events)) {
+        if (!\count($events)) {
             return [];
         }
 
@@ -163,7 +163,7 @@ class DoctrineEventHandler
         $notAllowedEvents = $this->getNotAllowedEvents($events);
         unset($events);
 
-        $nbNotAllowedEvents = count($notAllowedEvents);
+        $nbNotAllowedEvents = \count($notAllowedEvents);
         for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
             $this->explorationHandler->addBlackList();
         }
@@ -173,19 +173,19 @@ class DoctrineEventHandler
 
     public function handleIdsToMigrate(array $ids)
     {
-        if (!count($ids)) {
+        if (!\count($ids)) {
             return;
         }
 
         $eventOwners = $this->repoAgenda->findBy([
-            'facebookOwnerId' => array_keys($ids),
+            'facebookOwnerId' => \array_keys($ids),
         ]);
 
         $events = $this->repoAgenda->findBy([
-            'facebookEventId' => array_keys($ids),
+            'facebookEventId' => \array_keys($ids),
         ]);
 
-        $events = array_merge($events, $eventOwners);
+        $events = \array_merge($events, $eventOwners);
         foreach ($events as $event) {
             /*
              * @var Agenda
@@ -201,7 +201,7 @@ class DoctrineEventHandler
         }
 
         $places = $this->repoPlace->findBy([
-            'facebookId' => array_keys($ids),
+            'facebookId' => \array_keys($ids),
         ]);
 
         foreach ($places as $place) {
@@ -221,7 +221,7 @@ class DoctrineEventHandler
      */
     private function getAllowedEvents(array $events)
     {
-        return array_filter($events, [$this->firewall, 'isValid']);
+        return \array_filter($events, [$this->firewall, 'isValid']);
     }
 
     /**
@@ -231,7 +231,7 @@ class DoctrineEventHandler
      */
     private function getNotAllowedEvents(array $events)
     {
-        return array_filter($events, function ($event) {
+        return \array_filter($events, function ($event) {
             return !$this->firewall->isValid($event);
         });
     }
@@ -250,7 +250,7 @@ class DoctrineEventHandler
         }
 
         foreach ($chunks as $i => $chunk) {
-            $chunks[$i] = array_chunk($chunk, self::BATCH_SIZE, true);
+            $chunks[$i] = \array_chunk($chunk, self::BATCH_SIZE, true);
         }
 
         return $chunks;
@@ -265,7 +265,7 @@ class DoctrineEventHandler
     {
         $flat = [];
         foreach ($chunks as $chunk) {
-            $flat = array_merge($flat, $chunk);
+            $flat = \array_merge($flat, $chunk);
         }
 
         return $flat;
@@ -278,7 +278,7 @@ class DoctrineEventHandler
      */
     private function mergeWithDatabase(array $events)
     {
-        Monitor::createProgressBar(count($events));
+        Monitor::createProgressBar(\count($events));
 
         $chunks = $this->getChunks($events);
 
@@ -345,7 +345,7 @@ class DoctrineEventHandler
         try {
             $this->em->flush();
         } catch (\Exception $e) {
-            Monitor::writeln(sprintf(
+            Monitor::writeln(\sprintf(
                 '<error>%s</error>',
                 $e->getMessage()
             ));
@@ -356,7 +356,7 @@ class DoctrineEventHandler
     {
         $fb_ids = $this->getExplorationsFBIds($events);
 
-        if (count($fb_ids)) {
+        if (\count($fb_ids)) {
             $this->firewall->loadExplorations($fb_ids);
         }
     }
@@ -367,10 +367,10 @@ class DoctrineEventHandler
         $explorations = $this->firewall->getExplorations();
 
         $batchSize = 500;
-        $nbBatches = ceil(count($explorations) / $batchSize);
+        $nbBatches = \ceil(\count($explorations) / $batchSize);
 
         for ($i = 0; $i < $nbBatches; ++$i) {
-            $currentExplorations = array_slice($explorations, $i * $batchSize, $batchSize);
+            $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
             foreach ($currentExplorations as $exploration) {
                 /*
                  * @var Exploration $exploration
@@ -472,9 +472,9 @@ class DoctrineEventHandler
         //Ville
         if (!$zipCity && $place->getVille()) {
             $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
-            if (0 === count($zipCities)) {
+            if (0 === \count($zipCities)) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_CITY_NAME);
-            } elseif (count($zipCities) > 1) {
+            } elseif (\count($zipCities) > 1) {
                 $place->getReject()->addReason(Reject::AMBIGOUS_CITY);
             } else {
                 $zipCity = $zipCities[0];
@@ -484,9 +484,9 @@ class DoctrineEventHandler
         //CP
         if (!$zipCity && !$place->getCodePostal() && $place->getCodePostal()) {
             $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
-            if (0 === count($zipCities)) {
+            if (0 === \count($zipCities)) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
-            } elseif (count($zipCities) > 1) {
+            } elseif (\count($zipCities) > 1) {
                 $place->getReject()->addReason(Reject::AMBIGOUS_ZIP);
             } else {
                 $zipCity = $zipCities[0];
@@ -499,10 +499,10 @@ class DoctrineEventHandler
 
         //Recherche de l'entité via sa ville ou son nom
         if (!$city) {
-            $tries = array_filter([$place->getVille(), $place->getNom()]);
+            $tries = \array_filter([$place->getVille(), $place->getNom()]);
             foreach ($tries as $try) {
                 $cities = $this->repoCity->findByName($try, $place->getCountry()->getId());
-                if (1 === count($cities)) {
+                if (1 === \count($cities)) {
                     $city = $cities[0];
 
                     break;
@@ -570,6 +570,6 @@ class DoctrineEventHandler
             }
         }
 
-        return array_keys($fbIds);
+        return \array_keys($fbIds);
     }
 }

@@ -20,7 +20,7 @@ class AgendaController extends Controller
     public function indexAction(Request $request)
     {
         $absoluteURL = $request->getUri();
-        $absoluteURL = str_replace('agenda/', '', $absoluteURL);
+        $absoluteURL = \str_replace('agenda/', '', $absoluteURL);
 
         return $this->redirect($absoluteURL, Response::HTTP_MOVED_PERMANENTLY);
     }

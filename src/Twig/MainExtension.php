@@ -75,7 +75,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
         $hashified    = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
         $mentionified = '/(^|[\n\s])@([^\s"\t\n\r<:]*)/is';
 
-        $prettyTweet = preg_replace(
+        $prettyTweet = \preg_replace(
             array(
                 $linkified,
                 $hashified,
@@ -94,14 +94,14 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
     public function parseTags($texte)
     {
-        $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", '<a href="$2" target="_blank" rel="nofollow">', $texte);
-        $texte = preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', $texte);
+        $texte = \preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", '<a href="$2" target="_blank" rel="nofollow">', $texte);
+        $texte = \preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', $texte);
 
-        if (!preg_match('/<(.*)(script|style|link)/i', $texte)) {
+        if (!\preg_match('/<(.*)(script|style|link)/i', $texte)) {
             return $texte;
         }
 
-        return strip_tags($texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
+        return \strip_tags($texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
     }
 
     public function diffDate(\DateTime $date)
@@ -115,62 +115,62 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
         if ($diff->y > 0) { //Années
             return [
-                'short' => sprintf('%d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
-                'long'  => sprintf('%d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
-                'full'  => sprintf('Il y a %d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
+                'short' => \sprintf('%d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
+                'long'  => \sprintf('%d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
+                'full'  => \sprintf('Il y a %d an%s', $diff->y, $diff->y > 1 ? 's' : ''),
             ];
         } elseif ($diff->m > 0) { //Mois
             return [
-                'short' => sprintf('%d mois', $diff->m),
-                'long'  => sprintf('%d mois', $diff->m),
-                'full'  => sprintf('Il y a %d mois', $diff->m),
+                'short' => \sprintf('%d mois', $diff->m),
+                'long'  => \sprintf('%d mois', $diff->m),
+                'full'  => \sprintf('Il y a %d mois', $diff->m),
             ];
         } elseif ($diff->d > 0) { //Jours
             return [
-                'short' => sprintf('%d j', $diff->d),
-                'long'  => sprintf('%d jours', $diff->d),
-                'full'  => sprintf('Il y a %d jours', $diff->d),
+                'short' => \sprintf('%d j', $diff->d),
+                'long'  => \sprintf('%d jours', $diff->d),
+                'full'  => \sprintf('Il y a %d jours', $diff->d),
             ];
         } elseif ($diff->h > 0) { //Heures
             return [
-                'short' => sprintf('%d h', $diff->h),
-                'long'  => sprintf('%d heure%s', $diff->h, $diff->h > 1 ? 's' : ''),
-                'full'  => sprintf('Il y a %d heure%s', $diff->h, $diff->h > 1 ? 's' : ''),
+                'short' => \sprintf('%d h', $diff->h),
+                'long'  => \sprintf('%d heure%s', $diff->h, $diff->h > 1 ? 's' : ''),
+                'full'  => \sprintf('Il y a %d heure%s', $diff->h, $diff->h > 1 ? 's' : ''),
             ];
         } elseif ($diff->i > 0) { //Minutes
             return [
-                'short' => sprintf('%d min', $diff->i),
-                'long'  => sprintf('%d minute%s', $diff->i, $diff->i > 1 ? 's' : ''),
-                'full'  => sprintf('Il y a %d minute%s', $diff->i, $diff->i > 1 ? 's' : ''),
+                'short' => \sprintf('%d min', $diff->i),
+                'long'  => \sprintf('%d minute%s', $diff->i, $diff->i > 1 ? 's' : ''),
+                'full'  => \sprintf('Il y a %d minute%s', $diff->i, $diff->i > 1 ? 's' : ''),
             ];
         } elseif ($diff->s > 30) { //Secondes
             return [
-                'short' => sprintf('%d s', $diff->s),
-                'long'  => sprintf('%d seconde%s', $diff->s, $diff->s > 1 ? 's' : ''),
-                'full'  => sprintf('Il y a %d seconde%s', $diff->s, $diff->s > 1 ? 's' : ''),
+                'short' => \sprintf('%d s', $diff->s),
+                'long'  => \sprintf('%d seconde%s', $diff->s, $diff->s > 1 ? 's' : ''),
+                'full'  => \sprintf('Il y a %d seconde%s', $diff->s, $diff->s > 1 ? 's' : ''),
             ];
         }
 
         return [
-            'short' => sprintf('0 s'),
-            'long'  => sprintf("à l'instant"),
-            'full'  => sprintf("A l'instant"),
+            'short' => \sprintf('0 s'),
+            'long'  => \sprintf("à l'instant"),
+            'full'  => \sprintf("A l'instant"),
         ];
     }
 
     public function urlDecode($value)
     {
-        return urldecode($value);
+        return \urldecode($value);
     }
 
     public function resume($texte)
     {
-        $replaced_text = str_replace('&#13;', '<br>', $texte);
-        $stripped_text = strip_tags($replaced_text);
-        $shorted_text  = substr($stripped_text, 0, 250);
+        $replaced_text = \str_replace('&#13;', '<br>', $texte);
+        $stripped_text = \strip_tags($replaced_text);
+        $shorted_text  = \substr($stripped_text, 0, 250);
 
         //striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
-        $linked_text = preg_replace("
+        $linked_text = \preg_replace("
             #((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|\"|'|:|\<|$|\.\s)#ie",
             "'<a rel=\"nofollow\" href=\"$1\" target=\"_blank\">$3</a>$4'",
             $shorted_text
@@ -178,7 +178,7 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
 
         $final_text = $this->trimBr($linked_text);
 
-        return trim($final_text);
+        return \trim($final_text);
     }
 
     public function partialExtendsFilter($template, $suffix = '.partial')
@@ -194,13 +194,13 @@ class MainExtension extends \Twig_Extension implements \Twig_Extension_GlobalsIn
             $suffix = '';
         }
 
-        return preg_replace("/\.html(\.twig)?/i", $suffix . '.html.twig', $template);
+        return \preg_replace("/\.html(\.twig)?/i", $suffix . '.html.twig', $template);
     }
 
     protected function trimBr($string)
     {
-        $string = preg_replace('/^\s*(?:<br\s*\/?>\s*)*/i', '', $string);
-        $string = preg_replace('/\s*(?:<br\s*\/?>\s*)*$/i', '', $string);
+        $string = \preg_replace('/^\s*(?:<br\s*\/?>\s*)*/i', '', $string);
+        $string = \preg_replace('/\s*(?:<br\s*\/?>\s*)*$/i', '', $string);
 
         return $string;
     }

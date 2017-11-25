@@ -102,7 +102,7 @@ class AgendaRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_unique(array_filter(array_column($places, 'facebookOwnerId')));
+        return \array_unique(\array_filter(\array_column($places, 'facebookOwnerId')));
     }
 
     public function findAllOfWeek()
@@ -156,7 +156,7 @@ class AgendaRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_filter(array_map('current', $datas));
+        return \array_filter(\array_map('current', $datas));
     }
 
     public function getNextEventsCount(\DateTime $since)
@@ -218,7 +218,7 @@ class AgendaRepository extends EntityRepository
             ->where('c.user = :user')
             ->andWhere('a.dateFin ' . ($isNext ? '>=' : '<') . ' :date_debut')
             ->orderBy('a.dateFin', $isNext ? 'ASC' : 'DESC')
-            ->setParameters([':user' => $user->getId(), 'date_debut' => date('Y-m-d')])
+            ->setParameters([':user' => $user->getId(), 'date_debut' => \date('Y-m-d')])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -394,7 +394,7 @@ class AgendaRepository extends EntityRepository
             ->getQuery()
             ->execute();
 
-        usort($soirees, function (Agenda $a, Agenda $b) {
+        \usort($soirees, function (Agenda $a, Agenda $b) {
             if ($a->getDateFin() === $b->getDateFin()) {
                 return 0;
             }
@@ -427,21 +427,21 @@ class AgendaRepository extends EntityRepository
             $params[':now'] = (new \DateTime())->format('Y-m-d');
         }
 
-        if (count($search->getTerms()) > 0) {
+        if (\count($search->getTerms()) > 0) {
             $qb->andWhere('(a.nom LIKE :mot_clefs OR a.descriptif LIKE :mot_clefs OR a.lieuNom LIKE :mot_clefs)');
             $params[':mot_clefs'] = '%' . $search->getTerm() . '%';
         }
 
-        if (null !== $search->getTypeManifestation() && count($search->getTypeManifestation()) > 0) {
+        if (null !== $search->getTypeManifestation() && \count($search->getTypeManifestation()) > 0) {
             $qb->andWhere('a.typeManifestation IN(:type_manifesation)');
             $params[':type_manifesation'] = $search->getTypeManifestation();
         }
-        if (null !== $search->getCommune() && count($search->getCommune()) > 0) {
+        if (null !== $search->getCommune() && \count($search->getCommune()) > 0) {
             $qb->andWhere('a.commune IN(:commune)');
             $params[':commune'] = $search->getCommune();
         }
 
-        if (null !== $search->getLieux() && count($search->getLieux()) > 0) {
+        if (null !== $search->getLieux() && \count($search->getLieux()) > 0) {
             $qb->andWhere('a.lieuNom IN(:lieux)');
             $params[':lieux'] = $search->getLieux();
         }
@@ -488,7 +488,7 @@ class AgendaRepository extends EntityRepository
     //Appelé par DoctrineEventParser
     public function findAllByDates(array $events, array $fbIds)
     {
-        if (!count($events)) {
+        if (!\count($events)) {
             return [];
         }
 
@@ -512,7 +512,7 @@ class AgendaRepository extends EntityRepository
             $query->andWhere($where);
         }
 
-        if (count($fbIds) > 0) {
+        if (\count($fbIds) > 0) {
             $query->andWhere('a.facebookEventId NOT IN (:fbIds)');
             $params['fbIds'] = $fbIds;
         }

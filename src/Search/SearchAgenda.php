@@ -67,7 +67,7 @@ class SearchAgenda
 
     public function getTerms()
     {
-        return array_unique(array_filter(explode(' ', $this->getTerm())));
+        return \array_unique(\array_filter(\explode(' ', $this->getTerm())));
     }
 
     /**

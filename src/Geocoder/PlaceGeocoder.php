@@ -61,7 +61,7 @@ class PlaceGeocoder
 
     public function geocodeCoordinates(Place $place)
     {
-        $key  = sprintf('%f.%f', round($place->getLatitude(), 6), round($place->getLongitude(), 6));
+        $key  = \sprintf('%f.%f', \round($place->getLatitude(), 6), \round($place->getLongitude(), 6));
         $data = $this->cache->fetch($key);
         if (false === $data) {
             $request  = new GeocoderCoordinateRequest(new Coordinate($place->getLatitude(), $place->getLongitude()));
@@ -89,7 +89,7 @@ class PlaceGeocoder
             }
         }
 
-        if (!count($data)) {
+        if (!\count($data)) {
             $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
 
             return;
@@ -232,17 +232,17 @@ class PlaceGeocoder
     {
         $datas = [];
         foreach ($addresseComponents as $addressComponent) {
-            if (in_array('country', $addressComponent->getTypes())) {
+            if (\in_array('country', $addressComponent->getTypes())) {
                 $datas['country'] = $addressComponent->getLongName();
-            } elseif (in_array('administrative_area_level_1', $addressComponent->getTypes())) {
+            } elseif (\in_array('administrative_area_level_1', $addressComponent->getTypes())) {
                 $datas['admin_zone_1'] = $addressComponent->getLongName();
-            } elseif (in_array('administrative_area_level_2', $addressComponent->getTypes())) {
+            } elseif (\in_array('administrative_area_level_2', $addressComponent->getTypes())) {
                 $datas['admin_zone_2'] = $addressComponent->getLongName();
-            } elseif (in_array('postal_code', $addressComponent->getTypes())) {
+            } elseif (\in_array('postal_code', $addressComponent->getTypes())) {
                 $datas['postal_code'] = $addressComponent->getLongName();
-            } elseif (in_array('locality', $addressComponent->getTypes())) {
+            } elseif (\in_array('locality', $addressComponent->getTypes())) {
                 $datas['city'] = $addressComponent->getLongName();
-            } elseif (in_array('route', $addressComponent->getTypes())) {
+            } elseif (\in_array('route', $addressComponent->getTypes())) {
                 $datas['rue'] = $addressComponent->getLongName();
             }
         }

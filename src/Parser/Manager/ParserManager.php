@@ -36,16 +36,16 @@ class ParserManager
             /*
              * @var ParserInterface $parser
              */
-            Monitor::writeln(sprintf(
+            Monitor::writeln(\sprintf(
                 'Lancement de <info>%s</info>',
                 $parser->getNomData()
             ));
             $agendas = $parser->parse();
 
-            if (count($this->parsers) > 1) {
-                Monitor::writeln(sprintf(
+            if (\count($this->parsers) > 1) {
+                Monitor::writeln(\sprintf(
                     '<info>%d</info> événements à traiter pour <info>%s</info>',
-                    count($agendas),
+                    \count($agendas),
                     $parser->getNomData()
                 ));
             }
@@ -54,12 +54,12 @@ class ParserManager
                 $agenda['from_data'] = $parser->getNomData();
             }
 
-            $full_agendas = array_merge($full_agendas, $agendas);
+            $full_agendas = \array_merge($full_agendas, $agendas);
         }
 
-        Monitor::writeln(sprintf(
+        Monitor::writeln(\sprintf(
             '<info>%d</info> événements à traiter au total',
-            count($full_agendas)
+            \count($full_agendas)
         ));
 
         return $full_agendas;

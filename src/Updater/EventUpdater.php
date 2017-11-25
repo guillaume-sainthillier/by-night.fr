@@ -41,7 +41,7 @@ class EventUpdater extends Updater
 
         unset($fbIds);
 
-        $nbBatchs = ceil($count / self::PAGINATION_SIZE);
+        $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
         for ($i = 0; $i < $nbBatchs; ++$i) {
@@ -60,7 +60,7 @@ class EventUpdater extends Updater
              * @var Agenda
              */
             $imageURL = $event->getUrl();
-            $imageURL = preg_replace('#(jp|jpe|pn)$#', '$1g', $imageURL);
+            $imageURL = \preg_replace('#(jp|jpe|pn)$#', '$1g', $imageURL);
             if ($event->getFacebookEventId() && isset($fbStats[$event->getFacebookEventId()])) {
                 $imageURL = $fbStats[$event->getFacebookEventId()]['url'];
                 $event->setFbParticipations($fbStats[$event->getFacebookEventId()]['participations']);
