@@ -132,7 +132,7 @@
             <h2 class="modal-title">Les concerts</h2>
         </div>
         <div class="panel-body">
-            {% include ":City/Event:block_preview_event.html.twig" with({"events": concerts}) %}
+            {% include "City/Event/block_preview_event.html.twig" with({"events": concerts}) %}
         </div>
     </div>
 
@@ -141,7 +141,7 @@
             <h2 class="modal-title">Les spectacles</h2>
         </div>
         <div class="panel-body">
-            {% include ":City/Event:block_preview_event.html.twig" with({"events": spectacles}) %}
+            {% include "/City/Event/block_preview_event.html.twig" with({"events": spectacles}) %}
         </div>
     </div>
 
@@ -150,7 +150,7 @@
             <h2 class="modal-title">Les sorties étudiantes</h2>
         </div>
         <div class="panel-body">
-            {% include ":City/Event:block_preview_event.html.twig" with({"events": etudiants}) %}
+            {% include "City/Event/block_preview_event.html.twig" with({"events": etudiants}) %}
         </div>
     </div>
 
@@ -159,7 +159,7 @@
             <h2 class="modal-title">Les sorties en famille</h2>
         </div>
         <div class="panel-body">
-            {% include ":City/Event:block_preview_event.html.twig" with({"events": familles}) %}
+            {% include "City/Event/block_preview_event.html.twig" with({"events": familles}) %}
         </div>
     </div>
 </div>

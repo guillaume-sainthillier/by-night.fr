@@ -71,7 +71,7 @@ twig:
     strict_variables: "%kernel.debug%"
     form_themes:
             - 'VichUploaderBundle:Form:fields.html.twig'
-            - ':Form:fields.html.twig'
+            - 'Form/fields.html.twig'
     globals:
         menu: "@white_october_breadcrumbs"
         app_manager: "@tbn.app_manager"
