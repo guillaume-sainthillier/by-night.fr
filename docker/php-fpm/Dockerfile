@@ -61,9 +61,10 @@ RUN npm install -g grunt-cli
 #RUN npm install grunt --save-dev
 
 #PHPUnit
-RUN wget https://phar.phpunit.de/phpunit-6.4.phar
-RUN chmod +x phpunit-6.4.phar
-RUN sudo mv phpunit-6.4.phar /usr/local/bin/phpunit
+ENV PHPUNIT_VERSION 6.4
+RUN wget https://phar.phpunit.de/phpunit-${PHPUNIT_VERSION}.phar
+RUN chmod +x phpunit-${PHPUNIT_VERSION}.phar
+RUN mv phpunit-${PHPUNIT_VERSION}.phar /usr/local/bin/phpunit
 
 
 # Permission fix
