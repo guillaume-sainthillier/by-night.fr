@@ -44,12 +44,12 @@ class EventHandler
             $agenda->setUrl(null);
         } else {
             //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = preg_replace("/(\?|_)(.*)$/", '', pathinfo($agenda->getUrl(), PATHINFO_EXTENSION));
+            $ext = \preg_replace("/(\?|_)(.*)$/", '', \pathinfo($agenda->getUrl(), PATHINFO_EXTENSION));
 
-            $filename = sha1(uniqid(mt_rand(), true)) . '.' . $ext;
+            $filename = \sha1(\uniqid(\mt_rand(), true)) . '.' . $ext;
 
             $tempPath = $this->tempPath . '/' . $filename;
-            $octets   = file_put_contents($tempPath, $content);
+            $octets   = \file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
                 $file = new UploadedFile($tempPath, $filename, null, null, false, true);

@@ -22,7 +22,7 @@ class DefaultController extends BaseController
         $user = $this->getUser();
 
         /** @var Social $social */
-        $social = $this->container->get('tbn.social.' . strtolower('facebook' === $service ? 'facebook_events' : $service));
+        $social = $this->container->get('tbn.social.' . \strtolower('facebook' === $service ? 'facebook_events' : $service));
         $social->disconnectUser($user);
 
         $this->authenticateBasicUser($user);

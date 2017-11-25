@@ -40,19 +40,19 @@ class PlaceType extends AbstractType
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return floatval($latitude) ?: null;
+                return (float) $latitude ?: null;
             },
             function ($latitude) {
-                return floatval($latitude) ?: null;
+                return (float) $latitude ?: null;
             }
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return floatval($latitude) ?: null;
+                return (float) $latitude ?: null;
             },
             function ($latitude) {
-                return floatval($latitude) ?: null;
+                return (float) $latitude ?: null;
             }
         ));
     }

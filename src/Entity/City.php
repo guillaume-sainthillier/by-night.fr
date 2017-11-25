@@ -30,7 +30,7 @@ class City extends AdminZone
         }
         $parts[] = $this->getCountry()->getName();
 
-        return sprintf('%s (%s)', $this->getName(), implode(', ', $parts));
+        return \sprintf('%s (%s)', $this->getName(), \implode(', ', $parts));
     }
 
     /**

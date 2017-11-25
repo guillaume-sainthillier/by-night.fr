@@ -72,7 +72,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($sections as $name => $generateFunction) {
             if (!$section || $name === $section) {
-                call_user_func($generateFunction, $name);
+                \call_user_func($generateFunction, $name);
             }
         }
     }

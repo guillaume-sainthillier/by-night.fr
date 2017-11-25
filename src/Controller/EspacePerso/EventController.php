@@ -190,16 +190,16 @@ class EventController extends Controller
                     /*
                      * @var ConstraintViolation $error ;
                      */
-                    $errorsString[] = sprintf(
+                    $errorsString[] = \sprintf(
                         '<li>%s</li>',
                         $error->getMessage()
                     );
                 }
-                $this->addFlash('info', sprintf(
+                $this->addFlash('info', \sprintf(
                     "Informations sur l'événément <a href='https://facebook.com/events/%s/'>%s</a> : <ul>%s</ul>",
                     $event->getFacebookEventId(),
                     $event->getNom(),
-                    implode('', $errorsString)
+                    \implode('', $errorsString)
                 ));
             }
         }
@@ -216,7 +216,7 @@ class EventController extends Controller
             $indicatifUpdate = 1 == $explorationHandler->getNbUpdates() ? 'a' : 'ont';
             $message         = null;
             if ($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
-                $message = sprintf(
+                $message = \sprintf(
                     '<strong>%d</strong> événément%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !',
                     $explorationHandler->getNbInserts(),
                     $plurielInsert,
@@ -226,7 +226,7 @@ class EventController extends Controller
                     $indicatifUpdate
                 );
             } elseif ($explorationHandler->getNbInserts() > 0) {
-                $message = sprintf(
+                $message = \sprintf(
                     '<strong>%d</strong> événément%s %s été ajouté%s sur By Night !',
                     $explorationHandler->getNbInserts(),
                     $plurielInsert,
@@ -234,7 +234,7 @@ class EventController extends Controller
                     $plurielInsert
                 );
             } elseif ($explorationHandler->getNbUpdates() > 0) {
-                $message = sprintf(
+                $message = \sprintf(
                     '<strong>%d</strong> événément%s %s été mis à jour sur By Night !',
                     $explorationHandler->getNbUpdates(),
                     $plurielUpdate,
@@ -314,7 +314,7 @@ class EventController extends Controller
 
     protected function getServiceByName($service)
     {
-        return $this->get('tbn.social.' . strtolower('facebook' === $service ? 'facebook_admin' : $service));
+        return $this->get('tbn.social.' . \strtolower('facebook' === $service ? 'facebook_admin' : $service));
     }
 
     protected function createDeleteForm(Agenda $agenda)
@@ -336,7 +336,7 @@ class EventController extends Controller
 
     protected function createEditForm(Agenda $agenda)
     {
-        $options = array_merge($this->getAgendaOptions(), [
+        $options = \array_merge($this->getAgendaOptions(), [
             'action' => $this->generateUrl('tbn_agenda_edit', [
                 'slug' => $agenda->getSlug(),
             ]),
@@ -370,7 +370,7 @@ class EventController extends Controller
      */
     protected function createCreateForm(Agenda $agenda)
     {
-        $options = array_merge($this->getAgendaOptions(), [
+        $options = \array_merge($this->getAgendaOptions(), [
             'action' => $this->generateUrl('tbn_agenda_new'),
             'method' => 'POST',
         ]);

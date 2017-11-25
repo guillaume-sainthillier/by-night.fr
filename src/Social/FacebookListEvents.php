@@ -18,7 +18,7 @@ class FacebookListEvents extends Facebook
         $userInfo = $user->getInfo();
 
         if (!$userInfo || !$userInfo->getFacebookAccessToken()) {
-            throw new \RuntimeException(sprintf(
+            throw new \RuntimeException(\sprintf(
                 "Unable to find user social infos for user '%d'",
                 $user->getId()
             ));

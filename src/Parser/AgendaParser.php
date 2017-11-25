@@ -65,9 +65,9 @@ abstract class AgendaParser implements ParserInterface
     {
         $tabMois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
-        return preg_replace_callback("/(.+)(\d{2}) (" . implode('|', $tabMois) . ") (\d{4})(.*)/iu",
+        return \preg_replace_callback("/(.+)(\d{2}) (" . \implode('|', $tabMois) . ") (\d{4})(.*)/iu",
             function ($items) use ($tabMois) {
-                return $items[4] . '-' . (array_search($items[3], $tabMois) + 1) . '-' . $items[2];
+                return $items[4] . '-' . (\array_search($items[3], $tabMois) + 1) . '-' . $items[2];
             }, $date);
     }
 }

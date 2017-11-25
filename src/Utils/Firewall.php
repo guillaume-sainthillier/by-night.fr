@@ -257,13 +257,13 @@ class Firewall
     private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
     {
         $theta = $entity->getLongitude() - $boundary->getLongitude();
-        $dist  = sin(deg2rad($entity->getLatitude())) *
-            sin(deg2rad($boundary->getLatitude())) +
-            cos(deg2rad($entity->getLatitude())) *
-            cos(deg2rad($boundary->getLatitude())) *
-            cos(deg2rad($theta));
-        $dist = acos($dist);
-        $dist = rad2deg($dist);
+        $dist  = \sin(\deg2rad($entity->getLatitude())) *
+            \sin(\deg2rad($boundary->getLatitude())) +
+            \cos(\deg2rad($entity->getLatitude())) *
+            \cos(\deg2rad($boundary->getLatitude())) *
+            \cos(\deg2rad($theta));
+        $dist = \acos($dist);
+        $dist = \rad2deg($dist);
 
         return $dist * 111.189577; //60 * 1.1515 * 1.609344
     }
@@ -298,7 +298,7 @@ class Firewall
         ];
 
         foreach ($black_list as $black_word) {
-            if (strstr($content, $black_word)) {
+            if (\strstr($content, $black_word)) {
                 return true;
             }
         }
@@ -313,12 +313,12 @@ class Firewall
 
     private function checkLengthValidity($str, $length)
     {
-        return strlen($this->comparator->sanitize($str)) === $length;
+        return \strlen($this->comparator->sanitize($str)) === $length;
     }
 
     public function checkMinLengthValidity($str, $min)
     {
-        return isset(trim($str)[$min]);
+        return isset(\trim($str)[$min]);
     }
 
     public function addExploration(Exploration $exploration)

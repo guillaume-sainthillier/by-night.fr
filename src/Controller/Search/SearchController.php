@@ -78,9 +78,9 @@ class SearchController extends Controller
      */
     public function searchAction(Request $request)
     {
-        $q        = trim($request->get('q', null));
+        $q        = \trim($request->get('q', null));
         $type     = $request->get('type', null);
-        $page     = intval($request->get('page', 1));
+        $page     = (int) ($request->get('page', 1));
         $rm       = $this->get('fos_elastica.manager');
         $maxItems = 20;
 
@@ -88,7 +88,7 @@ class SearchController extends Controller
             $page = 1;
         }
 
-        if ($type && !in_array($type, ['evenements', 'membres'])) {
+        if ($type && !\in_array($type, ['evenements', 'membres'])) {
             $type = null;
         }
 

@@ -108,7 +108,7 @@ class Merger
         }
 
         foreach ($fields as $type => $field) {
-            if (is_numeric($type)) {
+            if (\is_numeric($type)) {
                 $type = self::DEFAULT_MERGE;
             } else {
                 $oldField = $field;
@@ -131,8 +131,8 @@ class Merger
 
     protected function getBestContent($valueA, $valueB, $mergeType)
     {
-        if (is_callable($mergeType)) {
-            return call_user_func($mergeType, $valueA, $valueB);
+        if (\is_callable($mergeType)) {
+            return \call_user_func($mergeType, $valueA, $valueB);
         }
 
         switch ($mergeType) {
@@ -153,14 +153,14 @@ class Merger
 
                 return $this->getBestContent($valueA, $valueB, self::MERGE_RIGHT_IF_DIFFERENT);
             case self::MERGE_MAX:
-                return max($valueA, $valueB);
+                return \max($valueA, $valueB);
         }
 
-        if (is_bool($valueA)) {
+        if (\is_bool($valueA)) {
             return $valueA;
         }
 
-        if (is_object($valueA) || is_object($valueB)) {
+        if (\is_object($valueA) || \is_object($valueB)) {
             return $valueA ?: $valueB;
         }
 
@@ -171,6 +171,6 @@ class Merger
 
     private function skakeToCamel($str)
     {
-        return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));
+        return \str_replace(' ', '', \ucwords(\str_replace('_', ' ', $str)));
     }
 }

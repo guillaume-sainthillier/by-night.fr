@@ -22,9 +22,9 @@ class CityRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        shuffle($results);
+        \shuffle($results);
 
-        return array_slice($results, 0, $limit);
+        return \array_slice($results, 0, $limit);
     }
 
     public function findLocations()
@@ -44,13 +44,13 @@ class CityRepository extends \Doctrine\ORM\EntityRepository
     public function findByName($city, $country)
     {
         $cities   = [];
-        $city     = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-        $city     = str_replace('’', "'", $city);
+        $city     = \preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
+        $city     = \str_replace('’', "'", $city);
         $cities[] = $city;
-        $cities[] = str_replace(' ', '-', $city);
-        $cities[] = str_replace('-', ' ', $city);
-        $cities[] = str_replace("'", '', $city);
-        $cities   = array_unique($cities);
+        $cities[] = \str_replace(' ', '-', $city);
+        $cities[] = \str_replace('-', ' ', $city);
+        $cities[] = \str_replace("'", '', $city);
+        $cities   = \array_unique($cities);
 
         return $this
             ->createQueryBuilder('c')
@@ -104,6 +104,6 @@ class CityRepository extends \Doctrine\ORM\EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_unique(array_filter(array_column($cities, 'name')));
+        return \array_unique(\array_filter(\array_column($cities, 'name')));
     }
 }

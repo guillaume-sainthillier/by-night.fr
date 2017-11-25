@@ -32,7 +32,7 @@ class UpdateFBId implements BatchConsumerInterface
 
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {
-            $data              = unserialize($message->body);
+            $data              = \unserialize($message->body);
             $ids[$data['old']] = $ids[$data['new']];
         }
 

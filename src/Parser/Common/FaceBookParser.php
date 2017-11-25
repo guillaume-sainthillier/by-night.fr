@@ -71,14 +71,14 @@ class FaceBookParser extends AgendaParser
     protected function getEventsFromUsers(array $additional_users, \DateTime $now)
     {
         $users = $this->getUsers();
-        $users = array_unique(array_merge($users, $additional_users));
+        $users = \array_unique(\array_merge($users, $additional_users));
 
         //Récupération des événements depuis les lieux trouvés
         Monitor::writeln('Recherche des événements associés aux users ...');
         $events = $this->api->getEventsFromUsers($users, $now);
-        Monitor::writeln(sprintf(
+        Monitor::writeln(\sprintf(
             '<info>%d</info> événements trouvés',
-            count($events)
+            \count($events)
         ));
 
         return $events;
@@ -92,23 +92,23 @@ class FaceBookParser extends AgendaParser
         $locations = $this->getSiteLocations();
         Monitor::writeln('Recherche des places associés aux sites ...');
         $gps_places = $this->api->getPlacesFromGPS($locations);
-        Monitor::writeln(sprintf(
+        Monitor::writeln(\sprintf(
             '<info>%d</info> places trouvées',
-            count($gps_places)
+            \count($gps_places)
         ));
 
-        $gps_places = array_map(function (GraphNode $node) {
+        $gps_places = \array_map(function (GraphNode $node) {
             return $node->getField('id');
         }, $gps_places);
 
-        $places = array_unique(array_filter(array_merge($places, $gps_places)));
+        $places = \array_unique(\array_filter(\array_merge($places, $gps_places)));
 
         //        Récupération des événements depuis les lieux trouvés
         Monitor::writeln('Recherche des événements associés aux places ...');
         $events = $this->api->getEventsFromPlaces($places, $now);
-        Monitor::writeln(sprintf(
+        Monitor::writeln(\sprintf(
             '<info>%d</info> événements trouvés',
-            count($events)
+            \count($events)
         ));
 
         return $events;
@@ -119,12 +119,12 @@ class FaceBookParser extends AgendaParser
         //Récupération des événements par mots-clés
         Monitor::writeln("Recherche d'événements associés aux mots clés...");
         $cities = $this->getCities();
-        shuffle($cities);
-        $cities = array_slice($cities, 0, 100);
+        \shuffle($cities);
+        $cities = \array_slice($cities, 0, 100);
         $events = $this->api->getEventsFromKeywords($cities, $now);
-        Monitor::writeln(sprintf(
+        Monitor::writeln(\sprintf(
             '<info>%d</info> événements trouvés',
-            count($events)
+            \count($events)
         ));
 
         return $events;
@@ -132,7 +132,7 @@ class FaceBookParser extends AgendaParser
 
     protected function getOwners(array $nodes)
     {
-        return array_filter(array_map(function (GraphNode $node) {
+        return \array_filter(\array_map(function (GraphNode $node) {
             $owner = $node->getField('owner');
 
             return $owner ? $owner->getField('id') : null;
@@ -158,16 +158,16 @@ class FaceBookParser extends AgendaParser
         //Recherche d'événéments de l'API en fonction des villes
         $cities_events = $this->getEventFromCities($now);
 
-        $events = $this->getUniqueEvents(array_merge($place_events, $user_events, $cities_events));
-        Monitor::writeln(sprintf(
+        $events = $this->getUniqueEvents(\array_merge($place_events, $user_events, $cities_events));
+        Monitor::writeln(\sprintf(
             '<info>%d</info> événément(s) à traiter au total',
-            count($events)
+            \count($events)
         ));
 
         //Appel au GC
         unset($place_events, $user_events, $cities_events);
 
-        return array_map([$this, 'getInfoAgenda'], $events);
+        return \array_map([$this, 'getInfoAgenda'], $events);
     }
 
     public function getIdsToMigrate()
@@ -198,7 +198,7 @@ class FaceBookParser extends AgendaParser
 
         $tab_retour['nom']                  = $event->getField('name');
         $tab_retour['facebook_event_id']    = $event->getField('id');
-        $tab_retour['descriptif']           = nl2br($event->getField('description'));
+        $tab_retour['descriptif']           = \nl2br($event->getField('description'));
         $tab_retour['date_debut']           = $event->getField('start_time');
         $tab_retour['date_fin']             = $event->getField('end_time');
         $tab_retour['fb_date_modification'] = $event->getField('updated_time');
@@ -211,9 +211,9 @@ class FaceBookParser extends AgendaParser
         $horaires  = null;
 
         if ($dateDebut instanceof \DateTime && $dateFin instanceof \DateTime) {
-            $horaires = sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
+            $horaires = \sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
         } elseif ($dateDebut instanceof \DateTime) {
-            $horaires = sprintf('A %s', $dateDebut->format("H\hi"));
+            $horaires = \sprintf('A %s', $dateDebut->format("H\hi"));
         }
 
         $tab_retour['horaires'] = $horaires;
@@ -287,13 +287,13 @@ class FaceBookParser extends AgendaParser
         $types      = [];
         $categories = [];
         foreach ($list as $subStr => $group) {
-            if (false !== strstr($category, $subStr)) {
+            if (false !== \strstr($category, $subStr)) {
                 $types[]      = $group['type'];
                 $categories[] = $group['categorie'];
             }
         }
 
-        return [implode(',', $types), implode(',', $categories)];
+        return [\implode(',', $types), \implode(',', $categories)];
     }
 
     public function getNomData()

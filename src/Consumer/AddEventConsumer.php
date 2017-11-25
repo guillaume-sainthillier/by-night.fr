@@ -36,7 +36,7 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 
     public function execute(AMQPMessage $msg)
     {
-        $datas = unserialize($msg->body);
+        $datas = \unserialize($msg->body);
         $event = $this->eventFactory->fromArray($datas);
         dump($event);
 
@@ -49,7 +49,7 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
         $events          = [];
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {
-            $events[] = $this->eventFactory->fromArray(unserialize($message->body));
+            $events[] = $this->eventFactory->fromArray(\unserialize($message->body));
         }
 
         $this->doctrineEventHandler->handleManyCLI($events);

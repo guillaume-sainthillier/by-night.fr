@@ -15,12 +15,12 @@ class EventSEO
     public function getEventDate(Agenda $event)
     {
         if (!$event->getDateFin() || $event->getDateDebut() === $event->getDateFin()) {
-            return sprintf('le %s',
+            return \sprintf('le %s',
                 $this->formatDate($event->getDateDebut(), \IntlDateFormatter::FULL, \IntlDateFormatter::NONE)
             );
         }
 
-        return sprintf('du %s au %s',
+        return \sprintf('du %s au %s',
             $this->formatDate($event->getDateDebut(), \IntlDateFormatter::FULL, \IntlDateFormatter::NONE),
             $this->formatDate($event->getDateFin(), \IntlDateFormatter::FULL, \IntlDateFormatter::NONE)
         );
@@ -28,25 +28,25 @@ class EventSEO
 
     public function getEventDescription(Agenda $agenda)
     {
-        $description = sprintf('Découvrez %s.', $agenda->getNom());
+        $description = \sprintf('Découvrez %s.', $agenda->getNom());
 
         if ($agenda->getPlace()) {
-            $description .= sprintf(' %s à %s.',
+            $description .= \sprintf(' %s à %s.',
                 $agenda->getPlace()->getNom(),
                 $agenda->getPlace()->getVille()
             );
         }
 
-        $description .= sprintf(' %s.', ucfirst($this->getEventDateTime($agenda)));
+        $description .= \sprintf(' %s.', \ucfirst($this->getEventDateTime($agenda)));
 
         $tags = $agenda->getDistinctTags();
 
-        if (count($tags)) {
-            $description .= sprintf(' %s.', implode(', ', $tags));
+        if (\count($tags)) {
+            $description .= \sprintf(' %s.', \implode(', ', $tags));
         }
 
         if ($agenda->getFbParticipations() + $agenda->getFbInterets() > 50) {
-            $description .= sprintf(' %d personnes intéressées', $agenda->getFbParticipations() + $agenda->getFbInterets());
+            $description .= \sprintf(' %d personnes intéressées', $agenda->getFbParticipations() + $agenda->getFbInterets());
         }
 
         return $description;
@@ -57,19 +57,19 @@ class EventSEO
         $datetime = $this->getEventDate($event);
 
         if ($event->getHoraires()) {
-            $datetime .= sprintf(' - %s', $event->getHoraires());
+            $datetime .= \sprintf(' - %s', $event->getHoraires());
         }
 
-        $datetime = trim($datetime);
+        $datetime = \trim($datetime);
 
-        return trim($datetime);
+        return \trim($datetime);
     }
 
     public function getEventShortTitle(Agenda $event)
     {
         $shortTitle = $event->getNom();
         if ($event->getModificationDerniereMinute()) {
-            $shortTitle .= sprintf(' [%s]', $event->getModificationDerniereMinute());
+            $shortTitle .= \sprintf(' [%s]', $event->getModificationDerniereMinute());
         }
 
         return $shortTitle;
@@ -80,7 +80,7 @@ class EventSEO
         $title = $this->getEventShortTitle($event);
 
         if ($event->getPlace()) {
-            $title .= sprintf(' - %s', $event->getPlace()->getNom());
+            $title .= \sprintf(' - %s', $event->getPlace()->getNom());
         }
 
         return $title;

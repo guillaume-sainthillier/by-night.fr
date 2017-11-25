@@ -11,9 +11,9 @@ class TBNController extends Controller
 {
     protected function getSecondsUntilTomorrow()
     {
-        $minuit = strtotime('tomorrow 00:00:00');
+        $minuit = \strtotime('tomorrow 00:00:00');
 
-        return $minuit - time();
+        return $minuit - \time();
     }
 
     /**
@@ -43,7 +43,7 @@ class TBNController extends Controller
         $requestStack = $this->get('request_stack');
 
         if (null === $requestStack->getParentRequest() && (!$id || $event->getSlug() !== $slug || $event->getPlace()->getCity()->getSlug() !== $city->getSlug())) {
-            $routeParams = array_merge([
+            $routeParams = \array_merge([
                 'id'   => $event->getId(),
                 'slug' => $event->getSlug(),
                 'city' => $event->getPlace()->getCity()->getSlug(),
@@ -57,12 +57,12 @@ class TBNController extends Controller
 
     protected function getSecondsUntil($hours)
     {
-        $time     = time();
+        $time     = \time();
         $now      = new \DateTime();
         $minutes  = $now->format('i');
         $secondes = $now->format('s');
 
-        $string = 1 == $hours ? '+1 hour' : sprintf('+%d hours', $hours);
+        $string = 1 == $hours ? '+1 hour' : \sprintf('+%d hours', $hours);
         $now->modify($string);
 
         if ($minutes > 0) {

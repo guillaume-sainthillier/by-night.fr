@@ -25,7 +25,7 @@ class ApiController extends Controller
      */
     public function cityAutocompleteAction(Request $request)
     {
-        $term = trim($request->get('q'));
+        $term = \trim($request->get('q'));
         if (!$term) {
             $results = [];
         } else {

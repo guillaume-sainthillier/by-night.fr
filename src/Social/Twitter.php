@@ -57,7 +57,7 @@ class Twitter extends Social
 
         try {
             $params = [
-                'q'           => sprintf('#%s filter:safe', $city->getName()),
+                'q'           => \sprintf('#%s filter:safe', $city->getName()),
                 'lang'        => 'fr',
                 'result_type' => 'recent',
                 'count'       => $limit,
@@ -89,7 +89,7 @@ class Twitter extends Social
             $client = new SingleUserAuth($config, new ArraySerializer());
 
             $reponse = $client->post('statuses/update', [
-                'status' => sprintf('%s : %s', $title, $url),
+                'status' => \sprintf('%s : %s', $title, $url),
             ]);
 
             if (isset($reponse->id_str)) {
@@ -113,7 +113,7 @@ class Twitter extends Social
 
             $ads = ' ' . $this->getLink($agenda) . ' #ByNight';
 
-            $status = substr($agenda->getNom(), 0, 140 - strlen($ads)) . $ads;
+            $status = \substr($agenda->getNom(), 0, 140 - \strlen($ads)) . $ads;
 
             $reponse = $client->post('statuses/update', [
                 'status' => $status,
@@ -137,9 +137,9 @@ class Twitter extends Social
             ];
 
             $client = new SingleUserAuth($config, new ArraySerializer());
-            $ads    = sprintf(' %s #ByNight', $this->getLink($agenda));
-            $titre  = sprintf('%s présente %s', $user->getUsername(), $agenda->getNom());
-            $status = substr($titre, 0, 140 - strlen($ads)) . $ads;
+            $ads    = \sprintf(' %s #ByNight', $this->getLink($agenda));
+            $titre  = \sprintf('%s présente %s', $user->getUsername(), $agenda->getNom());
+            $status = \substr($titre, 0, 140 - \strlen($ads)) . $ads;
 
             $reponse = $client->post('statuses/update', [
                 'status' => $status,

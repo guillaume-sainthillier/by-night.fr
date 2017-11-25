@@ -177,15 +177,15 @@ class AgendaController extends Controller
             $type_manifestation         = [];
 
             foreach ($soirees_type_manifestation as $soiree) {//
-                $types_manifestation = preg_split('/,/', $soiree->getCategorieManifestation());
+                $types_manifestation = \preg_split('/,/', $soiree->getCategorieManifestation());
                 foreach ($types_manifestation as $type) {
-                    $type = array_map('trim', explode('//', $type))[0];
-                    if (!in_array($type, $type_manifestation) && '' != $type) {
+                    $type = \array_map('trim', \explode('//', $type))[0];
+                    if (!\in_array($type, $type_manifestation) && '' != $type) {
                         $type_manifestation[$type] = $type;
                     }
                 }
             }
-            ksort($type_manifestation);
+            \ksort($type_manifestation);
             $cache->save($key, $type_manifestation, 24 * 60 * 60);
         }
 

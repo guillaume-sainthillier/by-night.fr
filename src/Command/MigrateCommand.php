@@ -28,7 +28,7 @@ class MigrateCommand extends AppCommand
         $em       = $this->getContainer()->get('doctrine.orm.entity_manager');
         $places   = $em->getRepository('AppBundle:Place')->findBy(['city' => null]);
         $france   = $em->getRepository('AppBundle:Country')->find('FR');
-        Monitor::createProgressBar(count($places));
+        Monitor::createProgressBar(\count($places));
 
         $migratedPlaces = [];
         foreach ($places as $i => $place) {

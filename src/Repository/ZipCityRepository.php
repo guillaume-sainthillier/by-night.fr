@@ -34,13 +34,13 @@ class ZipCityRepository extends \Doctrine\ORM\EntityRepository
 
         if ($city) {
             $cities   = [];
-            $city     = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-            $city     = str_replace('’', "'", $city);
+            $city     = \preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
+            $city     = \str_replace('’', "'", $city);
             $cities[] = $city;
-            $cities[] = str_replace(' ', '-', $city);
-            $cities[] = str_replace('-', ' ', $city);
-            $cities[] = str_replace("'", '', $city);
-            $cities   = array_unique($cities);
+            $cities[] = \str_replace(' ', '-', $city);
+            $cities[] = \str_replace('-', ' ', $city);
+            $cities[] = \str_replace("'", '', $city);
+            $cities   = \array_unique($cities);
 
             $query
                 ->andWhere('zc.name IN(:cities)')
@@ -64,7 +64,7 @@ class ZipCityRepository extends \Doctrine\ORM\EntityRepository
     public function findByPostalCodeAndCity($postalCode, $city, $country)
     {
         $cities = $this->findByPostalCodeOrCity($postalCode, $city, $country);
-        if (1 === count($cities)) {
+        if (1 === \count($cities)) {
             return $cities[0];
         }
 
