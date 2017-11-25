@@ -257,36 +257,6 @@ services:
             - ['setUrl', ["%url_opendata_toulouse%"]]
     tbn.parser.toulouse.tourisme:
         class: AppBundle\Parser\Toulouse\ToulouseTourismeParser
-    tbn.parser.toulouse.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #Paris
-    tbn.parser.paris.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #Marseille
-    tbn.parser.marseille.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #lyon
-    tbn.parser.lyon.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #brest
-    tbn.parser.brest.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #nice
-    tbn.parser.nice.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #nantes
-    tbn.parser.nantes.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #bordeaux
-    tbn.parser.bordeaux.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #lille
-    tbn.parser.lille.facebook:
-        parent: tbn.parser.abstracts.facebook
-    #montpellier
-    tbn.parser.montpellier.facebook:
-        parent: tbn.parser.abstracts.facebook
-
     #Aliases
     tbn.facebook_parser:
         alias: tbn.parser.abstracts.facebook
