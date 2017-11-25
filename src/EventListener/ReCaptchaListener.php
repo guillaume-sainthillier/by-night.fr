@@ -24,10 +24,10 @@ class ReCaptchaListener
 
     public function onKernelController(FilterControllerEvent $event)
     {
-        if(! $event->isMasterRequest()) {
+        if (!$event->isMasterRequest()) {
             return;
         }
-        
+
         $controller = $event->getController();
 
         if (!is_array($controller)) {

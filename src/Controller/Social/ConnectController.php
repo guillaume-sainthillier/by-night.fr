@@ -107,7 +107,7 @@ class ConnectController extends BaseController
             } else { // On connecte normalement l'utilisateur*/
                 /** @var $currentToken OAuthToken */
                 $currentToken = $this->getToken();
-                $currentUser = $currentToken->getUser();
+                $currentUser  = $currentToken->getUser();
 
                 $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
 
@@ -130,7 +130,7 @@ class ConnectController extends BaseController
 
             return $this->render('@HWIOAuth/Connect/connect_success.html.'.$this->getTemplatingEngine(), array(
                 'userInformation' => $userInformation,
-                'service' => $service,
+                'service'         => $service,
             ));
         }
 

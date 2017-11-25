@@ -27,7 +27,7 @@ class BrowserCacheListener implements EventSubscriberInterface
 
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        if($event->isMasterRequest()) {
+        if ($event->isMasterRequest()) {
             return;
         }
 
