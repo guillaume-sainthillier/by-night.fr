@@ -9,10 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace SocialBundle\Controller;
+namespace AppBundle\Controller\Social;
 
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Test\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,6 +30,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class ConnectController extends BaseController
 {
     /**
+     * @Route("/service/{service}", name="hwi_oauth_connect_service")
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
      * @param Request $request the active request
@@ -104,14 +106,15 @@ class ConnectController extends BaseController
                 $em->flush();
             } else { // On connecte normalement l'utilisateur*/
                 /** @var $currentToken OAuthToken */
-                $currentToken = $this->get('security.token_storage')->getToken();
-                $currentUser  = $currentToken->getUser();
+                $currentToken = $this->getToken();
+                $currentUser = $currentToken->getUser();
 
                 $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
 
                 if ($currentToken instanceof OAuthToken) {
                     // Update user token with new details
-                    $newToken = is_array($accessToken) &&
+                    $newToken =
+                        is_array($accessToken) &&
                         (isset($accessToken['access_token']) || isset($accessToken['oauth_token'])) ?
                             $accessToken : $currentToken->getRawToken();
 
@@ -123,19 +126,15 @@ class ConnectController extends BaseController
                 if ($targetPath = $this->getTargetPath($session)) {
                     return $this->redirect($targetPath);
                 }
-
-                return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), array(
-                    'userInformation' => $userInformation,
-                    'service'         => $service,
-                ));
             }
 
-            return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_success.html.' . $this->getTemplatingEngine(), [
+            return $this->render('@HWIOAuth/Connect/connect_success.html.'.$this->getTemplatingEngine(), array(
                 'userInformation' => $userInformation,
-            ]);
+                'service' => $service,
+            ));
         }
 
-        return $this->container->get('templating')->renderResponse('HWIOAuthBundle:Connect:connect_confirm.html.' . $this->getTemplatingEngine(), [
+        return $this->container->get('templating')->renderResponse('@HWIOAuth/Connect/connect_confirm.html.' . $this->getTemplatingEngine(), [
             'key'             => $key,
             'service'         => $service,
             'form'            => $form->createView(),

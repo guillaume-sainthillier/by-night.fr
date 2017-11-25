@@ -95,6 +95,12 @@ hwi_oauth_redirect:
     resource: "@HWIOAuthBundle/Resources/config/routing/redirect.xml"
     prefix:   /login-social
 
+#Login réseaux sociaux override
+app_hwi_oauth_connect:
+    resource: "@AppBundle/Controller/Social/ConnectController.php"
+    prefix: /login-social
+    type:     annotation
+
 #Login twitter
 twitter_login:
     path: /login/check-twitter
