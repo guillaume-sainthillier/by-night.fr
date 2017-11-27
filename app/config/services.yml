@@ -213,18 +213,21 @@ services:
               - "@doctrine.orm.default_entity_manager"
               - "@tbn.social.facebook_admin"
               - "@tbn.event_handler"
+
     tbn.user_updater:
         class: AppBundle\Updater\UserUpdater
         arguments:
           - "@doctrine.orm.default_entity_manager"
           - "@tbn.social.facebook_admin"
           - "@tbn.user_handler"
+
     tbn.event_fetcher:
         class: AppBundle\Fetcher\EventFetcher
         arguments:
           - "@tbn.parser_manager"
           - "@doctrine.orm.default_entity_manager"
           - "@site_manager"
+
     #Parsers
     tbn.parser.abstract:
         class: AppBundle\Parser\AgendaParser
@@ -262,6 +265,7 @@ services:
         alias: tbn.parser.abstracts.facebook
     tbn.soonnight_parser:
         alias: tbn.parser.abstracts.soonnight
+        public: true #For PHPUnit
     tbn.toulouse_parser:
         alias: tbn.parser.toulouse.toulouse
     tbn.bikini_parser:
@@ -281,9 +285,11 @@ services:
         arguments: ["@doctrine.orm.entity_manager"]
     tbn.doctrine_event_handler:
         class: AppBundle\Handler\DoctrineEventHandler
+        public: true #For PHPUnit
         arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler", "@app.geocoder.place_geocoder"]
     tbn.event_handler:
         class: AppBundle\Handler\EventHandler
+        public: true #For PHPUnit
         arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.project_dir%/../web/uploads/temp"]
     tbn.user_handler:
         class: AppBundle\Handler\UserHandler
@@ -296,9 +302,11 @@ services:
         arguments: ["@tbn.util"]
     tbn.firewall:
         class: AppBundle\Utils\Firewall
+        public: true #For PHPUnit
         arguments: ["@doctrine", "@tbn.comparator"]
     tbn.merger:
         class: AppBundle\Utils\Merger
+        public: true #For PHPUnit
         arguments: ["@tbn.comparator"]
 
     #Cleaner
