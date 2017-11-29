@@ -3,7 +3,6 @@
 namespace AppBundle\Social;
 
 use Google_Client;
-use Symfony\Component\Routing\Generator\UrlGenerator;
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\User;
 

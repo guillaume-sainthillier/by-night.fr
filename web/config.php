@@ -14,22 +14,22 @@ if (!isset($_SERVER['HTTP_HOST'])) {
     exit("This script cannot be run from the CLI. Run it from a browser.\n");
 }
 
-if (!in_array(@$_SERVER['REMOTE_ADDR'], array(
+if (!\in_array(@$_SERVER['REMOTE_ADDR'], array(
     '127.0.0.1',
     '::1',
-))  && false === getenv('SYMFONY_ALLOW_CONFIG')) {
-    header('HTTP/1.0 403 Forbidden');
+)) && false === \getenv('SYMFONY_ALLOW_CONFIG')) {
+    \header('HTTP/1.0 403 Forbidden');
     exit('This script is only accessible from localhost.');
 }
 
-require_once dirname(__FILE__).'/../var/SymfonyRequirements.php';
+require_once \dirname(__FILE__).'/../var/SymfonyRequirements.php';
 
 $symfonyRequirements = new SymfonyRequirements();
 
-$majorProblems = $symfonyRequirements->getFailedRequirements();
-$minorProblems = $symfonyRequirements->getFailedRecommendations();
-$hasMajorProblems = (bool) count($majorProblems);
-$hasMinorProblems = (bool) count($minorProblems);
+$majorProblems    = $symfonyRequirements->getFailedRequirements();
+$minorProblems    = $symfonyRequirements->getFailedRecommendations();
+$hasMajorProblems = (bool) \count($majorProblems);
+$hasMinorProblems = (bool) \count($minorProblems);
 
 ?>
 <!DOCTYPE html>
