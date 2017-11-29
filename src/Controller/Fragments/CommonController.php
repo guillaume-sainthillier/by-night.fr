@@ -43,7 +43,6 @@ class CommonController extends TBNController
         $socials = [
             'facebook' => $this->get('tbn.social.facebook_admin'),
             'twitter'  => $this->get('tbn.social.twitter'),
-            'google'   => $this->get('tbn.social.google'),
         ];
 
         $params = [];

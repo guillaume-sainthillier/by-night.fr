@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-7">
+    <div class="col-md-8">
         <div class="row">
             <div class="col-xs-6 footer_border">
                 <h3 class="modal-title color-second">By Night</h3>
@@ -44,9 +44,9 @@
             </div>
         </div>
     </div>
-    <div class="col-md-5 text-center">
+    <div class="col-md-4 text-center">
         <div class="row counts">
-            <div class="col-xs-4 preserve">
+            <div class="col-xs-6 preserve">
                 {% if app_manager.facebookIdPage %}
                     <a class="social" title="By Night sur Facebook" href="https://www.facebook.com/{{ app_manager.facebookIdPage }}">
                         <i class="fa fa-facebook fa-3x"></i>
@@ -54,20 +54,11 @@
                     </a>
                 {% endif %}
             </div>
-            <div class="col-xs-4 preserve">
+            <div class="col-xs-6 preserve">
                 {% if app_manager.twitterIdPage %}
                     <a class="social" title="By Night sur Twitter" href="https://twitter.com/{{ app_manager.twitterIdPage }}">
                         <i class="fa fa-twitter fa-3x"></i>
                         <span class="number number-xbig">{{ count_twitter }}</span>
-                    </a>
-                {% endif %}
-            </div>
-            <div class="col-xs-4 preserve">
-                {% if app_manager.googleIdPage %}
-                    <a class="social" title="By Night sur Google+"
-                       href="https://plus.google.com/{{ app_manager.googleIdPage }}" rel="publisher">
-                        <i class="fa fa-google-plus fa-3x"></i>
-                        <span class="number number-xbig">{{ count_google }}</span>
                     </a>
                 {% endif %}
             </div>
