@@ -429,26 +429,31 @@ fos_elastica:
     serializer:
         serializer: "jms_serializer"
     indexes:
-        by-night:
-            index_name: "by-night"
+        event:
+            index_name: "app.event"
             client: default
             settings:
                 index:
                     analysis:
                         analyzer:
-                            custom_french_analyzer:
-                                type: custom
-                                tokenizer: nGram
-                                filter: [stopwords, asciifolding, lowercase, snowball, elision, worddelimiter]
-                            custom_search_analyzer:
+                            event_description_analyzer:
                                 type: custom
                                 tokenizer: standard
-                                filter: [stopwords, asciifolding, lowercase, snowball, elision, worddelimiter]
+                                filter: [lowercase, asciifolding, stopwords, snowball, elision]
+                                char_filter: [html_strip]
+                            event_analyzer:
+                                type: custom
+                                tokenizer: nGram
+                                filter: [lowercase, asciifolding, stopwords, snowball, elision]
+                            event_city_analyzer:
+                                type: custom
+                                tokenizer: nGram
+                                filter: [lowercase, asciifolding]
                         tokenizer:
                             nGram:
                                 type:     nGram
                                 min_gram: 3
-                                max_gram: 20
+                                max_gram: 8
                         filter:
                             snowball:
                                 type:     snowball
@@ -459,43 +464,70 @@ fos_elastica:
                             stopwords:
                                 type:      stop
                                 stopwords: [_french_]
-                                ignore_case : true
-                            worddelimiter :
-                                type:      word_delimiter
+                                ignore_case: true
             types:
                 event:
                     indexable_callback: "isIndexable"
                     properties:
-                        nom: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer  }
-                        descriptif: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        date_debut: { type: date, format: 'yyyy-MM-dd' }
-                        date_fin: { type: date, format: 'yyyy-MM-dd' }
+                        nom: { boost: 5, type: "text", analyzer: event_analyzer, search_analyzer: event_analyzer  }
+                        descriptif: { analyzer: event_description_analyzer, search_analyzer: event_description_analyzer }
+                        date_debut: { type: "date", format: 'yyyy-MM-dd' }
+                        date_fin: { type: "date", format: 'yyyy-MM-dd' }
                         place:
                             type: "object"
                             properties:
-                                nom: { boost: 3, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                                rue: { analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                                ville: { boost: 2, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                                nom: { boost: 3, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
+                                rue: { analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
+                                ville: { boost: 2, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
                     persistence:
                         driver: orm # orm, mongodb, propel are available
                         model:  AppBundle\Entity\Agenda
                         repository: AppBundle\SearchRepository\AgendaRepository
-                user:
-                    properties:
-                        username: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        firstname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                        lastname: { boost: 1, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
-                    persistence:
-                        driver: orm
-                        model:  AppBundle\Entity\User
-                        repository: AppBundle\SearchRepository\UserRepository
+        city:
+            index_name: "app.city"
+            client: default
+            settings:
+                index:
+                    analysis:
+                        tokenizer:
+                            nGram:
+                                type:     nGram
+                                min_gram: 3
+                                max_gram: 10
+                        analyzer:
+                            city_analyzer:
+                                type: custom
+                                tokenizer: nGram
+                                filter: [lowercase, asciifolding]
+            types:
                 city:
                     properties:
-                        name: { boost: 5, type: "text", analyzer: custom_french_analyzer, search_analyzer: custom_search_analyzer }
+                        name: { type: "text", analyzer: city_analyzer, search_analyzer: city_analyzer }
                     persistence:
                         driver: orm
                         model:  AppBundle\Entity\City
                         repository: AppBundle\SearchRepository\CityRepository
+        user:
+            index_name: "app.user"
+            client: default
+            settings:
+                index:
+                    analysis:
+                        analyzer:
+                            user_analyzer:
+                                type: custom
+                                tokenizer: nGram
+                                filter: [asciifolding, lowercase]
+            types:
+                user:
+                    properties:
+                        username: { boost: 5, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                        firstname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                        lastname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                    persistence:
+                        driver: orm
+                        model:  AppBundle\Entity\User
+                        repository: AppBundle\SearchRepository\UserRepository
 
 jms_serializer:
     metadata:

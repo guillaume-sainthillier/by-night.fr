@@ -18,7 +18,7 @@ class CityRepository extends Repository
         $match = new Match('name', $q);
 
         $query = Query::create($match);
-        $query->addSort(['population' => 'DESC']);
+//        $query->addSort(['population' => 'DESC']);
 
         return $this->createPaginatorAdapter($query);
     }

@@ -107,7 +107,7 @@ services:
         networks:
             - backend
     elk:
-        image: sebp/elk:latest
+        image: sebp/elk:600
         ports:
             - 5601:5601
             - 9200:9200
