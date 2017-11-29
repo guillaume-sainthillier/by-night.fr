@@ -38,8 +38,8 @@ class EventController extends Controller
 
     /**
      * @Tag("detail-event")
-     * @Route("/soiree/{slug}--{id}.html", name="tbn_agenda_details", requirements={"slug": ".+", "id": "\d+"})
-     * @Route("/soiree/{slug}.html", name="tbn_agenda_details_old", requirements={"slug": ".+"})
+     * @Route("/soiree/{slug}--{id}", name="tbn_agenda_details", requirements={"slug": "[^/]+", "id": "\d+"})
+     * @Route("/soiree/{slug}", name="tbn_agenda_details_old", requirements={"slug": "[^/]+"})
      * @BrowserCache(false)
      */
     public function detailsAction(City $city, $slug, $id = null)

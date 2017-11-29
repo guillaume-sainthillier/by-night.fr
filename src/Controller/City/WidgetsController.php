@@ -66,7 +66,7 @@ class WidgetsController extends Controller
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}.html/prochaines-soirees/{page}", name="tbn_agenda_prochaines_soirees", requirements={"slug": ".+", "id": "\d+", "page": "\d+"})
+     * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="tbn_agenda_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
      * @BrowserCache(false)
      */
     public function nextEventsAction(City $city, $slug, $id = null, $page = 1)
@@ -126,7 +126,7 @@ class WidgetsController extends Controller
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}.html/autres-soirees/{page}", name="tbn_agenda_soirees_similaires", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))3
+     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="tbn_agenda_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))3
      * @BrowserCache(false)
      */
     public function soireesSimilairesAction(City $city, $slug, $id = null, $page = 1)
@@ -212,7 +212,7 @@ class WidgetsController extends Controller
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}.html/membres/{page}", name="tbn_agenda_soirees_membres", requirements={"slug": ".+", "id": "\d+", "page": "\d+"}))
+     * @Route("/soiree/{slug}--{id}/membres/{page}", name="tbn_agenda_soirees_membres", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))
      * @BrowserCache(false)
      */
     public function fbMembresAction(City $city, $slug, $id = null, $page = 1)
