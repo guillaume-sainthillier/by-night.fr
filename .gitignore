@@ -1,29 +1,24 @@
 #Sécurité
 .env
 .docker-sync/*
+/app/config/parameters.yml
 
 #SiteMaps
 /web/sitemap/*
 /.idea/
 
+#Assets
+/app/config/mapping_assets.yml
+
 # Sécurité
 /app/sessions/*
-/web/config.php
-.htaccess
 
 # Node
 /node_modules/
 
-
 # Bower & NPM
 /front/bower/*
 /npm-debug.log
-
-# ElasticSearch
-/app/Resources/java/elasticsearch/config/*
-/app/Resources/java/elasticsearch/data/*
-/app/Resources/java/elasticsearch/logs/*
-
 
 # Cache and logs (Symfony2)
 /app/cache/*
@@ -39,12 +34,7 @@
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 
-# Parameters
-/app/config/parameters.yml
-/app/config/custom_parameters.yml
-
 # Managed by Composer
-/app/bootstrap.php.cache
 /var/bootstrap.php.cache
 /bin/*
 !bin/console
@@ -57,15 +47,6 @@
 /web/prod/
 /web/media/
 
-# PHPUnit
-/app/phpunit.xml
-/phpunit.xml
-
-# Build data
-/build/
-
 # Composer PHAR
 /composer.phar
-0pgq1a0n.1gm.txt
 *.php~
-app/config/mapping_assets.yml

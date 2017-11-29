@@ -61,6 +61,7 @@ services:
             - APP_ENV
             - APP_DEBUG
             - SYMFONY_ALLOW_APPDEV
+            - SYMFONY_ALLOW_CONFIG
         restart: always
         networks:
             - backend
