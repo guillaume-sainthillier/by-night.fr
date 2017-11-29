@@ -54,11 +54,13 @@ class CityManager
         return $this;
     }
 
-    public function computeCityFromCookie()
+    private function computeCityFromCookie()
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
         if ($currentRequest->cookies->has('app_city')) {
             $this->cookieCity = $this->entityManager->getRepository('AppBundle:City')->findBySlug($currentRequest->cookies->get('app_city'));
+        }else {
+            $this->cookieCity = null;
         }
     }
 
@@ -87,6 +89,6 @@ class CityManager
      */
     public function getCity()
     {
-        return $this->getCookieCity() ?: $this->getCookieCity();
+        return $this->getCurrentCity() ?: $this->getCookieCity();
     }
 }

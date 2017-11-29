@@ -19,6 +19,17 @@ parameters:
 
 
 services:
+    AppBundle\Controller\:
+        resource: '../../src/Controller'
+        tags: ['controller.service_arguments']
+        autowire: true
+        autoconfigure: true
+
+    AppBundle\App\:
+        resource: '../../src/App'
+        autowire: true
+        autoconfigure: true
+
     app.consumer.add_event:
         class: AppBundle\Consumer\AddEventConsumer
         arguments:
@@ -104,9 +115,10 @@ services:
         arguments:
           - "@doctrine.orm.default_entity_manager"
           - "@request_stack"
+
     tbn.event_archivator:
         class: AppBundle\Archive\EventArchivator
-        arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.by_night.event" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.event.event" ]
 
     tbn.event_listener:
         class: AppBundle\Listener\EventListener

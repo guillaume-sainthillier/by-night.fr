@@ -1,31 +1,37 @@
+{% set no_ad = true %}
 {% extends "base.html.twig" %}
 
 {% block start_container -%}
 <div>
 {%- endblock %}
 
-{% block titre -%}
-    Bienvenue sur By Night !
-{%- endblock %}
-
-{% block title -%}
-    Choisissez votre ville
-{%- endblock %}
+{% block titre "Découvrez où sortir dans votre ville"%}
+{% block title "Choisissez votre ville" %}
 
 {% block meta_description -%}
     Choisissez votre ville et découvrez les événements du moment !
 {%- endblock %}
+
+{% block container_titre %}{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ app_asset('evenements/css/index.min.css', 'asset') }}" type="text/css">
+{% endblock %}
 
 {% block js -%}
     <script>
         $(document).ready(function() {
             $('.form-city-picker').each(function() {
                 var form = $(this);
-                var $btn = form.find('.choose-city-action');
-                $btn.attr('disabled', false);
+                var btn = form.find('.choose-city-action');
+                btn.attr('disabled', false);
+
+                $(this).submit(function() {
+                    return !btn.attr('disabled');
+                });
 
                 // Saisie de la ville
-                var $field = form.find('.city-picker');
+                var field = form.find('.city-picker');
 
                 var cities = new Bloodhound({
                     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -38,7 +44,7 @@
                 cities.initialize();
 
                 // Proxy inputs typeahead events to addressPicker
-                $field.typeahead(null, {
+                field.typeahead(null, {
                     name: 'cities',
                     display: 'name',
                     source: cities.ttAdapter()
@@ -105,62 +111,30 @@
     </script>
 {%- endblock %}
 
-{% block body %}
-<div class="container">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h2 class="modal-title">Choisissez une ville</h2>
-        </div>
-        <div class="panel-body">
-            {{ form_start(autocomplete_form, { 'action': path('app_change_city'), 'attr': {'class': 'form-city-picker'} }) }}
-            <div class="form-group">
-                <div class="input-group">
-                    {{ form_errors(autocomplete_form.city) }}
-                    {{ form_widget(autocomplete_form.name) }}
-                    <div class="input-group-btn">
-                        <button class="btn btn-lg btn-block btn-primary btn-raised choose-city-action" type="submit" disabled>Choisir</button>
+{% block helper_top %}
+<section class="full_wrapper" style="background-image: url({{ app_asset('img/landing.jpg') }})">
+    <div class="fade-black-transp"></div>
+    <div class="wrapper">
+        <h1 class="titrebloc text-center">{{ block('titre') }}</h1>
+        <div class="row">
+            <div class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2 col-lg-6 col-lg-push-3 no-margin-form panel panel-primary search_container img-rounded">
+                {{ form_start(autocomplete_form, { 'action': path('app_change_city'), 'attr': {'class': 'form-city-picker'} }) }}
+                    <div class="form-group">
+                        <div class="input-group">
+                            {{ form_errors(autocomplete_form.city) }}
+                            {{ form_widget(autocomplete_form.name) }}
+                            <div class="input-group-btn">
+                                <button class="btn btn-lg btn-block btn-primary btn-raised choose-city-action" type="submit" disabled>Choisir</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                {{ form(autocomplete_form) }}
+                {{ form_end(autocomplete_form) }}
             </div>
-            {{ form(autocomplete_form) }}
-            {{ form_end(autocomplete_form) }}
         </div>
     </div>
-
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h2 class="modal-title">Les concerts</h2>
-        </div>
-        <div class="panel-body">
-            {% include "City/Event/block_preview_event.html.twig" with({"events": concerts}) %}
-        </div>
+    <div class="footer_wrapper">
+        <h2 class="text-primary number number-xbig">Trouvez votre idée de sortie parmis plus de 400K événements</h2>
     </div>
-
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h2 class="modal-title">Les spectacles</h2>
-        </div>
-        <div class="panel-body">
-            {% include "/City/Event/block_preview_event.html.twig" with({"events": spectacles}) %}
-        </div>
-    </div>
-
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h2 class="modal-title">Les sorties étudiantes</h2>
-        </div>
-        <div class="panel-body">
-            {% include "City/Event/block_preview_event.html.twig" with({"events": etudiants}) %}
-        </div>
-    </div>
-
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h2 class="modal-title">Les sorties en famille</h2>
-        </div>
-        <div class="panel-body">
-            {% include "City/Event/block_preview_event.html.twig" with({"events": familles}) %}
-        </div>
-    </div>
-</div>
+</section>
 {% endblock %}

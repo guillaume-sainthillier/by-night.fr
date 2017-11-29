@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\App\CityManager;
 use AppBundle\Form\Type\CityAutocompleteType;
 use AppBundle\Search\SearchAgenda;
 use AppBundle\SearchRepository\AgendaRepository;
@@ -17,12 +18,23 @@ class DefaultController extends Controller
     const EVENT_PER_CATEGORY = 7;
 
     /**
+     * @var CityManager
+     */
+    private $cityManager;
+
+    public function __construct(CityManager $cityManager)
+    {
+        $this->cityManager = $cityManager;
+    }
+
+    /**
      * @Route("/", name="tbn_main_index")
      * @Cache(expires="tomorrow", maxage="86400", smaxage="86400", public=true)
      * @BrowserCache(false)
      */
     public function indexAction()
     {
+        /*
         $search = new SearchAgenda();
 
         $search->setTerm(AgendaRepository::CONCERT_TERMS);
@@ -36,14 +48,22 @@ class DefaultController extends Controller
 
         $search->setTerm(AgendaRepository::FAMILY_TERMS);
         $familles = $this->getResults($search);
+        */
 
-        $form = $this->createForm(CityAutocompleteType::class);
+        $datas = [];
+        if($city = $this->cityManager->getCity()) {
+            $datas = [
+                'name' => $city->getFullName(),
+                'city' => $city->getSlug()
+            ];
+        }
+        $form = $this->createForm(CityAutocompleteType::class, $datas);
 
         return $this->render('Default/index.html.twig', [
-            'concerts'          => $concerts,
-            'spectacles'        => $spectacles,
-            'etudiants'         => $etudiants,
-            'familles'          => $familles,
+//            'concerts'          => $concerts,
+//            'spectacles'        => $spectacles,
+//            'etudiants'         => $etudiants,
+//            'familles'          => $familles,
             'autocomplete_form' => $form->createView(),
         ]);
     }
