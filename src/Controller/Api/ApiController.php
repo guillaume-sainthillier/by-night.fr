@@ -2,8 +2,8 @@
 
 namespace AppBundle\Controller\Api;
 
-use AppBundle\Entity\City;
 use AppBundle\SearchRepository\CityRepository;
+use FOS\HttpCacheBundle\Configuration\Tag;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,8 +20,9 @@ class ApiController extends Controller
 
     /**
      * @Route("/villes", name="app_api_city")
-     * @Cache(expires="+1 week", maxage="604800", smaxage="604800", public=true)
+     * @Cache(expires="+1 month", maxage="2592000", smaxage="2592000", public=true)
      * @BrowserCache(false)
+     * @Tag("autocomplete_city")
      */
     public function cityAutocompleteAction(Request $request)
     {

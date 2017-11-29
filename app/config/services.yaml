@@ -106,7 +106,7 @@ services:
 
     tbn.event_http:invalidator:
         class: AppBundle\Invalidator\EventInvalidator
-        arguments: [ "@fos_http_cache.cache_manager", "@logger" ]
+        arguments: [ "@fos_http_cache.cache_manager", "@logger", "%kernel.debug" ]
     tbn.app_manager:
         class: AppBundle\App\AppManager
         arguments: [ "@service_container" ]
@@ -122,11 +122,12 @@ services:
 
     tbn.event_listener:
         class: AppBundle\Listener\EventListener
-        arguments: [ "@tbn.event_http:invalidator", "%kernel.debug" ]
+        arguments: [ "@tbn.event_http:invalidator" ]
         tags:
           - { name: doctrine.event_listener, event: preRemove }
           - { name: doctrine.event_listener, event: postUpdate }
           - { name: doctrine.event_listener, event: postFlush }
+          - { name: doctrine.event_listener, event: postInsert }
 
     tbn.profile_picture.event:
         class: AppBundle\Picture\EventProfilePicture

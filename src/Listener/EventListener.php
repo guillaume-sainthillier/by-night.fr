@@ -2,6 +2,7 @@
 
 namespace AppBundle\Listener;
 
+use AppBundle\Entity\City;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use AppBundle\Entity\Agenda;
 use AppBundle\Invalidator\EventInvalidator;
@@ -17,33 +18,36 @@ class EventListener
      */
     private $eventInvalidator;
 
-    /**
-     * @var bool
-     */
-    private $debug;
-
-    public function __construct(EventInvalidator $eventInvalidator, $debug)
+    public function __construct(EventInvalidator $eventInvalidator)
     {
         $this->eventInvalidator = $eventInvalidator;
-        $this->debug            = $debug;
     }
 
     public function postFlush()
     {
-        $this->eventInvalidator->invalidateEvents();
+        $this->eventInvalidator->invalidateObjects();
+    }
+
+    public function postInsert(LifecycleEventArgs $args) {
+        $entity = $args->getEntity();
+
+        if($entity instanceof City) {
+            $this->eventInvalidator->addCity($entity);
+            return;
+        }
     }
 
     public function postUpdate(LifecycleEventArgs $args)
     {
-        if ($this->debug) {
-            return;
-        }
-
         $entity = $args->getEntity();
 
         if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);
+            return;
+        }
 
+        if($entity instanceof City) {
+            $this->eventInvalidator->addCity($entity);
             return;
         }
 
@@ -57,19 +61,21 @@ class EventListener
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
-        if (!$this->debug) {
-            if ($entity instanceof User) {
-                $this->eventInvalidator->addUser($entity);
-
-                return;
-            }
-
-            if (!$entity instanceof Agenda) {
-                return;
-            }
-
-            $this->eventInvalidator->addEvent($entity);
+        if ($entity instanceof User) {
+            $this->eventInvalidator->addUser($entity);
+            return;
         }
+
+        if($entity instanceof City) {
+            $this->eventInvalidator->addCity($entity);
+            return;
+        }
+
+        if (!$entity instanceof Agenda) {
+            return;
+        }
+
+        $this->eventInvalidator->addEvent($entity);
 
         if (!$entity->getFacebookEventId()) {
             return;

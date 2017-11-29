@@ -8,6 +8,7 @@
 
 namespace AppBundle\Invalidator;
 
+use AppBundle\Entity\City;
 use FOS\HttpCacheBundle\CacheManager;
 use FOS\HttpCacheBundle\Handler\TagHandler;
 use Psr\Log\LoggerInterface;
@@ -27,6 +28,11 @@ class EventInvalidator
     private $logger;
 
     /**
+     * @var bool
+     */
+    private $debug;
+
+    /**
      * @var array
      */
     private $eventTags;
@@ -36,12 +42,19 @@ class EventInvalidator
      */
     private $userTags;
 
-    public function __construct(CacheManager $tagHandler, LoggerInterface $logger)
+    /**
+     * @var array
+     */
+    private $cityTags;
+
+    public function __construct(CacheManager $tagHandler, LoggerInterface $logger, $debug)
     {
         $this->tagHandler = $tagHandler;
         $this->logger     = $logger;
+        $this->debug = $debug;
         $this->eventTags  = [];
         $this->userTags   = [];
+        $this->cityTags   = [];
     }
 
     public static function getEventDetailTag(Agenda $event)
@@ -68,6 +81,11 @@ class EventInvalidator
         );
     }
 
+    public function addCity(City $city)
+    {
+        $this->cityTags[] = 'autocomplete_city';
+    }
+
     public function addUser(User $user)
     {
         $this->userTags[] = self::getUserMenuTag($user);
@@ -83,11 +101,16 @@ class EventInvalidator
         }
     }
 
-    public function invalidateEvents()
+    public function invalidateObjects()
     {
+        if($this->debug) {
+            return;
+        }
+
         $tags = \array_filter(\array_unique(\array_merge(
             $this->eventTags,
-            $this->userTags
+            $this->userTags,
+            $this->cityTags
         )));
 
         if (!\count($tags)) {
@@ -102,11 +125,5 @@ class EventInvalidator
 
         unset($this->eventTags);
         $this->eventTags = [];
-    }
-
-    public function invalidateEvent(Agenda $event)
-    {
-        $this->addEvent($event);
-        $this->invalidateEvents();
     }
 }
