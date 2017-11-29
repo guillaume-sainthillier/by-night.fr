@@ -51,10 +51,10 @@ class DefaultController extends Controller
         */
 
         $datas = [];
-        if($city = $this->cityManager->getCity()) {
+        if ($city = $this->cityManager->getCity()) {
             $datas = [
                 'name' => $city->getFullName(),
-                'city' => $city->getSlug()
+                'city' => $city->getSlug(),
             ];
         }
         $form = $this->createForm(CityAutocompleteType::class, $datas);
