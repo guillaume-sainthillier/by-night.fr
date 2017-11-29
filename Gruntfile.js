@@ -431,7 +431,7 @@ module.exports = function (grunt) {
             }
         };
         var content = YAML.stringify(config).replace(/web\//g, "");
-        grunt.file.write('app/config/mapping_assets.yml', content);
+        grunt.file.write('app/config/mapping_assets.yaml', content);
     });
 
     grunt.registerTask('default', ['css', 'js', 'symlink', 'cache']);

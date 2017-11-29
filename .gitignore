@@ -1,14 +1,14 @@
 #Sécurité
 .env
 .docker-sync/*
-/app/config/parameters.yml
+/app/config/parameters.yaml
 
 #SiteMaps
 /web/sitemap/*
 /.idea/
 
 #Assets
-/app/config/mapping_assets.yml
+/app/config/mapping_assets.yaml
 
 # Sécurité
 /app/sessions/*

@@ -1,9 +1,9 @@
 imports:
-    - { resource: parameters.yml }
-    - { resource: security.yml }
-    - { resource: services.yml }
-    - { resource: mapping_assets.yml, ignore_errors: true }
-    - { resource: sem_var.yml, ignore_errors: true }
+    - { resource: parameters.yaml }
+    - { resource: security.yaml }
+    - { resource: services.yaml }
+    - { resource: mapping_assets.yaml, ignore_errors: true }
+    - { resource: sem_var.yaml, ignore_errors: true }
 
 framework:
     esi: { enabled: true }
@@ -12,7 +12,7 @@ framework:
         logging:    false
     secret:         "%secret%"
     router:
-        resource: "%kernel.project_dir%/app/config/routing.yml"
+        resource: "%kernel.project_dir%/app/config/routing.yaml"
         strict_requirements: ~
     form:            ~
     csrf_protection: ~

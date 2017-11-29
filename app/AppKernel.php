@@ -85,6 +85,6 @@ class AppKernel extends Kernel
             $container->setParameter('container.dumper.inline_class_loader', true);
             $container->addObjectResource($this);
         });
-        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yaml');
     }
 }
