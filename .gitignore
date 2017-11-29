@@ -17,7 +17,7 @@
 /node_modules/
 
 # Bower & NPM
-/front/bower/*
+/assets/bower/*
 /npm-debug.log
 
 # Cache and logs (Symfony2)
