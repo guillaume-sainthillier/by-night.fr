@@ -5,8 +5,6 @@ RUN apt-get update && apt-get install -y \
     git \
     libicu-dev \
     libpng-dev \
-#    nodejs \
-#    npm \
     python \
     unzip \
     wget
