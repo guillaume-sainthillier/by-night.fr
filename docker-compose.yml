@@ -58,13 +58,15 @@ services:
             - MYSQL_DATABASE
             - MYSQL_USER
             - MYSQL_PASSWORD
+            - APP_ENV
+            - APP_DEBUG
+            - SYMFONY_ALLOW_APPDEV
         restart: always
         networks:
             - backend
     nginx:
         build: ${DOCKER_PATH}/nginx
         ports:
-#            - 8000:80
             - 8000:80
         volumes_from:
             - php
