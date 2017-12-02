@@ -37,7 +37,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Agenda implements GeolocalizeInterface
 {
     const INDEX_FROM = '-6 months';
-    const INDEX_TO = '+6 months';
+    const INDEX_TO   = '+6 months';
 
     /**
      * @ORM\Id

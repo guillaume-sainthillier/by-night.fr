@@ -29,7 +29,7 @@ class AgendaRepository extends EntityRepository
     public function createIsActiveQueryBuilder()
     {
         $from = new \DateTime();
-        $to = new \DateTime();
+        $to   = new \DateTime();
 
         $from->modify(Agenda::INDEX_FROM);
         $to->modify(Agenda::INDEX_TO);
@@ -47,7 +47,7 @@ class AgendaRepository extends EntityRepository
             ->andWhere('a.dateFin <= :to')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
-                'to' => $to->format('Y-m-d')
+                'to'   => $to->format('Y-m-d'),
             ]);
     }
 
@@ -63,7 +63,7 @@ class AgendaRepository extends EntityRepository
     public function updateNonIndexables()
     {
         $from = new \DateTime();
-        $to = new \DateTime();
+        $to   = new \DateTime();
 
         $from->modify(Agenda::INDEX_FROM);
         $to->modify(Agenda::INDEX_TO);
@@ -75,8 +75,8 @@ class AgendaRepository extends EntityRepository
             AND a.isArchive IS NULL) ')
             ->setParameters([
                 'archive' => true,
-                'from' => $from->format('Y-m-d'),
-                'to' => $to->format('Y-m-d')
+                'from'    => $from->format('Y-m-d'),
+                'to'      => $to->format('Y-m-d'),
             ])
             ->execute();
     }
@@ -84,7 +84,7 @@ class AgendaRepository extends EntityRepository
     public function findNonIndexables()
     {
         $from = new \DateTime();
-        $to = new \DateTime();
+        $to   = new \DateTime();
 
         $from->modify(Agenda::INDEX_FROM);
         $to->modify(Agenda::INDEX_TO);
@@ -95,8 +95,8 @@ class AgendaRepository extends EntityRepository
             ->andWhere('a.dateFin < :from OR a.dateFin > :to')
             ->setParameters([
                 'archive' => false,
-                'from' => $from->format('Y-m-d'),
-                'to' => $to->format('Y-m-d')
+                'from'    => $from->format('Y-m-d'),
+                'to'      => $to->format('Y-m-d'),
             ])
             ->getQuery()
             ->getResult();
@@ -107,7 +107,7 @@ class AgendaRepository extends EntityRepository
         $cities = $this->_em->getRepository('AppBundle:City')->findTopPopulation(50);
         $events = [];
         foreach ($cities as $city) {
-            /**
+            /*
              * @var City $city
              */
             $events[$city->getName()] = $this
@@ -655,7 +655,7 @@ class AgendaRepository extends EntityRepository
     public function getTypesEvenements(City $city)
     {
         $from = new \DateTime();
-        $to = new \DateTime();
+        $to   = new \DateTime();
 
         $from->modify(Agenda::INDEX_FROM);
         $to->modify(Agenda::INDEX_TO);
@@ -674,11 +674,11 @@ class AgendaRepository extends EntityRepository
             ->setParameters([
                 'city' => $city->getId(),
                 'from' => $from->format('Y-m-d'),
-                'to' => $to->format('Y-m-d')
+                'to'   => $to->format('Y-m-d'),
             ])
             ->getQuery()
             ->getArrayResult();
 
-        return array_map('current', $results);
+        return \array_map('current', $results);
     }
 }
