@@ -8,7 +8,7 @@
 
 namespace AppBundle\EventListener;
 
-use AppBundle\Configuration\BrowserCache;
+use AppBundle\Annotation\BrowserCache;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;

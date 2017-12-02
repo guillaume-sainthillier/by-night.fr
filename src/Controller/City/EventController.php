@@ -13,7 +13,7 @@ use SocialLinks\Page;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Configuration\BrowserCache;
+use AppBundle\Annotation\BrowserCache;
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\Calendrier;
 use AppBundle\Invalidator\EventInvalidator;

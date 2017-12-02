@@ -10,7 +10,6 @@ namespace AppBundle\Invalidator;
 
 use AppBundle\Entity\City;
 use FOS\HttpCacheBundle\CacheManager;
-use FOS\HttpCacheBundle\Handler\TagHandler;
 use Psr\Log\LoggerInterface;
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\User;
@@ -18,7 +17,7 @@ use AppBundle\Entity\User;
 class EventInvalidator
 {
     /**
-     * @var TagHandler
+     * @var CacheManager
      */
     private $tagHandler;
 

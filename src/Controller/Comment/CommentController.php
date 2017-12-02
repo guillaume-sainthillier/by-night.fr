@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Configuration\BrowserCache;
+use AppBundle\Annotation\BrowserCache;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Controller\TBNController as Controller;
 use AppBundle\Entity\Agenda;

@@ -4,7 +4,7 @@ namespace AppBundle\Controller\Fragments;
 
 use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Configuration\BrowserCache;
+use AppBundle\Annotation\BrowserCache;
 
 /**
  * Description of MenuDroitController.

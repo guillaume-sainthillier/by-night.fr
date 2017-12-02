@@ -5,7 +5,7 @@ namespace AppBundle\Controller\City;
 use AppBundle\Entity\City;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Configuration\BrowserCache;
+use AppBundle\Annotation\BrowserCache;
 use AppBundle\Controller\TBNController as Controller;
 use AppBundle\Search\SearchAgenda;
 

@@ -6,7 +6,7 @@ use AppBundle\Entity\City;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Configuration\BrowserCache;
+use AppBundle\Annotation\BrowserCache;
 
 /**
  * Description of MenuDroitController.

@@ -7,7 +7,7 @@ use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Configuration\BrowserCache;
+use AppBundle\Annotation\BrowserCache;
 use AppBundle\Entity\City;
 use AppBundle\Entity\Place;
 use AppBundle\Form\Type\SearchType;
