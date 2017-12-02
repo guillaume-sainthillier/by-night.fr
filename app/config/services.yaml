@@ -107,9 +107,11 @@ services:
     tbn.event_http:invalidator:
         class: AppBundle\Invalidator\EventInvalidator
         arguments: [ "@fos_http_cache.cache_manager", "@logger", "%kernel.debug" ]
+
     tbn.app_manager:
         class: AppBundle\App\AppManager
         arguments: [ "@service_container" ]
+
     tbn.city_manager:
         class: AppBundle\App\CityManager
         arguments:
