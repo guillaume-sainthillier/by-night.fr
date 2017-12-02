@@ -25,8 +25,7 @@ services:
         autowire: true
         autoconfigure: true
 
-    AppBundle\App\:
-        resource: '../../src/App'
+    AppBundle\App\CityManager:
         autowire: true
         autoconfigure: true
 
@@ -108,9 +107,9 @@ services:
         class: AppBundle\Invalidator\EventInvalidator
         arguments: [ "@fos_http_cache.cache_manager", "@logger", "%kernel.debug" ]
 
-    tbn.app_manager:
-        class: AppBundle\App\AppManager
-        arguments: [ "@service_container" ]
+    app.social_manager:
+        class: AppBundle\App\SocialManager
+        arguments: [ "@doctrine.orm.entity_manager", "%facebook_id_page%", "%twitter_id_page%", "%google_id_page%" ]
 
     tbn.city_manager:
         class: AppBundle\App\CityManager
@@ -139,10 +138,6 @@ services:
         class: AppBundle\Picture\UserProfilePicture
         arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper" ]
 
-    site_manager:
-        class: AppBundle\Site\SiteManager
-        arguments: [ "@doctrine.orm.entity_manager" ]
-
     image_listener:
         class: AppBundle\Listener\ImageListener
         arguments: [ "@liip_imagine.cache.manager" ]
@@ -150,11 +145,6 @@ services:
            - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
 
     #Twig extensions
-#    AppBundle\Twig\MainExtension:
-#        arguments: [ "@site_manager", "@request_stack" ]
-#        tags:
-#            - { name: twig.extension }
-
     AppBundle\Twig\AssetExtension:
         arguments: [ "@twig.extension.assets", "%mapping_assets%", "%kernel.environment%" ]
         tags:
@@ -256,7 +246,6 @@ services:
         arguments:
           - "@tbn.parser_manager"
           - "@doctrine.orm.default_entity_manager"
-          - "@site_manager"
 
     #Parsers
     tbn.parser.abstract:
@@ -346,22 +335,22 @@ services:
 
     tbn.social.twitter:
         class:        AppBundle\Social\Twitter
-        arguments:    [{ id: "%twitter_app_id%", secret: "%twitter_app_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+        arguments:    [{ id: "%twitter_app_id%", secret: "%twitter_app_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
     tbn.social.facebook:
         class:        AppBundle\Social\Facebook
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
     tbn.social.facebook_events:
         class:        AppBundle\Social\FacebookEvents
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
     tbn.social.facebook_list_events:
         class:        AppBundle\Social\FacebookListEvents
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
     tbn.social.facebook_admin:
         class:        AppBundle\Social\FacebookAdmin
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager", "@doctrine.orm.entity_manager"]
+        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager", "@doctrine.orm.entity_manager"]
     tbn.social.google:
         class:        AppBundle\Social\Google
-        arguments:    [{ id: "%google_app_id%", secret: "%google_app_secret%", key: "%google_map_key%"}, "@site_manager", "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@tbn.app_manager"]
+        arguments:    [{ id: "%google_app_id%", secret: "%google_app_secret%", key: "%google_map_key%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
 
     tbn.event_validator:
         class: AppBundle\Validator\Constraints\EventConstraintValidator

@@ -44,7 +44,7 @@
     {% if soiree.dateModification %}
         <meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />{% endif %}
     <meta property="article:publisher"
-          content="https://www.facebook.com/pages/By-Night/{{ app_manager.facebookIdPage }}"/>
+          content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}"/>
     {% if soiree.user %}
         <meta property="article:author"
               content="{{ url('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug, 'city': city.slug}) }}"/>

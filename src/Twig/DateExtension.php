@@ -8,9 +8,6 @@
 
 namespace AppBundle\Twig;
 
-use Symfony\Component\HttpFoundation\RequestStack;
-use AppBundle\Site\SiteManager;
-use Twig\Extension\GlobalsInterface;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 

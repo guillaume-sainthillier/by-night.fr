@@ -3,6 +3,7 @@
 namespace AppBundle\Security\Core\User;
 
 use AppBundle\App\CityManager;
+use AppBundle\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
@@ -90,7 +91,9 @@ class FOSUBUserProvider extends BaseClass
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
         if (null !== $info) {
-            return $this->entityManager->getRepository('AppBundle:User')->findOneByInfo($info);
+            return $this->entityManager->getRepository('AppBundle:User')->findOneBy([
+                'info' => $info
+            ]);
         }
 
         return null;
@@ -152,6 +155,10 @@ class FOSUBUserProvider extends BaseClass
 
     protected function hydrateUser(UserInterface $user, UserResponseInterface $response, $service)
     {
+        if(! $user instanceof User) {
+            return;
+        }
+
         if (null === $user->getInfo()) {
             $user->setInfo(new UserInfo());
         }

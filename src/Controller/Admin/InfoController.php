@@ -16,7 +16,7 @@ class InfoController extends Controller
      */
     public function listAction()
     {
-        $info = $this->get('site_manager')->getSiteInfo();
+        $info = $this->get('app.social_manager')->getSiteInfo();
 
         if (null === $info) {
             $info = new SiteInfo();

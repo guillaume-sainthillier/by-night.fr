@@ -24,9 +24,9 @@
 {%- endblock %}
 
 {% block twitter %}
-    {% if app_manager.twitterIdPage %}
+    {% if social_manager.twitterIdPage %}
         <meta name="twitter:card" content="summary"/>
-        <meta name="twitter:site" content="@{{ app_manager.twitterIdPage }}"/>
+        <meta name="twitter:site" content="@{{ social_manager.twitterIdPage }}"/>
         <meta name="twitter:title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}"/>
         <meta name="twitter:description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}"/>
         <meta name="twitter:image:src" content="{% spaceless %}{{ block('og_image') }}{% endspaceless %}"/>
@@ -34,14 +34,14 @@
 {% endblock %}
 
 {% block google %}
-    {% if app_manager.googleIdPage %}
-        <link rel="author" href="https://plus.google.com/u/{{ app_manager.googleIdPage }}"/>
+    {% if social_manager.googleIdPage %}
+        <link rel="author" href="https://plus.google.com/u/{{ social_manager.googleIdPage }}"/>
     {% endif %}
 {% endblock %}
 
 {% block facebook %}
-    {% if app_manager.facebookIdPage %}
-        <meta property="fb:page_id" content="{{ app_manager.facebookIdPage }}"/>
+    {% if social_manager.facebookIdPage %}
+        <meta property="fb:page_id" content="{{ social_manager.facebookIdPage }}"/>
     {% endif %}
 {% endblock %}
 

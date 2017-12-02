@@ -40,7 +40,7 @@ class Twitter extends Social
         $this->init();
 
         try {
-            $page = $this->client->get('users/show', ['screen_name' => $this->appManager->getTwitterIdPage()]);
+            $page = $this->client->get('users/show', ['screen_name' => $this->socialManager->getTwitterIdPage()]);
             if (isset($page['followers_count'])) {
                 return $page['followers_count'];
             }
@@ -77,7 +77,7 @@ class Twitter extends Social
 
     public function postNews($title, $url)
     {
-        $info = $this->siteManager->getSiteInfo();
+        $info = $this->socialManager->getSiteInfo();
         if (null !== $info->getTwitterAccessToken()) {
             $config = [
                 'consumer_key'       => $this->id,
@@ -127,7 +127,7 @@ class Twitter extends Social
 
     protected function afterPost(User $user, Agenda $agenda)
     {
-        $info = $this->siteManager->getSiteInfo();
+        $info = $this->socialManager->getSiteInfo();
         if ($user->hasRole('ROLE_TWITTER') && null === $agenda->getTweetPostSystemId() && null !== $agenda->getTweetPostId() && null !== $info->getTwitterAccessToken()) {
             $config = [
                 'consumer_key'       => $this->id,

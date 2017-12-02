@@ -2,7 +2,6 @@
 
 namespace AppBundle\Fetcher;
 
-use AppBundle\Site\SiteManager;
 use Doctrine\ORM\EntityManager;
 use AppBundle\Parser\Manager\ParserManager;
 use AppBundle\Parser\ParserInterface;
@@ -25,16 +24,10 @@ class EventFetcher
      */
     protected $parserManager;
 
-    /**
-     * @var SiteManager
-     */
-    protected $siteManager;
-
-    public function __construct(ParserManager $parserManager, EntityManager $entityManager, SiteManager $siteManager)
+    public function __construct(ParserManager $parserManager, EntityManager $entityManager)
     {
         $this->parserManager = $parserManager;
         $this->entityManager = $entityManager;
-        $this->siteManager   = $siteManager;
     }
 
     /**

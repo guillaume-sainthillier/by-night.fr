@@ -37,7 +37,7 @@ class SocialController extends Controller
         $social->disconnectSite();
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($this->get('site_manager')->getSiteInfo());
+        $em->persist($this->get('app.social_manager')->getSiteInfo());
         $em->flush();
 
         return new JsonResponse(['success' => true]);

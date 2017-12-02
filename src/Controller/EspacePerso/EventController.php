@@ -355,7 +355,7 @@ class EventController extends Controller
     protected function getAgendaOptions()
     {
         $user     = $this->getUser();
-        $siteInfo = $this->get('site_manager')->getSiteInfo();
+        $siteInfo = $this->get('app.social_manager')->getSiteInfo();
 
         return [
             'site_info' => $siteInfo,

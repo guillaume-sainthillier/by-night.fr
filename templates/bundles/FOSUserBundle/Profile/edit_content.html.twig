@@ -16,7 +16,7 @@
                 <h2 class="modal-title">Réseaux sociaux</h2>
             </div>
             <div class="panel-body">
-                {% for service in ['facebook','google','twitter'] %}
+                {% for service in ['facebook', 'google', 'twitter'] %}
                     <div class="bloc_config">
                         {% include "Social/social.html.twig" with { 'info': app.user.info, 'service': service } %}
                     </div>

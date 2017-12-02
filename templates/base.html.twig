@@ -35,9 +35,9 @@
         <!-- ./IE10+ -->
 
         <!-- Twitter -->
-        {% if app_manager.twitterIdPage %}
+        {% if social_manager.twitterIdPage %}
             <meta name="twitter:card" content="summary"/>
-            <meta name="twitter:site" content="@{{ app_manager.twitterIdPage }}"/>
+            <meta name="twitter:site" content="@{{ social_manager.twitterIdPage }}"/>
             <meta name="twitter:title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}"/>
             <meta name="twitter:description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}"/>
             <meta name="twitter:image:src" content="{% spaceless %}{{ block('og_image') }}{% endspaceless %}"/>

@@ -102,7 +102,7 @@ class ConnectController extends BaseController
                 $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
 
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($this->container->get('site_manager')->getSiteInfo());
+                $em->persist($this->container->get('app.social_manager')->getSiteInfo());
                 $em->flush();
             } else { // On connecte normalement l'utilisateur*/
                 /** @var $currentToken OAuthToken */

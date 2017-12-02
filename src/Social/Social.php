@@ -8,16 +8,16 @@ namespace AppBundle\Social;
  * && open the template in the editor.
  */
 
+use AppBundle\App\SocialManager;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use AppBundle\App\AppManager;
 use AppBundle\Picture\EventProfilePicture;
 use AppBundle\Exception\SocialException;
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Info;
-use AppBundle\Site\SiteManager;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -44,11 +44,6 @@ abstract class Social
      * @var string
      */
     protected $secret;
-
-    /**
-     * @var SiteManager
-     */
-    protected $siteManager;
 
     /**
      * @var TokenStorageInterface
@@ -81,13 +76,13 @@ abstract class Social
     protected $eventProfilePicture;
 
     /**
-     * @var AppManager
+     * @var SocialManager
      */
-    protected $appManager;
+    protected $socialManager;
 
     protected $isInitialized;
 
-    public function __construct($config, SiteManager $siteManager, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, AppManager $appManager)
+    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, Session $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager)
     {
         if (!isset($config['id'])) {
             throw new SocialException("Le paramètre 'id' est absent");
@@ -100,14 +95,13 @@ abstract class Social
         $this->id                  = $config['id'];
         $this->secret              = $config['secret'];
         $this->config              = $config;
-        $this->siteManager         = $siteManager;
         $this->tokenStorage        = $tokenStorage;
         $this->router              = $router;
         $this->session             = $session;
         $this->requestStack        = $requestStack;
         $this->logger              = $logger;
         $this->eventProfilePicture = $eventProfilePicture;
-        $this->appManager          = $appManager;
+        $this->socialManager          = $socialManager;
         $this->isInitialized       = false;
     }
 
@@ -141,7 +135,7 @@ abstract class Social
 
     public function disconnectSite()
     {
-        $this->disconnectInfo($this->siteManager->getSiteInfo());
+        $this->disconnectInfo($this->socialManager->getSiteInfo());
     }
 
     protected function connectInfo(Info $info, UserResponseInterface $response)
@@ -171,7 +165,7 @@ abstract class Social
 
     public function connectSite(UserResponseInterface $response)
     {
-        $this->connectInfo($this->siteManager->getSiteInfo(), $response);
+        $this->connectInfo($this->socialManager->getSiteInfo(), $response);
     }
 
     public function poster(Agenda $agenda)
