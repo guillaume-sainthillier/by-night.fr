@@ -8,11 +8,27 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Cleaner\ImageCleaner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CleanCommand extends AppCommand
 {
+    private $imageCleaner;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(ImageCleaner $imageCleaner)
+    {
+        $this->imageCleaner = $imageCleaner;
+
+        parent::__construct();
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
@@ -22,11 +38,11 @@ class CleanCommand extends AppCommand
             ->setDescription('Mettre à jour les images sur le serveur');
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
-        $cleaner = $this->getContainer()->get('tbn.image_cleaner');
-        $cleaner->clean();
+        $this->imageCleaner->clean();
     }
 }

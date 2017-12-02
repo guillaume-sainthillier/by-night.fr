@@ -19,13 +19,124 @@ parameters:
 
 
 services:
+    #Legacy
+    Symfony\Component\HttpFoundation\Session\Session: '@session'
+    Vich\UploaderBundle\Templating\Helper\UploaderHelper: '@vich_uploader.templating.helper.uploader_helper'
+    Liip\ImagineBundle\Imagine\Cache\CacheManager: '@liip_imagine.cache.manager'
+    Ivory\GoogleMap\Service\Place\Search\PlaceSearchService: "@ivory.google_map.place_search"
+    Ivory\GoogleMap\Service\Place\Detail\PlaceDetailService: "@ivory.google_map.place_detail"
+    Ivory\GoogleMap\Service\Geocoder\GeocoderService: "@ivory.google_map.geocoder"
+    FOS\HttpCacheBundle\CacheManager: "@fos_http_cache.cache_manager"
+    FOS\ElasticaBundle\Index\IndexManager: "@fos_elastica.index_manager"
+
+    AppBundle\:
+        resource: '../../src/{Picture,App,Archive,Cache,Cleaner,Consumer,EventListener,Factory,Fetcher,Geocoder,Handler,Importer,Invalidator,Listener,News,Request}/*'
+        autowire: true
+        autoconfigure: true
+
+    AppBundle\Handler\EventHandler:
+        autowire: true
+        public: true #For PHPUnit
+        arguments:
+            $tempPath: "%kernel.project_dir%/web/uploads/temp"
+
+    AppBundle\Invalidator\EventInvalidator:
+        autowire: true
+        arguments:
+            $debug: "%kernel.debug"
+
+    AppBundle\Handler\UserHandler:
+        autowire: true
+        public: true #For PHPUnit
+        arguments:
+            $tempPath: "%kernel.project_dir%/web/uploads/temp"
+
+    AppBundle\Geocoder\PlaceGeocoder:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $cache: "@app.location_cache_provider"
+
+    AppBundle\App\SocialManager:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $facebookIdPage: "%facebook_id_page%"
+            $twitterIdPage: "%twitter_id_page%"
+            $googleIdPage: "%google_id_page%"
+
+    AppBundle\Social\FacebookAdmin:
+        autowire: true
+        arguments:
+            $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
+
+    AppBundle\Social\Twitter:
+        autowire: true
+        arguments:
+            $config: { id: "%twitter_app_id%", secret: "%twitter_app_secret%"}
+
+    AppBundle\Social\Google:
+        autowire: true
+        arguments:
+            $config: { id: "%google_app_id%", secret: "%google_app_secret%"}
+
+    AppBundle\Social\Facebook:
+        autowire: true
+        arguments:
+            $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
+
+    AppBundle\Social\FacebookEvents:
+        autowire: true
+        arguments:
+            $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
+
+    AppBundle\Social\FacebookListEvents:
+        autowire: true
+        arguments:
+            $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
+
     AppBundle\Controller\:
         resource: '../../src/Controller'
         tags: ['controller.service_arguments']
         autowire: true
         autoconfigure: true
 
-    AppBundle\App\CityManager:
+#    AppBundle\App\CityManager:
+#        autowire: true
+#        autoconfigure: true
+
+    AppBundle\Utils\:
+        resource: '../../src/Utils/{Cleaner,Firewall,Merger,Monitor,Util}.php'
+        autowire: true
+        autoconfigure: true
+
+    AppBundle\Utils\Comparator:
+        autowire: true
+        arguments:
+            $cache: '@comparator_cache'
+
+#    AppBundle\Utils\:
+#        resource: '../../src/Utils'
+#        autowire: true
+#        autoconfigure: true
+
+    AppBundle\News\NewsManager: ~
+#    tbn.news_manager: '@AppBundle\News\NewsManager'
+
+    AppBundle\Parser\Common\:
+        resource: '../../src/Parser/Common'
+        autowire: true
+        autoconfigure: true
+
+    AppBundle\Command\FetchCommand:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
+            $updateFbIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'
+
+    AppBundle\Command\:
+        resource: '../../src/Command/{Archive,Clean,Country,Migrate,Update}Command.php'
         autowire: true
         autoconfigure: true
 
@@ -48,8 +159,8 @@ services:
             - "@ivory.google_map.place_detail"
             - "@ivory.google_map.geocoder"
             - "@tbn.firewall"
-    app.importer.country_importer:
-        class: AppBundle\Importer\CountryImporter
+
+    AppBundle\Importer\CountryImporter:
         arguments:
             - '@doctrine.orm.entity_manager'
             - "%kernel.project_dir%/app/datas"
@@ -72,10 +183,6 @@ services:
         arguments: []
         tags:
             - { name: kernel.event_subscriber }
-
-    tbn.news_manager:
-        class: AppBundle\News\NewsManager
-        arguments: [ "@doctrine.orm.entity_manager", "@twig", "@tbn.social.facebook_admin", "@tbn.social.twitter", "@logger" ]
 
     tbn.programmetv:
         class: AppBundle\Parser\ProgrammeTVParser
@@ -117,8 +224,7 @@ services:
           - "@doctrine.orm.default_entity_manager"
           - "@request_stack"
 
-    tbn.event_archivator:
-        class: AppBundle\Archive\EventArchivator
+    AppBundle\Archive\EventArchivator:
         arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.event.event" ]
 
     tbn.event_listener:
@@ -130,13 +236,7 @@ services:
           - { name: doctrine.event_listener, event: postFlush }
           - { name: doctrine.event_listener, event: postInsert }
 
-    tbn.profile_picture.event:
-        class: AppBundle\Picture\EventProfilePicture
-        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper", "@assets.packages"]
 
-    tbn.profile_picture.user:
-        class: AppBundle\Picture\UserProfilePicture
-        arguments: [ "@liip_imagine.cache.manager", "@vich_uploader.templating.helper.uploader_helper" ]
 
     image_listener:
         class: AppBundle\Listener\ImageListener
@@ -235,22 +335,21 @@ services:
     app.event_factory:
         class: AppBundle\Factory\EventFactory
 
-    tbn.event_updater:
-            class: AppBundle\Updater\EventUpdater
-            arguments:
-              - "@doctrine.orm.default_entity_manager"
-              - "@tbn.social.facebook_admin"
-              - "@tbn.event_handler"
+#    tbn.event_updater:
+#            class: AppBundle\Updater\EventUpdater
+#            arguments:
+#              - "@doctrine.orm.default_entity_manager"
+#              - "@tbn.social.facebook_admin"
+#              - "@tbn.event_handler"
+#
+#    tbn.user_updater:
+#        class: AppBundle\Updater\UserUpdater
+#        arguments:
+#          - "@doctrine.orm.default_entity_manager"
+#          - "@tbn.social.facebook_admin"
+#          - "@tbn.user_handler"
 
-    tbn.user_updater:
-        class: AppBundle\Updater\UserUpdater
-        arguments:
-          - "@doctrine.orm.default_entity_manager"
-          - "@tbn.social.facebook_admin"
-          - "@tbn.user_handler"
-
-    tbn.event_fetcher:
-        class: AppBundle\Fetcher\EventFetcher
+    AppBundle\Fetcher\EventFetcher:
         arguments:
           - "@tbn.parser_manager"
           - "@doctrine.orm.default_entity_manager"
@@ -272,12 +371,12 @@ services:
             - ['addUrl', ["%url_soonnight_lille%"]]
             - ['addUrl', ["%url_soonnight_montpellier%"]]
 
-    tbn.parser.abstracts.facebook:
-        class: AppBundle\Parser\Common\FaceBookParser
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@tbn.firewall"
-            - "@tbn.social.facebook_admin"
+#    tbn.parser.abstracts.facebook:
+#        class: AppBundle\Parser\Common\FaceBookParser
+#        arguments:
+#            - "@doctrine.orm.entity_manager"
+#            - "@tbn.firewall"
+#            - "@tbn.social.facebook_admin"
     #Toulouse
     tbn.parser.toulouse.bikini:
         class: AppBundle\Parser\Toulouse\BikiniParser
@@ -288,8 +387,6 @@ services:
     tbn.parser.toulouse.tourisme:
         class: AppBundle\Parser\Toulouse\ToulouseTourismeParser
     #Aliases
-    tbn.facebook_parser:
-        alias: tbn.parser.abstracts.facebook
     tbn.soonnight_parser:
         alias: tbn.parser.abstracts.soonnight
         public: true #For PHPUnit
@@ -317,10 +414,10 @@ services:
     tbn.event_handler:
         class: AppBundle\Handler\EventHandler
         public: true #For PHPUnit
-        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.project_dir%/../web/uploads/temp"]
+        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.project_dir%/web/uploads/temp"]
     tbn.user_handler:
         class: AppBundle\Handler\UserHandler
-        arguments: ["%kernel.project_dir%/../web/uploads/temp"]
+        arguments: ["%kernel.project_dir%/web/uploads/temp"]
     tbn.comparator:
         class: AppBundle\Utils\Comparator
         arguments: ["@tbn.util", "@comparator_cache"]
@@ -330,35 +427,17 @@ services:
     tbn.firewall:
         class: AppBundle\Utils\Firewall
         public: true #For PHPUnit
-        arguments: ["@doctrine", "@tbn.comparator"]
+        arguments: ["@doctrine.orm.entity_manager", "@tbn.comparator"]
     tbn.merger:
         class: AppBundle\Utils\Merger
         public: true #For PHPUnit
         arguments: ["@tbn.comparator"]
 
     #Cleaner
-    tbn.image_cleaner:
-        class: AppBundle\Cleaner\ImageCleaner
-        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "%kernel.project_dir%/../web"]
+    AppBundle\Cleaner\ImageCleaner:
+        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "%kernel.project_dir%/web"]
 
-    tbn.social.twitter:
-        class:        AppBundle\Social\Twitter
-        arguments:    [{ id: "%twitter_app_id%", secret: "%twitter_app_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
-    tbn.social.facebook:
-        class:        AppBundle\Social\Facebook
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
-    tbn.social.facebook_events:
-        class:        AppBundle\Social\FacebookEvents
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
-    tbn.social.facebook_list_events:
-        class:        AppBundle\Social\FacebookListEvents
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
-    tbn.social.facebook_admin:
-        class:        AppBundle\Social\FacebookAdmin
-        arguments:    [{ id: "%api_facebook_id%", secret: "%api_facebook_secret%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager", "@doctrine.orm.entity_manager"]
-    tbn.social.google:
-        class:        AppBundle\Social\Google
-        arguments:    [{ id: "%google_app_id%", secret: "%google_app_secret%", key: "%google_map_key%"}, "@security.token_storage", "@router", "@session", "@request_stack", "@logger", "@tbn.profile_picture.event", "@app.social_manager"]
+
 
     tbn.event_validator:
         class: AppBundle\Validator\Constraints\EventConstraintValidator
@@ -389,7 +468,7 @@ services:
             - {facebook: facebook_id, google: google_id, twitter: twitter_id}
             - "@tbn.city_manager"
             - "@doctrine.orm.entity_manager"
-            - {google: "@tbn.social.google", twitter: "@tbn.social.twitter", facebook_events: "@tbn.social.facebook_events", facebook_admin: "@tbn.social.facebook_admin", facebook_list_events: "@tbn.social.facebook_list_events", facebook: "@tbn.social.facebook"}
+            - {google: '@AppBundle\Social\Google', twitter: '@AppBundle\Social\Twitter', facebook_events: '@AppBundle\Social\FacebookEvents', facebook_admin: '@AppBundle\Social\FacebookAdmin', facebook_list_events: '@AppBundle\Social\FacebookListEvents', facebook: '@AppBundle\Social\Facebook'}
 
     authentication_handler:
         class: AppBundle\Handler\AuthenticationHandler

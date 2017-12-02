@@ -2,7 +2,9 @@
 
 namespace AppBundle\Archive;
 
-use Doctrine\ORM\EntityManager;
+use AppBundle\Utils\Monitor;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\QueryBuilder;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
 /**
@@ -13,29 +15,73 @@ use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
  */
 class EventArchivator
 {
+    const ITEMS_PER_TRANSACTION = 5000;
+
     /**
      * @var ObjectPersisterInterface
      */
     private $objectPersister;
 
     /**
-     * @var EntityManager
+     * @var ObjectManager
      */
     private $entityManager;
 
-    public function __construct(EntityManager $entityManager, ObjectPersisterInterface $objectPersister)
+    public function __construct(ObjectManager $entityManager, ObjectPersisterInterface $objectPersister)
     {
         $this->entityManager   = $entityManager;
         $this->objectPersister = $objectPersister;
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    protected function countObjects(QueryBuilder $queryBuilder)
+    {
+        /* Clone the query builder before altering its field selection and DQL,
+         * lest we leave the query builder in a bad state for fetchSlice().
+         */
+        $qb = clone $queryBuilder;
+        $rootAliases = $queryBuilder->getRootAliases();
+
+        return $qb
+            ->select($qb->expr()->count($rootAliases[0]))
+            // Remove ordering for efficiency; it doesn't affect the count
+            ->resetDQLPart('orderBy')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function archive()
     {
-        $events = $this->entityManager->getRepository('AppBundle:Agenda')->findNonIndexables();
+        $repo = $this->entityManager->getRepository('AppBundle:Agenda');
+        $qb = $repo->findNonIndexablesBuilder();
+        $nbObjects = $this->countObjects($qb);
 
-        if ($events) {
+        $nbTransactions = ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
+        Monitor::createProgressBar($nbTransactions);
+        for($i = 0; $i < $nbTransactions; $i++) {
+            $events = $qb
+                ->setFirstResult($i * self::ITEMS_PER_TRANSACTION)
+                ->setMaxResults(self::ITEMS_PER_TRANSACTION)
+                ->getQuery()
+                ->getResult();
+
+            if(! count($events)) {
+                continue;
+            }
+
             $this->objectPersister->deleteMany($events);
-            $this->entityManager->getRepository('AppBundle:Agenda')->updateNonIndexables();
+            Monitor::advanceProgressBar();
         }
+        $repo->updateNonIndexables();
+        Monitor::finishProgressBar();
     }
 }

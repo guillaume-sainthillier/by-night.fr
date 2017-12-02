@@ -11,6 +11,7 @@ namespace AppBundle\Request\ParamConverter;
 use AppBundle\App\CityManager;
 use AppBundle\Entity\City;
 use Doctrine\Common\Persistence\AbstractManagerRegistry;
+use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,18 +20,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class CityConverter implements ParamConverterInterface
 {
     /**
-     * @var AbstractManagerRegistry
+     * @var ObjectManager
      */
-    private $registry;
+    private $em;
 
     /**
      * @var CityManager
      */
     private $cityManager;
 
-    public function __construct(AbstractManagerRegistry $registry, CityManager $cityManager)
+    public function __construct(ObjectManager $em, CityManager $cityManager)
     {
-        $this->registry    = $registry;
+        $this->em    = $em;
         $this->cityManager = $cityManager;
     }
 

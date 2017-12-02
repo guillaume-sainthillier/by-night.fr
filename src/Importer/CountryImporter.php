@@ -14,6 +14,7 @@ use AppBundle\Entity\AdminZone2;
 use AppBundle\Entity\City;
 use AppBundle\Entity\Country;
 use AppBundle\Entity\ZipCity;
+use AppBundle\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CountryImporter
@@ -34,7 +35,14 @@ class CountryImporter
         $this->dataDir = $dataDir;
     }
 
-    public function import($id, $name = null, $capital = null, $locale = null)
+    /**
+     * @param string $id
+     * @param null|string $name
+     * @param null|string $capital
+     * @param null|string $locale
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null)
     {
         /**
          * @var Country
@@ -48,9 +56,11 @@ class CountryImporter
                 ->setCapital($capital)
                 ->setLocale($locale);
 
+            Monitor::writeln(sprintf("Création du pays <info>%s (%s)</info>", $id, $country->getName()));
             $this->em->persist($country);
             $this->em->flush();
         } else {
+            Monitor::writeln(sprintf("Mise à jour du pays <info>%s (%s)</info>", $id, $country->getName()));
             $this->deleteRelatedDatas($country);
         }
 
@@ -67,6 +77,10 @@ class CountryImporter
         ]);
     }
 
+    /**
+     * @param Country $country
+     * @throws \Doctrine\DBAL\DBALException
+     */
     private function cleanDatas(Country $country)
     {
         $this->em->getConnection()->executeUpdate('
@@ -153,6 +167,10 @@ class CountryImporter
         $this->fixDatas($country);
     }
 
+    /**
+     * @param Country $country
+     * @throws \Doctrine\DBAL\DBALException
+     */
     private function fixDatas(Country $country)
     {
         switch ($country->getId()) {
@@ -288,6 +306,11 @@ class CountryImporter
         $this->em->flush();
     }
 
+    /**
+     * @param array $associations
+     * @param Country $country
+     * @throws \Doctrine\DBAL\DBALException
+     */
     private function manualAssociation(array $associations, Country $country)
     {
         foreach ($associations as $zipSlug => $citySlug) {

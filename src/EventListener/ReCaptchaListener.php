@@ -16,7 +16,7 @@ class ReCaptchaListener
     private $formName;
     private $field;
 
-    public function __construct($formName, $field)
+    public function __construct($formName = "fos_user_registration_form", $field = 'recaptcha')
     {
         $this->formName = $formName;
         $this->field    = $field;

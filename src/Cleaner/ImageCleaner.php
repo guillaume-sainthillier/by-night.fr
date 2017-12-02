@@ -60,8 +60,8 @@ class ImageCleaner
         $finder = new Finder();
         $files  = $finder->in($this->webDir . $uri_prefix);
         foreach ($files as $file) {
-            /*
-             * @var \SplFileObject
+            /**
+             * @var \SplFileObject $file
              */
             if (!$file->getFilename()) {
                 continue;

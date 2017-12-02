@@ -26,6 +26,19 @@ class AgendaRepository extends EntityRepository
             ;
     }
 
+    public function createElasticaQueryBuilder($alias, $indexBy = null)
+    {
+        $qb = $this->createQueryBuilder($alias, $indexBy);
+
+        return $qb
+            ->addSelect('zc')
+            ->addSelect('c2')
+            ->addSelect('c3')
+            ->leftJoin('p.zipCity', 'zc')
+            ->leftJoin('c.parent', 'c2')
+            ->join('p.country', 'c3');
+    }
+
     public function createIsActiveQueryBuilder()
     {
         $from = new \DateTime();
@@ -34,15 +47,9 @@ class AgendaRepository extends EntityRepository
         $from->modify(Agenda::INDEX_FROM);
         $to->modify(Agenda::INDEX_TO);
 
-        $qb = $this->createQueryBuilder('a');
+        $qb = $this->createElasticaQueryBuilder('a');
 
         return $qb
-            ->addSelect('zc')
-            ->addSelect('c2')
-            ->addSelect('c3')
-            ->leftJoin('p.zipCity', 'zc')
-            ->leftJoin('c.parent', 'c2')
-            ->join('p.country', 'c3')
             ->where('a.dateFin >= :from')
             ->andWhere('a.dateFin <= :to')
             ->setParameters([
@@ -81,7 +88,7 @@ class AgendaRepository extends EntityRepository
             ->execute();
     }
 
-    public function findNonIndexables()
+    public function findNonIndexablesBuilder()
     {
         $from = new \DateTime();
         $to   = new \DateTime();
@@ -90,7 +97,7 @@ class AgendaRepository extends EntityRepository
         $to->modify(Agenda::INDEX_TO);
 
         return $this
-            ->createQueryBuilder('a')
+            ->createElasticaQueryBuilder('a')
             ->where('a.isArchive IS NULL OR a.isArchive = :archive')
             ->andWhere('a.dateFin < :from OR a.dateFin > :to')
             ->setParameters([
@@ -98,8 +105,7 @@ class AgendaRepository extends EntityRepository
                 'from'    => $from->format('Y-m-d'),
                 'to'      => $to->format('Y-m-d'),
             ])
-            ->getQuery()
-            ->getResult();
+            ->addOrderBy('a.id');
     }
 
     public function findByInterval(\DateTime $from, \DateTime $to)

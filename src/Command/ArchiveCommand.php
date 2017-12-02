@@ -2,12 +2,27 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Archive\EventArchivator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use AppBundle\Utils\Monitor;
 
 class ArchiveCommand extends AppCommand
 {
+    private $eventArchivator;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(EventArchivator $eventArchivator)
+    {
+        $this->eventArchivator = $eventArchivator;
+
+        parent::__construct();
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
@@ -17,11 +32,11 @@ class ArchiveCommand extends AppCommand
             ->setDescription('Archive les vieux événements sur By Night');
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
-        $eventArchivator = $this->getContainer()->get('tbn.event_archivator');
-        $eventArchivator->archive();
+        $this->eventArchivator->archive();
     }
 }

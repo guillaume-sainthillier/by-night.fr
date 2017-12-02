@@ -12,6 +12,9 @@ use AppBundle\Utils\Monitor;
 
 class MigrateCommand extends AppCommand
 {
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
@@ -21,10 +24,11 @@ class MigrateCommand extends AppCommand
             ->setDescription('Migrer les événements sur By Night');
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
         $firewall = $this->getContainer()->get('tbn.doctrine_event_handler');
         $em       = $this->getContainer()->get('doctrine.orm.entity_manager');
         $places   = $em->getRepository('AppBundle:Place')->findBy(['city' => null]);

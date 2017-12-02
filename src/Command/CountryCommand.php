@@ -2,20 +2,79 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Importer\CountryImporter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use AppBundle\Utils\Monitor;
+use Symfony\Component\Console\Question\Question;
 
 class CountryCommand extends AppCommand
 {
+    /**
+     * @var CountryImporter
+     */
+    private $countryImporter;
+
+    /**
+     * @inheritdoc
+     */
+    public function __construct(CountryImporter $countryImporter)
+    {
+        $this->countryImporter = $countryImporter;
+
+        parent::__construct();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        $optionalParams = [];
+        $atLeastOneInfo = false;
+        foreach($input->getArguments() as $name => $value) {
+            if(! in_array($name, ['id', 'command'], true)) {
+                continue;
+            }
+
+            $optionalParams[] = $name;
+            $atLeastOneInfo = $atLeastOneInfo || !empty($value);
+        }
+
+        if($atLeastOneInfo) {
+            foreach($optionalParams as $name) {
+                if(! $input->getArgument($name)) {
+                    $value = $this->askParam($name, $input, $output);
+                    $input->setArgument($name, $value);
+                }
+            }
+        }
+    }
+
+
+    private function askParam(string $name, InputInterface $input, OutputInterface $output): string {
+        $question = new Question(sprintf("Valeur de l'argument %s : ", $name));
+        $question->setValidator(function ($value) {
+            if (empty($value)) {
+                throw new \Exception('Cette valeur ne peut pas être vide');
+            }
+
+            return $value;
+        });
+
+        return $this->getHelper('question')->ask($input, $output, $question);
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
 
         $this
             ->setName('tbn:country:import')
-            ->setDescription('Ajoute un pays sur By Night')
+            ->setDescription('Ajouter un pays sur By Night')
             ->addArgument('id', InputArgument::REQUIRED)
             ->addArgument('name', InputArgument::OPTIONAL)
             ->addArgument('capital', InputArgument::OPTIONAL)
@@ -23,13 +82,12 @@ class CountryCommand extends AppCommand
         ;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
-        $importer        = $this->getContainer()->get('app.importer.country_importer');
-
-        $importer->import(
+        $this->countryImporter->import(
             $input->getArgument('id'),
             $input->getArgument('name'),
             $input->getArgument('capital'),

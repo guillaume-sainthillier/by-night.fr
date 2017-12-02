@@ -2,7 +2,7 @@
 
 namespace AppBundle\News;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use Psr\Log\LoggerInterface;
 use AppBundle\Entity\Agenda;
 use AppBundle\Entity\News;
@@ -13,7 +13,7 @@ use Twig\Environment;
 class NewsManager
 {
     /**
-     * @var EntityManager
+     * @var ObjectManager
      */
     private $em;
 
@@ -37,7 +37,7 @@ class NewsManager
      */
     private $twitter;
 
-    public function __construct(EntityManager $em, Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
+    public function __construct(ObjectManager $em, Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
     {
         $this->em       = $em;
         $this->twig     = $twig;
@@ -85,7 +85,7 @@ class NewsManager
         foreach ($datas as $site => $events) {
             $participants[$site] = 0;
             foreach ($events as $event) {
-                /*
+                /**
                  * @var Agenda $event
                  */
                 $participants[$site] += $event->getFbInterets() + $event->getFbParticipations();

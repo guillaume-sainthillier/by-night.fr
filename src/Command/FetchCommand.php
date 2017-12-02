@@ -2,7 +2,9 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Fetcher\EventFetcher;
 use AppBundle\Parser\Common\FaceBookParser;
+use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -11,20 +13,46 @@ use AppBundle\Parser\ParserInterface;
 
 class FetchCommand extends AppCommand
 {
+    /**
+     * @var EventFetcher
+     */
+    private $eventFetcher;
+
+    /**
+     * @var ProducerInterface
+     */
+    private $eventProducer;
+
+    /**
+     * @var ProducerInterface
+     */
+    private $updateFbIdProducer;
+
+    public function __construct(EventFetcher $eventFetcher, ProducerInterface $eventProducer, ProducerInterface $updateFbIdProducer) {
+        $this->eventFetcher = $eventFetcher;
+        $this->eventProducer = $eventProducer;
+        $this->updateFbIdProducer = $updateFbIdProducer;
+
+        parent::__construct();
+    }
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
 
         $this
             ->setName('tbn:events:fetch')
-            ->setDescription('Récupérer des nouveaux événéments sur By Night')
+            ->setDescription('Ajouter / mettre à jour des nouveaux événéments sur By Night')
             ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer');
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
         $parser = $input->getArgument('parser');
         if (!$this->getContainer()->has($parser)) {
             throw new \LogicException(\sprintf(
@@ -41,8 +69,9 @@ class FetchCommand extends AppCommand
             ));
         }
 
-        $fetcher = $this->getContainer()->get('tbn.event_fetcher');
-        $events  = $fetcher->fetchEvents($service);
+        die('ok');
+
+        $events  = $this->eventFetcher->fetchEvents($service);
         foreach ($events as $event) {
             $this->getContainer()->get('old_sound_rabbit_mq.add_event_producer')->publish(\serialize($event));
         }

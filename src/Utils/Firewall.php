@@ -11,6 +11,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use AppBundle\Reject\Reject;
 use AppBundle\Repository\ExplorationRepository;
 use AppBundle\Entity\User;
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
  * Description of Firewall.
@@ -29,6 +30,10 @@ class Firewall
      * @var Comparator
      */
     protected $comparator;
+
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectManager|object
+     */
     protected $om;
 
     /**
@@ -36,12 +41,11 @@ class Firewall
      */
     protected $repoExploration;
 
-    public function __construct(Registry $doctrine, Comparator $comparator)
+    public function __construct(ObjectManager $om, Comparator $comparator)
     {
-        $this->om              = $doctrine->getManager();
+        $this->om              = $om;
         $this->repoExploration = $this->om->getRepository('AppBundle:Exploration');
         $this->comparator      = $comparator;
-        $this->places          = [];
         $this->explorations    = [];
     }
 

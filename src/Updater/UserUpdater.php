@@ -8,7 +8,7 @@
 
 namespace AppBundle\Updater;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use AppBundle\Utils\Monitor;
 use AppBundle\Handler\UserHandler;
 use AppBundle\Social\FacebookAdmin;
@@ -21,7 +21,7 @@ class UserUpdater extends Updater
      */
     protected $userHandler;
 
-    public function __construct(EntityManager $entityManager, FacebookAdmin $facebookAdmin, UserHandler $userHandler)
+    public function __construct(ObjectManager $entityManager, FacebookAdmin $facebookAdmin, UserHandler $userHandler)
     {
         parent::__construct($entityManager, $facebookAdmin);
         $this->userHandler = $userHandler;

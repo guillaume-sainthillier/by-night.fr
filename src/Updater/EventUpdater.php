@@ -8,7 +8,7 @@
 
 namespace AppBundle\Updater;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use AppBundle\Entity\Agenda;
 use AppBundle\Handler\EventHandler;
 use AppBundle\Utils\Monitor;
@@ -21,7 +21,7 @@ class EventUpdater extends Updater
      */
     protected $eventHandler;
 
-    public function __construct(EntityManager $entityManager, FacebookAdmin $facebookAdmin, EventHandler $eventHandler)
+    public function __construct(ObjectManager $entityManager, FacebookAdmin $facebookAdmin, EventHandler $eventHandler)
     {
         parent::__construct($entityManager, $facebookAdmin);
         $this->eventHandler = $eventHandler;

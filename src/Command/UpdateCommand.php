@@ -9,6 +9,9 @@ use AppBundle\Utils\Monitor;
 
 class UpdateCommand extends AppCommand
 {
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
         parent::configure();
@@ -18,10 +21,11 @@ class UpdateCommand extends AppCommand
             ->setDescription('Mettre à jour les événements sur By Night');
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
         $updater = $this->getContainer()->get('tbn.user_updater');
         $updater->update();
 

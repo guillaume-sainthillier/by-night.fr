@@ -78,6 +78,9 @@ class AppKernel extends Kernel
         return \dirname(__DIR__ .'../');
     }
 
+    /**
+     * @inheritdoc
+     */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load(function (ContainerBuilder $container) {

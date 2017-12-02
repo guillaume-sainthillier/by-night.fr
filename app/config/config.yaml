@@ -76,8 +76,8 @@ twig:
         menu: "@white_october_breadcrumbs"
         social_manager: "@app.social_manager"
         city_manager: "@tbn.city_manager"
-        userProfilePicture: "@tbn.profile_picture.user"
-        eventProfilePicture: "@tbn.profile_picture.event"
+        userProfilePicture: '@AppBundle\Picture\UserProfilePicture'
+        eventProfilePicture: '@AppBundle\Picture\EventProfilePicture'
         facebook_app_id: "%api_facebook_id%"
         googleMapKey: "%google_map_key%"
         app_version: "v%application_version%"
