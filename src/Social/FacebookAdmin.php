@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use AppBundle\Entity\Agenda;
 use AppBundle\Picture\EventProfilePicture;
@@ -190,7 +189,7 @@ class FacebookAdmin extends FacebookEvents
                     //Traitement des réponses
                     foreach ($responses as $response) {
                         /**
-                         * @var FacebookResponse $response
+                         * @var FacebookResponse
                          */
                         if ($response->isError()) {
                             $e = $response->getThrownException();

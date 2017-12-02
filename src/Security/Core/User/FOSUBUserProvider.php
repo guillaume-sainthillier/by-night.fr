@@ -92,7 +92,7 @@ class FOSUBUserProvider extends BaseClass
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
         if (null !== $info) {
             return $this->entityManager->getRepository('AppBundle:User')->findOneBy([
-                'info' => $info
+                'info' => $info,
             ]);
         }
 
@@ -155,7 +155,7 @@ class FOSUBUserProvider extends BaseClass
 
     protected function hydrateUser(UserInterface $user, UserResponseInterface $response, $service)
     {
-        if(! $user instanceof User) {
+        if (!$user instanceof User) {
             return;
         }
 

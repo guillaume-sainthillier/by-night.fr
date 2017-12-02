@@ -32,7 +32,7 @@ class RegistrationListener implements EventSubscriberInterface
     public function onRegistrationInitialize(GetResponseUserEvent $event)
     {
         $user = $event->getUser();
-        if($user instanceof User) {
+        if ($user instanceof User) {
             $user->setFromLogin(true);
         }
     }

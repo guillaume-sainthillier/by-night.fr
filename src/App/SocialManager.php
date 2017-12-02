@@ -41,11 +41,11 @@ class SocialManager
 
     public function __construct(ObjectManager $entityManager, $facebookIdPage, $twitterIdPage, $googleIdPage)
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager  = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
         $this->twitterIdPage  = $twitterIdPage;
         $this->googleIdPage   = $googleIdPage;
-        $this->siteInfo = false;
+        $this->siteInfo       = false;
     }
 
     /**
@@ -53,7 +53,7 @@ class SocialManager
      */
     public function getSiteInfo()
     {
-        if(false === $this->siteInfo) {
+        if (false === $this->siteInfo) {
             $this->siteInfo = $this->entityManager
                 ->getRepository('AppBundle:SiteInfo')
                 ->findOneBy([]);
