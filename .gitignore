@@ -2,6 +2,7 @@
 .env
 .docker-sync/*
 /app/config/parameters.yaml
+/app/config/parameters.yml
 
 #SiteMaps
 /web/sitemap/*

@@ -1,5 +1,5 @@
 imports:
-    - { resource: parameters.yaml }
+    - { resource: parameters.yml }
     - { resource: security.yaml }
     - { resource: services.yaml }
     - { resource: mapping_assets.yaml, ignore_errors: true }
@@ -493,7 +493,7 @@ fos_elastica:
                             nGram:
                                 type:     nGram
                                 min_gram: 3
-                                max_gram: 10
+                                max_gram: 8
                         analyzer:
                             city_analyzer:
                                 type: custom
@@ -513,6 +513,11 @@ fos_elastica:
             settings:
                 index:
                     analysis:
+                        tokenizer:
+                            nGram:
+                                type:     nGram
+                                min_gram: 5
+                                max_gram: 8
                         analyzer:
                             user_analyzer:
                                 type: custom
@@ -535,7 +540,7 @@ jms_serializer:
         directories:
             FOSUserBundle:
                 namespace_prefix: "FOS\\UserBundle"
-                path: "%kernel.project_dir%/app/config/serializer/fos"
+                path: "%kernel.root_dir%/config/serializer/fos"
 
 presta_sitemap:
     route_annotation_listener: false

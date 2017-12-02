@@ -20,7 +20,6 @@ class UserRepository extends Repository
         $match = new MultiMatch();
         $match->setQuery($q)
             ->setFields(['username', 'firstname', 'lastname'])
-            ->setFuzziness(0.8)
             ->setMinimumShouldMatch('80%');
 
         $query->addFilter($match);

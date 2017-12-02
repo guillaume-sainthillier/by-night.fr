@@ -67,7 +67,6 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=127, nullable=true)
-     * @Expose
      */
     protected $description;
 
@@ -85,14 +84,12 @@ class User extends BaseUser
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site")
      * @ORM\JoinColumn(nullable=false)
-     * @Expose
      */
     protected $site;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City")
      * @ORM\JoinColumn(nullable=true)
-     * @Expose
      */
     protected $city;
 
@@ -103,19 +100,16 @@ class User extends BaseUser
 
     /**
      * @ORM\Column(name="show_socials", type="boolean", nullable=true)
-     * @Expose
      */
     protected $show_socials;
 
     /**
      * @ORM\Column(name="date_creation", type="datetime", nullable=true)
-     * @Expose
      */
     protected $date_creation;
 
     /**
      * @ORM\Column(name="website", type="string", length=255, nullable=true)
-     * @Expose
      */
     protected $website;
 
@@ -155,7 +149,6 @@ class User extends BaseUser
 
     /**
      * @ORM\Column(type="datetime")
-     * @Expose
      *
      * @var \DateTime
      */
