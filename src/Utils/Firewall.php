@@ -7,7 +7,6 @@ use AppBundle\Entity\Agenda;
 use AppBundle\Geolocalize\BoundaryInterface;
 use AppBundle\Geolocalize\GeolocalizeInterface;
 use AppBundle\Entity\Exploration;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use AppBundle\Reject\Reject;
 use AppBundle\Repository\ExplorationRepository;
 use AppBundle\Entity\User;

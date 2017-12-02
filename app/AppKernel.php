@@ -79,7 +79,7 @@ class AppKernel extends Kernel
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {

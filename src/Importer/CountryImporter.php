@@ -36,10 +36,11 @@ class CountryImporter
     }
 
     /**
-     * @param string $id
+     * @param string      $id
      * @param null|string $name
      * @param null|string $capital
      * @param null|string $locale
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null)
@@ -56,11 +57,11 @@ class CountryImporter
                 ->setCapital($capital)
                 ->setLocale($locale);
 
-            Monitor::writeln(sprintf("Création du pays <info>%s (%s)</info>", $id, $country->getName()));
+            Monitor::writeln(\sprintf('Création du pays <info>%s (%s)</info>', $id, $country->getName()));
             $this->em->persist($country);
             $this->em->flush();
         } else {
-            Monitor::writeln(sprintf("Mise à jour du pays <info>%s (%s)</info>", $id, $country->getName()));
+            Monitor::writeln(\sprintf('Mise à jour du pays <info>%s (%s)</info>', $id, $country->getName()));
             $this->deleteRelatedDatas($country);
         }
 
@@ -79,6 +80,7 @@ class CountryImporter
 
     /**
      * @param Country $country
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     private function cleanDatas(Country $country)
@@ -169,6 +171,7 @@ class CountryImporter
 
     /**
      * @param Country $country
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     private function fixDatas(Country $country)
@@ -307,8 +310,9 @@ class CountryImporter
     }
 
     /**
-     * @param array $associations
+     * @param array   $associations
      * @param Country $country
+     *
      * @throws \Doctrine\DBAL\DBALException
      */
     private function manualAssociation(array $associations, Country $country)

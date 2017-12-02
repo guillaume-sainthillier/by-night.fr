@@ -13,7 +13,6 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
-use Doctrine\ORM\EntityManager;
 use Psr\Http\Message\ResponseInterface;
 use AppBundle\Social\FacebookAdmin;
 
