@@ -11,6 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\Groups;
 use AppBundle\Validator\Constraints\EventConstraint;
 use AppBundle\Geolocalize\GeolocalizeInterface;
 use AppBundle\Reject\Reject;
@@ -35,10 +36,14 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Agenda implements GeolocalizeInterface
 {
+    const INDEX_FROM = '-6 months';
+    const INDEX_TO = '+6 months';
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $id;
@@ -54,6 +59,7 @@ class Agenda implements GeolocalizeInterface
      *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      * @Assert\NotBlank(message="N'oubliez pas de nommer votre événement !")
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $nom;
@@ -63,6 +69,7 @@ class Agenda implements GeolocalizeInterface
      *
      * @ORM\Column(name="descriptif", type="text", nullable=true)
      * @Assert\NotBlank(message="N'oubliez pas de décrire votre événement !")
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $descriptif;
@@ -86,6 +93,7 @@ class Agenda implements GeolocalizeInterface
      *
      * @ORM\Column(name="date_debut", type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
+     * @Groups({"list_event"})
      * @Expose
      * @Type("DateTime<'Y-m-d'>")
      */
@@ -95,6 +103,7 @@ class Agenda implements GeolocalizeInterface
      * @var \DateTime
      *
      * @ORM\Column(name="date_fin", type="date", nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      * @Type("DateTime<'Y-m-d'>")
      */
@@ -118,6 +127,7 @@ class Agenda implements GeolocalizeInterface
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $latitude;
@@ -126,6 +136,7 @@ class Agenda implements GeolocalizeInterface
      * @var float
      *
      * @ORM\Column(name="longitude", type="float", nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $longitude;
@@ -134,7 +145,6 @@ class Agenda implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="adresse", type="string", length=255, nullable=true)
-     * @Expose
      */
     protected $adresse;
 
@@ -142,6 +152,7 @@ class Agenda implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="type_manifestation", type="string", length=128, nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $typeManifestation;
@@ -150,6 +161,7 @@ class Agenda implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="categorie_manifestation", type="string", length=128, nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $categorieManifestation;
@@ -158,6 +170,7 @@ class Agenda implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="theme_manifestation", type="string", length=128, nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $themeManifestation;
@@ -238,6 +251,8 @@ class Agenda implements GeolocalizeInterface
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"list_event"})
+     * @Expose
      */
     protected $user;
 
@@ -305,7 +320,6 @@ class Agenda implements GeolocalizeInterface
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
-     * @Expose
      */
     protected $site;
 
@@ -326,6 +340,7 @@ class Agenda implements GeolocalizeInterface
      * @var int
      *
      * @ORM\Column(name="fb_participations", type="integer", nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $fbParticipations;
@@ -361,6 +376,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Place", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      * @Assert\Valid()
      */
@@ -392,10 +408,13 @@ class Agenda implements GeolocalizeInterface
 
     public function isIndexable()
     {
-        $now = new \DateTime();
-        $now->modify('-1 month');
+        $from = new \DateTime();
+        $from->modify(self::INDEX_FROM);
 
-        return $this->dateFin >= $now;
+        $to = new \DateTime();
+        $to->modify(self::INDEX_TO);
+
+        return $this->dateFin >= $from && $this->dateFin <= $to;
     }
 
     /**

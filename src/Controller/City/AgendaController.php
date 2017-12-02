@@ -176,8 +176,8 @@ class AgendaController extends Controller
             $soirees_type_manifestation = $repo->getTypesEvenements($city);
             $type_manifestation         = [];
 
-            foreach ($soirees_type_manifestation as $soiree) {//
-                $types_manifestation = \preg_split('/,/', $soiree->getCategorieManifestation());
+            foreach ($soirees_type_manifestation as $soiree_type_manifestation) {//
+                $types_manifestation = \preg_split('/,/', $soiree_type_manifestation);
                 foreach ($types_manifestation as $type) {
                     $type = \array_map('trim', \explode('//', $type))[0];
                     if (!\in_array($type, $type_manifestation) && '' != $type) {

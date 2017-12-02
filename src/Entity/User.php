@@ -5,6 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -27,11 +28,10 @@ class User extends BaseUser
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serializer\Groups({"list_even", "list_user"})
      * @Expose
      */
     protected $id;
-
-    protected $username;
 
     /**
      * @Gedmo\Slug(fields={"username"})
@@ -42,15 +42,8 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
-     * @Expose
-     */
-    protected $nom;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
+     * @Serializer\Groups({"list_user"})
      * @Expose
      */
     protected $firstname;
@@ -59,6 +52,7 @@ class User extends BaseUser
      * @var string
      *
      * @ORM\Column(name="lastname", type="string", length=255, nullable=true)
+     * @Serializer\Groups({"list_user"})
      * @Expose
      */
     protected $lastname;
@@ -246,30 +240,6 @@ class User extends BaseUser
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set nom.
-     *
-     * @param string $nom
-     *
-     * @return User
-     */
-    public function setNom($nom)
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    /**
-     * Get nom.
-     *
-     * @return string
-     */
-    public function getNom()
-    {
-        return $this->nom;
     }
 
     /**

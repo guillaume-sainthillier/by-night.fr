@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * ZipCity.
@@ -12,6 +13,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  @ORM\Index(name="zip_city_postal_code_name_idx", columns={"name", "postal_code"})
  * })
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ZipCityRepository", readOnly=true)
+ * @Serializer\ExclusionPolicy("ALL")
  */
 class ZipCity
 {
@@ -20,6 +22,8 @@ class ZipCity
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue("AUTO")
+     * @Serializer\Groups({"list_event", "list_city", "list_user"})
+     * @Serializer\Expose()
      */
     protected $id;
 

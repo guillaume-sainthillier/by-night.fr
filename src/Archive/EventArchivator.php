@@ -31,13 +31,11 @@ class EventArchivator
 
     public function archive()
     {
-        $now = new \DateTime();
-        $now->modify('-6 months');
-        $events = $this->entityManager->getRepository('AppBundle:Agenda')->findOlds($now);
+        $events = $this->entityManager->getRepository('AppBundle:Agenda')->findNonIndexables();
 
         if ($events) {
             $this->objectPersister->deleteMany($events);
-            $this->entityManager->getRepository('AppBundle:Agenda')->updateOlds($now);
+            $this->entityManager->getRepository('AppBundle:Agenda')->updateNonIndexables();
         }
     }
 }

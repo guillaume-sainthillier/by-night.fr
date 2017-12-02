@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * Info.
@@ -27,6 +28,7 @@ abstract class AdminZone
      * @var int
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
+     * @Groups({"list_event", "list_city", "list_user"})
      */
     protected $id;
 
@@ -40,30 +42,35 @@ abstract class AdminZone
     /**
      * @var string
      * @ORM\Column(name="name", type="string", length=200)
+     * @Groups({"list_city"})
      */
     protected $name;
 
     /**
      * @var float
      * @ORM\Column(name="latitude", type="float")
+     * @Groups({"list_city"})
      */
     protected $latitude;
 
     /**
      * @var float
      * @ORM\Column(name="longitude", type="float")
+     * @Groups({"list_city"})
      */
     protected $longitude;
 
     /**
      * @var int
      * @ORM\Column(name="population", type="integer")
+     * @Groups({"list_city"})
      */
     protected $population;
 
     /**
      * @var Country
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Country", fetch="EXTRA_LAZY")
+     * @Groups({"list_city"})
      */
     protected $country;
 

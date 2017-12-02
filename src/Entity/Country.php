@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * News.
@@ -21,6 +22,7 @@ class Country
      *
      * @ORM\Column(name="id", type="string", length=2)
      * @ORM\Id
+     * @Serializer\Groups({"list_event", "list_user", "list_city"})
      */
     private $id;
 
@@ -43,6 +45,7 @@ class Country
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=63)
+     * @Serializer\Groups({"list_city"})
      */
     private $name;
 

@@ -3,5 +3,7 @@ FOS\UserBundle\Model\User:
     properties:
         id:
             expose: true
+            groups: [list_event, list_user]
         username:
             expose: true
+            groups: [list_event, list_user]

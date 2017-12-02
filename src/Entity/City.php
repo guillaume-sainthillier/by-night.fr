@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Exclude;
 
 /**
@@ -18,7 +19,7 @@ class City extends AdminZone
     /**
      * @var AdminZone2
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AdminZone2", fetch="EAGER")
-     * @Exclude
+     * @Groups({"list_city"})
      */
     protected $parent;
 

@@ -15,6 +15,42 @@ use Doctrine\ORM\QueryBuilder;
 
 class AgendaRepository extends EntityRepository
 {
+    public function createQueryBuilder($alias, $indexBy = null)
+    {
+        $qb = parent::createQueryBuilder($alias, $indexBy);
+
+        return $qb->select($alias, 'p')
+            ->addSelect('c')
+            ->join($alias . '.place', 'p')
+            ->join('p.city', 'c')
+            ;
+    }
+
+    public function createIsActiveQueryBuilder()
+    {
+        $from = new \DateTime();
+        $to = new \DateTime();
+
+        $from->modify(Agenda::INDEX_FROM);
+        $to->modify(Agenda::INDEX_TO);
+
+        $qb = $this->createQueryBuilder('a');
+
+        return $qb
+            ->addSelect('zc')
+            ->addSelect('c2')
+            ->addSelect('c3')
+            ->leftJoin('p.zipCity', 'zc')
+            ->leftJoin('c.parent', 'c2')
+            ->join('p.country', 'c3')
+            ->where('a.dateFin >= :from')
+            ->andWhere('a.dateFin <= :to')
+            ->setParameters([
+                'from' => $from->format('Y-m-d'),
+                'to' => $to->format('Y-m-d')
+            ]);
+    }
+
     public function findSiteMap()
     {
         return $this->createQueryBuilder('a')
@@ -24,24 +60,44 @@ class AgendaRepository extends EntityRepository
             ->getArrayResult();
     }
 
-    public function updateOlds(\DateTime $since)
+    public function updateNonIndexables()
     {
+        $from = new \DateTime();
+        $to = new \DateTime();
+
+        $from->modify(Agenda::INDEX_FROM);
+        $to->modify(Agenda::INDEX_TO);
+
         return $this->_em
             ->createQuery('UPDATE AppBundle:Agenda a
-            SET a.isArchive = TRUE
-            WHERE a.dateFin <= :date_fin
+            SET a.isArchive = :archive
+            WHERE (a.dateFin < :from OR a.dateFin > :to)
             AND a.isArchive IS NULL) ')
-            ->setParameters(['date_fin' => $since->format('Y-m-d')])
+            ->setParameters([
+                'archive' => true,
+                'from' => $from->format('Y-m-d'),
+                'to' => $to->format('Y-m-d')
+            ])
             ->execute();
     }
 
-    public function findOlds(\DateTime $since)
+    public function findNonIndexables()
     {
+        $from = new \DateTime();
+        $to = new \DateTime();
+
+        $from->modify(Agenda::INDEX_FROM);
+        $to->modify(Agenda::INDEX_TO);
+
         return $this
             ->createQueryBuilder('a')
             ->where('a.isArchive IS NULL OR a.isArchive = :archive')
-            ->andWhere('a.dateFin <= :date_fin')
-            ->setParameters(['archive' => false, ':date_fin' => $since->format('Y-m-d')])
+            ->andWhere('a.dateFin < :from OR a.dateFin > :to')
+            ->setParameters([
+                'archive' => false,
+                'from' => $from->format('Y-m-d'),
+                'to' => $to->format('Y-m-d')
+            ])
             ->getQuery()
             ->getResult();
     }
@@ -51,6 +107,9 @@ class AgendaRepository extends EntityRepository
         $cities = $this->_em->getRepository('AppBundle:City')->findTopPopulation(50);
         $events = [];
         foreach ($cities as $city) {
+            /**
+             * @var City $city
+             */
             $events[$city->getName()] = $this
                 ->createQueryBuilder('a')
                 ->where('a.dateFin BETWEEN :debut AND :fin')
@@ -67,18 +126,6 @@ class AgendaRepository extends EntityRepository
         }
 
         return $events;
-    }
-
-    public function createQueryBuilder($alias, $indexBy = null)
-    {
-        $qb = parent::createQueryBuilder($alias, $indexBy);
-
-        $qb->select($alias, 'p')
-            ->join($alias . '.place', 'p')
-            ->join('p.city', 'c')
-        ;
-
-        return $qb;
     }
 
     public function findAllByUser(UserInterface $user)
@@ -607,15 +654,31 @@ class AgendaRepository extends EntityRepository
      */
     public function getTypesEvenements(City $city)
     {
-        return $this
-            ->createQueryBuilder('a')
+        $from = new \DateTime();
+        $to = new \DateTime();
+
+        $from->modify(Agenda::INDEX_FROM);
+        $to->modify(Agenda::INDEX_TO);
+
+        $results = $this->_em
+            ->createQueryBuilder()
+            ->select('a.categorieManifestation')
+            ->from('AppBundle:Agenda', 'a')
+            ->join('a.place', 'p')
             ->where('p.city = :city')
+            ->andWhere('a.dateFin >= :from')
+            ->andWhere('a.dateFin <= :to')
             ->andWhere("a.categorieManifestation != ''")
-            //->andWhere("a.dateDebut >= :today")
             ->groupBy('a.categorieManifestation')
             ->orderBy('a.categorieManifestation', 'DESC')
-            ->setParameters([':city' => $city->getId()])
+            ->setParameters([
+                'city' => $city->getId(),
+                'from' => $from->format('Y-m-d'),
+                'to' => $to->format('Y-m-d')
+            ])
             ->getQuery()
-            ->execute();
+            ->getArrayResult();
+
+        return array_map('current', $results);
     }
 }

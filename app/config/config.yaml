@@ -443,14 +443,14 @@ fos_elastica:
                                 char_filter: [html_strip]
                             event_analyzer:
                                 type: custom
-                                tokenizer: nGram
+                                tokenizer: nGram_event
                                 filter: [lowercase, asciifolding, stopwords, snowball, elision]
                             event_city_analyzer:
                                 type: custom
-                                tokenizer: nGram
+                                tokenizer: nGram_event
                                 filter: [lowercase, asciifolding]
                         tokenizer:
-                            nGram:
+                            nGram_event:
                                 type:     nGram
                                 min_gram: 3
                                 max_gram: 8
@@ -467,6 +467,8 @@ fos_elastica:
                                 ignore_case: true
             types:
                 event:
+                    serializer:
+                        groups: [list_event]
                     indexable_callback: "isIndexable"
                     properties:
                         nom: { boost: 5, type: "text", analyzer: event_analyzer, search_analyzer: event_analyzer  }
@@ -483,6 +485,9 @@ fos_elastica:
                         driver: orm # orm, mongodb, propel are available
                         model:  AppBundle\Entity\Agenda
                         repository: AppBundle\SearchRepository\AgendaRepository
+                        provider:
+                            query_builder_method: createIsActiveQueryBuilder
+                            batch_size: 5000
         city:
             index_name: "app.city"
             client: default
@@ -490,23 +495,27 @@ fos_elastica:
                 index:
                     analysis:
                         tokenizer:
-                            nGram:
+                            nGram_city:
                                 type:     nGram
                                 min_gram: 3
                                 max_gram: 8
                         analyzer:
                             city_analyzer:
                                 type: custom
-                                tokenizer: nGram
+                                tokenizer: nGram_city
                                 filter: [lowercase, asciifolding]
             types:
                 city:
+                    serializer:
+                        groups: [list_city]
                     properties:
                         name: { type: "text", analyzer: city_analyzer, search_analyzer: city_analyzer }
                     persistence:
                         driver: orm
                         model:  AppBundle\Entity\City
                         repository: AppBundle\SearchRepository\CityRepository
+                        provider:
+                            batch_size: 10000
         user:
             index_name: "app.user"
             client: default
@@ -514,17 +523,19 @@ fos_elastica:
                 index:
                     analysis:
                         tokenizer:
-                            nGram:
+                            nGram_user:
                                 type:     nGram
                                 min_gram: 5
                                 max_gram: 8
                         analyzer:
                             user_analyzer:
                                 type: custom
-                                tokenizer: nGram
+                                tokenizer: nGram_user
                                 filter: [asciifolding, lowercase]
             types:
                 user:
+                    serializer:
+                        groups: [list_user]
                     properties:
                         username: { boost: 5, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
                         firstname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
@@ -533,6 +544,8 @@ fos_elastica:
                         driver: orm
                         model:  AppBundle\Entity\User
                         repository: AppBundle\SearchRepository\UserRepository
+                        provider:
+                            batch_size: 1000
 
 jms_serializer:
     metadata:

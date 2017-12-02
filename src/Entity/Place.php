@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 use AppBundle\Geolocalize\GeolocalizeInterface;
 use AppBundle\Reject\Reject;
 
@@ -30,6 +31,7 @@ class Place implements GeolocalizeInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $id;
@@ -38,6 +40,7 @@ class Place implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="rue", type="string", length=127, nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     private $rue;
@@ -46,6 +49,7 @@ class Place implements GeolocalizeInterface
      * @var float
      *
      * @ORM\Column(name="latitude", type="float", nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     private $latitude;
@@ -54,6 +58,7 @@ class Place implements GeolocalizeInterface
      * @var float
      *
      * @ORM\Column(name="longitude", type="float", nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     private $longitude;
@@ -63,6 +68,7 @@ class Place implements GeolocalizeInterface
      *
      * @ORM\Column(name="nom", type="string", length=255)
      * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
+     * @Groups({"list_event"})
      * @Expose
      */
     private $nom;
@@ -90,12 +96,14 @@ class Place implements GeolocalizeInterface
 
     /**
      * @ORM\Column(name="ville", type="string", length=127, nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $ville;
 
     /**
      * @ORM\Column(name="code_postal", type="string", length=7, nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $codePostal;
@@ -116,6 +124,7 @@ class Place implements GeolocalizeInterface
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $city;
@@ -123,6 +132,7 @@ class Place implements GeolocalizeInterface
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ZipCity")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $zipCity;
@@ -130,13 +140,13 @@ class Place implements GeolocalizeInterface
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Country")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"list_event"})
      * @Expose
      */
     protected $country;
 
     /**
      * @ORM\Column(name="is_junk", type="boolean", nullable=true)
-     * @Expose
      */
     protected $isJunk;
 
