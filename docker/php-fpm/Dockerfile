@@ -1,8 +1,9 @@
-FROM php:fpm
+FROM php:7.2-fpm
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     git \
+    gnupg \
     libicu-dev \
     libpng-dev \
     python \
