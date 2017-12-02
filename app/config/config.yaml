@@ -560,16 +560,3 @@ lexik_maintenance:
     driver:
         class: '\Lexik\Bundle\MaintenanceBundle\Drivers\FileDriver'
         options: {file_path: "%kernel.cache_dir%/lock"}
-
-services:
-    fos_user.doctrine_registry:
-        alias: doctrine
-    twig.extension.intl:
-        class: Twig_Extensions_Extension_Intl
-        tags:
-            - { name: twig.extension }
-    twig.extension.text:
-       class: Twig_Extensions_Extension_Text
-       tags:
-           - { name: twig.extension }
-

@@ -145,6 +145,14 @@ services:
            - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
 
     #Twig extensions
+    Twig\Extensions\IntlExtension:
+        tags:
+            - { name: twig.extension }
+
+    Twig\Extensions\TextExtension:
+       tags:
+           - { name: twig.extension }
+
     AppBundle\Twig\AssetExtension:
         arguments: [ "@twig.extension.assets", "%mapping_assets%", "%kernel.environment%" ]
         tags:
@@ -386,3 +394,6 @@ services:
     authentication_handler:
         class: AppBundle\Handler\AuthenticationHandler
         arguments: ["@translator", "@router", "@session"]
+
+    fos_user.doctrine_registry:
+        alias: doctrine
