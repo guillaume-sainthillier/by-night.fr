@@ -92,17 +92,17 @@ abstract class Social
             throw new SocialException("Le paramètre 'secret' est absent");
         }
 
-        $this->id                  = $config['id'];
-        $this->secret              = $config['secret'];
-        $this->config              = $config;
-        $this->tokenStorage        = $tokenStorage;
-        $this->router              = $router;
-        $this->session             = $session;
-        $this->requestStack        = $requestStack;
-        $this->logger              = $logger;
-        $this->eventProfilePicture = $eventProfilePicture;
+        $this->id                     = $config['id'];
+        $this->secret                 = $config['secret'];
+        $this->config                 = $config;
+        $this->tokenStorage           = $tokenStorage;
+        $this->router                 = $router;
+        $this->session                = $session;
+        $this->requestStack           = $requestStack;
+        $this->logger                 = $logger;
+        $this->eventProfilePicture    = $eventProfilePicture;
         $this->socialManager          = $socialManager;
-        $this->isInitialized       = false;
+        $this->isInitialized          = false;
     }
 
     protected function init()
