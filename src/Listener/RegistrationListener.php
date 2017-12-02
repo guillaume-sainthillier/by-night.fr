@@ -8,6 +8,7 @@
 
 namespace AppBundle\Listener;
 
+use AppBundle\Entity\User;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\FOSUserEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -30,6 +31,9 @@ class RegistrationListener implements EventSubscriberInterface
 
     public function onRegistrationInitialize(GetResponseUserEvent $event)
     {
-        $event->getUser()->setFromLogin(true);
+        $user = $event->getUser();
+        if($user instanceof User) {
+            $user->setFromLogin(true);
+        }
     }
 }
