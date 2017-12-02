@@ -16,8 +16,8 @@ use JMS\Serializer\Annotation\Groups;
 class City extends AdminZone
 {
     /**
-     * @var AdminZone2
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AdminZone2", fetch="EAGER")
+     * @var AdminZone
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AdminZone", fetch="EAGER")
      * @Groups({"list_city"})
      */
     protected $parent;
@@ -36,11 +36,11 @@ class City extends AdminZone
     /**
      * Set parent.
      *
-     * @param \AppBundle\Entity\AdminZone2 $parent
+     * @param \AppBundle\Entity\AdminZone $parent
      *
      * @return City
      */
-    public function setParent(\AppBundle\Entity\AdminZone2 $parent = null)
+    public function setParent(\AppBundle\Entity\AdminZone $parent = null)
     {
         $this->parent = $parent;
 
@@ -50,7 +50,7 @@ class City extends AdminZone
     /**
      * Get parent.
      *
-     * @return \AppBundle\Entity\AdminZone2
+     * @return \AppBundle\Entity\AdminZone
      */
     public function getParent()
     {

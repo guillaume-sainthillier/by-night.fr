@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad21ce22f936b9c9b24dc7d4aaa1b20b",
+    "content-hash": "ad251aedd3ce42eafc9a07d111efd18d",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -3871,16 +3871,16 @@
         },
         {
             "name": "php-amqplib/rabbitmq-bundle",
-            "version": "v1.14.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-amqplib/RabbitMqBundle.git",
-                "reference": "7431adce1c894da095618ad5352d875b42550f5c"
+                "reference": "58eb5174cb2c0c848f11a1742e1b1f4fcee36e02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/RabbitMqBundle/zipball/7431adce1c894da095618ad5352d875b42550f5c",
-                "reference": "7431adce1c894da095618ad5352d875b42550f5c",
+                "url": "https://api.github.com/repos/php-amqplib/RabbitMqBundle/zipball/58eb5174cb2c0c848f11a1742e1b1f4fcee36e02",
+                "reference": "58eb5174cb2c0c848f11a1742e1b1f4fcee36e02",
                 "shasum": ""
             },
             "require": {
@@ -3935,7 +3935,7 @@
                 "queue",
                 "rabbitmq"
             ],
-            "time": "2017-11-27T18:14:21+00:00"
+            "time": "2017-11-29T14:42:58+00:00"
         },
         {
             "name": "php-http/cache-plugin",
@@ -8187,6 +8187,7 @@
     "stability-flags": {
         "friendsofsymfony/elastica-bundle": 20,
         "google/apiclient": 5,
+        "php-amqplib/rabbitmq-bundle": 20,
         "presta/sitemap-bundle": 20
     },
     "prefer-stable": false,

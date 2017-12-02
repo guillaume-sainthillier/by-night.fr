@@ -59,13 +59,6 @@ RUN npm install -g bower
 RUN npm install -g grunt-cli
 #RUN npm install grunt --save-dev
 
-#PHPUnit
-ENV PHPUNIT_VERSION 6.4
-RUN wget https://phar.phpunit.de/phpunit-${PHPUNIT_VERSION}.phar
-RUN chmod +x phpunit-${PHPUNIT_VERSION}.phar
-RUN mv phpunit-${PHPUNIT_VERSION}.phar /usr/local/bin/phpunit
-
-
 # Permission fix
 RUN chmod 777 /var/www
 RUN usermod -u 1000 www-data

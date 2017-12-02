@@ -2,8 +2,6 @@
 
 namespace AppBundle\DependencyInjection;
 
-use OldSound\RabbitMqBundle\DependencyInjection\Compiler\RegisterPartsPass;
-use OldSound\RabbitMqBundle\DependencyInjection\OldSoundRabbitMqExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -22,8 +20,5 @@ class AppExtension extends Extension
         if (!$container->hasParameter('mapping_assets')) {
             $container->setParameter('mapping_assets', []);
         }
-
-//        $container->registerExtension(new OldSoundRabbitMqExtension());
-//        $container->addCompilerPass(new RegisterPartsPass());
     }
 }

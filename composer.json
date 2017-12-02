@@ -42,7 +42,7 @@
         "lexik/maintenance-bundle": "2.*",
         "liip/imagine-bundle": "1.*",
         "neitanod/forceutf8": "2.*",
-        "php-amqplib/rabbitmq-bundle": "1.*",
+        "php-amqplib/rabbitmq-bundle": "dev-master",
         "php-http/guzzle6-adapter": "1.*",
         "php-http/httplug-bundle": "1.*",
         "presta/sitemap-bundle": "dev-master",
@@ -63,7 +63,7 @@
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
-        "phpunit/phpunit": "^6.2",
+        "phpunit/phpunit": "6.*",
         "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {
