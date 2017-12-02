@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Configuration;
+namespace AppBundle\Annotation;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
 
