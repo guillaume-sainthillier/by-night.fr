@@ -3,6 +3,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\Place;
+use AppBundle\Entity\User;
 use AppBundle\Reject\Reject;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -13,16 +14,16 @@ class MigrateCommand extends AppCommand
 {
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('tbn:events:migrate')
-            ->setDescription('Migrer les événements sur By Night')
-            ->addOption('monitor', 'm', InputOption::VALUE_NONE);
+            ->setDescription('Migrer les événements sur By Night');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        Monitor::enableMonitoring($input->getOption('monitor'));
-        Monitor::$output = $output;
+        parent::execute($input, $output);
 
         $firewall = $this->getContainer()->get('tbn.doctrine_event_handler');
         $em       = $this->getContainer()->get('doctrine.orm.entity_manager');
@@ -32,7 +33,7 @@ class MigrateCommand extends AppCommand
 
         $migratedPlaces = [];
         foreach ($places as $i => $place) {
-            /*
+            /**
              * @var Place $place
              */
             $place->setReject(new Reject())->setCountry($france);
@@ -95,6 +96,9 @@ class MigrateCommand extends AppCommand
 
         $users = $em->getRepository('AppBundle:User')->findBy(['city' => null]);
         foreach ($users as $user) {
+            /**
+             * @var User $user
+             */
             $city = $em->getRepository('AppBundle:City')->findBySlug($mapping[$user->getSite()->getSubdomain()]);
             $user->setCity($city);
             $em->persist($user);

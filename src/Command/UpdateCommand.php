@@ -11,16 +11,16 @@ class UpdateCommand extends AppCommand
 {
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('tbn:events:update')
-            ->setDescription('Mettre à jour les événements sur By Night')
-            ->addOption('monitor', 'm', InputOption::VALUE_NONE);
+            ->setDescription('Mettre à jour les événements sur By Night');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        Monitor::enableMonitoring($input->getOption('monitor'));
-        Monitor::$output = $output;
+        parent::execute($input, $output);
 
         $updater = $this->getContainer()->get('tbn.user_updater');
         $updater->update();

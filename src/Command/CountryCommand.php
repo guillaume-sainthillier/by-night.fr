@@ -11,6 +11,8 @@ class CountryCommand extends AppCommand
 {
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('tbn:country:import')
             ->setDescription('Ajoute un pays sur By Night')
@@ -23,7 +25,8 @@ class CountryCommand extends AppCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        Monitor::$output = $output;
+        parent::execute($input, $output);
+
         $importer        = $this->getContainer()->get('app.importer.country_importer');
 
         $importer->import(

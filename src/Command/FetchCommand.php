@@ -13,15 +13,18 @@ class FetchCommand extends AppCommand
 {
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('tbn:events:fetch')
             ->setDescription('Récupérer des nouveaux événéments sur By Night')
-            ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer')
-            ->addOption('monitor', 'm', InputOption::VALUE_NONE);
+            ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        parent::execute($input, $output);
+
         $parser = $input->getArgument('parser');
         if (!$this->getContainer()->has($parser)) {
             throw new \LogicException(\sprintf(

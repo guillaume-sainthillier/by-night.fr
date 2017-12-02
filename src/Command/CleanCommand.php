@@ -15,6 +15,8 @@ class CleanCommand extends AppCommand
 {
     protected function configure()
     {
+        parent::configure();
+
         $this
             ->setName('tbn:events:clean')
             ->setDescription('Mettre à jour les images sur le serveur');
@@ -22,6 +24,8 @@ class CleanCommand extends AppCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        parent::execute($input, $output);
+
         $cleaner = $this->getContainer()->get('tbn.image_cleaner');
         $cleaner->clean();
     }
