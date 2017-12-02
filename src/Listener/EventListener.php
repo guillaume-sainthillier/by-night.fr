@@ -28,11 +28,13 @@ class EventListener
         $this->eventInvalidator->invalidateObjects();
     }
 
-    public function postInsert(LifecycleEventArgs $args) {
+    public function postInsert(LifecycleEventArgs $args)
+    {
         $entity = $args->getEntity();
 
-        if($entity instanceof City) {
+        if ($entity instanceof City) {
             $this->eventInvalidator->addCity($entity);
+
             return;
         }
     }
@@ -43,11 +45,13 @@ class EventListener
 
         if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);
+
             return;
         }
 
-        if($entity instanceof City) {
+        if ($entity instanceof City) {
             $this->eventInvalidator->addCity($entity);
+
             return;
         }
 
@@ -63,11 +67,13 @@ class EventListener
         $entity = $args->getEntity();
         if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);
+
             return;
         }
 
-        if($entity instanceof City) {
+        if ($entity instanceof City) {
             $this->eventInvalidator->addCity($entity);
+
             return;
         }
 
