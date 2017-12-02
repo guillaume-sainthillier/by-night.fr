@@ -11,19 +11,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 abstract class AppCommand extends ContainerAwareCommand
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    protected function configure() {
+    protected function configure()
+    {
         $this->addOption('monitor', 'm', InputOption::VALUE_NONE);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function run(InputInterface $input, OutputInterface $output) {
+    public function run(InputInterface $input, OutputInterface $output)
+    {
         Monitor::$output = $output;
         Monitor::enableMonitoring($input->hasOption('monitor') && $input->getOption('monitor'));
-        Monitor::bench($this->getName(), function() use($input, $output) {
+        Monitor::bench($this->getName(), function () use ($input, $output) {
             parent::run($input, $output);
         });
         Monitor::displayStats();

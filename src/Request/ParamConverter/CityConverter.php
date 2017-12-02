@@ -10,7 +10,6 @@ namespace AppBundle\Request\ParamConverter;
 
 use AppBundle\App\CityManager;
 use AppBundle\Entity\City;
-use Doctrine\Common\Persistence\AbstractManagerRegistry;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
@@ -31,7 +30,7 @@ class CityConverter implements ParamConverterInterface
 
     public function __construct(ObjectManager $em, CityManager $cityManager)
     {
-        $this->em    = $em;
+        $this->em          = $em;
         $this->cityManager = $cityManager;
     }
 

@@ -6,14 +6,13 @@ use AppBundle\Entity\Place;
 use AppBundle\Entity\User;
 use AppBundle\Reject\Reject;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Utils\Monitor;
 
 class MigrateCommand extends AppCommand
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -25,7 +24,7 @@ class MigrateCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -37,7 +36,7 @@ class MigrateCommand extends AppCommand
 
         $migratedPlaces = [];
         foreach ($places as $i => $place) {
-            /**
+            /*
              * @var Place $place
              */
             $place->setReject(new Reject())->setCountry($france);
@@ -101,7 +100,7 @@ class MigrateCommand extends AppCommand
         $users = $em->getRepository('AppBundle:User')->findBy(['city' => null]);
         foreach ($users as $user) {
             /**
-             * @var User $user
+             * @var User
              */
             $city = $em->getRepository('AppBundle:City')->findBySlug($mapping[$user->getSite()->getSubdomain()]);
             $user->setCity($city);

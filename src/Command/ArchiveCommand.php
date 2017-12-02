@@ -11,7 +11,7 @@ class ArchiveCommand extends AppCommand
     private $eventArchivator;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(EventArchivator $eventArchivator)
     {
@@ -21,7 +21,7 @@ class ArchiveCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -33,7 +33,7 @@ class ArchiveCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
