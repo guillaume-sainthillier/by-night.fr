@@ -149,15 +149,30 @@ services:
         tags:
            - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
 
-    tbn.twig.main_extension:
-        class: AppBundle\Twig\MainExtension
-        arguments: [ "@site_manager", "@request_stack" ]
+    #Twig extensions
+#    AppBundle\Twig\MainExtension:
+#        arguments: [ "@site_manager", "@request_stack" ]
+#        tags:
+#            - { name: twig.extension }
+
+    AppBundle\Twig\AssetExtension:
+        arguments: [ "@twig.extension.assets", "%mapping_assets%", "%kernel.environment%" ]
         tags:
             - { name: twig.extension }
 
-    app.asset_extension:
-        class: AppBundle\Twig\AssetExtension
-        arguments: [ "@twig.extension.assets", "%mapping_assets%", "%kernel.environment%" ]
+    AppBundle\Twig\DateExtension:
+        tags:
+            - { name: twig.extension }
+
+    AppBundle\Twig\ParseExtension:
+        tags:
+            - { name: twig.extension }
+
+    AppBundle\Twig\TweetExtension:
+        tags:
+            - { name: twig.extension }
+
+    AppBundle\Twig\UrlExtension:
         tags:
             - { name: twig.extension }
 

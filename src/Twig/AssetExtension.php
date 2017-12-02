@@ -3,8 +3,10 @@
 namespace AppBundle\Twig;
 
 use Symfony\Bridge\Twig\Extension\AssetExtension as BaseAssetExtension;
+use Twig\Extension\AbstractExtension as Extension;
+use Twig\TwigFunction;
 
-class AssetExtension extends \Twig_Extension
+class AssetExtension extends Extension
 {
     const ASSET_PREFIX = 'prod/';
     /**
@@ -32,7 +34,7 @@ class AssetExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('app_asset', [$this, 'appAsset']),
+            new TwigFunction('app_asset', [$this, 'appAsset']),
         ];
     }
 
