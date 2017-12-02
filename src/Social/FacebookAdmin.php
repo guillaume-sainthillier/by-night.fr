@@ -188,7 +188,7 @@ class FacebookAdmin extends FacebookEvents
 
                     //Traitement des réponses
                     foreach ($responses as $response) {
-                        /**
+                        /*
                          * @var FacebookResponse
                          */
                         if ($response->isError()) {
