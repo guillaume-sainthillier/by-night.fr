@@ -51,7 +51,7 @@ class EventInvalidator
     {
         $this->tagHandler = $tagHandler;
         $this->logger     = $logger;
-        $this->debug = $debug;
+        $this->debug      = $debug;
         $this->eventTags  = [];
         $this->userTags   = [];
         $this->cityTags   = [];
@@ -103,7 +103,7 @@ class EventInvalidator
 
     public function invalidateObjects()
     {
-        if($this->debug) {
+        if ($this->debug) {
             return;
         }
 
