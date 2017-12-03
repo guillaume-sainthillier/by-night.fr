@@ -36,11 +36,11 @@ class EventConstraintValidator extends ConstraintValidator
     public function validate($event, Constraint $constraint)
     {
         /**
-         * @var Reject $reject
+         * @var Reject
          */
         $reject = $event->getReject();
 
-        /**
+        /*
          * @var EventConstraint $constraint
          */
         if (!$reject || $reject->isValid()) {

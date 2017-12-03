@@ -28,7 +28,7 @@ class CommonController extends TBNController
     {
         $this->socials = [
             'facebook' => $facebookAdmin,
-            'twitter' => $twitter
+            'twitter'  => $twitter,
         ];
     }
 
@@ -51,11 +51,11 @@ class CommonController extends TBNController
 
     public function footerAction()
     {
-        $cache = $this->get('memory_cache');
+        $cache  = $this->get('memory_cache');
         $params = [];
         foreach ($this->socials as $name => $service) {
             /**
-             * @var Social $service
+             * @var Social
              */
             $key = 'tbn.counts.' . $name;
             if (!$cache->contains($key)) {
