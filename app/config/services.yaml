@@ -33,22 +33,38 @@ services:
     HWI\Bundle\OAuthBundle\Security\OAuthUtils: "@hwi_oauth.security.oauth_utils"
     FOS\UserBundle\Model\UserManagerInterface: "@fos_user.user_manager.default"
     FOS\UserBundle\Form\Factory\FactoryInterface: "@fos_user.resetting.form.factory"
+    FOS\ElasticaBundle\Doctrine\RepositoryManager: "@fos_elastica.manager.orm"
 
     _defaults:
         autowire: true
         autoconfigure: true
-        public: false
+        public: true
 
     AppBundle\:
         resource: '../../src/*'
 #        resource: '../../src/{Picture,App,Archive,Cache,Cleaner,Consumer,EventListener,Factory,Fetcher,Geocoder,Handler,Importer,Invalidator,Listener,News,Request}/*'
-        exclude: '../../src/{Annotation,Entity,Exception,Reject,Search}'
+        exclude: '../../src/{Annotation,Entity,Exception,Geolocalize,Reject,Repository,Search}'
 
+    AppBundle\Controller\:
+        resource: '../../src/Controller'
+        tags: ['controller.service_arguments']
 
     AppBundle\Handler\EventHandler:
         public: true #For PHPUnit
         arguments:
             $tempPath: "%kernel.project_dir%/web/uploads/temp"
+
+    AppBundle\SearchRepository\AgendaRepository:
+        arguments:
+            $finder: "@fos_elastica.finder.event.event"
+
+    AppBundle\SearchRepository\CityRepository:
+        arguments:
+            $finder: "@fos_elastica.finder.city.city"
+
+    AppBundle\SearchRepository\UserRepository:
+        arguments:
+            $finder: "@fos_elastica.finder.user.user"
 
     AppBundle\Invalidator\EventInvalidator:
         arguments:
@@ -89,50 +105,18 @@ services:
         arguments:
             $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
 
-    AppBundle\Controller\:
-        resource: '../../src/Controller'
-        tags: ['controller.service_arguments']
-
-#    AppBundle\App\CityManager:
-#        autowire: true
-#        autoconfigure: true
-
-    AppBundle\Utils\:
-        resource: '../../src/Utils/{Cleaner,Firewall,Merger,Monitor,Util}.php'
-        autowire: true
-        autoconfigure: true
-
     AppBundle\Utils\Comparator:
-        autowire: true
         arguments:
             $cache: '@comparator_cache'
 
-#    AppBundle\Utils\:
-#        resource: '../../src/Utils'
-#        autowire: true
-#        autoconfigure: true
-
-    AppBundle\News\NewsManager: ~
-#    tbn.news_manager: '@AppBundle\News\NewsManager'
-
-    AppBundle\Parser\Common\:
-        resource: '../../src/Parser/Common'
-
     AppBundle\Archive\EventArchivator:
         arguments:
-          $objectPersister: "@fos_elastica.object_persister.event.event"
+            $objectPersister: "@fos_elastica.object_persister.event.event"
 
     AppBundle\Command\FetchCommand:
-        autowire: true
-        autoconfigure: true
         arguments:
             $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
             $updateFbIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'
-
-    AppBundle\Command\:
-        resource: '../../src/Command/{Archive,Clean,Country,Migrate,Update}Command.php'
-        autowire: true
-        autoconfigure: true
 
 #    app.consumer.add_event:
 #        class: AppBundle\Consumer\AddEventConsumer
@@ -419,20 +403,18 @@ services:
         arguments:
             $webDir: "%kernel.project_dir%/web"
 
-    tbn.event_validator:
-        class: AppBundle\Validator\Constraints\EventConstraintValidator
-        arguments: ["@router"]
+    AppBundle\Validator\Constraints\EventConstraintValidator:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
 
-    tbn.captcha_listener:
-        class: AppBundle\EventListener\ReCaptchaListener
-        arguments: ["fos_user_registration_form", "recaptcha"]
+    AppBundle\EventListener\ReCaptchaListener:
+        arguments:
+            $formName: "fos_user_registration_form"
+            $field: "recaptcha"
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: "onKernelController" }
 
     AppBundle\Captcha\CaptchaWrapper:
-        class: AppBundle\Captcha\CaptchaWrapper
         arguments:
             $secret: "%google_recaptcha_secret%"
 

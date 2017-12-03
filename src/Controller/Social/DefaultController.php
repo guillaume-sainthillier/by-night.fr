@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller\Social;
 
+use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Social\Social;
@@ -56,7 +57,7 @@ class DefaultController extends BaseController
             return;
         }
 
-        $userManager = $this->container->get('fos_user.user_manager');
+        $userManager = $this->container->get(UserManagerInterface::class);
         $userManager->updateUser($user);
         $userManager->reloadUser($user);
     }

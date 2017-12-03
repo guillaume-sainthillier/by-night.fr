@@ -2,9 +2,7 @@
 
 namespace AppBundle\Handler;
 
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Router;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
@@ -28,11 +26,11 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
     protected $router;
 
     /**
-     * @var Session
+     * @var SessionInterface
      */
     protected $session;
 
-    public function __construct(TranslatorInterface $translator, RouterInterface $router, Session $session)
+    public function __construct(TranslatorInterface $translator, RouterInterface $router, SessionInterface $session)
     {
         $this->translator = $translator;
         $this->router     = $router;

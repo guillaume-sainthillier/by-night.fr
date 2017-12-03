@@ -39,7 +39,7 @@ security:
                 oauth_user_provider:
                     #this is my custom user provider, created from FOSUBUserProvider - will manage the
                     #automatic user registration on your site, with data from the provider (facebook. google, etc.)
-                    service: my_user_provider
+                    service: AppBundle\Security\Core\User\FOSUBUserProvider
             logout:
                 invalidate_session:   true
             anonymous:    true

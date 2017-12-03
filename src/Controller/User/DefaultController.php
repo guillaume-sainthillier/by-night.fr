@@ -27,7 +27,7 @@ class DefaultController extends Controller
             $params['q'] = $term;
         }
 
-        return new RedirectResponse($this->get('router')->generate('tbn_search_query', $params));
+        return new RedirectResponse($this->generateUrl('tbn_search_query', $params));
     }
 
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])

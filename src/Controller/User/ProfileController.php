@@ -9,6 +9,7 @@
 namespace AppBundle\Controller\User;
 
 use AppBundle\Entity\Calendrier;
+use Doctrine\Common\Persistence\ObjectManager;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseUserEvent;
@@ -48,10 +49,8 @@ class ProfileController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
-            $userManager = $this->get('fos_user.user_manager');
-
-            $em = $this->get('doctrine.orm.entity_manager');
+            $userManager = $this->get(UserManagerInterface::class);
+            $em = $this->get(ObjectManager::class);
 
             $deleteEvents = $form->get('delete_events')->getData();
             $events       = $this->getDoctrine()->getRepository('AppBundle:Agenda')->findBy([
@@ -110,7 +109,7 @@ class ProfileController extends BaseController
         }
 
         /** @var $dispatcher EventDispatcherInterface */
-        $dispatcher = $this->get('event_dispatcher');
+        $dispatcher = $this->get(EventDispatcherInterface::class);
 
         $event = new GetResponseUserEvent($user, $request);
         $dispatcher->dispatch(FOSUserEvents::PROFILE_EDIT_INITIALIZE, $event);
@@ -128,8 +127,8 @@ class ProfileController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var $userManager UserManagerInterface */
-            $userManager = $this->get('fos_user.user_manager');
+            $userManager = $this->get(UserManagerInterface::class);
+
 
             $event = new FormEvent($form, $request);
             $dispatcher->dispatch(FOSUserEvents::PROFILE_EDIT_SUCCESS, $event);

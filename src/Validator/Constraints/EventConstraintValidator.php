@@ -8,7 +8,7 @@
 
 namespace AppBundle\Validator\Constraints;
 
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use AppBundle\Reject\Reject;
@@ -16,13 +16,13 @@ use AppBundle\Reject\Reject;
 class EventConstraintValidator extends ConstraintValidator
 {
     /**
-     * @var Router
+     * @var RouterInterface
      */
     private $router;
 
     private $checkIfUpdate;
 
-    public function __construct(Router $router)
+    public function __construct(RouterInterface $router)
     {
         $this->router        = $router;
         $this->checkIfUpdate = true;
