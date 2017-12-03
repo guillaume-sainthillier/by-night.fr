@@ -17,7 +17,7 @@ class CleanCommand extends AppCommand
     private $imageCleaner;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(ImageCleaner $imageCleaner)
     {
@@ -27,7 +27,7 @@ class CleanCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -39,7 +39,7 @@ class CleanCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

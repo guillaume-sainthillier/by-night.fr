@@ -16,7 +16,7 @@ class CountryCommand extends AppCommand
     private $countryImporter;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct(CountryImporter $countryImporter)
     {
@@ -26,24 +26,24 @@ class CountryCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         $optionalParams = [];
         $atLeastOneInfo = false;
-        foreach($input->getArguments() as $name => $value) {
-            if(! in_array($name, ['id', 'command'], true)) {
+        foreach ($input->getArguments() as $name => $value) {
+            if (!\in_array($name, ['id', 'command'], true)) {
                 continue;
             }
 
             $optionalParams[] = $name;
-            $atLeastOneInfo = $atLeastOneInfo || !empty($value);
+            $atLeastOneInfo   = $atLeastOneInfo || !empty($value);
         }
 
-        if($atLeastOneInfo) {
-            foreach($optionalParams as $name) {
-                if(! $input->getArgument($name)) {
+        if ($atLeastOneInfo) {
+            foreach ($optionalParams as $name) {
+                if (!$input->getArgument($name)) {
                     $value = $this->askParam($name, $input, $output);
                     $input->setArgument($name, $value);
                 }
@@ -51,9 +51,9 @@ class CountryCommand extends AppCommand
         }
     }
 
-
-    private function askParam(string $name, InputInterface $input, OutputInterface $output): string {
-        $question = new Question(sprintf("Valeur de l'argument %s : ", $name));
+    private function askParam(string $name, InputInterface $input, OutputInterface $output): string
+    {
+        $question = new Question(\sprintf("Valeur de l'argument %s : ", $name));
         $question->setValidator(function ($value) {
             if (empty($value)) {
                 throw new \Exception('Cette valeur ne peut pas être vide');
@@ -66,7 +66,7 @@ class CountryCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -83,7 +83,7 @@ class CountryCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

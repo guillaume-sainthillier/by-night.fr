@@ -7,7 +7,6 @@ use AppBundle\Parser\Common\FaceBookParser;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use AppBundle\Parser\ParserInterface;
 
@@ -28,15 +27,17 @@ class FetchCommand extends AppCommand
      */
     private $updateFbIdProducer;
 
-    public function __construct(EventFetcher $eventFetcher, ProducerInterface $eventProducer, ProducerInterface $updateFbIdProducer) {
-        $this->eventFetcher = $eventFetcher;
-        $this->eventProducer = $eventProducer;
+    public function __construct(EventFetcher $eventFetcher, ProducerInterface $eventProducer, ProducerInterface $updateFbIdProducer)
+    {
+        $this->eventFetcher       = $eventFetcher;
+        $this->eventProducer      = $eventProducer;
         $this->updateFbIdProducer = $updateFbIdProducer;
 
         parent::__construct();
     }
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -49,7 +50,7 @@ class FetchCommand extends AppCommand
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
