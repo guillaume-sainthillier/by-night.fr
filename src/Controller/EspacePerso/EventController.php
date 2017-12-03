@@ -2,7 +2,15 @@
 
 namespace AppBundle\Controller\EspacePerso;
 
+use AppBundle\App\SocialManager;
 use AppBundle\Entity\User;
+use AppBundle\Factory\EventFactory;
+use AppBundle\Handler\DoctrineEventHandler;
+use AppBundle\Parser\Common\FaceBookParser;
+use AppBundle\Social\FacebookAdmin;
+use AppBundle\Social\FacebookListEvents;
+use AppBundle\Validator\Constraints\EventConstraintValidator;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -16,6 +24,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class EventController extends Controller
 {
@@ -95,7 +104,7 @@ class EventController extends Controller
         $em->remove($agenda);
         $em->flush();
 
-        $this->get('session')->getFlashBag()->add(
+        $this->addFlash(
             'success',
             'Votre événement a bien été supprimé'
         );
@@ -119,7 +128,7 @@ class EventController extends Controller
         $this->checkIfOwner($agenda);
         $form = $this->createEditForm($agenda);
 
-        $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
+        $this->get(EventConstraintValidator::class)->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $agenda->getPlace()->getCity()->getName();
@@ -129,17 +138,17 @@ class EventController extends Controller
                 $em->merge($agenda);
                 $em->flush();
 
-                $this->get('session')->getFlashBag()->add(
+                $this->addFlash(
                     'success',
                     'Votre événement a bien été modifié'
                 );
 
                 return $this->redirect($this->generateUrl('tbn_agenda_list'));
             } catch (FileException $exception) {
-                $this->get('logger')->critical($exception);
+                $this->get(LoggerInterface::class)->critical($exception);
                 $this->addFlash('error', 'Un problème a eu lieu avec l\'envoi de votre pièce jointe');
             } catch (\Exception $exception) {
-                $this->get('logger')->critical($exception);
+                $this->get(LoggerInterface::class)->critical($exception);
                 $this->addFlash('error', 'Un problème a eu lieu avec l\'enregistrement de votre événement');
             }
         }
@@ -161,10 +170,10 @@ class EventController extends Controller
      */
     public function importAction()
     {
-        $importer     = $this->get('tbn.social.facebook_list_events');
-        $eventFactory = $this->get('app.event_factory');
-        $parser       = $this->get('tbn.parser.abstracts.facebook');
-        $handler      = $this->get('tbn.doctrine_event_handler');
+        $importer     = $this->get(FacebookListEvents::class);
+        $eventFactory = $this->get(EventFactory::class);
+        $parser       = $this->get(FaceBookParser::class);
+        $handler      = $this->get(DoctrineEventHandler::class);
 
         $user      = $this->getUser();
         $fb_events = $importer->getUserEvents($user);
@@ -178,7 +187,7 @@ class EventController extends Controller
 
         $events = $handler->handleMany($events);
         $this->addImportMessage($handler->getExplorationHandler());
-        $validator = $this->get('validator');
+        $validator = $this->get(ValidatorInterface::class);
         foreach ($events as $event) {
             /**
              * @var Agenda
@@ -187,8 +196,8 @@ class EventController extends Controller
             if ($errors->count() > 0) {
                 $errorsString = [];
                 foreach ($errors as $error) {
-                    /*
-                     * @var ConstraintViolation $error ;
+                    /**
+                     * @var ConstraintViolation $error
                      */
                     $errorsString[] = \sprintf(
                         '<li>%s</li>',
@@ -266,7 +275,7 @@ class EventController extends Controller
 
         $form = $this->createCreateForm($agenda);
         $form->handleRequest($request);
-        $this->get('tbn.event_validator')->setUpdatabilityCkeck(false);
+        $this->get(EventConstraintValidator::class)->setUpdatabilityCkeck(false);
         /**
          * @var Agenda
          */
@@ -292,12 +301,12 @@ class EventController extends Controller
             $em->flush();
 
             if ($isNewAgenda) {
-                $this->get('session')->getFlashBag()->add(
+                $this->addFlash(
                     'success',
                     'Votre événement a bien été mis à jour'
                 );
             } else {
-                $this->get('session')->getFlashBag()->add(
+                $this->addFlash(
                     'success',
                     'Votre événement a bien été créé. Merci !'
                 );
@@ -355,7 +364,7 @@ class EventController extends Controller
     protected function getAgendaOptions()
     {
         $user     = $this->getUser();
-        $siteInfo = $this->get('app.social_manager')->getSiteInfo();
+        $siteInfo = $this->get(SocialManager::class)->getSiteInfo();
 
         return [
             'site_info' => $siteInfo,
@@ -414,7 +423,7 @@ class EventController extends Controller
         if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookAccessToken()) {
             $key   = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
             $cache = $this->get('memory_cache');
-            $api   = $this->get('tbn.social.facebook_admin');
+            $api   = $this->get(FacebookAdmin::class);
             $api->updateEventStatut(
                 $agenda->getFacebookEventId(),
                 $user->getInfo()->getFacebookAccessToken(),

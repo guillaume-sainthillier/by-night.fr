@@ -13,7 +13,7 @@ use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class UpdateFBId implements BatchConsumerInterface
+class UpdateFBIdConsumer implements BatchConsumerInterface
 {
     /**
      * @var DoctrineEventHandler

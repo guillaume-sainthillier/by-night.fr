@@ -3,6 +3,7 @@
 namespace AppBundle\Controller\Fragments;
 
 use AppBundle\Controller\TBNController as Controller;
+use AppBundle\Parser\ProgrammeTVParser;
 use Symfony\Component\Routing\Annotation\Route;
 use AppBundle\Annotation\BrowserCache;
 
@@ -22,7 +23,7 @@ class WidgetsController extends Controller
      */
     public function programmeTVAction()
     {
-        $parser     = $this->get('tbn.programmetv');
+        $parser     = $this->get(ProgrammeTVParser::class);
         $programmes = $parser->getProgrammesTV();
 
         $response = $this->render('City/Hinclude/programme_tv.html.twig', [

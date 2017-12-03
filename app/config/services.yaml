@@ -28,78 +28,70 @@ services:
     Ivory\GoogleMap\Service\Geocoder\GeocoderService: "@ivory.google_map.geocoder"
     FOS\HttpCacheBundle\CacheManager: "@fos_http_cache.cache_manager"
     FOS\ElasticaBundle\Index\IndexManager: "@fos_elastica.index_manager"
+    FOS\HttpCacheBundle\Http\SymfonyResponseTagger: "@fos_http_cache.http.symfony_response_tagger"
+    Symfony\Bridge\Twig\Extension\AssetExtension: "@twig.extension.assets"
+    HWI\Bundle\OAuthBundle\Security\OAuthUtils: "@hwi_oauth.security.oauth_utils"
+    FOS\UserBundle\Model\UserManagerInterface: "@fos_user.user_manager.default"
+    FOS\UserBundle\Form\Factory\FactoryInterface: "@fos_user.resetting.form.factory"
 
-    AppBundle\:
-        resource: '../../src/{Picture,App,Archive,Cache,Cleaner,Consumer,EventListener,Factory,Fetcher,Geocoder,Handler,Importer,Invalidator,Listener,News,Request}/*'
+    _defaults:
         autowire: true
         autoconfigure: true
+        public: false
+
+    AppBundle\:
+        resource: '../../src/*'
+#        resource: '../../src/{Picture,App,Archive,Cache,Cleaner,Consumer,EventListener,Factory,Fetcher,Geocoder,Handler,Importer,Invalidator,Listener,News,Request}/*'
+        exclude: '../../src/{Annotation,Entity,Exception,Reject,Search}'
+
 
     AppBundle\Handler\EventHandler:
-        autowire: true
         public: true #For PHPUnit
         arguments:
             $tempPath: "%kernel.project_dir%/web/uploads/temp"
 
     AppBundle\Invalidator\EventInvalidator:
-        autowire: true
         arguments:
             $debug: "%kernel.debug"
 
     AppBundle\Handler\UserHandler:
-        autowire: true
         public: true #For PHPUnit
         arguments:
             $tempPath: "%kernel.project_dir%/web/uploads/temp"
 
-    AppBundle\Geocoder\PlaceGeocoder:
-        autowire: true
-        autoconfigure: true
-        arguments:
-            $cache: "@app.location_cache_provider"
-
     AppBundle\App\SocialManager:
-        autowire: true
-        autoconfigure: true
         arguments:
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
             $googleIdPage: "%google_id_page%"
 
     AppBundle\Social\FacebookAdmin:
-        autowire: true
         arguments:
             $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
 
     AppBundle\Social\Twitter:
-        autowire: true
         arguments:
             $config: { id: "%twitter_app_id%", secret: "%twitter_app_secret%"}
 
     AppBundle\Social\Google:
-        autowire: true
         arguments:
             $config: { id: "%google_app_id%", secret: "%google_app_secret%"}
 
     AppBundle\Social\Facebook:
-        autowire: true
         arguments:
             $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
 
     AppBundle\Social\FacebookEvents:
-        autowire: true
         arguments:
             $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
 
     AppBundle\Social\FacebookListEvents:
-        autowire: true
         arguments:
             $config: { id: "%api_facebook_id%", secret: "%api_facebook_secret%"}
 
     AppBundle\Controller\:
         resource: '../../src/Controller'
         tags: ['controller.service_arguments']
-        autowire: true
-        autoconfigure: true
 
 #    AppBundle\App\CityManager:
 #        autowire: true
@@ -125,8 +117,10 @@ services:
 
     AppBundle\Parser\Common\:
         resource: '../../src/Parser/Common'
-        autowire: true
-        autoconfigure: true
+
+    AppBundle\Archive\EventArchivator:
+        arguments:
+          $objectPersister: "@fos_elastica.object_persister.event.event"
 
     AppBundle\Command\FetchCommand:
         autowire: true
@@ -140,109 +134,101 @@ services:
         autowire: true
         autoconfigure: true
 
-    app.consumer.add_event:
-        class: AppBundle\Consumer\AddEventConsumer
+#    app.consumer.add_event:
+#        class: AppBundle\Consumer\AddEventConsumer
+#        arguments:
+#            - "@app.event_factory"
+#            - "@tbn.doctrine_event_handler"
+#
+#    app.consumer.update_fb_id:
+#        class: AppBundle\Consumer\UpdateFBId
+#        arguments:
+#            - "@tbn.doctrine_event_handler"
+#
+    AppBundle\Geocoder\PlaceGeocoder:
         arguments:
-            - "@app.event_factory"
-            - "@tbn.doctrine_event_handler"
-
-    app.consumer.update_fb_id:
-        class: AppBundle\Consumer\UpdateFBId
-        arguments:
-            - "@tbn.doctrine_event_handler"
-
-    app.geocoder.place_geocoder:
-        class: AppBundle\Geocoder\PlaceGeocoder
-        arguments:
-            - "@app.location_cache_provider"
-            - "@ivory.google_map.place_search"
-            - "@ivory.google_map.place_detail"
-            - "@ivory.google_map.geocoder"
-            - "@tbn.firewall"
+            $cache: '@array_cache'
 
     AppBundle\Importer\CountryImporter:
         arguments:
-            - '@doctrine.orm.entity_manager'
-            - "%kernel.project_dir%/app/datas"
+            $dataDir: "%kernel.project_dir%/app/datas"
 
-    app.location_cache_provider:
-        class:     AppBundle\Cache\LocationCacheProvider
-        arguments:
-            - "@doctrine.orm.entity_manager"
+#    app.location_cache_provider:
+#        class:     AppBundle\Cache\LocationCacheProvider
+#        arguments:
+#            - "@doctrine.orm.entity_manager"
+#
+#    app.sitemap.sitemap_subscriber:
+#        class:     AppBundle\EventListener\SitemapSuscriber
+#        arguments:
+#            - "@router"
+#            - "@doctrine.orm.entity_manager"
+#        tags:
+#            - { name: "kernel.event_subscriber", priority: 100 }
+#
+#    app.registration_listener:
+#        class: AppBundle\Listener\RegistrationListener
+#        arguments: []
+#        tags:
+#            - { name: kernel.event_subscriber }
+#
+#    tbn.programmetv:
+#        class: AppBundle\Parser\ProgrammeTVParser
+#
+#    tbn.event_seo:
+#        class: AppBundle\SEO\EventSEO
+#
+#    app.city_converter:
+#        class: AppBundle\Request\ParamConverter\CityConverter
+#        tags:
+#            - { name: request.param_converter, priority: 0, converter: city_converter }
+#        arguments:
+#            - "@doctrine"
+#            - "@tbn.city_manager"
 
-    app.sitemap.sitemap_subscriber:
-        class:     AppBundle\EventListener\SitemapSuscriber
-        arguments:
-            - "@router"
-            - "@doctrine.orm.entity_manager"
-        tags:
-            - { name: "kernel.event_subscriber", priority: 100 }
+    Monolog\Formatter\LineFormatter:
+        calls:
+            - [includeStacktraces]
 
-    app.registration_listener:
-        class: AppBundle\Listener\RegistrationListener
-        arguments: []
-        tags:
-            - { name: kernel.event_subscriber }
-
-    tbn.programmetv:
-        class: AppBundle\Parser\ProgrammeTVParser
-
-    tbn.event_seo:
-        class: AppBundle\SEO\EventSEO
-
-    app.city_converter:
-        class: AppBundle\Request\ParamConverter\CityConverter
-        tags:
-            - { name: request.param_converter, priority: 0, converter: city_converter }
-        arguments:
-            - "@doctrine"
-            - "@tbn.city_manager"
-
-    tbn.monolog_formatter:
-            class: Monolog\Formatter\LineFormatter
-            calls:
-                - [includeStacktraces]
-
-    tbn.event_listener.populate_listener:
-        class: AppBundle\Listener\PopulateListener
-        arguments: [ "@fos_elastica.index_manager" ]
-        tags:
-            - { name: kernel.event_listener, event: "elastica.index.index_pre_populate", method: preIndexPopulate}
-            - { name: kernel.event_listener, event: "elastica.index.index_post_populate", method: postIndexPopulate}
-
-    tbn.event_http:invalidator:
-        class: AppBundle\Invalidator\EventInvalidator
-        arguments: [ "@fos_http_cache.cache_manager", "@logger", "%kernel.debug" ]
-
-    app.social_manager:
-        class: AppBundle\App\SocialManager
-        arguments: [ "@doctrine.orm.entity_manager", "%facebook_id_page%", "%twitter_id_page%", "%google_id_page%" ]
-
-    tbn.city_manager:
-        class: AppBundle\App\CityManager
-        arguments:
-          - "@doctrine.orm.default_entity_manager"
-          - "@request_stack"
-
-    AppBundle\Archive\EventArchivator:
-        arguments: [ "@doctrine.orm.entity_manager", "@fos_elastica.object_persister.event.event" ]
-
-    tbn.event_listener:
-        class: AppBundle\Listener\EventListener
-        arguments: [ "@tbn.event_http:invalidator" ]
-        tags:
-          - { name: doctrine.event_listener, event: preRemove }
-          - { name: doctrine.event_listener, event: postUpdate }
-          - { name: doctrine.event_listener, event: postFlush }
-          - { name: doctrine.event_listener, event: postInsert }
+#    tbn.event_listener.populate_listener:
+#        class: AppBundle\Listener\PopulateListener
+#        arguments: [ "@fos_elastica.index_manager" ]
+#        tags:
+#            - { name: kernel.event_listener, event: "elastica.index.index_pre_populate", method: preIndexPopulate}
+#            - { name: kernel.event_listener, event: "elastica.index.index_post_populate", method: postIndexPopulate}
+#
+#    tbn.event_http:invalidator:
+#        class: AppBundle\Invalidator\EventInvalidator
+#        arguments: [ "@fos_http_cache.cache_manager", "@logger", "%kernel.debug" ]
+#
+#    app.social_manager:
+#        class: AppBundle\App\SocialManager
+#        arguments: [ "@doctrine.orm.entity_manager", "%facebook_id_page%", "%twitter_id_page%", "%google_id_page%" ]
+#
+#    tbn.city_manager:
+#        class: AppBundle\App\CityManager
+#        arguments:
+#          - "@doctrine.orm.default_entity_manager"
+#          - "@request_stack"
+#
+#
+#
+#    tbn.event_listener:
+#        class: AppBundle\Listener\EventListener
+#        arguments: [ "@tbn.event_http:invalidator" ]
+#        tags:
+#          - { name: doctrine.event_listener, event: preRemove }
+#          - { name: doctrine.event_listener, event: postUpdate }
+#          - { name: doctrine.event_listener, event: postFlush }
+#          - { name: doctrine.event_listener, event: postInsert }
 
 
 
-    image_listener:
-        class: AppBundle\Listener\ImageListener
-        arguments: [ "@liip_imagine.cache.manager" ]
-        tags:
-           - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
+#    image_listener:
+#        class: AppBundle\Listener\ImageListener
+#        arguments: [ "@liip_imagine.cache.manager" ]
+#        tags:
+#           - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
 
     #Twig extensions
     Twig\Extensions\IntlExtension:
@@ -254,86 +240,81 @@ services:
            - { name: twig.extension }
 
     AppBundle\Twig\AssetExtension:
-        arguments: [ "@twig.extension.assets", "%mapping_assets%", "%kernel.environment%" ]
-        tags:
-            - { name: twig.extension }
+        arguments:
+            $mappingAssets: "%mapping_assets%"
+            $debug: "%kernel.debug%"
 
-    AppBundle\Twig\DateExtension:
-        tags:
-            - { name: twig.extension }
-
-    AppBundle\Twig\ParseExtension:
-        tags:
-            - { name: twig.extension }
-
-    AppBundle\Twig\TweetExtension:
-        tags:
-            - { name: twig.extension }
-
-    AppBundle\Twig\UrlExtension:
-        tags:
-            - { name: twig.extension }
+#    AppBundle\Twig\DateExtension:
+#        tags:
+#            - { name: twig.extension }
+#
+#    AppBundle\Twig\ParseExtension:
+#        tags:
+#            - { name: twig.extension }
+#
+#    AppBundle\Twig\TweetExtension:
+#        tags:
+#            - { name: twig.extension }
+#
+#    AppBundle\Twig\UrlExtension:
+#        tags:
+#            - { name: twig.extension }
 
     #Forms
     #Collections
-    tbn.collections:
-        class: AppBundle\Form\Extension\CollectionExtension
+    AppBundle\Form\Extension\CollectionExtension:
         tags:
             - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\CollectionType }
 
     #Surcouche globale des formulaires
-    tbn.forms:
-        class: AppBundle\Form\Extension\WidgetFormTypeExtension
+    AppBundle\Form\Extension\WidgetFormTypeExtension:
         tags:
             - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
+
     #Datepicker
-    tbn.forms.datepicker:
-        class: AppBundle\Form\Extension\DateTypeExtension
+    AppBundle\Form\Extension\DateTypeExtension:
         tags:
             - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\DateType }
     #Image
-    tbn.image_type_extension:
-        class: AppBundle\Form\Extension\ImageTypeExtension
+    AppBundle\Form\Extension\ImageTypeExtension:
         tags:
             - { name: form.type_extension, extended_type: Vich\UploaderBundle\Form\Type\VichImageType }
 
-    tbn.form.type.task:
-        class: AppBundle\Form\Type\AgendaType
-        arguments: ['@tbn.doctrine_event_handler']
-        tags:
-            - { name: form.type }
-
-    tbn.registration.form.type:
-        class: AppBundle\Form\Type\RegistrationFormType
-        arguments: ["%fos_user.model.user.class%"]
-        tags:
-            - { name: form.type, alias: tbn_user_registration }
-
-    tbn.form.type.recaptcha:
-        class: AppBundle\Form\Type\ReCaptchaType
+#   AppBundle\Form\Type\AgendaType:
+#        tags:
+#            - { name: form.type }
+    AppBundle\Form\Type\ProfileFormType:
         arguments:
-            - '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
-        tags:
-            - { name: form.type, alias: recaptcha}
+            $class: "%fos_user.model.user.class%"
 
-    tbn.profile.form.type:
-        class: AppBundle\Form\Type\ProfileFormType
-        arguments: ["%fos_user.model.user.class%"]
-        tags:
-            - { name: form.type, alias: tbn_user_profile }
+    AppBundle\Form\Type\RegistrationFormType:
+        arguments:
+            $class: "%fos_user.model.user.class%"
+#        tags:
+#            - { name: form.type, alias: tbn_user_registration }
 
-    app.event_listener.browser_cache:
-        class: AppBundle\EventListener\BrowserCacheListener
-        tags:
-            - { name: kernel.event_subscriber }
+    AppBundle\Form\Type\ReCaptchaType:
+        arguments:
+            $siteKey: '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
+#        tags:
+#            - { name: form.type, alias: recaptcha}
 
-    app.event_listener.city:
-        class: AppBundle\EventListener\CityListener
-        tags:
-            - { name: kernel.event_subscriber }
 
-    app.event_factory:
-        class: AppBundle\Factory\EventFactory
+#        tags:
+#            - { name: form.type, alias: tbn_user_profile }
+
+#    app.event_listener.browser_cache:
+#        class: AppBundle\EventListener\BrowserCacheListener
+#        tags:
+#            - { name: kernel.event_subscriber }
+
+#    app.event_listener.city:
+#        class: AppBundle\EventListener\CityListener
+#        tags:
+#            - { name: kernel.event_subscriber }
+
+#    app.event_factory:
+#        class: AppBundle\Factory\EventFactory
 
 #    tbn.event_updater:
 #            class: AppBundle\Updater\EventUpdater
@@ -349,27 +330,27 @@ services:
 #          - "@tbn.social.facebook_admin"
 #          - "@tbn.user_handler"
 
-    AppBundle\Fetcher\EventFetcher:
-        arguments:
-          - "@tbn.parser_manager"
-          - "@doctrine.orm.default_entity_manager"
+#    AppBundle\Fetcher\EventFetcher:
+#        arguments:
+#          - "@tbn.parser_manager"
+#          - "@doctrine.orm.default_entity_manager"
 
     #Parsers
-    tbn.parser.abstract:
-        class: AppBundle\Parser\AgendaParser
-    tbn.parser.abstracts.soonnight:
-        class: AppBundle\Parser\Common\SoonNightParser
-        calls:
-            - ['addUrl', ["%url_soonnight_paris%"]]
-            - ['addUrl', ["%url_soonnight_tlse%"]]
-            - ['addUrl', ["%url_soonnight_marseille%"]]
-            - ['addUrl', ["%url_soonnight_lyon%"]]
-            - ['addUrl', ["%url_soonnight_brest%"]]
-            - ['addUrl', ["%url_soonnight_nice%"]]
-            - ['addUrl', ["%url_soonnight_nantes%"]]
-            - ['addUrl', ["%url_soonnight_bordeaux%"]]
-            - ['addUrl', ["%url_soonnight_lille%"]]
-            - ['addUrl', ["%url_soonnight_montpellier%"]]
+#    tbn.parser.abstract:
+#        class: AppBundle\Parser\AgendaParser
+#    tbn.parser.abstracts.soonnight:
+#        class: AppBundle\Parser\Common\SoonNightParser
+#        calls:
+#            - ['addUrl', ["%url_soonnight_paris%"]]
+#            - ['addUrl', ["%url_soonnight_tlse%"]]
+#            - ['addUrl', ["%url_soonnight_marseille%"]]
+#            - ['addUrl', ["%url_soonnight_lyon%"]]
+#            - ['addUrl', ["%url_soonnight_brest%"]]
+#            - ['addUrl', ["%url_soonnight_nice%"]]
+#            - ['addUrl', ["%url_soonnight_nantes%"]]
+#            - ['addUrl', ["%url_soonnight_bordeaux%"]]
+#            - ['addUrl', ["%url_soonnight_lille%"]]
+#            - ['addUrl', ["%url_soonnight_montpellier%"]]
 
 #    tbn.parser.abstracts.facebook:
 #        class: AppBundle\Parser\Common\FaceBookParser
@@ -378,66 +359,65 @@ services:
 #            - "@tbn.firewall"
 #            - "@tbn.social.facebook_admin"
     #Toulouse
-    tbn.parser.toulouse.bikini:
-        class: AppBundle\Parser\Toulouse\BikiniParser
-    tbn.parser.toulouse.toulouse:
-        class: AppBundle\Parser\Toulouse\ToulouseParser
-        calls:
-            - ['setUrl', ["%url_opendata_toulouse%"]]
-    tbn.parser.toulouse.tourisme:
-        class: AppBundle\Parser\Toulouse\ToulouseTourismeParser
+#    tbn.parser.toulouse.bikini:
+#        class: AppBundle\Parser\Toulouse\BikiniParser
+#    tbn.parser.toulouse.toulouse:
+#        class: AppBundle\Parser\Toulouse\ToulouseParser
+#        calls:
+#            - ['setUrl', ["%url_opendata_toulouse%"]]
+#    tbn.parser.toulouse.tourisme:
+#        class: AppBundle\Parser\Toulouse\ToulouseTourismeParser
     #Aliases
-    tbn.soonnight_parser:
-        alias: tbn.parser.abstracts.soonnight
-        public: true #For PHPUnit
-    tbn.toulouse_parser:
-        alias: tbn.parser.toulouse.toulouse
-    tbn.bikini_parser:
-        alias: tbn.parser.toulouse.bikini
-    tbn.toulouse_tourisme_parser:
-        alias: tbn.parser.toulouse.tourisme
+#    tbn.soonnight_parser:
+#        alias: tbn.parser.abstracts.soonnight
+#        public: true #For PHPUnit
+#    tbn.toulouse_parser:
+#        alias: tbn.parser.toulouse.toulouse
+#    tbn.bikini_parser:
+#        alias: tbn.parser.toulouse.bikini
+#    tbn.toulouse_tourisme_parser:
+#        alias: tbn.parser.toulouse.tourisme
 
     #Manager
-    tbn.parser_manager:
-        class: AppBundle\Parser\Manager\ParserManager
+#    tbn.parser_manager:
+#        class: AppBundle\Parser\Manager\ParserManager
 
     #Utils
-    tbn.util:
-        class: AppBundle\Utils\Util
-    tbn.echantillon_handler:
-        class: AppBundle\Handler\EchantillonHandler
-        arguments: ["@doctrine.orm.entity_manager"]
-    tbn.doctrine_event_handler:
-        class: AppBundle\Handler\DoctrineEventHandler
-        public: true #For PHPUnit
-        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler", "@app.geocoder.place_geocoder"]
-    tbn.event_handler:
-        class: AppBundle\Handler\EventHandler
-        public: true #For PHPUnit
-        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.project_dir%/web/uploads/temp"]
-    tbn.user_handler:
-        class: AppBundle\Handler\UserHandler
-        arguments: ["%kernel.project_dir%/web/uploads/temp"]
-    tbn.comparator:
-        class: AppBundle\Utils\Comparator
-        arguments: ["@tbn.util", "@comparator_cache"]
-    tbn.cleaner:
-        class: AppBundle\Utils\Cleaner
-        arguments: ["@tbn.util"]
-    tbn.firewall:
-        class: AppBundle\Utils\Firewall
-        public: true #For PHPUnit
-        arguments: ["@doctrine.orm.entity_manager", "@tbn.comparator"]
-    tbn.merger:
-        class: AppBundle\Utils\Merger
-        public: true #For PHPUnit
-        arguments: ["@tbn.comparator"]
+#    tbn.util:
+#        class: AppBundle\Utils\Util
+#    tbn.echantillon_handler:
+#        class: AppBundle\Handler\EchantillonHandler
+#        arguments: ["@doctrine.orm.entity_manager"]
+#    tbn.doctrine_event_handler:
+#        class: AppBundle\Handler\DoctrineEventHandler
+#        public: true #For PHPUnit
+#        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler", "@app.geocoder.place_geocoder"]
+#    tbn.event_handler:
+#        class: AppBundle\Handler\EventHandler
+#        public: true #For PHPUnit
+#        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.project_dir%/web/uploads/temp"]
+#    tbn.user_handler:
+#        class: AppBundle\Handler\UserHandler
+#        arguments: ["%kernel.project_dir%/web/uploads/temp"]
+#    tbn.comparator:
+#        class: AppBundle\Utils\Comparator
+#        arguments: ["@tbn.util", "@comparator_cache"]
+#    tbn.cleaner:
+#        class: AppBundle\Utils\Cleaner
+#        arguments: ["@tbn.util"]
+#    tbn.firewall:
+#        class: AppBundle\Utils\Firewall
+#        public: true #For PHPUnit
+#        arguments: ["@doctrine.orm.entity_manager", "@tbn.comparator"]
+#    tbn.merger:
+#        class: AppBundle\Utils\Merger
+#        public: true #For PHPUnit
+#        arguments: ["@tbn.comparator"]
 
     #Cleaner
     AppBundle\Cleaner\ImageCleaner:
-        arguments: ["@doctrine.orm.entity_manager", "@liip_imagine.cache.manager", "%kernel.project_dir%/web"]
-
-
+        arguments:
+            $webDir: "%kernel.project_dir%/web"
 
     tbn.event_validator:
         class: AppBundle\Validator\Constraints\EventConstraintValidator
@@ -451,28 +431,25 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: "onKernelController" }
 
-    tbn.captcha_wrapper:
+    AppBundle\Captcha\CaptchaWrapper:
         class: AppBundle\Captcha\CaptchaWrapper
-        arguments: ["@request_stack", "%google_recaptcha_secret%"]
-
-    tbn.validation.response_validator:
-        class: AppBundle\Validator\Constraints\ReCaptchaResponseValidator
-        arguments: ["@tbn.captcha_wrapper"]
-        tags:
-          - { name: validator.constraint_validator, alias: recaptcha_response_validator }
-
-    my_user_provider:
-        class: AppBundle\Security\Core\User\FOSUBUserProvider
         arguments:
-            - "@fos_user.user_manager.default"
-            - {facebook: facebook_id, google: google_id, twitter: twitter_id}
-            - "@tbn.city_manager"
-            - "@doctrine.orm.entity_manager"
-            - {google: '@AppBundle\Social\Google', twitter: '@AppBundle\Social\Twitter', facebook_events: '@AppBundle\Social\FacebookEvents', facebook_admin: '@AppBundle\Social\FacebookAdmin', facebook_list_events: '@AppBundle\Social\FacebookListEvents', facebook: '@AppBundle\Social\Facebook'}
+            $secret: "%google_recaptcha_secret%"
 
-    authentication_handler:
-        class: AppBundle\Handler\AuthenticationHandler
-        arguments: ["@translator", "@router", "@session"]
+#    tbn.validation.response_validator:
+#        class: AppBundle\Validator\Constraints\ReCaptchaResponseValidator
+#        arguments: ["@tbn.captcha_wrapper"]
+#        tags:
+#          - { name: validator.constraint_validator, alias: recaptcha_response_validator }
 
-    fos_user.doctrine_registry:
-        alias: doctrine
+    AppBundle\Security\Core\User\FOSUBUserProvider:
+        arguments:
+            $properties: {facebook: facebook_id, google: google_id, twitter: twitter_id}
+            $socials: {google: '@AppBundle\Social\Google', twitter: '@AppBundle\Social\Twitter', facebook_events: '@AppBundle\Social\FacebookEvents', facebook_admin: '@AppBundle\Social\FacebookAdmin', facebook_list_events: '@AppBundle\Social\FacebookListEvents', facebook: '@AppBundle\Social\Facebook'}
+
+#    authentication_handler:
+#        class: AppBundle\Handler\AuthenticationHandler
+#        arguments: ["@translator", "@router", "@session"]
+#
+#    fos_user.doctrine_registry:
+#        alias: doctrine

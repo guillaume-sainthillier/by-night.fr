@@ -2,7 +2,7 @@
 
 namespace AppBundle\Fetcher;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use AppBundle\Parser\Manager\ParserManager;
 use AppBundle\Parser\ParserInterface;
 
@@ -15,7 +15,7 @@ use AppBundle\Parser\ParserInterface;
 class EventFetcher
 {
     /**
-     * @var EntityManager
+     * @var ObjectManager
      */
     protected $entityManager;
 
@@ -24,7 +24,7 @@ class EventFetcher
      */
     protected $parserManager;
 
-    public function __construct(ParserManager $parserManager, EntityManager $entityManager)
+    public function __construct(ParserManager $parserManager, ObjectManager $entityManager)
     {
         $this->parserManager = $parserManager;
         $this->entityManager = $entityManager;

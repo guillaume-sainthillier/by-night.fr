@@ -6,6 +6,8 @@ use AppBundle\App\CityManager;
 use AppBundle\Form\Type\CityAutocompleteType;
 use AppBundle\Search\SearchAgenda;
 use AppBundle\SearchRepository\AgendaRepository;
+use FOS\ElasticaBundle\Doctrine\RepositoryManager;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -90,11 +92,11 @@ class DefaultController extends Controller
 
     private function getResults(SearchAgenda $search)
     {
-        $paginator = $this->get('knp_paginator');
+        $paginator = $this->get(PaginatorInterface::class);
         /**
          * @var AgendaRepository
          */
-        $repo    = $this->get('fos_elastica.manager')->getRepository('AppBundle:Agenda');
+        $repo    = $this->get(RepositoryManager::class)->getRepository('AppBundle:Agenda');
         $results = $repo->findWithSearch($search);
 
         return $paginator->paginate($results, 1, self::EVENT_PER_CATEGORY);

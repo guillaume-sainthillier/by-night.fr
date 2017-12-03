@@ -49,8 +49,7 @@ class CityConverter implements ParamConverterInterface
             $entity = $this->cityManager->getCurrentCity();
         } else {
             $entity = $this
-                ->registry
-                ->getManager()
+                ->em
                 ->getRepository('AppBundle:City')
                 ->findBySlug($city);
         }

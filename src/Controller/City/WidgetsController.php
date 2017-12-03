@@ -3,6 +3,10 @@
 namespace AppBundle\Controller\City;
 
 use AppBundle\Entity\City;
+use AppBundle\Social\FacebookAdmin;
+use AppBundle\Social\Twitter;
+use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +29,7 @@ class WidgetsController extends Controller
      */
     public function twitterAction(City $city, $max_id = null)
     {
-        $results = $this->get('tbn.social.twitter')->getTimeline($city, $max_id, self::TWEET_LIMIT);
+        $results = $this->get(Twitter::class)->getTimeline($city, $max_id, self::TWEET_LIMIT);
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
@@ -43,7 +47,7 @@ class WidgetsController extends Controller
             $results['statuses'] = [];
         }
 
-        if (!\count($results['statuses']) && null === $this->get('request_stack')->getParentRequest()) {
+        if (!\count($results['statuses']) && null === $this->get(RequestStack::class)->getParentRequest()) {
             return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()]);
         }
 
@@ -235,7 +239,7 @@ class WidgetsController extends Controller
             ]);
         }
 
-        $api    = $this->get('tbn.social.facebook_admin');
+        $api    = $this->get(FacebookAdmin::class);
         $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
         $membres = \array_merge($retour['participations'], $retour['interets']);
@@ -276,7 +280,7 @@ class WidgetsController extends Controller
                 ->setSharedMaxAge($next2hours);
         }
 
-        $this->get('fos_http_cache.http.symfony_response_tagger')->addTags(['fb-membres']);
+        $this->get(SymfonyResponseTagger::class)->addTags(['fb-membres']);
 
         return $response->setPublic();
     }

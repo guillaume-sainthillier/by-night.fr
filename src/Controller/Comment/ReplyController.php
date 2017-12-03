@@ -53,7 +53,7 @@ class ReplyController extends Controller
             $user = $this->getUser();
 
             if (!$user) {
-                $this->get('session')->getFlashBag()->add(
+                $this->addFlash(
                     'warning',
                     'Vous devez vous connecter pour répondre à cet utilisateur'
                 );

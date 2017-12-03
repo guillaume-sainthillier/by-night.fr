@@ -4,6 +4,8 @@ namespace AppBundle\Controller\City;
 
 use AppBundle\Repository\AgendaRepository;
 use AppBundle\Controller\TBNController as Controller;
+use FOS\ElasticaBundle\Doctrine\RepositoryManager;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Routing\Annotation\Route;
@@ -138,11 +140,11 @@ class AgendaController extends Controller
         }
 
         //Recherche ElasticSearch
-        $repositoryManager = $this->get('fos_elastica.manager');
+        $repositoryManager = $this->get(RepositoryManager::class);
         $repository        = $repositoryManager->getRepository('AppBundle:Agenda');
         $results           = $repository->findWithSearch($search);
 
-        $paginator        = $this->get('knp_paginator');
+        $paginator        = $this->get(PaginatorInterface::class);
         $pagination       = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
         $nbSoireesTotales = $pagination->getTotalItemCount();
         $soirees          = $pagination;

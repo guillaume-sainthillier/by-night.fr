@@ -2,10 +2,13 @@
 
 namespace AppBundle\Controller\Admin;
 
+use AppBundle\App\SocialManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use AppBundle\Social\Social;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @Route("/social/{service}", requirements={"service": "facebook|twitter|google"})
@@ -17,10 +20,10 @@ class SocialController extends Controller
      */
     public function connectInfoAction($service)
     {
-        $session = $this->container->get('session');
+        $session = $this->container->get(SessionInterface::class);
         $session->set('connect_site', true);
 
-        $url = $this->get('router')->generate('hwi_oauth_service_redirect', ['service' => 'facebook' === $service ? 'facebook_admin' : $service]);
+        $url = $this->get(RouterInterface::class)->generate('hwi_oauth_service_redirect', ['service' => 'facebook' === $service ? 'facebook_admin' : $service]);
 
         return $this->redirect($url);
     }
@@ -37,7 +40,7 @@ class SocialController extends Controller
         $social->disconnectSite();
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($this->get('app.social_manager')->getSiteInfo());
+        $em->persist($this->get(SocialManager::class)->getSiteInfo());
         $em->flush();
 
         return new JsonResponse(['success' => true]);

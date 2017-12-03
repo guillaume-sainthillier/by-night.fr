@@ -2,9 +2,11 @@
 
 namespace AppBundle\Controller\Admin;
 
+use AppBundle\App\SocialManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use AppBundle\Entity\SiteInfo;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @Route("/info")
@@ -16,7 +18,7 @@ class InfoController extends Controller
      */
     public function listAction()
     {
-        $info = $this->get('app.social_manager')->getSiteInfo();
+        $info = $this->get(SocialManager::class)->getSiteInfo();
 
         if (null === $info) {
             $info = new SiteInfo();
@@ -25,7 +27,7 @@ class InfoController extends Controller
             $em->flush();
         }
 
-        return $this->redirect($this->get('router')->generate('tbn_administration_info_edit', ['id' => $info->getId()]));
+        return $this->redirect($this->get(RouterInterface::class)->generate('tbn_administration_info_edit', ['id' => $info->getId()]));
     }
 
     /**

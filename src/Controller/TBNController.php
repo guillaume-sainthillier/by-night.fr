@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\City;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TBNController extends Controller
@@ -40,7 +41,7 @@ class TBNController extends Controller
             throw new NotFoundHttpException('Event not found');
         }
 
-        $requestStack = $this->get('request_stack');
+        $requestStack = $this->get(RequestStack::class);
 
         if (null === $requestStack->getParentRequest() && (!$id || $event->getSlug() !== $slug || $event->getPlace()->getCity()->getSlug() !== $city->getSlug())) {
             $routeParams = \array_merge([

@@ -11,8 +11,12 @@
 
 namespace AppBundle\Controller\Social;
 
+use AppBundle\App\SocialManager;
+use AppBundle\Security\Core\User\FOSUBUserProvider;
+use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
+use HWI\Bundle\OAuthBundle\Security\OAuthUtils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Test\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,7 +68,7 @@ class ConnectController extends BaseController
         if ($resourceOwner->handles($request)) {
             $accessToken = $resourceOwner->getAccessToken(
                 $request,
-                $this->container->get('hwi_oauth.security.oauth_utils')->getServiceAuthUrl($request, $resourceOwner)
+                $this->container->get(OAuthUtils::class)->getServiceAuthUrl($request, $resourceOwner)
             );
 
             // save in session
@@ -96,20 +100,20 @@ class ConnectController extends BaseController
         if ($form->isSubmitted() && $form->isValid()) {
             show_confirmation_page:
 
-            $session = $this->container->get('session');
+            $session = $this->container->get(SessionInterface::class);
             if ($session->has('connect_site')) { // On veut connecter le site et non l'utilisateur
                 $session->remove('connect_site');
                 $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
 
                 $em = $this->getDoctrine()->getManager();
-                $em->persist($this->container->get('app.social_manager')->getSiteInfo());
+                $em->persist($this->container->get(SocialManager::class)->getSiteInfo());
                 $em->flush();
             } else { // On connecte normalement l'utilisateur*/
                 /** @var $currentToken OAuthToken */
                 $currentToken = $this->getToken();
                 $currentUser  = $currentToken->getUser();
 
-                $this->container->get('hwi_oauth.account.connector')->connect($currentUser, $userInformation);
+                $this->container->get(FOSUBUserProvider::class)->connect($currentUser, $userInformation);
 
                 if ($currentToken instanceof OAuthToken) {
                     // Update user token with new details
@@ -134,7 +138,7 @@ class ConnectController extends BaseController
             ));
         }
 
-        return $this->container->get('templating')->renderResponse('@HWIOAuth/Connect/connect_confirm.html.' . $this->getTemplatingEngine(), [
+        return $this->render('@HWIOAuth/Connect/connect_confirm.html.' . $this->getTemplatingEngine(), [
             'key'             => $key,
             'service'         => $service,
             'form'            => $form->createView(),
@@ -161,8 +165,8 @@ class ConnectController extends BaseController
 
     protected function refreshUser(UserInterface $user)
     {
-        $userManager = $this->container->get('fos_user.user_manager');
+        $userManager = $this->container->get(UserManagerInterface::class);
         $userManager->reloadUser($user);
-        $this->container->get('security.token_storage')->getToken()->setAuthenticated(false);
+        $this->getToken()->setAuthenticated(false);
     }
 }

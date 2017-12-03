@@ -3,7 +3,9 @@
 namespace AppBundle\Controller\Api;
 
 use AppBundle\SearchRepository\CityRepository;
+use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use FOS\HttpCacheBundle\Configuration\Tag;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,12 +32,12 @@ class ApiController extends Controller
         if (!$term) {
             $results = [];
         } else {
-            $paginator = $this->get('knp_paginator');
+            $paginator = $this->get(PaginatorInterface::class);
 
             /**
              * @var CityRepository
              */
-            $repo    = $this->get('fos_elastica.manager')->getRepository('AppBundle:City');
+            $repo    = $this->get(RepositoryManager::class)->getRepository('AppBundle:City');
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }

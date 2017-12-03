@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller\Comment;
 
+use AppBundle\Invalidator\EventInvalidator;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -82,7 +83,7 @@ class CommentController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $this->get('tbn.event_http:invalidator')->addEvent($soiree);
+            $this->get(EventInvalidator::class)->addEvent($soiree);
             $em->persist($comment);
             $em->flush();
 

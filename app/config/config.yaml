@@ -40,7 +40,7 @@ framework:
 doctrine_cache:
     custom_providers:
         location:
-            prototype:  "app.location_cache_provider"
+            prototype:  'AppBundle\Cache\LocationCacheProvider'
     providers:
         redis:
             type: redis
@@ -74,14 +74,14 @@ twig:
             - 'Form/fields.html.twig'
     globals:
         menu: "@white_october_breadcrumbs"
-        social_manager: "@app.social_manager"
-        city_manager: "@tbn.city_manager"
+        social_manager: '@AppBundle\App\SocialManager'
+        city_manager: '@AppBundle\App\CityManager'
         userProfilePicture: '@AppBundle\Picture\UserProfilePicture'
         eventProfilePicture: '@AppBundle\Picture\EventProfilePicture'
         facebook_app_id: "%api_facebook_id%"
         googleMapKey: "%google_map_key%"
         app_version: "v%application_version%"
-        event_seo: "@tbn.event_seo"
+        event_seo: '@AppBundle\SEO\EventSEO'
 
 # Doctrine Configuration
 doctrine:
@@ -148,14 +148,14 @@ old_sound_rabbit_mq:
             connection:       default
             exchange_options: {name: 'add-event', type: direct}
             queue_options:    {name: 'add-event'}
-            callback:         app.consumer.add_event
+            callback:         AppBundle\Consumer\AddEventConsumer
 
     batch_consumers:
         add_event:
             connection:       default
             exchange_options: {name: 'add-event', type: fanout}
             queue_options:    {name: 'add-event'}
-            callback:         app.consumer.add_event
+            callback:         AppBundle\Consumer\AddEventConsumer
             qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
             timeout_wait:     5
             auto_setup_fabric: false
@@ -164,7 +164,7 @@ old_sound_rabbit_mq:
             connection:       default
             exchange_options: {name: 'update-fb-id', type: fanout}
             queue_options:    {name: 'update-fb-id'}
-            callback:         app.consumer.update_fb_id
+            callback:         AppBundle\Consumer\UpdateFBIdConsumer
             qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
             timeout_wait:     180
             auto_setup_fabric: false

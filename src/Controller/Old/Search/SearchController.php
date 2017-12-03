@@ -4,7 +4,9 @@ namespace AppBundle\Controller\Old\Search;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 class SearchController extends Controller
 {
@@ -17,8 +19,8 @@ class SearchController extends Controller
             'type' => 'evenements',
         ];
 
-        $term = $this->container->get('request_stack')->getCurrentRequest()->get('q');
-        $page = $this->container->get('request_stack')->getCurrentRequest()->get('page');
+        $term = $this->container->get(RequestStack::class)->getCurrentRequest()->get('q');
+        $page = $this->container->get(RequestStack::class)->getCurrentRequest()->get('page');
         if ($term) {
             $params['q'] = $term;
         }
@@ -27,6 +29,6 @@ class SearchController extends Controller
             $params['page'] = $page;
         }
 
-        return new RedirectResponse($this->get('router')->generate('tbn_search_query', $params));
+        return new RedirectResponse($this->get(RouterInterface::class)->generate('tbn_search_query', $params));
     }
 }

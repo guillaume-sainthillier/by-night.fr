@@ -22,8 +22,8 @@ security:
                 csrf_token_generator: security.csrf.token_manager
                 login_path: /login
                 check_path: /login_check
-                success_handler: authentication_handler
-                failure_handler: authentication_handler
+                success_handler: AppBundle\Handler\AuthenticationHandler
+                failure_handler: AppBundle\Handler\AuthenticationHandler
             oauth:
                 remember_me: true
                 resource_owners:

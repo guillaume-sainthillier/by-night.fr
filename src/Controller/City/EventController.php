@@ -3,6 +3,9 @@
 namespace AppBundle\Controller\City;
 
 use AppBundle\Entity\City;
+use AppBundle\Picture\EventProfilePicture;
+use AppBundle\Social\FacebookAdmin;
+use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -75,7 +78,7 @@ class EventController extends Controller
             ->setSharedMaxAge($ttl)
             ->setExpires($expires);
 
-        $this->get('fos_http_cache.http.symfony_response_tagger')->addTags([
+        $this->get(SymfonyResponseTagger::class)->addTags([
             EventInvalidator::getEventDetailTag($agenda),
         ]);
 
@@ -97,7 +100,7 @@ class EventController extends Controller
             'city' => $agenda->getPlace()->getCity()->getSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $eventProfile = $this->get('tbn.profile_picture.event')->getOriginalPictureUrl($agenda);
+        $eventProfile = $this->get(EventProfilePicture::class)->getOriginalPictureUrl($agenda);
 
         $page = new Page([
             'url'   => $link,
@@ -141,7 +144,7 @@ class EventController extends Controller
                 $cache = $this->get('memory_cache');
                 $key   = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
                 if (!$cache->contains($key)) {
-                    $api   = $this->get('tbn.social.facebook_admin');
+                    $api   = $this->get(FacebookAdmin::class);
                     $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
                     $cache->save($key, $stats);
                 }

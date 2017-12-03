@@ -15,19 +15,19 @@ class AssetExtension extends Extension
     private $assetExtension;
 
     /**
-     * @var string
+     * @var bool
      */
-    private $env;
+    private $debug;
 
     /**
      * @var array
      */
     private $mappingAssets;
 
-    public function __construct(BaseAssetExtension $assetExtension, array $mappingAssets, $env)
+    public function __construct(BaseAssetExtension $assetExtension, array $mappingAssets, bool $debug)
     {
         $this->assetExtension = $assetExtension;
-        $this->env            = $env;
+        $this->debug            = $debug;
         $this->mappingAssets  = $mappingAssets;
     }
 
@@ -41,7 +41,7 @@ class AssetExtension extends Extension
     public function appAsset($path, $packageName = null)
     {
         $path = self::ASSET_PREFIX.$path;
-        if ('dev' === $this->env) {
+        if (true === $this->debug) {
             return $this->assetExtension->getAssetUrl($path, $packageName);
         }
 

@@ -15,11 +15,14 @@ use AppBundle\Validator\Constraints\ReCaptchaResponse;
 
 class ReCaptchaType extends AbstractType
 {
-    private $sitekey;
+    /**
+     * @var string
+     */
+    private $siteKey;
 
-    public function __construct($sitekey)
+    public function __construct(string $siteKey)
     {
-        $this->sitekey = $sitekey;
+        $this->siteKey = $siteKey;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -28,7 +31,7 @@ class ReCaptchaType extends AbstractType
             'mapped'   => false,
             'compound' => false,
             'attr'     => array(
-                'data-sitekey' => $this->sitekey,
+                'data-sitekey' => $this->siteKey,
                 'class'        => 'g-recaptcha',
             ),
             'constraints' => array(
