@@ -50,7 +50,7 @@ class ProfileController extends BaseController
 
         if ($form->isValid()) {
             $userManager = $this->get(UserManagerInterface::class);
-            $em = $this->get(ObjectManager::class);
+            $em          = $this->get(ObjectManager::class);
 
             $deleteEvents = $form->get('delete_events')->getData();
             $events       = $this->getDoctrine()->getRepository('AppBundle:Agenda')->findBy([
@@ -128,7 +128,6 @@ class ProfileController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $userManager = $this->get(UserManagerInterface::class);
-
 
             $event = new FormEvent($form, $request);
             $dispatcher->dispatch(FOSUserEvents::PROFILE_EDIT_SUCCESS, $event);

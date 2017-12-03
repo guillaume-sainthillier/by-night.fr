@@ -196,7 +196,7 @@ class EventController extends Controller
             if ($errors->count() > 0) {
                 $errorsString = [];
                 foreach ($errors as $error) {
-                    /**
+                    /*
                      * @var ConstraintViolation $error
                      */
                     $errorsString[] = \sprintf(
