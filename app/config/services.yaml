@@ -49,6 +49,11 @@ services:
         resource: '../../src/Controller'
         tags: ['controller.service_arguments']
 
+    App\Request\ParamConverter\:
+        resource: '../../src/Request/ParamConverter'
+        tags:
+            - { name: request.param_converter, priority: 0 }
+
     App\Handler\EventHandler:
         public: true #For PHPUnit
         arguments:

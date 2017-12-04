@@ -17,13 +17,11 @@ class DefaultController extends BaseController
 {
     /**
      * @Route("/deconnexion", name="tbn_disconnect_service")
+     * @ParamConverter("social", options={"default_facebook_name": "facebook_events"})
      */
-    public function disconnectAction($service)
+    public function disconnectAction(Social $social)
     {
         $user = $this->getUser();
-
-        /** @var Social $social */
-        $social = $this->container->get('tbn.social.' . \strtolower('facebook' === $service ? 'facebook_events' : $service));
         $social->disconnectUser($user);
 
         $this->authenticateBasicUser($user);

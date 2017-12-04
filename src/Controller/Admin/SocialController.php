@@ -3,12 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\App\SocialManager;
+use App\Social\SocialProvider;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Social\Social;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @Route("/social/{service}", requirements={"service": "facebook|twitter|google"})
@@ -22,20 +23,19 @@ class SocialController extends Controller
     {
         $session->set('connect_site', true);
 
-        $url = $this->generateUrl('hwi_oauth_service_redirect', ['service' => 'facebook' === $service ? 'facebook_admin' : $service]);
+        $url = $this->generateUrl('hwi_oauth_service_redirect', [
+            'service' => SocialProvider::FACEBOOK === $service ? SocialProvider::FACEBOOK_ADMIN : $service
+        ]);
 
         return $this->redirect($url);
     }
 
     /**
      * @Route("/deconnexion", name="tbn_administration_disconnect_service")
+     * @ParamConverter("social", options={"default_facebook_name": "facebook_admin"})
      */
-    public function disconnectSiteAction($service)
+    public function disconnectSiteAction($service, Social $social)
     {
-        $serviceName = 'tbn.social.' . ('facebook' === $service ? 'facebook_events' : $service);
-
-        /** @var Social $social */
-        $social = $this->container->get($serviceName);
         $social->disconnectSite();
 
         $em = $this->getDoctrine()->getManager();

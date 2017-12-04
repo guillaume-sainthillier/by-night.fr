@@ -3,6 +3,7 @@
 namespace App\App;
 
 use App\Entity\SiteInfo;
+use App\Social\SocialProvider;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 
@@ -51,7 +52,7 @@ class SocialManager
     /**
      * @return SiteInfo
      */
-    public function getSiteInfo()
+    public function getSiteInfo() : SiteInfo
     {
         if (false === $this->siteInfo) {
             $this->siteInfo = $this->entityManager
@@ -65,7 +66,7 @@ class SocialManager
     /**
      * @return string
      */
-    public function getFacebookIdPage()
+    public function getFacebookIdPage() : string
     {
         return $this->facebookIdPage;
     }
@@ -73,7 +74,7 @@ class SocialManager
     /**
      * @return string
      */
-    public function getTwitterIdPage()
+    public function getTwitterIdPage() : string
     {
         return $this->twitterIdPage;
     }
@@ -81,7 +82,7 @@ class SocialManager
     /**
      * @return string
      */
-    public function getGoogleIdPage()
+    public function getGoogleIdPage() : string
     {
         return $this->googleIdPage;
     }

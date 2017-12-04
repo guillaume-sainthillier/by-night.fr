@@ -57,7 +57,7 @@ class CommonController extends TBNController
             /**
              * @var Social
              */
-            $key = 'tbn.counts.' . $name;
+            $key = 'app.social_counts.' . $name;
             if (!$cache->contains($key)) {
                 $cache->save($key, $service->getNumberOfCount(), self::LIFE_TIME_CACHE);
             }

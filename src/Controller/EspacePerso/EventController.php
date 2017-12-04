@@ -9,9 +9,11 @@ use App\Handler\DoctrineEventHandler;
 use App\Parser\Common\FaceBookParser;
 use App\Social\FacebookAdmin;
 use App\Social\FacebookListEvents;
+use App\Social\SocialProvider;
 use App\Validator\Constraints\EventConstraintValidator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use App\Controller\TBNController as Controller;
 use App\Entity\Agenda;
@@ -119,7 +121,7 @@ class EventController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function editAction(Request $request, Agenda $agenda, EventConstraintValidator $validator, LoggerInterface $logger)
+    public function editAction(Request $request, Agenda $agenda, EventConstraintValidator $validator, LoggerInterface $logger, SocialProvider $socialProvider)
     {
         $em = $this->getDoctrine()->getManager();
         $em->detach($agenda);
@@ -131,7 +133,7 @@ class EventController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $agenda->getPlace()->getCity()->getName();
-            $this->postSocial($agenda, $form);
+            $this->postSocial($agenda, $form, $socialProvider);
 
             try {
                 $em->merge($agenda);
@@ -259,14 +261,14 @@ class EventController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function newAction(Request $request, EventConstraintValidator $validator)
+    public function newAction(Request $request, EventConstraintValidator $validator, SocialManager $socialManager, SocialProvider $socialProvider)
     {
         $user   = $this->getUser();
         $agenda = (new Agenda())
             ->setUser($user)
             ->setParticipations(1);
 
-        $form = $this->createCreateForm($agenda);
+        $form = $this->createCreateForm($agenda, $socialManager);
         $form->handleRequest($request);
         $validator->setUpdatabilityCkeck(false);
         /**
@@ -290,7 +292,7 @@ class EventController extends Controller
                 $em->merge($calendrier);
             }
 
-            $this->postSocial($agenda, $form);
+            $this->postSocial($agenda, $form, $socialProvider);
             $em->flush();
 
             if ($isNewAgenda) {
@@ -312,11 +314,6 @@ class EventController extends Controller
             'form'   => $form->createView(),
             'agenda' => $agenda,
         ]);
-    }
-
-    protected function getServiceByName($service)
-    {
-        return $this->get('tbn.social.' . \strtolower('facebook' === $service ? 'facebook_admin' : $service));
     }
 
     protected function createDeleteForm(Agenda $agenda)
@@ -386,16 +383,16 @@ class EventController extends Controller
             ]);
     }
 
-    protected function postSocial(Agenda $agenda, $form)
+    protected function postSocial(Agenda $agenda, FormInterface $form, SocialProvider $socialProvider)
     {
-        $services = [
-            'facebook' => ['nom' => 'Facebook'],
-            'twitter'  => ['nom' => 'Twitter'],
+        $postServices = [
+            SocialProvider::FACEBOOK,
+            SocialProvider::TWITTER,
         ];
-        foreach ($services as $id => $infos) {
-            $want_post = $form->get('share_' . $id)->getData();
+        foreach ($postServices as $serviceId) {
+            $want_post = $form->get('share_' . $serviceId)->getData();
             if ($want_post) {
-                $service = $this->getServiceByName($id);
+                $service = $socialProvider->getSocial($serviceId);
                 $service->poster($agenda);
             }
         }

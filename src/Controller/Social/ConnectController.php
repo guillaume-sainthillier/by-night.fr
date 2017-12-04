@@ -100,7 +100,6 @@ class ConnectController extends BaseController
         if ($form->isSubmitted() && $form->isValid()) {
             show_confirmation_page:
 
-            $session = $this->container->get(SessionInterface::class);
             if ($session->has('connect_site')) { // On veut connecter le site et non l'utilisateur
                 $session->remove('connect_site');
                 $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
