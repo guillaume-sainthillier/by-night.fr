@@ -28,9 +28,9 @@ class WidgetsController extends Controller
      * @Route("/tweeter-feed/{max_id}", name="tbn_agenda_tweeter_feed", requirements={"max_id": "\d+"})
      * @BrowserCache(false)
      */
-    public function twitterAction(City $city, $max_id = null)
+    public function twitterAction(City $city, Twitter $twitter, RequestStack $requestStack, $max_id = null)
     {
-        $results = $this->get(Twitter::class)->getTimeline($city, $max_id, self::TWEET_LIMIT);
+        $results = $twitter->getTimeline($city, $max_id, self::TWEET_LIMIT);
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
@@ -48,7 +48,7 @@ class WidgetsController extends Controller
             $results['statuses'] = [];
         }
 
-        if (!\count($results['statuses']) && null === $this->get(RequestStack::class)->getParentRequest()) {
+        if (!\count($results['statuses']) && null === $requestStack->getParentRequest()) {
             return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()]);
         }
 
@@ -220,7 +220,7 @@ class WidgetsController extends Controller
      * @Route("/soiree/{slug}--{id}/membres/{page}", name="tbn_agenda_soirees_membres", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))
      * @BrowserCache(false)
      */
-    public function fbMembresAction(City $city, $slug, $id = null, $page = 1)
+    public function fbMembresAction(City $city, FacebookAdmin $facebookAdmin, SymfonyResponseTagger $responseTagger, $slug, $id = null, $page = 1)
     {
         if ($page <= 1) {
             $page = 1;
@@ -240,8 +240,7 @@ class WidgetsController extends Controller
             ]);
         }
 
-        $api    = $this->get(FacebookAdmin::class);
-        $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
+        $retour = $facebookAdmin->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
         $membres = \array_merge($retour['participations'], $retour['interets']);
         if (self::FB_MEMBERS_LIMIT == \count($retour['interets']) || self::FB_MEMBERS_LIMIT == \count($retour['participations'])) {
@@ -281,7 +280,7 @@ class WidgetsController extends Controller
                 ->setSharedMaxAge($next2hours);
         }
 
-        $this->get(SymfonyResponseTagger::class)->addTags(['fb-membres']);
+        $responseTagger->addTags(['fb-membres']);
 
         return $response->setPublic();
     }

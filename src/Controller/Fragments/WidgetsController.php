@@ -22,9 +22,8 @@ class WidgetsController extends Controller
     /**
      * @Route("/programme-tv", name="tbn_agenda_programme_tv")
      */
-    public function programmeTVAction()
+    public function programmeTVAction(ProgrammeTVParser $parser)
     {
-        $parser     = $this->get(ProgrammeTVParser::class);
         $programmes = $parser->getProgrammesTV();
 
         $response = $this->render('City/Hinclude/programme_tv.html.twig', [

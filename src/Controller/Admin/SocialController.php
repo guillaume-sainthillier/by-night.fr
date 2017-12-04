@@ -18,12 +18,11 @@ class SocialController extends Controller
     /**
      * @Route("/connexion", name="tbn_administration_connect_site")
      */
-    public function connectInfoAction($service)
+    public function connectInfoAction($service, SessionInterface $session)
     {
-        $session = $this->container->get(SessionInterface::class);
         $session->set('connect_site', true);
 
-        $url = $this->get(RouterInterface::class)->generate('hwi_oauth_service_redirect', ['service' => 'facebook' === $service ? 'facebook_admin' : $service]);
+        $url = $this->generateUrl('hwi_oauth_service_redirect', ['service' => 'facebook' === $service ? 'facebook_admin' : $service]);
 
         return $this->redirect($url);
     }

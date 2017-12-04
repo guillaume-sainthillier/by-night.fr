@@ -65,7 +65,7 @@ class CommentController extends Controller
      *
      * @return Response
      */
-    public function newAction(Request $request, Agenda $soiree)
+    public function newAction(Request $request, Agenda $soiree, EventInvalidator $eventInvalidator)
     {
         $comment = new Comment();
         $form    = $this->getCreateForm($comment, $soiree);
@@ -83,7 +83,7 @@ class CommentController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $this->get(EventInvalidator::class)->addEvent($soiree);
+            $eventInvalidator->addEvent($soiree);
             $em->persist($comment);
             $em->flush();
 

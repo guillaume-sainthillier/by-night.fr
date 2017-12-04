@@ -39,7 +39,7 @@ class ProfileController extends BaseController
     /**
      * @Route("/delete", name="tbn_user_delete")
      */
-    public function deleteAction(Request $request)
+    public function deleteAction(Request $request, UserManagerInterface $userManager)
     {
         $user = $this->getUser();
         if (!\is_object($user) || !$user instanceof UserInterface) {
@@ -50,8 +50,7 @@ class ProfileController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $userManager = $this->get(UserManagerInterface::class);
-            $em          = $this->get(ObjectManager::class);
+            $em          = $this->getDoctrine()->getManager();
 
             $deleteEvents = $form->get('delete_events')->getData();
             $events       = $this->getDoctrine()->getRepository(Agenda::class)->findBy([

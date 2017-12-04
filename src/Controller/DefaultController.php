@@ -35,22 +35,22 @@ class DefaultController extends Controller
      * @Cache(expires="tomorrow", maxage="86400", smaxage="86400", public=true)
      * @BrowserCache(false)
      */
-    public function indexAction()
+    public function indexAction(PaginatorInterface $paginator, RepositoryManager $repositoryManager)
     {
         /*
         $search = new SearchAgenda();
 
         $search->setTerm(AgendaRepository::CONCERT_TERMS);
-        $concerts = $this->getResults($search);
+        $concerts = $this->getResults($search, $paginator, $repositoryManager);
 
         $search->setTerm(AgendaRepository::SHOW_TERMS);
-        $spectacles = $this->getResults($search);
+        $spectacles = $this->getResults($search, $paginator, $repositoryManager);
 
         $search->setTerm(AgendaRepository::STUDENT_TERMS);
-        $etudiants = $this->getResults($search);
+        $etudiants = $this->getResults($search, $paginator, $repositoryManager);
 
         $search->setTerm(AgendaRepository::FAMILY_TERMS);
-        $familles = $this->getResults($search);
+        $familles = $this->getResults($search, $paginator, $repositoryManager);
         */
 
         $datas = [];
@@ -91,13 +91,12 @@ class DefaultController extends Controller
         return $this->redirectToRoute('tbn_main_index');
     }
 
-    private function getResults(SearchAgenda $search)
+    private function getResults(SearchAgenda $search, PaginatorInterface $paginator, RepositoryManager $repositoryManager)
     {
-        $paginator = $this->get(PaginatorInterface::class);
         /**
          * @var AgendaRepository
          */
-        $repo    = $this->get(RepositoryManager::class)->getRepository(Agenda::class);
+        $repo    = $repositoryManager->getRepository(Agenda::class);
         $results = $repo->findWithSearch($search);
 
         return $paginator->paginate($results, 1, self::EVENT_PER_CATEGORY);

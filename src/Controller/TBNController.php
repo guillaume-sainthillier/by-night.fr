@@ -11,6 +11,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TBNController extends Controller
 {
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    public function __construct(RequestStack $requestStack) {
+        $this->requestStack = $requestStack;
+    }
+
     protected function getSecondsUntilTomorrow()
     {
         $minuit = \strtotime('tomorrow 00:00:00');
@@ -42,9 +51,7 @@ class TBNController extends Controller
             throw new NotFoundHttpException('Event not found');
         }
 
-        $requestStack = $this->get(RequestStack::class);
-
-        if (null === $requestStack->getParentRequest() && (!$id || $event->getSlug() !== $slug || $event->getPlace()->getCity()->getSlug() !== $city->getSlug())) {
+        if (null === $this->requestStack->getParentRequest() && (!$id || $event->getSlug() !== $slug || $event->getPlace()->getCity()->getSlug() !== $city->getSlug())) {
             $routeParams = \array_merge([
                 'id'   => $event->getId(),
                 'slug' => $event->getSlug(),

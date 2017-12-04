@@ -81,7 +81,7 @@ class AgendaController extends Controller
      * @Route("/tag/{tag}/page/{page}", name="tbn_agenda_tags_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
      * @BrowserCache(false)
      */
-    public function indexAction(Request $request, City $city, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
+    public function indexAction(Request $request, City $city, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination', RepositoryManager $repositoryManager)
     {
         //État de la page
         $isAjax           = $request->isXmlHttpRequest();
@@ -141,7 +141,6 @@ class AgendaController extends Controller
         }
 
         //Recherche ElasticSearch
-        $repositoryManager = $this->get(RepositoryManager::class);
         $repository        = $repositoryManager->getRepository(Agenda::class);
         $results           = $repository->findWithSearch($search);
 

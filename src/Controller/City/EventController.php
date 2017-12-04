@@ -45,7 +45,7 @@ class EventController extends Controller
      * @Route("/soiree/{slug}", name="tbn_agenda_details_old", requirements={"slug": "[^/]+"})
      * @BrowserCache(false)
      */
-    public function detailsAction(City $city, $slug, $id = null)
+    public function detailsAction(City $city, $slug, $id = null, SymfonyResponseTagger $responseTagger)
     {
         $result = $this->checkEventUrl($city, $slug, $id);
         if ($result instanceof Response) {
@@ -78,7 +78,7 @@ class EventController extends Controller
             ->setSharedMaxAge($ttl)
             ->setExpires($expires);
 
-        $this->get(SymfonyResponseTagger::class)->addTags([
+        $responseTagger->addTags([
             EventInvalidator::getEventDetailTag($agenda),
         ]);
 
@@ -92,7 +92,7 @@ class EventController extends Controller
      *
      * @return Response
      */
-    public function shareAction(Agenda $agenda)
+    public function shareAction(Agenda $agenda, EventProfilePicture $eventProfilePicture)
     {
         $link = $this->generateUrl('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
@@ -100,7 +100,7 @@ class EventController extends Controller
             'city' => $agenda->getPlace()->getCity()->getSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $eventProfile = $this->get(EventProfilePicture::class)->getOriginalPictureUrl($agenda);
+        $eventProfile = $eventProfilePicture->getOriginalPictureUrl($agenda);
 
         $page = new Page([
             'url'   => $link,
@@ -120,7 +120,7 @@ class EventController extends Controller
         ]);
     }
 
-    protected function getAgendaStats(Agenda $agenda)
+    protected function getAgendaStats(Agenda $agenda, FacebookAdmin $facebookAdmin)
     {
         $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
@@ -144,8 +144,7 @@ class EventController extends Controller
                 $cache = $this->get('memory_cache');
                 $key   = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
                 if (!$cache->contains($key)) {
-                    $api   = $this->get(FacebookAdmin::class);
-                    $stats = $api->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
+                    $stats = $facebookAdmin->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
                     $cache->save($key, $stats);
                 }
                 $stats = $cache->fetch($key);

@@ -20,14 +20,14 @@ class SearchController extends Controller
     /**
      * @Route("/evenements", name="tbn_old_search_query")
      */
-    public function oldSearchAction()
+    public function oldSearchAction(Request $request)
     {
         $params = [
             'type' => 'evenements',
         ];
 
-        $term = $this->container->get(RequestStack::class)->getCurrentRequest()->get('q');
-        $page = $this->container->get(RequestStack::class)->getCurrentRequest()->get('page');
+        $term = $request->get('q');
+        $page = $request->get('page');
         if ($term) {
             $params['q'] = $term;
         }
@@ -36,7 +36,7 @@ class SearchController extends Controller
             $params['page'] = $page;
         }
 
-        return new RedirectResponse($this->get(RouterInterface::class)->generate('tbn_search_query', $params));
+        return $this->redirectToRoute('tbn_search_query', $params);
     }
 
     /**
@@ -79,12 +79,11 @@ class SearchController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function searchAction(Request $request)
+    public function searchAction(Request $request, RepositoryManager $rm, PaginatorInterface $paginator)
     {
         $q        = \trim($request->get('q', null));
         $type     = $request->get('type', null);
         $page     = (int) ($request->get('page', 1));
-        $rm       = $this->get(RepositoryManager::class);
         $maxItems = 20;
 
         if ($page <= 0) {
@@ -103,7 +102,6 @@ class SearchController extends Controller
         if ($q) {
             if (!$type || 'evenements' === $type) { //Recherche d'événements
                 $query      = $this->searchEvents($rm, $q);
-                $paginator  = $this->get(PaginatorInterface::class);
                 $pagination = $paginator->paginate($query, $page, $maxItems);
                 $nbSoirees  = $pagination->getTotalItemCount();
                 $soirees    = $pagination;
@@ -121,7 +119,6 @@ class SearchController extends Controller
 
             if (!$type || 'membres' === $type) { //Recherche de membres
                 $query      = $this->searchUsers($rm, $q);
-                $paginator  = $this->get(PaginatorInterface::class);
                 $pagination = $paginator->paginate($query, $page, $maxItems);
                 $nbUsers    = $pagination->getTotalItemCount();
                 $users      = $pagination;

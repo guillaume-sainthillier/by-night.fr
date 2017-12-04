@@ -27,18 +27,16 @@ class ApiController extends Controller
      * @BrowserCache(false)
      * @Tag("autocomplete_city")
      */
-    public function cityAutocompleteAction(Request $request)
+    public function cityAutocompleteAction(Request $request, PaginatorInterface $paginator, RepositoryManager $repositoryManager)
     {
         $term = \trim($request->get('q'));
         if (!$term) {
             $results = [];
         } else {
-            $paginator = $this->get(PaginatorInterface::class);
-
             /**
              * @var CityRepository
              */
-            $repo    = $this->get(RepositoryManager::class)->getRepository(City::class);
+            $repo    = $repositoryManager->getRepository(City::class);
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }

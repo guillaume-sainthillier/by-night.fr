@@ -16,9 +16,9 @@ class InfoController extends Controller
     /**
      * @Route("/", name="tbn_administration_info_index")
      */
-    public function listAction()
+    public function listAction(RouterInterface $router, SocialManager $socialManager)
     {
-        $info = $this->get(SocialManager::class)->getSiteInfo();
+        $info = $socialManager->getSiteInfo();
 
         if (null === $info) {
             $info = new SiteInfo();
@@ -27,7 +27,9 @@ class InfoController extends Controller
             $em->flush();
         }
 
-        return $this->redirect($this->get(RouterInterface::class)->generate('tbn_administration_info_edit', ['id' => $info->getId()]));
+        return $this->redirectToRoute('tbn_administration_info_edit', [
+            'id' => $info->getId()
+        ]);
     }
 
     /**
