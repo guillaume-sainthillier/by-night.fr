@@ -1,12 +1,12 @@
 <?php
 
-namespace AppBundle\Listener;
+namespace App\Listener;
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Vich\UploaderBundle\Event\Event;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\Site;
-use AppBundle\Entity\User;
+use App\Entity\Agenda;
+use App\Entity\Site;
+use App\Entity\User;
 
 class ImageListener
 {

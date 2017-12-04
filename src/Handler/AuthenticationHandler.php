@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Handler;
+namespace App\Handler;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;

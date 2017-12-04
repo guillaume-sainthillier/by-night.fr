@@ -9,10 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace AppBundle\Controller\Social;
+namespace App\Controller\Social;
 
-use AppBundle\App\SocialManager;
-use AppBundle\Security\Core\User\FOSUBUserProvider;
+use App\App\SocialManager;
+use App\Security\Core\User\FOSUBUserProvider;
 use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;

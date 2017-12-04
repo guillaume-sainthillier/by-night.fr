@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller\Comment;
+namespace App\Controller\Comment;
 
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -8,10 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Form\Type\CommentType;
-use AppBundle\Entity\Comment;
-use AppBundle\Entity\Agenda;
-use AppBundle\Repository\CommentRepository;
+use App\Form\Type\CommentType;
+use App\Entity\Comment;
+use App\Entity\Agenda;
+use App\Repository\CommentRepository;
 
 class ReplyController extends Controller
 {
@@ -101,7 +101,7 @@ class ReplyController extends Controller
      */
     protected function getCommentRepo()
     {
-        $repo = $this->getDoctrine()->getRepository('AppBundle:Comment');
+        $repo = $this->getDoctrine()->getRepository('App:Comment');
 
         return $repo;
     }

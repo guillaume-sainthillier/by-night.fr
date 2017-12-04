@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Repository;
+namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -11,7 +11,7 @@ class ExplorationRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('e')
-            ->from('AppBundle:Exploration', 'e')
+            ->from('App:Exploration', 'e')
             ->where('e.id IN(:ids)')
             ->setParameter('ids', $fb_ids)
             ->getQuery()

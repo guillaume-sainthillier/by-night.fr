@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Controller\Api;
+namespace App\Controller\Api;
 
-use AppBundle\SearchRepository\CityRepository;
+use App\SearchRepository\CityRepository;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Knp\Component\Pager\PaginatorInterface;
@@ -11,7 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Annotation\BrowserCache;
+use App\Annotation\BrowserCache;
 
 /**
  * @Route("/api")
@@ -37,7 +37,7 @@ class ApiController extends Controller
             /**
              * @var CityRepository
              */
-            $repo    = $this->get(RepositoryManager::class)->getRepository('AppBundle:City');
+            $repo    = $this->get(RepositoryManager::class)->getRepository('App:City');
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }

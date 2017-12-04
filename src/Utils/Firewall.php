@@ -1,15 +1,15 @@
 <?php
 
-namespace AppBundle\Utils;
+namespace App\Utils;
 
-use AppBundle\Entity\Place;
-use AppBundle\Entity\Agenda;
-use AppBundle\Geolocalize\BoundaryInterface;
-use AppBundle\Geolocalize\GeolocalizeInterface;
-use AppBundle\Entity\Exploration;
-use AppBundle\Reject\Reject;
-use AppBundle\Repository\ExplorationRepository;
-use AppBundle\Entity\User;
+use App\Entity\Place;
+use App\Entity\Agenda;
+use App\Geolocalize\BoundaryInterface;
+use App\Geolocalize\GeolocalizeInterface;
+use App\Entity\Exploration;
+use App\Reject\Reject;
+use App\Repository\ExplorationRepository;
+use App\Entity\User;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
@@ -43,7 +43,7 @@ class Firewall
     public function __construct(ObjectManager $om, Comparator $comparator)
     {
         $this->om              = $om;
-        $this->repoExploration = $this->om->getRepository('AppBundle:Exploration');
+        $this->repoExploration = $this->om->getRepository('App:Exploration');
         $this->comparator      = $comparator;
         $this->explorations    = [];
     }

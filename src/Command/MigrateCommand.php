@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle\Command;
+namespace App\Command;
 
-use AppBundle\Entity\Place;
-use AppBundle\Entity\User;
-use AppBundle\Reject\Reject;
+use App\Entity\Place;
+use App\Entity\User;
+use App\Reject\Reject;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use AppBundle\Utils\Monitor;
+use App\Utils\Monitor;
 
 class MigrateCommand extends AppCommand
 {
@@ -30,8 +30,8 @@ class MigrateCommand extends AppCommand
     {
         $firewall = $this->getContainer()->get('tbn.doctrine_event_handler');
         $em       = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $places   = $em->getRepository('AppBundle:Place')->findBy(['city' => null]);
-        $france   = $em->getRepository('AppBundle:Country')->find('FR');
+        $places   = $em->getRepository('App:Place')->findBy(['city' => null]);
+        $france   = $em->getRepository('App:Country')->find('FR');
         Monitor::createProgressBar(\count($places));
 
         $migratedPlaces = [];
@@ -89,20 +89,20 @@ class MigrateCommand extends AppCommand
             'toulouse'       => 'toulouse',
         ];
 
-        $places = $em->getRepository('AppBundle:Place')->findBy(['city' => null]);
+        $places = $em->getRepository('App:Place')->findBy(['city' => null]);
         foreach ($places as $place) {
-            $newCity = $em->getRepository('AppBundle:City')->findBySlug($mapping[$place->getSite()->getSubdomain()]);
+            $newCity = $em->getRepository('App:City')->findBySlug($mapping[$place->getSite()->getSubdomain()]);
             $place->setCity($newCity)->setJunk(true);
             $em->persist($place);
         }
         $em->flush();
 
-        $users = $em->getRepository('AppBundle:User')->findBy(['city' => null]);
+        $users = $em->getRepository('App:User')->findBy(['city' => null]);
         foreach ($users as $user) {
             /**
              * @var User
              */
-            $city = $em->getRepository('AppBundle:City')->findBySlug($mapping[$user->getSite()->getSubdomain()]);
+            $city = $em->getRepository('App:City')->findBySlug($mapping[$user->getSite()->getSubdomain()]);
             $user->setCity($city);
             $em->persist($user);
         }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Geolocalize;
+namespace App\Geolocalize;
 
 /**
  * Created by PhpStorm.

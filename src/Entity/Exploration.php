@@ -1,16 +1,16 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use AppBundle\Reject\Reject;
+use App\Reject\Reject;
 
 /**
  * Exploration.
  *
  * @ORM\Table(name="Exploration")
  * @ORM\Entity
- * @ORM\Entity(repositoryClass="AppBundle\Repository\ExplorationRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\ExplorationRepository")
  */
 class Exploration
 {

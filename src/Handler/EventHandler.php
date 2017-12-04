@@ -1,14 +1,14 @@
 <?php
 
-namespace AppBundle\Handler;
+namespace App\Handler;
 
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\Place;
+use App\Entity\Agenda;
+use App\Entity\Place;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use AppBundle\Utils\Cleaner;
-use AppBundle\Utils\Comparator;
-use AppBundle\Utils\Merger;
-use AppBundle\Utils\Monitor;
+use App\Utils\Cleaner;
+use App\Utils\Comparator;
+use App\Utils\Merger;
+use App\Utils\Monitor;
 
 /**
  * Description of EventHandler.

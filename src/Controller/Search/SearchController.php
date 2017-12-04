@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Controller\Search;
+namespace App\Controller\Search;
 
-use AppBundle\SearchRepository\AgendaRepository;
-use AppBundle\SearchRepository\UserRepository;
+use App\SearchRepository\AgendaRepository;
+use App\SearchRepository\UserRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -12,7 +12,7 @@ use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Pagerfanta\Pagerfanta;
-use AppBundle\Search\SearchAgenda;
+use App\Search\SearchAgenda;
 use Symfony\Component\Routing\RouterInterface;
 
 class SearchController extends Controller
@@ -50,7 +50,7 @@ class SearchController extends Controller
         /**
          * @var AgendaRepository
          */
-        $repoSearch = $rm->getRepository('AppBundle:Agenda');
+        $repoSearch = $rm->getRepository('App:Agenda');
         $search     = (new SearchAgenda())->setTerm($q);
 
         return $repoSearch->findWithSearch($search);
@@ -67,7 +67,7 @@ class SearchController extends Controller
         /**
          * @var UserRepository
          */
-        $repo = $rm->getRepository('AppBundle:User');
+        $repo = $rm->getRepository('App:User');
 
         return $repo->findWithSearch($q);
     }

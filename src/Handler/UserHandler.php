@@ -6,10 +6,10 @@
  * Time: 19:29.
  */
 
-namespace AppBundle\Handler;
+namespace App\Handler;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use AppBundle\Entity\User;
+use App\Entity\User;
 
 class UserHandler
 {

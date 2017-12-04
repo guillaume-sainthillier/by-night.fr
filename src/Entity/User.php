@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * User.
  *
  * @ORM\Table(name="User", indexes={@ORM\Index(name="user_nom_idx", columns={"nom"})})
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
  * @ORM\HasLifecycleCallbacks()
@@ -65,24 +65,24 @@ class User extends BaseUser
     protected $description;
 
     /**
-     * @ORM\OneToOne(targetEntity="AppBundle\Entity\UserInfo", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\UserInfo", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     protected $info;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Calendrier", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="user")
      */
     protected $calendriers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Site")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $site;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City")
+     * @ORM\ManyToOne(targetEntity="App\Entity\City")
      * @ORM\JoinColumn(nullable=true)
      */
     protected $city;
@@ -379,7 +379,7 @@ class User extends BaseUser
     /**
      * Get info.
      *
-     * @return \AppBundle\Entity\UserInfo
+     * @return \App\Entity\UserInfo
      */
     public function getInfo()
     {
@@ -437,7 +437,7 @@ class User extends BaseUser
     /**
      * Get site.
      *
-     * @return \AppBundle\Entity\Site
+     * @return \App\Entity\Site
      */
     public function getSite()
     {
@@ -596,11 +596,11 @@ class User extends BaseUser
     /**
      * Set city.
      *
-     * @param \AppBundle\Entity\City $city
+     * @param \App\Entity\City $city
      *
      * @return User
      */
-    public function setCity(\AppBundle\Entity\City $city = null)
+    public function setCity(\App\Entity\City $city = null)
     {
         $this->city = $city;
 
@@ -610,7 +610,7 @@ class User extends BaseUser
     /**
      * Get city.
      *
-     * @return \AppBundle\Entity\City
+     * @return \App\Entity\City
      */
     public function getCity()
     {

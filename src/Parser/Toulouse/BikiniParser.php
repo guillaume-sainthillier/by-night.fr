@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Parser\Toulouse;
+namespace App\Parser\Toulouse;
 
 use Symfony\Component\DomCrawler\Crawler;
-use AppBundle\Parser\LinksParser;
+use App\Parser\LinksParser;
 
 /**
  * @author Guillaume SAINTHILLIER

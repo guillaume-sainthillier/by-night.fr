@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle\Controller\City;
+namespace App\Controller\City;
 
-use AppBundle\Entity\City;
+use App\Entity\City;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Annotation\BrowserCache;
-use AppBundle\Controller\TBNController as Controller;
-use AppBundle\Search\SearchAgenda;
+use App\Annotation\BrowserCache;
+use App\Controller\TBNController as Controller;
+use App\Search\SearchAgenda;
 
 class DefaultController extends Controller
 {
@@ -19,7 +19,7 @@ class DefaultController extends Controller
     public function indexAction(City $city)
     {
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:Agenda');
+        $repo = $em->getRepository('App:Agenda');
 
         $search    = (new SearchAgenda())->setDu(null);
         $topEvents = $repo->findTopSoiree($city, 1, 7);

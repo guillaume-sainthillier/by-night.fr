@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Listener;
+namespace App\Listener;
 
 use FOS\ElasticaBundle\Event\IndexPopulateEvent;
 use FOS\ElasticaBundle\Index\IndexManager;

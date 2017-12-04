@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\Social;
+namespace App\Social;
 
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\City;
-use AppBundle\Entity\User;
+use App\Entity\Agenda;
+use App\Entity\City;
+use App\Entity\User;
 use TwitterOAuth\Auth\SingleUserAuth;
 /*
  * Serializer Namespace

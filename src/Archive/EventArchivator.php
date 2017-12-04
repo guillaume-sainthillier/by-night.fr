@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Archive;
+namespace App\Archive;
 
-use AppBundle\Utils\Monitor;
+use App\Utils\Monitor;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\QueryBuilder;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
@@ -63,7 +63,7 @@ class EventArchivator
      */
     public function archive()
     {
-        $repo      = $this->entityManager->getRepository('AppBundle:Agenda');
+        $repo      = $this->entityManager->getRepository('App:Agenda');
         $qb        = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
 

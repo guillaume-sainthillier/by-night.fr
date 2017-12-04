@@ -40,7 +40,7 @@ framework:
 doctrine_cache:
     custom_providers:
         location:
-            prototype:  'AppBundle\Cache\LocationCacheProvider'
+            prototype:  'App\Cache\LocationCacheProvider'
     providers:
         redis:
             type: redis
@@ -74,14 +74,14 @@ twig:
             - 'Form/fields.html.twig'
     globals:
         menu: "@white_october_breadcrumbs"
-        social_manager: '@AppBundle\App\SocialManager'
-        city_manager: '@AppBundle\App\CityManager'
-        userProfilePicture: '@AppBundle\Picture\UserProfilePicture'
-        eventProfilePicture: '@AppBundle\Picture\EventProfilePicture'
+        social_manager: '@App\App\SocialManager'
+        city_manager: '@App\App\CityManager'
+        userProfilePicture: '@App\Picture\UserProfilePicture'
+        eventProfilePicture: '@App\Picture\EventProfilePicture'
         facebook_app_id: "%api_facebook_id%"
         googleMapKey: "%google_map_key%"
         app_version: "v%application_version%"
-        event_seo: '@AppBundle\SEO\EventSEO'
+        event_seo: '@App\SEO\EventSEO'
 
 # Doctrine Configuration
 doctrine:
@@ -148,14 +148,14 @@ old_sound_rabbit_mq:
             connection:       default
             exchange_options: {name: 'add-event', type: direct}
             queue_options:    {name: 'add-event'}
-            callback:         AppBundle\Consumer\AddEventConsumer
+            callback:         App\Consumer\AddEventConsumer
 
     batch_consumers:
         add_event:
             connection:       default
             exchange_options: {name: 'add-event', type: fanout}
             queue_options:    {name: 'add-event'}
-            callback:         AppBundle\Consumer\AddEventConsumer
+            callback:         App\Consumer\AddEventConsumer
             qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
             timeout_wait:     5
             auto_setup_fabric: false
@@ -164,7 +164,7 @@ old_sound_rabbit_mq:
             connection:       default
             exchange_options: {name: 'update-fb-id', type: fanout}
             queue_options:    {name: 'update-fb-id'}
-            callback:         AppBundle\Consumer\UpdateFBIdConsumer
+            callback:         App\Consumer\UpdateFBIdConsumer
             qos_options:      {prefetch_size: 0, prefetch_count: 1, global: false}
             timeout_wait:     180
             auto_setup_fabric: false
@@ -223,16 +223,16 @@ stof_doctrine_extensions:
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main  
-    user_class: AppBundle\Entity\User
+    user_class: App\Entity\User
     from_email:
         address: "%mailer_user%"
         sender_name: "By Night"
     profile:
         form:
-            type: AppBundle\Form\Type\ProfileFormType
+            type: App\Form\Type\ProfileFormType
     registration:
         form:
-            type: AppBundle\Form\Type\RegistrationFormType
+            type: App\Form\Type\RegistrationFormType
 
 httplug:
     classes:
@@ -261,23 +261,23 @@ ivory_google_map:
 
 easy_admin:
     entities:
-        - AppBundle\Entity\Agenda
-        - AppBundle\Entity\User
-        - AppBundle\Entity\Site
-        - AppBundle\Entity\Place
-        - AppBundle\Entity\Calendrier
-        - AppBundle\Entity\Comment
-        - AppBundle\Entity\Exploration
-        - AppBundle\Entity\HistoriqueMaj
-        - AppBundle\Entity\SiteInfo
-        - AppBundle\Entity\UserInfo
+        - App\Entity\Agenda
+        - App\Entity\User
+        - App\Entity\Site
+        - App\Entity\Place
+        - App\Entity\Calendrier
+        - App\Entity\Comment
+        - App\Entity\Exploration
+        - App\Entity\HistoriqueMaj
+        - App\Entity\SiteInfo
+        - App\Entity\UserInfo
 
 hwi_oauth:
     #this is my custom user provider, created from FOSUBUserProvider - will manage the 
     #automatic user registration on your site, with data from the provider (facebook. google, etc.)
     #and also, the connecting part (get the token and the user_id)
     connect:
-        account_connector: AppBundle\Security\Core\User\FOSUBUserProvider
+        account_connector: App\Security\Core\User\FOSUBUserProvider
         confirmation: false
     # name of the firewall in which this bundle is active, this setting MUST be set
     firewall_names: [main]
@@ -479,8 +479,8 @@ fos_elastica:
                                 ville: { boost: 2, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
                     persistence:
                         driver: orm # orm, mongodb, propel are available
-                        model:  AppBundle\Entity\Agenda
-                        repository: AppBundle\SearchRepository\AgendaRepository
+                        model:  App\Entity\Agenda
+                        repository: App\SearchRepository\AgendaRepository
                         provider:
                             query_builder_method: createIsActiveQueryBuilder
                             batch_size: 5000
@@ -508,8 +508,8 @@ fos_elastica:
                         name: { type: "text", analyzer: city_analyzer, search_analyzer: city_analyzer }
                     persistence:
                         driver: orm
-                        model:  AppBundle\Entity\City
-                        repository: AppBundle\SearchRepository\CityRepository
+                        model:  App\Entity\City
+                        repository: App\SearchRepository\CityRepository
                         provider:
                             batch_size: 10000
         user:
@@ -538,8 +538,8 @@ fos_elastica:
                         lastname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
                     persistence:
                         driver: orm
-                        model:  AppBundle\Entity\User
-                        repository: AppBundle\SearchRepository\UserRepository
+                        model:  App\Entity\User
+                        repository: App\SearchRepository\UserRepository
                         provider:
                             batch_size: 1000
 

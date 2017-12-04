@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Parser;
+namespace App\Parser;
 
 use Symfony\Component\DomCrawler\Crawler;
-use AppBundle\Utils\Monitor;
+use App\Utils\Monitor;
 
 /**
  * @author Guillaume S. <guillaume@sainthillier.fr>

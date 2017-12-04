@@ -6,17 +6,17 @@
  * Time: 19:16.
  */
 
-namespace AppBundle\Handler;
+namespace App\Handler;
 
-use AppBundle\Geocoder\PlaceGeocoder;
+use App\Geocoder\PlaceGeocoder;
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\Place;
-use AppBundle\Entity\Site;
-use AppBundle\Entity\Exploration;
-use AppBundle\Reject\Reject;
-use AppBundle\Utils\Firewall;
-use AppBundle\Utils\Monitor;
+use App\Entity\Agenda;
+use App\Entity\Place;
+use App\Entity\Site;
+use App\Entity\Exploration;
+use App\Reject\Reject;
+use App\Utils\Firewall;
+use App\Utils\Monitor;
 
 class DoctrineEventHandler
 {
@@ -25,22 +25,22 @@ class DoctrineEventHandler
     private $em;
 
     /**
-     * @var \AppBundle\Repository\AgendaRepository
+     * @var \App\Repository\AgendaRepository
      */
     private $repoAgenda;
 
     /**
-     * @var \AppBundle\Repository\PlaceRepository
+     * @var \App\Repository\PlaceRepository
      */
     private $repoPlace;
 
     /**
-     * @var \AppBundle\Repository\CityRepository
+     * @var \App\Repository\CityRepository
      */
     private $repoCity;
 
     /**
-     * @var \AppBundle\Repository\ZipCityRepository
+     * @var \App\Repository\ZipCityRepository
      */
     private $repoZipCity;
 
@@ -72,11 +72,11 @@ class DoctrineEventHandler
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, PlaceGeocoder $geocoder)
     {
         $this->em                 = $em;
-        $this->repoAgenda         = $em->getRepository('AppBundle:Agenda');
-        $this->repoPlace          = $em->getRepository('AppBundle:Place');
-        $this->repoSite           = $em->getRepository('AppBundle:Site');
-        $this->repoCity           = $em->getRepository('AppBundle:City');
-        $this->repoZipCity        = $em->getRepository('AppBundle:ZipCity');
+        $this->repoAgenda         = $em->getRepository('App:Agenda');
+        $this->repoPlace          = $em->getRepository('App:Place');
+        $this->repoSite           = $em->getRepository('App:Site');
+        $this->repoCity           = $em->getRepository('App:City');
+        $this->repoZipCity        = $em->getRepository('App:ZipCity');
         $this->handler            = $handler;
         $this->firewall           = $firewall;
         $this->echantillonHandler = $echantillonHandler;
@@ -439,7 +439,7 @@ class DoctrineEventHandler
     {
         //Recherche du pays en premier lieu
         if ($place->getCountryName() && (!$place->getCountry() || $place->getCountry()->getName() !== $place->getCountryName())) {
-            $country = $this->em->getRepository('AppBundle:Country')->findByName($place->getCountryName());
+            $country = $this->em->getRepository('App:Country')->findByName($place->getCountryName());
             $place->setCountry($country);
         }
 

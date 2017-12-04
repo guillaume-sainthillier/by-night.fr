@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Controller\Admin;
+namespace App\Controller\Admin;
 
-use AppBundle\App\SocialManager;
+use App\App\SocialManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use AppBundle\Social\Social;
+use App\Social\Social;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;

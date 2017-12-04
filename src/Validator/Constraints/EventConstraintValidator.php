@@ -6,12 +6,12 @@
  * Time: 22:24.
  */
 
-namespace AppBundle\Validator\Constraints;
+namespace App\Validator\Constraints;
 
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use AppBundle\Reject\Reject;
+use App\Reject\Reject;
 
 class EventConstraintValidator extends ConstraintValidator
 {

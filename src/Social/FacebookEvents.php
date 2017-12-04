@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\Social;
+namespace App\Social;
 
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\User;
+use App\Entity\Agenda;
+use App\Entity\User;
 
 /**
  * Description of Facebook.

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * AdminZone1.
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZone1Repository", readOnly=true)
+ * @ORM\Entity(repositoryClass="App\Repository\AdminZone1Repository", readOnly=true)
  */
 class AdminZone1 extends AdminZone
 {

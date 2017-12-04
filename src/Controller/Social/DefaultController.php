@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Controller\Social;
+namespace App\Controller\Social;
 
 use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use AppBundle\Social\Social;
+use App\Social\Social;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use FOS\UserBundle\Model\UserInterface;
 use Symfony\Component\Routing\Annotation\Route;

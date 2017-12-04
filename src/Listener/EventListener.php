@@ -1,15 +1,15 @@
 <?php
 
-namespace AppBundle\Listener;
+namespace App\Listener;
 
-use AppBundle\Entity\City;
+use App\Entity\City;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use AppBundle\Entity\Agenda;
-use AppBundle\Invalidator\EventInvalidator;
-use AppBundle\Entity\Exploration;
-use AppBundle\Reject\Reject;
-use AppBundle\Utils\Firewall;
-use AppBundle\Entity\User;
+use App\Entity\Agenda;
+use App\Invalidator\EventInvalidator;
+use App\Entity\Exploration;
+use App\Reject\Reject;
+use App\Utils\Firewall;
+use App\Entity\User;
 
 class EventListener
 {
@@ -88,7 +88,7 @@ class EventListener
         }
 
         $entityManager = $args->getEntityManager();
-        $exploration   = $entityManager->getRepository('AppBundle:Exploration')->find($entity->getFacebookEventId());
+        $exploration   = $entityManager->getRepository('App:Exploration')->find($entity->getFacebookEventId());
 
         if (!$exploration) {
             $exploration = (new Exploration())->setId($entity->getFacebookEventId());

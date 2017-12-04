@@ -6,9 +6,9 @@
  * Time: 20:32.
  */
 
-namespace AppBundle\Handler;
+namespace App\Handler;
 
-use AppBundle\Entity\HistoriqueMaj;
+use App\Entity\HistoriqueMaj;
 
 class ExplorationHandler
 {

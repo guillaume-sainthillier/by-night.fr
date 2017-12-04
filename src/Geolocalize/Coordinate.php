@@ -6,7 +6,7 @@
  * Time: 14:44.
  */
 
-namespace AppBundle\Geolocalize;
+namespace App\Geolocalize;
 
 class Coordinate extends \Ivory\GoogleMap\Base\Coordinate implements GeolocalizeInterface
 {

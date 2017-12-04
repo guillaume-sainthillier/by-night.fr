@@ -6,9 +6,9 @@
  * Time: 21:47.
  */
 
-namespace AppBundle\SEO;
+namespace App\SEO;
 
-use AppBundle\Entity\Agenda;
+use App\Entity\Agenda;
 
 class EventSEO
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as Serializer;
  * News.
  *
  * @ORM\Table(name="country")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\CountryRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\CountryRepository")
  * @ExclusionPolicy("NONE")
  */
 class Country

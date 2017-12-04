@@ -6,9 +6,9 @@
  * Time: 20:29.
  */
 
-namespace AppBundle\EventListener;
+namespace App\EventListener;
 
-use AppBundle\Annotation\BrowserCache;
+use App\Annotation\BrowserCache;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;

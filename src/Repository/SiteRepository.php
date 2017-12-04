@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Repository;
+namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr;
@@ -18,8 +18,8 @@ class SiteRepository extends EntityRepository
         return $this
             ->createQueryBuilder('s')
             ->select('s.nom, s.subdomain, count(DISTINCT u.id) AS count_users, count(DISTINCT a.id) as count_events')
-            ->leftJoin('AppBundle:User', 'u', Expr\Join::WITH, 'u.site = s')
-            ->leftJoin('AppBundle:Agenda', 'a', Expr\Join::WITH, 'a.site = s')
+            ->leftJoin('App:User', 'u', Expr\Join::WITH, 'u.site = s')
+            ->leftJoin('App:Agenda', 'a', Expr\Join::WITH, 'a.site = s')
             ->orderBy('s.nom')
             ->groupBy('s.id')
             ->getQuery()

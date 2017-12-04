@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Form\Type;
+namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -13,13 +13,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use AppBundle\Handler\DoctrineEventHandler;
+use App\Handler\DoctrineEventHandler;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class AgendaType extends AbstractType
 {
     /**
-     * @var \AppBundle\Handler\DoctrineEventHandler
+     * @var \App\Handler\DoctrineEventHandler
      */
     private $doctrineEventHandler;
 
@@ -196,7 +196,7 @@ class AgendaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'AppBundle\Entity\Agenda',
+            'data_class' => 'App\Entity\Agenda',
             'site_info'  => null,
             'user'       => null,
             'config'     => [],

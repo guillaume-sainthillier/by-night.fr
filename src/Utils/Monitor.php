@@ -6,7 +6,7 @@
  * Time: 20:51.
  */
 
-namespace AppBundle\Utils;
+namespace App\Utils;
 
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;

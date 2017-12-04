@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Form\Extension;
+namespace App\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\OptionsResolver\OptionsResolver;

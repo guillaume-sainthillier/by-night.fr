@@ -6,13 +6,13 @@
  * Time: 22:23.
  */
 
-namespace AppBundle\Controller\Fragments;
+namespace App\Controller\Fragments;
 
-use AppBundle\Controller\TBNController;
-use AppBundle\Entity\City;
-use AppBundle\Social\FacebookAdmin;
-use AppBundle\Social\Social;
-use AppBundle\Social\Twitter;
+use App\Controller\TBNController;
+use App\Entity\City;
+use App\Social\FacebookAdmin;
+use App\Social\Social;
+use App\Social\Twitter;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -65,7 +65,7 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo             = $this->getDoctrine()->getRepository('AppBundle:City');
+        $repo             = $this->getDoctrine()->getRepository('App:City');
         $params['cities'] = $repo->findRandomNames();
         $response         = $this->render('City/footer.html.twig', $params);
 

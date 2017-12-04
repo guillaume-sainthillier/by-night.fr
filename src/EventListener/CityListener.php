@@ -6,7 +6,7 @@
  * Time: 20:29.
  */
 
-namespace AppBundle\EventListener;
+namespace App\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;

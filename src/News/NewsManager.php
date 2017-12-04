@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle\News;
+namespace App\News;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Psr\Log\LoggerInterface;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\News;
-use AppBundle\Social\FacebookAdmin;
-use AppBundle\Social\Twitter;
+use App\Entity\Agenda;
+use App\Entity\News;
+use App\Social\FacebookAdmin;
+use App\Social\Twitter;
 use Twig\Environment;
 
 class NewsManager
@@ -79,7 +79,7 @@ class NewsManager
 
     public function getNewsDatas(\DateTime $from, \DateTime $to)
     {
-        $datas = $this->em->getRepository('AppBundle:Agenda')->findByInterval($from, $to);
+        $datas = $this->em->getRepository('App:Agenda')->findByInterval($from, $to);
 
         $participants = [];
         foreach ($datas as $site => $events) {
@@ -95,13 +95,13 @@ class NewsManager
         \arsort($participants);
         $totalPartcipants = \array_sum($participants);
 
-        $news = $this->em->getRepository('AppBundle:News')->findOneBy([
+        $news = $this->em->getRepository('App:News')->findOneBy([
             'dateDebut' => $from,
             'dateFin'   => $to,
         ]);
 
         if (!$news) {
-            $nextEdition = $this->em->getRepository('AppBundle:News')->findNextEdition();
+            $nextEdition = $this->em->getRepository('App:News')->findNextEdition();
             $news        = (new News())
                 ->setDateDebut($from)
                 ->setDateFin($to)

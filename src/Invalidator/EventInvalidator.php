@@ -6,13 +6,13 @@
  * Time: 17:53.
  */
 
-namespace AppBundle\Invalidator;
+namespace App\Invalidator;
 
-use AppBundle\Entity\City;
+use App\Entity\City;
 use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\User;
+use App\Entity\Agenda;
+use App\Entity\User;
 
 class EventInvalidator
 {

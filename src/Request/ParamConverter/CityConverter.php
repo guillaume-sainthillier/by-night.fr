@@ -6,10 +6,10 @@
  * Time: 19:13.
  */
 
-namespace AppBundle\Request\ParamConverter;
+namespace App\Request\ParamConverter;
 
-use AppBundle\App\CityManager;
-use AppBundle\Entity\City;
+use App\App\CityManager;
+use App\Entity\City;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
@@ -49,7 +49,7 @@ class CityConverter implements ParamConverterInterface
         } else {
             $entity = $this
                 ->em
-                ->getRepository('AppBundle:City')
+                ->getRepository('App:City')
                 ->findBySlug($city);
         }
 

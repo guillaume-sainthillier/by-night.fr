@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\App;
+namespace App\App;
 
-use AppBundle\Entity\SiteInfo;
+use App\Entity\SiteInfo;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
 
@@ -55,7 +55,7 @@ class SocialManager
     {
         if (false === $this->siteInfo) {
             $this->siteInfo = $this->entityManager
-                ->getRepository('AppBundle:SiteInfo')
+                ->getRepository('App:SiteInfo')
                 ->findOneBy([]);
         }
 

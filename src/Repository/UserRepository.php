@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Repository;
+namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -52,7 +52,7 @@ class UserRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('count(u.id)')
-            ->from('AppBundle:User', 'u')
+            ->from('App:User', 'u')
             ->getQuery()
             ->getSingleScalarResult();
     }

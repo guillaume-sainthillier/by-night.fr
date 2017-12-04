@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Social;
+namespace App\Social;
 
-use AppBundle\App\SocialManager;
+use App\App\SocialManager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\Exceptions\FacebookResponseException;
 use Facebook\FacebookResponse;
@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use AppBundle\Entity\Agenda;
-use AppBundle\Picture\EventProfilePicture;
-use AppBundle\Utils\Monitor;
-use AppBundle\Entity\SiteInfo;
-use AppBundle\Entity\User;
+use App\Entity\Agenda;
+use App\Picture\EventProfilePicture;
+use App\Utils\Monitor;
+use App\Entity\SiteInfo;
+use App\Entity\User;
 use Facebook\Exceptions\FacebookSDKException;
 
 /**

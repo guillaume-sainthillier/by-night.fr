@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * HistoriqueMaj.
  *
  * @ORM\Table(name="HistoriqueMaj")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\HistoriqueMajRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\HistoriqueMajRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class HistoriqueMaj

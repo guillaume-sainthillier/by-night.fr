@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Controller\Fragments;
+namespace App\Controller\Fragments;
 
-use AppBundle\Controller\TBNController as Controller;
-use AppBundle\Parser\ProgrammeTVParser;
+use App\Controller\TBNController as Controller;
+use App\Parser\ProgrammeTVParser;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Annotation\BrowserCache;
+use App\Annotation\BrowserCache;
 
 /**
  * Description of MenuDroitController.
@@ -47,7 +47,7 @@ class WidgetsController extends Controller
         }
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:User');
+        $repo = $em->getRepository('App:User');
 
         $count   = $repo->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;

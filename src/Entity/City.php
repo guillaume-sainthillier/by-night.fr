@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -10,14 +10,14 @@ use JMS\Serializer\Annotation\Groups;
  * City.
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="AppBundle\Repository\CityRepository", readOnly=true)
+ * @ORM\Entity(repositoryClass="App\Repository\CityRepository", readOnly=true)
  * @ExclusionPolicy("NONE")
  */
 class City extends AdminZone
 {
     /**
      * @var AdminZone
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AdminZone", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="App\Entity\AdminZone", fetch="EAGER")
      * @Groups({"list_city"})
      */
     protected $parent;
@@ -36,11 +36,11 @@ class City extends AdminZone
     /**
      * Set parent.
      *
-     * @param \AppBundle\Entity\AdminZone $parent
+     * @param \App\Entity\AdminZone $parent
      *
      * @return City
      */
-    public function setParent(\AppBundle\Entity\AdminZone $parent = null)
+    public function setParent(\App\Entity\AdminZone $parent = null)
     {
         $this->parent = $parent;
 
@@ -50,7 +50,7 @@ class City extends AdminZone
     /**
      * Get parent.
      *
-     * @return \AppBundle\Entity\AdminZone
+     * @return \App\Entity\AdminZone
      */
     public function getParent()
     {

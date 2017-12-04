@@ -19,7 +19,7 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
 
             //App
-            new AppBundle\AppBundle(),
+            new App\App(),
 
             //Vendors
             new Ivory\GoogleMapBundle\IvoryGoogleMapBundle(),

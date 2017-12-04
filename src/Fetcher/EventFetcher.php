@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\Fetcher;
+namespace App\Fetcher;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use AppBundle\Parser\Manager\ParserManager;
-use AppBundle\Parser\ParserInterface;
+use App\Parser\Manager\ParserManager;
+use App\Parser\ParserInterface;
 
 /**
  * Created by PhpStorm.

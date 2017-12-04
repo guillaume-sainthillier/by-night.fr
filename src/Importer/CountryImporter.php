@@ -6,15 +6,15 @@
  * Time: 14:04.
  */
 
-namespace AppBundle\Importer;
+namespace App\Importer;
 
-use AppBundle\Entity\AdminZone;
-use AppBundle\Entity\AdminZone1;
-use AppBundle\Entity\AdminZone2;
-use AppBundle\Entity\City;
-use AppBundle\Entity\Country;
-use AppBundle\Entity\ZipCity;
-use AppBundle\Utils\Monitor;
+use App\Entity\AdminZone;
+use App\Entity\AdminZone1;
+use App\Entity\AdminZone2;
+use App\Entity\City;
+use App\Entity\Country;
+use App\Entity\ZipCity;
+use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CountryImporter
@@ -48,7 +48,7 @@ class CountryImporter
         /**
          * @var Country
          */
-        $country = $this->em->getRepository('AppBundle:Country')->find($id);
+        $country = $this->em->getRepository('App:Country')->find($id);
         if (!$country) {
             $country = new Country();
             $country
@@ -73,7 +73,7 @@ class CountryImporter
 
     private function deleteEmptyDatas(Country $country)
     {
-        $this->em->createQuery(' DELETE FROM AppBundle:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
+        $this->em->createQuery(' DELETE FROM App:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
             'country' => $country->getId(),
         ]);
     }
@@ -251,9 +251,9 @@ class CountryImporter
 
                 break;
             case 'FR':
-                $this->em->createQuery(" UPDATE AppBundle:AdminZone2 c SET c.slug = 'paris-temp' WHERE c.slug = 'paris'")->execute();
-                $this->em->createQuery(" UPDATE AppBundle:City c SET c.slug = 'paris' WHERE c.slug = 'paris-1'")->execute();
-                $this->em->createQuery(" UPDATE AppBundle:AdminZone2 c SET c.slug = 'paris-1' WHERE c.slug = 'paris-temp'")->execute();
+                $this->em->createQuery(" UPDATE App:AdminZone2 c SET c.slug = 'paris-temp' WHERE c.slug = 'paris'")->execute();
+                $this->em->createQuery(" UPDATE App:City c SET c.slug = 'paris' WHERE c.slug = 'paris-1'")->execute();
+                $this->em->createQuery(" UPDATE App:AdminZone2 c SET c.slug = 'paris-1' WHERE c.slug = 'paris-temp'")->execute();
                 $this->insertCity(2995599, 'Marne-la-Vallée', 0, 48.83333, 2.63333, 11, 77, $country);
                 $this->manualAssociation([
                     'la-defense',
@@ -481,11 +481,11 @@ class CountryImporter
     private function deleteRelatedDatas(Country $country)
     {
         $this->em->createQuery('
-            UPDATE AppBundle:Place p
+            UPDATE App:Place p
             SET p.zipCity = NULL
             WHERE p.zipCity IN (
                 SELECT zc 
-                FROM AppBundle:ZipCity zc 
+                FROM App:ZipCity zc 
                 WHERE zc.country = :country
             )
         ')
@@ -494,7 +494,7 @@ class CountryImporter
         ;
 
         $this->em->createQuery('
-            DELETE FROM AppBundle:ZipCity zc
+            DELETE FROM App:ZipCity zc
             WHERE zc.country = :country
         ')
             ->setParameter('country', $country->getId())
@@ -502,11 +502,11 @@ class CountryImporter
         ;
 
         $this->em->createQuery('
-            UPDATE AppBundle:Place p
+            UPDATE App:Place p
             SET p.city = NULL
             WHERE p.city IN (
                 SELECT c 
-                FROM AppBundle:City c 
+                FROM App:City c 
                 WHERE c.country = :country
             )
         ')
@@ -515,7 +515,7 @@ class CountryImporter
         ;
 
         $this->em->createQuery('
-            DELETE FROM AppBundle:City c
+            DELETE FROM App:City c
             WHERE c.country = :country
         ')
             ->setParameter('country', $country->getId())
@@ -523,7 +523,7 @@ class CountryImporter
         ;
 
         $this->em->createQuery('
-            DELETE FROM AppBundle:AdminZone2 a
+            DELETE FROM App:AdminZone2 a
             WHERE a.country = :country
         ')
             ->setParameter('country', $country->getId())
@@ -531,7 +531,7 @@ class CountryImporter
         ;
 
         $this->em->createQuery('
-            DELETE FROM AppBundle:AdminZone1 a
+            DELETE FROM App:AdminZone1 a
             WHERE a.country = :country
         ')
             ->setParameter('country', $country->getId())

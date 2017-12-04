@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Captcha;
+namespace App\Captcha;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use ReCaptcha\ReCaptcha;

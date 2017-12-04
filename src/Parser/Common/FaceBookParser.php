@@ -1,14 +1,14 @@
 <?php
 
-namespace AppBundle\Parser\Common;
+namespace App\Parser\Common;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
-use AppBundle\Repository\SiteRepository;
-use AppBundle\Utils\Monitor;
-use AppBundle\Social\FacebookAdmin;
-use AppBundle\Parser\AgendaParser;
-use AppBundle\Utils\Firewall;
+use App\Repository\SiteRepository;
+use App\Utils\Monitor;
+use App\Social\FacebookAdmin;
+use App\Parser\AgendaParser;
+use App\Utils\Firewall;
 
 /**
  * Classe de parsing des événéments FB.
@@ -46,26 +46,26 @@ class FaceBookParser extends AgendaParser
 
     protected function getPlaces()
     {
-        $places = $this->om->getRepository('AppBundle:Place')->findAllFBIds();
+        $places = $this->om->getRepository('App:Place')->findAllFBIds();
 
         return $places;
     }
 
     protected function getUsers()
     {
-        $users = $this->om->getRepository('AppBundle:Agenda')->findAllFBOwnerIds();
+        $users = $this->om->getRepository('App:Agenda')->findAllFBOwnerIds();
 
         return $users;
     }
 
     protected function getCities()
     {
-        return $this->om->getRepository('AppBundle:City')->findAllCities();
+        return $this->om->getRepository('App:City')->findAllCities();
     }
 
     protected function getSiteLocations()
     {
-        return $this->om->getRepository('AppBundle:City')->findLocations();
+        return $this->om->getRepository('App:City')->findLocations();
     }
 
     protected function getEventsFromUsers(array $additional_users, \DateTime $now)

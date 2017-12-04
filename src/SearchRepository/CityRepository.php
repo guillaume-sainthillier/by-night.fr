@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\SearchRepository;
+namespace App\SearchRepository;
 
 use Elastica\Query;
 use Elastica\Query\Match;

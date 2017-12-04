@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Parser;
+namespace App\Parser;
 
-use AppBundle\Entity\Site;
+use App\Entity\Site;
 
 /*
  * Classe abstraite représentant le parse des données d'un site Internet

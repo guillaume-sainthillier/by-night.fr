@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\SearchRepository;
+namespace App\SearchRepository;
 
 use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
-use AppBundle\Search\SearchAgenda;
+use App\Search\SearchAgenda;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query;

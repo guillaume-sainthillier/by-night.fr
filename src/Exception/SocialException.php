@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace AppBundle\Exception;
+namespace App\Exception;
 
 /**
  * Description of SocialException.

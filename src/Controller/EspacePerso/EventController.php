@@ -1,24 +1,24 @@
 <?php
 
-namespace AppBundle\Controller\EspacePerso;
+namespace App\Controller\EspacePerso;
 
-use AppBundle\App\SocialManager;
-use AppBundle\Entity\User;
-use AppBundle\Factory\EventFactory;
-use AppBundle\Handler\DoctrineEventHandler;
-use AppBundle\Parser\Common\FaceBookParser;
-use AppBundle\Social\FacebookAdmin;
-use AppBundle\Social\FacebookListEvents;
-use AppBundle\Validator\Constraints\EventConstraintValidator;
+use App\App\SocialManager;
+use App\Entity\User;
+use App\Factory\EventFactory;
+use App\Handler\DoctrineEventHandler;
+use App\Parser\Common\FaceBookParser;
+use App\Social\FacebookAdmin;
+use App\Social\FacebookListEvents;
+use App\Validator\Constraints\EventConstraintValidator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Validator\ConstraintViolation;
-use AppBundle\Controller\TBNController as Controller;
-use AppBundle\Entity\Agenda;
-use AppBundle\Handler\ExplorationHandler;
-use AppBundle\Form\Type\AgendaType;
-use AppBundle\Entity\Calendrier;
+use App\Controller\TBNController as Controller;
+use App\Entity\Agenda;
+use App\Handler\ExplorationHandler;
+use App\Form\Type\AgendaType;
+use App\Entity\Calendrier;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -80,7 +80,7 @@ class EventController extends Controller
     public function indexAction()
     {
         $user    = $this->getUser();
-        $soirees = $this->getRepo('AppBundle:Agenda')->findAllByUser($user);
+        $soirees = $this->getRepo('App:Agenda')->findAllByUser($user);
 
         $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
 
@@ -448,7 +448,7 @@ class EventController extends Controller
         $user = $this->getUser();
 
         $em         = $this->getDoctrine()->getManager();
-        $calendrier = $em->getRepository('AppBundle:Calendrier')->findOneBy(['user' => $user, 'agenda' => $agenda]);
+        $calendrier = $em->getRepository('App:Calendrier')->findOneBy(['user' => $user, 'agenda' => $agenda]);
 
         if (null === $calendrier) {
             $calendrier = new Calendrier();
@@ -460,7 +460,7 @@ class EventController extends Controller
         $em->persist($calendrier);
         $em->flush();
 
-        $repo           = $em->getRepository('AppBundle:Agenda');
+        $repo           = $em->getRepository('App:Agenda');
         $participations = $repo->getCountTendancesParticipation($agenda);
         $interets       = $repo->getCountTendancesInterets($agenda);
 

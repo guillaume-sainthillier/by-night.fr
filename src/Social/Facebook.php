@@ -1,16 +1,16 @@
 <?php
 
-namespace AppBundle\Social;
+namespace App\Social;
 
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphEdge;
-use AppBundle\Entity\Agenda;
-use AppBundle\Exception\SocialException;
+use App\Entity\Agenda;
+use App\Exception\SocialException;
 use Facebook\Exceptions\FacebookSDKException;
-use AppBundle\Utils\Monitor;
+use App\Utils\Monitor;
 use Facebook\GraphNodes\GraphNode;
 use Facebook\Facebook as Client;
-use AppBundle\Entity\User;
+use App\Entity\User;
 
 /**
  * Description of Facebook.

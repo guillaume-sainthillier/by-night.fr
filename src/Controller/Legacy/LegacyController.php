@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Controller\Legacy;
+namespace App\Controller\Legacy;
 
-use AppBundle\Controller\TBNController as Controller;
+use App\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
 
 class LegacyController extends Controller

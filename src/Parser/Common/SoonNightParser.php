@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Parser\Common;
+namespace App\Parser\Common;
 
 use Symfony\Component\DomCrawler\Crawler;
-use AppBundle\Parser\LinksParser;
+use App\Parser\LinksParser;
 use ForceUTF8\Encoding;
 
 /**

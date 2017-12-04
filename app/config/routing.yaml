@@ -1,24 +1,24 @@
 app.default:
-    resource: "@AppBundle/Controller"
+    resource: "@App/Controller"
     type:     annotation
 
 app.social:
-    resource: "@AppBundle/Controller/Social"
+    resource: "@App/Controller/Social"
     prefix:   /social
     type:     annotation
 
 app.espace_perso:
-    resource: "@AppBundle/Controller/EspacePerso"
+    resource: "@App/Controller/EspacePerso"
     prefix:   /espace-perso
     type:     annotation
 
 app.comments:
-    resource: "@AppBundle/Controller/Comment"
+    resource: "@App/Controller/Comment"
     prefix:   /commentaire
     type:     annotation
 
 app.legacy:
-    resource: "@AppBundle/Controller/Legacy"
+    resource: "@App/Controller/Legacy"
     type:     annotation
 
 easy_admin_bundle:
@@ -27,17 +27,17 @@ easy_admin_bundle:
     prefix:   /_administration
 
 app.admin:
-    resource: "@AppBundle/Controller/Admin"
+    resource: "@App/Controller/Admin"
     prefix:   /_administration
     type:     annotation
 
 app.search:
-    resource: "@AppBundle/Controller/Search"
+    resource: "@App/Controller/Search"
     prefix:   /recherche
     type:     annotation
 
 app.private:
-    resource: "@AppBundle/Controller/Fragments"
+    resource: "@App/Controller/Fragments"
 
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"
@@ -57,7 +57,7 @@ fos_user_profile:
 
 #Profile override
 app_user_profile:
-    resource: "@AppBundle/Controller/User/ProfileController.php"
+    resource: "@App/Controller/User/ProfileController.php"
     prefix: /profile
     type:     annotation
 
@@ -97,7 +97,7 @@ hwi_oauth_redirect:
 
 #Login réseaux sociaux override
 app_hwi_oauth_connect:
-    resource: "@AppBundle/Controller/Social/ConnectController.php"
+    resource: "@App/Controller/Social/ConnectController.php"
     prefix: /login-social
     type:     annotation
 
@@ -115,10 +115,10 @@ google_login:
 
 #La ville est définie à partir d'ici
 app.city:
-    resource: "@AppBundle/Controller/City"
+    resource: "@App/Controller/City"
     prefix:   /{city}
     type:     annotation
 
 app.old:
-    resource: "@AppBundle/Controller/Old"
+    resource: "@App/Controller/Old"
     type:     annotation

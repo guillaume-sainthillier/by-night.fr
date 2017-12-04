@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Reject;
+namespace App\Reject;
 
 /**
  * Created by PhpStorm.

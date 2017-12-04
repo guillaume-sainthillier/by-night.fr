@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Twig;
+namespace App\Twig;
 
 use Symfony\Bridge\Twig\Extension\AssetExtension as BaseAssetExtension;
 use Twig\Extension\AbstractExtension as Extension;

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"user" = "UserInfo", "site" = "SiteInfo"})
- * @ORM\Entity(repositoryClass="AppBundle\Repository\InfoRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\InfoRepository")
  */
 abstract class Info
 {

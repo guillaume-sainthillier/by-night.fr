@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Search;
+namespace App\Search;
 
-use AppBundle\Entity\City;
+use App\Entity\City;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

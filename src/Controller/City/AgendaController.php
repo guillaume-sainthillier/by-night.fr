@@ -1,19 +1,19 @@
 <?php
 
-namespace AppBundle\Controller\City;
+namespace App\Controller\City;
 
-use AppBundle\Repository\AgendaRepository;
-use AppBundle\Controller\TBNController as Controller;
+use App\Repository\AgendaRepository;
+use App\Controller\TBNController as Controller;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Annotation\BrowserCache;
-use AppBundle\Entity\City;
-use AppBundle\Entity\Place;
-use AppBundle\Form\Type\SearchType;
-use AppBundle\Search\SearchAgenda;
+use App\Annotation\BrowserCache;
+use App\Entity\City;
+use App\Entity\Place;
+use App\Form\Type\SearchType;
+use App\Search\SearchAgenda;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AgendaController extends Controller
@@ -39,23 +39,23 @@ class AgendaController extends Controller
             $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type, 'city' => $city->getSlug()]);
             switch ($type) {
                 case 'exposition':
-                    $term = \AppBundle\SearchRepository\AgendaRepository::EXPO_TERMS;
+                    $term = \App\SearchRepository\AgendaRepository::EXPO_TERMS;
 
                     break;
                 case 'concert':
-                    $term = \AppBundle\SearchRepository\AgendaRepository::CONCERT_TERMS;
+                    $term = \App\SearchRepository\AgendaRepository::CONCERT_TERMS;
 
                     break;
                 case 'famille':
-                    $term = \AppBundle\SearchRepository\AgendaRepository::FAMILY_TERMS;
+                    $term = \App\SearchRepository\AgendaRepository::FAMILY_TERMS;
 
                     break;
                 case 'spectacle':
-                    $term = \AppBundle\SearchRepository\AgendaRepository::SHOW_TERMS;
+                    $term = \App\SearchRepository\AgendaRepository::SHOW_TERMS;
 
                     break;
                 case 'etudiant':
-                    $term = \AppBundle\SearchRepository\AgendaRepository::STUDENT_TERMS;
+                    $term = \App\SearchRepository\AgendaRepository::STUDENT_TERMS;
 
                     break;
             }
@@ -104,14 +104,14 @@ class AgendaController extends Controller
 
         //Récupération du repo des événéments
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:Agenda');
+        $repo = $em->getRepository('App:Agenda');
 
         //Recherche des événements
         $search = new SearchAgenda();
         $search->setCity($city);
         $place = null;
         if (null !== $slug) {
-            $place = $em->getRepository('AppBundle:Place')->findOneBy(['slug' => $slug]);
+            $place = $em->getRepository('App:Place')->findOneBy(['slug' => $slug]);
             if (!$place) {
                 return new RedirectResponse($this->generateUrl('tbn_agenda_agenda', ['city' => $city->getSlug()]));
             }
@@ -141,7 +141,7 @@ class AgendaController extends Controller
 
         //Recherche ElasticSearch
         $repositoryManager = $this->get(RepositoryManager::class);
-        $repository        = $repositoryManager->getRepository('AppBundle:Agenda');
+        $repository        = $repositoryManager->getRepository('App:Agenda');
         $results           = $repository->findWithSearch($search);
 
         $paginator        = $this->get(PaginatorInterface::class);

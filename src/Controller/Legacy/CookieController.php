@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller\Legacy;
+namespace App\Controller\Legacy;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;

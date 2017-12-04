@@ -6,14 +6,14 @@
  * Time: 19:32.
  */
 
-namespace AppBundle\Consumer;
+namespace App\Consumer;
 
-use AppBundle\Factory\EventFactory;
-use AppBundle\Handler\DoctrineEventHandler;
+use App\Factory\EventFactory;
+use App\Handler\DoctrineEventHandler;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
-use AppBundle\Utils\Monitor;
+use App\Utils\Monitor;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface

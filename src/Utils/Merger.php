@@ -1,9 +1,9 @@
 <?php
 
-namespace AppBundle\Utils;
+namespace App\Utils;
 
-use AppBundle\Entity\Place;
-use AppBundle\Entity\Agenda;
+use App\Entity\Place;
+use App\Entity\Agenda;
 
 /**
  * Description of Merger.

@@ -6,13 +6,13 @@
  * Time: 17:16.
  */
 
-namespace AppBundle\Geocoder;
+namespace App\Geocoder;
 
-use AppBundle\Entity\Place;
-use AppBundle\Geolocalize\Boundary;
-use AppBundle\Geolocalize\Coordinate;
-use AppBundle\Reject\Reject;
-use AppBundle\Utils\Firewall;
+use App\Entity\Place;
+use App\Geolocalize\Boundary;
+use App\Geolocalize\Coordinate;
+use App\Reject\Reject;
+use App\Utils\Firewall;
 use Doctrine\Common\Cache\CacheProvider;
 use Ivory\GoogleMap\Service\Base\AddressComponent;
 use Ivory\GoogleMap\Service\Geocoder\GeocoderService;

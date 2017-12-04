@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Cleaner;
+namespace App\Cleaner;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
@@ -40,7 +40,7 @@ class ImageCleaner
     {
         $result = $this
             ->entityManager
-            ->createQuery('SELECT a.path, a.systemPath FROM AppBundle:Agenda a WHERE a.path IS NOT NULL OR a.systemPath IS NOT NULL')
+            ->createQuery('SELECT a.path, a.systemPath FROM App:Agenda a WHERE a.path IS NOT NULL OR a.systemPath IS NOT NULL')
             ->getScalarResult();
 
         $paths = \array_unique(\array_filter(\array_merge(\array_column($result, 'path'), \array_column($result, 'systemPath'))));
@@ -48,7 +48,7 @@ class ImageCleaner
 
         $result = $this
             ->entityManager
-            ->createQuery('SELECT u.path, u.systemPath FROM AppBundle:User u WHERE u.path IS NOT NULL OR u.systemPath IS NOT NULL')
+            ->createQuery('SELECT u.path, u.systemPath FROM App:User u WHERE u.path IS NOT NULL OR u.systemPath IS NOT NULL')
             ->getScalarResult();
 
         $paths = \array_unique(\array_filter(\array_merge(\array_column($result, 'path'), \array_column($result, 'systemPath'))));

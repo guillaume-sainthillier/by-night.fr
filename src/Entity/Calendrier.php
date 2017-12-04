@@ -1,13 +1,13 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Calendrier.
  *
- * @ORM\Entity(repositoryClass="AppBundle\Repository\CalendrierRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\CalendrierRepository")
  * @ORM\Table(name="Calendrier",
  *      uniqueConstraints={
  *          @ORM\UniqueConstraint(name="user_agenda_unique",columns={"user_id","agenda_id"})
@@ -40,13 +40,13 @@ class Calendrier
     protected $interet;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="calendriers")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Agenda", inversedBy="calendriers")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Agenda", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $agenda;
@@ -152,7 +152,7 @@ class Calendrier
     /**
      * Get user.
      *
-     * @return \AppBundle\Entity\User
+     * @return \App\Entity\User
      */
     public function getUser()
     {
@@ -176,7 +176,7 @@ class Calendrier
     /**
      * Get agenda.
      *
-     * @return \AppBundle\Entity\Agenda
+     * @return \App\Entity\Agenda
      */
     public function getAgenda()
     {

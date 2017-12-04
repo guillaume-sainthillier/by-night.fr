@@ -6,9 +6,9 @@
  * Time: 20:52.
  */
 
-namespace AppBundle\Command;
+namespace App\Command;
 
-use AppBundle\Cleaner\ImageCleaner;
+use App\Cleaner\ImageCleaner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

@@ -1,20 +1,20 @@
 <?php
 
-namespace AppBundle\Controller\Comment;
+namespace App\Controller\Comment;
 
-use AppBundle\Invalidator\EventInvalidator;
+use App\Invalidator\EventInvalidator;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Annotation\BrowserCache;
+use App\Annotation\BrowserCache;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Controller\TBNController as Controller;
-use AppBundle\Entity\Agenda;
-use AppBundle\Form\Type\CommentType;
-use AppBundle\Entity\Comment;
-use AppBundle\Repository\CommentRepository;
+use App\Controller\TBNController as Controller;
+use App\Entity\Agenda;
+use App\Form\Type\CommentType;
+use App\Entity\Comment;
+use App\Repository\CommentRepository;
 
 class CommentController extends Controller
 {
@@ -113,7 +113,7 @@ class CommentController extends Controller
      */
     protected function getCommentRepo()
     {
-        $repo = $this->getDoctrine()->getRepository('AppBundle:Comment');
+        $repo = $this->getDoctrine()->getRepository('App:Comment');
 
         return $repo;
     }

@@ -6,18 +6,18 @@
  * Time: 14:28.
  */
 
-namespace AppBundle\Updater;
+namespace App\Updater;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use AppBundle\Utils\Monitor;
-use AppBundle\Handler\UserHandler;
-use AppBundle\Social\FacebookAdmin;
-use AppBundle\Entity\User;
+use App\Utils\Monitor;
+use App\Handler\UserHandler;
+use App\Social\FacebookAdmin;
+use App\Entity\User;
 
 class UserUpdater extends Updater
 {
     /**
-     * @var \AppBundle\Handler\UserHandler
+     * @var \App\Handler\UserHandler
      */
     protected $userHandler;
 
@@ -29,7 +29,7 @@ class UserUpdater extends Updater
 
     public function update()
     {
-        $repo  = $this->entityManager->getRepository('AppBundle:User');
+        $repo  = $this->entityManager->getRepository('App:User');
         $fbIds = $repo->getUserFbIds();
         $count = \count($fbIds);
 

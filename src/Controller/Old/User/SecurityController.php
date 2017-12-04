@@ -6,7 +6,7 @@
  * Time: 19:26.
  */
 
-namespace AppBundle\Controller\Old\User;
+namespace App\Controller\Old\User;
 
 use FOS\UserBundle\Controller\ProfileController as BaseController;
 use Symfony\Component\HttpFoundation\Response;

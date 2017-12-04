@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Parser;
+namespace App\Parser;
 
 /**
  * Description of ParserInterface.

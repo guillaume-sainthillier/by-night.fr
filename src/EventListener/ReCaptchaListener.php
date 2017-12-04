@@ -6,7 +6,7 @@
  * Time: 23:28.
  */
 
-namespace AppBundle\EventListener;
+namespace App\EventListener;
 
 use FOS\UserBundle\Controller\RegistrationController;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;

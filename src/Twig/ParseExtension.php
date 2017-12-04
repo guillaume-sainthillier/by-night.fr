@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace AppBundle\Twig;
+namespace App\Twig;
 
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;

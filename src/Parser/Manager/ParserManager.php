@@ -4,10 +4,10 @@
  * Effectue la gestion des différents parser
  */
 
-namespace AppBundle\Parser\Manager;
+namespace App\Parser\Manager;
 
-use AppBundle\Parser\ParserInterface;
-use AppBundle\Utils\Monitor;
+use App\Parser\ParserInterface;
+use App\Utils\Monitor;
 
 /**
  * @author Guillaume SAINTHILLIER

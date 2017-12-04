@@ -6,7 +6,7 @@
  * Time: 18:55.
  */
 
-namespace AppBundle\Updater;
+namespace App\Updater;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Exception\RequestException;
@@ -14,7 +14,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
-use AppBundle\Social\FacebookAdmin;
+use App\Social\FacebookAdmin;
 
 abstract class Updater
 {

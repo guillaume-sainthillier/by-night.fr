@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,24 +8,24 @@ use Doctrine\ORM\Mapping as ORM;
  * AdminZone2.
  *
  * @ORM\Table()
- * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZone2Repository", readOnly=true)
+ * @ORM\Entity(repositoryClass="App\Repository\AdminZone2Repository", readOnly=true)
  */
 class AdminZone2 extends AdminZone
 {
     /**
      * @var AdminZone1
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\AdminZone1", fetch="EXTRA_LAZY")
+     * @ORM\ManyToOne(targetEntity="App\Entity\AdminZone1", fetch="EXTRA_LAZY")
      */
     protected $parent;
 
     /**
      * Set parent.
      *
-     * @param \AppBundle\Entity\AdminZone1 $parent
+     * @param \App\Entity\AdminZone1 $parent
      *
      * @return AdminZone2
      */
-    public function setParent(\AppBundle\Entity\AdminZone1 $parent = null)
+    public function setParent(\App\Entity\AdminZone1 $parent = null)
     {
         $this->parent = $parent;
 
@@ -35,7 +35,7 @@ class AdminZone2 extends AdminZone
     /**
      * Get parent.
      *
-     * @return \AppBundle\Entity\AdminZone1
+     * @return \App\Entity\AdminZone1
      */
     public function getParent()
     {

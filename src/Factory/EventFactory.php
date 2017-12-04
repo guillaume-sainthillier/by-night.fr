@@ -6,9 +6,9 @@
  * Time: 18:57.
  */
 
-namespace AppBundle\Factory;
+namespace App\Factory;
 
-use AppBundle\Entity\Agenda;
+use App\Entity\Agenda;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 

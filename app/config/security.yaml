@@ -22,8 +22,8 @@ security:
                 csrf_token_generator: security.csrf.token_manager
                 login_path: /login
                 check_path: /login_check
-                success_handler: AppBundle\Handler\AuthenticationHandler
-                failure_handler: AppBundle\Handler\AuthenticationHandler
+                success_handler: App\Handler\AuthenticationHandler
+                failure_handler: App\Handler\AuthenticationHandler
             oauth:
                 remember_me: true
                 resource_owners:
@@ -39,7 +39,7 @@ security:
                 oauth_user_provider:
                     #this is my custom user provider, created from FOSUBUserProvider - will manage the
                     #automatic user registration on your site, with data from the provider (facebook. google, etc.)
-                    service: AppBundle\Security\Core\User\FOSUBUserProvider
+                    service: App\Security\Core\User\FOSUBUserProvider
             logout:
                 invalidate_session:   true
             anonymous:    true

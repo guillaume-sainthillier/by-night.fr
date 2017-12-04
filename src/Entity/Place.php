@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -8,8 +8,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
-use AppBundle\Geolocalize\GeolocalizeInterface;
-use AppBundle\Reject\Reject;
+use App\Geolocalize\GeolocalizeInterface;
+use App\Reject\Reject;
 
 /**
  * Place.
@@ -21,7 +21,7 @@ use AppBundle\Reject\Reject;
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PlaceRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\PlaceRepository")
  */
 class Place implements GeolocalizeInterface
 {
@@ -109,7 +109,7 @@ class Place implements GeolocalizeInterface
     protected $codePostal;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Site", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
      */
     protected $site;
@@ -122,7 +122,7 @@ class Place implements GeolocalizeInterface
     protected $facebookId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City")
+     * @ORM\ManyToOne(targetEntity="App\Entity\City")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -130,7 +130,7 @@ class Place implements GeolocalizeInterface
     protected $city;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\ZipCity")
+     * @ORM\ManyToOne(targetEntity="App\Entity\ZipCity")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -138,7 +138,7 @@ class Place implements GeolocalizeInterface
     protected $zipCity;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Country")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -466,7 +466,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get site.
      *
-     * @return \AppBundle\Entity\Site
+     * @return \App\Entity\Site
      */
     public function getSite()
     {
@@ -481,11 +481,11 @@ class Place implements GeolocalizeInterface
     /**
      * Set city.
      *
-     * @param \AppBundle\Entity\City $city
+     * @param \App\Entity\City $city
      *
      * @return Place
      */
-    public function setCity(\AppBundle\Entity\City $city = null)
+    public function setCity(\App\Entity\City $city = null)
     {
         $this->city = $city;
 
@@ -495,7 +495,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get city.
      *
-     * @return \AppBundle\Entity\City
+     * @return \App\Entity\City
      */
     public function getCity()
     {
@@ -505,11 +505,11 @@ class Place implements GeolocalizeInterface
     /**
      * Set zipCity.
      *
-     * @param \AppBundle\Entity\ZipCity $zipCity
+     * @param \App\Entity\ZipCity $zipCity
      *
      * @return Place
      */
-    public function setZipCity(\AppBundle\Entity\ZipCity $zipCity = null)
+    public function setZipCity(\App\Entity\ZipCity $zipCity = null)
     {
         $this->zipCity = $zipCity;
 
@@ -519,7 +519,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get zipCity.
      *
-     * @return \AppBundle\Entity\ZipCity
+     * @return \App\Entity\ZipCity
      */
     public function getZipCity()
     {
@@ -529,11 +529,11 @@ class Place implements GeolocalizeInterface
     /**
      * Set country.
      *
-     * @param \AppBundle\Entity\Country $country
+     * @param \App\Entity\Country $country
      *
      * @return Place
      */
-    public function setCountry(\AppBundle\Entity\Country $country = null)
+    public function setCountry(\App\Entity\Country $country = null)
     {
         $this->country = $country;
 
@@ -543,7 +543,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get country.
      *
-     * @return \AppBundle\Entity\Country
+     * @return \App\Entity\Country
      */
     public function getCountry()
     {

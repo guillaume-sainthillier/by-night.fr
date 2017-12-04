@@ -6,9 +6,9 @@
  * Time: 15:20.
  */
 
-namespace AppBundle\App;
+namespace App\App;
 
-use AppBundle\Entity\City;
+use App\Entity\City;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -58,7 +58,7 @@ class CityManager
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
         if ($currentRequest->cookies->has('app_city')) {
-            $this->cookieCity = $this->entityManager->getRepository('AppBundle:City')->findBySlug($currentRequest->cookies->get('app_city'));
+            $this->cookieCity = $this->entityManager->getRepository('App:City')->findBySlug($currentRequest->cookies->get('app_city'));
         } else {
             $this->cookieCity = null;
         }

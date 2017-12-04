@@ -1,12 +1,12 @@
 <?php
 
-namespace AppBundle\Utils;
+namespace App\Utils;
 
-use AppBundle\Entity\City;
-use AppBundle\Entity\ZipCity;
+use App\Entity\City;
+use App\Entity\ZipCity;
 use Doctrine\Common\Cache\ArrayCache;
-use AppBundle\Entity\Place;
-use AppBundle\Entity\Agenda;
+use App\Entity\Place;
+use App\Entity\Agenda;
 use Doctrine\Common\Cache\Cache;
 
 /**

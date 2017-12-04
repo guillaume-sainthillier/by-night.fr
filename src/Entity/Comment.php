@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Comment.
  *
  * @ORM\Table(name="Comment")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\CommentRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class Comment
@@ -57,7 +57,7 @@ class Comment
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $user;
@@ -65,7 +65,7 @@ class Comment
     /**
      * @var Agenda
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Agenda", inversedBy="commentaires")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Agenda", inversedBy="commentaires")
      * @ORM\JoinColumn(nullable=false)
      */
     protected $agenda;
@@ -73,13 +73,13 @@ class Comment
     /**
      * @var Comment
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Comment", inversedBy="reponses")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="reponses")
      * @ORM\JoinColumn(nullable=true)
      */
     protected $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $reponses;
@@ -224,7 +224,7 @@ class Comment
     /**
      * Get user.
      *
-     * @return \AppBundle\Entity\User
+     * @return \App\Entity\User
      */
     public function getUser()
     {
@@ -248,7 +248,7 @@ class Comment
     /**
      * Get agenda.
      *
-     * @return \AppBundle\Entity\Agenda
+     * @return \App\Entity\Agenda
      */
     public function getAgenda()
     {
@@ -272,7 +272,7 @@ class Comment
     /**
      * Get parent.
      *
-     * @return \AppBundle\Entity\Comment
+     * @return \App\Entity\Comment
      */
     public function getParent()
     {

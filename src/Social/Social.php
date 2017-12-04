@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Social;
+namespace App\Social;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -8,16 +8,16 @@ namespace AppBundle\Social;
  * && open the template in the editor.
  */
 
-use AppBundle\App\SocialManager;
+use App\App\SocialManager;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use AppBundle\Picture\EventProfilePicture;
-use AppBundle\Exception\SocialException;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\User;
-use AppBundle\Entity\Info;
+use App\Picture\EventProfilePicture;
+use App\Exception\SocialException;
+use App\Entity\Agenda;
+use App\Entity\User;
+use App\Entity\Info;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;

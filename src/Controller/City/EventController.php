@@ -1,26 +1,26 @@
 <?php
 
-namespace AppBundle\Controller\City;
+namespace App\Controller\City;
 
-use AppBundle\Entity\City;
-use AppBundle\Picture\EventProfilePicture;
-use AppBundle\Social\FacebookAdmin;
+use App\Entity\City;
+use App\Picture\EventProfilePicture;
+use App\Social\FacebookAdmin;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use AppBundle\Entity\Comment;
-use AppBundle\Form\Type\CommentType;
-use AppBundle\Controller\TBNController as Controller;
+use App\Entity\Comment;
+use App\Form\Type\CommentType;
+use App\Controller\TBNController as Controller;
 use SocialLinks\Page;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Annotation\BrowserCache;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\Calendrier;
-use AppBundle\Invalidator\EventInvalidator;
-use AppBundle\Entity\User;
+use App\Annotation\BrowserCache;
+use App\Entity\Agenda;
+use App\Entity\Calendrier;
+use App\Invalidator\EventInvalidator;
+use App\Entity\User;
 
 class EventController extends Controller
 {
@@ -123,7 +123,7 @@ class EventController extends Controller
     protected function getAgendaStats(Agenda $agenda)
     {
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:Agenda');
+        $repo = $em->getRepository('App:Agenda');
 
         $participer = false;
         $interet    = false;
@@ -133,7 +133,7 @@ class EventController extends Controller
             /**
              * @var User
              */
-            $repoCalendrier = $em->getRepository('AppBundle:Calendrier');
+            $repoCalendrier = $em->getRepository('App:Calendrier');
             $calendrier     = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
             if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();

@@ -6,9 +6,9 @@
  * Time: 21:01.
  */
 
-namespace AppBundle\Cache;
+namespace App\Cache;
 
-use AppBundle\Entity\Location;
+use App\Entity\Location;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -27,7 +27,7 @@ class LocationCacheProvider extends CacheProvider
     public function __construct(EntityManagerInterface $em)
     {
         $this->em   = $em;
-        $this->repo = $em->getRepository('AppBundle:Location');
+        $this->repo = $em->getRepository('App:Location');
     }
 
     /**

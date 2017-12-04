@@ -6,10 +6,10 @@
  * Time: 18:48.
  */
 
-namespace AppBundle\Picture;
+namespace App\Picture;
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use AppBundle\Entity\User;
+use App\Entity\User;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserProfilePicture

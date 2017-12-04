@@ -6,13 +6,13 @@
  * Time: 14:28.
  */
 
-namespace AppBundle\Updater;
+namespace App\Updater;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use AppBundle\Entity\Agenda;
-use AppBundle\Handler\EventHandler;
-use AppBundle\Utils\Monitor;
-use AppBundle\Social\FacebookAdmin;
+use App\Entity\Agenda;
+use App\Handler\EventHandler;
+use App\Utils\Monitor;
+use App\Social\FacebookAdmin;
 
 class EventUpdater extends Updater
 {
@@ -33,7 +33,7 @@ class EventUpdater extends Updater
             $since = new \DateTime();
         }
 
-        $repo  = $this->entityManager->getRepository('AppBundle:Agenda');
+        $repo  = $this->entityManager->getRepository('App:Agenda');
         $count = $repo->getNextEventsCount($since);
 
         $fbIds   = $repo->getNextEventsFbIds($since);

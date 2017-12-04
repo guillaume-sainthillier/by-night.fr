@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\Controller\User;
+namespace App\Controller\User;
 
-use AppBundle\Controller\TBNController as Controller;
-use AppBundle\Entity\User;
-use AppBundle\Repository\AgendaRepository;
+use App\Controller\TBNController as Controller;
+use App\Entity\User;
+use App\Repository\AgendaRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +33,7 @@ class DefaultController extends Controller
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
     {
         $em       = $this->getDoctrine()->getManager();
-        $repoUser = $em->getRepository('AppBundle:User');
+        $repoUser = $em->getRepository('App:User');
 
         if (!$id) {
             $user = $repoUser->findOneBy(['username' => $username]);
@@ -67,7 +67,7 @@ class DefaultController extends Controller
         $user = $result;
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:Agenda');
+        $repo = $em->getRepository('App:Agenda');
 
         return $this->render('User/index.html.twig', [
             'user'                 => $user,
@@ -92,7 +92,7 @@ class DefaultController extends Controller
         $user = $result;
 
         $em       = $this->getDoctrine()->getManager();
-        $repo     = $em->getRepository('AppBundle:Agenda');
+        $repo     = $em->getRepository('App:Agenda');
         $str_date = $repo->getLastDateStatsUser($user);
 
         $response = $this->cacheVerif($str_date);

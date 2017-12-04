@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation as Serializer;
  * @ORM\Table(name="zip_city", indexes={
  @ORM\Index(name="zip_city_postal_code_name_idx", columns={"name", "postal_code"})
  * })
- * @ORM\Entity(repositoryClass="AppBundle\Repository\ZipCityRepository", readOnly=true)
+ * @ORM\Entity(repositoryClass="App\Repository\ZipCityRepository", readOnly=true)
  * @Serializer\ExclusionPolicy("ALL")
  */
 class ZipCity
@@ -35,7 +35,7 @@ class ZipCity
 
     /**
      * @var Country
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Country", fetch="EXTRA_LAZY")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country", fetch="EXTRA_LAZY")
      */
     protected $country;
 
@@ -77,7 +77,7 @@ class ZipCity
 
     /**
      * @var City
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\City", fetch="EXTRA_LAZY")
+     * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EXTRA_LAZY")
      */
     protected $parent;
 
@@ -250,11 +250,11 @@ class ZipCity
     /**
      * Set country.
      *
-     * @param \AppBundle\Entity\Country $country
+     * @param \App\Entity\Country $country
      *
      * @return ZipCity
      */
-    public function setCountry(\AppBundle\Entity\Country $country = null)
+    public function setCountry(\App\Entity\Country $country = null)
     {
         $this->country = $country;
 
@@ -264,7 +264,7 @@ class ZipCity
     /**
      * Get country.
      *
-     * @return \AppBundle\Entity\Country
+     * @return \App\Entity\Country
      */
     public function getCountry()
     {
@@ -298,11 +298,11 @@ class ZipCity
     /**
      * Set parent.
      *
-     * @param \AppBundle\Entity\City $parent
+     * @param \App\Entity\City $parent
      *
      * @return ZipCity
      */
-    public function setParent(\AppBundle\Entity\City $parent = null)
+    public function setParent(\App\Entity\City $parent = null)
     {
         $this->parent = $parent;
 
@@ -312,7 +312,7 @@ class ZipCity
     /**
      * Get parent.
      *
-     * @return \AppBundle\Entity\City
+     * @return \App\Entity\City
      */
     public function getParent()
     {

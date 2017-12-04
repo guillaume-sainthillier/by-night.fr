@@ -6,12 +6,12 @@
  * Time: 22:19.
  */
 
-namespace AppBundle\Form\Type;
+namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use AppBundle\Validator\Constraints\ReCaptchaResponse;
+use App\Validator\Constraints\ReCaptchaResponse;
 
 class ReCaptchaType extends AbstractType
 {

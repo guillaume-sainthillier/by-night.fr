@@ -1,16 +1,16 @@
 <?php
 
-namespace AppBundle\Controller\City;
+namespace App\Controller\City;
 
-use AppBundle\Entity\City;
-use AppBundle\Social\FacebookAdmin;
-use AppBundle\Social\Twitter;
+use App\Entity\City;
+use App\Social\FacebookAdmin;
+use App\Social\Twitter;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Controller\TBNController as Controller;
+use App\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Annotation\BrowserCache;
+use App\Annotation\BrowserCache;
 
 /**
  * Description of MenuDroitController.
@@ -98,7 +98,7 @@ class WidgetsController extends Controller
         }
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:Agenda');
+        $repo = $em->getRepository('App:Agenda');
 
         $count   = $repo->findAllNextCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -146,7 +146,7 @@ class WidgetsController extends Controller
         $soiree = $result;
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:Agenda');
+        $repo = $em->getRepository('App:Agenda');
 
         $count   = $repo->findAllSimilairesCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -187,7 +187,7 @@ class WidgetsController extends Controller
         }
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:Agenda');
+        $repo = $em->getRepository('App:Agenda');
 
         $current = $page * self::WIDGET_ITEM_LIMIT;
         $count   = $repo->findTopSoireeCount($city);

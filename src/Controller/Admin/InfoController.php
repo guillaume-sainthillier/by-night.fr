@@ -1,10 +1,10 @@
 <?php
 
-namespace AppBundle\Controller\Admin;
+namespace App\Controller\Admin;
 
-use AppBundle\App\SocialManager;
+use App\App\SocialManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use AppBundle\Entity\SiteInfo;
+use App\Entity\SiteInfo;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 

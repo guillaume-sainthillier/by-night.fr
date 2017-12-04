@@ -1,15 +1,15 @@
 <?php
 
-namespace AppBundle\Security\Core\User;
+namespace App\Security\Core\User;
 
-use AppBundle\App\CityManager;
-use AppBundle\Entity\User;
+use App\App\CityManager;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
 use Symfony\Component\Security\Core\User\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
-use AppBundle\Entity\UserInfo;
+use App\Entity\UserInfo;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 
 class FOSUBUserProvider extends BaseClass
@@ -73,7 +73,7 @@ class FOSUBUserProvider extends BaseClass
     /**
      * @param string $service
      *
-     * @return \AppBundle\Social\Social
+     * @return \App\Social\Social
      */
     protected function getSocialService($service)
     {
@@ -87,11 +87,11 @@ class FOSUBUserProvider extends BaseClass
 
     protected function findUserBySocialInfo(UserResponseInterface $cle, $valeur)
     {
-        $repo = $this->entityManager->getRepository('AppBundle:Info');
+        $repo = $this->entityManager->getRepository('App:Info');
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
         if (null !== $info) {
-            return $this->entityManager->getRepository('AppBundle:User')->findOneBy([
+            return $this->entityManager->getRepository('App:User')->findOneBy([
                 'info' => $info,
             ]);
         }

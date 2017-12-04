@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Controller\Old\Search;
+namespace App\Controller\Old\Search;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;

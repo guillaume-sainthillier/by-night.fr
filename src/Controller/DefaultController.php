@@ -1,11 +1,11 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace App\Controller;
 
-use AppBundle\App\CityManager;
-use AppBundle\Form\Type\CityAutocompleteType;
-use AppBundle\Search\SearchAgenda;
-use AppBundle\SearchRepository\AgendaRepository;
+use App\App\CityManager;
+use App\Form\Type\CityAutocompleteType;
+use App\Search\SearchAgenda;
+use App\SearchRepository\AgendaRepository;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use AppBundle\Annotation\BrowserCache;
+use App\Annotation\BrowserCache;
 
 class DefaultController extends Controller
 {
@@ -96,7 +96,7 @@ class DefaultController extends Controller
         /**
          * @var AgendaRepository
          */
-        $repo    = $this->get(RepositoryManager::class)->getRepository('AppBundle:Agenda');
+        $repo    = $this->get(RepositoryManager::class)->getRepository('App:Agenda');
         $results = $repo->findWithSearch($search);
 
         return $paginator->paginate($results, 1, self::EVENT_PER_CATEGORY);

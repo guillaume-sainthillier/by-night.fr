@@ -259,7 +259,7 @@
             </div>
             <div class="panel-body">
                 <br/>
-                {{ render_esi(controller('AppBundle:City/Event:share', {'slug': soiree.slug, 'city': soiree.place.city.slug})) }}
+                {{ render_esi(controller('App:City/Event:share', {'slug': soiree.slug, 'city': soiree.place.city.slug})) }}
 
                 <div class="comments">
                     <h4 class="heading">

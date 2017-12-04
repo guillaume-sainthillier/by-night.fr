@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Repository;
+namespace App\Repository;
 
-use AppBundle\Entity\Agenda;
+use App\Entity\Agenda;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -18,7 +18,7 @@ class CalendrierRepository extends EntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('MAX(c.lastDate)')
-            ->from('AppBundle:Calendrier', 'c')
+            ->from('App:Calendrier', 'c')
             ->where('c.agenda = :agenda')
             ->setParameters([':agenda' => $soiree])
             ->getQuery()

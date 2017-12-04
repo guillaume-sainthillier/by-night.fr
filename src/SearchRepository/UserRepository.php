@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\SearchRepository;
+namespace App\SearchRepository;
 
 use FOS\ElasticaBundle\Repository;
 use Elastica\Query\BoolQuery;

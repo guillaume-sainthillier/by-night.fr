@@ -6,7 +6,7 @@
  * Time: 14:13.
  */
 
-namespace AppBundle\Geolocalize;
+namespace App\Geolocalize;
 
 class Boundary implements BoundaryInterface
 {

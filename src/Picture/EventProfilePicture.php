@@ -6,11 +6,11 @@
  * Time: 18:48.
  */
 
-namespace AppBundle\Picture;
+namespace App\Picture;
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
-use AppBundle\Entity\Agenda;
+use App\Entity\Agenda;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class EventProfilePicture

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -18,7 +18,7 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
  * @ORM\DiscriminatorMap({"PPL" = "City","ADM1" = "AdminZone1", "ADM2" = "AdminZone2"})
- * @ORM\Entity(repositoryClass="AppBundle\Repository\AdminZoneRepository", readOnly=true)
+ * @ORM\Entity(repositoryClass="App\Repository\AdminZoneRepository", readOnly=true)
  * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("NONE")
  */
@@ -69,7 +69,7 @@ abstract class AdminZone
 
     /**
      * @var Country
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Country", fetch="EXTRA_LAZY")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country", fetch="EXTRA_LAZY")
      * @Groups({"list_city"})
      */
     protected $country;
@@ -235,11 +235,11 @@ abstract class AdminZone
     /**
      * Set country.
      *
-     * @param \AppBundle\Entity\Country $country
+     * @param \App\Entity\Country $country
      *
      * @return AdminZone
      */
-    public function setCountry(\AppBundle\Entity\Country $country = null)
+    public function setCountry(\App\Entity\Country $country = null)
     {
         $this->country = $country;
 
@@ -249,7 +249,7 @@ abstract class AdminZone
     /**
      * Get country.
      *
-     * @return \AppBundle\Entity\Country
+     * @return \App\Entity\Country
      */
     public function getCountry()
     {

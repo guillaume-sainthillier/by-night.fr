@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Controller;
+namespace App\Controller;
 
-use AppBundle\Entity\City;
+use App\Entity\City;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -24,12 +24,12 @@ class TBNController extends Controller
      * @param string $routeName
      * @param array  $extraParams
      *
-     * @return null|object|RedirectResponse|\AppBundle\Entity\Agenda
+     * @return null|object|RedirectResponse|\App\Entity\Agenda
      */
     protected function checkEventUrl(City $city, $slug, $id, $routeName = 'tbn_agenda_details', array $extraParams = [])
     {
         $em       = $this->getDoctrine()->getManager();
-        $repoUser = $em->getRepository('AppBundle:Agenda');
+        $repoUser = $em->getRepository('App:Agenda');
 
         if (!$id) {
             $event = $repoUser->findOneBy(['slug' => $slug]);

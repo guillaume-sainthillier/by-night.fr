@@ -6,21 +6,21 @@
  * Time: 20:22.
  */
 
-namespace AppBundle\Handler;
+namespace App\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\Place;
+use App\Entity\Agenda;
+use App\Entity\Place;
 
 class EchantillonHandler
 {
     /**
-     * @var \AppBundle\Repository\AgendaRepository
+     * @var \App\Repository\AgendaRepository
      */
     private $repoAgenda;
 
     /**
-     * @var \AppBundle\Repository\PlaceRepository
+     * @var \App\Repository\PlaceRepository
      */
     private $repoPlace;
 
@@ -56,8 +56,8 @@ class EchantillonHandler
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this->repoAgenda = $em->getRepository('AppBundle:Agenda');
-        $this->repoPlace  = $em->getRepository('AppBundle:Place');
+        $this->repoAgenda = $em->getRepository('App:Agenda');
+        $this->repoPlace  = $em->getRepository('App:Place');
 
         $this->init();
     }

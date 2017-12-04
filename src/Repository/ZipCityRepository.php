@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Repository;
+namespace App\Repository;
 
-use AppBundle\Entity\ZipCity;
+use App\Entity\ZipCity;
 
 /**
  * ZipCityRepository.

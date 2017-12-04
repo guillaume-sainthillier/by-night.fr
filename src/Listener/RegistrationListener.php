@@ -6,9 +6,9 @@
  * Time: 20:06.
  */
 
-namespace AppBundle\Listener;
+namespace App\Listener;
 
-use AppBundle\Entity\User;
+use App\Entity\User;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\FOSUserEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

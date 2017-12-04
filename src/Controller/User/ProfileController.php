@@ -6,9 +6,9 @@
  * Time: 19:26.
  */
 
-namespace AppBundle\Controller\User;
+namespace App\Controller\User;
 
-use AppBundle\Entity\Calendrier;
+use App\Entity\Calendrier;
 use Doctrine\Common\Persistence\ObjectManager;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
@@ -53,7 +53,7 @@ class ProfileController extends BaseController
             $em          = $this->get(ObjectManager::class);
 
             $deleteEvents = $form->get('delete_events')->getData();
-            $events       = $this->getDoctrine()->getRepository('AppBundle:Agenda')->findBy([
+            $events       = $this->getDoctrine()->getRepository('App:Agenda')->findBy([
                 'user' => $user,
             ]);
 
@@ -77,7 +77,7 @@ class ProfileController extends BaseController
                 $em->remove($calendrier);
             }
 
-            $comments = $this->getDoctrine()->getRepository('AppBundle:Comment')->findAllByUser($user);
+            $comments = $this->getDoctrine()->getRepository('App:Comment')->findAllByUser($user);
             foreach ($comments as $comment) {
                 $em->remove($comment);
             }

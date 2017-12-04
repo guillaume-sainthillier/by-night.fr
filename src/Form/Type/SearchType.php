@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Form\Type;
+namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -93,7 +93,7 @@ class SearchType extends AbstractType
             'communes'        => [],
             'lieux'           => [],
             'types_manif'     => [],
-            'data_class'      => 'AppBundle\Search\SearchAgenda',
+            'data_class'      => 'App\Search\SearchAgenda',
             'csrf_protection' => false,
         ]);
     }

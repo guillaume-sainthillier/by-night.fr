@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Repository;
+namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr;
@@ -63,8 +63,8 @@ class PlaceRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('p.ville')
             ->addSelect('s.id')
-            ->from('AppBundle:Place', 'p')
-            ->join('AppBundle:Site', 's', Expr\Join::WITH, 'p.site = s')
+            ->from('App:Place', 'p')
+            ->join('App:Site', 's', Expr\Join::WITH, 'p.site = s')
             ->where('p.ville IS NOT NULL')
             ->groupBy('p.ville')
             ->getQuery()
@@ -76,7 +76,7 @@ class PlaceRepository extends EntityRepository
         $places = $this->_em
             ->createQueryBuilder()
             ->select('p.facebookId')
-            ->from('AppBundle:Place', 'p')
+            ->from('App:Place', 'p')
             ->where('p.facebookId IS NOT NULL')
             ->getQuery()
             ->getScalarResult();

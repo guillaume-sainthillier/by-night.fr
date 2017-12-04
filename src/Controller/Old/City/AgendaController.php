@@ -1,8 +1,8 @@
 <?php
 
-namespace AppBundle\Controller\Old\City;
+namespace App\Controller\Old\City;
 
-use AppBundle\Controller\TBNController as Controller;
+use App\Controller\TBNController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Parser;
+namespace App\Parser;
 
 use Symfony\Component\DomCrawler\Crawler as Crawler;
 

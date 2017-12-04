@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,9 +12,9 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\Groups;
-use AppBundle\Validator\Constraints\EventConstraint;
-use AppBundle\Geolocalize\GeolocalizeInterface;
-use AppBundle\Reject\Reject;
+use App\Validator\Constraints\EventConstraint;
+use App\Geolocalize\GeolocalizeInterface;
+use App\Reject\Reject;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -28,7 +28,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *   @ORM\Index(name="agenda_fb_participations", columns={"date_fin", "fb_participations", "fb_interets"})
  * })
  *
- * @ORM\Entity(repositoryClass="AppBundle\Repository\AgendaRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\AgendaRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
@@ -249,7 +249,7 @@ class Agenda implements GeolocalizeInterface
     protected $url;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -313,18 +313,18 @@ class Agenda implements GeolocalizeInterface
     protected $googleSystemPostId;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Calendrier", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      */
     protected $calendriers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Site", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Site", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
      */
     protected $site;
 
     /**
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Comment", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $commentaires;
@@ -374,7 +374,7 @@ class Agenda implements GeolocalizeInterface
     protected $source;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Place", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -1478,11 +1478,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set user.
      *
-     * @param \AppBundle\Entity\User $user
+     * @param \App\Entity\User $user
      *
      * @return Agenda
      */
-    public function setUser(\AppBundle\Entity\User $user = null)
+    public function setUser(\App\Entity\User $user = null)
     {
         $this->user = $user;
 
@@ -1492,7 +1492,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get user.
      *
-     * @return \AppBundle\Entity\User
+     * @return \App\Entity\User
      */
     public function getUser()
     {
@@ -1502,11 +1502,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Add calendrier.
      *
-     * @param \AppBundle\Entity\Calendrier $calendrier
+     * @param \App\Entity\Calendrier $calendrier
      *
      * @return Agenda
      */
-    public function addCalendrier(\AppBundle\Entity\Calendrier $calendrier)
+    public function addCalendrier(\App\Entity\Calendrier $calendrier)
     {
         $this->calendriers[] = $calendrier;
 
@@ -1516,9 +1516,9 @@ class Agenda implements GeolocalizeInterface
     /**
      * Remove calendrier.
      *
-     * @param \AppBundle\Entity\Calendrier $calendrier
+     * @param \App\Entity\Calendrier $calendrier
      */
-    public function removeCalendrier(\AppBundle\Entity\Calendrier $calendrier)
+    public function removeCalendrier(\App\Entity\Calendrier $calendrier)
     {
         $this->calendriers->removeElement($calendrier);
     }
@@ -1536,11 +1536,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set site.
      *
-     * @param \AppBundle\Entity\Site $site
+     * @param \App\Entity\Site $site
      *
      * @return Agenda
      */
-    public function setSite(\AppBundle\Entity\Site $site)
+    public function setSite(\App\Entity\Site $site)
     {
         $this->site = $site;
 
@@ -1550,7 +1550,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get site.
      *
-     * @return \AppBundle\Entity\Site
+     * @return \App\Entity\Site
      */
     public function getSite()
     {
@@ -1560,11 +1560,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Add commentaire.
      *
-     * @param \AppBundle\Entity\Comment $commentaire
+     * @param \App\Entity\Comment $commentaire
      *
      * @return Agenda
      */
-    public function addCommentaire(\AppBundle\Entity\Comment $commentaire)
+    public function addCommentaire(\App\Entity\Comment $commentaire)
     {
         $this->commentaires[] = $commentaire;
 
@@ -1574,9 +1574,9 @@ class Agenda implements GeolocalizeInterface
     /**
      * Remove commentaire.
      *
-     * @param \AppBundle\Entity\Comment $commentaire
+     * @param \App\Entity\Comment $commentaire
      */
-    public function removeCommentaire(\AppBundle\Entity\Comment $commentaire)
+    public function removeCommentaire(\App\Entity\Comment $commentaire)
     {
         $this->commentaires->removeElement($commentaire);
     }
@@ -1594,11 +1594,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set place.
      *
-     * @param \AppBundle\Entity\Place $place
+     * @param \App\Entity\Place $place
      *
      * @return Agenda
      */
-    public function setPlace(\AppBundle\Entity\Place $place = null)
+    public function setPlace(\App\Entity\Place $place = null)
     {
         $this->place = $place;
 
@@ -1608,7 +1608,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get place.
      *
-     * @return \AppBundle\Entity\Place
+     * @return \App\Entity\Place
      */
     public function getPlace()
     {
