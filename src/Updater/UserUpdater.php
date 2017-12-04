@@ -29,7 +29,7 @@ class UserUpdater extends Updater
 
     public function update()
     {
-        $repo  = $this->entityManager->getRepository('App:User');
+        $repo  = $this->entityManager->getRepository(User::class);
         $fbIds = $repo->getUserFbIds();
         $count = \count($fbIds);
 

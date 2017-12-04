@@ -27,7 +27,7 @@ class LocationCacheProvider extends CacheProvider
     public function __construct(EntityManagerInterface $em)
     {
         $this->em   = $em;
-        $this->repo = $em->getRepository('App:Location');
+        $this->repo = $em->getRepository(Location::class);
     }
 
     /**

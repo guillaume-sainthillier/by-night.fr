@@ -2,6 +2,7 @@
 
 namespace App\Controller\City;
 
+use App\Entity\Agenda;
 use App\Entity\City;
 use App\Social\FacebookAdmin;
 use App\Social\Twitter;
@@ -98,7 +99,7 @@ class WidgetsController extends Controller
         }
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('App:Agenda');
+        $repo = $em->getRepository(Agenda::class);
 
         $count   = $repo->findAllNextCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -146,7 +147,7 @@ class WidgetsController extends Controller
         $soiree = $result;
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('App:Agenda');
+        $repo = $em->getRepository(Agenda::class);
 
         $count   = $repo->findAllSimilairesCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -187,7 +188,7 @@ class WidgetsController extends Controller
         }
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('App:Agenda');
+        $repo = $em->getRepository(Agenda::class);
 
         $current = $page * self::WIDGET_ITEM_LIMIT;
         $count   = $repo->findTopSoireeCount($city);

@@ -110,7 +110,7 @@ class AgendaRepository extends EntityRepository
 
     public function findByInterval(\DateTime $from, \DateTime $to)
     {
-        $cities = $this->_em->getRepository('App:City')->findTopPopulation(50);
+        $cities = $this->_em->getRepository(City::class)->findTopPopulation(50);
         $events = [];
         foreach ($cities as $city) {
             /*

@@ -55,7 +55,7 @@ class SocialManager
     {
         if (false === $this->siteInfo) {
             $this->siteInfo = $this->entityManager
-                ->getRepository('App:SiteInfo')
+                ->getRepository(SiteInfo::class)
                 ->findOneBy([]);
         }
 

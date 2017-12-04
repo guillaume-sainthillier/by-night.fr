@@ -123,7 +123,7 @@ class EventController extends Controller
     protected function getAgendaStats(Agenda $agenda)
     {
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('App:Agenda');
+        $repo = $em->getRepository(Agenda::class);
 
         $participer = false;
         $interet    = false;
@@ -133,7 +133,7 @@ class EventController extends Controller
             /**
              * @var User
              */
-            $repoCalendrier = $em->getRepository('App:Calendrier');
+            $repoCalendrier = $em->getRepository(Calendrier::class);
             $calendrier     = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
             if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();

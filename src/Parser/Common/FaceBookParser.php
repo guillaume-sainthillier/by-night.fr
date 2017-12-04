@@ -2,6 +2,9 @@
 
 namespace App\Parser\Common;
 
+use App\Entity\Agenda;
+use App\Entity\City;
+use App\Entity\Place;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 use App\Repository\SiteRepository;
@@ -46,26 +49,26 @@ class FaceBookParser extends AgendaParser
 
     protected function getPlaces()
     {
-        $places = $this->om->getRepository('App:Place')->findAllFBIds();
+        $places = $this->om->getRepository(Place::class)->findAllFBIds();
 
         return $places;
     }
 
     protected function getUsers()
     {
-        $users = $this->om->getRepository('App:Agenda')->findAllFBOwnerIds();
+        $users = $this->om->getRepository(Agenda::class)->findAllFBOwnerIds();
 
         return $users;
     }
 
     protected function getCities()
     {
-        return $this->om->getRepository('App:City')->findAllCities();
+        return $this->om->getRepository(City::class)->findAllCities();
     }
 
     protected function getSiteLocations()
     {
-        return $this->om->getRepository('App:City')->findLocations();
+        return $this->om->getRepository(City::class)->findLocations();
     }
 
     protected function getEventsFromUsers(array $additional_users, \DateTime $now)

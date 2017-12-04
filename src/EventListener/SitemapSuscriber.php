@@ -8,6 +8,10 @@
 
 namespace App\EventListener;
 
+use App\Entity\Agenda;
+use App\Entity\Place;
+use App\Entity\Site;
+use App\Entity\User;
 use Doctrine\Common\Persistence\ObjectManager;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
@@ -79,7 +83,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerAgendaRoutes($section)
     {
-        $sites = $this->manager->getRepository('App:Site')->findAll();
+        $sites = $this->manager->getRepository(Site::class)->findAll();
 
         foreach ($sites as $site) {
             $this->addUrl($section, 'tbn_agenda_agenda', ['city' => $site->getSubdomain()]);
@@ -90,7 +94,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'exposition', 'city' => $site->getSubdomain()]);
         }
 
-        $places = $this->manager->getRepository('App:Place')->findAll();
+        $places = $this->manager->getRepository(Place::class)->findAll();
         foreach ($places as $place) {
             $this->addUrl($section, 'tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $place->getCity()->getSlug()]);
         }
@@ -107,7 +111,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerEventRoutes($section)
     {
-        $events = $this->manager->getRepository('App:Agenda')->findSiteMap();
+        $events = $this->manager->getRepository(Agenda::class)->findSiteMap();
 
         foreach ($events as $event) {
             $this->addUrl($section, 'tbn_agenda_details', [
@@ -122,7 +126,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerUserRoutes($section)
     {
-        $users = $this->manager->getRepository('App:User')->findAll();
+        $users = $this->manager->getRepository(User::class)->findAll();
 
         foreach ($users as $user) {
             $this->addUrl($section, 'tbn_user_details', [

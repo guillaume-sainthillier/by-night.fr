@@ -8,6 +8,9 @@
 
 namespace App\Handler;
 
+use App\Entity\City;
+use App\Entity\Country;
+use App\Entity\ZipCity;
 use App\Geocoder\PlaceGeocoder;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Agenda;
@@ -22,6 +25,9 @@ class DoctrineEventHandler
 {
     const BATCH_SIZE = 50;
 
+    /**
+     * @var EntityManagerInterface
+     */
     private $em;
 
     /**
@@ -72,18 +78,15 @@ class DoctrineEventHandler
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, PlaceGeocoder $geocoder)
     {
         $this->em                 = $em;
-        $this->repoAgenda         = $em->getRepository('App:Agenda');
-        $this->repoPlace          = $em->getRepository('App:Place');
-        $this->repoSite           = $em->getRepository('App:Site');
-        $this->repoCity           = $em->getRepository('App:City');
-        $this->repoZipCity        = $em->getRepository('App:ZipCity');
+        $this->repoAgenda         = $em->getRepository(Agenda::class);
+        $this->repoPlace          = $em->getRepository(Place::class);
+        $this->repoCity           = $em->getRepository(City::class);
+        $this->repoZipCity        = $em->getRepository(ZipCity::class);
         $this->handler            = $handler;
         $this->firewall           = $firewall;
         $this->echantillonHandler = $echantillonHandler;
         $this->geocoder           = $geocoder;
         $this->explorationHandler = new ExplorationHandler();
-        $this->output             = null;
-        $this->stats              = [];
     }
 
     /**
@@ -439,7 +442,7 @@ class DoctrineEventHandler
     {
         //Recherche du pays en premier lieu
         if ($place->getCountryName() && (!$place->getCountry() || $place->getCountry()->getName() !== $place->getCountryName())) {
-            $country = $this->em->getRepository('App:Country')->findByName($place->getCountryName());
+            $country = $this->em->getRepository(Country::class)->findByName($place->getCountryName());
             $place->setCountry($country);
         }
 

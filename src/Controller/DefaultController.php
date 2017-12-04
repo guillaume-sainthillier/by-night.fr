@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\App\CityManager;
+use App\Entity\Agenda;
 use App\Form\Type\CityAutocompleteType;
 use App\Search\SearchAgenda;
 use App\SearchRepository\AgendaRepository;
@@ -96,7 +97,7 @@ class DefaultController extends Controller
         /**
          * @var AgendaRepository
          */
-        $repo    = $this->get(RepositoryManager::class)->getRepository('App:Agenda');
+        $repo    = $this->get(RepositoryManager::class)->getRepository(Agenda::class);
         $results = $repo->findWithSearch($search);
 
         return $paginator->paginate($results, 1, self::EVENT_PER_CATEGORY);

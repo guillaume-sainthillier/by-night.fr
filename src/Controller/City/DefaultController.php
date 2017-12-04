@@ -2,6 +2,7 @@
 
 namespace App\Controller\City;
 
+use App\Entity\Agenda;
 use App\Entity\City;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,7 +20,7 @@ class DefaultController extends Controller
     public function indexAction(City $city)
     {
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('App:Agenda');
+        $repo = $em->getRepository(Agenda::class);
 
         $search    = (new SearchAgenda())->setDu(null);
         $topEvents = $repo->findTopSoiree($city, 1, 7);

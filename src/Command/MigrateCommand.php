@@ -2,6 +2,8 @@
 
 namespace App\Command;
 
+use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Reject\Reject;
@@ -30,8 +32,8 @@ class MigrateCommand extends AppCommand
     {
         $firewall = $this->getContainer()->get('tbn.doctrine_event_handler');
         $em       = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $places   = $em->getRepository('App:Place')->findBy(['city' => null]);
-        $france   = $em->getRepository('App:Country')->find('FR');
+        $places   = $em->getRepository(Place::class)->findBy(['city' => null]);
+        $france   = $em->getRepository(Country::class)->find('FR');
         Monitor::createProgressBar(\count($places));
 
         $migratedPlaces = [];
@@ -89,20 +91,20 @@ class MigrateCommand extends AppCommand
             'toulouse'       => 'toulouse',
         ];
 
-        $places = $em->getRepository('App:Place')->findBy(['city' => null]);
+        $places = $em->getRepository(Place::class)->findBy(['city' => null]);
         foreach ($places as $place) {
-            $newCity = $em->getRepository('App:City')->findBySlug($mapping[$place->getSite()->getSubdomain()]);
+            $newCity = $em->getRepository(City::class)->findBySlug($mapping[$place->getSite()->getSubdomain()]);
             $place->setCity($newCity)->setJunk(true);
             $em->persist($place);
         }
         $em->flush();
 
-        $users = $em->getRepository('App:User')->findBy(['city' => null]);
+        $users = $em->getRepository(User::class)->findBy(['city' => null]);
         foreach ($users as $user) {
             /**
              * @var User
              */
-            $city = $em->getRepository('App:City')->findBySlug($mapping[$user->getSite()->getSubdomain()]);
+            $city = $em->getRepository(City::class)->findBySlug($mapping[$user->getSite()->getSubdomain()]);
             $user->setCity($city);
             $em->persist($user);
         }

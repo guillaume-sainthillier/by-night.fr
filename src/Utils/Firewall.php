@@ -43,7 +43,7 @@ class Firewall
     public function __construct(ObjectManager $om, Comparator $comparator)
     {
         $this->om              = $om;
-        $this->repoExploration = $this->om->getRepository('App:Exploration');
+        $this->repoExploration = $this->om->getRepository(Exploration::class);
         $this->comparator      = $comparator;
         $this->explorations    = [];
     }

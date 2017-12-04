@@ -48,7 +48,7 @@ class CountryImporter
         /**
          * @var Country
          */
-        $country = $this->em->getRepository('App:Country')->find($id);
+        $country = $this->em->getRepository(Country::class)->find($id);
         if (!$country) {
             $country = new Country();
             $country

@@ -3,6 +3,7 @@
 namespace App\Controller\Fragments;
 
 use App\Controller\TBNController as Controller;
+use App\Entity\User;
 use App\Parser\ProgrammeTVParser;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Annotation\BrowserCache;
@@ -47,7 +48,7 @@ class WidgetsController extends Controller
         }
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('App:User');
+        $repo = $em->getRepository(User::class);
 
         $count   = $repo->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;

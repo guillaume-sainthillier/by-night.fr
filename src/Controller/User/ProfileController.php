@@ -8,7 +8,9 @@
 
 namespace App\Controller\User;
 
+use App\Entity\Agenda;
 use App\Entity\Calendrier;
+use App\Entity\Comment;
 use Doctrine\Common\Persistence\ObjectManager;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
@@ -53,7 +55,7 @@ class ProfileController extends BaseController
             $em          = $this->get(ObjectManager::class);
 
             $deleteEvents = $form->get('delete_events')->getData();
-            $events       = $this->getDoctrine()->getRepository('App:Agenda')->findBy([
+            $events       = $this->getDoctrine()->getRepository(Agenda::class)->findBy([
                 'user' => $user,
             ]);
 
@@ -77,7 +79,7 @@ class ProfileController extends BaseController
                 $em->remove($calendrier);
             }
 
-            $comments = $this->getDoctrine()->getRepository('App:Comment')->findAllByUser($user);
+            $comments = $this->getDoctrine()->getRepository(Comment::class)->findAllByUser($user);
             foreach ($comments as $comment) {
                 $em->remove($comment);
             }

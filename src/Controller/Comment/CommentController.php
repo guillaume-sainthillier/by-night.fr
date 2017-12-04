@@ -113,7 +113,7 @@ class CommentController extends Controller
      */
     protected function getCommentRepo()
     {
-        $repo = $this->getDoctrine()->getRepository('App:Comment');
+        $repo = $this->getDoctrine()->getRepository(Comment::class);
 
         return $repo;
     }

@@ -3,6 +3,7 @@
 namespace App\Controller\User;
 
 use App\Controller\TBNController as Controller;
+use App\Entity\Agenda;
 use App\Entity\User;
 use App\Repository\AgendaRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,7 +34,7 @@ class DefaultController extends Controller
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
     {
         $em       = $this->getDoctrine()->getManager();
-        $repoUser = $em->getRepository('App:User');
+        $repoUser = $em->getRepository(User::class);
 
         if (!$id) {
             $user = $repoUser->findOneBy(['username' => $username]);
@@ -67,7 +68,7 @@ class DefaultController extends Controller
         $user = $result;
 
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('App:Agenda');
+        $repo = $em->getRepository(Agenda::class);
 
         return $this->render('User/index.html.twig', [
             'user'                 => $user,
@@ -92,7 +93,7 @@ class DefaultController extends Controller
         $user = $result;
 
         $em       = $this->getDoctrine()->getManager();
-        $repo     = $em->getRepository('App:Agenda');
+        $repo     = $em->getRepository(Agenda::class);
         $str_date = $repo->getLastDateStatsUser($user);
 
         $response = $this->cacheVerif($str_date);

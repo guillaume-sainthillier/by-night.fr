@@ -79,7 +79,7 @@ class NewsManager
 
     public function getNewsDatas(\DateTime $from, \DateTime $to)
     {
-        $datas = $this->em->getRepository('App:Agenda')->findByInterval($from, $to);
+        $datas = $this->em->getRepository(Agenda::class)->findByInterval($from, $to);
 
         $participants = [];
         foreach ($datas as $site => $events) {
@@ -95,13 +95,13 @@ class NewsManager
         \arsort($participants);
         $totalPartcipants = \array_sum($participants);
 
-        $news = $this->em->getRepository('App:News')->findOneBy([
+        $news = $this->em->getRepository(News::class)->findOneBy([
             'dateDebut' => $from,
             'dateFin'   => $to,
         ]);
 
         if (!$news) {
-            $nextEdition = $this->em->getRepository('App:News')->findNextEdition();
+            $nextEdition = $this->em->getRepository(News::class)->findNextEdition();
             $news        = (new News())
                 ->setDateDebut($from)
                 ->setDateFin($to)

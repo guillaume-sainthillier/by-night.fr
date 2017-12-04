@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\City;
 use App\SearchRepository\CityRepository;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use FOS\HttpCacheBundle\Configuration\Tag;
@@ -37,7 +38,7 @@ class ApiController extends Controller
             /**
              * @var CityRepository
              */
-            $repo    = $this->get(RepositoryManager::class)->getRepository('App:City');
+            $repo    = $this->get(RepositoryManager::class)->getRepository(City::class);
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }

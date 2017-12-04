@@ -65,7 +65,7 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo             = $this->getDoctrine()->getRepository('App:City');
+        $repo             = $this->getDoctrine()->getRepository(City::class);
         $params['cities'] = $repo->findRandomNames();
         $response         = $this->render('City/footer.html.twig', $params);
 

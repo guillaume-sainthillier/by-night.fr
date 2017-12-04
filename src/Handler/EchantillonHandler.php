@@ -56,8 +56,8 @@ class EchantillonHandler
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this->repoAgenda = $em->getRepository('App:Agenda');
-        $this->repoPlace  = $em->getRepository('App:Place');
+        $this->repoAgenda = $em->getRepository(Agenda::class);
+        $this->repoPlace  = $em->getRepository(Place::class);
 
         $this->init();
     }

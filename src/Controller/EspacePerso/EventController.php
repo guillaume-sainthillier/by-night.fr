@@ -80,7 +80,7 @@ class EventController extends Controller
     public function indexAction()
     {
         $user    = $this->getUser();
-        $soirees = $this->getRepo('App:Agenda')->findAllByUser($user);
+        $soirees = $this->getDoctrine()->getRepository(Agenda::c)->findAllByUser($user);
 
         $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
 
@@ -448,7 +448,7 @@ class EventController extends Controller
         $user = $this->getUser();
 
         $em         = $this->getDoctrine()->getManager();
-        $calendrier = $em->getRepository('App:Calendrier')->findOneBy(['user' => $user, 'agenda' => $agenda]);
+        $calendrier = $em->getRepository(Calendrier::class)->findOneBy(['user' => $user, 'agenda' => $agenda]);
 
         if (null === $calendrier) {
             $calendrier = new Calendrier();
@@ -460,7 +460,7 @@ class EventController extends Controller
         $em->persist($calendrier);
         $em->flush();
 
-        $repo           = $em->getRepository('App:Agenda');
+        $repo           = $em->getRepository(Agenda::class);
         $participations = $repo->getCountTendancesParticipation($agenda);
         $interets       = $repo->getCountTendancesInterets($agenda);
 

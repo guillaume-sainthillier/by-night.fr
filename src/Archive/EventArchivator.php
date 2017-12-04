@@ -2,6 +2,7 @@
 
 namespace App\Archive;
 
+use App\Entity\Agenda;
 use App\Utils\Monitor;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\QueryBuilder;
@@ -63,7 +64,7 @@ class EventArchivator
      */
     public function archive()
     {
-        $repo      = $this->entityManager->getRepository('App:Agenda');
+        $repo      = $this->entityManager->getRepository(Agenda::class);
         $qb        = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
 

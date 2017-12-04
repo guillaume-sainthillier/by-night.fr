@@ -33,7 +33,7 @@ class EventUpdater extends Updater
             $since = new \DateTime();
         }
 
-        $repo  = $this->entityManager->getRepository('App:Agenda');
+        $repo  = $this->entityManager->getRepository(Agenda::class);
         $count = $repo->getNextEventsCount($since);
 
         $fbIds   = $repo->getNextEventsFbIds($since);

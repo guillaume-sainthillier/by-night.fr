@@ -2,6 +2,7 @@
 
 namespace App\Controller\City;
 
+use App\Entity\Agenda;
 use App\Repository\AgendaRepository;
 use App\Controller\TBNController as Controller;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
@@ -104,14 +105,14 @@ class AgendaController extends Controller
 
         //Récupération du repo des événéments
         $em   = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('App:Agenda');
+        $repo = $em->getRepository(Agenda::class);
 
         //Recherche des événements
         $search = new SearchAgenda();
         $search->setCity($city);
         $place = null;
         if (null !== $slug) {
-            $place = $em->getRepository('App:Place')->findOneBy(['slug' => $slug]);
+            $place = $em->getRepository(Place::class)->findOneBy(['slug' => $slug]);
             if (!$place) {
                 return new RedirectResponse($this->generateUrl('tbn_agenda_agenda', ['city' => $city->getSlug()]));
             }
@@ -141,7 +142,7 @@ class AgendaController extends Controller
 
         //Recherche ElasticSearch
         $repositoryManager = $this->get(RepositoryManager::class);
-        $repository        = $repositoryManager->getRepository('App:Agenda');
+        $repository        = $repositoryManager->getRepository(Agenda::class);
         $results           = $repository->findWithSearch($search);
 
         $paginator        = $this->get(PaginatorInterface::class);

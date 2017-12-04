@@ -3,6 +3,7 @@
 namespace App\Security\Core\User;
 
 use App\App\CityManager;
+use App\Entity\Info;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
@@ -87,11 +88,11 @@ class FOSUBUserProvider extends BaseClass
 
     protected function findUserBySocialInfo(UserResponseInterface $cle, $valeur)
     {
-        $repo = $this->entityManager->getRepository('App:Info');
+        $repo = $this->entityManager->getRepository(Info::class);
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
         if (null !== $info) {
-            return $this->entityManager->getRepository('App:User')->findOneBy([
+            return $this->entityManager->getRepository(User::class)->findOneBy([
                 'info' => $info,
             ]);
         }

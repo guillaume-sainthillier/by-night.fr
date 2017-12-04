@@ -49,7 +49,7 @@ class CityConverter implements ParamConverterInterface
         } else {
             $entity = $this
                 ->em
-                ->getRepository('App:City')
+                ->getRepository(City::class)
                 ->findBySlug($city);
         }
 
