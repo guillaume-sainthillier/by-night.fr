@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\AppBundle\Utils;
+namespace App\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use AppBundle\Entity\Agenda;
-use AppBundle\Entity\Exploration;
-use AppBundle\Reject\Reject;
-use AppBundle\Utils\Firewall;
+use App\Entity\Agenda;
+use App\Entity\Exploration;
+use App\Reject\Reject;
+use App\Utils\Firewall;
 
 class FirewallTest extends KernelTestCase
 {
@@ -19,7 +19,7 @@ class FirewallTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->firewall = static::$kernel->getContainer()->get('tbn.firewall');
+        $this->firewall = static::$kernel->getContainer()->get(Firewall::class);
     }
 
     public function testExplorations()

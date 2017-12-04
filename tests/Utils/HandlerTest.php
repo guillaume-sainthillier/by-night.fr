@@ -1,24 +1,25 @@
 <?php
 
-namespace Tests\AppBundle\Utils;
+namespace App\Tests\Utils;
 
-use AppBundle\Entity\City;
-use AppBundle\Entity\ZipCity;
+use App\Entity\City;
+use App\Entity\ZipCity;
+use App\Handler\EventHandler;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use AppBundle\Entity\Place;
-use AppBundle\Entity\Agenda;
+use App\Entity\Place;
+use App\Entity\Agenda;
 
 class HandlerTest extends KernelTestCase
 {
     /**
-     * @var \AppBundle\Handler\EventHandler
+     * @var \App\Handler\EventHandler
      */
     protected $handler;
 
     public function setUp()
     {
         self::bootKernel();
-        $this->handler = static::$kernel->getContainer()->get('tbn.event_handler');
+        $this->handler = static::$kernel->getContainer()->get(EventHandler::class);
     }
 
     public function testHandleEvent()

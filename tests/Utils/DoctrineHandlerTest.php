@@ -1,25 +1,26 @@
 <?php
 
-namespace Tests\AppBundle\Utils;
+namespace App\Tests\Utils;
 
-use AppBundle\Entity\City;
-use AppBundle\Entity\Country;
-use AppBundle\Entity\ZipCity;
-use AppBundle\Reject\Reject;
+use App\Entity\City;
+use App\Entity\Country;
+use App\Entity\ZipCity;
+use App\Handler\DoctrineEventHandler;
+use App\Reject\Reject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use AppBundle\Entity\Place;
+use App\Entity\Place;
 
 class DoctrineHandlerTest extends KernelTestCase
 {
     /**
-     * @var \AppBundle\Handler\DoctrineEventHandler
+     * @var \App\Handler\DoctrineEventHandler
      */
     protected $doctrineHandler;
 
     public function setUp()
     {
         self::bootKernel();
-        $this->doctrineHandler = static::$kernel->getContainer()->get('tbn.doctrine_event_handler');
+        $this->doctrineHandler = static::$kernel->getContainer()->get(DoctrineEventHandler::class);
     }
 
     public function testGuessEventLocation()

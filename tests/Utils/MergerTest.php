@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\AppBundle\Utils;
+namespace App\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use AppBundle\Entity\Place;
-use AppBundle\Entity\Agenda;
-use AppBundle\Utils\Merger;
+use App\Entity\Place;
+use App\Entity\Agenda;
+use App\Utils\Merger;
 
 class MergerTest extends KernelTestCase
 {
@@ -18,7 +18,7 @@ class MergerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->merger = static::$kernel->getContainer()->get('tbn.merger');
+        $this->merger = static::$kernel->getContainer()->get(Merger::class);
     }
 
     public function testPlaceMerge()

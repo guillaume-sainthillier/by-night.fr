@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests\AppBundle\Utils;
+namespace App\Tests\Utils;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use AppBundle\Parser\Common\SoonNightParser;
+use App\Parser\Common\SoonNightParser;
 
 class SoonNightParserTest extends KernelTestCase
 {
@@ -16,7 +16,7 @@ class SoonNightParserTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->parser = static::$kernel->getContainer()->get('tbn.soonnight_parser');
+        $this->parser = static::$kernel->getContainer()->get(SoonNightParser::class);
     }
 
     public function testNormalize()
