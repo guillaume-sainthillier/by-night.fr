@@ -11,7 +11,6 @@ namespace App\Controller\User;
 use App\Entity\Agenda;
 use App\Entity\Calendrier;
 use App\Entity\Comment;
-use Doctrine\Common\Persistence\ObjectManager;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseUserEvent;
