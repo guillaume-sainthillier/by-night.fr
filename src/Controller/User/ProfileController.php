@@ -23,7 +23,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use FOS\UserBundle\Controller\ProfileController as BaseController;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use FOS\UserBundle\Form\Factory\FactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
