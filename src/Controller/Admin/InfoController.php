@@ -28,7 +28,7 @@ class InfoController extends Controller
         }
 
         return $this->redirectToRoute('tbn_administration_info_edit', [
-            'id' => $info->getId()
+            'id' => $info->getId(),
         ]);
     }
 

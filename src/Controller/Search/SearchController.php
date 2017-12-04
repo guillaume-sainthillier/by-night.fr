@@ -6,14 +6,11 @@ use App\SearchRepository\AgendaRepository;
 use App\SearchRepository\UserRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Pagerfanta\Pagerfanta;
 use App\Search\SearchAgenda;
-use Symfony\Component\Routing\RouterInterface;
 
 class SearchController extends Controller
 {

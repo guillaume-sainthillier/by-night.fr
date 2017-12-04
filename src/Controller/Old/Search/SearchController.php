@@ -3,11 +3,8 @@
 namespace App\Controller\Old\Search;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\RouterInterface;
 
 class SearchController extends Controller
 {
@@ -19,7 +16,6 @@ class SearchController extends Controller
         $params = [
             'type' => 'evenements',
         ];
-
 
         $term = $request->get('q');
         $page = $request->get('page');

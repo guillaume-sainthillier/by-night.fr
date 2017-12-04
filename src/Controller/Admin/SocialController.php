@@ -24,7 +24,7 @@ class SocialController extends Controller
         $session->set('connect_site', true);
 
         $url = $this->generateUrl('hwi_oauth_service_redirect', [
-            'service' => SocialProvider::FACEBOOK === $service ? SocialProvider::FACEBOOK_ADMIN : $service
+            'service' => SocialProvider::FACEBOOK === $service ? SocialProvider::FACEBOOK_ADMIN : $service,
         ]);
 
         return $this->redirect($url);
