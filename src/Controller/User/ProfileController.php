@@ -108,8 +108,7 @@ class ProfileController extends BaseController
             throw new AccessDeniedException('This user does not have access to this section.');
         }
 
-        /** @var $dispatcher EventDispatcherInterface */
-        $dispatcher = $this->get(EventDispatcherInterface::class);
+        $dispatcher = $this->get('event_dispatcher');
 
         $event = new GetResponseUserEvent($user, $request);
         $dispatcher->dispatch(FOSUserEvents::PROFILE_EDIT_INITIALIZE, $event);

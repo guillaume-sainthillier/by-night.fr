@@ -118,17 +118,6 @@ services:
             $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
             $updateFbIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'
 
-#    app.consumer.add_event:
-#        class: AppBundle\Consumer\AddEventConsumer
-#        arguments:
-#            - "@app.event_factory"
-#            - "@tbn.doctrine_event_handler"
-#
-#    app.consumer.update_fb_id:
-#        class: AppBundle\Consumer\UpdateFBId
-#        arguments:
-#            - "@tbn.doctrine_event_handler"
-#
     AppBundle\Geocoder\PlaceGeocoder:
         arguments:
             $cache: '@array_cache'
