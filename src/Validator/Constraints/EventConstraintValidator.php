@@ -8,6 +8,7 @@
 
 namespace App\Validator\Constraints;
 
+use App\Entity\Agenda;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -33,14 +34,15 @@ class EventConstraintValidator extends ConstraintValidator
         $this->checkIfUpdate = $checkIfUpdate;
     }
 
+    /**
+     * @param Agenda $event
+     * @param Constraint $constraint
+     */
     public function validate($event, Constraint $constraint)
     {
-        /**
-         * @var Reject
-         */
         $reject = $event->getReject();
 
-        /*
+        /**
          * @var EventConstraint $constraint
          */
         if (!$reject || $reject->isValid()) {
