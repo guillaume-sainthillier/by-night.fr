@@ -81,7 +81,7 @@ class EventController extends Controller
     public function indexAction()
     {
         $user    = $this->getUser();
-        $soirees = $this->getDoctrine()->getRepository(Agenda::c)->findAllByUser($user);
+        $soirees = $this->getDoctrine()->getRepository(Agenda::class)->findAllByUser($user);
 
         $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
 
