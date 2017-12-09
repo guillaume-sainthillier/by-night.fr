@@ -12,7 +12,6 @@ use App\Entity\Agenda;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use App\Reject\Reject;
 
 class EventConstraintValidator extends ConstraintValidator
 {
@@ -35,14 +34,14 @@ class EventConstraintValidator extends ConstraintValidator
     }
 
     /**
-     * @param Agenda $event
+     * @param Agenda     $event
      * @param Constraint $constraint
      */
     public function validate($event, Constraint $constraint)
     {
         $reject = $event->getReject();
 
-        /**
+        /*
          * @var EventConstraint $constraint
          */
         if (!$reject || $reject->isValid()) {
