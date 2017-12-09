@@ -51,13 +51,14 @@ RUN docker-php-ext-install gd exif
 
 COPY php.ini /usr/local/etc/php/php.ini
 
-# NPM and GRUNT
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+# NPM, Yarn and Grunt
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
-#RUN ln -s /usr/bin/nodejs /usr/bin/node
-RUN npm install -g bower
-RUN npm install -g grunt-cli
-#RUN npm install grunt --save-dev
+
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get install yarn
+RUN yarn global add grunt-cli
 
 # Permission fix
 RUN chmod 777 /var/www

@@ -1,6 +1,5 @@
 module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
-    var YAML = require('yamljs');
 
     // Configuration du projet
     grunt.initConfig({
@@ -106,11 +105,11 @@ module.exports = function (grunt) {
             },
             mainCss: {
                 src: [
-                    '<%= pkg.baseVendor %>/jquery.cookiebar/jquery.cookiebar.css',
+                    '<%= pkg.baseVendor %>/jquery.cookiebar/cookieBar.min.css',
                     '<%= pkg.baseVendor %>/bootstrap/dist/css/bootstrap.min.css',
+                    '<%= pkg.baseVendor %>/bootstrap-material-design/dist/css/ripples.min.css',
                     '<%= pkg.baseVendor %>/font-awesome/css/font-awesome.min.css',
-                    '<%= pkg.baseVendor %>/bootstrap-material-design/dist/css/ripples.css',
-                    '<%= pkg.baseVendor %>/fancybox/dist/jquery.fancybox.css',
+                    '<%= pkg.baseVendor %>/fancybox/dist/css/jquery.fancybox.css',
                     '<%= pkg.baseCss %>/components/typeahead.css',
                     '<%= pkg.baseCss %>/material/theme.blue.css',
                     '<%= pkg.baseCss %>/components/social_icons.css',
@@ -137,7 +136,7 @@ module.exports = function (grunt) {
             },
             agendaCss: {
                 src: [
-                    '<%= pkg.baseVendor %>/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
+                    '<%= pkg.baseVendor %>/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css',
                     '<%= pkg.baseVendor %>/bootstrap-select/dist/css/bootstrap-select.min.css',
                     '<%= pkg.baseVendor %>/dropdown.js/jquery.dropdown.css',
                     '<%= pkg.baseCss %>/components/menu_droit.css',
@@ -179,7 +178,7 @@ module.exports = function (grunt) {
             },
             espacePersoListeCss: {
                 src: [
-                    '<%= pkg.baseVendor %>/bootstrap-datepicker/dist/css/bootstrap-datepicker3.css',
+                    '<%= pkg.baseVendor %>/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css',
                     '<%= pkg.baseVendor %>/summernote/dist/summernote.css',
                     '<%= pkg.baseCss %>/pages/user_event_crud.css',
                     '<%= pkg.baseCss %>/components/social_login.css'
@@ -212,7 +211,7 @@ module.exports = function (grunt) {
             }
         },
 
-        //Watch des fichiers js / css
+        //gr des fichiers js / css
         watch: {
             css: {
                 files: ['<%= pkg.baseCss %>/*.css'],
@@ -230,13 +229,14 @@ module.exports = function (grunt) {
                 files: {
                     '<%= pkg.baseDist %>/main/js/scripts.min.js': [
                         '<%= pkg.baseVendor %>/jquery/dist/jquery.min.js',
+                        '<%= pkg.baseVendor %>/popper.js/dist/umd/popper.min.js',
                         '<%= pkg.baseVendor %>/bootstrap/dist/js/bootstrap.min.js',
-                        '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/ripples.js',
-                        '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/material.js',
-                        '<%= pkg.baseVendor %>/jquery.cookiebar/jquery.cookiebar.js',
+                        '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/ripples.min.js',
+                        '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/material.min.js',
+                        '<%= pkg.baseVendor %>/jquery.cookiebar/jquery.cookieBar.min.js',
                         '<%= pkg.baseVendor %>/jquery.scrollTo/jquery.scrollTo.min.js',
-                        '<%= pkg.baseVendor %>/jquery-unveil/jquery.unveil.min.js',
-                        '<%= pkg.baseVendor %>/fancybox/dist/jquery.fancybox.js',
+                        '<%= pkg.baseVendor %>/jquery-unveil/jquery.unveil.js',
+                        '<%= pkg.baseVendor %>/fancybox/dist/js/jquery.fancybox.pack.js',
                         '<%= pkg.baseVendor %>/typeahead.js/dist/bloodhound.min.js',
                         '<%= pkg.baseVendor %>/typeahead.js/dist/typeahead.bundle.min.js',
                         '<%= pkg.baseVendor %>/typeahead-addresspicker/dist/typeahead-addresspicker.min.js',
@@ -267,7 +267,7 @@ module.exports = function (grunt) {
                         '<%= pkg.baseVendor %>/bootstrap-datepicker/dist/js/bootstrap-datepicker.js',
                         '<%= pkg.baseVendor %>/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js',
                         '<%= pkg.baseVendor %>/summernote/dist/summernote.js',
-                        '<%= pkg.baseJs %>/i18n/summernote/summernote-fr-FR.js',
+                        '<%= pkg.baseJs %>/summernote/dist/lang/summernote-fr-FR.js',
                         '<%= pkg.baseJs %>/components/SocialLogin.js',
                         '<%= pkg.baseJs %>/components/UserEventHandler.js'
                     ],
@@ -430,14 +430,14 @@ module.exports = function (grunt) {
                 'mapping_assets': mapping
             }
         };
+        var YAML = require('yamljs');
         var content = YAML.stringify(config).replace(/web\//g, "");
         grunt.file.write('app/config/mapping_assets.yaml', content);
     });
 
-    grunt.registerTask('default', ['css', 'js', 'symlink', 'cache']);
+    grunt.registerTask('default', ['sprite', 'css', 'js', 'symlink', 'cache']);
     grunt.registerTask('css', ['concat', 'cssmin']);
-    grunt.registerTask('cache', ['clean', 'cacheBust', 'merge-json', 'convert_mapping']);
     grunt.registerTask('js', ['uglify']);
+    grunt.registerTask('cache', ['clean', 'cacheBust', 'merge-json', 'convert_mapping']);
     grunt.registerTask('assets:install', ['symlink']);
-    grunt.registerTask('deploy', ['sprite', 'default']);
 };
