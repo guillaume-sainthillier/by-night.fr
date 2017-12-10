@@ -2,22 +2,22 @@
 
 namespace App\Tests\Utils;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\ContainerTestCase;
 use App\Entity\Agenda;
 use App\Entity\Exploration;
 use App\Reject\Reject;
 use App\Utils\Firewall;
 
-class FirewallTest extends KernelTestCase
+class FirewallTest extends ContainerTestCase
 {
     /**
      * @var Firewall
      */
     protected $firewall;
 
-    public function setUp()
+    protected function setUp()
     {
-        self::bootKernel();
+        parent::setUp();
 
         $this->firewall = static::$kernel->getContainer()->get(Firewall::class);
     }

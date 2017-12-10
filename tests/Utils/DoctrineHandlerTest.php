@@ -7,19 +7,21 @@ use App\Entity\Country;
 use App\Entity\ZipCity;
 use App\Handler\DoctrineEventHandler;
 use App\Reject\Reject;
+use App\Tests\ContainerTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\Entity\Place;
 
-class DoctrineHandlerTest extends KernelTestCase
+class DoctrineHandlerTest extends ContainerTestCase
 {
     /**
      * @var \App\Handler\DoctrineEventHandler
      */
     protected $doctrineHandler;
 
-    public function setUp()
+    protected function setUp()
     {
-        self::bootKernel();
+        parent::setUp();
+
         $this->doctrineHandler = static::$kernel->getContainer()->get(DoctrineEventHandler::class);
     }
 

@@ -49,6 +49,9 @@ RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
 # Install GD + EXIF
 RUN docker-php-ext-install gd exif
 
+#Zip (PhpUnit)
+RUN docker-php-ext-install zip
+
 COPY php.ini /usr/local/etc/php/php.ini
 
 # NPM, Yarn and Grunt

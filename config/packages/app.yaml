@@ -1,0 +1,23 @@
+parameters:
+    application_version: '2.0.0'
+    facebook_id_page: '205292952998805'
+    facebook_id_app: '%env(FACEBOOK_API_ID)%'
+    google_id_page: '113344346320536654292'
+    google_map_key: '%env(GOOGLE_MAP_API_SECRET)%'
+    twitter_id_page: 'By__Night'
+    app_public_root: '%kernel.project_dir%/public/'
+    class.guzzle.response: Guzzle\Http\Message\Response
+    class.guzzle.client: Guzzle\Http\Client
+    class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
+    twitter.baseurl: https://api.twitter.com/1.1
+    url_soonnight_tlse: http://www.soonnight.com/midi-pyrenees/sortir-midi-pyrenees,4.html?id_dept=15
+    url_soonnight_paris: http://www.soonnight.com/paris/sortir-paris,4.html
+    url_soonnight_marseille: http://www.soonnight.com/paca/sortir-paca,4.html?id_dept=40
+    url_soonnight_lyon: http://www.soonnight.com/rhone-alpes/sortir-rhone-alpes,4.html?id_dept=21
+    url_soonnight_brest: http://www.soonnight.com/bretagne/sortir-bretagne,4.html?id_dept=85
+    url_soonnight_nantes: http://www.soonnight.com/pays-de-la-loire/sortir-pays-de-la-loire,4.html?id_dept=89
+    url_soonnight_lille: http://www.soonnight.com/nord-pas-de-calais/sortir-nord-pas-de-calais,4.html?id_dept=32
+    url_soonnight_montpellier: http://www.soonnight.com/languedoc-roussillon/sortir-languedoc-roussillon,4.html?id_dept=26
+    url_soonnight_nice: http://www.soonnight.com/paca/sortir-paca,4.html?id_dept=11
+    url_soonnight_bordeaux: http://www.soonnight.com/aquitaine/sortir-aquitaine,4.html?id_dept=36
+    url_opendata_toulouse: https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true

@@ -1,0 +1,18 @@
+framework:
+    secret: '%env(APP_SECRET)%'
+    default_locale: fr
+    csrf_protection: ~
+    http_method_override: true
+
+    session:
+        handler_id: ~
+        save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"
+
+    assets:
+        base_url: '%env(APP_ASSET_URL)%'
+        packages:
+            asset: ~
+    esi: { enabled: true }
+    fragments: ~
+    php_errors:
+        log: true

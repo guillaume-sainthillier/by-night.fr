@@ -2,21 +2,21 @@
 
 namespace App\Tests\Utils;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\ContainerTestCase;
 use App\Entity\Place;
 use App\Entity\Agenda;
 use App\Utils\Merger;
 
-class MergerTest extends KernelTestCase
+class MergerTest extends ContainerTestCase
 {
     /**
      * @var Merger
      */
     protected $merger;
 
-    public function setUp()
+    protected function setUp()
     {
-        self::bootKernel();
+        parent::setUp();
 
         $this->merger = static::$kernel->getContainer()->get(Merger::class);
     }

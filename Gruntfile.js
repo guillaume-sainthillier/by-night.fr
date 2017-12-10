@@ -431,8 +431,8 @@ module.exports = function (grunt) {
             }
         };
         var YAML = require('yamljs');
-        var content = YAML.stringify(config).replace(/web\//g, "");
-        grunt.file.write('app/config/mapping_assets.yaml', content);
+        var content = YAML.stringify(config).replace(/public\//g, "");
+        grunt.file.write('config/packages/prod/mapping_assets.yaml', content);
     });
 
     grunt.registerTask('default', ['sprite', 'css', 'js', 'symlink', 'cache']);

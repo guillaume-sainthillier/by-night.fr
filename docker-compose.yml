@@ -53,15 +53,6 @@ services:
             - db
         volumes:
              - ${SYMFONY_APP_PATH}:/var/www/symfony
-        environment:
-            - MYSQL_ROOT_PASSWORD
-            - MYSQL_DATABASE
-            - MYSQL_USER
-            - MYSQL_PASSWORD
-            - APP_ENV
-            - APP_DEBUG
-            - SYMFONY_ALLOW_APPDEV
-            - SYMFONY_ALLOW_CONFIG
         restart: always
         networks:
             - backend

@@ -8,7 +8,7 @@
     "baseCss": "assets/css",
     "baseImg": "assets/img",
     "baseFont": "assets/fonts",
-    "baseDist": "web/prod",
+    "baseDist": "public/prod",
     "dependencies": {
         "bootstrap": "^3.3.7",
         "bootstrap-datepicker": "^1.7.1",

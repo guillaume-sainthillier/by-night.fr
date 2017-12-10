@@ -2,19 +2,19 @@
 
 namespace App\Tests\Utils;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\ContainerTestCase;
 use App\Parser\Common\SoonNightParser;
 
-class SoonNightParserTest extends KernelTestCase
+class SoonNightParserTest extends ContainerTestCase
 {
     /**
      * @var SoonNightParser
      */
     protected $parser;
 
-    public function setUp()
+    protected function setUp()
     {
-        self::bootKernel();
+        parent::setUp();
 
         $this->parser = static::$kernel->getContainer()->get(SoonNightParser::class);
     }

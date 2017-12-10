@@ -39,7 +39,6 @@ class SocialProvider
     /**
      * @param $name
      * @param string $default_facebook_name
-     *
      * @return Social
      */
     public function getSocial($name, $default_facebook_name = self::FACEBOOK): Social

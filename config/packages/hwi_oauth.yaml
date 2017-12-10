@@ -1,0 +1,84 @@
+hwi_oauth:
+    #this is my custom user provider, created from FOSUBUserProvider - will manage the 
+    #automatic user registration on your site, with data from the provider (facebook. google, etc.)
+    #and also, the connecting part (get the token and the user_id)
+    connect:
+        account_connector: App\Security\Core\User\FOSUBUserProvider
+        confirmation: false
+    # name of the firewall in which this bundle is active, this setting MUST be set
+    firewall_names: [main]
+    http_client:
+        timeout:       10 # Time in seconds, after library will shutdown request, by default: 5
+        verify_peer:   false # Setting allowing you to turn off SSL verification, by default: true
+        ignore_errors: false # Setting allowing you to easier debug request errors, by default: true
+        max_redirects: 1 # Number of HTTP redirection request after which library will shutdown request,
+                         # by default: 5
+    fosub:
+        username_iterations: 30
+        properties:
+            # these properties will be used/redefined later in the custom FOSUBUserProvider service.
+            facebook: facebook_id
+            google:   google_id
+            twitter:  twitter_id
+    resource_owners:
+        twitter:
+            type:               twitter
+            client_id:          '%env(TWITTER_API_ID)%'
+            client_secret:      '%env(TWITTER_API_SECRET)%'
+        facebook_admin:
+            type:                facebook
+            client_id:           '%env(FACEBOOK_API_ID)%'
+            client_secret:       '%env(FACEBOOK_API_SECRET)%'
+            scope:               email, publish_actions, manage_pages, publish_pages
+            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
+            paths:
+                email:          email
+                profilepicture: picture.data.url
+            options:
+                display: popup #dialog is optimized for popup window
+        facebook_events:
+            type:                facebook
+            client_id:           '%env(FACEBOOK_API_ID)%'
+            client_secret:       '%env(FACEBOOK_API_SECRET)%'
+            scope:               email, user_posts
+            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
+            paths:
+                email:          email
+                profilepicture: picture.data.url
+            options:
+                display: popup #dialog is optimized for popup window
+        facebook_list_events:
+            type:                facebook
+            client_id:           '%env(FACEBOOK_API_ID)%'
+            client_secret:       '%env(FACEBOOK_API_SECRET)%'
+            scope:               email, user_events
+            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
+            paths:
+                email:          email
+                profilepicture: picture.data.url
+            options:
+                display: popup #dialog is optimized for popup window
+        facebook:
+            type:                facebook
+            client_id:           '%env(FACEBOOK_API_ID)%'
+            client_secret:       '%env(FACEBOOK_API_SECRET)%'
+            scope:               email, rsvp_event
+            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
+            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
+            paths:
+                email:          email
+                profilepicture: picture.data.url
+            options:
+                display: popup #dialog is optimized for popup window
+        google:
+            type:                google
+            client_id:           '%env(GOOGLE_API_ID)%'
+            client_secret:       '%env(GOOGLE_API_SECRET)%'
+            scope:               https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.stream.read https://www.googleapis.com/auth/plus.stream.write
+            options:
+                access_type:         offline
+                approval_prompt:     auto
+                display:             popup
+                login_hint:          email address

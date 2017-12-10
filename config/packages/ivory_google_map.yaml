@@ -1,0 +1,16 @@
+ivory_google_map:
+    place_search:
+        client: httplug.client.default
+        message_factory: httplug.message_factory.default
+        format: json
+        api_key: '%env(GOOGLE_MAP_API_SECRET)%'
+    place_detail:
+        client: httplug.client.default
+        message_factory: httplug.message_factory.default
+        format: json
+        api_key: '%env(GOOGLE_MAP_API_SECRET)%'
+    geocoder:        
+        client: httplug.client.default
+        message_factory: httplug.message_factory.default
+        format: json
+        api_key: '%env(GOOGLE_MAP_API_SECRET)%'

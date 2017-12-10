@@ -36,7 +36,7 @@ class CommonController extends TBNController
      * @Route("/header/{city}", name="tbn_private_header_site")
      * @Route("/header", name="tbn_private_header")
      */
-    public function headerAction(City $city = null)
+    public function header(City $city = null)
     {
         $response = $this->render('menu.html.twig', [
             'city' => $city,
@@ -49,7 +49,7 @@ class CommonController extends TBNController
             ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
-    public function footerAction()
+    public function footer()
     {
         $cache  = $this->get('memory_cache');
         $params = [];

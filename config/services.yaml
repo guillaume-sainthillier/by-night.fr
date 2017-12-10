@@ -1,0 +1,423 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: 'fr'
+
+services:
+    #Legacy
+#    templating: '@twig'
+    Vich\UploaderBundle\Templating\Helper\UploaderHelper: '@vich_uploader.templating.helper.uploader_helper'
+    Liip\ImagineBundle\Imagine\Cache\CacheManager: '@liip_imagine.cache.manager'
+    Ivory\GoogleMap\Service\Place\Search\PlaceSearchService: "@ivory.google_map.place_search"
+    Ivory\GoogleMap\Service\Place\Detail\PlaceDetailService: "@ivory.google_map.place_detail"
+    Ivory\GoogleMap\Service\Geocoder\GeocoderService: "@ivory.google_map.geocoder"
+    FOS\HttpCacheBundle\CacheManager: "@fos_http_cache.cache_manager"
+    FOS\ElasticaBundle\Index\IndexManager: "@fos_elastica.index_manager"
+    FOS\HttpCacheBundle\Http\SymfonyResponseTagger: "@fos_http_cache.http.symfony_response_tagger"
+    Symfony\Bridge\Twig\Extension\AssetExtension: "@twig.extension.assets"
+    HWI\Bundle\OAuthBundle\Security\OAuthUtils: "@hwi_oauth.security.oauth_utils"
+    FOS\UserBundle\Model\UserManagerInterface: "@fos_user.user_manager.default"
+    FOS\UserBundle\Form\Factory\FactoryInterface: "@fos_user.resetting.form.factory"
+    FOS\ElasticaBundle\Doctrine\RepositoryManager: "@fos_elastica.manager.orm"
+
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Annotation,Entity,Exception,Migrations,Geolocalize,Reject,Repository,Search}'
+
+    App\Kernel:
+        autowire: false
+        autoconfigure: false
+
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Request\ParamConverter\:
+        resource: '../src/Request/ParamConverter'
+        tags:
+            - { name: request.param_converter, priority: 0 }
+
+    App\Handler\EventHandler:
+        public: true #For PHPUnit
+        arguments:
+            $tempPath: "%kernel.project_dir%/web/uploads/temp"
+
+    App\SearchRepository\AgendaRepository:
+        arguments:
+            $finder: "@fos_elastica.finder.event.event"
+
+    App\SearchRepository\CityRepository:
+        arguments:
+            $finder: "@fos_elastica.finder.city.city"
+
+    App\SearchRepository\UserRepository:
+        arguments:
+            $finder: "@fos_elastica.finder.user.user"
+
+    App\Invalidator\EventInvalidator:
+        arguments:
+            $debug: "%kernel.debug"
+
+    App\Handler\UserHandler:
+        public: true #For PHPUnit
+        arguments:
+            $tempPath: "%kernel.project_dir%/web/uploads/temp"
+
+    App\App\SocialManager:
+        arguments:
+            $facebookIdPage: "%facebook_id_page%"
+            $twitterIdPage: "%twitter_id_page%"
+            $googleIdPage: "%google_id_page%"
+
+    App\Social\FacebookAdmin:
+        arguments:
+            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
+
+    App\Social\Twitter:
+        arguments:
+            $config: { id: "%env(TWITTER_API_ID)%", secret: "%env(TWITTER_API_SECRET)%"}
+
+    App\Social\Google:
+        arguments:
+            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(TWITTER_API_SECRET)%"}
+
+    App\Social\Facebook:
+        arguments:
+            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
+
+    App\Social\FacebookEvents:
+        arguments:
+            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
+
+    App\Social\FacebookListEvents:
+        arguments:
+            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
+
+    App\Utils\Comparator:
+        arguments:
+            $cache: '@comparator_cache'
+
+    App\Handler\AuthenticationHandler:
+        arguments:
+            $session: '@session'
+
+    App\Archive\EventArchivator:
+        arguments:
+            $objectPersister: "@fos_elastica.object_persister.event.event"
+
+    App\Command\FetchCommand:
+        arguments:
+            $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
+            $updateFbIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'
+
+    App\Geocoder\PlaceGeocoder:
+        arguments:
+            $cache: '@array_cache'
+
+    App\Importer\CountryImporter:
+        arguments:
+            $dataDir: "%kernel.project_dir%/app/datas"
+
+#    app.location_cache_provider:
+#        class:     App\Cache\LocationCacheProvider
+#        arguments:
+#            - "@doctrine.orm.entity_manager"
+#
+#    app.sitemap.sitemap_subscriber:
+#        class:     App\EventListener\SitemapSuscriber
+#        arguments:
+#            - "@router"
+#            - "@doctrine.orm.entity_manager"
+#        tags:
+#            - { name: "kernel.event_subscriber", priority: 100 }
+#
+#    app.registration_listener:
+#        class: App\Listener\RegistrationListener
+#        arguments: []
+#        tags:
+#            - { name: kernel.event_subscriber }
+#
+#    tbn.programmetv:
+#        class: App\Parser\ProgrammeTVParser
+#
+#    tbn.event_seo:
+#        class: App\SEO\EventSEO
+#
+#    app.city_converter:
+#        class: App\Request\ParamConverter\CityConverter
+#        tags:
+#            - { name: request.param_converter, priority: 0, converter: city_converter }
+#        arguments:
+#            - "@doctrine"
+#            - "@tbn.city_manager"
+
+    Monolog\Formatter\LineFormatter:
+        calls:
+            - [includeStacktraces]
+
+#    tbn.event_listener.populate_listener:
+#        class: App\Listener\PopulateListener
+#        arguments: [ "@fos_elastica.index_manager" ]
+#        tags:
+#            - { name: kernel.event_listener, event: "elastica.index.index_pre_populate", method: preIndexPopulate}
+#            - { name: kernel.event_listener, event: "elastica.index.index_post_populate", method: postIndexPopulate}
+#
+#    tbn.event_http:invalidator:
+#        class: App\Invalidator\EventInvalidator
+#        arguments: [ "@fos_http_cache.cache_manager", "@logger", "%kernel.debug" ]
+#
+#    app.social_manager:
+#        class: App\App\SocialManager
+#        arguments: [ "@doctrine.orm.entity_manager", "%facebook_id_page%", "%twitter_id_page%", "%google_id_page%" ]
+#
+#    tbn.city_manager:
+#        class: App\App\CityManager
+#        arguments:
+#          - "@doctrine.orm.default_entity_manager"
+#          - "@request_stack"
+#
+#
+#
+#    tbn.event_listener:
+#        class: App\Listener\EventListener
+#        arguments: [ "@tbn.event_http:invalidator" ]
+#        tags:
+#          - { name: doctrine.event_listener, event: preRemove }
+#          - { name: doctrine.event_listener, event: postUpdate }
+#          - { name: doctrine.event_listener, event: postFlush }
+#          - { name: doctrine.event_listener, event: postInsert }
+
+
+
+#    image_listener:
+#        class: App\Listener\ImageListener
+#        arguments: [ "@liip_imagine.cache.manager" ]
+#        tags:
+#           - { name: kernel.event_listener, event: "vich_uploader.pre_remove", method: onImageDelete}
+
+    #Twig extensions
+    Twig\Extensions\IntlExtension:
+        tags:
+            - { name: twig.extension }
+
+    Twig\Extensions\TextExtension:
+       tags:
+           - { name: twig.extension }
+
+    App\Twig\AssetExtension:
+        arguments:
+            $mappingAssets: "%mapping_assets%"
+            $debug: "%kernel.debug%"
+
+#    App\Twig\DateExtension:
+#        tags:
+#            - { name: twig.extension }
+#
+#    App\Twig\ParseExtension:
+#        tags:
+#            - { name: twig.extension }
+#
+#    App\Twig\TweetExtension:
+#        tags:
+#            - { name: twig.extension }
+#
+#    App\Twig\UrlExtension:
+#        tags:
+#            - { name: twig.extension }
+
+    #Forms
+    #Collections
+    App\Form\Extension\CollectionExtension:
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\CollectionType }
+
+    #Surcouche globale des formulaires
+    App\Form\Extension\WidgetFormTypeExtension:
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
+
+    #Datepicker
+    App\Form\Extension\DateTypeExtension:
+        tags:
+            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\DateType }
+    #Image
+    App\Form\Extension\ImageTypeExtension:
+        tags:
+            - { name: form.type_extension, extended_type: Vich\UploaderBundle\Form\Type\VichImageType }
+
+#   App\Form\Type\AgendaType:
+#        tags:
+#            - { name: form.type }
+    App\Form\Type\ProfileFormType:
+        arguments:
+            $class: "%fos_user.model.user.class%"
+
+    App\Form\Type\RegistrationFormType:
+        arguments:
+            $class: "%fos_user.model.user.class%"
+#        tags:
+#            - { name: form.type, alias: tbn_user_registration }
+
+    App\Form\Type\ReCaptchaType:
+        arguments:
+            $siteKey: '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
+#        tags:
+#            - { name: form.type, alias: recaptcha}
+
+
+#        tags:
+#            - { name: form.type, alias: tbn_user_profile }
+
+#    app.event_listener.browser_cache:
+#        class: App\EventListener\BrowserCacheListener
+#        tags:
+#            - { name: kernel.event_subscriber }
+
+#    app.event_listener.city:
+#        class: App\EventListener\CityListener
+#        tags:
+#            - { name: kernel.event_subscriber }
+
+#    app.event_factory:
+#        class: App\Factory\EventFactory
+
+#    tbn.event_updater:
+#            class: App\Updater\EventUpdater
+#            arguments:
+#              - "@doctrine.orm.default_entity_manager"
+#              - "@tbn.social.facebook_admin"
+#              - "@tbn.event_handler"
+#
+#    tbn.user_updater:
+#        class: App\Updater\UserUpdater
+#        arguments:
+#          - "@doctrine.orm.default_entity_manager"
+#          - "@tbn.social.facebook_admin"
+#          - "@tbn.user_handler"
+
+#    App\Fetcher\EventFetcher:
+#        arguments:
+#          - "@tbn.parser_manager"
+#          - "@doctrine.orm.default_entity_manager"
+
+    #Parsers
+#    tbn.parser.abstract:
+#        class: App\Parser\AgendaParser
+#    tbn.parser.abstracts.soonnight:
+#        class: App\Parser\Common\SoonNightParser
+#        calls:
+#            - ['addUrl', ["%url_soonnight_paris%"]]
+#            - ['addUrl', ["%url_soonnight_tlse%"]]
+#            - ['addUrl', ["%url_soonnight_marseille%"]]
+#            - ['addUrl', ["%url_soonnight_lyon%"]]
+#            - ['addUrl', ["%url_soonnight_brest%"]]
+#            - ['addUrl', ["%url_soonnight_nice%"]]
+#            - ['addUrl', ["%url_soonnight_nantes%"]]
+#            - ['addUrl', ["%url_soonnight_bordeaux%"]]
+#            - ['addUrl', ["%url_soonnight_lille%"]]
+#            - ['addUrl', ["%url_soonnight_montpellier%"]]
+
+#    tbn.parser.abstracts.facebook:
+#        class: App\Parser\Common\FaceBookParser
+#        arguments:
+#            - "@doctrine.orm.entity_manager"
+#            - "@tbn.firewall"
+#            - "@tbn.social.facebook_admin"
+    #Toulouse
+#    tbn.parser.toulouse.bikini:
+#        class: App\Parser\Toulouse\BikiniParser
+#    tbn.parser.toulouse.toulouse:
+#        class: App\Parser\Toulouse\ToulouseParser
+#        calls:
+#            - ['setUrl', ["%url_opendata_toulouse%"]]
+#    tbn.parser.toulouse.tourisme:
+#        class: App\Parser\Toulouse\ToulouseTourismeParser
+    #Aliases
+#    tbn.soonnight_parser:
+#        alias: tbn.parser.abstracts.soonnight
+#        public: true #For PHPUnit
+#    tbn.toulouse_parser:
+#        alias: tbn.parser.toulouse.toulouse
+#    tbn.bikini_parser:
+#        alias: tbn.parser.toulouse.bikini
+#    tbn.toulouse_tourisme_parser:
+#        alias: tbn.parser.toulouse.tourisme
+
+    #Manager
+#    tbn.parser_manager:
+#        class: App\Parser\Manager\ParserManager
+
+    #Utils
+#    tbn.util:
+#        class: App\Utils\Util
+#    tbn.echantillon_handler:
+#        class: App\Handler\EchantillonHandler
+#        arguments: ["@doctrine.orm.entity_manager"]
+#    tbn.doctrine_event_handler:
+#        class: App\Handler\DoctrineEventHandler
+#        public: true #For PHPUnit
+#        arguments: ["@doctrine.orm.entity_manager", "@tbn.event_handler", "@tbn.firewall", "@tbn.echantillon_handler", "@app.geocoder.place_geocoder"]
+#    tbn.event_handler:
+#        class: App\Handler\EventHandler
+#        public: true #For PHPUnit
+#        arguments: ["@tbn.cleaner", "@tbn.comparator", "@tbn.merger", "%kernel.project_dir%/web/uploads/temp"]
+#    tbn.user_handler:
+#        class: App\Handler\UserHandler
+#        arguments: ["%kernel.project_dir%/web/uploads/temp"]
+#    tbn.comparator:
+#        class: App\Utils\Comparator
+#        arguments: ["@tbn.util", "@comparator_cache"]
+#    tbn.cleaner:
+#        class: App\Utils\Cleaner
+#        arguments: ["@tbn.util"]
+#    tbn.firewall:
+#        class: App\Utils\Firewall
+#        public: true #For PHPUnit
+#        arguments: ["@doctrine.orm.entity_manager", "@tbn.comparator"]
+#    tbn.merger:
+#        class: App\Utils\Merger
+#        public: true #For PHPUnit
+#        arguments: ["@tbn.comparator"]
+
+    #Cleaner
+    App\Cleaner\ImageCleaner:
+        arguments:
+            $webDir: "%kernel.project_dir%/web"
+
+    App\Validator\Constraints\EventConstraintValidator:
+        tags:
+            - { name: validator.constraint_validator, alias: EventContraintValidator }
+
+    App\EventListener\ReCaptchaListener:
+        arguments:
+            $formName: "fos_user_registration_form"
+            $field: "recaptcha"
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: "onKernelController" }
+
+    App\Captcha\CaptchaWrapper:
+        arguments:
+            $secret: "%env(GOOGLE_RECAPTCHA_API_SECRET)%"
+
+#    tbn.validation.response_validator:
+#        class: App\Validator\Constraints\ReCaptchaResponseValidator
+#        arguments: ["@tbn.captcha_wrapper"]
+#        tags:
+#          - { name: validator.constraint_validator, alias: recaptcha_response_validator }
+
+    App\Security\Core\User\FOSUBUserProvider:
+        arguments:
+            $properties: {facebook: facebook_id, google: google_id, twitter: twitter_id}
+            $socials: {google: '@App\Social\Google', twitter: '@App\Social\Twitter', facebook_events: '@App\Social\FacebookEvents', facebook_admin: '@App\Social\FacebookAdmin', facebook_list_events: '@App\Social\FacebookListEvents', facebook: '@App\Social\Facebook'}
+
+#    authentication_handler:
+#        class: App\Handler\AuthenticationHandler
+#        arguments: ["@translator", "@router", "@session"]
+#
+#    fos_user.doctrine_registry:
+#        alias: doctrine

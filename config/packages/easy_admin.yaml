@@ -1,0 +1,12 @@
+easy_admin:
+    entities:
+        - App\Entity\Agenda
+        - App\Entity\User
+        - App\Entity\Site
+        - App\Entity\Place
+        - App\Entity\Calendrier
+        - App\Entity\Comment
+        - App\Entity\Exploration
+        - App\Entity\HistoriqueMaj
+        - App\Entity\SiteInfo
+        - App\Entity\UserInfo

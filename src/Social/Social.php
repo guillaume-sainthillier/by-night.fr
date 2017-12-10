@@ -11,7 +11,7 @@ namespace App\Social;
 use App\App\SocialManager;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Picture\EventProfilePicture;
 use App\Exception\SocialException;
@@ -20,7 +20,6 @@ use App\Entity\User;
 use App\Entity\Info;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -82,7 +81,7 @@ abstract class Social
 
     protected $isInitialized;
 
-    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, Session $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager)
+    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager)
     {
         if (!isset($config['id'])) {
             throw new SocialException("Le paramètre 'id' est absent");

@@ -1,0 +1,53 @@
+liip_imagine:
+    resolvers:
+        default:
+            web_path: ~
+    loaders:
+        default:
+            filesystem:
+                data_root: '%app_public_root%'
+
+    filter_sets:
+        cache: ~
+        thumb_site_large:
+            quality: 75
+            filters:
+                thumbnail: { size: [1970, 400], mode: outbound }
+                interlace:
+                    mode: line
+        thumb_site:
+            quality: 100
+            filters:
+                relative_resize: { heighten: 350 }
+        thumbs_evenement:
+            quality: 75
+            filters:
+                relative_resize: { heighten: 200 }
+        thumb_evenement:
+            quality: 100
+            filters:
+                relative_resize: { heighten: 250 }
+        thumb_user_evenement:
+            quality: 75
+            filters:
+                relative_resize: { heighten: 128 }
+        thumb_user_large:
+            quality: 75
+            filters:
+                relative_resize: { heighten: 200 }
+        thumb_user:
+            quality: 75
+            filters:
+                thumbnail: { size: [200, 200], mode: outbound }
+        thumb_user_menu:
+            quality: 75
+            filters:
+                thumbnail: { size: [30, 30], mode: outbound }
+        thumb_user_50:
+            quality: 75
+            filters:
+                thumbnail: { size: [50, 50], mode: outbound }
+        thumb_user_115:
+            quality: 75
+            filters:
+                thumbnail: { size: [115, 115], mode: outbound }

@@ -5,20 +5,21 @@ namespace App\Tests\Utils;
 use App\Entity\City;
 use App\Entity\ZipCity;
 use App\Handler\EventHandler;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\ContainerTestCase;
 use App\Entity\Place;
 use App\Entity\Agenda;
 
-class HandlerTest extends KernelTestCase
+class HandlerTest extends ContainerTestCase
 {
     /**
-     * @var \App\Handler\EventHandler
+     * @var EventHandler
      */
     protected $handler;
 
-    public function setUp()
+    protected function setUp()
     {
-        self::bootKernel();
+        parent::setUp();
+
         $this->handler = static::$kernel->getContainer()->get(EventHandler::class);
     }
 

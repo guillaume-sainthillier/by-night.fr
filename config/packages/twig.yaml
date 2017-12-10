@@ -1,0 +1,21 @@
+framework:
+    templating:
+        engines: ['twig']
+
+twig:
+    paths: ['%kernel.project_dir%/templates']
+    debug: '%kernel.debug%'
+    strict_variables: '%kernel.debug%'
+    form_themes:
+        - 'VichUploaderBundle:Form:fields.html.twig'
+        - 'Form/fields.html.twig'
+    globals:
+        menu: "@white_october_breadcrumbs"
+        social_manager: '@App\App\SocialManager'
+        city_manager: '@App\App\CityManager'
+        userProfilePicture: '@App\Picture\UserProfilePicture'
+        eventProfilePicture: '@App\Picture\EventProfilePicture'
+        facebook_app_id: "%facebook_id_app%"
+        googleMapKey: "%google_map_key%"
+        app_version: "v%application_version%"
+        event_seo: '@App\SEO\EventSEO'

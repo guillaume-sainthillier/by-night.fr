@@ -1,0 +1,127 @@
+# Read the documentation: https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/Resources/doc/setup.md
+fos_elastica:
+    clients:
+        default:
+            host: '%env(ES_HOST)%'
+            port: '%env(ES_PORT)%'
+            compression: true
+    serializer:
+        serializer: "jms_serializer"
+    indexes:
+        event:
+            index_name: "app.event"
+            client: default
+            settings:
+                index:
+                    analysis:
+                        analyzer:
+                            event_description_analyzer:
+                                type: custom
+                                tokenizer: standard
+                                filter: [lowercase, asciifolding, stopwords, snowball, elision]
+                                char_filter: [html_strip]
+                            event_analyzer:
+                                type: custom
+                                tokenizer: nGram_event
+                                filter: [lowercase, asciifolding, stopwords, snowball, elision]
+                            event_city_analyzer:
+                                type: custom
+                                tokenizer: nGram_event
+                                filter: [lowercase, asciifolding]
+                        tokenizer:
+                            nGram_event:
+                                type:     nGram
+                                min_gram: 3
+                                max_gram: 8
+                        filter:
+                            snowball:
+                                type:     snowball
+                                language: French
+                            elision:
+                                type:     elision
+                                articles: [l, m, t, qu, n, s, j, d]
+                            stopwords:
+                                type:      stop
+                                stopwords: [_french_]
+                                ignore_case: true
+            types:
+                event:
+                    serializer:
+                        groups: [list_event]
+                    indexable_callback: "isIndexable"
+                    properties:
+                        nom: { boost: 5, type: "text", analyzer: event_analyzer, search_analyzer: event_analyzer  }
+                        descriptif: { analyzer: event_description_analyzer, search_analyzer: event_description_analyzer }
+                        date_debut: { type: "date", format: 'yyyy-MM-dd' }
+                        date_fin: { type: "date", format: 'yyyy-MM-dd' }
+                        place:
+                            type: "object"
+                            properties:
+                                nom: { boost: 3, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
+                                rue: { analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
+                                ville: { boost: 2, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
+                    persistence:
+                        driver: orm # orm, mongodb, propel are available
+                        model:  App\Entity\Agenda
+                        repository: App\SearchRepository\AgendaRepository
+                        provider:
+                            query_builder_method: createIsActiveQueryBuilder
+                            batch_size: 5000
+        city:
+            index_name: "app.city"
+            client: default
+            settings:
+                index:
+                    analysis:
+                        tokenizer:
+                            nGram_city:
+                                type:     nGram
+                                min_gram: 3
+                                max_gram: 8
+                        analyzer:
+                            city_analyzer:
+                                type: custom
+                                tokenizer: nGram_city
+                                filter: [lowercase, asciifolding]
+            types:
+                city:
+                    serializer:
+                        groups: [list_city]
+                    properties:
+                        name: { type: "text", analyzer: city_analyzer, search_analyzer: city_analyzer }
+                    persistence:
+                        driver: orm
+                        model:  App\Entity\City
+                        repository: App\SearchRepository\CityRepository
+                        provider:
+                            batch_size: 10000
+        user:
+            index_name: "app.user"
+            client: default
+            settings:
+                index:
+                    analysis:
+                        tokenizer:
+                            nGram_user:
+                                type:     nGram
+                                min_gram: 5
+                                max_gram: 8
+                        analyzer:
+                            user_analyzer:
+                                type: custom
+                                tokenizer: nGram_user
+                                filter: [asciifolding, lowercase]
+            types:
+                user:
+                    serializer:
+                        groups: [list_user]
+                    properties:
+                        username: { boost: 5, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                        firstname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                        lastname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                    persistence:
+                        driver: orm
+                        model:  App\Entity\User
+                        repository: App\SearchRepository\UserRepository
+                        provider:
+                            batch_size: 1000

@@ -9,6 +9,7 @@ use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphNode;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -56,7 +57,7 @@ class FacebookAdmin extends FacebookEvents
      */
     protected $pageAccessToken;
 
-    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, Session $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager, ObjectManager $om)
+    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager, ObjectManager $om)
     {
         parent::__construct($config, $tokenStorage, $router, $session, $requestStack, $logger, $eventProfilePicture, $socialManager);
 

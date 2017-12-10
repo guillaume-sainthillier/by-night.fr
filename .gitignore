@@ -1,52 +1,35 @@
-#Sécurité
+###> symfony/framework-bundle ###
 .env
-.docker-sync/*
-/app/config/parameters.yaml
-/app/config/parameters.yml
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
 
-#SiteMaps
-/web/sitemap/*
-/.idea/
+#Public datas
+/public/sitemap/*
+/public/bundles/*
+/public/uploads/*
+/public/prod/*
+/public/media/*
 
 #Assets
-/app/config/mapping_assets.yaml
+/config/mapping_assets.yaml
 
-# Sécurité
-/app/sessions/*
+#NodeJS
+node_modules/
 
-# Node
-/node_modules/
-
-# Bower & NPM
+#Pollution
+/.idea/
+.docker-sync/
 /npm-debug.log
-
-# Cache and logs (Symfony2)
-/app/cache/*
-/app/logs/*
-!app/cache/.gitkeep
-!app/logs/.gitkeep
-
-# Cache and logs (Symfony3)
-/var/cache/*
-/var/logs/*
-/var/sessions/*
-!var/sessions/.gitkeep
-!var/cache/.gitkeep
-!var/logs/.gitkeep
-
-# Managed by Composer
-/var/bootstrap.php.cache
-/bin/*
-!bin/console
-!bin/symfony_requirements
-/vendor/
-
-# Assets and user uploads
-/web/bundles/
-/web/uploads/
-/web/prod/
-/web/media/
-
-# Composer PHAR
 /composer.phar
 *.php~
+
+###> phpunit/phpunit ###
+/phpunit.xml
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+/phpunit.xml
+###< symfony/phpunit-bridge ###

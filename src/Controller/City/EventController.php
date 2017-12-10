@@ -45,7 +45,7 @@ class EventController extends Controller
      * @Route("/soiree/{slug}", name="tbn_agenda_details_old", requirements={"slug": "[^/]+"})
      * @BrowserCache(false)
      */
-    public function detailsAction(City $city, $slug, $id = null, SymfonyResponseTagger $responseTagger)
+    public function detailsAction(City $city, SymfonyResponseTagger $responseTagger, FacebookAdmin $facebookAdmin, $slug, $id = null)
     {
         $result = $this->checkEventUrl($city, $slug, $id);
         if ($result instanceof Response) {
@@ -62,7 +62,7 @@ class EventController extends Controller
             'soiree'      => $agenda,
             'form'        => $form->createView(),
             'nb_comments' => $nbComments,
-            'stats'       => $this->getAgendaStats($agenda),
+            'stats'       => $this->getAgendaStats($agenda, $facebookAdmin),
         ]);
 
         $now = new \DateTime();
