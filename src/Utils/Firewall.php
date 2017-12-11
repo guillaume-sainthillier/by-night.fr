@@ -22,7 +22,9 @@ class Firewall
     const VERSION = '1.1';
 
     protected $toSaveExplorations;
+
     protected $explorations;
+
     protected $fbExploration;
 
     /**

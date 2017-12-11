@@ -18,8 +18,11 @@ use App\Utils\Monitor;
 class EventHandler
 {
     private $cleaner;
+
     private $comparator;
+
     private $merger;
+
     private $tempPath;
 
     public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, $tempPath)

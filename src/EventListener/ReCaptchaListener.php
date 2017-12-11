@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 class ReCaptchaListener
 {
     private $formName;
+
     private $field;
 
     public function __construct($formName, $field)

@@ -8,7 +8,6 @@ use Facebook\Exceptions\FacebookResponseException;
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphNode;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
