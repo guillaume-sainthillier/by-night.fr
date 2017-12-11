@@ -9,6 +9,7 @@ use Twig\TwigFunction;
 class AssetExtension extends Extension
 {
     const ASSET_PREFIX = 'prod/';
+
     /**
      * @var BaseAssetExtension
      */

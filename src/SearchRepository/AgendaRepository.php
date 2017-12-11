@@ -16,9 +16,13 @@ use Elastica\Query\Range;
 class AgendaRepository extends Repository
 {
     const EXPO_TERMS    = 'expo, exposition';
+
     const CONCERT_TERMS = 'concert, musique, artiste';
+
     const FAMILY_TERMS  = 'famille, enfants';
+
     const SHOW_TERMS    = 'spectacle, exposition, théâtre, comédie';
+
     const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
     /**

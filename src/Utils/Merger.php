@@ -13,12 +13,19 @@ use App\Entity\Agenda;
 class Merger
 {
     const MERGE_LEFT                    = 'do_merge_left';
+
     const MERGE_RIGHT                   = 'do_merge_right';
+
     const MERGE_MAX                     = 'do_merge_max';
+
     const MERGE_RIGHT_IF_DIFFERENT      = 'do_merge_right_if_different';
+
     const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
+
     const FORCE_MERGE_LEFT              = 'do_force_merge_left';
+
     const FORCE_MERGE_RIGHT             = 'do_force_merge_right';
+
     const DEFAULT_MERGE                 = self::MERGE_RIGHT;
 
     /**
