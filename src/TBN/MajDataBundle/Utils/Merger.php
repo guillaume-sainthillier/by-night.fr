@@ -13,12 +13,19 @@ use TBN\AgendaBundle\Entity\Place;
 class Merger
 {
     const MERGE_LEFT                    = 'do_merge_left';
+
     const MERGE_RIGHT                   = 'do_merge_right';
+
     const MERGE_MAX                     = 'do_merge_max';
+
     const MERGE_RIGHT_IF_DIFFERENT      = 'do_merge_right_if_different';
+
     const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
+
     const FORCE_MERGE_LEFT              = 'do_force_merge_left';
+
     const FORCE_MERGE_RIGHT             = 'do_force_merge_right';
+
     const DEFAULT_MERGE                 = self::MERGE_RIGHT;
 
     /**
@@ -111,7 +118,7 @@ class Merger
         }
 
         foreach ($fields as $type => $field) {
-            if (is_numeric($type)) {
+            if (\is_numeric($type)) {
                 $type = self::DEFAULT_MERGE;
             } else {
                 $oldField = $field;
@@ -134,8 +141,8 @@ class Merger
 
     protected function getBestContent($valueA, $valueB, $mergeType)
     {
-        if (is_callable($mergeType)) {
-            return call_user_func($mergeType, $valueA, $valueB);
+        if (\is_callable($mergeType)) {
+            return \call_user_func($mergeType, $valueA, $valueB);
         }
 
         switch ($mergeType) {
@@ -156,14 +163,14 @@ class Merger
 
                 return $this->getBestContent($valueA, $valueB, self::MERGE_RIGHT_IF_DIFFERENT);
             case self::MERGE_MAX:
-                return max($valueA, $valueB);
+                return \max($valueA, $valueB);
         }
 
-        if (is_bool($valueA)) {
+        if (\is_bool($valueA)) {
             return $valueA;
         }
 
-        if (is_object($valueA) || is_object($valueB)) {
+        if (\is_object($valueA) || \is_object($valueB)) {
             return $valueA ?: $valueB;
         }
 
@@ -174,6 +181,6 @@ class Merger
 
     private function skakeToCamel($str)
     {
-        return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));
+        return \str_replace(' ', '', \ucwords(\str_replace('_', ' ', $str)));
     }
 }

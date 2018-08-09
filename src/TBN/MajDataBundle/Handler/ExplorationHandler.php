@@ -13,6 +13,7 @@ use TBN\MajDataBundle\Entity\HistoriqueMaj;
 class ExplorationHandler
 {
     private $stats;
+
     private $historique;
 
     public function __construct()

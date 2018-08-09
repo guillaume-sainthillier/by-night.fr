@@ -16,8 +16,11 @@ use TBN\UserBundle\Entity\User;
 class EventInvalidator
 {
     private $tagHandler;
+
     private $logger;
+
     private $eventTags;
+
     private $userTags;
 
     public function __construct(TagHandler $tagHandler, LoggerInterface $logger)
@@ -30,7 +33,7 @@ class EventInvalidator
 
     public static function getEventDetailTag(Agenda $event)
     {
-        return sprintf(
+        return \sprintf(
             'detail-event-%d',
             $event->getId()
         );
@@ -38,7 +41,7 @@ class EventInvalidator
 
     public static function getUserDetailTag(User $user)
     {
-        return sprintf(
+        return \sprintf(
             'detail-user-%d',
             $user->getId()
         );
@@ -46,7 +49,7 @@ class EventInvalidator
 
     public static function getUserMenuTag(User $user)
     {
-        return sprintf(
+        return \sprintf(
             'menu-%d',
             $user->getId()
         );
@@ -63,18 +66,18 @@ class EventInvalidator
         $this->eventTags[] = self::getEventDetailTag($event);
 
         if ($event->getPlace() && $event->getPlace()->getId()) {
-            $this->eventTags[] = sprintf('detail-place-%d', $event->getPlace()->getId());
+            $this->eventTags[] = \sprintf('detail-place-%d', $event->getPlace()->getId());
         }
     }
 
     public function invalidateEvents()
     {
-        $tags = array_filter(array_unique(array_merge(
+        $tags = \array_filter(\array_unique(\array_merge(
             $this->eventTags,
             $this->userTags
         )));
 
-        if (!count($tags)) {
+        if (!\count($tags)) {
             return;
         }
 

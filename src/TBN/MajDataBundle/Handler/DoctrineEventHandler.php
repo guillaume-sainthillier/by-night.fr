@@ -24,12 +24,17 @@ class DoctrineEventHandler
     const BATCH_SIZE = 50;
 
     private $em;
+
     private $repoAgenda;
+
     private $repoPlace;
+
     private $handler;
+
     private $firewall;
 
     private $sites;
+
     private $villes;
 
     /**
@@ -116,7 +121,7 @@ class DoctrineEventHandler
     {
         $this->explorationHandler->start();
 
-        if (!count($events)) {
+        if (!\count($events)) {
             return [];
         }
         $this->loadSites();
@@ -129,7 +134,7 @@ class DoctrineEventHandler
         $notAllowedEvents = $this->getNotAllowedEvents($events);
         unset($events);
 
-        $nbNotAllowedEvents = count($notAllowedEvents);
+        $nbNotAllowedEvents = \count($notAllowedEvents);
         for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
             $this->explorationHandler->addBlackList();
         }
@@ -141,19 +146,19 @@ class DoctrineEventHandler
     {
         $ids = $parser->getIdsToMigrate();
 
-        if (!count($ids)) {
+        if (!\count($ids)) {
             return;
         }
 
         $eventOwners = $this->repoAgenda->findBy([
-            'facebookOwnerId' => array_keys($ids),
+            'facebookOwnerId' => \array_keys($ids),
         ]);
 
         $events = $this->repoAgenda->findBy([
-            'facebookEventId' => array_keys($ids),
+            'facebookEventId' => \array_keys($ids),
         ]);
 
-        $events = array_merge($events, $eventOwners);
+        $events = \array_merge($events, $eventOwners);
         foreach ($events as $event) {
             if (isset($ids[$event->getFacebookEventId()])) {
                 $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
@@ -166,7 +171,7 @@ class DoctrineEventHandler
         }
 
         $places = $this->repoPlace->findBy([
-           'facebookId' => array_keys($ids),
+           'facebookId' => \array_keys($ids),
         ]);
 
         foreach ($places as $place) {
@@ -181,8 +186,8 @@ class DoctrineEventHandler
 
     protected function getAllowedEvents(array $events)
     {
-        $events = array_filter($events, [$this->firewall, 'isValid']);
-        usort($events, function (Agenda $a, Agenda $b) {
+        $events = \array_filter($events, [$this->firewall, 'isValid']);
+        \usort($events, function (Agenda $a, Agenda $b) {
             if ($a->getSite() == $b->getSite()) {
                 return 0;
             }
@@ -195,7 +200,7 @@ class DoctrineEventHandler
 
     protected function getNotAllowedEvents(array $events)
     {
-        return array_filter($events, function ($event) {
+        return \array_filter($events, function ($event) {
             return !$this->firewall->isValid($event);
         });
     }
@@ -208,7 +213,7 @@ class DoctrineEventHandler
         }
 
         foreach ($chunks as $i => $chunk) {
-            $chunks[$i] = array_chunk($chunk, self::BATCH_SIZE, true);
+            $chunks[$i] = \array_chunk($chunk, self::BATCH_SIZE, true);
         }
 
         return $chunks;
@@ -218,7 +223,7 @@ class DoctrineEventHandler
     {
         $flat = [];
         foreach ($chunks as $chunk) {
-            $flat = array_merge($flat, $chunk);
+            $flat = \array_merge($flat, $chunk);
         }
 
         return $flat;
@@ -226,7 +231,7 @@ class DoctrineEventHandler
 
     protected function mergeWithDatabase(array $events)
     {
-        Monitor::createProgressBar(count($events));
+        Monitor::createProgressBar(\count($events));
 
         $chunks = $this->getChunks($events);
         foreach ($chunks as $chunk) {
@@ -282,7 +287,7 @@ class DoctrineEventHandler
         try {
             $this->em->flush();
         } catch (\Exception $e) {
-            Monitor::writeln(sprintf(
+            Monitor::writeln(\sprintf(
                 '<error>%s</error>',
                 $e->getMessage()
             ));
@@ -315,7 +320,7 @@ class DoctrineEventHandler
     {
         $fb_ids = $this->getExplorationsFBIds($events);
 
-        if (count($fb_ids)) {
+        if (\count($fb_ids)) {
             $this->firewall->loadExplorations($fb_ids);
         }
     }
@@ -325,10 +330,10 @@ class DoctrineEventHandler
         $explorations = $this->firewall->getExplorations();
 
         $batchSize = 100;
-        $nbBatches = ceil(count($explorations) / $batchSize);
+        $nbBatches = \ceil(\count($explorations) / $batchSize);
 
         for ($i = 0; $i < $nbBatches; ++$i) {
-            $currentExplorations = array_slice($explorations, $i * $batchSize, $batchSize);
+            $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
             foreach ($currentExplorations as $exploration) {
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->explorationHandler->addExploration();
@@ -435,6 +440,6 @@ class DoctrineEventHandler
             }
         }
 
-        return array_keys($fbIds);
+        return \array_keys($fbIds);
     }
 }

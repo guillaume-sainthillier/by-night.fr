@@ -58,7 +58,7 @@ abstract class LinksParser extends AgendaParser
                     $infosAgenda = [$infosAgenda];
                 }
 
-                $agendas = array_merge($agendas, $infosAgenda);
+                $agendas = \array_merge($agendas, $infosAgenda);
             } catch (\Exception $e) {
                 Monitor::writeException($e);
             }
@@ -78,7 +78,7 @@ abstract class LinksParser extends AgendaParser
 
     private function isMultiArray($array)
     {
-        return count(array_filter($array, 'is_array')) > 0;
+        return \count(\array_filter($array, 'is_array')) > 0;
     }
 
     public function getBaseUrl()

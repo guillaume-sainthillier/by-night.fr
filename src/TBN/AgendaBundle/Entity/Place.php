@@ -418,6 +418,6 @@ class Place implements GeolocalizeInterface
 
     public function __toString()
     {
-        return sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
+        return \sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
     }
 }

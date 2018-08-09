@@ -41,7 +41,7 @@ class UserController extends Controller
         }
 
         if ($user->getSlug() !== $slug) {
-            $routeParams = array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
+            $routeParams = \array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
 
             return new RedirectResponse($this->generateUrl($routeName, $routeParams));
         }
@@ -156,10 +156,10 @@ class UserController extends Controller
                 }
             }
 
-            $cle                              = ucfirst($this->getDayName($date->format('N')));
+            $cle                              = \ucfirst($this->getDayName($date->format('N')));
             $final_datas['full_categories'][] = $cle.' '.$date->format('d').' '.$this->getMonthName($date->format('m')).' '.$date->format('Y');
             $final_datas['categories'][]      = $cle;
-            $final_datas['data'][]            = intval($nb_events);
+            $final_datas['data'][]            = (int) $nb_events;
 
             $date->add(new \DateInterval('P1D'));
         }
@@ -187,11 +187,11 @@ class UserController extends Controller
                 }
             }
 
-            $cle = ucfirst($this->getDayName($date->format('N'))).' '.$date->format('d');
+            $cle = \ucfirst($this->getDayName($date->format('N'))).' '.$date->format('d');
 
-            $final_datas['full_categories'][] = ucfirst($this->getDayName($date->format('N'))).' '.$date->format('d').' '.$this->getMonthName($date->format('m')).' '.$date->format('Y');
+            $final_datas['full_categories'][] = \ucfirst($this->getDayName($date->format('N'))).' '.$date->format('d').' '.$this->getMonthName($date->format('m')).' '.$date->format('Y');
             $final_datas['categories'][]      = $cle;
-            $final_datas['data'][]            = intval($nb_events);
+            $final_datas['data'][]            = (int) $nb_events;
 
             $date->add(new \DateInterval('P1D'));
         }
@@ -219,10 +219,10 @@ class UserController extends Controller
                 }
             }
 
-            $cle                              = ucfirst(utf8_encode(substr(utf8_decode($this->getMonthName($date->format('m'))), 0, 3)));
-            $final_datas['full_categories'][] = ucfirst($this->getMonthName($date->format('m'))).' '.$date->format('Y');
+            $cle                              = \ucfirst(\utf8_encode(\substr(\utf8_decode($this->getMonthName($date->format('m'))), 0, 3)));
+            $final_datas['full_categories'][] = \ucfirst($this->getMonthName($date->format('m'))).' '.$date->format('Y');
             $final_datas['categories'][]      = $cle;
-            $final_datas['data'][]            = intval($nb_events);
+            $final_datas['data'][]            = (int) $nb_events;
 
             $date->add(new \DateInterval('P1M'));
         }
@@ -234,14 +234,14 @@ class UserController extends Controller
     {
         $months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
-        return $months[(intval($number) - 1)];
+        return $months[((int) $number - 1)];
     }
 
     protected function getDayName($number)
     {
         $days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
-        return $days[(intval($number) - 1)];
+        return $days[((int) $number - 1)];
     }
 
     protected function calculDate($format)

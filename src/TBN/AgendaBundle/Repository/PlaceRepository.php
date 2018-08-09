@@ -37,7 +37,7 @@ class PlaceRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_unique(array_filter(array_column($places, 'facebookId')));
+        return \array_unique(\array_filter(\array_column($places, 'facebookId')));
     }
 
     public function findAllCities()
@@ -51,6 +51,6 @@ class PlaceRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_unique(array_filter(array_column($places, 'ville')));
+        return \array_unique(\array_filter(\array_column($places, 'ville')));
     }
 }

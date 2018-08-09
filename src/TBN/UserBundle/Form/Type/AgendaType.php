@@ -81,7 +81,7 @@ class AgendaType extends AbstractType
 
         foreach ($configs as $service => $config) {
             $nomService    = $config['nom'];
-            $accessService = ucfirst($service);
+            $accessService = \ucfirst($service);
             if ('' === $nomService) {
                 $nomService = $accessService;
             }
@@ -97,7 +97,7 @@ class AgendaType extends AbstractType
                 if ('facebook' === $service) {
                     $role = 'ROLE_FACEBOOK_EVENTS';
                 } else {
-                    $role = 'ROLE_'.strtoupper($service);
+                    $role = 'ROLE_'.\strtoupper($service);
                 }
                 $post_disabled = false;
                 $post_checked  = $user->hasRole($role);

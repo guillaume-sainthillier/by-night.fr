@@ -43,7 +43,7 @@ class EventProfilePicture
 
     private function getAppUrl()
     {
-        return rtrim($this->router->generate('tbn_agenda_index', [], Router::ABSOLUTE_URL), '/');
+        return \rtrim($this->router->generate('tbn_agenda_index', [], Router::ABSOLUTE_URL), '/');
     }
 
     public function getOriginalPictureUrl(Agenda $agenda)
@@ -92,7 +92,7 @@ class EventProfilePicture
     {
         if ($agenda->getPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
-            $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
+            $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
 
             return $this->packages->getUrl(
                 $webPath
@@ -101,7 +101,7 @@ class EventProfilePicture
 
         if ($agenda->getSystemPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
-            $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
+            $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
 
             return $this->packages->getUrl(
                 $webPath
@@ -113,7 +113,7 @@ class EventProfilePicture
         }
 
         $webPath = $this->cacheManager->getBrowserPath('img/empty_event.png', $thumb);
-        $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
+        $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
 
         return $this->packages->getUrl(
             $webPath

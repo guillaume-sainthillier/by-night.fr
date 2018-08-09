@@ -20,7 +20,7 @@ class SearchType extends AbstractType
         $data = $event->getData();
 
         if (isset($data['du']) && !$data['du']) {
-            $data['du'] = date('d/m/Y');
+            $data['du'] = \date('d/m/Y');
         }
 
         $event->setData($data);

@@ -31,12 +31,12 @@ class UserUpdater extends Updater
     {
         $repo  = $this->entityManager->getRepository('TBNUserBundle:User');
         $fbIds = $repo->getUserFbIds();
-        $count = count($fbIds);
+        $count = \count($fbIds);
 
         $fbStats = $this->facebookAdmin->getUserStatsFromIds($fbIds);
         unset($fbIds);
 
-        $nbBatchs = ceil($count / self::PAGINATION_SIZE);
+        $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
         for ($i = 0; $i < $nbBatchs; ++$i) {

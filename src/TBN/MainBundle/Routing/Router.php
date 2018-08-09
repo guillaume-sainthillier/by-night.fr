@@ -10,7 +10,9 @@ use Symfony\Component\Routing\RequestContext;
 class Router extends BaseRouter
 {
     private $cache;
+
     private $siteManager;
+
     private $subdomain;
 
     /**

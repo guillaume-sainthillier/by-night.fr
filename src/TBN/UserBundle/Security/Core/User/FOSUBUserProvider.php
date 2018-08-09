@@ -13,7 +13,9 @@ use TBN\UserBundle\Entity\UserInfo;
 class FOSUBUserProvider extends BaseClass
 {
     private $socials;
+
     private $doctrine;
+
     private $siteManager;
 
     public function __construct(UserManagerInterface $userManager, array $properties, SiteManager $siteManager, $doctrine, array $socials)
@@ -64,9 +66,9 @@ class FOSUBUserProvider extends BaseClass
      */
     protected function getSocialService($service)
     {
-        $key = strtolower($service);
+        $key = \strtolower($service);
         if (!isset($this->socials[$key])) {
-            throw new RuntimeException(sprintf('Le service %s est introuvable', $service));
+            throw new RuntimeException(\sprintf('Le service %s est introuvable', $service));
         }
 
         return $this->socials[$key];
@@ -85,7 +87,7 @@ class FOSUBUserProvider extends BaseClass
 
     protected function getProperty(UserResponseInterface $response)
     {
-        if (preg_match('/facebook/i', $response->getResourceOwner()->getName())) {
+        if (\preg_match('/facebook/i', $response->getResourceOwner()->getName())) {
             $response->getResourceOwner()->setName('facebook');
         }
 
@@ -152,10 +154,10 @@ class FOSUBUserProvider extends BaseClass
         }
 
         if (null === $user->getFirstname() && null === $user->getLastname()) {
-            $nom_prenoms = preg_split('/ /', $response->getRealName());
+            $nom_prenoms = \preg_split('/ /', $response->getRealName());
             $user->setFirstname($nom_prenoms[0]);
-            if (count($nom_prenoms) > 0) {
-                $user->setLastname(implode(' ', array_slice($nom_prenoms, 1)));
+            if (\count($nom_prenoms) > 0) {
+                $user->setLastname(\implode(' ', \array_slice($nom_prenoms, 1)));
             }
         }
 
