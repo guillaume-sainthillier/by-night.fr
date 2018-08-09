@@ -11,7 +11,9 @@ namespace App\Geolocalize;
 class Boundary implements BoundaryInterface
 {
     private $lat;
+
     private $lng;
+
     private $distanceMax;
 
     public function __construct($lat, $lng, $distanceMax = 5.0)

@@ -60,6 +60,7 @@ abstract class Info
      * @ORM\Column(name="facebook_refresh_token", type="string", length=255, nullable=true)
      */
     protected $facebook_refresh_token;
+
     /**
      * @ORM\Column(name="facebook_email", type="string", length=255, nullable=true)
      */
@@ -104,6 +105,7 @@ abstract class Info
      * @ORM\Column(name="google_refresh_token", type="string", length=255, nullable=true)
      */
     protected $google_refresh_token;
+
     /**
      * @ORM\Column(name="google_email", type="string", length=255, nullable=true)
      */

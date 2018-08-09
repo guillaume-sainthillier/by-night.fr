@@ -8,7 +8,6 @@ use App\Entity\ZipCity;
 use App\Handler\DoctrineEventHandler;
 use App\Reject\Reject;
 use App\Tests\ContainerTestCase;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\Entity\Place;
 
 class DoctrineHandlerTest extends ContainerTestCase

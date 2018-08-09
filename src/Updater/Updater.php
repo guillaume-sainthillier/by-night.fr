@@ -19,6 +19,7 @@ use App\Social\FacebookAdmin;
 abstract class Updater
 {
     const PAGINATION_SIZE = 200;
+
     const POOL_SIZE       = 10;
 
     /**
