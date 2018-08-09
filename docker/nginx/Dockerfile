@@ -1,6 +1,6 @@
 FROM debian:stretch
 
-ENV FILEBEAT_VERSION 6.0.0
+ENV FILEBEAT_VERSION 6.1.1
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -12,8 +12,6 @@ RUN curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-${
  && rm filebeat-${FILEBEAT_VERSION}-amd64.deb
 
 # Config Filebeat
-ADD filebeat.template.json /etc/filebeat/filebeat.template.json
-RUN chmod 644 /etc/filebeat/filebeat.template.json
 ADD filebeat.yml /etc/filebeat/filebeat.yml
 RUN chmod 644 /etc/filebeat/filebeat.yml
 
@@ -22,7 +20,7 @@ RUN mkdir -p /etc/pki/tls/certs
 ADD logstash-beats.crt /etc/pki/tls/certs/logstash-beats.crt
 
 # Config nginx
-ADD nginx.conf /etc/nginx/
+ADD nginx.conf /etc/nginx/f
 ADD symfony.conf /etc/nginx/sites-available/
 
 RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
