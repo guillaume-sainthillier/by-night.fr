@@ -16,7 +16,7 @@ class CityController extends Controller
         $repo     = $doctrine->getRepository('TBNMainBundle:Site');
         $sites    = $repo->findStats();
 
-        $villes = array_map(function (array $site) {
+        $villes = \array_map(function (array $site) {
             return $site['nom'];
         }, $sites);
 

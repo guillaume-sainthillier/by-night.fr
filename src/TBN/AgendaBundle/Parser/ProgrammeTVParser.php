@@ -28,11 +28,11 @@ class ProgrammeTVParser
                 $nom = $programme->filter('.prog_name');
                 $type = $programme->filter('.prog_type');
 
-                $labelChaine = $chaine->count() ? str_replace('Programme de ', '', $chaine->attr('title')) : null;
+                $labelChaine = $chaine->count() ? \str_replace('Programme de ', '', $chaine->attr('title')) : null;
                 $css_chaine = $this->getCSSChaine($labelChaine);
 
                 return [
-                    'logo'       => $logo->count() ? trim($logo->attr('data-src')) : null,
+                    'logo'       => $logo->count() ? \trim($logo->attr('data-src')) : null,
                     'chaine'     => $labelChaine,
                     'css_chaine' => $css_chaine ? 'icon-'.$css_chaine : null,
                     'heure'      => $heure->count() ? $heure->text() : null,

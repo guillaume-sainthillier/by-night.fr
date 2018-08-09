@@ -22,9 +22,13 @@ class Firewall
     const VERSION = '1.1';
 
     protected $toSaveExplorations;
+
     protected $explorations;
+
     protected $fbExploration;
+
     protected $comparator;
+
     protected $om;
 
     /**
@@ -132,7 +136,7 @@ class Firewall
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-            //L'événement a changé -> valide
+        //L'événement a changé -> valide
         } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
@@ -250,13 +254,13 @@ class Firewall
     private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
     {
         $theta = $entity->getLongitude() - $boundary->getLongitude();
-        $dist  = sin(deg2rad($entity->getLatitude())) *
-            sin(deg2rad($boundary->getLatitude())) +
-                cos(deg2rad($entity->getLatitude())) *
-                cos(deg2rad($boundary->getLatitude())) *
-                cos(deg2rad($theta));
-        $dist = acos($dist);
-        $dist = rad2deg($dist);
+        $dist  = \sin(\deg2rad($entity->getLatitude())) *
+            \sin(\deg2rad($boundary->getLatitude())) +
+                \cos(\deg2rad($entity->getLatitude())) *
+                \cos(\deg2rad($boundary->getLatitude())) *
+                \cos(\deg2rad($theta));
+        $dist = \acos($dist);
+        $dist = \rad2deg($dist);
 
         return $dist * 111.189577; //60 * 1.1515 * 1.609344
     }
@@ -290,11 +294,11 @@ class Firewall
             'Please find the agenda', 'Fore More Details like our Page & Massage us',
         ];
 
-        $filter = array_filter($black_list, function ($elem) use ($content) {
-            return strstr($content, $elem);
+        $filter = \array_filter($black_list, function ($elem) use ($content) {
+            return \strstr($content, $elem);
         });
 
-        return count($filter) > 0;
+        return \count($filter) > 0;
     }
 
     public function getVilleHash($villeName)
@@ -304,7 +308,7 @@ class Firewall
 
     private function checkLengthValidity($str, $length)
     {
-        return strlen($this->comparator->sanitize($str)) === $length;
+        return \strlen($this->comparator->sanitize($str)) === $length;
     }
 
     public function checkMinLengthValidity($str, $min)

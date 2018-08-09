@@ -15,14 +15,19 @@ use TBN\AgendaBundle\Entity\Place;
 class EchantillonHandler
 {
     private $repoAgenda;
+
     private $repoPlace;
 
     private $places;
+
     private $fbPlaces;
+
     private $newPlaces;
 
     private $agendas;
+
     private $fbAgendas;
+
     private $newAgendas;
 
     public function __construct(EntityManagerInterface $em)
@@ -67,7 +72,7 @@ class EchantillonHandler
 
     public function prefetchPlaceEchantillons(array $events)
     {
-        $places = array_map(function (Agenda $event) {
+        $places = \array_map(function (Agenda $event) {
             return $event->getPlace();
         }, $events);
 
@@ -83,7 +88,7 @@ class EchantillonHandler
             }
         }
 
-        if (count($byFbIdPlaces) > 0) {
+        if (\count($byFbIdPlaces) > 0) {
             $fbPlaces = $this->repoPlace->findBy([
                 'facebookId' => $byFbIdPlaces,
             ]);
@@ -100,7 +105,7 @@ class EchantillonHandler
             }
         }
 
-        if (count($bySitePlaces)) {
+        if (\count($bySitePlaces)) {
             $sitePlaces = $this->repoPlace->findBy([
                 'site' => $bySitePlaces,
             ]);
@@ -124,7 +129,7 @@ class EchantillonHandler
             }
         }
 
-        if (count($byFbIdEvents) > 0) {
+        if (\count($byFbIdEvents) > 0) {
             $fbEvents = $this->repoAgenda->findBy([
                 'facebookEventId' => $byFbIdEvents,
             ]);
@@ -141,7 +146,7 @@ class EchantillonHandler
             }
         }
 
-        if (count($byDateEvents)) {
+        if (\count($byDateEvents)) {
             $dateEvents = $this->repoAgenda->findAllByDates($byDateEvents);
             foreach ($dateEvents as $event) {
                 $this->addEvent($event);
@@ -155,7 +160,7 @@ class EchantillonHandler
             return [$this->fbPlaces[$place->getFacebookId()]];
         }
 
-        return array_merge(
+        return \array_merge(
             $this->getPlaces($place),
             $this->getNewPlaces($place)
         );
@@ -167,7 +172,7 @@ class EchantillonHandler
             return [$this->fbAgendas[$event->getFacebookEventId()]];
         }
 
-        return array_merge(
+        return \array_merge(
             $this->getEvents($event),
             $this->getNewEvents($event)
         );
@@ -211,7 +216,7 @@ class EchantillonHandler
                 $this->newAgendas[$key] = [];
             }
 
-            $id                          = spl_object_hash($event);
+            $id                          = \spl_object_hash($event);
             $this->newAgendas[$key][$id] = $event;
         }
 
@@ -266,7 +271,7 @@ class EchantillonHandler
                 $this->newPlaces[$key] = [];
             }
 
-            $id                         = spl_object_hash($place);
+            $id                         = \spl_object_hash($place);
             $this->newPlaces[$key][$id] = $place;
         }
     }
@@ -283,7 +288,7 @@ class EchantillonHandler
 
     protected function getAgendaCacheKey(Agenda $agenda)
     {
-        return sprintf(
+        return \sprintf(
             '%s.%s.%s',
             $agenda->getSite()->getId(),
             $agenda->getDateDebut()->format('Y-m-d'),

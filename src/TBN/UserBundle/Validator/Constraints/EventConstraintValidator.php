@@ -104,11 +104,11 @@ class EventConstraintValidator extends ConstraintValidator
 
         if ($reject->isBadUser()) {
             $link    = $this->router->generate('tbn_agenda_details', ['slug' => $event->getSlug(), 'id' => $event->getId()]);
-            $message = str_replace([
+            $message = \str_replace([
                 '[link]',
                 '[/link]',
             ], [
-                sprintf('<a href="%s">', $link),
+                \sprintf('<a href="%s">', $link),
                 '</a>',
             ], $constraint->badUser);
             $this->context->buildViolation($message)->addViolation();

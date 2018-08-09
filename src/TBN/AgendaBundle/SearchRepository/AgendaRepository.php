@@ -95,7 +95,7 @@ class AgendaRepository extends Repository
                     'theme_manifestation', 'categorie_manifestation', 'place.nom',
                     'place.rue', 'place.ville', 'place.code_postal',
                 ])
-                ->setOperator(false !== strstr($search->getTerm(), ',') ? 'or' : 'and')
+                ->setOperator(false !== \strstr($search->getTerm(), ',') ? 'or' : 'and')
                 ->setFuzziness(0.8)
                 ->setMinimumShouldMatch('80%');
             $mainQuery->addMust($query);
@@ -107,7 +107,7 @@ class AgendaRepository extends Repository
         }
 
         if ($search->getCommune()) {
-            $query = (new Match())->setField('place.ville', implode(',', $search->getCommune()));
+            $query = (new Match())->setField('place.ville', \implode(',', $search->getCommune()));
             $mainQuery->addMust($query);
         }
 
@@ -120,7 +120,7 @@ class AgendaRepository extends Repository
 
         if ($search->getTypeManifestation()) {
             $communeTypeManifestationQuery = new Match();
-            $communeTypeManifestationQuery->setField('type_manifestation', implode(' ', $search->getTypeManifestation()));
+            $communeTypeManifestationQuery->setField('type_manifestation', \implode(' ', $search->getTypeManifestation()));
             $mainQuery->addMust($communeTypeManifestationQuery);
         }
 

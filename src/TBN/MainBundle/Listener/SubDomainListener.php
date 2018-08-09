@@ -26,6 +26,7 @@ class SubDomainListener
     private $router;
 
     private $baseHost;
+
     private $basePort;
 
     public function __construct(SiteManager $siteManager, EntityManager $em, RouterInterface $router, $baseHost, $basePort)
@@ -52,7 +53,7 @@ class SubDomainListener
             ], '', $currentHost);
 
             if ($subdomain === $this->baseHost || (
-                'static' === $subdomain && 0 === strpos($event->getRequest()->getPathInfo(), '/media')
+                'static' === $subdomain && 0 === \strpos($event->getRequest()->getPathInfo(), '/media')
                 )) {
                 return;
             }

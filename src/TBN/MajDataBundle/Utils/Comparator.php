@@ -139,7 +139,7 @@ class Comparator
         $bestItem  = null;
 
         foreach ($items as $item) {
-            $score = call_user_func($machingFunction, $item, $testedItem);
+            $score = \call_user_func($machingFunction, $item, $testedItem);
 
             if ($score >= 100) {
                 return $item;
@@ -162,7 +162,7 @@ class Comparator
 
     protected function isSubstrInStr($needle, $haystack)
     {
-        return false !== strpos($haystack, $needle);
+        return false !== \strpos($haystack, $needle);
     }
 
     protected function getMatchingScore($a, $b)
@@ -175,7 +175,7 @@ class Comparator
             }
 
             if (isset($a[250]) || isset($b[250])) {
-                similar_text($a, $b, $pourcentage);
+                \similar_text($a, $b, $pourcentage);
             } else {
                 try {
                     $pourcentage = $this->getDiffPourcentage($a, $b);
@@ -189,8 +189,8 @@ class Comparator
 
     private function getDiffPourcentage($a, $b)
     {
-        $hashA = md5($a);
-        $hashB = md5($b);
+        $hashA = \md5($a);
+        $hashB = \md5($b);
         $keys  = ['getDiffPourcentage.'.$hashA.'.'.$hashB, 'getDiffPourcentage.'.$hashB.'.'.$hashA];
 
         foreach ($keys as $key) {
@@ -199,7 +199,7 @@ class Comparator
             }
         }
 
-        $score = (1 - levenshtein($a, $b) / max(strlen($a), strlen($b))) * 100;
+        $score = (1 - \levenshtein($a, $b) / \max(\strlen($a), \strlen($b))) * 100;
 
         $this->cache->save($keys[0], $score);
 
@@ -232,7 +232,7 @@ class Comparator
 
     public function sanitizeNumber($string)
     {
-        return preg_replace('/\D/', '', $string);
+        return \preg_replace('/\D/', '', $string);
     }
 
     public function isSameMoment(Agenda $a, Agenda $b)
@@ -256,17 +256,17 @@ class Comparator
         $step2 = $this->util->replaceAccents($step1);
         $step3 = $this->util->deleteMultipleSpaces($step2);
 
-        return trim($step3);
+        return \trim($step3);
     }
 
     public function sanitizeHTML($string)
     {
-        return $this->sanitize(strip_tags($string));
+        return $this->sanitize(\strip_tags($string));
     }
 
     public function sanitizeVille($string)
     {
-        $string = preg_replace("#-(\s*)st(\s*)-#i", 'saint', $string);
+        $string = \preg_replace("#-(\s*)st(\s*)-#i", 'saint', $string);
 
         return $this->sanitize($string);
     }
@@ -281,7 +281,7 @@ class Comparator
                 $step3 = $this->util->replaceNonAlphanumericChars($step2);
                 $step4 = $this->util->deleteStopWords($step3);
                 $step5 = $this->util->deleteMultipleSpaces($step4);
-                $step6 = trim($step5);
+                $step6 = \trim($step5);
                 $this->cache->save($key, $step6);
             }
 
@@ -306,7 +306,7 @@ class Comparator
             return true;
         } elseif ($minPourcentage < 100) {
             $pourcentage = 0;
-            similar_text($a, $b, $pourcentage);
+            \similar_text($a, $b, $pourcentage);
 
             return $pourcentage >= $minPourcentage;
         }

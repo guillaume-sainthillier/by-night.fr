@@ -36,9 +36,9 @@ class SiteRepository extends EntityRepository
         ->getQuery()
         ->getScalarResult();
 
-        shuffle($results);
+        \shuffle($results);
 
-        return array_slice($results, 0, $limit);
+        return \array_slice($results, 0, $limit);
     }
 
     public function findLocations()

@@ -56,7 +56,7 @@ class ConnectController extends BaseController
         $resourceOwner = $this->getResourceOwnerByName($service);
 
         $session = $request->getSession();
-        $key     = $request->query->get('key', time());
+        $key     = $request->query->get('key', \time());
 
         if ($resourceOwner->handles($request)) {
             $accessToken = $resourceOwner->getAccessToken(
@@ -84,7 +84,7 @@ class ConnectController extends BaseController
 
         // Symfony <3.0 BC
         /** @var $form FormInterface */
-        $form = method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
+        $form = \method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
             ? $this->createForm('Symfony\Component\Form\Extension\Core\Type\FormType')
             : $this->createForm('form');
         // Handle the form
@@ -115,7 +115,7 @@ class ConnectController extends BaseController
                 if ($currentToken instanceof OAuthToken) {
                     // Update user token with new details
                     $newToken =
-                        is_array($accessToken) &&
+                        \is_array($accessToken) &&
                         (isset($accessToken['access_token']) || isset($accessToken['oauth_token'])) ?
                             $accessToken : $currentToken->getRawToken();
 

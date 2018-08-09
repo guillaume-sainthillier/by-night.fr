@@ -238,7 +238,7 @@ class Ville
 
     public function toJSON()
     {
-        return json_encode($this->toArray());
+        return \json_encode($this->toArray());
     }
 
     public function toArray()

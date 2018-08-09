@@ -28,10 +28,10 @@ class FacebookEvents extends FacebookListEvents
                 'link'        => $this->getLink($agenda),
                 'picture'     => $this->getLinkPicture($agenda),
                 'name'        => $agenda->getNom(),
-                'description' => $date.'. '.strip_tags($agenda->getDescriptif()),
+                'description' => $date.'. '.\strip_tags($agenda->getDescriptif()),
                 'message'     => $agenda->getNom().($place ? ' @ '.$place->getNom() : ''),
                 //'privacy' => json_encode(['value' => 'SELF']),
-                'actions' => json_encode([
+                'actions' => \json_encode([
                     [
                         'name' => $user->getUsername().' sur '.$agenda->getSite()->getNom().' By Night',
                         'link' => $this->getMembreLink($user),

@@ -22,7 +22,7 @@ class UserRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_filter(array_map('current', $datas));
+        return \array_filter(\array_map('current', $datas));
     }
 
     public function getUsersWithInfo($page, $limit)

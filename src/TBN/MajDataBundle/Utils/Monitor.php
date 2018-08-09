@@ -73,12 +73,12 @@ class Monitor
         }
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
 
-        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2).' '.$unit[$i];
+        return @\round($size / 1024 ** ($i = \floor(\log($size, 1024))), 2).' '.$unit[$i];
     }
 
     private static function getTime($stat)
     {
-        $nbItems = count($stat['time']);
+        $nbItems = \count($stat['time']);
 
         if (0 === $nbItems) {
             return [
@@ -93,19 +93,19 @@ class Monitor
                 'total'      => 0,
             ];
         }
-        $somme       = array_sum($stat['time']);
-        $sommeMemory = array_sum($stat['memory']);
+        $somme       = \array_sum($stat['time']);
+        $sommeMemory = \array_sum($stat['memory']);
 
         return [
-            'avg'        => sprintf('%01.2f ms', ($somme / $nbItems)),
-            'min'        => sprintf('%01.2f ms', min($stat['time'])),
-            'max'        => sprintf('%01.2f ms', max($stat['time'])),
+            'avg'        => \sprintf('%01.2f ms', ($somme / $nbItems)),
+            'min'        => \sprintf('%01.2f ms', \min($stat['time'])),
+            'max'        => \sprintf('%01.2f ms', \max($stat['time'])),
             'nb'         => $nbItems,
             'memory'     => self::convertMemory($sommeMemory),
             'avg_memory' => self::convertMemory($sommeMemory / $nbItems),
-            'min_memory' => self::convertMemory(min($stat['memory'])),
-            'max_memory' => self::convertMemory(max($stat['memory'])),
-            'total'      => sprintf('%01.2f ms', $somme),
+            'min_memory' => self::convertMemory(\min($stat['memory'])),
+            'max_memory' => self::convertMemory(\max($stat['memory'])),
+            'total'      => \sprintf('%01.2f ms', $somme),
         ];
     }
 
@@ -118,7 +118,7 @@ class Monitor
 
     public static function writeException(\Exception $e)
     {
-        self::writeln(sprintf(
+        self::writeln(\sprintf(
             '<error>%s at %s(%d)</error> <info>%s</info>',
             $e->getMessage(),
             $e->getFile(),
@@ -137,7 +137,7 @@ class Monitor
     public static function displayTable(array $datas)
     {
         $datas   = isset($datas[0]) ? $datas[0] : [$datas];
-        $headers = array_keys($datas[0]);
+        $headers = \array_keys($datas[0]);
 
         (new Table(self::$output))
             ->setHeaders($headers)
@@ -155,7 +155,7 @@ class Monitor
             ]);
 
         $stats = self::getStats();
-        ksort($stats, SORT_STRING);
+        \ksort($stats, SORT_STRING);
         foreach ($stats as $key => $stat) {
             $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['min'], $stat['max'], $stat['memory'], $stat['avg_memory'], $stat['min_memory'], $stat['max_memory']]);
         }
@@ -177,7 +177,7 @@ class Monitor
             $stopwatch->start($message);
         }
 
-        $retour = call_user_func($function);
+        $retour = \call_user_func($function);
 
         if (self::$enableMonitoring) {
             $event = $stopwatch->stop($message);

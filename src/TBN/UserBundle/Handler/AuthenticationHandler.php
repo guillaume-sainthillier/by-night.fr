@@ -14,8 +14,11 @@ use TBN\MainBundle\Site\SiteManager;
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
     protected $translator;
+
     protected $router;
+
     protected $session;
+
     protected $site_manager;
 
     public function __construct($translator, $router, $session, SiteManager $site_manager)

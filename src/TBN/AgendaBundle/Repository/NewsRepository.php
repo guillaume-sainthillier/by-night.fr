@@ -22,6 +22,6 @@ class NewsRepository extends \Doctrine\ORM\EntityRepository
             return 1;
         }
 
-        return intval($result) + 1;
+        return (int) $result + 1;
     }
 }

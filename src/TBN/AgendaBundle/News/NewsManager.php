@@ -91,8 +91,8 @@ class NewsManager
             }
         }
 
-        arsort($participants);
-        $totalPartcipants = array_sum($participants);
+        \arsort($participants);
+        $totalPartcipants = \array_sum($participants);
 
         $news = $this->em->getRepository('TBNAgendaBundle:News')->findOneBy([
             'dateDebut' => $from,
@@ -109,7 +109,7 @@ class NewsManager
 
         $content = $this->twig->render('@TBNAgenda/News/news.html.twig', [
             'datas'           => $datas,
-            'topParticipants' => array_slice($participants, 0, 5),
+            'topParticipants' => \array_slice($participants, 0, 5),
             'participants'    => $totalPartcipants,
         ]);
 

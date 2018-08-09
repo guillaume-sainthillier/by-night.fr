@@ -24,7 +24,7 @@ class FetchCommand extends AppCommand
     {
         $parser = $input->getArgument('parser');
         if (!$this->getContainer()->has($parser)) {
-            throw new \LogicException(sprintf(
+            throw new \LogicException(\sprintf(
                 'Le service "%s" est introuvable',
                 $parser
             ));
@@ -32,7 +32,7 @@ class FetchCommand extends AppCommand
 
         $service = $this->getContainer()->get($parser);
         if (!$service instanceof ParserInterface) {
-            throw new \LogicException(sprintf(
+            throw new \LogicException(\sprintf(
                 'Le service "%s" doit être une instance de ParserInterface',
                 $service
             ));

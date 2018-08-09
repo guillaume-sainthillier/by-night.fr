@@ -317,6 +317,6 @@ class Comment
 
     public function __toString()
     {
-        return sprintf('#%s', $this->id ?: '?');
+        return \sprintf('#%s', $this->id ?: '?');
     }
 }

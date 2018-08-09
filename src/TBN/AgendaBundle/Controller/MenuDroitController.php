@@ -13,7 +13,9 @@ use TBN\MainBundle\Controller\TBNController as Controller;
 class MenuDroitController extends Controller
 {
     const FB_MEMBERS_LIMIT  = 100;
+
     const TWEET_LIMIT       = 25;
+
     const WIDGET_ITEM_LIMIT = 7;
 
     public function programmeTVAction()
@@ -37,7 +39,7 @@ class MenuDroitController extends Controller
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
-            parse_str($results['search_metadata']['next_results'], $infos);
+            \parse_str($results['search_metadata']['next_results'], $infos);
 
             if (isset($infos['?max_id'])) {
                 $nextLink = $this->generateUrl('tbn_agenda_tweeter_feed', [
@@ -50,7 +52,7 @@ class MenuDroitController extends Controller
             $results['statuses'] = [];
         }
 
-        if (!count($results['statuses']) && null === $this->get('request_stack')->getParentRequest()) {
+        if (!\count($results['statuses']) && null === $this->get('request_stack')->getParentRequest()) {
             return $this->redirectToRoute('tbn_agenda_agenda');
         }
 
@@ -59,7 +61,7 @@ class MenuDroitController extends Controller
             'hasNextLink' => $nextLink,
         ]);
 
-        if (!$max_id || self::TWEET_LIMIT !== count($results['statuses'])) {
+        if (!$max_id || self::TWEET_LIMIT !== \count($results['statuses'])) {
             list($expire, $ttl) = $this->getSecondsUntil(1);
         } else {
             $expire = new \DateTime();
@@ -234,8 +236,8 @@ class MenuDroitController extends Controller
         $api    = $this->get('tbn.social.facebook_admin');
         $retour = $api->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
-        $membres = array_merge($retour['participations'], $retour['interets']);
-        if (self::FB_MEMBERS_LIMIT == count($retour['interets']) || self::FB_MEMBERS_LIMIT == count($retour['participations'])) {
+        $membres = \array_merge($retour['participations'], $retour['interets']);
+        if (self::FB_MEMBERS_LIMIT == \count($retour['interets']) || self::FB_MEMBERS_LIMIT == \count($retour['participations'])) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
                 'slug' => $soiree->getSlug(),
                 'id'   => $soiree->getId(),
