@@ -1,3 +1,30 @@
+###> symfony/framework-bundle ###
+.env
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+#Public datas
+/public/sitemap/*
+/public/bundles/*
+/public/uploads/*
+/public/prod/*
+/public/media/*
+
+#Assets
+/config/mapping_assets.yaml
+
+#NodeJS
+node_modules/
+
+#Pollution
+/.idea/
+.docker-sync/
+/npm-debug.log
+/composer.phar
+*.php~
+
 #SiteMaps
 /web/sitemap/*
 /.idea/
@@ -14,11 +41,6 @@
 # Bower & NPM
 /web/bower/*
 /npm-debug.log
-
-# ElasticSearch
-/app/Resources/java/elasticsearch/config/*
-/app/Resources/java/elasticsearch/data/*
-/app/Resources/java/elasticsearch/logs/*
 
 
 # Cache and logs (Symfony2)
