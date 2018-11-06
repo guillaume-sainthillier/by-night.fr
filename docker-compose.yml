@@ -6,7 +6,6 @@ services:
         volumes:
             - db-data:/var/lib/mysql
             - ${DOCKER_PATH}/mysql/app.cnf:/etc/mysql/conf.d/app.cnf
-            - ${DOCKER_PATH}/:/home
         environment:
             - MYSQL_ROOT_PASSWORD
             - MYSQL_DATABASE
