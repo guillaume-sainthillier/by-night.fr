@@ -15,19 +15,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     wget
 
-# Config nginx
-COPY nginx.conf /etc/nginx/
-COPY symfony.conf /etc/nginx/sites-available/
-
-RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
-RUN rm /etc/nginx/sites-enabled/default
-
-RUN echo "upstream php-upstream { server 127.0.0.1:9000; }" > /etc/nginx/conf.d/upstream.conf
-RUN usermod -u 1000 www-data
-
-# remove log symlinks
-RUN rm /var/log/nginx/access.log /var/log/nginx/error.log
-
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer --version
@@ -64,6 +51,12 @@ RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
     && mv /tmp/blackfire-*.so $(php -r "echo ini_get('extension_dir');")/blackfire.so \
     && printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8707\n" > $PHP_INI_DIR/conf.d/blackfire.ini
 
+# Blackfire for CLI
+RUN mkdir -p /tmp/blackfire \
+    && curl -A "Docker" -L https://blackfire.io/api/v1/releases/client/linux_static/amd64 | tar zxp -C /tmp/blackfire \
+    && mv /tmp/blackfire/blackfire /usr/bin/blackfire \
+    && rm -Rf /tmp/blackfire
+
 # Install GD + EXIF
 RUN docker-php-ext-install gd exif
 
@@ -85,10 +78,22 @@ RUN yarn global add grunt-cli
 RUN chmod 777 /var/www
 
 # Add some shortcuts
-#RUN echo 'alias php="su -l www-data -s /bin/bash -c php"' >> ~/.bashrc
 RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
 RUN echo 'alias ls="ls --color=auto"' >> ~/.bashrc
 RUN echo 'alias ll="ls -alF"' >> ~/.bashrc
+
+# Install nginx
+COPY nginx.conf /etc/nginx/
+COPY symfony.conf /etc/nginx/sites-available/
+
+RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
+RUN rm /etc/nginx/sites-enabled/default
+
+RUN echo "upstream php-upstream { server 127.0.0.1:9000; }" > /etc/nginx/conf.d/upstream.conf
+RUN usermod -u 1000 www-data
+
+# remove log symlinks
+RUN rm /var/log/nginx/access.log /var/log/nginx/error.log
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 

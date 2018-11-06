@@ -14,6 +14,11 @@ use App\Parser\AgendaParser;
  */
 class ToulouseParser extends AgendaParser
 {
+    public function __construct()
+    {
+        $this->setURL('https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true');
+    }
+
     public function getRawAgendas()
     {
         $fichier = $this->downloadCSV();

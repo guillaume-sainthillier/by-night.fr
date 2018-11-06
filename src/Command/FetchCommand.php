@@ -70,8 +70,6 @@ class FetchCommand extends AppCommand
             ));
         }
 
-        die('ok');
-
         $events  = $this->eventFetcher->fetchEvents($service);
         foreach ($events as $event) {
             $this->getContainer()->get('old_sound_rabbit_mq.add_event_producer')->publish(\serialize($event));

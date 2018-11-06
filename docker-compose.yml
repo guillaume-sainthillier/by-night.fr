@@ -43,6 +43,9 @@ services:
             - 8000:80
         links:
             - elk:elasticsearch
+        environment:
+            - BLACKFIRE_CLIENT_ID
+            - BLACKFIRE_CLIENT_TOKEN
         depends_on:
             - db
             - elk
@@ -68,8 +71,6 @@ services:
     blackfire:
         image: blackfire/blackfire
         environment:
-            - BLACKFIRE_CLIENT_ID
-            - BLACKFIRE_CLIENT_TOKEN
             - BLACKFIRE_SERVER_ID
             - BLACKFIRE_SERVER_TOKEN
         networks:

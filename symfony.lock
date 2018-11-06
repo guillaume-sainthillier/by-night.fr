@@ -47,6 +47,9 @@
             "ref": "c1431086fec31f17fbcfe6d6d7e92059458facc1"
         }
     },
+    "doctrine/event-manager": {
+        "version": "v1.0.0"
+    },
     "doctrine/inflector": {
         "version": "v1.2.0"
     },
@@ -61,6 +64,12 @@
     },
     "doctrine/orm": {
         "version": "v2.5.13"
+    },
+    "doctrine/persistence": {
+        "version": "v1.0.1"
+    },
+    "doctrine/reflection": {
+        "version": "v1.0.0"
     },
     "egeloen/google-map": {
         "version": "2.0.2"
@@ -200,6 +209,15 @@
     "neitanod/forceutf8": {
         "version": "v2.0.1"
     },
+    "nyholm/psr7": {
+        "version": "0.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "0.3",
+            "ref": "caee6dde912660fc0763cf7be689ac165cfd050f"
+        }
+    },
     "ocramius/package-versions": {
         "version": "1.2.0"
     },
@@ -318,6 +336,12 @@
         "version": "1.0.1"
     },
     "psr/container": {
+        "version": "1.0.0"
+    },
+    "psr/http-client": {
+        "version": "0.1.0"
+    },
+    "psr/http-factory": {
         "version": "1.0.0"
     },
     "psr/http-message": {
@@ -503,13 +527,13 @@
     "symfony/polyfill-apcu": {
         "version": "v1.6.0"
     },
+    "symfony/polyfill-ctype": {
+        "version": "v1.10.0"
+    },
     "symfony/polyfill-intl-icu": {
         "version": "v1.6.0"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.6.0"
-    },
-    "symfony/polyfill-util": {
         "version": "v1.6.0"
     },
     "symfony/process": {
