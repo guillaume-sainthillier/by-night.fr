@@ -1,36 +1,29 @@
-version: '2'
+version: '3.2'
 
 services:
     db:
-        image: mysql:8
+        image: mysql:5.7
         volumes:
             - db-data:/var/lib/mysql
             - ${DOCKER_PATH}/mysql/app.cnf:/etc/mysql/conf.d/app.cnf
+            - ${DOCKER_PATH}/:/home
         environment:
             - MYSQL_ROOT_PASSWORD
             - MYSQL_DATABASE
             - MYSQL_USER
             - MYSQL_PASSWORD
-        restart: always
         networks:
             - backend
     redis:
         image: redis:alpine
-        restart: always
         networks:
             - backend
-#    node:
-#        build: ${DOCKER_PATH}/node
-#        volumes:
-#            - ${SYMFONY_APP_PATH}/front:/app/front
-#            - ${SYMFONY_APP_PATH}/web/prod:/app/dist
     rabbitmq:
         image: rabbitmq:3.7-management
         ports:
             - 15672:15672
         volumes:
             - queue-data:/var/lib/rabbitmq
-        restart: always
         networks:
             - backend
     phpmyadmin:
@@ -44,47 +37,31 @@ services:
             - ${DOCKER_PATH}/phpmyadmin/php.conf:/etc/php7/conf.d/99-overrides.conf
         networks:
             - backend
-        restart: always
-    php:
-        build: ${DOCKER_PATH}/php-fpm
+    app:
+        build: ${DOCKER_PATH}/php-nginx
+        ports:
+            - 8000:80
         links:
             - elk:elasticsearch
         depends_on:
             - db
-        volumes:
-             - ${SYMFONY_APP_PATH}:/var/www/symfony
-        restart: always
-        networks:
-            - backend
-    nginx:
-        build: ${DOCKER_PATH}/nginx
-        ports:
-            - 8000:80
-        volumes_from:
-            - php
-        depends_on:
-            - db
             - elk
-            - php
             - redis
         volumes:
-            - ${SYMFONY_APP_PATH}/var/logs/nginx/:/var/log/nginx
-        restart: always
+             - ${SYMFONY_APP_PATH}:/var/www/symfony
         networks:
-            - frontend
             - backend
     varnish:
         image: million12/varnish
         ports:
             - 8080:80
         depends_on:
-            - nginx
+            - app
         environment:
             CACHE_SIZE: "1G"
         volumes:
           - ${DOCKER_PATH}/varnish/default.vcl:/etc/varnish/default.vcl
           - varnish-data:/var/lib/varnish
-        restart: always
         networks:
             - frontend
             - backend
@@ -111,7 +88,6 @@ services:
         networks:
             - backend
             - frontend
-        restart: always
 volumes:
     db-data:
         driver: local

@@ -24,7 +24,7 @@
         "grunt-contrib-cssmin": "^2.2.1",
         "grunt-contrib-jshint": "^1.1.0",
         "grunt-contrib-symlink": "^1.0.0",
-        "grunt-contrib-uglify": "https://github.com/gruntjs/grunt-contrib-uglify/archive/harmony.tar.gz",
+        "grunt-contrib-uglify": "^4.0.0",
         "grunt-contrib-watch": "^1.0.0",
         "grunt-merge-json": "^0.9.6",
         "grunt-spritesmith": "^6.5.1",

@@ -5,13 +5,13 @@ import directors;
 
 # by-night.fr
 backend default {
-    .host = "nginx";
+    .host = "app";
     .port = "80";
 }
 
 acl purge {
     # ACL we'll use later to allow purges
-    "nginx";
+    "app";
     "localhost";
     "127.0.0.1";
     "::1";

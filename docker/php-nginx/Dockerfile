@@ -1,14 +1,32 @@
 FROM php:7.2-fpm
 
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
 # Install dependencies
 RUN apt-get update && apt-get install -y \
+    curl \
     git \
     gnupg \
     libicu-dev \
     libpng-dev \
+    nginx \
     python \
+    supervisor \
     unzip \
     wget
+
+# Config nginx
+COPY nginx.conf /etc/nginx/
+COPY symfony.conf /etc/nginx/sites-available/
+
+RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
+RUN rm /etc/nginx/sites-enabled/default
+
+RUN echo "upstream php-upstream { server 127.0.0.1:9000; }" > /etc/nginx/conf.d/upstream.conf
+RUN usermod -u 1000 www-data
+
+# remove log symlinks
+RUN rm /var/log/nginx/access.log /var/log/nginx/error.log
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -65,10 +83,6 @@ RUN yarn global add grunt-cli
 
 # Permission fix
 RUN chmod 777 /var/www
-RUN usermod -u 1000 www-data
-
-# Set www-data as current user (for using composer)
-#USER www-data
 
 # Add some shortcuts
 #RUN echo 'alias php="su -l www-data -s /bin/bash -c php"' >> ~/.bashrc
@@ -76,4 +90,7 @@ RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
 RUN echo 'alias ls="ls --color=auto"' >> ~/.bashrc
 RUN echo 'alias ll="ls -alF"' >> ~/.bashrc
 
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 WORKDIR /var/www/symfony
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
