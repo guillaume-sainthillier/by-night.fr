@@ -71,6 +71,15 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "easycorp/easyadmin-bundle": {
+        "version": "1.17",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.17",
+            "ref": "66070ea553247b0cd5275e21d0fe5399a25f40be"
+        }
+    },
     "egeloen/google-map": {
         "version": "2.0.2"
     },
@@ -148,15 +157,6 @@
     },
     "imagine/imagine": {
         "version": "v0.7.1"
-    },
-    "javiereguiluz/easyadmin-bundle": {
-        "version": "1.17",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.17",
-            "ref": "66070ea553247b0cd5275e21d0fe5399a25f40be"
-        }
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
@@ -396,12 +396,12 @@
         "version": "2.0.1"
     },
     "sensio/framework-extra-bundle": {
-        "version": "4.0",
+        "version": "5.2",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
-            "version": "4.0",
-            "ref": "aaddfdf43cdecd4cf91f992052d76c2cadc04543"
+            "version": "5.2",
+            "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
         }
     },
     "social-links/social-links": {
@@ -496,9 +496,6 @@
     },
     "symfony/intl": {
         "version": "v3.4.1"
-    },
-    "symfony/lts": {
-        "version": "v3"
     },
     "symfony/monolog-bridge": {
         "version": "v3.4.1"
