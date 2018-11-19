@@ -71,6 +71,15 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "easycorp/easy-log-handler": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "70062abc2cd58794d2a90274502f81b55cd9951b"
+        }
+    },
     "easycorp/easyadmin-bundle": {
         "version": "1.17",
         "recipe": {
@@ -80,26 +89,20 @@
             "ref": "66070ea553247b0cd5275e21d0fe5399a25f40be"
         }
     },
-    "egeloen/google-map": {
-        "version": "2.0.2"
-    },
-    "egeloen/google-map-bundle": {
-        "version": "3.0.1"
-    },
-    "egeloen/json-builder": {
-        "version": "3.0.0"
-    },
-    "egeloen/serializer": {
-        "version": "1.0.0"
-    },
-    "egeloen/serializer-bundle": {
-        "version": "1.0.0"
+    "egulias/email-validator": {
+        "version": "2.1.6"
     },
     "elasticsearch/elasticsearch": {
         "version": "v5.3.0"
     },
     "facebook/graph-sdk": {
         "version": "5.6.1"
+    },
+    "facebook/webdriver": {
+        "version": "1.6.0"
+    },
+    "fig/link-util": {
+        "version": "1.0.0"
     },
     "firebase/php-jwt": {
         "version": "v5.0.0"
@@ -185,9 +188,6 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v2.7.1"
     },
-    "kriswallsmith/buzz": {
-        "version": "v0.15.2"
-    },
     "lexik/maintenance-bundle": {
         "version": "v2.1.2"
     },
@@ -203,20 +203,11 @@
     "monolog/monolog": {
         "version": "1.23.0"
     },
-    "myclabs/deep-copy": {
-        "version": "1.7.0"
-    },
     "neitanod/forceutf8": {
         "version": "v2.0.1"
     },
-    "nyholm/psr7": {
-        "version": "0.3",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "0.3",
-            "ref": "caee6dde912660fc0763cf7be689ac165cfd050f"
-        }
+    "nikic/php-parser": {
+        "version": "v4.1.0"
     },
     "ocramius/package-versions": {
         "version": "1.2.0"
@@ -226,15 +217,6 @@
     },
     "pagerfanta/pagerfanta": {
         "version": "v1.0.5"
-    },
-    "paragonie/random_compat": {
-        "version": "v2.0.11"
-    },
-    "phar-io/manifest": {
-        "version": "1.0.1"
-    },
-    "phar-io/version": {
-        "version": "1.0.1"
     },
     "php-amqplib/php-amqplib": {
         "version": "v2.7.0"
@@ -284,50 +266,11 @@
     "phpcollection/phpcollection": {
         "version": "0.5.0"
     },
-    "phpdocumentor/reflection-common": {
-        "version": "1.0.1"
-    },
-    "phpdocumentor/reflection-docblock": {
-        "version": "4.2.0"
-    },
-    "phpdocumentor/type-resolver": {
-        "version": "0.4.0"
-    },
     "phpoption/phpoption": {
         "version": "1.5.0"
     },
     "phpseclib/phpseclib": {
         "version": "2.0.9"
-    },
-    "phpspec/prophecy": {
-        "version": "1.7.3"
-    },
-    "phpunit/php-code-coverage": {
-        "version": "5.3.0"
-    },
-    "phpunit/php-file-iterator": {
-        "version": "1.4.5"
-    },
-    "phpunit/php-text-template": {
-        "version": "1.2.1"
-    },
-    "phpunit/php-timer": {
-        "version": "1.0.9"
-    },
-    "phpunit/php-token-stream": {
-        "version": "2.0.2"
-    },
-    "phpunit/phpunit": {
-        "version": "4.7",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "4.7",
-            "ref": "fc35828893288f0bb786291377433ee8d7e14738"
-        }
-    },
-    "phpunit/phpunit-mock-objects": {
-        "version": "5.0.5"
     },
     "presta/sitemap-bundle": {
         "version": "1.5.x-dev"
@@ -338,14 +281,11 @@
     "psr/container": {
         "version": "1.0.0"
     },
-    "psr/http-client": {
-        "version": "0.1.0"
-    },
-    "psr/http-factory": {
-        "version": "1.0.0"
-    },
     "psr/http-message": {
         "version": "1.0.1"
+    },
+    "psr/link": {
+        "version": "1.0.0"
     },
     "psr/log": {
         "version": "1.0.2"
@@ -361,39 +301,6 @@
     },
     "ruflin/elastica": {
         "version": "5.3.0"
-    },
-    "sebastian/code-unit-reverse-lookup": {
-        "version": "1.0.1"
-    },
-    "sebastian/comparator": {
-        "version": "2.1.0"
-    },
-    "sebastian/diff": {
-        "version": "2.0.1"
-    },
-    "sebastian/environment": {
-        "version": "3.1.0"
-    },
-    "sebastian/exporter": {
-        "version": "3.1.0"
-    },
-    "sebastian/global-state": {
-        "version": "2.0.0"
-    },
-    "sebastian/object-enumerator": {
-        "version": "3.0.3"
-    },
-    "sebastian/object-reflector": {
-        "version": "1.1.1"
-    },
-    "sebastian/recursion-context": {
-        "version": "3.0.0"
-    },
-    "sebastian/resource-operations": {
-        "version": "1.0.0"
-    },
-    "sebastian/version": {
-        "version": "2.0.1"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
@@ -422,10 +329,10 @@
     "symfony/asset": {
         "version": "v3.4.1"
     },
-    "symfony/cache": {
-        "version": "v3.4.1"
+    "symfony/browser-kit": {
+        "version": "v4.1.7"
     },
-    "symfony/class-loader": {
+    "symfony/cache": {
         "version": "v3.4.1"
     },
     "symfony/config": {
@@ -445,6 +352,18 @@
     },
     "symfony/debug": {
         "version": "v3.4.1"
+    },
+    "symfony/debug-bundle": {
+        "version": "4.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.1",
+            "ref": "f8863cbad2f2e58c4b65fa1eac892ab189971bea"
+        }
+    },
+    "symfony/debug-pack": {
+        "version": "v1.0.6"
     },
     "symfony/dependency-injection": {
         "version": "v3.4.1"
@@ -497,6 +416,15 @@
     "symfony/intl": {
         "version": "v3.4.1"
     },
+    "symfony/maker-bundle": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
+        }
+    },
     "symfony/monolog-bridge": {
         "version": "v3.4.1"
     },
@@ -512,6 +440,12 @@
     "symfony/options-resolver": {
         "version": "v3.4.1"
     },
+    "symfony/orm-pack": {
+        "version": "v1.0.5"
+    },
+    "symfony/panther": {
+        "version": "v0.2.0"
+    },
     "symfony/phpunit-bridge": {
         "version": "3.3",
         "recipe": {
@@ -524,17 +458,20 @@
     "symfony/polyfill-apcu": {
         "version": "v1.6.0"
     },
-    "symfony/polyfill-ctype": {
-        "version": "v1.10.0"
-    },
     "symfony/polyfill-intl-icu": {
         "version": "v1.6.0"
     },
     "symfony/polyfill-mbstring": {
         "version": "v1.6.0"
     },
+    "symfony/polyfill-php72": {
+        "version": "v1.10.0"
+    },
     "symfony/process": {
         "version": "v3.4.1"
+    },
+    "symfony/profiler-pack": {
+        "version": "v1.0.3"
     },
     "symfony/property-access": {
         "version": "v3.4.1"
@@ -575,6 +512,9 @@
     "symfony/templating": {
         "version": "v3.4.1"
     },
+    "symfony/test-pack": {
+        "version": "v1.0.4"
+    },
     "symfony/translation": {
         "version": "3.3",
         "recipe": {
@@ -602,6 +542,9 @@
     "symfony/var-dumper": {
         "version": "v3.4.1"
     },
+    "symfony/web-link": {
+        "version": "v4.1.7"
+    },
     "symfony/web-profiler-bundle": {
         "version": "3.3",
         "recipe": {
@@ -611,11 +554,17 @@
             "ref": "6bdfa1a95f6b2e677ab985cd1af2eae35d62e0f6"
         }
     },
+    "symfony/web-server-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "dae9b39fd6717970be7601101ce5aa960bf53d9a"
+        }
+    },
     "symfony/yaml": {
         "version": "v3.4.1"
-    },
-    "theseer/tokenizer": {
-        "version": "1.1.0"
     },
     "twig/extensions": {
         "version": "1.0",
@@ -637,12 +586,6 @@
             "version": "1.5",
             "ref": "c4f5755b37fb65b9c6a3cbdae91205c15a137ed4"
         }
-    },
-    "webmozart/assert": {
-        "version": "1.2.0"
-    },
-    "white-october/pagerfanta-bundle": {
-        "version": "v1.1.1"
     },
     "whiteoctober/breadcrumbs-bundle": {
         "version": "1.2.3"

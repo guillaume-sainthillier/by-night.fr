@@ -50,7 +50,7 @@ class PlaceGeocoder
      */
     private $firewall;
 
-    public function __construct(CacheProvider $cache, PlaceSearchService $geocoder, PlaceDetailService $placeGeocoder, GeocoderService $reverseGeocoder, Firewall $firewall)
+    public function __construct(Firewall $firewall)
     {
         $this->cache           = $cache;
         $this->geocoder        = $geocoder;

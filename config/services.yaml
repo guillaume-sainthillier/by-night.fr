@@ -8,9 +8,6 @@ services:
 #    templating: '@twig'
     Vich\UploaderBundle\Templating\Helper\UploaderHelper: '@vich_uploader.templating.helper.uploader_helper'
     Liip\ImagineBundle\Imagine\Cache\CacheManager: '@liip_imagine.cache.manager'
-    Ivory\GoogleMap\Service\Place\Search\PlaceSearchService: "@ivory.google_map.place_search"
-    Ivory\GoogleMap\Service\Place\Detail\PlaceDetailService: "@ivory.google_map.place_detail"
-    Ivory\GoogleMap\Service\Geocoder\GeocoderService: "@ivory.google_map.geocoder"
     FOS\HttpCacheBundle\CacheManager: "@fos_http_cache.cache_manager"
     FOS\ElasticaBundle\Index\IndexManager: "@fos_elastica.index_manager"
     FOS\HttpCacheBundle\Http\SymfonyResponseTagger: "@fos_http_cache.http.symfony_response_tagger"
@@ -114,10 +111,6 @@ services:
         arguments:
             $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
             $updateFbIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'
-
-    App\Geocoder\PlaceGeocoder:
-        arguments:
-            $cache: '@array_cache'
 
     App\Importer\CountryImporter:
         arguments:
