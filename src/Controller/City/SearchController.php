@@ -15,11 +15,12 @@ class SearchController extends Controller
     /**
      * @Route("/", name="tbn_search_query_city", requirements={"city": ".+"})
      *
+     * @param City $city
      * @param Request $request
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function searchAction(City $city, Request $request)
+    public function searchAction(Request $request)
     {
         $params = [];
 

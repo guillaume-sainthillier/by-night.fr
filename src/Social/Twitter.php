@@ -96,6 +96,8 @@ class Twitter extends Social
                 return $reponse->id_str;
             }
         }
+
+        return null;
     }
 
     protected function post(User $user, Agenda $agenda)

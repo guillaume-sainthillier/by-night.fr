@@ -12,21 +12,21 @@ use App\Entity\Agenda;
  */
 class Merger
 {
-    const MERGE_LEFT                    = 'do_merge_left';
+    const MERGE_LEFT = 'do_merge_left';
 
-    const MERGE_RIGHT                   = 'do_merge_right';
+    const MERGE_RIGHT = 'do_merge_right';
 
-    const MERGE_MAX                     = 'do_merge_max';
+    const MERGE_MAX = 'do_merge_max';
 
-    const MERGE_RIGHT_IF_DIFFERENT      = 'do_merge_right_if_different';
+    const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
 
     const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
 
-    const FORCE_MERGE_LEFT              = 'do_force_merge_left';
+    const FORCE_MERGE_LEFT = 'do_force_merge_left';
 
-    const FORCE_MERGE_RIGHT             = 'do_force_merge_right';
+    const FORCE_MERGE_RIGHT = 'do_force_merge_right';
 
-    const DEFAULT_MERGE                 = self::MERGE_RIGHT;
+    const DEFAULT_MERGE = self::MERGE_RIGHT;
 
     /**
      * @var Comparator
@@ -45,7 +45,7 @@ class Merger
 //            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
-            'date_fin'   => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
+            'date_fin' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
             'descriptif',
             'horaires',
             'modification_derniere_minute',
@@ -60,7 +60,7 @@ class Merger
             'facebook_event_id',
             'facebook_owner_id',
             'fb_participations' => self::MERGE_MAX,
-            'fb_interets'       => self::MERGE_MAX,
+            'fb_interets' => self::MERGE_MAX,
             'fb_post_id',
             'fb_post_system_id',
             'tweet_post_id',
@@ -82,13 +82,13 @@ class Merger
     public function mergePlace(Place $a = null, Place $b = null)
     {
         return $this->merge($a, $b, [
-            'nom'         => self::MERGE_LEFT,
-            'latitude'    => self::MERGE_LEFT,
-            'longitude'   => self::MERGE_LEFT,
-            'rue'         => self::MERGE_LEFT,
-            'url'         => self::MERGE_LEFT,
-            'ville'       => self::MERGE_LEFT,
-            'codePostal'  => self::MERGE_LEFT,
+            'nom' => self::MERGE_LEFT,
+            'latitude' => self::MERGE_LEFT,
+            'longitude' => self::MERGE_LEFT,
+            'rue' => self::MERGE_LEFT,
+            'url' => self::MERGE_LEFT,
+            'ville' => self::MERGE_LEFT,
+            'codePostal' => self::MERGE_LEFT,
             'facebook_id' => self::MERGE_LEFT,
             'reject',
         ]);
@@ -99,11 +99,11 @@ class Merger
      *
      * @param \stdClass $a
      * @param \stdClass $b
-     * @param array     $fields
+     * @param array $fields
      *
      * @return \stdClass
      */
-    private function merge($a = null, $b = null, array $fields)
+    private function merge($a = null, $b = null, array $fields = [])
     {
         //Un ou les deux est nul, pas la peine de merger
         if (null === $a || null === $b) {
@@ -119,8 +119,8 @@ class Merger
                 $type = self::DEFAULT_MERGE;
             } else {
                 $oldField = $field;
-                $field    = $type;
-                $type     = $oldField;
+                $field = $type;
+                $type = $oldField;
             }
 
             $getter = 'get' . $this->skakeToCamel($field);
@@ -128,7 +128,7 @@ class Merger
 
             $valueA = $a->$getter();
             $valueB = $b->$getter();
-            $value  = $this->getBestContent($valueA, $valueB, $type);
+            $value = $this->getBestContent($valueA, $valueB, $type);
 
             $a->$setter($value);
         }

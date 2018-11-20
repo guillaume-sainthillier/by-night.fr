@@ -15,8 +15,11 @@ class InfoController extends Controller
 {
     /**
      * @Route("/", name="tbn_administration_info_index")
+     * @param RouterInterface $router
+     * @param SocialManager $socialManager
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function listAction(RouterInterface $router, SocialManager $socialManager)
+    public function listAction(SocialManager $socialManager)
     {
         $info = $socialManager->getSiteInfo();
 
@@ -34,6 +37,8 @@ class InfoController extends Controller
 
     /**
      * @Route("/{id}", name="tbn_administration_info_edit", requirements={"id": "\d+"})
+     * @param SiteInfo $info
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function viewAction(SiteInfo $info)
     {

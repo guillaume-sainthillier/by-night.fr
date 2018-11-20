@@ -19,7 +19,7 @@ class ZipCityRepository extends \Doctrine\ORM\EntityRepository
      *
      * @return ZipCity[]
      */
-    private function findByPostalCodeOrCity($postalCode = null, $city = null, $country)
+    private function findByPostalCodeOrCity($postalCode = null, $city = null, $country = null)
     {
         $query = $this
             ->createQueryBuilder('zc')

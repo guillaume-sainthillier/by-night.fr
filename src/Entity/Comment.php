@@ -258,7 +258,7 @@ class Comment
     /**
      * Set parent.
      *
-     * @param Comment $parent
+     * @param self $parent
      *
      * @return Comment
      */
@@ -282,7 +282,7 @@ class Comment
     /**
      * Add reponses.
      *
-     * @param Comment $reponses
+     * @param self $reponses
      *
      * @return Comment
      */
@@ -296,7 +296,7 @@ class Comment
     /**
      * Remove reponses.
      *
-     * @param Comment $reponses
+     * @param self $reponses
      */
     public function removeReponse(self $reponses)
     {

@@ -58,6 +58,10 @@ class DefaultController extends Controller
     /**
      * @Route("/{slug}--{id}", name="tbn_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/{username}", name="tbn_user_details_old", requirements={"username": "[^/]+"})
+     * @param null $id
+     * @param null $slug
+     * @param null $username
+     * @return null|object|RedirectResponse|Response
      */
     public function indexAction($id = null, $slug = null, $username = null)
     {
@@ -83,6 +87,12 @@ class DefaultController extends Controller
     /**
      * @Route("/{slug}--{id}/stats/{type}", name="tbn_user_stats", requirements={"slug": "[^/]+", "id": "\d+", "type": "semaine|mois|annee"})
      * @Route("/{username}/stats/{type}", name="tbn_user_stats_old", requirements={"username": "[^/]+", "type": "semaine|mois|annee"})
+     * @param Request $request
+     * @param $type
+     * @param null $id
+     * @param null $slug
+     * @param null $username
+     * @return null|object|JsonResponse|RedirectResponse
      */
     public function statsAction(Request $request, $type, $id = null, $slug = null, $username = null)
     {

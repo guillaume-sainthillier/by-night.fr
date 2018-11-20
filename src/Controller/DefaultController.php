@@ -34,6 +34,9 @@ class DefaultController extends Controller
      * @Route("/", name="tbn_main_index")
      * @Cache(expires="tomorrow", maxage="86400", smaxage="86400", public=true)
      * @BrowserCache(false)
+     * @param PaginatorInterface $paginator
+     * @param RepositoryManager $repositoryManager
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(PaginatorInterface $paginator, RepositoryManager $repositoryManager)
     {
@@ -74,6 +77,8 @@ class DefaultController extends Controller
     /**
      * @Route("/change-city", name="app_change_city")
      * @Method("POST")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function changeCityAction(Request $request)
     {
@@ -89,16 +94,5 @@ class DefaultController extends Controller
         $this->addFlash('error', 'Veuillez seléctionner une ville');
 
         return $this->redirectToRoute('tbn_main_index');
-    }
-
-    private function getResults(SearchAgenda $search, PaginatorInterface $paginator, RepositoryManager $repositoryManager)
-    {
-        /**
-         * @var AgendaRepository
-         */
-        $repo    = $repositoryManager->getRepository(Agenda::class);
-        $results = $repo->findWithSearch($search);
-
-        return $paginator->paginate($results, 1, self::EVENT_PER_CATEGORY);
     }
 }

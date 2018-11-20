@@ -157,7 +157,6 @@ class FacebookAdmin extends FacebookEvents
 
         try {
             $page = $this->getPageFromId($this->socialManager->getFacebookIdPage(), ['fields' => 'fan_count']);
-
             return $page->getField('fan_count');
         } catch (FacebookSDKException $ex) {
             $this->logger->error($ex);

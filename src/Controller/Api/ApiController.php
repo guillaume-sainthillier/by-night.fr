@@ -26,6 +26,10 @@ class ApiController extends Controller
      * @Cache(expires="+1 month", maxage="2592000", smaxage="2592000", public=true)
      * @BrowserCache(false)
      * @Tag("autocomplete_city")
+     * @param Request $request
+     * @param PaginatorInterface $paginator
+     * @param RepositoryManager $repositoryManager
+     * @return JsonResponse
      */
     public function cityAutocompleteAction(Request $request, PaginatorInterface $paginator, RepositoryManager $repositoryManager)
     {

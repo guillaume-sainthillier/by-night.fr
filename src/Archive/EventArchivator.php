@@ -39,7 +39,6 @@ class EventArchivator
      *
      * @return mixed
      *
-     * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     protected function countObjects(QueryBuilder $queryBuilder)

@@ -11,7 +11,7 @@ class UserRepository extends Repository
     /**
      * @param string $q
      *
-     * @return \Pagerfanta\Pagerfanta
+     * @return \FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface
      */
     public function findWithSearch($q)
     {

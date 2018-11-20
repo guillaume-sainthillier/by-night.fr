@@ -11,14 +11,12 @@ class CityRepository extends Repository
     /**
      * @param string $q
      *
-     * @return \Pagerfanta\Pagerfanta
+     * @return \FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface
      */
     public function findWithSearch($q)
     {
         $match = new Match('name', $q);
-
         $query = Query::create($match);
-//        $query->addSort(['population' => 'DESC']);
 
         return $this->createPaginatorAdapter($query);
     }

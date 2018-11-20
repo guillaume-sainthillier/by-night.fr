@@ -101,9 +101,7 @@ class ReplyController extends Controller
      */
     protected function getCommentRepo()
     {
-        $repo = $this->getDoctrine()->getRepository(Comment::class);
-
-        return $repo;
+        return $this->getDoctrine()->getRepository(Comment::class);
     }
 
     protected function getCommentaires(Agenda $soiree, $page, $limit = 10)

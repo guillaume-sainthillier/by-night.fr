@@ -23,6 +23,8 @@ class WidgetsController extends Controller
 
     /**
      * @Route("/programme-tv", name="tbn_agenda_programme_tv")
+     * @param ProgrammeTVParser $parser
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function programmeTVAction(ProgrammeTVParser $parser)
     {
@@ -41,6 +43,8 @@ class WidgetsController extends Controller
     /**
      * @Route("/top/membres/{page}", name="tbn_agenda_top_membres", requirements={"page": "\d+"})
      * @BrowserCache(false)
+     * @param int $page
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function topMembresAction($page = 1)
     {

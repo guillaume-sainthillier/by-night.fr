@@ -19,6 +19,8 @@ class DefaultController extends BaseController
     /**
      * @Route("/deconnexion", name="tbn_disconnect_service")
      * @ParamConverter("social", options={"default_facebook_name": "facebook_events"})
+     * @param Social $social
+     * @return JsonResponse
      */
     public function disconnectAction(Social $social)
     {
@@ -32,6 +34,8 @@ class DefaultController extends BaseController
 
     /**
      * @Route("/deconnexion/confirmation", name="tbn_disconnect_service_confirm")
+     * @param $service
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function disconnectConfirmAction($service)
     {

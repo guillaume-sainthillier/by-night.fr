@@ -2,7 +2,7 @@
 
 namespace App\Migrations;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
+use Doctrine\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -16,6 +16,8 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
 
     /**
      * @param Schema $schema
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Migrations\AbortMigrationException
      */
     public function up(Schema $schema)
     {
@@ -43,6 +45,8 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
 
     /**
      * @param Schema $schema
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Migrations\AbortMigrationException
      */
     public function down(Schema $schema)
     {

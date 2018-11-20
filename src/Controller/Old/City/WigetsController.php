@@ -18,6 +18,8 @@ class WigetsController extends Controller
 
     /**
      * @Route("/{city}/top/membres/{page}", name="tbn_agenda_top_membres_old", requirements={"city": ".+", "page": "\d+"})
+     * @param int $page
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function topMembresAction($page = 1)
     {

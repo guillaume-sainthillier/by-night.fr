@@ -37,6 +37,9 @@ class ProfileController extends BaseController
 
     /**
      * @Route("/delete", name="tbn_user_delete")
+     * @param Request $request
+     * @param UserManagerInterface $userManager
+     * @return RedirectResponse
      */
     public function deleteAction(Request $request, UserManagerInterface $userManager)
     {
@@ -99,6 +102,8 @@ class ProfileController extends BaseController
 
     /**
      * @Route("/edit", name="fos_user_profile_edit")
+     * @param Request $request
+     * @return null|RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function editAction(Request $request)
     {

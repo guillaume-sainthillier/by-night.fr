@@ -61,8 +61,9 @@ class CommentController extends Controller
      * @Route("/{id}/nouveau", name="tbn_comment_new", requirements={"id": "\d+"})
      *
      * @param Request $request
-     * @param Agenda  $soiree
+     * @param Agenda $soiree
      *
+     * @param EventInvalidator $eventInvalidator
      * @return Response
      */
     public function newAction(Request $request, Agenda $soiree, EventInvalidator $eventInvalidator)
@@ -113,9 +114,7 @@ class CommentController extends Controller
      */
     protected function getCommentRepo()
     {
-        $repo = $this->getDoctrine()->getRepository(Comment::class);
-
-        return $repo;
+        return $this->getDoctrine()->getRepository(Comment::class);
     }
 
     protected function getCommentaires(Agenda $soiree, $page = 1, $limit = 10)
