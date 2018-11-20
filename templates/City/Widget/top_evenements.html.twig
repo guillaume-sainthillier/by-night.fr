@@ -5,7 +5,7 @@
 {% block icone %}fa-star{% endblock %}
 {% block body %}
     <div>
-        {{ render_esi(controller('App\\Controller\\City\\WidgetsController:topSoireesAction', {
+        {{ render_esi(controller('App\\Controller\\City\\WidgetsController::topSoireesAction', {
             'city': city
         })) }}
     </div>

@@ -259,7 +259,7 @@
             </div>
             <div class="panel-body">
                 <br/>
-                {{ render_esi(controller('App\\Controller\\City\\EventController:shareAction', {
+                {{ render_esi(controller('App\\Controller\\City\\EventController::shareAction', {
                     'slug': soiree.slug,
                     'city': soiree.place.city.slug
                 })) }}
