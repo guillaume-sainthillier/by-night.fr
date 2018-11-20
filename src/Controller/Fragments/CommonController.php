@@ -13,6 +13,7 @@ use App\Entity\City;
 use App\Social\FacebookAdmin;
 use App\Social\Social;
 use App\Social\Twitter;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -24,8 +25,9 @@ class CommonController extends TBNController
 
     private $socials;
 
-    public function __construct(FacebookAdmin $facebookAdmin, Twitter $twitter)
+    public function __construct(RequestStack $requestStack, FacebookAdmin $facebookAdmin, Twitter $twitter)
     {
+        parent::__construct($requestStack);
         $this->socials = [
             'facebook' => $facebookAdmin,
             'twitter'  => $twitter,
