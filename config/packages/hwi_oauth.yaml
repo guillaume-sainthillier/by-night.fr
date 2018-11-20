@@ -19,6 +19,8 @@ hwi_oauth:
             type:               twitter
             client_id:          '%env(TWITTER_API_ID)%'
             client_secret:      '%env(TWITTER_API_SECRET)%'
+            options:
+                include_email: true
         facebook_admin:
             type:                facebook
             client_id:           '%env(FACEBOOK_API_ID)%'
@@ -28,51 +30,35 @@ hwi_oauth:
             paths:
                 email:          email
                 profilepicture: picture.data.url
-            options:
-                display: popup #dialog is optimized for popup window
         facebook_events:
             type:                facebook
             client_id:           '%env(FACEBOOK_API_ID)%'
             client_secret:       '%env(FACEBOOK_API_SECRET)%'
             scope:               email, user_posts
-            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
-            options:
-                display: popup #dialog is optimized for popup window
         facebook_list_events:
             type:                facebook
             client_id:           '%env(FACEBOOK_API_ID)%'
             client_secret:       '%env(FACEBOOK_API_SECRET)%'
             scope:               email, user_events
-            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
-            options:
-                display: popup #dialog is optimized for popup window
         facebook:
             type:                facebook
             client_id:           '%env(FACEBOOK_API_ID)%'
             client_secret:       '%env(FACEBOOK_API_SECRET)%'
-            scope:               email, rsvp_event
-            authorization_url:   https://www.facebook.com/v2.8/dialog/oauth
+            scope:               email
             infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
-            options:
-                display: popup #dialog is optimized for popup window
         google:
             type:                google
             client_id:           '%env(GOOGLE_API_ID)%'
             client_secret:       '%env(GOOGLE_API_SECRET)%'
-            scope:               https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.stream.read https://www.googleapis.com/auth/plus.stream.write
-            options:
-                access_type:         offline
-                approval_prompt:     auto
-                display:             popup
-                login_hint:          email address
+            scope:               "email profile"
