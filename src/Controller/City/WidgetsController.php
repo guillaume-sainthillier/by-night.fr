@@ -2,6 +2,8 @@
 
 namespace App\Controller\City;
 
+use App\Annotation\BrowserCache;
+use App\Controller\TBNController as Controller;
 use App\Entity\Agenda;
 use App\Entity\City;
 use App\Social\FacebookAdmin;
@@ -9,9 +11,7 @@ use App\Social\Twitter;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\TBNController as Controller;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Annotation\BrowserCache;
 
 /**
  * Description of MenuDroitController.

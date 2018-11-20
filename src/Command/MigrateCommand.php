@@ -7,9 +7,9 @@ use App\Entity\Country;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Reject\Reject;
+use App\Utils\Monitor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\Utils\Monitor;
 
 class MigrateCommand extends AppCommand
 {

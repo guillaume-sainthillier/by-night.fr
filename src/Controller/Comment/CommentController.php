@@ -2,19 +2,19 @@
 
 namespace App\Controller\Comment;
 
-use App\Invalidator\EventInvalidator;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Annotation\BrowserCache;
-use Symfony\Component\HttpFoundation\Response;
 use App\Controller\TBNController as Controller;
 use App\Entity\Agenda;
-use App\Form\Type\CommentType;
 use App\Entity\Comment;
+use App\Form\Type\CommentType;
+use App\Invalidator\EventInvalidator;
 use App\Repository\CommentRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CommentController extends Controller
 {

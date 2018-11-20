@@ -3,28 +3,28 @@
 namespace App\Controller\EspacePerso;
 
 use App\App\SocialManager;
+use App\Controller\TBNController as Controller;
+use App\Entity\Agenda;
+use App\Entity\Calendrier;
 use App\Entity\User;
 use App\Factory\EventFactory;
+use App\Form\Type\AgendaType;
 use App\Handler\DoctrineEventHandler;
+use App\Handler\ExplorationHandler;
 use App\Parser\Common\FaceBookParser;
 use App\Social\FacebookAdmin;
 use App\Social\FacebookListEvents;
 use App\Social\SocialProvider;
 use App\Validator\Constraints\EventConstraintValidator;
 use Psr\Log\LoggerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use App\Controller\TBNController as Controller;
-use App\Entity\Agenda;
-use App\Handler\ExplorationHandler;
-use App\Form\Type\AgendaType;
-use App\Entity\Calendrier;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class EventController extends Controller

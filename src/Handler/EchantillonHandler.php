@@ -8,9 +8,9 @@
 
 namespace App\Handler;
 
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Agenda;
 use App\Entity\Place;
+use Doctrine\ORM\EntityManagerInterface;
 
 class EchantillonHandler
 {

@@ -2,10 +2,10 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
-use App\Entity\Comment;
 use App\Entity\Agenda;
+use App\Entity\Comment;
 use App\Entity\User;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * CommentRepository.

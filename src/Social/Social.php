@@ -9,18 +9,18 @@ namespace App\Social;
  */
 
 use App\App\SocialManager;
+use App\Entity\Agenda;
+use App\Entity\Info;
+use App\Entity\User;
+use App\Exception\SocialException;
+use App\Picture\EventProfilePicture;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Picture\EventProfilePicture;
-use App\Exception\SocialException;
-use App\Entity\Agenda;
-use App\Entity\User;
-use App\Entity\Info;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Description of Twitter.

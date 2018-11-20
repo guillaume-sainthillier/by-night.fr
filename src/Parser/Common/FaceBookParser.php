@@ -5,13 +5,13 @@ namespace App\Parser\Common;
 use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\Place;
+use App\Parser\AgendaParser;
+use App\Repository\SiteRepository;
+use App\Social\FacebookAdmin;
+use App\Utils\Firewall;
+use App\Utils\Monitor;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
-use App\Repository\SiteRepository;
-use App\Utils\Monitor;
-use App\Social\FacebookAdmin;
-use App\Parser\AgendaParser;
-use App\Utils\Firewall;
 
 /**
  * Classe de parsing des événéments FB.

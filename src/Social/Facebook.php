@@ -2,15 +2,15 @@
 
 namespace App\Social;
 
+use App\Entity\Agenda;
+use App\Entity\User;
+use App\Exception\SocialException;
+use App\Utils\Monitor;
+use Facebook\Exceptions\FacebookSDKException;
+use Facebook\Facebook as Client;
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphEdge;
-use App\Entity\Agenda;
-use App\Exception\SocialException;
-use Facebook\Exceptions\FacebookSDKException;
-use App\Utils\Monitor;
 use Facebook\GraphNodes\GraphNode;
-use Facebook\Facebook as Client;
-use App\Entity\User;
 
 /**
  * Description of Facebook.

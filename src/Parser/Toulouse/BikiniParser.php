@@ -2,8 +2,8 @@
 
 namespace App\Parser\Toulouse;
 
-use Symfony\Component\DomCrawler\Crawler;
 use App\Parser\LinksParser;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @author Guillaume SAINTHILLIER

@@ -5,13 +5,13 @@ namespace App\Security\Core\User;
 use App\App\CityManager;
 use App\Entity\Info;
 use App\Entity\User;
+use App\Entity\UserInfo;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
-use Symfony\Component\Security\Core\User\UserInterface;
-use FOS\UserBundle\Model\UserManagerInterface;
-use App\Entity\UserInfo;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class FOSUBUserProvider extends BaseClass
 {

@@ -2,16 +2,16 @@
 
 namespace App\Repository;
 
+use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\Place;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use App\Entity\Site;
-use App\Entity\Agenda;
 use App\Entity\User;
 use App\Search\SearchAgenda;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class AgendaRepository extends EntityRepository
 {

@@ -2,9 +2,9 @@
 
 namespace App\Fetcher;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use App\Parser\Manager\ParserManager;
 use App\Parser\ParserInterface;
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
  * Created by PhpStorm.

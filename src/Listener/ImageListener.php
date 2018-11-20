@@ -2,11 +2,11 @@
 
 namespace App\Listener;
 
-use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Vich\UploaderBundle\Event\Event;
 use App\Entity\Agenda;
 use App\Entity\Site;
 use App\Entity\User;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use Vich\UploaderBundle\Event\Event;
 
 class ImageListener
 {

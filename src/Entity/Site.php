@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
+use App\Geolocalize\BoundaryInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
-use App\Geolocalize\BoundaryInterface;
 
 /**
  * Site.

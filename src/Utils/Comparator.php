@@ -2,11 +2,11 @@
 
 namespace App\Utils;
 
+use App\Entity\Agenda;
 use App\Entity\City;
+use App\Entity\Place;
 use App\Entity\ZipCity;
 use Doctrine\Common\Cache\ArrayCache;
-use App\Entity\Place;
-use App\Entity\Agenda;
 use Doctrine\Common\Cache\Cache;
 
 /**

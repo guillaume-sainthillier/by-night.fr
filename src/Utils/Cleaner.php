@@ -2,8 +2,8 @@
 
 namespace App\Utils;
 
-use App\Entity\Place;
 use App\Entity\Agenda;
+use App\Entity\Place;
 
 /**
  * Description of Merger.

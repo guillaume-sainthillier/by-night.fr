@@ -6,10 +6,11 @@ use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\User;
 use TwitterOAuth\Auth\SingleUserAuth;
+use TwitterOAuth\Serializer\ArraySerializer;
+
 /*
  * Serializer Namespace
  */
-use TwitterOAuth\Serializer\ArraySerializer;
 
 /**
  * Description of Twitter.

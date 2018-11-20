@@ -3,21 +3,21 @@
 namespace App\Social;
 
 use App\App\SocialManager;
+use App\Entity\Agenda;
+use App\Entity\SiteInfo;
+use App\Entity\User;
+use App\Picture\EventProfilePicture;
+use App\Utils\Monitor;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\Exceptions\FacebookResponseException;
+use Facebook\Exceptions\FacebookSDKException;
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphNode;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use App\Entity\Agenda;
-use App\Picture\EventProfilePicture;
-use App\Utils\Monitor;
-use App\Entity\SiteInfo;
-use App\Entity\User;
-use Facebook\Exceptions\FacebookSDKException;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Description of Facebook.

@@ -8,13 +8,13 @@
 
 namespace App\Updater;
 
+use App\Social\FacebookAdmin;
 use Doctrine\Common\Persistence\ObjectManager;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
-use App\Social\FacebookAdmin;
 
 abstract class Updater
 {

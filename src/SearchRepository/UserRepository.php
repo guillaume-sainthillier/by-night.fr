@@ -2,9 +2,9 @@
 
 namespace App\SearchRepository;
 
-use FOS\ElasticaBundle\Repository;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
+use FOS\ElasticaBundle\Repository;
 
 class UserRepository extends Repository
 {

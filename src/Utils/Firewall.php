@@ -2,14 +2,14 @@
 
 namespace App\Utils;
 
-use App\Entity\Place;
 use App\Entity\Agenda;
+use App\Entity\Exploration;
+use App\Entity\Place;
+use App\Entity\User;
 use App\Geolocalize\BoundaryInterface;
 use App\Geolocalize\GeolocalizeInterface;
-use App\Entity\Exploration;
 use App\Reject\Reject;
 use App\Repository\ExplorationRepository;
-use App\Entity\User;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**

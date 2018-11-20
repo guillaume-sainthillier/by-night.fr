@@ -2,12 +2,12 @@
 
 namespace App\News;
 
-use Doctrine\Common\Persistence\ObjectManager;
-use Psr\Log\LoggerInterface;
 use App\Entity\Agenda;
 use App\Entity\News;
 use App\Social\FacebookAdmin;
 use App\Social\Twitter;
+use Doctrine\Common\Persistence\ObjectManager;
+use Psr\Log\LoggerInterface;
 use Twig\Environment;
 
 class NewsManager

@@ -8,18 +8,18 @@
 
 namespace App\Handler;
 
+use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\Country;
-use App\Entity\ZipCity;
-use App\Geocoder\PlaceGeocoder;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Agenda;
+use App\Entity\Exploration;
 use App\Entity\Place;
 use App\Entity\Site;
-use App\Entity\Exploration;
+use App\Entity\ZipCity;
+use App\Geocoder\PlaceGeocoder;
 use App\Reject\Reject;
 use App\Utils\Firewall;
 use App\Utils\Monitor;
+use Doctrine\ORM\EntityManagerInterface;
 
 class DoctrineEventHandler
 {

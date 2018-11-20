@@ -2,9 +2,9 @@
 
 namespace App\Parser\Common;
 
-use Symfony\Component\DomCrawler\Crawler;
 use App\Parser\LinksParser;
 use ForceUTF8\Encoding;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Description of SoonNightParser.

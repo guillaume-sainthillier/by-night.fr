@@ -10,10 +10,10 @@ namespace App\Consumer;
 
 use App\Factory\EventFactory;
 use App\Handler\DoctrineEventHandler;
+use App\Utils\Monitor;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
-use App\Utils\Monitor;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface

@@ -2,14 +2,14 @@
 
 namespace App\Listener;
 
-use App\Entity\City;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use App\Entity\Agenda;
-use App\Invalidator\EventInvalidator;
+use App\Entity\City;
 use App\Entity\Exploration;
+use App\Entity\User;
+use App\Invalidator\EventInvalidator;
 use App\Reject\Reject;
 use App\Utils\Firewall;
-use App\Entity\User;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class EventListener
 {

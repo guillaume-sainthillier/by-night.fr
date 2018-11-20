@@ -2,8 +2,8 @@
 
 namespace App\Social;
 
-use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use App\Entity\User;
+use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 
 /**
  * Description of Facebook.

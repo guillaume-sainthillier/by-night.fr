@@ -8,11 +8,11 @@
 
 namespace App\Updater;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use App\Entity\Agenda;
 use App\Handler\EventHandler;
-use App\Utils\Monitor;
 use App\Social\FacebookAdmin;
+use App\Utils\Monitor;
+use Doctrine\Common\Persistence\ObjectManager;
 
 class EventUpdater extends Updater
 {

@@ -2,25 +2,25 @@
 
 namespace App\Controller\City;
 
-use App\Entity\City;
-use App\Picture\EventProfilePicture;
-use App\Social\FacebookAdmin;
-use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Entity\Comment;
-use App\Form\Type\CommentType;
-use App\Controller\TBNController as Controller;
-use SocialLinks\Page;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use FOS\HttpCacheBundle\Configuration\Tag;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Annotation\BrowserCache;
+use App\Controller\TBNController as Controller;
 use App\Entity\Agenda;
 use App\Entity\Calendrier;
-use App\Invalidator\EventInvalidator;
+use App\Entity\City;
+use App\Entity\Comment;
 use App\Entity\User;
+use App\Form\Type\CommentType;
+use App\Invalidator\EventInvalidator;
+use App\Picture\EventProfilePicture;
+use App\Social\FacebookAdmin;
+use FOS\HttpCacheBundle\Configuration\Tag;
+use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use SocialLinks\Page;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EventController extends Controller
 {

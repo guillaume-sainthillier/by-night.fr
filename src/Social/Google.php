@@ -2,9 +2,9 @@
 
 namespace App\Social;
 
-use Google_Client;
 use App\Entity\Agenda;
 use App\Entity\User;
+use Google_Client;
 
 /**
  * Description of Twitter.

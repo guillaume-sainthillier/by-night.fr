@@ -3,8 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\App\SocialManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use App\Entity\SiteInfo;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 

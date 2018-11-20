@@ -2,14 +2,14 @@
 
 namespace App\Controller\Social;
 
+use App\Social\Social;
+use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Social\Social;
-use Symfony\Component\Security\Core\Exception\AccountStatusException;
-use FOS\UserBundle\Model\UserInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccountStatusException;
 
 /**
  * @Route("/{service}", requirements={"service": "facebook|twitter|google"})

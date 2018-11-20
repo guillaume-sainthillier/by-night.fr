@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
+use App\Geolocalize\GeolocalizeInterface;
+use App\Reject\Reject;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
-use App\Geolocalize\GeolocalizeInterface;
-use App\Reject\Reject;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Place.

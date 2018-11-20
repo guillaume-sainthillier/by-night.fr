@@ -2,17 +2,17 @@
 
 namespace App\Controller\Api;
 
+use App\Annotation\BrowserCache;
 use App\Entity\City;
 use App\SearchRepository\CityRepository;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Annotation\BrowserCache;
 
 /**
  * @Route("/api")

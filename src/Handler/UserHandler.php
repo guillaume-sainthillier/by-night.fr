@@ -8,8 +8,8 @@
 
 namespace App\Handler;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Entity\User;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UserHandler
 {

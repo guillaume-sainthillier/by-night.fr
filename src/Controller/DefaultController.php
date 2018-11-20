@@ -2,19 +2,16 @@
 
 namespace App\Controller;
 
+use App\Annotation\BrowserCache;
 use App\App\CityManager;
-use App\Entity\Agenda;
 use App\Form\Type\CityAutocompleteType;
-use App\Search\SearchAgenda;
-use App\SearchRepository\AgendaRepository;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Annotation\BrowserCache;
 
 class DefaultController extends Controller
 {

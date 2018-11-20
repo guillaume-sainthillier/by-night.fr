@@ -4,11 +4,11 @@ namespace App\Command;
 
 use App\Fetcher\EventFetcher;
 use App\Parser\Common\FaceBookParser;
+use App\Parser\ParserInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\Parser\ParserInterface;
 
 class FetchCommand extends AppCommand
 {

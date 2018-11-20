@@ -2,8 +2,8 @@
 
 namespace App\Parser;
 
-use Symfony\Component\DomCrawler\Crawler;
 use App\Utils\Monitor;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @author Guillaume S. <guillaume@sainthillier.fr>

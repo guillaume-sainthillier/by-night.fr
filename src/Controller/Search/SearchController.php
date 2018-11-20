@@ -2,15 +2,15 @@
 
 namespace App\Controller\Search;
 
+use App\Search\SearchAgenda;
 use App\SearchRepository\AgendaRepository;
 use App\SearchRepository\UserRepository;
+use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Knp\Component\Pager\PaginatorInterface;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Symfony\Component\Routing\Annotation\Route;
-use Pagerfanta\Pagerfanta;
-use App\Search\SearchAgenda;
 
 class SearchController extends Controller
 {

@@ -4,11 +4,11 @@ namespace App\Handler;
 
 use App\Entity\Agenda;
 use App\Entity\Place;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Utils\Cleaner;
 use App\Utils\Comparator;
 use App\Utils\Merger;
 use App\Utils\Monitor;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Description of EventHandler.

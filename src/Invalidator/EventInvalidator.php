@@ -8,11 +8,11 @@
 
 namespace App\Invalidator;
 
+use App\Entity\Agenda;
 use App\Entity\City;
+use App\Entity\User;
 use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;
-use App\Entity\Agenda;
-use App\Entity\User;
 
 class EventInvalidator
 {

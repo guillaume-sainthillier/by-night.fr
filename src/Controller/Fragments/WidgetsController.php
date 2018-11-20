@@ -2,11 +2,11 @@
 
 namespace App\Controller\Fragments;
 
+use App\Annotation\BrowserCache;
 use App\Controller\TBNController as Controller;
 use App\Entity\User;
 use App\Parser\ProgrammeTVParser;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Annotation\BrowserCache;
 
 /**
  * Description of MenuDroitController.

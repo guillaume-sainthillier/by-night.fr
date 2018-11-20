@@ -2,20 +2,20 @@
 
 namespace App\Controller\City;
 
-use App\Entity\Agenda;
-use App\Repository\AgendaRepository;
-use App\Controller\TBNController as Controller;
-use FOS\ElasticaBundle\Doctrine\RepositoryManager;
-use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Annotation\BrowserCache;
+use App\Controller\TBNController as Controller;
+use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\Place;
 use App\Form\Type\SearchType;
+use App\Repository\AgendaRepository;
 use App\Search\SearchAgenda;
+use FOS\ElasticaBundle\Doctrine\RepositoryManager;
+use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class AgendaController extends Controller
 {

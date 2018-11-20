@@ -8,10 +8,10 @@
 
 namespace App\Form\Type;
 
+use App\Validator\Constraints\ReCaptchaResponse;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use App\Validator\Constraints\ReCaptchaResponse;
 
 class ReCaptchaType extends AbstractType
 {

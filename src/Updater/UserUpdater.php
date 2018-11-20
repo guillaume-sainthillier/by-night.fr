@@ -8,11 +8,11 @@
 
 namespace App\Updater;
 
-use Doctrine\Common\Persistence\ObjectManager;
-use App\Utils\Monitor;
+use App\Entity\User;
 use App\Handler\UserHandler;
 use App\Social\FacebookAdmin;
-use App\Entity\User;
+use App\Utils\Monitor;
+use Doctrine\Common\Persistence\ObjectManager;
 
 class UserUpdater extends Updater
 {

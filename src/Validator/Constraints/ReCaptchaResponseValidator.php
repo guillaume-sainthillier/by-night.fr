@@ -8,9 +8,9 @@
 
 namespace App\Validator\Constraints;
 
+use App\Captcha\CaptchaWrapper;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use App\Captcha\CaptchaWrapper;
 
 class ReCaptchaResponseValidator extends ConstraintValidator
 {

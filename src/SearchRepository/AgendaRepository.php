@@ -2,16 +2,16 @@
 
 namespace App\SearchRepository;
 
-use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
-use FOS\ElasticaBundle\Repository;
 use App\Search\SearchAgenda;
-use Elastica\Query\Term;
-use Elastica\Query\Terms;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Match;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
+use Elastica\Query\Term;
+use Elastica\Query\Terms;
+use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
+use FOS\ElasticaBundle\Repository;
 
 class AgendaRepository extends Repository
 {

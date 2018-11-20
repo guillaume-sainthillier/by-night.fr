@@ -2,13 +2,13 @@
 
 namespace App\Controller\City;
 
-use App\Entity\Agenda;
-use App\Entity\City;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Routing\Annotation\Route;
 use App\Annotation\BrowserCache;
 use App\Controller\TBNController as Controller;
+use App\Entity\Agenda;
+use App\Entity\City;
 use App\Search\SearchAgenda;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends Controller
 {

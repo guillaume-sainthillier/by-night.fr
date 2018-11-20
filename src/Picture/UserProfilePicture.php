@@ -8,8 +8,8 @@
 
 namespace App\Picture;
 
-use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use App\Entity\User;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserProfilePicture

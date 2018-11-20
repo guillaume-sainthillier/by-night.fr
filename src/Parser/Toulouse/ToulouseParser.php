@@ -2,10 +2,10 @@
 
 namespace App\Parser\Toulouse;
 
-use ForceUTF8\Encoding;
-use Symfony\Component\Filesystem\Filesystem;
 use App\Entity\Agenda;
 use App\Parser\AgendaParser;
+use ForceUTF8\Encoding;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Description of ToulouseParser.

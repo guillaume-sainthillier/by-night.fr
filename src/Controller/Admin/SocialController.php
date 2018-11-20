@@ -3,11 +3,11 @@
 namespace App\Controller\Admin;
 
 use App\App\SocialManager;
+use App\Social\Social;
 use App\Social\SocialProvider;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Social\Social;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 

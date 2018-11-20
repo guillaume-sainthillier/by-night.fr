@@ -2,8 +2,8 @@
 
 namespace App\Captcha;
 
-use Symfony\Component\HttpFoundation\RequestStack;
 use ReCaptcha\ReCaptcha;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Created by PhpStorm.

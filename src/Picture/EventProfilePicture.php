@@ -8,9 +8,9 @@
 
 namespace App\Picture;
 
+use App\Entity\Agenda;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
-use App\Entity\Agenda;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class EventProfilePicture

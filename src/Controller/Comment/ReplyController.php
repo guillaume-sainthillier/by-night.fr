@@ -2,16 +2,16 @@
 
 namespace App\Controller\Comment;
 
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\Request;
+use App\Entity\Agenda;
+use App\Entity\Comment;
+use App\Form\Type\CommentType;
+use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Form\Type\CommentType;
-use App\Entity\Comment;
-use App\Entity\Agenda;
-use App\Repository\CommentRepository;
 
 class ReplyController extends Controller
 {
