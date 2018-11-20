@@ -60,10 +60,10 @@ class CommentController extends Controller
     /**
      * @Route("/{id}/nouveau", name="tbn_comment_new", requirements={"id": "\d+"})
      *
-     * @param Request $request
-     * @param Agenda $soiree
-     *
+     * @param Request          $request
+     * @param Agenda           $soiree
      * @param EventInvalidator $eventInvalidator
+     *
      * @return Response
      */
     public function newAction(Request $request, Agenda $soiree, EventInvalidator $eventInvalidator)

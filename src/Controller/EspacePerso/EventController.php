@@ -116,12 +116,12 @@ class EventController extends Controller
     /**
      * @Route("/corriger/{slug}", name="tbn_agenda_edit", requirements={"slug": ".+"})
      *
-     * @param Request $request
-     * @param Agenda $agenda
-     *
+     * @param Request                  $request
+     * @param Agenda                   $agenda
      * @param EventConstraintValidator $validator
-     * @param LoggerInterface $logger
-     * @param SocialProvider $socialProvider
+     * @param LoggerInterface          $logger
+     * @param SocialProvider           $socialProvider
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function editAction(Request $request, Agenda $agenda, EventConstraintValidator $validator, LoggerInterface $logger, SocialProvider $socialProvider)
@@ -170,11 +170,12 @@ class EventController extends Controller
      * @Route("/import", name="tbn_agenda_import_events")
      * @Security("has_role('ROLE_FACEBOOK_LIST_EVENTS')")
      *
-     * @param FacebookListEvents $importer
-     * @param EventFactory $eventFactory
-     * @param FaceBookParser $parser
+     * @param FacebookListEvents   $importer
+     * @param EventFactory         $eventFactory
+     * @param FaceBookParser       $parser
      * @param DoctrineEventHandler $handler
-     * @param ValidatorInterface $validator
+     * @param ValidatorInterface   $validator
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function importAction(FacebookListEvents $importer, EventFactory $eventFactory, FaceBookParser $parser, DoctrineEventHandler $handler, ValidatorInterface $validator)
@@ -265,11 +266,11 @@ class EventController extends Controller
     /**
      * @Route("/espace-perso/nouvelle-soiree", name="tbn_agenda_new")
      *
-     * @param Request $request
-     *
+     * @param Request                  $request
      * @param EventConstraintValidator $validator
-     * @param SocialManager $socialManager
-     * @param SocialProvider $socialProvider
+     * @param SocialManager            $socialManager
+     * @param SocialProvider           $socialProvider
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function newAction(Request $request, EventConstraintValidator $validator, SocialManager $socialManager, SocialProvider $socialProvider)
@@ -374,9 +375,9 @@ class EventController extends Controller
     }
 
     /**
-     * @param Agenda $agenda
-     *
+     * @param Agenda        $agenda
      * @param SocialManager $socialManager
+     *
      * @return \Symfony\Component\Form\FormInterface
      */
     protected function createCreateForm(Agenda $agenda, SocialManager $socialManager)
@@ -443,10 +444,12 @@ class EventController extends Controller
     /**
      * @Route("/participer/{id}", name="tbn_user_participer", defaults={"participer": true, "interet": false})
      * @Route("/interet/{id}", name="tbn_user_interesser", defaults={"participer": false, "interet": true})
-     * @param Agenda $agenda
+     *
+     * @param Agenda        $agenda
      * @param FacebookAdmin $facebookAdmin
      * @param $participer
      * @param $interet
+     *
      * @return JsonResponse
      */
     public function participerAction(Agenda $agenda, FacebookAdmin $facebookAdmin, $participer, $interet)

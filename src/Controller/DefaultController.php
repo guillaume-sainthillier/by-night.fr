@@ -31,8 +31,10 @@ class DefaultController extends Controller
      * @Route("/", name="tbn_main_index")
      * @Cache(expires="tomorrow", maxage="86400", smaxage="86400", public=true)
      * @BrowserCache(false)
+     *
      * @param PaginatorInterface $paginator
-     * @param RepositoryManager $repositoryManager
+     * @param RepositoryManager  $repositoryManager
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(PaginatorInterface $paginator, RepositoryManager $repositoryManager)
@@ -74,7 +76,9 @@ class DefaultController extends Controller
     /**
      * @Route("/change-city", name="app_change_city")
      * @Method("POST")
+     *
      * @param Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function changeCityAction(Request $request)

@@ -37,7 +37,9 @@ class CommonController extends TBNController
     /**
      * @Route("/header/{city}", name="tbn_private_header_site")
      * @Route("/header", name="tbn_private_header")
+     *
      * @param City|null $city
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function header(City $city = null)

@@ -44,11 +44,13 @@ class EventController extends Controller
      * @Route("/soiree/{slug}--{id}", name="tbn_agenda_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/soiree/{slug}", name="tbn_agenda_details_old", requirements={"slug": "[^/]+"})
      * @BrowserCache(false)
-     * @param City $city
+     *
+     * @param City                  $city
      * @param SymfonyResponseTagger $responseTagger
-     * @param FacebookAdmin $facebookAdmin
+     * @param FacebookAdmin         $facebookAdmin
      * @param $slug
      * @param null $id
+     *
      * @return Agenda|null|object|\Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function detailsAction(City $city, SymfonyResponseTagger $responseTagger, FacebookAdmin $facebookAdmin, $slug, $id = null)
@@ -94,10 +96,11 @@ class EventController extends Controller
     /**
      * @Cache(expires="+12 hours", smaxage="43200")
      *
-     * @param Agenda $agenda
-     *
+     * @param Agenda              $agenda
      * @param EventProfilePicture $eventProfilePicture
+     *
      * @return Response
+     *
      * @throws \Exception
      */
     public function shareAction(Agenda $agenda, EventProfilePicture $eventProfilePicture)

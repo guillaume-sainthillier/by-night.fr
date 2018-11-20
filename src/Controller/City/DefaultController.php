@@ -16,7 +16,9 @@ class DefaultController extends Controller
      * @Cache(expires="+2 hours", smaxage="7200")
      * @Route("/", name="tbn_agenda_index")
      * @BrowserCache(false)
+     *
      * @param City $city
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(City $city)

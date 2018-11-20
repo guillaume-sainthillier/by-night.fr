@@ -12,6 +12,7 @@ class Version20161205113345 extends AbstractMigration
 {
     /**
      * @param Schema $schema
+     *
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\DBAL\Migrations\AbortMigrationException
      */
@@ -27,6 +28,7 @@ class Version20161205113345 extends AbstractMigration
 
     /**
      * @param Schema $schema
+     *
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\DBAL\Migrations\AbortMigrationException
      */
