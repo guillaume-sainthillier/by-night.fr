@@ -80,15 +80,17 @@ class AgendaController extends Controller
      * @Route("/tag/{tag}", name="tbn_agenda_tags", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
      * @Route("/tag/{tag}/page/{page}", name="tbn_agenda_tags_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
      * @BrowserCache(false)
-     * @param Request $request
-     * @param City $city
-     * @param int $page
-     * @param null $type
-     * @param null $tag
-     * @param null $ville
-     * @param null $slug
-     * @param string $paginateRoute
+     *
+     * @param Request           $request
+     * @param City              $city
+     * @param int               $page
+     * @param null              $type
+     * @param null              $tag
+     * @param null              $ville
+     * @param null              $slug
+     * @param string            $paginateRoute
      * @param RepositoryManager $repositoryManager
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function indexAction(Request $request, City $city, RepositoryManager $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')

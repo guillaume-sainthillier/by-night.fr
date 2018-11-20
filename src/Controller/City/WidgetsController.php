@@ -29,10 +29,12 @@ class WidgetsController extends Controller
     /**
      * @Route("/tweeter-feed/{max_id}", name="tbn_agenda_tweeter_feed", requirements={"max_id": "\d+"})
      * @BrowserCache(false)
-     * @param City $city
-     * @param Twitter $twitter
+     *
+     * @param City         $city
+     * @param Twitter      $twitter
      * @param RequestStack $requestStack
-     * @param null $max_id
+     * @param null         $max_id
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function twitterAction(City $city, Twitter $twitter, RequestStack $requestStack, $max_id = null)
@@ -80,10 +82,12 @@ class WidgetsController extends Controller
     /**
      * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="tbn_agenda_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
      * @BrowserCache(false)
+     *
      * @param City $city
      * @param $slug
      * @param null $id
-     * @param int $page
+     * @param int  $page
+     *
      * @return Agenda|null|object|\Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function nextEventsAction(City $city, $slug, $id = null, $page = 1)
@@ -145,10 +149,12 @@ class WidgetsController extends Controller
     /**
      * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="tbn_agenda_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))3
      * @BrowserCache(false)
+     *
      * @param City $city
      * @param $slug
      * @param null $id
-     * @param int $page
+     * @param int  $page
+     *
      * @return Agenda|null|object|\Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function soireesSimilairesAction(City $city, $slug, $id = null, $page = 1)
@@ -197,8 +203,10 @@ class WidgetsController extends Controller
     /**
      * @Route("/top/soirees/{page}", name="tbn_agenda_top_soirees", requirements={"page": "\d+"})
      * @BrowserCache(false)
+     *
      * @param City $city
-     * @param int $page
+     * @param int  $page
+     *
      * @return Response
      */
     public function topSoireesAction(City $city, $page = 1)
@@ -239,12 +247,14 @@ class WidgetsController extends Controller
     /**
      * @Route("/soiree/{slug}--{id}/membres/{page}", name="tbn_agenda_soirees_membres", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))
      * @BrowserCache(false)
-     * @param City $city
-     * @param FacebookAdmin $facebookAdmin
+     *
+     * @param City                  $city
+     * @param FacebookAdmin         $facebookAdmin
      * @param SymfonyResponseTagger $responseTagger
      * @param $slug
      * @param null $id
-     * @param int $page
+     * @param int  $page
+     *
      * @return Agenda|null|object|\Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function fbMembresAction(City $city, FacebookAdmin $facebookAdmin, SymfonyResponseTagger $responseTagger, $slug, $id = null, $page = 1)

@@ -16,7 +16,9 @@ class AgendaController extends Controller
      * @Route("/{city}/agenda/sortir-a/{slug}/page/{page}", name="tbn_agenda_place_pagination_old", requirements={"slug": ".+", "page": "\d+"})
      * @Route("/{city}/agenda/tag/{tag}", name="tbn_agenda_tags_old", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
      * @Route("/{city}/agenda/tag/{tag}/page/{page}", name="tbn_agenda_tags_pagination_old", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
+     *
      * @param Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function indexAction(Request $request)
@@ -30,8 +32,10 @@ class AgendaController extends Controller
     /**
      * @Route("/{city}/agenda/sortir-dans/{ville}", name="tbn_agenda_ville_old", requirements={"ville": ".*"})
      * @Route("/{city}/agenda/sortir-dans/{ville}/page/{page}", name="tbn_agenda_ville_pagination_old", requirements={"ville": ".*", "page": "\d+"})
+     *
      * @param $ville
      * @param int $page
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function cityAction($ville, $page = 1)
@@ -50,8 +54,10 @@ class AgendaController extends Controller
     /**
      * @Route("/{city}/sortir-dans/{ville}", name="tbn_agenda_ville", requirements={"ville": ".*"})
      * @Route("/{city}/sortir-dans/{ville}/page/{page}", name="tbn_agenda_ville_pagination", requirements={"ville": ".*", "page": "\d+"})
+     *
      * @param $ville
      * @param int $page
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function city2Action($ville, $page = 1)

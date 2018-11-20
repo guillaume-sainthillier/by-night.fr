@@ -10,7 +10,9 @@ class SearchController extends Controller
 {
     /**
      * @Route("/evenements", name="tbn_old_search_query")
+     *
      * @param Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function oldSearchAction(Request $request)

@@ -45,7 +45,7 @@ class Merger
 //            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
-            'date_fin' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
+            'date_fin'   => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
             'descriptif',
             'horaires',
             'modification_derniere_minute',
@@ -60,7 +60,7 @@ class Merger
             'facebook_event_id',
             'facebook_owner_id',
             'fb_participations' => self::MERGE_MAX,
-            'fb_interets' => self::MERGE_MAX,
+            'fb_interets'       => self::MERGE_MAX,
             'fb_post_id',
             'fb_post_system_id',
             'tweet_post_id',
@@ -82,13 +82,13 @@ class Merger
     public function mergePlace(Place $a = null, Place $b = null)
     {
         return $this->merge($a, $b, [
-            'nom' => self::MERGE_LEFT,
-            'latitude' => self::MERGE_LEFT,
-            'longitude' => self::MERGE_LEFT,
-            'rue' => self::MERGE_LEFT,
-            'url' => self::MERGE_LEFT,
-            'ville' => self::MERGE_LEFT,
-            'codePostal' => self::MERGE_LEFT,
+            'nom'         => self::MERGE_LEFT,
+            'latitude'    => self::MERGE_LEFT,
+            'longitude'   => self::MERGE_LEFT,
+            'rue'         => self::MERGE_LEFT,
+            'url'         => self::MERGE_LEFT,
+            'ville'       => self::MERGE_LEFT,
+            'codePostal'  => self::MERGE_LEFT,
             'facebook_id' => self::MERGE_LEFT,
             'reject',
         ]);
@@ -99,7 +99,7 @@ class Merger
      *
      * @param \stdClass $a
      * @param \stdClass $b
-     * @param array $fields
+     * @param array     $fields
      *
      * @return \stdClass
      */
@@ -119,8 +119,8 @@ class Merger
                 $type = self::DEFAULT_MERGE;
             } else {
                 $oldField = $field;
-                $field = $type;
-                $type = $oldField;
+                $field    = $type;
+                $type     = $oldField;
             }
 
             $getter = 'get' . $this->skakeToCamel($field);
@@ -128,7 +128,7 @@ class Merger
 
             $valueA = $a->$getter();
             $valueB = $b->$getter();
-            $value = $this->getBestContent($valueA, $valueB, $type);
+            $value  = $this->getBestContent($valueA, $valueB, $type);
 
             $a->$setter($value);
         }

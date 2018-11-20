@@ -18,8 +18,10 @@ class SocialController extends Controller
 {
     /**
      * @Route("/connexion", name="tbn_administration_connect_site")
+     *
      * @param $service
      * @param SessionInterface $session
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function connectInfoAction($service, SessionInterface $session)
@@ -36,8 +38,10 @@ class SocialController extends Controller
     /**
      * @Route("/deconnexion", name="tbn_administration_disconnect_service")
      * @ParamConverter("social", options={"default_facebook_name": "facebook_admin"})
+     *
      * @param $service
      * @param Social $social
+     *
      * @return JsonResponse
      */
     public function disconnectSiteAction(Social $social)
@@ -53,7 +57,9 @@ class SocialController extends Controller
 
     /**
      * @Route("/deconnexion/confirmation", name="tbn_administration_disconnect_service_confirm")
+     *
      * @param $service
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function disconnectConfirmAction($service)

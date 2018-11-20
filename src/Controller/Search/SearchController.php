@@ -16,7 +16,9 @@ class SearchController extends Controller
 {
     /**
      * @Route("/evenements", name="tbn_old_search_query")
+     *
      * @param Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function oldSearchAction(Request $request)
@@ -74,10 +76,10 @@ class SearchController extends Controller
     /**
      * @Route("/", name="tbn_search_query")
      *
-     * @param Request $request
-     *
-     * @param RepositoryManager $rm
+     * @param Request            $request
+     * @param RepositoryManager  $rm
      * @param PaginatorInterface $paginator
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function searchAction(Request $request, RepositoryManager $rm, PaginatorInterface $paginator)
