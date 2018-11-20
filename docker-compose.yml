@@ -75,7 +75,7 @@ services:
         networks:
             - backend
     elk:
-        image: sebp/elk:611
+        image: sebp/elk:642
         environment:
             - ES_JAVA_OPTS
         ports:
