@@ -114,7 +114,7 @@ services:
 
     App\Importer\CountryImporter:
         arguments:
-            $dataDir: "%kernel.project_dir%/app/datas"
+            $dataDir: "%kernel.project_dir%/var/datas"
 
 #    app.location_cache_provider:
 #        class:     App\Cache\LocationCacheProvider

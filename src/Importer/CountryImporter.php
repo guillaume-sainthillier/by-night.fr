@@ -16,9 +16,12 @@ use App\Entity\Country;
 use App\Entity\ZipCity;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 class CountryImporter
 {
+    private const ZIP_CODES_PER_TRANSACTION = 500;
+    private const CITIES_PER_TRANSACTION = 50;
     /**
      * @var EntityManagerInterface
      */
@@ -29,7 +32,7 @@ class CountryImporter
      */
     private $dataDir;
 
-    public function __construct(EntityManagerInterface $em, $dataDir)
+    public function __construct(EntityManagerInterface $em, string  $dataDir)
     {
         $this->em      = $em;
         $this->dataDir = $dataDir;
@@ -342,7 +345,13 @@ class CountryImporter
 
     private function createZipCities(Country $country)
     {
-        $fd = \fopen($this->dataDir . '/'. $country->getId().'/zip.csv', 'r');
+        $filepath = $this->dataDir . '/'. $country->getId().'/zip.csv';
+
+        if(! file_exists($filepath)) {
+            throw new IOException(sprintf("File %s does not exists", $filepath));
+        }
+
+        $fd = \fopen($filepath, 'r');
         if (false === $fd) {
             return;
         }
@@ -371,7 +380,7 @@ class CountryImporter
                 ->setCountry($country);
 
             $this->em->persist($city);
-            if (500 === $i) {
+            if (self::ZIP_CODES_PER_TRANSACTION === $i) {
                 $this->em->flush();
                 $this->em->clear(ZipCity::class);
                 $i = 0;
@@ -383,17 +392,18 @@ class CountryImporter
 
     private function createAdminZones(Country $country)
     {
-        $fd = \fopen($this->dataDir . '/'. $country->getId().'/cities.csv', 'r');
+        $filepath = $this->dataDir . '/'. $country->getId().'/cities.csv';
+        if(! file_exists($filepath)) {
+            throw new IOException(sprintf("File %s does not exists", $filepath));
+        }
+        $fd = \fopen($filepath, 'r');
         if (false === $fd) {
             return;
         }
 
         $i = 0;
         while (false !== ($data = \fgetcsv($fd, 3000, "\t"))) {
-            if (!(
-                \in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6]
-//                ($data[6] === "P" && $data[14] > 0)
-            )) {
+            if (!(\in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6])) {
                 continue;
             }
             ++$i;
@@ -421,7 +431,7 @@ class CountryImporter
             $this->sanitizeAdminZone($entity);
 
             $this->em->persist($entity);
-            if (50 === $i) {
+            if (self::CITIES_PER_TRANSACTION === $i) {
                 $this->em->flush();
                 $this->em->clear(City::class);
                 $this->em->clear(AdminZone::class);
