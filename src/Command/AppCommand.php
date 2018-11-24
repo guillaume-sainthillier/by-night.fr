@@ -15,7 +15,7 @@ abstract class AppCommand extends ContainerAwareCommand
      */
     protected function configure()
     {
-        $this->addOption('monitor', 'm', InputOption::VALUE_NONE);
+        $this->addOption('monitor', 'm', InputOption::VALUE_NONE, 'Active le monitor des fonctions');
     }
 
     /**
