@@ -25,9 +25,11 @@ abstract class AppCommand extends ContainerAwareCommand
     {
         Monitor::$output = $output;
         Monitor::enableMonitoring($input->hasOption('monitor') && $input->getOption('monitor'));
-        Monitor::bench($this->getName(), function () use ($input, $output) {
-            parent::run($input, $output);
+        $retour = Monitor::bench($this->getName(), function () use ($input, $output) {
+            return parent::run($input, $output);
         });
         Monitor::displayStats();
+
+        return $retour;
     }
 }

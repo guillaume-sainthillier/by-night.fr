@@ -6,7 +6,7 @@ use App\Archive\EventArchivator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ArchiveCommand extends AppCommand
+class AppEventsArchiveArchive extends AppCommand
 {
     private $eventArchivator;
 
@@ -28,8 +28,8 @@ class ArchiveCommand extends AppCommand
         parent::configure();
 
         $this
-            ->setName('tbn:events:archive')
-            ->setDescription('Archive les vieux événements sur By Night');
+            ->setName('app:events:archive')
+            ->setDescription('Archive les vieux événements dans ElasticSearch');
     }
 
     /**

@@ -12,7 +12,7 @@ use App\Cleaner\ImageCleaner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CleanCommand extends AppCommand
+class AppImagesCleanCommand extends AppCommand
 {
     private $imageCleaner;
 
@@ -34,8 +34,8 @@ class CleanCommand extends AppCommand
         parent::configure();
 
         $this
-            ->setName('tbn:events:clean')
-            ->setDescription('Mettre à jour les images sur le serveur');
+            ->setName('app:images:clean')
+            ->setDescription('Supprime les images inutilisées sur le serveur');
     }
 
     /**

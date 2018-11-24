@@ -5,7 +5,7 @@ namespace App\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpdateCommand extends AppCommand
+class AppImagesUpdateCommand extends AppCommand
 {
     /**
      * {@inheritdoc}
@@ -15,8 +15,8 @@ class UpdateCommand extends AppCommand
         parent::configure();
 
         $this
-            ->setName('tbn:events:update')
-            ->setDescription('Mettre à jour les événements sur By Night');
+            ->setName('app:images:update')
+            ->setDescription('Mettre à jour les images (events, users) en provenance des réseaux sociaux');
     }
 
     /**

@@ -11,7 +11,7 @@ use App\Utils\Monitor;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrateCommand extends AppCommand
+class AppEventsMigrateCommand extends AppCommand
 {
     /**
      * {@inheritdoc}
@@ -21,7 +21,7 @@ class MigrateCommand extends AppCommand
         parent::configure();
 
         $this
-            ->setName('tbn:events:migrate')
+            ->setName('app:events:migrate')
             ->setDescription('Migrer les événements sur By Night');
     }
 

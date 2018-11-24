@@ -107,7 +107,7 @@ services:
         arguments:
             $objectPersister: "@fos_elastica.object_persister.event.event"
 
-    App\Command\FetchCommand:
+    App\Command\AppEventsImportCommand:
         arguments:
             $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
             $updateFbIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'

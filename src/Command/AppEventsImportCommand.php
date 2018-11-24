@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class FetchCommand extends AppCommand
+class AppEventsImportCommand extends AppCommand
 {
     /**
      * @var EventFetcher
@@ -44,7 +44,7 @@ class FetchCommand extends AppCommand
         parent::configure();
 
         $this
-            ->setName('tbn:events:fetch')
+            ->setName('app:events:import')
             ->setDescription('Ajouter / mettre à jour des nouveaux événéments sur By Night')
             ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer');
     }

@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
-class CountryCommand extends AppCommand
+class AppCountryImportCommand extends AppCommand
 {
     /**
      * @var CountryImporter
@@ -23,6 +23,23 @@ class CountryCommand extends AppCommand
         $this->countryImporter = $countryImporter;
 
         parent::__construct();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure()
+    {
+        parent::configure();
+
+        $this
+            ->setName('app:country:import')
+            ->setDescription('Ajoute un nouveau pays')
+            ->addArgument('id', InputArgument::REQUIRED)
+            ->addArgument('name', InputArgument::OPTIONAL)
+            ->addArgument('capital', InputArgument::OPTIONAL)
+            ->addArgument('locale', InputArgument::OPTIONAL)
+        ;
     }
 
     /**
@@ -63,23 +80,6 @@ class CountryCommand extends AppCommand
         });
 
         return $this->getHelper('question')->ask($input, $output, $question);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
-    {
-        parent::configure();
-
-        $this
-            ->setName('tbn:country:import')
-            ->setDescription('Ajouter un pays sur By Night')
-            ->addArgument('id', InputArgument::REQUIRED)
-            ->addArgument('name', InputArgument::OPTIONAL)
-            ->addArgument('capital', InputArgument::OPTIONAL)
-            ->addArgument('locale', InputArgument::OPTIONAL)
-        ;
     }
 
     /**
