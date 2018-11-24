@@ -2,17 +2,39 @@
 
 namespace App\Command;
 
+use App\Entity\AdminZone;
+use App\Entity\AdminZone1;
+use App\Entity\AdminZone2;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Place;
 use App\Entity\User;
+use App\Entity\ZipCity;
+use App\Handler\DoctrineEventHandler;
 use App\Reject\Reject;
 use App\Utils\Monitor;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class AppEventsMigrateCommand extends AppCommand
 {
+    private const PLACES_PER_TRANSACTION = 500;
+
+    /** @var DoctrineEventHandler */
+    private $doctrineEventHandler;
+
+    /** @var EntityManagerInterface */
+    private $entityManager;
+    public function __construct(DoctrineEventHandler $doctrineEventHandler, EntityManagerInterface $entityManager, ?string $name = null)
+    {
+        parent::__construct($name);
+
+        $this->doctrineEventHandler = $doctrineEventHandler;
+        $this->entityManager = $entityManager;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -30,37 +52,52 @@ class AppEventsMigrateCommand extends AppCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $firewall = $this->getContainer()->get('tbn.doctrine_event_handler');
-        $em       = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $places   = $em->getRepository(Place::class)->findBy(['city' => null]);
-        $france   = $em->getRepository(Country::class)->find('FR');
-        Monitor::createProgressBar(\count($places));
+        $em = $this->entityManager;
+        $em->getConnection()->getConfiguration()->setSQLLogger(null);
 
-        $migratedPlaces = [];
-        foreach ($places as $i => $place) {
-            /*
+        $nbPlaces = $em->getRepository(Place::class)
+            ->createQueryBuilder('p')
+            ->select('count(p)')
+            ->where('p.city IS NULL')
+            ->getQuery()
+            ->getSingleScalarResult();
+        $places   = $em->getRepository(Place::class)
+            ->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.city IS NULL')
+            ->getQuery()
+            ->iterate();
+
+        $france   = $em->getRepository(Country::class)->find('FR');
+        Monitor::createProgressBar($nbPlaces);
+        foreach ($places as $i => $row) {
+            /**
              * @var Place $place
              */
+            $place = $row[0];
             $place->setReject(new Reject())->setCountry($france);
             if ($place->getZipCity() && $place->getZipCity()->getParent()) {
                 $place->setCity($place->getZipCity()->getParent());
             }
 
-            $firewall->guessEventLocation($place);
-            $place = $em->merge($place);
+            $this->doctrineEventHandler->guessEventLocation($place);
+            $em->merge($place);
 
-            $migratedPlaces[] = $place;
             Monitor::advanceProgressBar();
-
-            if (0 === $i % 500) {
+            if (self::PLACES_PER_TRANSACTION - 1 === $i % self::PLACES_PER_TRANSACTION) {
                 $em->flush();
-                foreach ($migratedPlaces as $migratedPlace) {
-                    $em->detach($migratedPlace);
-                }
-                $migratedPlaces = [];
+                $em->clear(Place::class);
+                $em->clear(ZipCity::class);
+                $em->clear(AdminZone::class);
+                $em->clear(City::class);
             }
         }
         $em->flush();
+        $em->clear(Place::class);
+        $em->clear(ZipCity::class);
+        $em->clear(AdminZone::class);
+        $em->clear(City::class);
+        Monitor::finishProgressBar();
 
         $mapping = [
             'basse-terre'    => 'basse-terre',
@@ -95,10 +132,11 @@ class AppEventsMigrateCommand extends AppCommand
         foreach ($places as $place) {
             $newCity = $em->getRepository(City::class)->findBySlug($mapping[$place->getSite()->getSubdomain()]);
             $place->setCity($newCity)->setJunk(true);
-            $em->persist($place);
+            $em->merge($place);
         }
         $em->flush();
-
+        $em->clear();
+        
         $users = $em->getRepository(User::class)->findBy(['city' => null]);
         foreach ($users as $user) {
             /**
@@ -106,8 +144,9 @@ class AppEventsMigrateCommand extends AppCommand
              */
             $city = $em->getRepository(City::class)->findBySlug($mapping[$user->getSite()->getSubdomain()]);
             $user->setCity($city);
-            $em->persist($user);
+            $em->merge($user);
         }
         $em->flush();
+        $em->clear();
     }
 }
