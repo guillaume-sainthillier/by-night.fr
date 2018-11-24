@@ -26,11 +26,6 @@ class Version20170511211135 extends AbstractMigration
         $this->addSql('ALTER TABLE zip_city ADD CONSTRAINT FK_FBE2D3F4727ACA70 FOREIGN KEY (parent_id) REFERENCES admin_zone (id)');
         $this->addSql('CREATE INDEX IDX_FBE2D3F4727ACA70 ON zip_city (parent_id)');
         $this->addSql('CREATE INDEX zip_city_postal_code_name_idx ON zip_city (postal_code, name)');
-        $this->addSql('DELETE FROM zip_city WHERE id IN (
-            SELECT * FROM (
-                SELECT a2.id FROM zip_city a2 GROUP BY a2.postal_code, a2.name HAVING(COUNT(a2.id)) > 1 AND MAX(a2.id)
-            ) as myId
-        )');
     }
 
     /**
