@@ -87,7 +87,7 @@ class AgendaRepository extends EntityRepository
             ->createQuery('UPDATE App:Agenda a
             SET a.isArchive = :archive
             WHERE (a.dateFin < :from OR a.dateFin > :to)
-            AND a.isArchive IS NULL) ')
+            AND a.isArchive IS NULL ')
             ->setParameters([
                 'archive' => true,
                 'from' => $from->format('Y-m-d'),

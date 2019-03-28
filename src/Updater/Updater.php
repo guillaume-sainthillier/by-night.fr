@@ -19,7 +19,6 @@ use Psr\Http\Message\ResponseInterface;
 abstract class Updater
 {
     const PAGINATION_SIZE = 200;
-
     const POOL_SIZE = 10;
 
     /**

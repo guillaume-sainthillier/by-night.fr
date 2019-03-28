@@ -41,6 +41,6 @@ class AppImagesUpdateCommand extends AppCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->userUpdater->update();
-        //$this->eventUpdater->update();
+        $this->eventUpdater->update();
     }
 }

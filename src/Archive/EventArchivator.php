@@ -3,6 +3,7 @@
 namespace App\Archive;
 
 use App\Entity\Agenda;
+use App\Repository\AgendaRepository;
 use App\Utils\Monitor;
 use function ceil;
 use function count;
@@ -67,6 +68,7 @@ class EventArchivator
      */
     public function archive()
     {
+        /** @var AgendaRepository $repo */
         $repo = $this->entityManager->getRepository(Agenda::class);
         $qb = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
