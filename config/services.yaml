@@ -5,7 +5,6 @@ parameters:
 
 services:
     #Legacy
-#    templating: '@twig'
     Vich\UploaderBundle\Templating\Helper\UploaderHelper: '@vich_uploader.templating.helper.uploader_helper'
     Liip\ImagineBundle\Imagine\Cache\CacheManager: '@liip_imagine.cache.manager'
     FOS\HttpCacheBundle\CacheManager: "@fos_http_cache.cache_manager"
@@ -94,10 +93,6 @@ services:
     App\Utils\Comparator:
         arguments:
             $cache: '@comparator_cache'
-
-    App\Handler\AuthenticationHandler:
-        arguments:
-            $session: '@session'
 
     App\Geocoder\PlaceGeocoder:
         arguments:
