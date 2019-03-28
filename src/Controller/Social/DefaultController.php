@@ -19,7 +19,7 @@ class DefaultController extends BaseController
 {
     /**
      * @Route("/deconnexion", name="tbn_disconnect_service")
-     * @ParamConverter("social", options={"default_facebook_name": "facebook_events"})
+     * @ParamConverter("social", options={"default_facebook_name": "facebook"})
      *
      * @param Social $social
      *

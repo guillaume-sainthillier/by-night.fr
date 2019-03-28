@@ -15,7 +15,6 @@ class SocialProvider
 {
     const FACEBOOK = 'facebook';
     const FACEBOOK_LIST_EVENTS = 'facebook_list_events';
-    const FACEBOOK_EVENTS = 'facebook_events';
     const FACEBOOK_ADMIN = 'facebook_admin';
     const TWITTER = 'twitter';
     const GOOGLE = 'google';
@@ -25,11 +24,10 @@ class SocialProvider
      */
     private $socials;
 
-    public function __construct(Facebook $facebook, FacebookEvents $facebookEvents, FacebookListEvents $facebookListEvents, FacebookAdmin $facebookAdmin, Twitter $twitter, Google $google)
+    public function __construct(Facebook $facebook, FacebookListEvents $facebookListEvents, FacebookAdmin $facebookAdmin, Twitter $twitter, Google $google)
     {
         $this->socials = [
             self::FACEBOOK => $facebook,
-            self::FACEBOOK_EVENTS => $facebookEvents,
             self::FACEBOOK_LIST_EVENTS => $facebookListEvents,
             self::FACEBOOK_ADMIN => $facebookAdmin,
             self::TWITTER => $twitter,

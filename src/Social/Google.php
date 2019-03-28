@@ -46,17 +46,8 @@ class Google extends Social
         throw new BadMethodCallException('Not implemented');
     }
 
-    protected function post(User $user, Agenda $agenda)
-    {
-        return; //Wait Google api fix
-    }
-
     protected function getName()
     {
         return 'Google';
-    }
-
-    protected function afterPost(User $user, Agenda $agenda)
-    {
     }
 }

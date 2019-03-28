@@ -2,10 +2,9 @@
 
 namespace App\Form\Type;
 
+use App\Entity\Agenda;
 use App\Handler\DoctrineEventHandler;
-use function strtoupper;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -15,7 +14,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use function ucfirst;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class AgendaType extends AbstractType
@@ -78,63 +76,14 @@ class AgendaType extends AbstractType
                 'attr' => [
                     'placeholder' => 'A 20h, de 21h à minuit',
                 ],
-            ]);
-
-        $services = [
-            'facebook' => ['nom' => 'Facebook'],
-            'twitter' => ['nom' => 'Twitter'],
-        ];
-
-        foreach ($services as $service => $config) {
-            $nomService = $config['nom'];
-            $accessService = ucfirst($service);
-
-            $getter = 'get' . $accessService . 'AccessToken';
-            $is_api_ready = $siteInfo && $siteInfo->$getter();
-
-            if (!$is_api_ready) {
-                $message = "L'accès à " . $nomService . ' est momentanément désactivé';
-                $post_checked = false;
-                $post_disabled = true;
-            } else {
-                if ('facebook' === $service) {
-                    $role = 'ROLE_FACEBOOK_EVENTS';
-                } else {
-                    $role = 'ROLE_' . strtoupper($service);
-                }
-                $post_disabled = false;
-                $post_checked = $user->hasRole($role);
-
-                if ($post_checked) {
-                    $info = $user->getInfo();
-                    $getter = 'get' . $accessService . 'Nickname';
-                    $message = 'Connecté sous ' . ('twitter' === $service ? '@' : '') . $info->$getter();
-                } else {
-                    $message = 'Connectez vous à ' . $nomService;
-                }
-            }
-
-            $builder->add('share_' . $service, CheckboxType::class, [
-                'label' => 'Poster mon événement sur ' . $nomService,
+            ])
+            ->add('tarif', TextType::class, [
+                'label' => 'Tarif',
                 'required' => false,
-                'mapped' => false,
-                'disabled' => $post_disabled,
-                'data' => $post_checked,
-                'attr' => array(
-                    'class' => 'social_post onoffswitch-checkbox ' . ($post_checked ? 'checked' : ''),
-                    'data-connected' => (!$post_disabled && $post_checked) ? '1' : '0',
-                    'data-message' => $message,
-                ),
-            ]);
-        }
-
-        $builder->add('tarif', TextType::class, [
-            'label' => 'Tarif',
-            'required' => false,
-            'attr' => [
-                'placeholder' => '17€ avec préventes, 20€ sur place',
-            ],
-        ])
+                'attr' => [
+                    'placeholder' => '17€ avec préventes, 20€ sur place',
+                ],
+            ])
             ->add('categorieManifestation', TextType::class, [
                 'label' => 'Catégorie',
                 'required' => false,
@@ -198,7 +147,7 @@ class AgendaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'App\Entity\Agenda',
+            'data_class' => Agenda::class,
             'site_info' => null,
             'user' => null,
             'config' => [],

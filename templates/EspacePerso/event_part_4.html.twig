@@ -3,15 +3,9 @@
 {% block titre %}Communiquez{% endblock %}
 {% block icone %}fa-bullhorn{% endblock %}
 {% block body %}
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            {% include "EspacePerso/on_off.html.twig" with({'elem' : form.share_facebook, 'service': 'facebook_events' }) %}
-            {% include "EspacePerso/on_off.html.twig" with({'elem' : form.share_twitter, 'service': 'twitter' }) %}
-        </div>
-    </div>
-    <br/>
-    <br/>
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
 {% endblock %}
+
+{% block footer '' %}

@@ -157,16 +157,6 @@ class Facebook extends Social
         throw new SocialException("Les droits de l'utilisateur sont insufisants pour récupérer des infos sur une page Facebook");
     }
 
-    protected function post(User $user, Agenda $agenda)
-    {
-        throw new SocialException("Les droits de l'utilisateur sont insufisants pour poster sur Facebook");
-    }
-
-    protected function afterPost(User $user, Agenda $agenda)
-    {
-        throw new SocialException('Les droits du système sont insufisants pour poster sur une page Facebook');
-    }
-
     protected function getDuree($dateDebut, $dateFin)
     {
         return $dateDebut === $dateFin ? 'Le ' . $dateDebut : 'Du ' . $dateDebut . ' au ' . $dateFin;

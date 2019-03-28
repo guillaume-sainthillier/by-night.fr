@@ -82,10 +82,6 @@ services:
         arguments:
             $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
 
-    App\Social\FacebookEvents:
-        arguments:
-            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
-
     App\Social\FacebookListEvents:
         arguments:
             $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
@@ -402,7 +398,7 @@ services:
     App\Security\Core\User\FOSUBUserProvider:
         arguments:
             $properties: {facebook: facebook_id, google: google_id, twitter: twitter_id}
-            $socials: {google: '@App\Social\Google', twitter: '@App\Social\Twitter', facebook_events: '@App\Social\FacebookEvents', facebook_admin: '@App\Social\FacebookAdmin', facebook_list_events: '@App\Social\FacebookListEvents', facebook: '@App\Social\Facebook'}
+            $socials: {google: '@App\Social\Google', twitter: '@App\Social\Twitter', facebook_admin: '@App\Social\FacebookAdmin', facebook_list_events: '@App\Social\FacebookListEvents', facebook: '@App\Social\Facebook'}
 
 #    authentication_handler:
 #        class: App\Handler\AuthenticationHandler

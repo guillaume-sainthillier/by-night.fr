@@ -3,40 +3,36 @@
 namespace App\Social;
 
 use App\App\SocialManager;
-use App\Entity\Agenda;
 use App\Entity\SiteInfo;
-use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use App\Utils\Monitor;
-use function array_merge;
-use function array_slice;
-use function call_user_func;
-use function ceil;
-use function count;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\FacebookResponse;
 use Facebook\GraphNodes\GraphNode;
-use function implode;
-use function json_encode;
-use function preg_match;
 use Psr\Log\LoggerInterface;
-use function sprintf;
-use function str_replace;
-use function strip_tags;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use function array_merge;
+use function array_slice;
+use function call_user_func;
+use function ceil;
+use function count;
+use function implode;
+use function preg_match;
+use function sprintf;
+use function str_replace;
 
 /**
  * Description of Facebook.
  *
  * @author guillaume
  */
-class FacebookAdmin extends FacebookEvents
+class FacebookAdmin extends FacebookListEvents
 {
     /**
      * @var SiteInfo
@@ -131,36 +127,6 @@ class FacebookAdmin extends FacebookEvents
         $post = $response->getGraphNode();
 
         return $post->getField('id');
-    }
-
-    protected function afterPost(User $user, Agenda $agenda)
-    {
-        if (null === $agenda->getFbPostSystemId()) {
-            $accessToken = $this->getPageAccessToken();
-            $dateDebut = $this->getReadableDate($agenda->getDateDebut());
-            $dateFin = $this->getReadableDate($agenda->getDateFin());
-            $date = $this->getDuree($dateDebut, $dateFin);
-            $place = $agenda->getPlace();
-            $message = $user->getUsername() . ' présente : ' . $agenda->getNom() . ($place ? ' @ ' . $place->getNom() : '');
-
-            //Authentification
-            $request = $this->client->post('/' . $this->socialManager->getFacebookIdPage() . '/feed', [
-                'message' => $message,
-                'name' => $agenda->getNom(),
-                'link' => $this->getLink($agenda),
-                'picture' => $this->getLinkPicture($agenda),
-                'description' => $date . '. ' . strip_tags($agenda->getDescriptif()),
-                'actions' => json_encode([
-                    [
-                        'name' => $user->getUsername() . ' sur By Night',
-                        'link' => $this->getMembreLink($user),
-                    ],
-                ]),
-            ], $accessToken);
-
-            $post = $request->getGraphNode();
-            $agenda->setFbPostSystemId($post->getField('id'));
-        }
     }
 
     public function getNumberOfCount()

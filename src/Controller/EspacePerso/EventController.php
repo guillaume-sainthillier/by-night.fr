@@ -16,13 +16,10 @@ use App\Social\FacebookAdmin;
 use App\Social\FacebookListEvents;
 use App\Social\SocialProvider;
 use App\Validator\Constraints\EventConstraintValidator;
-use function array_merge;
 use DateTime;
 use Exception;
-use function implode;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use function sprintf;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -33,6 +30,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use function array_merge;
+use function implode;
+use function sprintf;
 
 class EventController extends Controller
 {
@@ -131,20 +131,17 @@ class EventController extends Controller
      *
      * @return RedirectResponse|Response
      */
-    public function editAction(Request $request, Agenda $agenda, EventConstraintValidator $validator, LoggerInterface $logger, SocialProvider $socialProvider)
+    public function editAction(Request $request, Agenda $agenda, SocialManager $socialManager, EventConstraintValidator $validator, LoggerInterface $logger, SocialProvider $socialProvider)
     {
         $em = $this->getDoctrine()->getManager();
         $em->detach($agenda);
 
         $this->checkIfOwner($agenda);
-        $form = $this->createEditForm($agenda);
+        $form = $this->createEditForm($agenda, $socialManager);
 
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $agenda->getPlace()->getCity()->getName();
-            $this->postSocial($agenda, $form, $socialProvider);
-
             try {
                 $em->merge($agenda);
                 $em->flush();
@@ -311,7 +308,6 @@ class EventController extends Controller
                 $em->merge($calendrier);
             }
 
-            $this->postSocial($agenda, $form, $socialProvider);
             $em->flush();
 
             if ($isNewAgenda) {
@@ -352,9 +348,9 @@ class EventController extends Controller
             ->getForm();
     }
 
-    protected function createEditForm(Agenda $agenda)
+    protected function createEditForm(Agenda $agenda, SocialManager $socialManager)
     {
-        $options = array_merge($this->getAgendaOptions(), [
+        $options = array_merge($this->getAgendaOptions($socialManager), [
             'action' => $this->generateUrl('tbn_agenda_edit', [
                 'slug' => $agenda->getSlug(),
             ]),
@@ -401,21 +397,6 @@ class EventController extends Controller
                     'class' => 'btn btn-primary btn-raised btn-lg btn-block',
                 ],
             ]);
-    }
-
-    protected function postSocial(Agenda $agenda, FormInterface $form, SocialProvider $socialProvider)
-    {
-        $postServices = [
-            SocialProvider::FACEBOOK,
-            SocialProvider::TWITTER,
-        ];
-        foreach ($postServices as $serviceId) {
-            $want_post = $form->get('share_' . $serviceId)->getData();
-            if ($want_post) {
-                $service = $socialProvider->getSocial($serviceId);
-                $service->poster($agenda);
-            }
-        }
     }
 
     protected function checkIfOwner(Agenda $agenda)

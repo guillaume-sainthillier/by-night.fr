@@ -14,16 +14,14 @@ use App\Entity\Info;
 use App\Entity\User;
 use App\Exception\SocialException;
 use App\Picture\EventProfilePicture;
-use Exception;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
-use function sprintf;
-use function strtolower;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use function strtolower;
 use function ucfirst;
 
 /**
@@ -171,27 +169,6 @@ abstract class Social
         $this->connectInfo($this->socialManager->getSiteInfo(), $response);
     }
 
-    public function poster(Agenda $agenda)
-    {
-        $this->init();
-        $user = $this->tokenStorage->getToken()->getUser();
-
-        try {
-            $this->post($user, $agenda);
-            $this->afterPost($user, $agenda);
-        } catch (Exception $ex) {
-            $type = 'error';
-            if ($ex instanceof SocialException) {
-                $type = $ex->getType();
-            }
-
-            $this->session->getFlashBag()->add(
-                $type,
-                sprintf('Une erreur est survenue sur <b>%s</b> : %s', $this->getName(), $ex->getMessage())
-            );
-        }
-    }
-
     protected function getLinkPicture(Agenda $agenda)
     {
         return $this->eventProfilePicture->getOriginalPictureUrl($agenda);
@@ -216,14 +193,4 @@ abstract class Social
     abstract protected function constructClient();
 
     abstract protected function getName();
-
-    /**
-     * @param User $user
-     * @param Agenda $agenda La soirée concernée
-     *
-     * @throws SocialException si une erreur est survenue
-     */
-    abstract protected function post(User $user, Agenda $agenda);
-
-    abstract protected function afterPost(User $user, Agenda $agenda);
 }

@@ -31,7 +31,6 @@ security:
                 remember_me: true
                 resource_owners:
                     facebook_admin:    "/login-social/check-facebook-admin"
-                    facebook_events:    "/login-social/check-facebook-events"
                     facebook_list_events:    "/login-social/check-facebook-list-events"
                     facebook:           "/login-social/check-facebook"
                     google:             "/login-social/check-google"
