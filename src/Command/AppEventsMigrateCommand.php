@@ -3,8 +3,6 @@
 namespace App\Command;
 
 use App\Entity\AdminZone;
-use App\Entity\AdminZone1;
-use App\Entity\AdminZone2;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Place;
@@ -13,7 +11,6 @@ use App\Entity\ZipCity;
 use App\Handler\DoctrineEventHandler;
 use App\Reject\Reject;
 use App\Utils\Monitor;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,6 +24,7 @@ class AppEventsMigrateCommand extends AppCommand
 
     /** @var EntityManagerInterface */
     private $entityManager;
+
     public function __construct(DoctrineEventHandler $doctrineEventHandler, EntityManagerInterface $entityManager, ?string $name = null)
     {
         parent::__construct($name);
@@ -61,14 +59,14 @@ class AppEventsMigrateCommand extends AppCommand
             ->where('p.city IS NULL')
             ->getQuery()
             ->getSingleScalarResult();
-        $places   = $em->getRepository(Place::class)
+        $places = $em->getRepository(Place::class)
             ->createQueryBuilder('p')
             ->select('p')
             ->where('p.city IS NULL')
             ->getQuery()
             ->iterate();
 
-        $france   = $em->getRepository(Country::class)->find('FR');
+        $france = $em->getRepository(Country::class)->find('FR');
         Monitor::createProgressBar($nbPlaces);
         foreach ($places as $i => $row) {
             /**
@@ -99,33 +97,35 @@ class AppEventsMigrateCommand extends AppCommand
         $em->clear(City::class);
         Monitor::finishProgressBar();
 
+        return;
+
         $mapping = [
-            'basse-terre'    => 'basse-terre',
-            'bordeaux'       => 'bordeaux',
-            'brest'          => 'brest',
-            'caen'           => 'caen',
-            'cayenne'        => 'cayenne',
-            'dijon'          => 'dijon',
+            'basse-terre' => 'basse-terre',
+            'bordeaux' => 'bordeaux',
+            'brest' => 'brest',
+            'caen' => 'caen',
+            'cayenne' => 'cayenne',
+            'dijon' => 'dijon',
             'fort-de-france' => 'fort-de-france',
-            'grenoble'       => 'grenoble',
-            'le-havre'       => 'le-havre',
-            'lille'          => 'lille',
-            'lyon'           => 'lyon',
-            'mamoudzou'      => 'mamoudzou',
-            'marseille'      => 'marseille',
-            'montpellier'    => 'montpellier',
-            'nantes'         => 'nantes',
-            'narbonne'       => 'narbonne',
-            'nice'           => 'nice',
-            'paris'          => 'paris',
-            'perpignan'      => 'perpignan',
-            'poitiers'       => 'poitiers',
-            'reims'          => 'reims',
-            'rennes'         => 'rennes',
-            'rouen'          => 'rouen',
-            'saint-denis'    => 'saint-denis-8',
-            'strasbourg'     => 'strasbourg',
-            'toulouse'       => 'toulouse',
+            'grenoble' => 'grenoble',
+            'le-havre' => 'le-havre',
+            'lille' => 'lille',
+            'lyon' => 'lyon',
+            'mamoudzou' => 'mamoudzou',
+            'marseille' => 'marseille',
+            'montpellier' => 'montpellier',
+            'nantes' => 'nantes',
+            'narbonne' => 'narbonne',
+            'nice' => 'nice',
+            'paris' => 'paris',
+            'perpignan' => 'perpignan',
+            'poitiers' => 'poitiers',
+            'reims' => 'reims',
+            'rennes' => 'rennes',
+            'rouen' => 'rouen',
+            'saint-denis' => 'saint-denis-8',
+            'strasbourg' => 'strasbourg',
+            'toulouse' => 'toulouse',
         ];
 
         $places = $em->getRepository(Place::class)->findBy(['city' => null]);
@@ -136,7 +136,7 @@ class AppEventsMigrateCommand extends AppCommand
         }
         $em->flush();
         $em->clear();
-        
+
         $users = $em->getRepository(User::class)->findBy(['city' => null]);
         foreach ($users as $user) {
             /**

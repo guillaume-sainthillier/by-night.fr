@@ -5,6 +5,8 @@ namespace App\Controller\Admin;
 use App\App\SocialManager;
 use App\Entity\SiteInfo;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -17,9 +19,9 @@ class InfoController extends Controller
      * @Route("/", name="tbn_administration_info_index")
      *
      * @param RouterInterface $router
-     * @param SocialManager   $socialManager
+     * @param SocialManager $socialManager
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function listAction(SocialManager $socialManager)
     {
@@ -27,7 +29,7 @@ class InfoController extends Controller
 
         if (null === $info) {
             $info = new SiteInfo();
-            $em   = $this->getDoctrine()->getManager();
+            $em = $this->getDoctrine()->getManager();
             $em->persist($info);
             $em->flush();
         }
@@ -42,7 +44,7 @@ class InfoController extends Controller
      *
      * @param SiteInfo $info
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function viewAction(SiteInfo $info)
     {

@@ -5,8 +5,14 @@ namespace App\Entity;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
+use function array_filter;
+use function array_map;
+use function array_unique;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use function explode;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
@@ -38,7 +44,7 @@ class Agenda implements GeolocalizeInterface
 {
     const INDEX_FROM = '-6 months';
 
-    const INDEX_TO   = '+6 months';
+    const INDEX_TO = '+6 months';
 
     /**
      * @ORM\Id
@@ -76,21 +82,21 @@ class Agenda implements GeolocalizeInterface
     protected $descriptif;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_modification", type="datetime", nullable=true)
      */
     protected $dateModification;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="fb_date_modification", type="datetime", nullable=true)
      */
     protected $fbDateModification;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_debut", type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
@@ -101,7 +107,7 @@ class Agenda implements GeolocalizeInterface
     protected $dateDebut;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_fin", type="date", nullable=true)
      * @Groups({"list_event"})
@@ -267,49 +273,49 @@ class Agenda implements GeolocalizeInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="tweet_post_id", type="string", length=31, nullable=true)
+     * @ORM\Column(name="tweet_post_id", type="string", length=127, nullable=true)
      */
     protected $tweetPostId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="facebook_event_id", type="string", length=31, nullable=true)
+     * @ORM\Column(name="facebook_event_id", type="string", length=127, nullable=true)
      */
     protected $facebookEventId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="tweet_post_system_id", type="string", length=31, nullable=true)
+     * @ORM\Column(name="tweet_post_system_id", type="string", length=127, nullable=true)
      */
     protected $tweetPostSystemId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="fb_post_id", type="string", length=31, nullable=true)
+     * @ORM\Column(name="fb_post_id", type="string", length=127, nullable=true)
      */
     protected $fbPostId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="fb_post_system_id", type="string", length=31, nullable=true)
+     * @ORM\Column(name="fb_post_system_id", type="string", length=127, nullable=true)
      */
     protected $fbPostSystemId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="google_post_id", type="string", length=31, nullable=true)
+     * @ORM\Column(name="google_post_id", type="string", length=127, nullable=true)
      */
     protected $googlePostId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="google_post_system_id", type="string", length=31, nullable=true)
+     * @ORM\Column(name="google_post_system_id", type="string", length=127, nullable=true)
      */
     protected $googleSystemPostId;
 
@@ -409,10 +415,10 @@ class Agenda implements GeolocalizeInterface
 
     public function isIndexable()
     {
-        $from = new \DateTime();
+        $from = new DateTime();
         $from->modify(self::INDEX_FROM);
 
-        $to = new \DateTime();
+        $to = new DateTime();
         $to->modify(self::INDEX_TO);
 
         return $this->dateFin >= $from && $this->dateFin <= $to;
@@ -436,7 +442,7 @@ class Agenda implements GeolocalizeInterface
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->dateModification = new \DateTime();
+            $this->dateModification = new DateTime();
         }
 
         return $this;
@@ -457,7 +463,7 @@ class Agenda implements GeolocalizeInterface
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
      *
-     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     * @param File|UploadedFile $image
      *
      * @return Agenda
      */
@@ -468,7 +474,7 @@ class Agenda implements GeolocalizeInterface
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->dateModification = new \DateTime();
+            $this->dateModification = new DateTime();
         }
 
         return $this;
@@ -499,16 +505,16 @@ class Agenda implements GeolocalizeInterface
      */
     public function preDateModification()
     {
-        $this->dateModification = new \DateTime();
+        $this->dateModification = new DateTime();
     }
 
     public function __construct()
     {
-        $this->setDateDebut(new \DateTime());
-        $this->place        = new Place();
-        $this->calendriers  = new ArrayCollection();
+        $this->setDateDebut(new DateTime());
+        $this->place = new Place();
+        $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
-        $this->isArchive    = false;
+        $this->isArchive = false;
     }
 
     public function setId($id)
@@ -522,7 +528,7 @@ class Agenda implements GeolocalizeInterface
     {
         $tags = $this->getCategorieManifestation() . ',' . $this->getTypeManifestation() . ',' . $this->getThemeManifestation();
 
-        return \array_unique(\array_map('trim', \array_map('ucfirst', \array_filter(\explode(',', $tags)))));
+        return array_unique(array_map('trim', array_map('ucfirst', array_filter(explode(',', $tags)))));
     }
 
     public function __toString()
@@ -663,7 +669,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set dateModification.
      *
-     * @param \DateTime $dateModification
+     * @param DateTime $dateModification
      *
      * @return Agenda
      */
@@ -677,7 +683,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get dateModification.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateModification()
     {
@@ -687,7 +693,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set fbDateModification.
      *
-     * @param \DateTime $fbDateModification
+     * @param DateTime $fbDateModification
      *
      * @return Agenda
      */
@@ -701,7 +707,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get fbDateModification.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getFbDateModification()
     {
@@ -711,7 +717,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set dateDebut.
      *
-     * @param \DateTime $dateDebut
+     * @param DateTime $dateDebut
      *
      * @return Agenda
      */
@@ -725,7 +731,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get dateDebut.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateDebut()
     {
@@ -735,7 +741,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set dateFin.
      *
-     * @param \DateTime $dateFin
+     * @param DateTime $dateFin
      *
      * @return Agenda
      */
@@ -749,7 +755,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get dateFin.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateFin()
     {
@@ -1479,11 +1485,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set user.
      *
-     * @param \App\Entity\User $user
+     * @param User $user
      *
      * @return Agenda
      */
-    public function setUser(\App\Entity\User $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -1493,7 +1499,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get user.
      *
-     * @return \App\Entity\User
+     * @return User
      */
     public function getUser()
     {
@@ -1503,11 +1509,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Add calendrier.
      *
-     * @param \App\Entity\Calendrier $calendrier
+     * @param Calendrier $calendrier
      *
      * @return Agenda
      */
-    public function addCalendrier(\App\Entity\Calendrier $calendrier)
+    public function addCalendrier(Calendrier $calendrier)
     {
         $this->calendriers[] = $calendrier;
 
@@ -1517,9 +1523,9 @@ class Agenda implements GeolocalizeInterface
     /**
      * Remove calendrier.
      *
-     * @param \App\Entity\Calendrier $calendrier
+     * @param Calendrier $calendrier
      */
-    public function removeCalendrier(\App\Entity\Calendrier $calendrier)
+    public function removeCalendrier(Calendrier $calendrier)
     {
         $this->calendriers->removeElement($calendrier);
     }
@@ -1527,7 +1533,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get calendriers.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCalendriers()
     {
@@ -1537,11 +1543,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set site.
      *
-     * @param \App\Entity\Site $site
+     * @param Site $site
      *
      * @return Agenda
      */
-    public function setSite(\App\Entity\Site $site)
+    public function setSite(Site $site)
     {
         $this->site = $site;
 
@@ -1551,7 +1557,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get site.
      *
-     * @return \App\Entity\Site
+     * @return Site
      */
     public function getSite()
     {
@@ -1561,11 +1567,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Add commentaire.
      *
-     * @param \App\Entity\Comment $commentaire
+     * @param Comment $commentaire
      *
      * @return Agenda
      */
-    public function addCommentaire(\App\Entity\Comment $commentaire)
+    public function addCommentaire(Comment $commentaire)
     {
         $this->commentaires[] = $commentaire;
 
@@ -1575,9 +1581,9 @@ class Agenda implements GeolocalizeInterface
     /**
      * Remove commentaire.
      *
-     * @param \App\Entity\Comment $commentaire
+     * @param Comment $commentaire
      */
-    public function removeCommentaire(\App\Entity\Comment $commentaire)
+    public function removeCommentaire(Comment $commentaire)
     {
         $this->commentaires->removeElement($commentaire);
     }
@@ -1585,7 +1591,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get commentaires.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCommentaires()
     {
@@ -1595,11 +1601,11 @@ class Agenda implements GeolocalizeInterface
     /**
      * Set place.
      *
-     * @param \App\Entity\Place $place
+     * @param Place $place
      *
      * @return Agenda
      */
-    public function setPlace(\App\Entity\Place $place = null)
+    public function setPlace(Place $place = null)
     {
         $this->place = $place;
 
@@ -1609,7 +1615,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * Get place.
      *
-     * @return \App\Entity\Place
+     * @return Place
      */
     public function getPlace()
     {

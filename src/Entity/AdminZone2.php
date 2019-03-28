@@ -21,11 +21,11 @@ class AdminZone2 extends AdminZone
     /**
      * Set parent.
      *
-     * @param \App\Entity\AdminZone1 $parent
+     * @param AdminZone1 $parent
      *
      * @return AdminZone2
      */
-    public function setParent(\App\Entity\AdminZone1 $parent = null)
+    public function setParent(AdminZone1 $parent = null)
     {
         $this->parent = $parent;
 
@@ -35,7 +35,7 @@ class AdminZone2 extends AdminZone
     /**
      * Get parent.
      *
-     * @return \App\Entity\AdminZone1
+     * @return AdminZone1
      */
     public function getParent()
     {

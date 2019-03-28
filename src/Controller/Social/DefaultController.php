@@ -8,6 +8,7 @@ use FOS\UserBundle\Model\UserManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 
@@ -39,13 +40,13 @@ class DefaultController extends BaseController
      *
      * @param $service
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function disconnectConfirmAction($service)
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,
-            'url'     => $this->generateUrl('tbn_disconnect_service', ['service' => $service]),
+            'url' => $this->generateUrl('tbn_disconnect_service', ['service' => $service]),
         ]);
     }
 

@@ -4,6 +4,7 @@ namespace App\SearchRepository;
 
 use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
+use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
 
 class UserRepository extends Repository
@@ -11,7 +12,7 @@ class UserRepository extends Repository
     /**
      * @param string $q
      *
-     * @return \FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface
+     * @return PaginatorAdapterInterface
      */
     public function findWithSearch($q)
     {

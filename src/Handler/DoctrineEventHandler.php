@@ -17,9 +17,22 @@ use App\Entity\Site;
 use App\Entity\ZipCity;
 use App\Geocoder\PlaceGeocoder;
 use App\Reject\Reject;
+use App\Repository\AgendaRepository;
+use App\Repository\CityRepository;
+use App\Repository\PlaceRepository;
+use App\Repository\ZipCityRepository;
 use App\Utils\Firewall;
 use App\Utils\Monitor;
+use function array_chunk;
+use function array_filter;
+use function array_keys;
+use function array_merge;
+use function array_slice;
+use function ceil;
+use function count;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
+use function sprintf;
 
 class DoctrineEventHandler
 {
@@ -31,22 +44,22 @@ class DoctrineEventHandler
     private $em;
 
     /**
-     * @var \App\Repository\AgendaRepository
+     * @var AgendaRepository
      */
     private $repoAgenda;
 
     /**
-     * @var \App\Repository\PlaceRepository
+     * @var PlaceRepository
      */
     private $repoPlace;
 
     /**
-     * @var \App\Repository\CityRepository
+     * @var CityRepository
      */
     private $repoCity;
 
     /**
-     * @var \App\Repository\ZipCityRepository
+     * @var ZipCityRepository
      */
     private $repoZipCity;
 
@@ -77,15 +90,15 @@ class DoctrineEventHandler
 
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, PlaceGeocoder $geocoder)
     {
-        $this->em                 = $em;
-        $this->repoAgenda         = $em->getRepository(Agenda::class);
-        $this->repoPlace          = $em->getRepository(Place::class);
-        $this->repoCity           = $em->getRepository(City::class);
-        $this->repoZipCity        = $em->getRepository(ZipCity::class);
-        $this->handler            = $handler;
-        $this->firewall           = $firewall;
+        $this->em = $em;
+        $this->repoAgenda = $em->getRepository(Agenda::class);
+        $this->repoPlace = $em->getRepository(Place::class);
+        $this->repoCity = $em->getRepository(City::class);
+        $this->repoZipCity = $em->getRepository(ZipCity::class);
+        $this->handler = $handler;
+        $this->firewall = $firewall;
         $this->echantillonHandler = $echantillonHandler;
-        $this->geocoder           = $geocoder;
+        $this->geocoder = $geocoder;
         $this->explorationHandler = new ExplorationHandler();
     }
 
@@ -131,9 +144,9 @@ class DoctrineEventHandler
         Monitor::writeln('');
         Monitor::displayStats();
         Monitor::displayTable([
-            'NEWS'         => $this->explorationHandler->getNbInserts(),
-            'UPDATES'      => $this->explorationHandler->getNbUpdates(),
-            'BLACKLISTS'   => $this->explorationHandler->getNbBlackLists(),
+            'NEWS' => $this->explorationHandler->getNbInserts(),
+            'UPDATES' => $this->explorationHandler->getNbUpdates(),
+            'BLACKLISTS' => $this->explorationHandler->getNbBlackLists(),
             'EXPLORATIONS' => $this->explorationHandler->getNbExplorations(),
         ]);
 
@@ -149,7 +162,7 @@ class DoctrineEventHandler
     {
         $this->explorationHandler->start();
 
-        if (!\count($events)) {
+        if (!count($events)) {
             return [];
         }
 
@@ -162,11 +175,11 @@ class DoctrineEventHandler
         //On met ensuite à jour le statut de ces explorations en base
         $this->flushExplorations();
 
-        $allowedEvents    = $this->getAllowedEvents($events);
+        $allowedEvents = $this->getAllowedEvents($events);
         $notAllowedEvents = $this->getNotAllowedEvents($events);
         unset($events);
 
-        $nbNotAllowedEvents = \count($notAllowedEvents);
+        $nbNotAllowedEvents = count($notAllowedEvents);
         for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
             $this->explorationHandler->addBlackList();
         }
@@ -176,19 +189,19 @@ class DoctrineEventHandler
 
     public function handleIdsToMigrate(array $ids)
     {
-        if (!\count($ids)) {
+        if (!count($ids)) {
             return;
         }
 
         $eventOwners = $this->repoAgenda->findBy([
-            'facebookOwnerId' => \array_keys($ids),
+            'facebookOwnerId' => array_keys($ids),
         ]);
 
         $events = $this->repoAgenda->findBy([
-            'facebookEventId' => \array_keys($ids),
+            'facebookEventId' => array_keys($ids),
         ]);
 
-        $events = \array_merge($events, $eventOwners);
+        $events = array_merge($events, $eventOwners);
         foreach ($events as $event) {
             /*
              * @var Agenda
@@ -204,7 +217,7 @@ class DoctrineEventHandler
         }
 
         $places = $this->repoPlace->findBy([
-            'facebookId' => \array_keys($ids),
+            'facebookId' => array_keys($ids),
         ]);
 
         foreach ($places as $place) {
@@ -224,7 +237,7 @@ class DoctrineEventHandler
      */
     private function getAllowedEvents(array $events)
     {
-        return \array_filter($events, [$this->firewall, 'isValid']);
+        return array_filter($events, [$this->firewall, 'isValid']);
     }
 
     /**
@@ -234,7 +247,7 @@ class DoctrineEventHandler
      */
     private function getNotAllowedEvents(array $events)
     {
-        return \array_filter($events, function ($event) {
+        return array_filter($events, function ($event) {
             return !$this->firewall->isValid($event);
         });
     }
@@ -248,12 +261,12 @@ class DoctrineEventHandler
     {
         $chunks = [];
         foreach ($events as $i => $event) {
-            $key              = 'city.'. $event->getPlace()->getCity()->getId();
+            $key = 'city.' . $event->getPlace()->getCity()->getId();
             $chunks[$key][$i] = $event;
         }
 
         foreach ($chunks as $i => $chunk) {
-            $chunks[$i] = \array_chunk($chunk, self::BATCH_SIZE, true);
+            $chunks[$i] = array_chunk($chunk, self::BATCH_SIZE, true);
         }
 
         return $chunks;
@@ -268,7 +281,7 @@ class DoctrineEventHandler
     {
         $flat = [];
         foreach ($chunks as $chunk) {
-            $flat = \array_merge($flat, $chunk);
+            $flat = array_merge($flat, $chunk);
         }
 
         return $flat;
@@ -281,7 +294,7 @@ class DoctrineEventHandler
      */
     private function mergeWithDatabase(array $events)
     {
-        Monitor::createProgressBar(\count($events));
+        Monitor::createProgressBar(count($events));
 
         $chunks = $this->getChunks($events);
 
@@ -302,7 +315,7 @@ class DoctrineEventHandler
                     $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
 
                     $oldUser = $event->getUser();
-                    $event   = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
+                    $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
                     $this->firewall->filterEventIntegrity($event, $oldUser);
                     if (!$this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
@@ -347,8 +360,8 @@ class DoctrineEventHandler
     {
         try {
             $this->em->flush();
-        } catch (\Exception $e) {
-            Monitor::writeln(\sprintf(
+        } catch (Exception $e) {
+            Monitor::writeln(sprintf(
                 '<error>%s</error>',
                 $e->getMessage()
             ));
@@ -359,7 +372,7 @@ class DoctrineEventHandler
     {
         $fb_ids = $this->getExplorationsFBIds($events);
 
-        if (\count($fb_ids)) {
+        if (count($fb_ids)) {
             $this->firewall->loadExplorations($fb_ids);
         }
     }
@@ -370,10 +383,10 @@ class DoctrineEventHandler
         $explorations = $this->firewall->getExplorations();
 
         $batchSize = 500;
-        $nbBatches = \ceil(\count($explorations) / $batchSize);
+        $nbBatches = ceil(count($explorations) / $batchSize);
 
         for ($i = 0; $i < $nbBatches; ++$i) {
-            $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
+            $currentExplorations = array_slice($explorations, $i * $batchSize, $batchSize);
             foreach ($currentExplorations as $exploration) {
                 /*
                  * @var Exploration $exploration
@@ -463,9 +476,10 @@ class DoctrineEventHandler
             return;
         }
 
+
         //Location fournie -> Vérification dans la base des villes existantes
         $zipCity = null;
-        $city    = null;
+        $city = null;
 
         //Ville + CP
         if ($place->getVille() && $place->getCodePostal()) {
@@ -475,9 +489,9 @@ class DoctrineEventHandler
         //Ville
         if (!$zipCity && $place->getVille()) {
             $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
-            if (0 === \count($zipCities)) {
+            if (0 === count($zipCities)) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_CITY_NAME);
-            } elseif (\count($zipCities) > 1) {
+            } elseif (count($zipCities) > 1) {
                 $place->getReject()->addReason(Reject::AMBIGOUS_CITY);
             } else {
                 $zipCity = $zipCities[0];
@@ -487,9 +501,9 @@ class DoctrineEventHandler
         //CP
         if (!$zipCity && !$place->getCodePostal() && $place->getCodePostal()) {
             $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
-            if (0 === \count($zipCities)) {
+            if (0 === count($zipCities)) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
-            } elseif (\count($zipCities) > 1) {
+            } elseif (count($zipCities) > 1) {
                 $place->getReject()->addReason(Reject::AMBIGOUS_ZIP);
             } else {
                 $zipCity = $zipCities[0];
@@ -502,10 +516,10 @@ class DoctrineEventHandler
 
         //Recherche de l'entité via sa ville ou son nom
         if (!$city) {
-            $tries = \array_filter([$place->getVille(), $place->getNom()]);
+            $tries = array_filter([$place->getVille(), $place->getNom()]);
             foreach ($tries as $try) {
                 $cities = $this->repoCity->findByName($try, $place->getCountry()->getId());
-                if (1 === \count($cities)) {
+                if (1 === count($cities)) {
                     $city = $cities[0];
 
                     break;
@@ -514,11 +528,10 @@ class DoctrineEventHandler
         }
 
         if ($city || $zipCity) {
-            $place->getReject()->setReason(Reject::VALID);
+            $place->getReject()->setValid();
         }
 
         $place->setCity($city)->setZipCity($zipCity);
-
         if ($city) {
             $place->setCountry($city->getCountry());
         } elseif ($zipCity) {
@@ -544,12 +557,12 @@ class DoctrineEventHandler
             }
         }
 
-        //Sinon, on tente de trouver la ville via lat/long
-        if ($place->getLatitude() && $place->getLongitude()) {
-            $this->geocoder->geocodeCoordinates($place);
-        } else {
-            //Dernière tentative, on trouve la ville via le nom du lieu
+        //On trouve la ville via le nom du lieu
+        if ($place->getNom()) {
             $this->geocoder->geocodePlace($place);
+        } elseif ($place->getLatitude() && $place->getLongitude()) {
+            //Sinon, on tente de trouver la ville via lat/long
+            $this->geocoder->geocodeCoordinates($place);
         }
 
         $this->guessEventCity($place);
@@ -573,6 +586,6 @@ class DoctrineEventHandler
             }
         }
 
-        return \array_keys($fbIds);
+        return array_keys($fbIds);
     }
 }

@@ -15,6 +15,7 @@ use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use function unserialize;
 
 class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 {
@@ -30,13 +31,13 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 
     public function __construct(EventFactory $eventFactory, DoctrineEventHandler $doctrineEventHandler)
     {
-        $this->eventFactory         = $eventFactory;
+        $this->eventFactory = $eventFactory;
         $this->doctrineEventHandler = $doctrineEventHandler;
     }
 
     public function execute(AMQPMessage $msg)
     {
-        $datas = \unserialize($msg->body);
+        $datas = unserialize($msg->body);
         $event = $this->eventFactory->fromArray($datas);
         dump($event);
 
@@ -46,10 +47,10 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
     public function batchExecute(array $messages)
     {
         Monitor::$output = new ConsoleOutput();
-        $events          = [];
+        $events = [];
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {
-            $events[] = $this->eventFactory->fromArray(\unserialize($message->body));
+            $events[] = $this->eventFactory->fromArray(unserialize($message->body));
         }
 
         $this->doctrineEventHandler->handleManyCLI($events);

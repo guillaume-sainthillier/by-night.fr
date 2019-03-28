@@ -12,16 +12,18 @@ use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
+use function implode;
+use function strstr;
 
 class AgendaRepository extends Repository
 {
-    const EXPO_TERMS    = 'expo, exposition';
+    const EXPO_TERMS = 'expo, exposition';
 
     const CONCERT_TERMS = 'concert, musique, artiste';
 
-    const FAMILY_TERMS  = 'famille, enfants';
+    const FAMILY_TERMS = 'famille, enfants';
 
-    const SHOW_TERMS    = 'spectacle, exposition, théâtre, comédie';
+    const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
 
     const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
@@ -104,7 +106,7 @@ class AgendaRepository extends Repository
                     'theme_manifestation', 'categorie_manifestation', 'place.nom',
                     'place.rue', 'place.ville', 'place.code_postal',
                 ])
-                ->setOperator(false !== \strstr($search->getTerm(), ',') ? 'or' : 'and')
+                ->setOperator(false !== strstr($search->getTerm(), ',') ? 'or' : 'and')
                 ->setFuzziness(0.8)
                 ->setMinimumShouldMatch('80%');
             $mainQuery->addMust($query);
@@ -116,7 +118,7 @@ class AgendaRepository extends Repository
         }
 
         if ($search->getCommune()) {
-            $query = (new Match())->setField('place.ville', \implode(',', $search->getCommune()));
+            $query = (new Match())->setField('place.ville', implode(',', $search->getCommune()));
             $mainQuery->addMust($query);
         }
 
@@ -129,7 +131,7 @@ class AgendaRepository extends Repository
 
         if ($search->getTypeManifestation()) {
             $communeTypeManifestationQuery = new Match();
-            $communeTypeManifestationQuery->setField('type_manifestation', \implode(' ', $search->getTypeManifestation()));
+            $communeTypeManifestationQuery->setField('type_manifestation', implode(' ', $search->getTypeManifestation()));
             $mainQuery->addMust($communeTypeManifestationQuery);
         }
 

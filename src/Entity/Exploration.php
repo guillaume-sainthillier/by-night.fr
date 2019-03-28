@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Reject\Reject;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="Exploration")
  * @ORM\Entity
- * @ORM\Entity(repositoryClass="App\Repository\ExplorationRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\ExplorationRepository", readOnly=true)
  */
 class Exploration
 {
@@ -23,7 +24,7 @@ class Exploration
     protected $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="last_updated", type="datetime", nullable=true)
      */
@@ -80,7 +81,7 @@ class Exploration
     /**
      * Set lastUpdated.
      *
-     * @param \DateTime $lastUpdated
+     * @param DateTime $lastUpdated
      *
      * @return Exploration
      */
@@ -94,7 +95,7 @@ class Exploration
     /**
      * Get lastUpdated.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getLastUpdated()
     {

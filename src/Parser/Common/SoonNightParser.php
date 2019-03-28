@@ -3,8 +3,29 @@
 namespace App\Parser\Common;
 
 use App\Parser\LinksParser;
+use function array_filter;
+use function array_map;
+use function array_merge;
+use function array_search;
+use function array_slice;
+use function array_values;
+use function count;
+use DateTime;
+use function explode;
 use ForceUTF8\Encoding;
+use function implode;
+use function in_array;
+use function is_numeric;
+use function preg_match;
+use function preg_replace;
+use function preg_replace_callback;
+use function preg_split;
+use function sprintf;
+use function str_replace;
+use function strstr;
+use function strtolower;
 use Symfony\Component\DomCrawler\Crawler;
+use function trim;
 
 /**
  * Description of SoonNightParser.
@@ -30,54 +51,54 @@ class SoonNightParser extends LinksParser
         $tab_retour = [];
 
         //Date & Nom
-        $date_lieu         = \preg_split('/-/', $this->parser->filter('.soiree_fiche h2.sous_titre')->text());
-        $nom               = \preg_replace("/\&(\d+);/i", '&#$1;', $this->parser->filter('h1.titre_principal')->text()) . ' @ ' . $date_lieu[1];
+        $date_lieu = preg_split('/-/', $this->parser->filter('.soiree_fiche h2.sous_titre')->text());
+        $nom = preg_replace("/\&(\d+);/i", '&#$1;', $this->parser->filter('h1.titre_principal')->text()) . ' @ ' . $date_lieu[1];
         $tab_retour['nom'] = $this->decodeNumCharacter($nom);
-        $date              = $this->parseDate($date_lieu[0]);
+        $date = $this->parseDate($date_lieu[0]);
 
-        $tab_retour['date_debut'] = \DateTime::createFromFormat('Y-n-d', $date);
+        $tab_retour['date_debut'] = DateTime::createFromFormat('Y-n-d', $date);
 
         //Lieux
-        $rue         = null;
+        $rue = null;
         $code_postal = null;
-        $lieu        = null;
-        $lat         = null;
-        $long        = null;
-        $ville       = null;
-        $lieux       = $this->parser->filter('.adresse');
+        $lieu = null;
+        $lat = null;
+        $long = null;
+        $ville = null;
+        $lieux = $this->parser->filter('.adresse');
         if ($lieux->count()) {
-            $infosGPS = \array_map('trim', \explode(',', $lieux->attr('longlat')));
-            if (\count($infosGPS) > 1) {
-                $lat  = $infosGPS[0];
+            $infosGPS = array_map('trim', explode(',', $lieux->attr('longlat')));
+            if (count($infosGPS) > 1) {
+                $lat = $infosGPS[0];
                 $long = $infosGPS[1];
             }
 
-            $adresse                         = $lieux->text();
+            $adresse = $lieux->text();
             list($rue, $code_postal, $ville) = $this->normalizeAddress($adresse);
 
             $node_lieu = $this->parser->filter('.titre.nom_lieu');
-            $lieu      = $node_lieu->count() ? \trim($node_lieu->text()) : null;
+            $lieu = $node_lieu->count() ? trim($node_lieu->text()) : null;
         }
-        $tab_retour['place.latitude']     = $lat;
-        $tab_retour['place.longitude']    = $long;
-        $tab_retour['place.nom']          = $lieu;
-        $tab_retour['place.rue']          = $rue;
-        $tab_retour['place.code_postal']  = $code_postal;
-        $tab_retour['place.ville']        = $ville;
+        $tab_retour['place.latitude'] = $lat;
+        $tab_retour['place.longitude'] = $long;
+        $tab_retour['place.nom'] = $lieu;
+        $tab_retour['place.rue'] = $rue;
+        $tab_retour['place.code_postal'] = $code_postal;
+        $tab_retour['place.ville'] = $ville;
         $tab_retour['place.country_name'] = 'France';
 
         //Tarifs
-        $node_tarif          = $this->getSibling($this->parser->filter('.row_bloc .icon-euro'), '.texte');
-        $tab_retour['tarif'] = $node_tarif ? \trim($node_tarif->text()) : null;
+        $node_tarif = $this->getSibling($this->parser->filter('.row_bloc .icon-euro'), '.texte');
+        $tab_retour['tarif'] = $node_tarif ? trim($node_tarif->text()) : null;
 
         //Description
         $descriptif_long = $this->parser->filter('.description_soiree');
-        $descriptif      = null;
+        $descriptif = null;
 
         //Suppression des foutues pubs
         foreach ($descriptif_long as $node) {
             foreach ($node->childNodes as $children) {
-                if (XML_TEXT_NODE === $children->nodeType || !\in_array($children->nodeName, ['span', 'div'])) {
+                if (XML_TEXT_NODE === $children->nodeType || !in_array($children->nodeName, ['span', 'div'])) {
                     $descriptif .= ('br' === $children->nodeName ? '<br>' : $children->textContent . ' ');
                 }
             }
@@ -91,21 +112,21 @@ class SoonNightParser extends LinksParser
             'Mise en relation',
             'Afficher le numéro du service de mise en relation',
         ];
-        $clean_descriptif         = $this->decodeNumCharacter(\str_replace($black_list, '', $descriptif));
+        $clean_descriptif = $this->decodeNumCharacter(str_replace($black_list, '', $descriptif));
         $tab_retour['descriptif'] = $clean_descriptif;
 
         //Catégorie & Thème
-        $node_categorie                        = $this->getNodeFromHeading($this->parser->filter('.fiche_soiree_top .info .type'));
-        $tab_retour['categorie_manifestation'] = $node_categorie ? \trim($node_categorie->text()) : null;
-        $tab_retour['categorie_manifestation'] = false !== \strstr($tab_retour['categorie_manifestation'], 'After Work') ? 'After Work' : $tab_retour['categorie_manifestation'];
+        $node_categorie = $this->getNodeFromHeading($this->parser->filter('.fiche_soiree_top .info .type'));
+        $tab_retour['categorie_manifestation'] = $node_categorie ? trim($node_categorie->text()) : null;
+        $tab_retour['categorie_manifestation'] = false !== strstr($tab_retour['categorie_manifestation'], 'After Work') ? 'After Work' : $tab_retour['categorie_manifestation'];
 
-        $node_musique                      = $this->getSibling($this->parser->filter('.icon-music'), '.texte');
-        $tab_retour['theme_manifestation'] = $node_musique ? \trim($node_musique->text()) : null;
-        $tab_retour['type_manifestation']  = 'Soirée';
+        $node_musique = $this->getSibling($this->parser->filter('.icon-music'), '.texte');
+        $tab_retour['theme_manifestation'] = $node_musique ? trim($node_musique->text()) : null;
+        $tab_retour['type_manifestation'] = 'Soirée';
 
         //Image
-        $image                = $this->parser->filter('.fiche_soiree_top .image');
-        $tab_retour['url']    = $image->count() ? $image->attr('data-src') : null;
+        $image = $this->parser->filter('.fiche_soiree_top .image');
+        $tab_retour['url'] = $image->count() ? $image->attr('data-src') : null;
         $tab_retour['source'] = $this->url;
 
         return $tab_retour;
@@ -113,11 +134,11 @@ class SoonNightParser extends LinksParser
 
     public function normalizeAddress($adresse)
     {
-        $infos = \array_values(\array_filter(\array_map('trim', \explode(',', $adresse))));
+        $infos = array_values(array_filter(array_map('trim', explode(',', $adresse))));
 
-        $rue         = null;
+        $rue = null;
         $code_postal = null;
-        $ville       = null;
+        $ville = null;
 
         /*
          * 46 rue des lombards, 75001 Paris
@@ -125,28 +146,28 @@ class SoonNightParser extends LinksParser
          * Canal de l'Ourcq - Parc de la Villette, 59 Boulevard Macdonald, 75019 Paris
          * Escale de Passy, parking Passy face à la maison de la radio, 75016 Paris
          */
-        if (\count($infos) > 2) {
-            if (\is_numeric($infos[0])) {
-                $infos[0] = \sprintf(
+        if (count($infos) > 2) {
+            if (is_numeric($infos[0])) {
+                $infos[0] = sprintf(
                     '%s %s',
                     $infos[0],
                     $infos[1]
                 );
                 $infos[1] = $infos[2];
-            } elseif (!\preg_match("#^\d{5} #", $infos[1])) {
+            } elseif (!preg_match("#^\d{5} #", $infos[1])) {
                 $infos[0] = $infos[1];
                 $infos[1] = $infos[2];
             }
             unset($infos[2]);
         }
 
-        $infosRue = \array_values(\array_filter(\array_map('trim', \explode('-', $infos[0]))));
-        $rue      = $infosRue[\count($infosRue) - 1];
-        if (\count($infos) > 1) {
-            $infosVille  = \array_map('trim', \explode(' ', $infos[1]));
+        $infosRue = array_values(array_filter(array_map('trim', explode('-', $infos[0]))));
+        $rue = $infosRue[count($infosRue) - 1];
+        if (count($infos) > 1) {
+            $infosVille = array_map('trim', explode(' ', $infos[1]));
             $code_postal = $infosVille[0];
-            if (\count($infosVille) > 0) {
-                $ville = \implode(' ', \array_slice($infosVille, 1, \count($infosVille)));
+            if (count($infosVille) > 0) {
+                $ville = implode(' ', array_slice($infosVille, 1, count($infosVille)));
             }
         }
 
@@ -163,7 +184,7 @@ class SoonNightParser extends LinksParser
                 return $this->base_url . $item->attr('href');
             });
 
-            $urls = \array_merge($urls, $currentUrls);
+            $urls = array_merge($urls, $currentUrls);
         }
 
         return $urls;
@@ -178,9 +199,9 @@ class SoonNightParser extends LinksParser
     {
         $tabMois = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
 
-        return \preg_replace_callback("/(.+)(\d{2}) (" . \implode('|', $tabMois) . ") (\d{4})(.+)/iu",
+        return preg_replace_callback("/(.+)(\d{2}) (" . implode('|', $tabMois) . ") (\d{4})(.+)/iu",
             function ($items) use ($tabMois) {
-                return $items[4] . '-' . (\array_search(\strtolower($items[3]), $tabMois) + 1) . '-' . $items[2];
+                return $items[4] . '-' . (array_search(strtolower($items[3]), $tabMois) + 1) . '-' . $items[2];
             }, $date);
     }
 

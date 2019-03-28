@@ -11,8 +11,10 @@ namespace App\Request\ParamConverter;
 use App\App\CityManager;
 use App\Entity\City;
 use Doctrine\Common\Persistence\ObjectManager;
+use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
+use function sprintf;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -30,7 +32,7 @@ class CityConverter implements ParamConverterInterface
 
     public function __construct(ObjectManager $em, CityManager $cityManager)
     {
-        $this->em          = $em;
+        $this->em = $em;
         $this->cityManager = $cityManager;
     }
 
@@ -39,7 +41,7 @@ class CityConverter implements ParamConverterInterface
         $city = $request->attributes->get('city');
 
         if (null === $city && !$configuration->isOptional()) {
-            throw new \InvalidArgumentException('Route attribute is missing');
+            throw new InvalidArgumentException('Route attribute is missing');
         } elseif (null === $city) {
             return;
         }
@@ -54,7 +56,7 @@ class CityConverter implements ParamConverterInterface
         }
 
         if (!$entity) {
-            throw new NotFoundHttpException(\sprintf(
+            throw new NotFoundHttpException(sprintf(
                 "La ville '%s' est introuvable",
                 $city
             ));

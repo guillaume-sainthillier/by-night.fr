@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ReplyController extends Controller
@@ -21,18 +22,18 @@ class ReplyController extends Controller
      * @param Comment $comment
      * @param $page
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function listAction(Comment $comment, $page = 1)
     {
         $limit = 5;
 
         return $this->render('Comment/Reply/list.html.twig', [
-            'comments'     => $this->getReponses($comment, $page, $limit),
+            'comments' => $this->getReponses($comment, $page, $limit),
             'main_comment' => $comment,
-            'nb_comments'  => $this->getNbReponses($comment),
-            'page'         => $page,
-            'offset'       => $limit,
+            'nb_comments' => $this->getNbReponses($comment),
+            'page' => $page,
+            'offset' => $limit,
         ]);
     }
 
@@ -42,12 +43,12 @@ class ReplyController extends Controller
      * @param Request $request
      * @param Comment $comment
      *
-     * @return JsonResponse|RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return JsonResponse|RedirectResponse|Response
      */
     public function newAction(Request $request, Comment $comment)
     {
         $reponse = new Comment();
-        $form    = $this->getCreateForm($reponse, $comment);
+        $form = $this->getCreateForm($reponse, $comment);
 
         if ('POST' == $request->getMethod()) {
             $user = $this->getUser();
@@ -74,7 +75,7 @@ class ReplyController extends Controller
                 return new JsonResponse([
                     'success' => true,
                     'comment' => $this->renderView('Comment/Reply/details.html.twig', [
-                        'comment'              => $reponse,
+                        'comment' => $reponse,
                         'success_confirmation' => true,
                     ]),
                     'nb_reponses' => $this->getNbReponses($comment),
@@ -82,9 +83,9 @@ class ReplyController extends Controller
             } else {
                 return new JsonResponse([
                     'success' => false,
-                    'post'    => $this->renderView('Comment/Reply/post.html.twig', [
+                    'post' => $this->renderView('Comment/Reply/post.html.twig', [
                         'comment' => $comment,
-                        'form'    => $form->createView(),
+                        'form' => $form->createView(),
                     ]),
                 ]);
             }
@@ -92,7 +93,7 @@ class ReplyController extends Controller
 
         return $this->render('Comment/Reply/post.html.twig', [
             'comment' => $comment,
-            'form'    => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 
@@ -127,7 +128,7 @@ class ReplyController extends Controller
     public function detailsAction(Comment $comment)
     {
         return $this->render('Comment/Reply/details.html.twig', [
-            'comment'     => $comment,
+            'comment' => $comment,
             'nb_reponses' => $this->getNbReponses($comment),
         ]);
     }
@@ -140,8 +141,8 @@ class ReplyController extends Controller
         ])
             ->add('poster', SubmitType::class, [
                 'label' => 'Répondre',
-                'attr'  => [
-                    'class'             => 'btn btn-primary btn-submit btn-raised',
+                'attr' => [
+                    'class' => 'btn btn-primary btn-submit btn-raised',
                     'data-loading-text' => 'En cours...',
                 ],
             ]);

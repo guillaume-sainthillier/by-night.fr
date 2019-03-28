@@ -12,8 +12,8 @@ use JMS\Serializer\Annotation\Groups;
  * Info.
  *
  * @ORM\Table(name="admin_zone", indexes={
- @ORM\Index(name="admin_zone_type_name_idx", columns={"type", "name"}),
- @ORM\Index(name="admin_zone_type_population_idx", columns={"type", "population"})
+@ORM\Index(name="admin_zone_type_name_idx", columns={"type", "name"}),
+@ORM\Index(name="admin_zone_type_population_idx", columns={"type", "population"})
  * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
@@ -235,11 +235,11 @@ abstract class AdminZone
     /**
      * Set country.
      *
-     * @param \App\Entity\Country $country
+     * @param Country $country
      *
      * @return AdminZone
      */
-    public function setCountry(\App\Entity\Country $country = null)
+    public function setCountry(Country $country = null)
     {
         $this->country = $country;
 
@@ -249,7 +249,7 @@ abstract class AdminZone
     /**
      * Get country.
      *
-     * @return \App\Entity\Country
+     * @return Country
      */
     public function getCountry()
     {

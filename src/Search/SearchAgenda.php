@@ -3,6 +3,10 @@
 namespace App\Search;
 
 use App\Entity\City;
+use function array_filter;
+use function array_unique;
+use DateTime;
+use function explode;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -13,13 +17,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SearchAgenda
 {
     /**
-     * @var \DateTime
+     * @var DateTime
      * @Assert\Date()
      */
     protected $du;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      * @Assert\Date()
      */
     protected $au;
@@ -62,12 +66,12 @@ class SearchAgenda
     public function __construct()
     {
         $this->page = 1;
-        $this->du   = new \DateTime();
+        $this->du = new DateTime();
     }
 
     public function getTerms()
     {
-        return \array_unique(\array_filter(\explode(' ', $this->getTerm())));
+        return array_unique(array_filter(explode(' ', $this->getTerm())));
     }
 
     /**
@@ -91,7 +95,7 @@ class SearchAgenda
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDu()
     {
@@ -99,7 +103,7 @@ class SearchAgenda
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getAu()
     {
@@ -151,11 +155,11 @@ class SearchAgenda
     }
 
     /**
-     * @param \DateTime|null $du
+     * @param DateTime|null $du
      *
      * @return $this
      */
-    public function setDu(\DateTime $du = null)
+    public function setDu(DateTime $du = null)
     {
         $this->du = $du;
 
@@ -163,11 +167,11 @@ class SearchAgenda
     }
 
     /**
-     * @param \DateTime|null $au
+     * @param DateTime|null $au
      *
      * @return $this
      */
-    public function setAu(\DateTime $au = null)
+    public function setAu(DateTime $au = null)
     {
         $this->au = $au;
 

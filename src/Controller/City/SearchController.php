@@ -5,6 +5,7 @@ namespace App\Controller\City;
 use App\Entity\City;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -15,10 +16,10 @@ class SearchController extends Controller
     /**
      * @Route("/", name="tbn_search_query_city", requirements={"city": ".+"})
      *
-     * @param City    $city
+     * @param City $city
      * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function searchAction(Request $request)
     {

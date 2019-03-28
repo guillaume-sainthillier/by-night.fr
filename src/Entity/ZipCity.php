@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as Serializer;
  * ZipCity.
  *
  * @ORM\Table(name="zip_city", indexes={
- @ORM\Index(name="zip_city_postal_code_name_idx", columns={"name", "postal_code"})
+@ORM\Index(name="zip_city_postal_code_name_idx", columns={"name", "postal_code"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\ZipCityRepository", readOnly=true)
  * @Serializer\ExclusionPolicy("ALL")
@@ -250,11 +250,11 @@ class ZipCity
     /**
      * Set country.
      *
-     * @param \App\Entity\Country $country
+     * @param Country $country
      *
      * @return ZipCity
      */
-    public function setCountry(\App\Entity\Country $country = null)
+    public function setCountry(Country $country = null)
     {
         $this->country = $country;
 
@@ -264,7 +264,7 @@ class ZipCity
     /**
      * Get country.
      *
-     * @return \App\Entity\Country
+     * @return Country
      */
     public function getCountry()
     {
@@ -298,11 +298,11 @@ class ZipCity
     /**
      * Set parent.
      *
-     * @param \App\Entity\City $parent
+     * @param City $parent
      *
      * @return ZipCity
      */
-    public function setParent(\App\Entity\City $parent = null)
+    public function setParent(City $parent = null)
     {
         $this->parent = $parent;
 
@@ -312,7 +312,7 @@ class ZipCity
     /**
      * Get parent.
      *
-     * @return \App\Entity\City
+     * @return City
      */
     public function getParent()
     {

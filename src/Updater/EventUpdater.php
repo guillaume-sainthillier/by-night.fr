@@ -10,9 +10,13 @@ namespace App\Updater;
 
 use App\Entity\Agenda;
 use App\Handler\EventHandler;
+use App\Repository\AgendaRepository;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
+use function ceil;
+use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
+use function preg_replace;
 
 class EventUpdater extends Updater
 {
@@ -27,21 +31,22 @@ class EventUpdater extends Updater
         $this->eventHandler = $eventHandler;
     }
 
-    public function update(\DateTime $since = null)
+    public function update(DateTime $since = null)
     {
         if (!$since) {
-            $since = new \DateTime();
+            $since = new DateTime();
         }
 
-        $repo  = $this->entityManager->getRepository(Agenda::class);
+        /** @var AgendaRepository $repo */
+        $repo = $this->entityManager->getRepository(Agenda::class);
         $count = $repo->getNextEventsCount($since);
 
-        $fbIds   = $repo->getNextEventsFbIds($since);
+        $fbIds = $repo->getNextEventsFbIds($since);
         $fbStats = $this->facebookAdmin->getEventStatsFromIds($fbIds);
 
         unset($fbIds);
 
-        $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
+        $nbBatchs = ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
         for ($i = 0; $i < $nbBatchs; ++$i) {
@@ -60,7 +65,7 @@ class EventUpdater extends Updater
              * @var Agenda
              */
             $imageURL = $event->getUrl();
-            $imageURL = \preg_replace('#(jp|jpe|pn)$#', '$1g', $imageURL);
+            $imageURL = preg_replace('#(jp|jpe|pn)$#', '$1g', $imageURL);
             if ($event->getFacebookEventId() && isset($fbStats[$event->getFacebookEventId()])) {
                 $imageURL = $fbStats[$event->getFacebookEventId()]['url'];
                 $event->setFbParticipations($fbStats[$event->getFacebookEventId()]['participations']);

@@ -4,6 +4,8 @@ framework:
     csrf_protection: ~
     http_method_override: true
 
+    cache:
+        app: cache.adapter.redis
     session:
         handler_id: ~
         save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"

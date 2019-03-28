@@ -33,12 +33,12 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
     public function __construct(TranslatorInterface $translator, RouterInterface $router, Session $session)
     {
         $this->translator = $translator;
-        $this->router     = $router;
-        $this->session    = $session;
+        $this->router = $router;
+        $this->session = $session;
     }
 
     /**
-     * @param Request        $request
+     * @param Request $request
      * @param TokenInterface $token
      *
      * @return JsonResponse|RedirectResponse
@@ -78,7 +78,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
     }
 
     /**
-     * @param Request                 $request
+     * @param Request $request
      * @param AuthenticationException $exception
      *
      * @return JsonResponse|RedirectResponse

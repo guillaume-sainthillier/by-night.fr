@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
  * News.
  *
  * @ORM\Table(name="country")
- * @ORM\Entity(repositoryClass="App\Repository\CountryRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\CountryRepository", readOnly=true)
  * @ExclusionPolicy("NONE")
  */
 class Country

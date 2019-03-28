@@ -16,13 +16,20 @@ use App\Social\FacebookAdmin;
 use App\Social\FacebookListEvents;
 use App\Social\SocialProvider;
 use App\Validator\Constraints\EventConstraintValidator;
+use function array_merge;
+use DateTime;
+use Exception;
+use function implode;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use function sprintf;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -33,7 +40,7 @@ class EventController extends Controller
      * @Route("/annuler/{slug}", name="tbn_agenda_annuler", requirements={"slug": ".+"})
      *
      * @param Request $request
-     * @param Agenda  $agenda
+     * @param Agenda $agenda
      *
      * @return JsonResponse
      */
@@ -41,11 +48,11 @@ class EventController extends Controller
     {
         $this->checkIfOwner($agenda);
 
-        $annuler                    = $request->get('annuler', 'true');
+        $annuler = $request->get('annuler', 'true');
         $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
 
         $em = $this->getDoctrine()->getManager();
-        $agenda->setModificationDerniereMinute($modificationDerniereMinute)->setDateModification(new \DateTime());
+        $agenda->setModificationDerniereMinute($modificationDerniereMinute)->setDateModification(new DateTime());
         $em->merge($agenda);
         $em->flush();
 
@@ -56,7 +63,7 @@ class EventController extends Controller
      * @Route("/brouillon/{slug}", name="tbn_agenda_brouillon", requirements={"slug": ".+"})
      *
      * @param Request $request
-     * @param Agenda  $agenda
+     * @param Agenda $agenda
      *
      * @return JsonResponse
      */
@@ -64,11 +71,11 @@ class EventController extends Controller
     {
         $this->checkIfOwner($agenda);
 
-        $brouillon   = $request->get('brouillon', 'true');
+        $brouillon = $request->get('brouillon', 'true');
         $isBrouillon = ('true' === $brouillon);
 
         $em = $this->getDoctrine()->getManager();
-        $agenda->setBrouillon($isBrouillon)->setDateModification(new \DateTime());
+        $agenda->setBrouillon($isBrouillon)->setDateModification(new DateTime());
         $em->merge($agenda);
         $em->flush();
 
@@ -80,13 +87,13 @@ class EventController extends Controller
      */
     public function indexAction()
     {
-        $user    = $this->getUser();
+        $user = $this->getUser();
         $soirees = $this->getDoctrine()->getRepository(Agenda::class)->findAllByUser($user);
 
         $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
 
         return $this->render('EspacePerso/liste.html.twig', [
-            'soirees'    => $soirees,
+            'soirees' => $soirees,
             'canSynchro' => $canSynchro,
         ]);
     }
@@ -96,7 +103,7 @@ class EventController extends Controller
      *
      * @param Agenda $agenda
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function deleteAction(Agenda $agenda)
     {
@@ -116,13 +123,13 @@ class EventController extends Controller
     /**
      * @Route("/corriger/{slug}", name="tbn_agenda_edit", requirements={"slug": ".+"})
      *
-     * @param Request                  $request
-     * @param Agenda                   $agenda
+     * @param Request $request
+     * @param Agenda $agenda
      * @param EventConstraintValidator $validator
-     * @param LoggerInterface          $logger
-     * @param SocialProvider           $socialProvider
+     * @param LoggerInterface $logger
+     * @param SocialProvider $socialProvider
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return RedirectResponse|Response
      */
     public function editAction(Request $request, Agenda $agenda, EventConstraintValidator $validator, LoggerInterface $logger, SocialProvider $socialProvider)
     {
@@ -151,7 +158,7 @@ class EventController extends Controller
             } catch (FileException $exception) {
                 $logger->critical($exception);
                 $this->addFlash('error', 'Un problème a eu lieu avec l\'envoi de votre pièce jointe');
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $logger->critical($exception);
                 $this->addFlash('error', 'Un problème a eu lieu avec l\'enregistrement de votre événement');
             }
@@ -160,8 +167,8 @@ class EventController extends Controller
         $formDelete = $this->createDeleteForm($agenda);
 
         return $this->render('EspacePerso/edit.html.twig', [
-            'form'        => $form->createView(),
-            'agenda'      => $agenda,
+            'form' => $form->createView(),
+            'agenda' => $agenda,
             'form_delete' => $formDelete->createView(),
         ]);
     }
@@ -170,24 +177,24 @@ class EventController extends Controller
      * @Route("/import", name="tbn_agenda_import_events")
      * @Security("has_role('ROLE_FACEBOOK_LIST_EVENTS')")
      *
-     * @param FacebookListEvents   $importer
-     * @param EventFactory         $eventFactory
-     * @param FaceBookParser       $parser
+     * @param FacebookListEvents $importer
+     * @param EventFactory $eventFactory
+     * @param FaceBookParser $parser
      * @param DoctrineEventHandler $handler
-     * @param ValidatorInterface   $validator
+     * @param ValidatorInterface $validator
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function importAction(FacebookListEvents $importer, EventFactory $eventFactory, FaceBookParser $parser, DoctrineEventHandler $handler, ValidatorInterface $validator)
     {
-        $user      = $this->getUser();
+        $user = $this->getUser();
         $fb_events = $importer->getUserEvents($user);
 
         $events = [];
         foreach ($fb_events as $fb_event) {
             $array_event = $parser->getInfoAgenda($fb_event);
-            $event       = $eventFactory->fromArray($array_event);
-            $events[]    = $event->setUser($user);
+            $event = $eventFactory->fromArray($array_event);
+            $events[] = $event->setUser($user);
         }
 
         $events = $handler->handleMany($events);
@@ -203,16 +210,16 @@ class EventController extends Controller
                     /*
                      * @var ConstraintViolation $error
                      */
-                    $errorsString[] = \sprintf(
+                    $errorsString[] = sprintf(
                         '<li>%s</li>',
                         $error->getMessage()
                     );
                 }
-                $this->addFlash('info', \sprintf(
+                $this->addFlash('info', sprintf(
                     "Informations sur l'événément <a href='https://facebook.com/events/%s/'>%s</a> : <ul>%s</ul>",
                     $event->getFacebookEventId(),
                     $event->getNom(),
-                    \implode('', $errorsString)
+                    implode('', $errorsString)
                 ));
             }
         }
@@ -223,13 +230,13 @@ class EventController extends Controller
     protected function addImportMessage(ExplorationHandler $explorationHandler)
     {
         if ($explorationHandler->getNbInserts() > 0 || $explorationHandler->getNbUpdates() > 0) {
-            $plurielInsert   = $explorationHandler->getNbInserts() > 1 ? 's' : '';
-            $plurielUpdate   = $explorationHandler->getNbUpdates() > 1 ? 's' : '';
+            $plurielInsert = $explorationHandler->getNbInserts() > 1 ? 's' : '';
+            $plurielUpdate = $explorationHandler->getNbUpdates() > 1 ? 's' : '';
             $indicatifInsert = 1 == $explorationHandler->getNbInserts() ? 'a' : 'ont';
             $indicatifUpdate = 1 == $explorationHandler->getNbUpdates() ? 'a' : 'ont';
-            $message         = null;
+            $message = null;
             if ($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
-                $message = \sprintf(
+                $message = sprintf(
                     '<strong>%d</strong> événément%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !',
                     $explorationHandler->getNbInserts(),
                     $plurielInsert,
@@ -239,7 +246,7 @@ class EventController extends Controller
                     $indicatifUpdate
                 );
             } elseif ($explorationHandler->getNbInserts() > 0) {
-                $message = \sprintf(
+                $message = sprintf(
                     '<strong>%d</strong> événément%s %s été ajouté%s sur By Night !',
                     $explorationHandler->getNbInserts(),
                     $plurielInsert,
@@ -247,7 +254,7 @@ class EventController extends Controller
                     $plurielInsert
                 );
             } elseif ($explorationHandler->getNbUpdates() > 0) {
-                $message = \sprintf(
+                $message = sprintf(
                     '<strong>%d</strong> événément%s %s été mis à jour sur By Night !',
                     $explorationHandler->getNbUpdates(),
                     $plurielUpdate,
@@ -266,16 +273,16 @@ class EventController extends Controller
     /**
      * @Route("/espace-perso/nouvelle-soiree", name="tbn_agenda_new")
      *
-     * @param Request                  $request
+     * @param Request $request
      * @param EventConstraintValidator $validator
-     * @param SocialManager            $socialManager
-     * @param SocialProvider           $socialProvider
+     * @param SocialManager $socialManager
+     * @param SocialProvider $socialProvider
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @return RedirectResponse|Response
      */
     public function newAction(Request $request, EventConstraintValidator $validator, SocialManager $socialManager, SocialProvider $socialProvider)
     {
-        $user   = $this->getUser();
+        $user = $this->getUser();
         $agenda = (new Agenda())
             ->setUser($user)
             ->setParticipations(1);
@@ -286,12 +293,12 @@ class EventController extends Controller
         /**
          * @var Agenda
          */
-        $agenda      = $form->getData();
+        $agenda = $form->getData();
         $isNewAgenda = null !== $agenda->getId();
         if ($form->isSubmitted() && $form->isValid()) {
-            $em          = $this->getDoctrine()->getManager();
-            $agenda      = $em->merge($agenda);
-            $found       = false;
+            $em = $this->getDoctrine()->getManager();
+            $agenda = $em->merge($agenda);
+            $found = false;
             $calendriers = $agenda->getCalendriers();
             foreach ($calendriers as $calendrier) {
                 if ($calendrier->getUser()->getId() === $user->getId()) {
@@ -323,7 +330,7 @@ class EventController extends Controller
         }
 
         return $this->render('EspacePerso/new.html.twig', [
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
             'agenda' => $agenda,
         ]);
     }
@@ -338,7 +345,7 @@ class EventController extends Controller
         ])
             ->add('supprimer', SubmitType::class, [
                 'label' => 'Supprimer',
-                'attr'  => [
+                'attr' => [
                     'class' => 'btn btn-danger btn-raised btn-lg btn-block',
                 ],
             ])
@@ -347,7 +354,7 @@ class EventController extends Controller
 
     protected function createEditForm(Agenda $agenda)
     {
-        $options = \array_merge($this->getAgendaOptions(), [
+        $options = array_merge($this->getAgendaOptions(), [
             'action' => $this->generateUrl('tbn_agenda_edit', [
                 'slug' => $agenda->getSlug(),
             ]),
@@ -357,7 +364,7 @@ class EventController extends Controller
         return $this->createForm(AgendaType::class, $agenda, $options)
             ->add('ajouter', SubmitType::class, [
                 'label' => 'Enregistrer',
-                'attr'  => [
+                'attr' => [
                     'class' => 'btn btn-primary btn-raised btn-lg btn-block',
                 ],
             ]);
@@ -365,24 +372,24 @@ class EventController extends Controller
 
     protected function getAgendaOptions(SocialManager $socialManager)
     {
-        $user     = $this->getUser();
+        $user = $this->getUser();
         $siteInfo = $socialManager->getSiteInfo();
 
         return [
             'site_info' => $siteInfo,
-            'user'      => $user,
+            'user' => $user,
         ];
     }
 
     /**
-     * @param Agenda        $agenda
+     * @param Agenda $agenda
      * @param SocialManager $socialManager
      *
-     * @return \Symfony\Component\Form\FormInterface
+     * @return FormInterface
      */
     protected function createCreateForm(Agenda $agenda, SocialManager $socialManager)
     {
-        $options = \array_merge($this->getAgendaOptions($socialManager), [
+        $options = array_merge($this->getAgendaOptions($socialManager), [
             'action' => $this->generateUrl('tbn_agenda_new'),
             'method' => 'POST',
         ]);
@@ -390,7 +397,7 @@ class EventController extends Controller
         return $this->createForm(AgendaType::class, $agenda, $options)
             ->add('ajouter', SubmitType::class, [
                 'label' => 'Enregistrer',
-                'attr'  => [
+                'attr' => [
                     'class' => 'btn btn-primary btn-raised btn-lg btn-block',
                 ],
             ]);
@@ -413,7 +420,7 @@ class EventController extends Controller
 
     protected function checkIfOwner(Agenda $agenda)
     {
-        $user_agenda  = $agenda->getUser();
+        $user_agenda = $agenda->getUser();
         $current_user = $this->getUser();
 
         if (!$current_user->hasRole('ROLE_ADMIN') && $user_agenda !== $current_user) {
@@ -424,7 +431,7 @@ class EventController extends Controller
     private function updateFBEvent(Agenda $agenda, User $user, Calendrier $calendrier, FacebookAdmin $facebookAdmin)
     {
         if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookAccessToken()) {
-            $key   = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
+            $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
             $cache = $this->get('memory_cache');
             $facebookAdmin->updateEventStatut(
                 $agenda->getFacebookEventId(),
@@ -434,7 +441,7 @@ class EventController extends Controller
 
             $datas = [
                 'participer' => $calendrier->getParticipe(),
-                'interet'    => $calendrier->getInteret(),
+                'interet' => $calendrier->getInteret(),
             ];
 
             $cache->save($key, $datas);
@@ -445,7 +452,7 @@ class EventController extends Controller
      * @Route("/participer/{id}", name="tbn_user_participer", defaults={"participer": true, "interet": false})
      * @Route("/interet/{id}", name="tbn_user_interesser", defaults={"participer": false, "interet": true})
      *
-     * @param Agenda        $agenda
+     * @param Agenda $agenda
      * @param FacebookAdmin $facebookAdmin
      * @param $participer
      * @param $interet
@@ -456,7 +463,7 @@ class EventController extends Controller
     {
         $user = $this->getUser();
 
-        $em         = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $calendrier = $em->getRepository(Calendrier::class)->findOneBy(['user' => $user, 'agenda' => $agenda]);
 
         if (null === $calendrier) {
@@ -469,17 +476,17 @@ class EventController extends Controller
         $em->persist($calendrier);
         $em->flush();
 
-        $repo           = $em->getRepository(Agenda::class);
+        $repo = $em->getRepository(Agenda::class);
         $participations = $repo->getCountTendancesParticipation($agenda);
-        $interets       = $repo->getCountTendancesInterets($agenda);
+        $interets = $repo->getCountTendancesInterets($agenda);
 
         $agenda->setParticipations($participations)->setInterets($interets);
         $em->flush();
 
         return new JsonResponse([
-            'success'    => true,
+            'success' => true,
             'participer' => $participer,
-            'interet'    => $interet,
+            'interet' => $interet,
         ]);
     }
 }

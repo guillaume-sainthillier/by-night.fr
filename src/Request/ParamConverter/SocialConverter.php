@@ -10,6 +10,8 @@ namespace App\Request\ParamConverter;
 
 use App\Social\Social;
 use App\Social\SocialProvider;
+use function array_merge;
+use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,10 +33,10 @@ class SocialConverter implements ParamConverterInterface
         $service = $request->attributes->get('service');
 
         if (null === $service && !$configuration->isOptional()) {
-            throw new \InvalidArgumentException('Route attribute is missing');
+            throw new InvalidArgumentException('Route attribute is missing');
         }
 
-        $options = \array_merge([
+        $options = array_merge([
             'default_facebook_name' => SocialProvider::FACEBOOK,
         ], $configuration->getOptions());
 

@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use function sprintf;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -41,14 +44,14 @@ class Comment
     protected $isApprouve;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_creation", type="datetime")
      */
     protected $dateCreation;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_modification", type="datetime")
      */
@@ -87,8 +90,8 @@ class Comment
     public function __construct()
     {
         $this->reponses = new ArrayCollection();
-        $this->setDateCreation(new \DateTime());
-        $this->setDateModification(new \DateTime());
+        $this->setDateCreation(new DateTime());
+        $this->setDateModification(new DateTime());
 
         $this->setApprouve(true);
     }
@@ -98,7 +101,7 @@ class Comment
      */
     public function setUpdateDate()
     {
-        $this->setDateModification(new \DateTime());
+        $this->setDateModification(new DateTime());
     }
 
     /**
@@ -162,7 +165,7 @@ class Comment
     /**
      * Set dateCreation.
      *
-     * @param \DateTime $dateCreation
+     * @param DateTime $dateCreation
      *
      * @return Comment
      */
@@ -176,7 +179,7 @@ class Comment
     /**
      * Get dateCreation.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateCreation()
     {
@@ -186,7 +189,7 @@ class Comment
     /**
      * Set dateModification.
      *
-     * @param \DateTime $dateModification
+     * @param DateTime $dateModification
      *
      * @return Comment
      */
@@ -200,7 +203,7 @@ class Comment
     /**
      * Get dateModification.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateModification()
     {
@@ -224,7 +227,7 @@ class Comment
     /**
      * Get user.
      *
-     * @return \App\Entity\User
+     * @return User
      */
     public function getUser()
     {
@@ -248,7 +251,7 @@ class Comment
     /**
      * Get agenda.
      *
-     * @return \App\Entity\Agenda
+     * @return Agenda
      */
     public function getAgenda()
     {
@@ -272,7 +275,7 @@ class Comment
     /**
      * Get parent.
      *
-     * @return \App\Entity\Comment
+     * @return Comment
      */
     public function getParent()
     {
@@ -306,7 +309,7 @@ class Comment
     /**
      * Get reponses.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getReponses()
     {
@@ -315,7 +318,7 @@ class Comment
 
     public function __toString()
     {
-        return \sprintf('#%s', $this->id ?: '?');
+        return sprintf('#%s', $this->id ?: '?');
     }
 
     /**

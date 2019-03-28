@@ -10,6 +10,9 @@ namespace App\Picture;
 
 use App\Entity\Agenda;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use function strlen;
+use function strpos;
+use function substr;
 use Symfony\Component\Asset\Packages;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -31,8 +34,8 @@ class EventProfilePicture
     public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages)
     {
         $this->cacheManager = $cacheManager;
-        $this->helper       = $helper;
-        $this->packages     = $packages;
+        $this->helper = $helper;
+        $this->packages = $packages;
     }
 
     public function getOriginalPictureUrl(Agenda $agenda)
@@ -81,7 +84,7 @@ class EventProfilePicture
     {
         if ($agenda->getPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
-            $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
+            $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
 
             return $this->packages->getUrl(
                 $webPath
@@ -90,7 +93,7 @@ class EventProfilePicture
 
         if ($agenda->getSystemPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
-            $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
+            $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
 
             return $this->packages->getUrl(
                 $webPath
@@ -102,7 +105,7 @@ class EventProfilePicture
         }
 
         $webPath = $this->cacheManager->getBrowserPath('img/empty_event.png', $thumb);
-        $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
+        $webPath = substr($webPath, strpos($webPath, '/media'), strlen($webPath));
 
         return $this->packages->getUrl(
             $webPath

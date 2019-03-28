@@ -3,7 +3,7 @@ parameters:
     facebook_id_page: '205292952998805'
     facebook_id_app: '%env(FACEBOOK_API_ID)%'
     google_id_page: '113344346320536654292'
-    google_map_key: '%env(GOOGLE_MAP_API_SECRET)%'
+    google_map_key: '%env(GOOGLE_MAP_KEY_WEB)%'
     twitter_id_page: 'By__Night'
     app_public_root: '%kernel.project_dir%/public/'
     class.guzzle.response: Guzzle\Http\Message\Response

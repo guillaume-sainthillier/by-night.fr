@@ -2,6 +2,8 @@
 
 namespace App\Reject;
 
+use LogicException;
+
 /**
  * Created by PhpStorm.
  * User: guillaume
@@ -10,45 +12,45 @@ namespace App\Reject;
  */
 class Reject
 {
-    const VALID                      = 1;
+    const VALID = 1;
 
-    const BAD_EVENT_NAME             = 2;
+    const BAD_EVENT_NAME = 2;
 
-    const BAD_EVENT_DATE             = 4;
+    const BAD_EVENT_DATE = 4;
 
-    const BAD_EVENT_DATE_INTERVAL    = 8;
+    const BAD_EVENT_DATE_INTERVAL = 8;
 
-    const SPAM_EVENT_DESCRIPTION     = 16;
+    const SPAM_EVENT_DESCRIPTION = 16;
 
-    const BAD_EVENT_DESCRIPTION      = 32;
+    const BAD_EVENT_DESCRIPTION = 32;
 
-    const NO_NEED_TO_UPDATE          = 64;
+    const NO_NEED_TO_UPDATE = 64;
 
-    const NO_PLACE_PROVIDED          = 128;
+    const NO_PLACE_PROVIDED = 128;
 
     const NO_PLACE_LOCATION_PROVIDED = 256;
 
-    const BAD_PLACE_NAME             = 512;
+    const BAD_PLACE_NAME = 512;
 
-    const BAD_PLACE_LOCATION         = 1024;
+    const BAD_PLACE_LOCATION = 1024;
 
-    const BAD_PLACE_CITY_NAME        = 2048;
+    const BAD_PLACE_CITY_NAME = 2048;
 
     const BAD_PLACE_CITY_POSTAL_CODE = 4096;
 
-    const BAD_USER                   = 8192;
+    const BAD_USER = 8192;
 
-    const EVENT_DELETED              = 16384;
+    const EVENT_DELETED = 16384;
 
-    const AMBIGOUS_ZIP               = 32768;
+    const AMBIGOUS_ZIP = 32768;
 
-    const AMBIGOUS_CITY              = 65536;
+    const AMBIGOUS_CITY = 65536;
 
-    const NO_COUNTRY_PROVIDED        = 131072;
+    const NO_COUNTRY_PROVIDED = 131072;
 
-    const BAD_COUNTRY                = 262144;
+    const BAD_COUNTRY = 262144;
 
-    const GEOCODE_LIMIT              = 524288;
+    const GEOCODE_LIMIT = 524288;
 
     protected $reason;
 
@@ -65,7 +67,7 @@ class Reject
     public function setReason($reason)
     {
         if (null === $reason) {
-            throw new \LogicException('Reason must be integer');
+            throw new LogicException('Reason must be integer');
         }
         $this->reason = $reason;
 

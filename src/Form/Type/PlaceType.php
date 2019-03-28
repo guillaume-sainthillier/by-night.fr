@@ -17,8 +17,8 @@ class PlaceType extends AbstractType
         $builder
             ->add('nom', TextType::class, [
                 'required' => true,
-                'label'    => 'Où ça ?',
-                'attr'     => [
+                'label' => 'Où ça ?',
+                'attr' => [
                     'placeholder' => 'Indiquez le nom du lieu',
                 ],
             ])
@@ -40,19 +40,19 @@ class PlaceType extends AbstractType
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             },
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             }
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             },
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             }
         ));
     }

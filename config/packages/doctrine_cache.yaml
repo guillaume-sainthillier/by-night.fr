@@ -8,21 +8,24 @@ doctrine_cache:
             redis:
                 host: '%env(REDIS_HOST)%'
                 port: '%env(REDIS_PORT)%'
-            namespace: memory_cache_ns
+            namespace: memory_ns
             aliases:
+                - redis_cache
                 - memory_cache
-        location_cache:
+        location:
             name: location_cache
             location: ~
-            namespace: location_cache_ns
+            namespace: location_ns
+            aliases:
+                - location_cache
         array:
             type: array
-            namespace: array_cache_ns
+            namespace: array_ns
             aliases:
                 - array_cache
         comparator:
             type: array
-            namespace: comparator_cache_ns
+            namespace: comparator_ns
             aliases:
                 - comparator_cache
         

@@ -13,10 +13,13 @@ namespace App\Controller\Social;
 
 use App\App\SocialManager;
 use App\Security\Core\User\FOSUBUserProvider;
+use Exception;
 use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
 use HWI\Bundle\OAuthBundle\Security\Core\Authentication\Token\OAuthToken;
 use HWI\Bundle\OAuthBundle\Security\OAuthUtils;
+use function is_array;
+use function method_exists;
 use Symfony\Component\Form\Test\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +28,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use function time;
 
 /**
  * ConnectController.
@@ -38,11 +42,11 @@ class ConnectController extends BaseController
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
      * @param Request $request the active request
-     * @param string  $service name of the resource owner to connect to
-     *
-     * @throws \Exception
+     * @param string $service name of the resource owner to connect to
      *
      * @return Response
+     *
+     * @throws Exception
      *
      * @throws NotFoundHttpException if `connect` functionality was not enabled
      * @throws AccessDeniedException if no user is authenticated
@@ -63,7 +67,7 @@ class ConnectController extends BaseController
         $resourceOwner = $this->getResourceOwnerByName($service);
 
         $session = $request->getSession();
-        $key     = $request->query->get('key', \time());
+        $key = $request->query->get('key', time());
 
         if ($resourceOwner->handles($request)) {
             $accessToken = $resourceOwner->getAccessToken(
@@ -91,7 +95,7 @@ class ConnectController extends BaseController
 
         // Symfony <3.0 BC
         /** @var $form FormInterface */
-        $form = \method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
+        $form = method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')
             ? $this->createForm('Symfony\Component\Form\Extension\Core\Type\FormType')
             : $this->createForm('form');
         // Handle the form
@@ -110,14 +114,14 @@ class ConnectController extends BaseController
             } else { // On connecte normalement l'utilisateur*/
                 /** @var $currentToken OAuthToken */
                 $currentToken = $this->getToken();
-                $currentUser  = $currentToken->getUser();
+                $currentUser = $currentToken->getUser();
 
                 $this->container->get(FOSUBUserProvider::class)->connect($currentUser, $userInformation);
 
                 if ($currentToken instanceof OAuthToken) {
                     // Update user token with new details
                     $newToken =
-                        \is_array($accessToken) &&
+                        is_array($accessToken) &&
                         (isset($accessToken['access_token']) || isset($accessToken['oauth_token'])) ?
                             $accessToken : $currentToken->getRawToken();
 
@@ -131,16 +135,16 @@ class ConnectController extends BaseController
                 }
             }
 
-            return $this->render('@HWIOAuth/Connect/connect_success.html.'.$this->getTemplatingEngine(), array(
+            return $this->render('@HWIOAuth/Connect/connect_success.html.' . $this->getTemplatingEngine(), array(
                 'userInformation' => $userInformation,
-                'service'         => $service,
+                'service' => $service,
             ));
         }
 
         return $this->render('@HWIOAuth/Connect/connect_confirm.html.' . $this->getTemplatingEngine(), [
-            'key'             => $key,
-            'service'         => $service,
-            'form'            => $form->createView(),
+            'key' => $key,
+            'service' => $service,
+            'form' => $form->createView(),
             'userInformation' => $userInformation,
         ]);
     }

@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use function implode;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
+use function sprintf;
 
 /**
  * City.
@@ -30,17 +32,17 @@ class City extends AdminZone
         }
         $parts[] = $this->getCountry()->getName();
 
-        return \sprintf('%s (%s)', $this->getName(), \implode(', ', $parts));
+        return sprintf('%s (%s)', $this->getName(), implode(', ', $parts));
     }
 
     /**
      * Set parent.
      *
-     * @param \App\Entity\AdminZone $parent
+     * @param AdminZone $parent
      *
      * @return City
      */
-    public function setParent(\App\Entity\AdminZone $parent = null)
+    public function setParent(AdminZone $parent = null)
     {
         $this->parent = $parent;
 
@@ -50,7 +52,7 @@ class City extends AdminZone
     /**
      * Get parent.
      *
-     * @return \App\Entity\AdminZone
+     * @return AdminZone
      */
     public function getParent()
     {

@@ -9,6 +9,8 @@
 namespace App\Validator\Constraints;
 
 use App\Entity\Agenda;
+use function sprintf;
+use function str_replace;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -24,7 +26,7 @@ class EventConstraintValidator extends ConstraintValidator
 
     public function __construct(RouterInterface $router)
     {
-        $this->router        = $router;
+        $this->router = $router;
         $this->checkIfUpdate = true;
     }
 
@@ -34,7 +36,7 @@ class EventConstraintValidator extends ConstraintValidator
     }
 
     /**
-     * @param Agenda     $event
+     * @param Agenda $event
      * @param Constraint $constraint
      */
     public function validate($event, Constraint $constraint)
@@ -105,14 +107,14 @@ class EventConstraintValidator extends ConstraintValidator
         if ($reject->isBadUser()) {
             $link = $this->router->generate('tbn_agenda_details', [
                 'slug' => $event->getSlug(),
-                'id'   => $event->getId(),
+                'id' => $event->getId(),
                 'city' => $event->getPlace()->getCity()->getSlug(),
             ]);
-            $message = \str_replace([
+            $message = str_replace([
                 '[link]',
                 '[/link]',
             ], [
-                \sprintf('<a href="%s">', $link),
+                sprintf('<a href="%s">', $link),
                 '</a>',
             ], $constraint->badUser);
             $this->context->buildViolation($message)->addViolation();

@@ -28,11 +28,11 @@ class ReCaptchaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'mapped'   => false,
+            'mapped' => false,
             'compound' => false,
-            'attr'     => array(
+            'attr' => array(
                 'data-sitekey' => $this->siteKey,
-                'class'        => 'g-recaptcha',
+                'class' => 'g-recaptcha',
             ),
             'constraints' => array(
                 new ReCaptchaResponse(),

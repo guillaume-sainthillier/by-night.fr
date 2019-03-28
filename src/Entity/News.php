@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,14 +23,14 @@ class News
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_debut", type="date")
      */
     private $dateDebut;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_fin", type="date")
      */
@@ -76,7 +77,7 @@ class News
     /**
      * Set dateDebut.
      *
-     * @param \DateTime $dateDebut
+     * @param DateTime $dateDebut
      *
      * @return News
      */
@@ -90,7 +91,7 @@ class News
     /**
      * Get dateDebut.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateDebut()
     {
@@ -100,7 +101,7 @@ class News
     /**
      * Set dateFin.
      *
-     * @param \DateTime $dateFin
+     * @param DateTime $dateFin
      *
      * @return News
      */
@@ -114,7 +115,7 @@ class News
     /**
      * Get dateFin.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateFin()
     {

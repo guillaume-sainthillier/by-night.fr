@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use function trim;
 
 /**
  * @Route("/api")
@@ -27,22 +28,22 @@ class ApiController extends Controller
      * @BrowserCache(false)
      * @Tag("autocomplete_city")
      *
-     * @param Request            $request
+     * @param Request $request
      * @param PaginatorInterface $paginator
-     * @param RepositoryManager  $repositoryManager
+     * @param RepositoryManager $repositoryManager
      *
      * @return JsonResponse
      */
     public function cityAutocompleteAction(Request $request, PaginatorInterface $paginator, RepositoryManager $repositoryManager)
     {
-        $term = \trim($request->get('q'));
+        $term = trim($request->get('q'));
         if (!$term) {
             $results = [];
         } else {
             /**
              * @var CityRepository
              */
-            $repo    = $repositoryManager->getRepository(City::class);
+            $repo = $repositoryManager->getRepository(City::class);
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }

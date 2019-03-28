@@ -2,11 +2,27 @@
 
 namespace App\Command;
 
+use App\Updater\EventUpdater;
+use App\Updater\UserUpdater;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class AppImagesUpdateCommand extends AppCommand
 {
+    /** @var UserUpdater */
+    private $userUpdater;
+
+    /** @var EventUpdater */
+    private $eventUpdater;
+
+    public function __construct(UserUpdater $userUpdater, EventUpdater $eventUpdater)
+    {
+        $this->userUpdater = $userUpdater;
+        $this->eventUpdater = $eventUpdater;
+
+        parent::__construct();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -24,10 +40,7 @@ class AppImagesUpdateCommand extends AppCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $updater = $this->getContainer()->get('tbn.user_updater');
-        $updater->update();
-
-        $updater = $this->getContainer()->get('tbn.event_updater');
-        $updater->update();
+        $this->userUpdater->update();
+        //$this->eventUpdater->update();
     }
 }

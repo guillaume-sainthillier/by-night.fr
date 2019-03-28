@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use function array_filter;
+use function array_map;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -21,7 +23,7 @@ class UserRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return \array_filter(\array_map('current', $datas));
+        return array_filter(array_map('current', $datas));
     }
 
     public function getUsersWithInfo($page, $limit)

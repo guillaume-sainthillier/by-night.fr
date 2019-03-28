@@ -6,10 +6,18 @@ use App\App\CityManager;
 use App\Entity\Info;
 use App\Entity\User;
 use App\Entity\UserInfo;
+use App\Social\Social;
+use function array_slice;
+use function count;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
+use function implode;
+use function preg_match;
+use function preg_split;
+use function sprintf;
+use function strtolower;
 use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -34,9 +42,9 @@ class FOSUBUserProvider extends BaseClass
     {
         parent::__construct($userManager, $properties);
 
-        $this->cityManager   = $cityManager;
+        $this->cityManager = $cityManager;
         $this->entityManager = $entityManager;
-        $this->socials       = $socials;
+        $this->socials = $socials;
     }
 
     public function connectSite(UserResponseInterface $response)
@@ -74,13 +82,13 @@ class FOSUBUserProvider extends BaseClass
     /**
      * @param string $service
      *
-     * @return \App\Social\Social
+     * @return Social
      */
     protected function getSocialService($service)
     {
-        $key = \strtolower($service);
+        $key = strtolower($service);
         if (!isset($this->socials[$key])) {
-            throw new RuntimeException(\sprintf('Le service %s est introuvable', $service));
+            throw new RuntimeException(sprintf('Le service %s est introuvable', $service));
         }
 
         return $this->socials[$key];
@@ -102,7 +110,7 @@ class FOSUBUserProvider extends BaseClass
 
     protected function getProperty(UserResponseInterface $response)
     {
-        if (\preg_match('/facebook/i', $response->getResourceOwner()->getName())) {
+        if (preg_match('/facebook/i', $response->getResourceOwner()->getName())) {
             $response->getResourceOwner()->setName('facebook');
         }
 
@@ -115,7 +123,7 @@ class FOSUBUserProvider extends BaseClass
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         $username = $response->getUsername();
-        $service  = $response->getResourceOwner()->getName();
+        $service = $response->getResourceOwner()->getName();
 
         // Recherche de l'user par son id sur les réseaux sociaux (facebook_id)
         $user = $this->findUserBySocialInfo($response, $username);
@@ -173,10 +181,10 @@ class FOSUBUserProvider extends BaseClass
         }
 
         if (null === $user->getFirstname() && null === $user->getLastname()) {
-            $nom_prenoms = \preg_split('/ /', $response->getRealName());
+            $nom_prenoms = preg_split('/ /', $response->getRealName());
             $user->setFirstname($nom_prenoms[0]);
-            if (\count($nom_prenoms) > 0) {
-                $user->setLastname(\implode(' ', \array_slice($nom_prenoms, 1)));
+            if (count($nom_prenoms) > 0) {
+                $user->setLastname(implode(' ', array_slice($nom_prenoms, 1)));
             }
         }
 

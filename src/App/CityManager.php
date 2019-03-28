@@ -37,9 +37,9 @@ class CityManager
     public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack)
     {
         $this->entityManager = $entityManager;
-        $this->requestStack  = $requestStack;
-        $this->currentCity   = null;
-        $this->cookieCity    = false;
+        $this->requestStack = $requestStack;
+        $this->currentCity = null;
+        $this->cookieCity = false;
     }
 
     /**

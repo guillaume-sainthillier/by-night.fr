@@ -3,6 +3,7 @@
 namespace App\Form\Type;
 
 use App\Handler\DoctrineEventHandler;
+use function strtoupper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -14,12 +15,13 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function ucfirst;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class AgendaType extends AbstractType
 {
     /**
-     * @var \App\Handler\DoctrineEventHandler
+     * @var DoctrineEventHandler
      */
     private $doctrineEventHandler;
 
@@ -31,81 +33,81 @@ class AgendaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $siteInfo = $options['site_info'];
-        $user     = $options['user'];
+        $user = $options['user'];
 
         $builder
             ->add('nom', TextType::class, [
                 'label' => 'Titre',
-                'attr'  => [
+                'attr' => [
                     'placeholder' => 'Choisissez un titre accrocheur...',
                 ],
             ])
             ->add('descriptif', TextareaType::class, [
-                'label'    => 'Description',
+                'label' => 'Description',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Décrivez votre événement...',
                 ],
             ])
             ->add('file', VichImageType::class, [
-                'label'        => 'Affiche / Flyer',
-                'required'     => false,
+                'label' => 'Affiche / Flyer',
+                'required' => false,
                 'image_filter' => 'thumb_evenement',
             ])
             ->add('dateDebut', DateType::class, [
-                'label'    => 'A partir du ',
-                'widget'   => 'single_text',
+                'label' => 'A partir du ',
+                'widget' => 'single_text',
                 'required' => true,
-                'format'   => 'dd/MM/yyyy',
-                'attr'     => [
+                'format' => 'dd/MM/yyyy',
+                'attr' => [
                     'placeholder' => 'Le / Du...',
                 ],
             ])
             ->add('dateFin', DateType::class, [
-                'label'    => "Jusqu'au",
-                'widget'   => 'single_text',
+                'label' => "Jusqu'au",
+                'widget' => 'single_text',
                 'required' => false,
-                'format'   => 'dd/MM/yyyy',
-                'attr'     => [
+                'format' => 'dd/MM/yyyy',
+                'attr' => [
                     'placeholder' => 'Au...',
                 ],
             ])
             ->add('horaires', TextType::class, [
-                'label'    => 'Horaires',
+                'label' => 'Horaires',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'A 20h, de 21h à minuit',
                 ],
             ]);
 
         $services = [
             'facebook' => ['nom' => 'Facebook'],
-            'twitter'  => ['nom' => 'Twitter'],
+            'twitter' => ['nom' => 'Twitter'],
         ];
 
         foreach ($services as $service => $config) {
-            $nomService    = $config['nom'];
-            $accessService = \ucfirst($service);
+            $nomService = $config['nom'];
+            $accessService = ucfirst($service);
 
-            $getter       = 'get' . $accessService . 'AccessToken';
+            $getter = 'get' . $accessService . 'AccessToken';
             $is_api_ready = $siteInfo && $siteInfo->$getter();
 
             if (!$is_api_ready) {
-                $message       = "L'accès à " . $nomService . ' est momentanément désactivé';
-                $post_checked  = false;
+                $message = "L'accès à " . $nomService . ' est momentanément désactivé';
+                $post_checked = false;
                 $post_disabled = true;
             } else {
                 if ('facebook' === $service) {
                     $role = 'ROLE_FACEBOOK_EVENTS';
                 } else {
-                    $role = 'ROLE_' . \strtoupper($service);
+                    $role = 'ROLE_' . strtoupper($service);
                 }
                 $post_disabled = false;
-                $post_checked  = $user->hasRole($role);
+                $post_checked = $user->hasRole($role);
 
                 if ($post_checked) {
-                    $info    = $user->getInfo();
-                    $getter  = 'get' . $accessService . 'Nickname';
+                    $info = $user->getInfo();
+                    $getter = 'get' . $accessService . 'Nickname';
                     $message = 'Connecté sous ' . ('twitter' === $service ? '@' : '') . $info->$getter();
                 } else {
                     $message = 'Connectez vous à ' . $nomService;
@@ -113,44 +115,44 @@ class AgendaType extends AbstractType
             }
 
             $builder->add('share_' . $service, CheckboxType::class, [
-                'label'    => 'Poster mon événement sur ' . $nomService,
+                'label' => 'Poster mon événement sur ' . $nomService,
                 'required' => false,
-                'mapped'   => false,
+                'mapped' => false,
                 'disabled' => $post_disabled,
-                'data'     => $post_checked,
-                'attr'     => array(
-                    'class'          => 'social_post onoffswitch-checkbox ' . ($post_checked ? 'checked' : ''),
+                'data' => $post_checked,
+                'attr' => array(
+                    'class' => 'social_post onoffswitch-checkbox ' . ($post_checked ? 'checked' : ''),
                     'data-connected' => (!$post_disabled && $post_checked) ? '1' : '0',
-                    'data-message'   => $message,
+                    'data-message' => $message,
                 ),
             ]);
         }
 
         $builder->add('tarif', TextType::class, [
-            'label'    => 'Tarif',
+            'label' => 'Tarif',
             'required' => false,
-            'attr'     => [
+            'attr' => [
                 'placeholder' => '17€ avec préventes, 20€ sur place',
             ],
         ])
             ->add('categorieManifestation', TextType::class, [
-                'label'    => 'Catégorie',
+                'label' => 'Catégorie',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Concert, Spectacle, ...',
                 ],
             ])
             ->add('themeManifestation', TextType::class, [
-                'label'    => 'Thèmes',
+                'label' => 'Thèmes',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
                 ],
             ])
             ->add('adresse', TextType::class, [
                 'required' => false,
-                'label'    => 'Adresse',
-                'attr'     => [
+                'label' => 'Adresse',
+                'attr' => [
                     'placeholder' => 'Tapez votre adresse ici pour remplir les champs ci-dessous',
                 ],
             ])
@@ -158,23 +160,23 @@ class AgendaType extends AbstractType
                 'label' => false,
             ])
             ->add('reservationInternet', UrlType::class, [
-                'label'    => 'Réservation par internet',
+                'label' => 'Réservation par internet',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => "L'URL où trouver un billet",
                 ],
             ])
             ->add('reservationTelephone', TextType::class, [
-                'label'    => 'Réservation téléphonique',
+                'label' => 'Réservation téléphonique',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Le numéro à appeler pour acheter un billet',
                 ],
             ])
             ->add('reservationEmail', EmailType::class, [
-                'label'    => 'Réservation par mail',
+                'label' => 'Réservation par mail',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Le mail pour vous contacter',
                 ],
             ])
@@ -197,9 +199,9 @@ class AgendaType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'App\Entity\Agenda',
-            'site_info'  => null,
-            'user'       => null,
-            'config'     => [],
+            'site_info' => null,
+            'user' => null,
+            'config' => [],
         ]);
     }
 

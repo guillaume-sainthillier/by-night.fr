@@ -14,10 +14,16 @@ class Location
 {
     /**
      * @var string
-     * @ORM\Column(name="id", type="string", length=255)
+     * @ORM\Column(name="id", type="string", length=32)
      * @ORM\Id
      */
     protected $id;
+
+    /**
+     * @var string
+     * @ORM\Column(name="name", type="string", length=255)
+     */
+    protected $name;
 
     /**
      * @ORM\Column(name="value", type="json_array")
@@ -46,6 +52,24 @@ class Location
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     * @return Location
+     */
+    public function setName(string $name): Location
+    {
+        $this->name = $name;
+        return $this;
     }
 
     /**

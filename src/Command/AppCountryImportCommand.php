@@ -3,6 +3,9 @@
 namespace App\Command;
 
 use App\Importer\CountryImporter;
+use Exception;
+use function in_array;
+use function sprintf;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,8 +41,7 @@ class AppCountryImportCommand extends AppCommand
             ->addArgument('id', InputArgument::REQUIRED)
             ->addArgument('name', InputArgument::OPTIONAL)
             ->addArgument('capital', InputArgument::OPTIONAL)
-            ->addArgument('locale', InputArgument::OPTIONAL)
-        ;
+            ->addArgument('locale', InputArgument::OPTIONAL);
     }
 
     /**
@@ -50,12 +52,12 @@ class AppCountryImportCommand extends AppCommand
         $optionalParams = [];
         $atLeastOneInfo = false;
         foreach ($input->getArguments() as $name => $value) {
-            if (!\in_array($name, ['id', 'command'], true)) {
+            if (!in_array($name, ['id', 'command'], true)) {
                 continue;
             }
 
             $optionalParams[] = $name;
-            $atLeastOneInfo   = $atLeastOneInfo || !empty($value);
+            $atLeastOneInfo = $atLeastOneInfo || !empty($value);
         }
 
         if ($atLeastOneInfo) {
@@ -70,10 +72,10 @@ class AppCountryImportCommand extends AppCommand
 
     private function askParam(string $name, InputInterface $input, OutputInterface $output): string
     {
-        $question = new Question(\sprintf("Valeur de l'argument %s : ", $name));
+        $question = new Question(sprintf("Valeur de l'argument %s : ", $name));
         $question->setValidator(function ($value) {
             if (empty($value)) {
-                throw new \Exception('Cette valeur ne peut pas être vide');
+                throw new Exception('Cette valeur ne peut pas être vide');
             }
 
             return $value;

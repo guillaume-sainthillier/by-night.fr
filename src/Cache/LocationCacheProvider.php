@@ -10,12 +10,13 @@ namespace App\Cache;
 
 use App\Entity\Location;
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class LocationCacheProvider extends CacheProvider
 {
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
+     * @var ObjectRepository
      */
     private $repo;
 
@@ -26,7 +27,7 @@ class LocationCacheProvider extends CacheProvider
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em   = $em;
+        $this->em = $em;
         $this->repo = $em->getRepository(Location::class);
     }
 
@@ -35,9 +36,9 @@ class LocationCacheProvider extends CacheProvider
      */
     protected function doFetch($id)
     {
-        $location = $this->repo->find($id);
+        $location = $this->repo->find(md5($id));
 
-        if (!$location) {
+        if (null === $location) {
             return false;
         }
 
@@ -59,8 +60,9 @@ class LocationCacheProvider extends CacheProvider
     {
         $location = new Location();
         $location
-            ->setId($id)
-            ->setValues((array) $data);
+            ->setId(md5($id))
+            ->setName($id)
+            ->setValues((array)$data);
 
         $this->em->persist($location);
         $this->em->flush();
@@ -73,8 +75,8 @@ class LocationCacheProvider extends CacheProvider
      */
     protected function doDelete($id)
     {
-        $location = $this->repo->find($id);
-        if ($location) {
+        $location = $this->doFetch($id);
+        if (false !== $location) {
             $this->em->remove($location);
             $this->em->flush();
         }

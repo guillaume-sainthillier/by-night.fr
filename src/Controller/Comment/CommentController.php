@@ -21,7 +21,7 @@ class CommentController extends Controller
     public function detailsAction(Comment $comment)
     {
         return $this->render('Comment/details.html.twig', [
-            'comment'     => $comment,
+            'comment' => $comment,
             'nb_reponses' => $this->getNbReponses($comment),
         ]);
     }
@@ -33,22 +33,22 @@ class CommentController extends Controller
      * @param Agenda $soiree
      * @param $page
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      * @Cache(expires="tomorrow")
      */
     public function listAction(Agenda $soiree, $page = 1)
     {
-        $offset  = 10;
+        $offset = 10;
         $comment = new Comment();
-        $form    = $this->getCreateForm($comment, $soiree);
+        $form = $this->getCreateForm($comment, $soiree);
 
         $response = $this->render('Comment/list.html.twig', [
             'nb_comments' => $this->getNbComments($soiree),
-            'comments'    => $this->getCommentaires($soiree, $page, $offset),
-            'soiree'      => $soiree,
-            'page'        => $page,
-            'offset'      => $offset,
-            'form'        => $form->createView(),
+            'comments' => $this->getCommentaires($soiree, $page, $offset),
+            'soiree' => $soiree,
+            'page' => $page,
+            'offset' => $offset,
+            'form' => $form->createView(),
         ]);
 
         $tomorrow = $this->getSecondsUntilTomorrow();
@@ -60,8 +60,8 @@ class CommentController extends Controller
     /**
      * @Route("/{id}/nouveau", name="tbn_comment_new", requirements={"id": "\d+"})
      *
-     * @param Request          $request
-     * @param Agenda           $soiree
+     * @param Request $request
+     * @param Agenda $soiree
      * @param EventInvalidator $eventInvalidator
      *
      * @return Response
@@ -69,13 +69,13 @@ class CommentController extends Controller
     public function newAction(Request $request, Agenda $soiree, EventInvalidator $eventInvalidator)
     {
         $comment = new Comment();
-        $form    = $this->getCreateForm($comment, $soiree);
+        $form = $this->getCreateForm($comment, $soiree);
 
         $user = $this->getUser();
         if (!$user) {
             return new JsonResponse([
                 'success' => false,
-                'post'    => $this->renderView('Comment/error.html.twig'),
+                'post' => $this->renderView('Comment/error.html.twig'),
             ]);
         }
 
@@ -91,9 +91,9 @@ class CommentController extends Controller
             return new JsonResponse([
                 'success' => true,
                 'comment' => $this->renderView('Comment/details.html.twig', [
-                    'comment'              => $comment,
+                    'comment' => $comment,
                     'success_confirmation' => true,
-                    'nb_reponses'          => 0,
+                    'nb_reponses' => 0,
                 ]),
                 'header' => $this->renderView('Comment/header.html.twig', [
                     'nb_comments' => $this->getNbComments($soiree),
@@ -103,7 +103,7 @@ class CommentController extends Controller
 
         return new JsonResponse([
             'success' => false,
-            'post'    => $this->renderView('Comment/post.html.twig', [
+            'post' => $this->renderView('Comment/post.html.twig', [
                 'form' => $form->createView(),
             ]),
         ]);
@@ -145,8 +145,8 @@ class CommentController extends Controller
         ])
             ->add('poster', SubmitType::class, [
                 'label' => 'Poster',
-                'attr'  => [
-                    'class'             => 'btn btn-primary btn-submit btn-raised',
+                'attr' => [
+                    'class' => 'btn btn-primary btn-submit btn-raised',
                     'data-loading-text' => 'En cours...',
                 ],
             ]);

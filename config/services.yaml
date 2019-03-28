@@ -24,11 +24,7 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{Annotation,Entity,Exception,Migrations,Geolocalize,Reject,Repository,Search}'
-
-    App\Kernel:
-        autowire: false
-        autoconfigure: false
+        exclude: '../src/{Annotation,Entity,Exception,Kernel.php,Migrations,Geolocalize,Reject,Repository,Search}'
 
     App\Controller\:
         resource: '../src/Controller'
@@ -42,7 +38,7 @@ services:
     App\Handler\EventHandler:
         public: true #For PHPUnit
         arguments:
-            $tempPath: "%kernel.project_dir%/web/uploads/temp"
+            $tempPath: "%kernel.project_dir%/public/uploads/temp"
 
     App\SearchRepository\AgendaRepository:
         arguments:
@@ -63,7 +59,7 @@ services:
     App\Handler\UserHandler:
         public: true #For PHPUnit
         arguments:
-            $tempPath: "%kernel.project_dir%/web/uploads/temp"
+            $tempPath: "%kernel.project_dir%/public/uploads/temp"
 
     App\App\SocialManager:
         arguments:
@@ -102,6 +98,11 @@ services:
     App\Handler\AuthenticationHandler:
         arguments:
             $session: '@session'
+
+    App\Geocoder\PlaceGeocoder:
+        arguments:
+            $cache: '@doctrine_cache.providers.location_cache'
+            $geocoder: '@app_geocoder'
 
     App\Archive\EventArchivator:
         arguments:
@@ -380,7 +381,7 @@ services:
     #Cleaner
     App\Cleaner\ImageCleaner:
         arguments:
-            $webDir: "%kernel.project_dir%/web"
+            $webDir: "%kernel.project_dir%/public"
 
     App\Validator\Constraints\EventConstraintValidator:
         tags:

@@ -8,6 +8,18 @@
 
 namespace App\Utils;
 
+use function array_keys;
+use function array_sum;
+use function call_user_func;
+use function count;
+use Exception;
+use function floor;
+use function ksort;
+use function log;
+use function max;
+use function min;
+use function round;
+use function sprintf;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
@@ -73,39 +85,39 @@ class Monitor
         }
         $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
 
-        return @\round($size / 1024 ** ($i = \floor(\log($size, 1024))), 2) . ' ' . $unit[$i];
+        return @round($size / 1024 ** ($i = floor(log($size, 1024))), 2) . ' ' . $unit[$i];
     }
 
     private static function getTime($stat)
     {
-        $nbItems = \count($stat['time']);
+        $nbItems = count($stat['time']);
 
         if (0 === $nbItems) {
             return [
-                'avg'        => 0,
-                'min'        => 0,
-                'max'        => 0,
-                'nb'         => 0,
-                'memory'     => 0,
+                'avg' => 0,
+                'min' => 0,
+                'max' => 0,
+                'nb' => 0,
+                'memory' => 0,
                 'avg_memory' => 0,
                 'min_memory' => 0,
                 'max_memory' => 0,
-                'total'      => 0,
+                'total' => 0,
             ];
         }
-        $somme       = \array_sum($stat['time']);
-        $sommeMemory = \array_sum($stat['memory']);
+        $somme = array_sum($stat['time']);
+        $sommeMemory = array_sum($stat['memory']);
 
         return [
-            'avg'        => \sprintf('%01.2f ms', ($somme / $nbItems)),
-            'min'        => \sprintf('%01.2f ms', \min($stat['time'])),
-            'max'        => \sprintf('%01.2f ms', \max($stat['time'])),
-            'nb'         => $nbItems,
-            'memory'     => self::convertMemory($sommeMemory),
+            'avg' => sprintf('%01.2f ms', ($somme / $nbItems)),
+            'min' => sprintf('%01.2f ms', min($stat['time'])),
+            'max' => sprintf('%01.2f ms', max($stat['time'])),
+            'nb' => $nbItems,
+            'memory' => self::convertMemory($sommeMemory),
             'avg_memory' => self::convertMemory($sommeMemory / $nbItems),
-            'min_memory' => self::convertMemory(\min($stat['memory'])),
-            'max_memory' => self::convertMemory(\max($stat['memory'])),
-            'total'      => \sprintf('%01.2f ms', $somme),
+            'min_memory' => self::convertMemory(min($stat['memory'])),
+            'max_memory' => self::convertMemory(max($stat['memory'])),
+            'total' => sprintf('%01.2f ms', $somme),
         ];
     }
 
@@ -116,9 +128,9 @@ class Monitor
         }
     }
 
-    public static function writeException(\Exception $e)
+    public static function writeException(Exception $e)
     {
-        self::writeln(\sprintf(
+        self::writeln(sprintf(
             '<error>%s at %s(%d)</error> <info>%s</info>',
             $e->getMessage(),
             $e->getFile(),
@@ -136,8 +148,8 @@ class Monitor
 
     public static function displayTable(array $datas)
     {
-        $datas   = isset($datas[0]) ? $datas[0] : [$datas];
-        $headers = \array_keys($datas[0]);
+        $datas = isset($datas[0]) ? $datas[0] : [$datas];
+        $headers = array_keys($datas[0]);
 
         (new Table(self::$output))
             ->setHeaders($headers)
@@ -158,7 +170,7 @@ class Monitor
             ));
 
         $stats = self::getStats();
-        \ksort($stats, SORT_STRING);
+        ksort($stats, SORT_STRING);
         foreach ($stats as $key => $stat) {
             $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['min'], $stat['max'], $stat['memory'], $stat['avg_memory'], $stat['min_memory'], $stat['max_memory']]);
         }
@@ -171,7 +183,7 @@ class Monitor
         if (self::$enableMonitoring) {
             if (!isset(self::$stats[$message])) {
                 self::$stats[$message] = [
-                    'time'   => [],
+                    'time' => [],
                     'memory' => [],
                 ];
             }
@@ -180,12 +192,12 @@ class Monitor
             $stopwatch->start($message);
         }
 
-        $retour = \call_user_func($function);
+        $retour = call_user_func($function);
 
         if (self::$enableMonitoring) {
             $event = $stopwatch->stop($message);
 
-            self::$stats[$message]['time'][]   = $event->getDuration();
+            self::$stats[$message]['time'][] = $event->getDuration();
             self::$stats[$message]['memory'][] = $event->getMemory();
         }
 

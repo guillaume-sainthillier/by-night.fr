@@ -1,42 +1,6 @@
 version: '3.2'
 
 services:
-    db:
-        image: mysql:5.7
-        volumes:
-            - db-data:/var/lib/mysql
-            - ${DOCKER_PATH}/mysql/app.cnf:/etc/mysql/conf.d/app.cnf
-            - ${DOCKER_PATH}/data/mysql:/data
-        environment:
-            - MYSQL_ROOT_PASSWORD
-            - MYSQL_DATABASE
-            - MYSQL_USER
-            - MYSQL_PASSWORD
-        networks:
-            - backend
-    redis:
-        image: redis:alpine
-        networks:
-            - backend
-    rabbitmq:
-        image: rabbitmq:3.7-management
-        ports:
-            - 15672:15672
-        volumes:
-            - queue-data:/var/lib/rabbitmq
-        networks:
-            - backend
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin:edge-4.8
-        depends_on:
-            - db
-        ports:
-            - 8001:80
-        volumes:
-            - ${DOCKER_PATH}/phpmyadmin/nginx.conf:/etc/nginx/conf.d/overrides.conf
-            - ${DOCKER_PATH}/phpmyadmin/php.conf:/etc/php7/conf.d/99-overrides.conf
-        networks:
-            - backend
     app:
         build: ${DOCKER_PATH}/php-nginx
         ports:
@@ -47,58 +11,43 @@ services:
             - BLACKFIRE_CLIENT_ID
             - BLACKFIRE_CLIENT_TOKEN
         depends_on:
-            - db
             - elk
             - redis
         volumes:
-             - ${SYMFONY_APP_PATH}:/var/www/symfony
-        networks:
-            - backend
+            - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
+
     varnish:
         image: million12/varnish
         ports:
-            - 8080:80
+            - 8001:80
         depends_on:
             - app
-        environment:
-            CACHE_SIZE: "1G"
         volumes:
-          - ${DOCKER_PATH}/varnish/default.vcl:/etc/varnish/default.vcl
-          - varnish-data:/var/lib/varnish
-        networks:
-            - frontend
-            - backend
+            - ${DOCKER_PATH}/varnish/default.vcl:/etc/varnish/default.vcl
+            - /var/lib/varnish
+
+    redis:
+        image: redis:alpine
+
+    rabbitmq:
+        image: rabbitmq:3.7-management
+        ports:
+            - 15672:15672
+        volumes:
+            - /var/lib/rabbitmq
+
     blackfire:
         image: blackfire/blackfire
         environment:
             - BLACKFIRE_SERVER_ID
             - BLACKFIRE_SERVER_TOKEN
-        networks:
-            - backend
+
     elk:
-        image: sebp/elk:642
+        image: sebp/elk:661
         environment:
             - ES_JAVA_OPTS
         ports:
             - 5601:5601
             - 9200:9200
         volumes:
-            - ${SYMFONY_APP_PATH}/var/logs:/var/www/symfony/var/logs
-            - ${SYMFONY_APP_PATH}/var/logs/nginx:/var/log/nginx
-            - elk-data:/var/lib/elasticsearch
-        networks:
-            - backend
-            - frontend
-volumes:
-    db-data:
-        driver: local
-    elk-data:
-        driver: local
-    queue-data:
-        driver: local
-    varnish-data:
-        driver: local
-
-networks:
-    frontend:
-    backend:
+            - /var/lib/elasticsearch

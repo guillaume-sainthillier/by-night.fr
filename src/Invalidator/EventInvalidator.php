@@ -11,8 +11,14 @@ namespace App\Invalidator;
 use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\User;
+use function array_filter;
+use function array_merge;
+use function array_unique;
+use function count;
+use Exception;
 use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;
+use function sprintf;
 
 class EventInvalidator
 {
@@ -49,16 +55,16 @@ class EventInvalidator
     public function __construct(CacheManager $tagHandler, LoggerInterface $logger, $debug)
     {
         $this->tagHandler = $tagHandler;
-        $this->logger     = $logger;
-        $this->debug      = $debug;
-        $this->eventTags  = [];
-        $this->userTags   = [];
-        $this->cityTags   = [];
+        $this->logger = $logger;
+        $this->debug = $debug;
+        $this->eventTags = [];
+        $this->userTags = [];
+        $this->cityTags = [];
     }
 
     public static function getEventDetailTag(Agenda $event)
     {
-        return \sprintf(
+        return sprintf(
             'detail-event-%d',
             $event->getId()
         );
@@ -66,7 +72,7 @@ class EventInvalidator
 
     public static function getUserDetailTag(User $user)
     {
-        return \sprintf(
+        return sprintf(
             'detail-user-%d',
             $user->getId()
         );
@@ -74,7 +80,7 @@ class EventInvalidator
 
     public static function getUserMenuTag(User $user)
     {
-        return \sprintf(
+        return sprintf(
             'menu-%d',
             $user->getId()
         );
@@ -96,7 +102,7 @@ class EventInvalidator
         $this->eventTags[] = self::getEventDetailTag($event);
 
         if ($event->getPlace() && $event->getPlace()->getId()) {
-            $this->eventTags[] = \sprintf('detail-place-%d', $event->getPlace()->getId());
+            $this->eventTags[] = sprintf('detail-place-%d', $event->getPlace()->getId());
         }
     }
 
@@ -106,19 +112,19 @@ class EventInvalidator
             return;
         }
 
-        $tags = \array_filter(\array_unique(\array_merge(
+        $tags = array_filter(array_unique(array_merge(
             $this->eventTags,
             $this->userTags,
             $this->cityTags
         )));
 
-        if (!\count($tags)) {
+        if (!count($tags)) {
             return;
         }
 
         try {
             $this->tagHandler->invalidateTags($tags);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->critical($e);
         }
 

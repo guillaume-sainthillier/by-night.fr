@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use function array_slice;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr;
+use function shuffle;
 
 /**
  * SiteRepository.
@@ -34,9 +36,9 @@ class SiteRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        \shuffle($results);
+        shuffle($results);
 
-        return \array_slice($results, 0, $limit);
+        return array_slice($results, 0, $limit);
     }
 
     public function findLocations()

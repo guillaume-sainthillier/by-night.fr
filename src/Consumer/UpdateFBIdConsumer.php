@@ -12,6 +12,7 @@ use App\Handler\DoctrineEventHandler;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
+use function unserialize;
 
 class UpdateFBIdConsumer implements BatchConsumerInterface
 {
@@ -32,7 +33,7 @@ class UpdateFBIdConsumer implements BatchConsumerInterface
 
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {
-            $data              = \unserialize($message->body);
+            $data = unserialize($message->body);
             $ids[$data['old']] = $ids[$data['new']];
         }
 

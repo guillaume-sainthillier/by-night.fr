@@ -9,6 +9,7 @@
 namespace App\EventListener;
 
 use FOS\UserBundle\Controller\RegistrationController;
+use function is_array;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 class ReCaptchaListener
@@ -20,7 +21,7 @@ class ReCaptchaListener
     public function __construct($formName, $field)
     {
         $this->formName = $formName;
-        $this->field    = $field;
+        $this->field = $field;
     }
 
     public function onKernelController(FilterControllerEvent $event)
@@ -31,7 +32,7 @@ class ReCaptchaListener
 
         $controller = $event->getController();
 
-        if (!\is_array($controller)) {
+        if (!is_array($controller)) {
             return;
         }
 
@@ -40,7 +41,7 @@ class ReCaptchaListener
 
             $captchaResponse = $request->get('g-recaptcha-response');
             if ($captchaResponse) {
-                $formData               = $request->get($this->formName);
+                $formData = $request->get($this->formName);
                 $formData[$this->field] = $captchaResponse;
                 $request->set($this->formName, $formData);
                 $request->remove('g-recaptcha-response');

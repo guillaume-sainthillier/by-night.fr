@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -52,7 +53,7 @@ class Calendrier
     protected $agenda;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="last_date", type="datetime")
      */
@@ -63,9 +64,9 @@ class Calendrier
      */
     public function __construct()
     {
-        $this->lastDate  = new \DateTime();
+        $this->lastDate = new DateTime();
         $this->participe = false;
-        $this->interet   = false;
+        $this->interet = false;
     }
 
     /**
@@ -74,7 +75,7 @@ class Calendrier
      */
     public function preUpload()
     {
-        $this->lastDate = new \DateTime();
+        $this->lastDate = new DateTime();
     }
 
     /**
@@ -152,7 +153,7 @@ class Calendrier
     /**
      * Get user.
      *
-     * @return \App\Entity\User
+     * @return User
      */
     public function getUser()
     {
@@ -176,7 +177,7 @@ class Calendrier
     /**
      * Get agenda.
      *
-     * @return \App\Entity\Agenda
+     * @return Agenda
      */
     public function getAgenda()
     {
@@ -186,7 +187,7 @@ class Calendrier
     /**
      * Set lastDate.
      *
-     * @param \DateTime $lastDate
+     * @param DateTime $lastDate
      *
      * @return Calendrier
      */
@@ -200,7 +201,7 @@ class Calendrier
     /**
      * Get lastDate.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getLastDate()
     {

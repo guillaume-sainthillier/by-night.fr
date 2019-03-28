@@ -4,6 +4,15 @@ namespace App\Utils;
 
 use App\Entity\Agenda;
 use App\Entity\Place;
+use function call_user_func;
+use function is_bool;
+use function is_callable;
+use function is_numeric;
+use function is_object;
+use function max;
+use stdClass;
+use function str_replace;
+use function ucwords;
 
 /**
  * Description of Merger.
@@ -45,7 +54,7 @@ class Merger
 //            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
-            'date_fin'   => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
+            'date_fin' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
             'descriptif',
             'horaires',
             'modification_derniere_minute',
@@ -60,7 +69,7 @@ class Merger
             'facebook_event_id',
             'facebook_owner_id',
             'fb_participations' => self::MERGE_MAX,
-            'fb_interets'       => self::MERGE_MAX,
+            'fb_interets' => self::MERGE_MAX,
             'fb_post_id',
             'fb_post_system_id',
             'tweet_post_id',
@@ -82,13 +91,13 @@ class Merger
     public function mergePlace(Place $a = null, Place $b = null)
     {
         return $this->merge($a, $b, [
-            'nom'         => self::MERGE_LEFT,
-            'latitude'    => self::MERGE_LEFT,
-            'longitude'   => self::MERGE_LEFT,
-            'rue'         => self::MERGE_LEFT,
-            'url'         => self::MERGE_LEFT,
-            'ville'       => self::MERGE_LEFT,
-            'codePostal'  => self::MERGE_LEFT,
+            'nom' => self::MERGE_LEFT,
+            'latitude' => self::MERGE_LEFT,
+            'longitude' => self::MERGE_LEFT,
+            'rue' => self::MERGE_LEFT,
+            'url' => self::MERGE_LEFT,
+            'ville' => self::MERGE_LEFT,
+            'codePostal' => self::MERGE_LEFT,
             'facebook_id' => self::MERGE_LEFT,
             'reject',
         ]);
@@ -97,11 +106,11 @@ class Merger
     /**
      * Merge les champs de b dans a s'ils sont jugés plus pertinents.
      *
-     * @param \stdClass $a
-     * @param \stdClass $b
-     * @param array     $fields
+     * @param stdClass $a
+     * @param stdClass $b
+     * @param array $fields
      *
-     * @return \stdClass
+     * @return stdClass
      */
     private function merge($a = null, $b = null, array $fields = [])
     {
@@ -115,12 +124,12 @@ class Merger
         }
 
         foreach ($fields as $type => $field) {
-            if (\is_numeric($type)) {
+            if (is_numeric($type)) {
                 $type = self::DEFAULT_MERGE;
             } else {
                 $oldField = $field;
-                $field    = $type;
-                $type     = $oldField;
+                $field = $type;
+                $type = $oldField;
             }
 
             $getter = 'get' . $this->skakeToCamel($field);
@@ -128,7 +137,7 @@ class Merger
 
             $valueA = $a->$getter();
             $valueB = $b->$getter();
-            $value  = $this->getBestContent($valueA, $valueB, $type);
+            $value = $this->getBestContent($valueA, $valueB, $type);
 
             $a->$setter($value);
         }
@@ -138,8 +147,8 @@ class Merger
 
     protected function getBestContent($valueA, $valueB, $mergeType)
     {
-        if (\is_callable($mergeType)) {
-            return \call_user_func($mergeType, $valueA, $valueB);
+        if (is_callable($mergeType)) {
+            return call_user_func($mergeType, $valueA, $valueB);
         }
 
         switch ($mergeType) {
@@ -160,14 +169,14 @@ class Merger
 
                 return $this->getBestContent($valueA, $valueB, self::MERGE_RIGHT_IF_DIFFERENT);
             case self::MERGE_MAX:
-                return \max($valueA, $valueB);
+                return max($valueA, $valueB);
         }
 
-        if (\is_bool($valueA)) {
+        if (is_bool($valueA)) {
             return $valueA;
         }
 
-        if (\is_object($valueA) || \is_object($valueB)) {
+        if (is_object($valueA) || is_object($valueB)) {
             return $valueA ?: $valueB;
         }
 
@@ -178,6 +187,6 @@ class Merger
 
     private function skakeToCamel($str)
     {
-        return \str_replace(' ', '', \ucwords(\str_replace('_', ' ', $str)));
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));
     }
 }

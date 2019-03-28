@@ -13,15 +13,18 @@ use App\Geolocalize\Boundary;
 use App\Geolocalize\Coordinate;
 use App\Reject\Reject;
 use App\Utils\Firewall;
+use function count;
 use Doctrine\Common\Cache\CacheProvider;
-use Ivory\GoogleMap\Service\Base\AddressComponent;
-use Ivory\GoogleMap\Service\Geocoder\GeocoderService;
-use Ivory\GoogleMap\Service\Geocoder\Request\GeocoderCoordinateRequest;
-use Ivory\GoogleMap\Service\Geocoder\Response\GeocoderStatus;
-use Ivory\GoogleMap\Service\Place\Detail\PlaceDetailService;
-use Ivory\GoogleMap\Service\Place\Detail\Request\PlaceDetailRequest;
-use Ivory\GoogleMap\Service\Place\Search\PlaceSearchService;
-use Ivory\GoogleMap\Service\Place\Search\Request\TextPlaceSearchRequest;
+use Geocoder\Exception\InvalidCredentials;
+use Geocoder\Exception\InvalidServerResponse;
+use Geocoder\Exception\QuotaExceeded;
+use Geocoder\Model\AdminLevel;
+use Geocoder\Provider\GoogleMaps\Model\GoogleAddress;
+use Geocoder\Provider\Provider;
+use Geocoder\Query\GeocodeQuery;
+use Geocoder\Query\ReverseQuery;
+use function round;
+use function sprintf;
 
 class PlaceGeocoder
 {
@@ -31,65 +34,47 @@ class PlaceGeocoder
     private $cache;
 
     /**
-     * @var PlaceSearchService
+     * @var Provider
      */
     private $geocoder;
-
-    /**
-     * @var PlaceDetailService
-     */
-    private $placeGeocoder;
-
-    /**
-     * @var GeocoderService
-     */
-    private $reverseGeocoder;
 
     /**
      * @var Firewall
      */
     private $firewall;
 
-    public function __construct(Firewall $firewall)
+    public function __construct(CacheProvider $cache, Provider $geocoder, Firewall $firewall)
     {
-        $this->cache           = $cache;
-        $this->geocoder        = $geocoder;
-        $this->placeGeocoder   = $placeGeocoder;
-        $this->reverseGeocoder = $reverseGeocoder;
-        $this->firewall        = $firewall;
+        $this->cache = $cache;
+        $this->geocoder = $geocoder;
+        $this->firewall = $firewall;
     }
 
     public function geocodeCoordinates(Place $place)
     {
-        $key  = \sprintf('%f.%f', \round($place->getLatitude(), 6), \round($place->getLongitude(), 6));
+        $key = sprintf('%f;%f', round($place->getLatitude(), 6), round($place->getLongitude(), 6));
         $data = $this->cache->fetch($key);
         if (false === $data) {
-            $request  = new GeocoderCoordinateRequest(new Coordinate($place->getLatitude(), $place->getLongitude()));
-            $response = $this->reverseGeocoder->geocode($request);
-            $data     = [];
+            try {
+                $responses = $this->geocoder->reverseQuery(ReverseQuery::fromCoordinates($place->getLatitude(), $place->getLongitude()));
+            } catch (QuotaExceeded $e) {
+                $place->getReject()->addReason(Reject::GEOCODE_LIMIT);
 
-            switch ($response->getStatus()) {
-                case GeocoderStatus::ERROR:
-                case GeocoderStatus::UNKNOWN_ERROR:
-                case GeocoderStatus::INVALID_REQUEST:
-                case GeocoderStatus::REQUEST_DENIED:
-                    $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
+                return;
+            } catch (InvalidServerResponse | InvalidCredentials $e) {
+                $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
 
-                    return;
-                case GeocoderStatus::OVER_QUERY_LIMIT:
-                    $place->getReject()->addReason(Reject::GEOCODE_LIMIT);
-
-                    return;
+                return;
             }
 
-            foreach ($response->getResults() as $result) {
-                $data = $this->getPlaceInfos($result->getAddressComponents());
-
+            $data = [];
+            foreach ($responses as $result) {
+                $data = $this->getPlaceInfos($result);
                 break;
             }
         }
 
-        if (!\count($data)) {
+        if (!count($data)) {
             $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
 
             return;
@@ -100,6 +85,10 @@ class PlaceGeocoder
 
     public function geocodePlace(Place $place)
     {
+        if (null === $place->getLongitude() || null === $place->getLatitude()) {
+            return;
+        }
+
         $nom = $place->getNom();
         if (!$nom) {
             return;
@@ -107,64 +96,53 @@ class PlaceGeocoder
 
         $data = $this->cache->fetch($nom);
         if (false === $data) {
-            $request  = new TextPlaceSearchRequest($nom);
-            $response = $this->geocoder->process($request);
-            $data     = [];
-            foreach ($response as $results) {
-                $data['status']  = $results->getStatus();
-                $data['results'] = [];
+            try {
+                $query = GeocodeQuery::create($nom);
+                $responses = $this->geocoder->geocodeQuery($query);
+            } catch (QuotaExceeded $e) {
+                $place->getReject()->addReason(Reject::GEOCODE_LIMIT);
 
-                switch ($data['status']) {
-                    case GeocoderStatus::ERROR:
-                    case GeocoderStatus::UNKNOWN_ERROR:
-                    case GeocoderStatus::INVALID_REQUEST:
-                    case GeocoderStatus::REQUEST_DENIED:
-                        $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
-
-                        return;
-                    case GeocoderStatus::OVER_QUERY_LIMIT:
-                        $place->getReject()->addReason(Reject::GEOCODE_LIMIT);
-
-                        return;
-                }
-
-                foreach ($results->getResults() as $candidatePlace) {
-                    $result = [
-                        'id'               => $candidatePlace->getId(),
-                        'placeId'          => $candidatePlace->getPlaceId(),
-                        'name'             => $candidatePlace->getName(),
-                        'formattedAddress' => $candidatePlace->getFormattedAddress(),
-                    ];
-
-                    if ($candidatePlace->getGeometry() && $candidatePlace->getGeometry()->getLocation()) {
-                        $geometry           = $candidatePlace->getGeometry();
-                        $result['geometry'] = [
-                            'lat' => $geometry->getLocation()->getLatitude(),
-                            'lng' => $geometry->getLocation()->getLongitude(),
-                        ];
-                    }
-                    $data['results'][] = $result;
-                }
-                $this->cache->save($nom, $data);
-
-                break;
-            }
-        }
-
-        switch ($data['status']) {
-            case GeocoderStatus::ZERO_RESULTS:
+                return;
+            } catch (InvalidServerResponse | InvalidCredentials $e) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
 
                 return;
+            }
+
+            $data = [];
+            foreach ($responses as $response) {
+                /** @var GoogleAddress $response */
+                $result = array_merge([
+                    'placeId' => $response->getId(),
+                ], $response->toArray());
+
+                if ($response->getCoordinates()) {
+                    $geometry = $response->getCoordinates();
+                    $result['geometry'] = [
+                        'lat' => $geometry->getLatitude(),
+                        'lng' => $geometry->getLongitude(),
+                    ];
+                }
+                $data[] = $result;
+            }
+
+            $this->cache->save($nom, $data);
+        }
+
+        if (!count($data)) {
+            $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
+
+            return;
         }
 
         $candidatePlace = null;
-        foreach ($data['results'] as $result) {
-            if (isset($result['geometry'])) {
-                $candidateCoordinate = new Coordinate($result['geometry']['lat'], $result['geometry']['lng']);
-                $placeCoordinate     = new Boundary($place->getLatitude(), $place->getLongitude());
+        foreach ($data as $result) {
+            $address = GoogleAddress::createFromArray($result);
+            if ($address->getCoordinates()) {
+                $candidateCoordinate = new Coordinate($address->getCoordinates()->getLatitude(), $address->getCoordinates()->getLongitude());
+                $placeCoordinate = new Boundary($place->getLatitude(), $place->getLongitude());
                 if ($this->firewall->isLocationBounded($candidateCoordinate, $placeCoordinate)) {
-                    $candidatePlace = $result;
+                    $candidatePlace = $address;
 
                     break;
                 }
@@ -177,34 +155,7 @@ class PlaceGeocoder
             return;
         }
 
-        $gmapPlace = $this->cache->fetch($candidatePlace['placeId']);
-        if (false === $gmapPlace) {
-            $request  = new PlaceDetailRequest($candidatePlace['placeId']);
-            $response = $this->placeGeocoder->process($request);
-            switch ($response->getStatus()) {
-                case GeocoderStatus::ERROR:
-                case GeocoderStatus::UNKNOWN_ERROR:
-                case GeocoderStatus::INVALID_REQUEST:
-                case GeocoderStatus::REQUEST_DENIED:
-                    $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
-
-                    return;
-                case GeocoderStatus::OVER_QUERY_LIMIT:
-                    $place->getReject()->addReason(Reject::GEOCODE_LIMIT);
-
-                    return;
-            }
-
-            $gmapPlace = $response->getResult();
-            $datas     = [];
-            if ($gmapPlace) {
-                $datas = $this->getPlaceInfos($gmapPlace->getAddressComponents());
-            }
-
-            $this->cache->save($candidatePlace['placeId'], $datas);
-            $gmapPlace = $datas;
-        }
-
+        $gmapPlace = $this->getPlaceInfos($candidatePlace);
         $this->setPlaceInfos($place, $gmapPlace);
     }
 
@@ -221,29 +172,37 @@ class PlaceGeocoder
         if (isset($gmapPlace['postal_code'])) {
             $place->setCodePostal($gmapPlace['postal_code']);
         }
+
+        if (isset($gmapPlace['rue'])) {
+            $place->setRue($gmapPlace['rue']);
+        }
     }
 
-    /**
-     * @param AddressComponent[] $addresseComponents
-     *
-     * @return array
-     */
-    private function getPlaceInfos(array $addresseComponents)
+    private function getPlaceInfos(GoogleAddress $address)
     {
         $datas = [];
-        foreach ($addresseComponents as $addressComponent) {
-            if (\in_array('country', $addressComponent->getTypes())) {
-                $datas['country'] = $addressComponent->getLongName();
-            } elseif (\in_array('administrative_area_level_1', $addressComponent->getTypes())) {
-                $datas['admin_zone_1'] = $addressComponent->getLongName();
-            } elseif (\in_array('administrative_area_level_2', $addressComponent->getTypes())) {
-                $datas['admin_zone_2'] = $addressComponent->getLongName();
-            } elseif (\in_array('postal_code', $addressComponent->getTypes())) {
-                $datas['postal_code'] = $addressComponent->getLongName();
-            } elseif (\in_array('locality', $addressComponent->getTypes())) {
-                $datas['city'] = $addressComponent->getLongName();
-            } elseif (\in_array('route', $addressComponent->getTypes())) {
-                $datas['rue'] = $addressComponent->getLongName();
+        if ($address->getPostalCode()) {
+            $datas['postal_code'] = $address->getPostalCode();
+        }
+
+        if ($address->getLocality()) {
+            $datas['city'] = $address->getLocality();
+        }
+
+        if ($address->getStreetName()) {
+            $datas['rue'] = trim(sprintf('%s %s', $address->getStreetNumber(), $address->getStreetName()));
+        }
+
+        if ($address->getCountry()) {
+            $datas['country'] = $address->getCountry()->getName();
+        }
+
+        foreach ($address->getAdminLevels() as $adminLevel) {
+            /** @var AdminLevel $adminLevel */
+            if ($adminLevel->getLevel() === 1) {
+                $datas['admin_zone_1'] = $adminLevel->getName();
+            } elseif ($adminLevel->getLevel() === 2) {
+                $datas['admin_zone_2'] = $adminLevel->getName();
             }
         }
 

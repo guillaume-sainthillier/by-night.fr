@@ -128,6 +128,15 @@
     "gedmo/doctrine-extensions": {
         "version": "v2.4.31"
     },
+    "geocoder-php/common-http": {
+        "version": "4.1.0"
+    },
+    "geocoder-php/google-maps-provider": {
+        "version": "4.2.0"
+    },
+    "geocoder-php/plugin": {
+        "version": "1.1.0"
+    },
     "google/apiclient": {
         "version": "v2.2.1"
     },
@@ -293,6 +302,9 @@
     "psr/simple-cache": {
         "version": "1.0.0"
     },
+    "ralouphie/getallheaders": {
+        "version": "2.0.5"
+    },
     "react/promise": {
         "version": "v2.5.1"
     },
@@ -346,6 +358,9 @@
             "version": "3.3",
             "ref": "9f94d3ea453cd8a3b95db7f82592d7344fe3a76a"
         }
+    },
+    "symfony/contracts": {
+        "version": "v1.0.2"
     },
     "symfony/css-selector": {
         "version": "v3.4.1"
@@ -461,6 +476,9 @@
     "symfony/polyfill-intl-icu": {
         "version": "v1.6.0"
     },
+    "symfony/polyfill-intl-idn": {
+        "version": "v1.11.0"
+    },
     "symfony/polyfill-mbstring": {
         "version": "v1.6.0"
     },
@@ -485,9 +503,6 @@
             "ref": "a249484db698d1a847a30291c8f732414ac47e25"
         }
     },
-    "symfony/security": {
-        "version": "v3.4.1"
-    },
     "symfony/security-bundle": {
         "version": "3.3",
         "recipe": {
@@ -496,6 +511,18 @@
             "version": "3.3",
             "ref": "85834af1496735f28d831489d12ab1921a875e0d"
         }
+    },
+    "symfony/security-core": {
+        "version": "v4.2.4"
+    },
+    "symfony/security-csrf": {
+        "version": "v4.2.4"
+    },
+    "symfony/security-guard": {
+        "version": "v4.2.4"
+    },
+    "symfony/security-http": {
+        "version": "v4.2.4"
     },
     "symfony/stopwatch": {
         "version": "v3.4.1"
@@ -541,6 +568,9 @@
     },
     "symfony/var-dumper": {
         "version": "v3.4.1"
+    },
+    "symfony/var-exporter": {
+        "version": "v4.2.4"
     },
     "symfony/web-link": {
         "version": "v4.1.7"
@@ -589,6 +619,18 @@
     },
     "whiteoctober/breadcrumbs-bundle": {
         "version": "1.2.3"
+    },
+    "willdurand/geocoder": {
+        "version": "4.2.0"
+    },
+    "willdurand/geocoder-bundle": {
+        "version": "5.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "5.0",
+            "ref": "b272ad4fbfcd45a20e7cbfdc4ad1b0e27a62fd3b"
+        }
     },
     "zendframework/zend-code": {
         "version": "3.3.0"

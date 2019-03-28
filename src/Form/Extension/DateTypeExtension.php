@@ -21,9 +21,9 @@ class DateTypeExtension extends AbstractTypeExtension
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'input'        => 'datetime',
-            'widget'       => 'single_text',
-            'format'       => 'dd/MM/yyyy',
+            'input' => 'datetime',
+            'widget' => 'single_text',
+            'format' => 'dd/MM/yyyy',
             'widget_class' => 'widget_datepicker',
         ));
     }

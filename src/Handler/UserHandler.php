@@ -9,7 +9,11 @@
 namespace App\Handler;
 
 use App\Entity\User;
+use function file_put_contents;
+use function mt_rand;
+use function sha1;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use function uniqid;
 
 class UserHandler
 {
@@ -38,16 +42,15 @@ class UserHandler
             $user->getInfo()->setFacebookProfilePicture(null);
         } else {
             $url = $user->getInfo()->getFacebookProfilePicture();
-            //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = \preg_replace("/(\?|_)(.*)$/", '', \pathinfo($url, PATHINFO_EXTENSION));
-
-            $filename = \sha1(\uniqid(\mt_rand(), true)) . '.' . $ext;
+            $path = parse_url($url, PHP_URL_PATH);
+            $ext = pathinfo($path, PATHINFO_EXTENSION);
+            $filename = sha1(uniqid(mt_rand(), true)) . '.' . $ext;
 
             $tempPath = $this->tempPath . '/' . $filename;
-            $octets   = \file_put_contents($tempPath, $content);
+            $octets = file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
-                $file = new UploadedFile($tempPath, $filename, null, null, false, true);
+                $file = new UploadedFile($tempPath, $filename, null, null, true);
                 $user->setSystemPath($filename);
                 $user->setImageSystemFile($file);
             } else {

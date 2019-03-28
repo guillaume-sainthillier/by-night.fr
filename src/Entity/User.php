@@ -2,15 +2,20 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use function sprintf;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use function ucfirst;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -144,7 +149,7 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="datetime")
      *
-     * @var \DateTime
+     * @var DateTime
      */
     private $updatedAt;
 
@@ -155,12 +160,12 @@ class User extends BaseUser
     {
         parent::__construct();
 
-        $this->updatedAt = new \DateTime();
+        $this->updatedAt = new DateTime();
         $this->setFromLogin(false);
         $this->setShowSocials(true);
-        $this->date_creation = new \DateTime();
-        $this->calendriers   = new ArrayCollection();
-        $this->info          = new UserInfo();
+        $this->date_creation = new DateTime();
+        $this->calendriers = new ArrayCollection();
+        $this->info = new UserInfo();
     }
 
     /**
@@ -170,7 +175,7 @@ class User extends BaseUser
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
      *
-     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     * @param File|UploadedFile $image
      *
      * @return User
      */
@@ -181,7 +186,7 @@ class User extends BaseUser
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new \DateTime('now');
+            $this->updatedAt = new DateTime('now');
         }
 
         return $this;
@@ -202,7 +207,7 @@ class User extends BaseUser
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
      *
-     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $image
+     * @param File|UploadedFile $image
      *
      * @return User
      */
@@ -213,7 +218,7 @@ class User extends BaseUser
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new \DateTime('now');
+            $this->updatedAt = new DateTime('now');
         }
 
         return $this;
@@ -229,7 +234,7 @@ class User extends BaseUser
 
     public function getUsername()
     {
-        return \ucfirst(parent::getUsername());
+        return ucfirst(parent::getUsername());
     }
 
     /**
@@ -341,7 +346,7 @@ class User extends BaseUser
     /**
      * Set date_creation.
      *
-     * @param \DateTime $dateCreation
+     * @param DateTime $dateCreation
      *
      * @return User
      */
@@ -355,7 +360,7 @@ class User extends BaseUser
     /**
      * Get date_creation.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateCreation()
     {
@@ -379,7 +384,7 @@ class User extends BaseUser
     /**
      * Get info.
      *
-     * @return \App\Entity\UserInfo
+     * @return UserInfo
      */
     public function getInfo()
     {
@@ -413,7 +418,7 @@ class User extends BaseUser
     /**
      * Get calendriers.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getCalendriers()
     {
@@ -437,7 +442,7 @@ class User extends BaseUser
     /**
      * Get site.
      *
-     * @return \App\Entity\Site
+     * @return Site
      */
     public function getSite()
     {
@@ -494,7 +499,7 @@ class User extends BaseUser
 
     public function __toString()
     {
-        return \sprintf('#%s (%s)', $this->id ?: '?', $this->getUsername());
+        return sprintf('#%s (%s)', $this->id ?: '?', $this->getUsername());
     }
 
     /**
@@ -524,7 +529,7 @@ class User extends BaseUser
     /**
      * Set updatedAt.
      *
-     * @param \DateTime $updatedAt
+     * @param DateTime $updatedAt
      *
      * @return User
      */
@@ -538,7 +543,7 @@ class User extends BaseUser
     /**
      * Get updatedAt.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getUpdatedAt()
     {
@@ -596,11 +601,11 @@ class User extends BaseUser
     /**
      * Set city.
      *
-     * @param \App\Entity\City $city
+     * @param City $city
      *
      * @return User
      */
-    public function setCity(\App\Entity\City $city = null)
+    public function setCity(City $city = null)
     {
         $this->city = $city;
 
@@ -610,7 +615,7 @@ class User extends BaseUser
     /**
      * Get city.
      *
-     * @return \App\Entity\City
+     * @return City
      */
     public function getCity()
     {

@@ -29,44 +29,44 @@ class SiteType extends AbstractType
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
-                'attr'  => [
+                'attr' => [
                     'rows' => 6,
                 ],
             ])
             ->add('facebookIdPage', TextType::class, [
-                'label'    => 'N° Page FaceBook',
+                'label' => 'N° Page FaceBook',
                 'required' => false,
             ])
             ->add('googleIdPage', TextType::class, [
-                'label'    => 'N° Page Google+',
+                'label' => 'N° Page Google+',
                 'required' => false,
             ])
             ->add('twitterIdPage', TextType::class, [
-                'label'    => 'N° Page Twitter',
+                'label' => 'N° Page Twitter',
                 'required' => false,
             ])
             ->add('twitterURLWidget', TextType::class, [
-                'label'    => 'URL du Widget Twitter',
+                'label' => 'URL du Widget Twitter',
                 'required' => false,
             ])
             ->add('twitterIdWidget', TextType::class, [
-                'label'    => 'ID du Widget Twitter',
+                'label' => 'ID du Widget Twitter',
                 'required' => false,
             ])
             ->add('distanceMax', NumberType::class, [
-                'label'    => 'Distance Max',
+                'label' => 'Distance Max',
                 'required' => false,
             ])
             ->add('latitude', NumberType::class, [
-                'label'    => 'Latitude',
+                'label' => 'Latitude',
                 'required' => false,
             ])
             ->add('longitude', NumberType::class, [
-                'label'    => 'Longitude',
+                'label' => 'Longitude',
                 'required' => false,
             ])
             ->add('isActif', CheckboxType::class, [
-                'label'    => 'Actif',
+                'label' => 'Actif',
                 'required' => false,
             ]);
     }

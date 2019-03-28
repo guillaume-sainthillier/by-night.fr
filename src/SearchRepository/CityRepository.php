@@ -4,6 +4,7 @@ namespace App\SearchRepository;
 
 use Elastica\Query;
 use Elastica\Query\Match;
+use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
 
 class CityRepository extends Repository
@@ -11,7 +12,7 @@ class CityRepository extends Repository
     /**
      * @param string $q
      *
-     * @return \FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface
+     * @return PaginatorAdapterInterface
      */
     public function findWithSearch($q)
     {

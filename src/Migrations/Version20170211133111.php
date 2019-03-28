@@ -2,6 +2,8 @@
 
 namespace App\Migrations;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Migrations\AbortMigrationException;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -17,10 +19,10 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
     /**
      * @param Schema $schema
      *
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\DBAL\Migrations\AbortMigrationException
+     * @throws DBALException
+     * @throws AbortMigrationException
      */
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
@@ -28,7 +30,7 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
         $this->addSql('ALTER TABLE User ADD slug VARCHAR(128) DEFAULT ""');
     }
 
-    public function postUp(Schema $schema)
+    public function postup(Schema $schema): void
     {
         $em = $this->container->get('doctrine')->getManager();
 
@@ -47,10 +49,10 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
     /**
      * @param Schema $schema
      *
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\DBAL\Migrations\AbortMigrationException
+     * @throws DBALException
+     * @throws AbortMigrationException
      */
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');

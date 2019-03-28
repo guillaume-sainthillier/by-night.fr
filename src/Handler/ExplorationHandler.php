@@ -9,6 +9,7 @@
 namespace App\Handler;
 
 use App\Entity\HistoriqueMaj;
+use DateTime;
 
 class ExplorationHandler
 {
@@ -19,9 +20,9 @@ class ExplorationHandler
     public function __construct()
     {
         $this->stats = [
-            'nbBlacklists'   => 0,
-            'nbInserts'      => 0,
-            'nbUpdates'      => 0,
+            'nbBlacklists' => 0,
+            'nbInserts' => 0,
+            'nbUpdates' => 0,
             'nbExplorations' => 0,
         ];
 
@@ -89,12 +90,11 @@ class ExplorationHandler
     public function stop()
     {
         $this->getHistorique()
-            ->setDateFin(new \DateTime())
+            ->setDateFin(new DateTime())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNouvellesSoirees($this->getNbInserts())
             ->setUpdateSoirees($this->getNbUpdates())
-            ->setFromData('?')
-        ;
+            ->setFromData('?');
 
         return $this->getHistorique();
     }
@@ -102,6 +102,6 @@ class ExplorationHandler
     public function start()
     {
         $this->historique = (new HistoriqueMaj())
-            ->setDateDebut(new \DateTime());
+            ->setDateDebut(new DateTime());
     }
 }

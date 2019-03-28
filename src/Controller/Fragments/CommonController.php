@@ -13,7 +13,9 @@ use App\Entity\City;
 use App\Social\FacebookAdmin;
 use App\Social\Social;
 use App\Social\Twitter;
+use DateTime;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -30,7 +32,7 @@ class CommonController extends TBNController
         parent::__construct($requestStack);
         $this->socials = [
             'facebook' => $facebookAdmin,
-            'twitter'  => $twitter,
+            'twitter' => $twitter,
         ];
     }
 
@@ -40,7 +42,7 @@ class CommonController extends TBNController
      *
      * @param City|null $city
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function header(City $city = null)
     {
@@ -48,7 +50,7 @@ class CommonController extends TBNController
             'city' => $city,
         ]);
 
-        $tomorrow = new \DateTime('tomorrow');
+        $tomorrow = new DateTime('tomorrow');
 
         return $response
             ->setExpires($tomorrow)
@@ -57,7 +59,7 @@ class CommonController extends TBNController
 
     public function footer()
     {
-        $cache  = $this->get('memory_cache');
+        $cache = $this->get('memory_cache');
         $params = [];
         foreach ($this->socials as $name => $service) {
             /**
@@ -71,11 +73,11 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo             = $this->getDoctrine()->getRepository(City::class);
+        $repo = $this->getDoctrine()->getRepository(City::class);
         $params['cities'] = $repo->findRandomNames();
-        $response         = $this->render('City/footer.html.twig', $params);
+        $response = $this->render('City/footer.html.twig', $params);
 
-        $tomorrow = new \DateTime('tomorrow');
+        $tomorrow = new DateTime('tomorrow');
 
         return $response
             ->setExpires($tomorrow)

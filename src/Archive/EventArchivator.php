@@ -4,7 +4,11 @@ namespace App\Archive;
 
 use App\Entity\Agenda;
 use App\Utils\Monitor;
+use function ceil;
+use function count;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
@@ -30,7 +34,7 @@ class EventArchivator
 
     public function __construct(ObjectManager $entityManager, ObjectPersisterInterface $objectPersister)
     {
-        $this->entityManager   = $entityManager;
+        $this->entityManager = $entityManager;
         $this->objectPersister = $objectPersister;
     }
 
@@ -39,14 +43,14 @@ class EventArchivator
      *
      * @return mixed
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     protected function countObjects(QueryBuilder $queryBuilder)
     {
         /* Clone the query builder before altering its field selection and DQL,
          * lest we leave the query builder in a bad state for fetchSlice().
          */
-        $qb          = clone $queryBuilder;
+        $qb = clone $queryBuilder;
         $rootAliases = $queryBuilder->getRootAliases();
 
         return $qb
@@ -58,16 +62,16 @@ class EventArchivator
     }
 
     /**
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function archive()
     {
-        $repo      = $this->entityManager->getRepository(Agenda::class);
-        $qb        = $repo->findNonIndexablesBuilder();
+        $repo = $this->entityManager->getRepository(Agenda::class);
+        $qb = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
 
-        $nbTransactions = \ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
+        $nbTransactions = ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
         Monitor::createProgressBar($nbTransactions);
         for ($i = 0; $i < $nbTransactions; ++$i) {
             $events = $qb
@@ -76,7 +80,7 @@ class EventArchivator
                 ->getQuery()
                 ->getResult();
 
-            if (!\count($events)) {
+            if (!count($events)) {
                 continue;
             }
 

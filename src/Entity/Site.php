@@ -6,6 +6,7 @@ use App\Geolocalize\BoundaryInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use function sprintf;
 
 /**
  * Site.
@@ -283,7 +284,7 @@ class Site implements BoundaryInterface
 
     public function __toString()
     {
-        return \sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
+        return sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
     }
 
     /**

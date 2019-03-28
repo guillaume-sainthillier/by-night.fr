@@ -9,6 +9,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
+use function sprintf;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -466,7 +467,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get site.
      *
-     * @return \App\Entity\Site
+     * @return Site
      */
     public function getSite()
     {
@@ -475,17 +476,17 @@ class Place implements GeolocalizeInterface
 
     public function __toString()
     {
-        return \sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
+        return sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
     }
 
     /**
      * Set city.
      *
-     * @param \App\Entity\City $city
+     * @param City $city
      *
      * @return Place
      */
-    public function setCity(\App\Entity\City $city = null)
+    public function setCity(City $city = null)
     {
         $this->city = $city;
 
@@ -495,7 +496,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get city.
      *
-     * @return \App\Entity\City
+     * @return City
      */
     public function getCity()
     {
@@ -505,11 +506,11 @@ class Place implements GeolocalizeInterface
     /**
      * Set zipCity.
      *
-     * @param \App\Entity\ZipCity $zipCity
+     * @param ZipCity $zipCity
      *
      * @return Place
      */
-    public function setZipCity(\App\Entity\ZipCity $zipCity = null)
+    public function setZipCity(ZipCity $zipCity = null)
     {
         $this->zipCity = $zipCity;
 
@@ -519,7 +520,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get zipCity.
      *
-     * @return \App\Entity\ZipCity
+     * @return ZipCity
      */
     public function getZipCity()
     {
@@ -529,11 +530,11 @@ class Place implements GeolocalizeInterface
     /**
      * Set country.
      *
-     * @param \App\Entity\Country $country
+     * @param Country $country
      *
      * @return Place
      */
-    public function setCountry(\App\Entity\Country $country = null)
+    public function setCountry(Country $country = null)
     {
         $this->country = $country;
 
@@ -543,7 +544,7 @@ class Place implements GeolocalizeInterface
     /**
      * Get country.
      *
-     * @return \App\Entity\Country
+     * @return Country
      */
     public function getCountry()
     {

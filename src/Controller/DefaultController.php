@@ -10,7 +10,9 @@ use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends Controller
@@ -33,9 +35,9 @@ class DefaultController extends Controller
      * @BrowserCache(false)
      *
      * @param PaginatorInterface $paginator
-     * @param RepositoryManager  $repositoryManager
+     * @param RepositoryManager $repositoryManager
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function indexAction(PaginatorInterface $paginator, RepositoryManager $repositoryManager)
     {
@@ -79,7 +81,7 @@ class DefaultController extends Controller
      *
      * @param Request $request
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function changeCityAction(Request $request)
     {

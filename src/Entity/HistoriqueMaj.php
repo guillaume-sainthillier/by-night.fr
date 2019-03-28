@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * HistoriqueMaj.
  *
  * @ORM\Table(name="HistoriqueMaj")
- * @ORM\Entity(repositoryClass="App\Repository\HistoriqueMajRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\HistoriqueMajRepository", readOnly=true)
  * @ORM\HasLifecycleCallbacks
  */
 class HistoriqueMaj
@@ -23,7 +24,7 @@ class HistoriqueMaj
     protected $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_debut", type="datetime")
      */
@@ -37,7 +38,7 @@ class HistoriqueMaj
     private $fromData;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_fin", type="datetime")
      */
@@ -66,7 +67,7 @@ class HistoriqueMaj
 
     public function __construct()
     {
-        $this->dateDebut = new \DateTime();
+        $this->dateDebut = new DateTime();
     }
 
     /**
@@ -74,7 +75,7 @@ class HistoriqueMaj
      */
     public function majDateFin()
     {
-        $this->dateFin = new \DateTime();
+        $this->dateFin = new DateTime();
     }
 
     /**
@@ -100,7 +101,7 @@ class HistoriqueMaj
     /**
      * Set dateDebut.
      *
-     * @param \DateTime $dateDebut
+     * @param DateTime $dateDebut
      *
      * @return HistoriqueMaj
      */
@@ -114,7 +115,7 @@ class HistoriqueMaj
     /**
      * Get dateDebut.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateDebut()
     {
@@ -148,7 +149,7 @@ class HistoriqueMaj
     /**
      * Set dateFin.
      *
-     * @param \DateTime $dateFin
+     * @param DateTime $dateFin
      *
      * @return HistoriqueMaj
      */
@@ -162,7 +163,7 @@ class HistoriqueMaj
     /**
      * Get dateFin.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateFin()
     {

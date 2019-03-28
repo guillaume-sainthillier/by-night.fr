@@ -22,14 +22,14 @@ class PopulateListener
 
     public function preIndexPopulate(IndexPopulateEvent $event)
     {
-        $index    = $this->indexManager->getIndex($event->getIndex());
+        $index = $this->indexManager->getIndex($event->getIndex());
         $settings = $index->getSettings();
         $settings->setRefreshInterval(-1);
     }
 
     public function postIndexPopulate(IndexPopulateEvent $event)
     {
-        $index    = $this->indexManager->getIndex($event->getIndex());
+        $index = $this->indexManager->getIndex($event->getIndex());
         $settings = $index->getSettings();
         $index->forcemerge(['max_num_segments' => 5]);
         $settings->setRefreshInterval('1s');

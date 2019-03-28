@@ -8,21 +8,22 @@
 
 namespace App\Social;
 
+use function sprintf;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SocialProvider
 {
-    const FACEBOOK             = 'facebook';
+    const FACEBOOK = 'facebook';
 
     const FACEBOOK_LIST_EVENTS = 'facebook_list_events';
 
-    const FACEBOOK_EVENTS      = 'facebook_events';
+    const FACEBOOK_EVENTS = 'facebook_events';
 
-    const FACEBOOK_ADMIN       = 'facebook_admin';
+    const FACEBOOK_ADMIN = 'facebook_admin';
 
-    const TWITTER              = 'twitter';
+    const TWITTER = 'twitter';
 
-    const GOOGLE               = 'google';
+    const GOOGLE = 'google';
 
     /**
      * @var array
@@ -32,12 +33,12 @@ class SocialProvider
     public function __construct(Facebook $facebook, FacebookEvents $facebookEvents, FacebookListEvents $facebookListEvents, FacebookAdmin $facebookAdmin, Twitter $twitter, Google $google)
     {
         $this->socials = [
-            self::FACEBOOK             => $facebook,
-            self::FACEBOOK_EVENTS      => $facebookEvents,
+            self::FACEBOOK => $facebook,
+            self::FACEBOOK_EVENTS => $facebookEvents,
             self::FACEBOOK_LIST_EVENTS => $facebookListEvents,
-            self::FACEBOOK_ADMIN       => $facebookAdmin,
-            self::TWITTER              => $twitter,
-            self::GOOGLE               => $google,
+            self::FACEBOOK_ADMIN => $facebookAdmin,
+            self::TWITTER => $twitter,
+            self::GOOGLE => $google,
         ];
     }
 
@@ -54,7 +55,7 @@ class SocialProvider
         }
 
         if (!isset($this->socials[$name])) {
-            throw new NotFoundHttpException(\sprintf('Unable to find social service with id "%s"', $name));
+            throw new NotFoundHttpException(sprintf('Unable to find social service with id "%s"', $name));
         }
 
         return $this->socials[$name];

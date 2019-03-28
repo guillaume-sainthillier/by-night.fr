@@ -26,7 +26,7 @@ class CaptchaWrapper
     public function __construct(RequestStack $requestStack, $secret)
     {
         $this->requestStack = $requestStack;
-        $this->secret       = $secret;
+        $this->secret = $secret;
     }
 
     /**
@@ -39,7 +39,7 @@ class CaptchaWrapper
         $request = $this->requestStack->getMasterRequest();
 
         $reCaptcha = new ReCaptcha($this->secret);
-        $response  = $reCaptcha->verify(
+        $response = $reCaptcha->verify(
             $value,
             $request->getClientIp()
         );
