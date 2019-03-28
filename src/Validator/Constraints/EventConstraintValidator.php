@@ -12,14 +12,15 @@ use App\Entity\Agenda;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use function sprintf;
+use function str_replace;
 
 class EventConstraintValidator extends ConstraintValidator
 {
-    /**
-     * @var RouterInterface
-     */
+    /** @var RouterInterface */
     private $router;
 
+    /** @var bool */
     private $checkIfUpdate;
 
     public function __construct(RouterInterface $router)
@@ -116,6 +117,10 @@ class EventConstraintValidator extends ConstraintValidator
                 '</a>',
             ], $constraint->badUser);
             $this->context->buildViolation($message)->addViolation();
+        }
+
+        if (0 === count($this->context->getViolations())) {
+            $this->context->buildViolation("Une erreur de validité empêche l'événement d'être créé.")->addViolation();
         }
     }
 }
