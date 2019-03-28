@@ -8,11 +8,9 @@ use App\Entity\Agenda;
 use App\Entity\City;
 use App\Social\FacebookAdmin;
 use App\Social\Twitter;
-use function array_merge;
 use function count;
 use DateTime;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
-use function parse_str;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,17 +24,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class WidgetsController extends Controller
 {
     const FB_MEMBERS_LIMIT = 100;
+
     const TWEET_LIMIT = 25;
+
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
      * @Route("/tweeter-feed/{max_id}", name="tbn_agenda_tweeter_feed", requirements={"max_id": "\d+"})
      * @BrowserCache(false)
      *
-     * @param City $city
-     * @param Twitter $twitter
+     * @param City         $city
+     * @param Twitter      $twitter
      * @param RequestStack $requestStack
-     * @param null $max_id
+     * @param null         $max_id
      *
      * @return RedirectResponse|Response
      */
@@ -46,11 +46,11 @@ class WidgetsController extends Controller
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
-            parse_str($results['search_metadata']['next_results'], $infos);
+            \parse_str($results['search_metadata']['next_results'], $infos);
 
             if (isset($infos['?max_id'])) {
                 $nextLink = $this->generateUrl('tbn_agenda_tweeter_feed', [
-                    'city' => $city->getSlug(),
+                    'city'   => $city->getSlug(),
                     'max_id' => $infos['?max_id'],
                 ]);
             }
@@ -60,16 +60,16 @@ class WidgetsController extends Controller
             $results['statuses'] = [];
         }
 
-        if (!count($results['statuses']) && null === $requestStack->getParentRequest()) {
+        if (!\count($results['statuses']) && null === $requestStack->getParentRequest()) {
             return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()]);
         }
 
         $response = $this->render('City/Hinclude/tweets.html.twig', [
-            'tweets' => $results['statuses'],
+            'tweets'      => $results['statuses'],
             'hasNextLink' => $nextLink,
         ]);
 
-        if (!$max_id || self::TWEET_LIMIT !== count($results['statuses'])) {
+        if (!$max_id || self::TWEET_LIMIT !== \count($results['statuses'])) {
             list($expire, $ttl) = $this->getSecondsUntil(1);
         } else {
             $expire = new DateTime();
@@ -89,7 +89,7 @@ class WidgetsController extends Controller
      * @param City $city
      * @param $slug
      * @param null $id
-     * @param int $page
+     * @param int  $page
      *
      * @return Agenda|null|object|RedirectResponse|Response
      */
@@ -111,22 +111,22 @@ class WidgetsController extends Controller
 
         if (!$soiree->getPlace()) {
             return $this->redirectToRoute('tbn_agenda_details', [
-                'id' => $soiree->getId(),
+                'id'   => $soiree->getId(),
                 'slug' => $soiree->getSlug(),
                 'city' => $city->getSlug(),
             ]);
         }
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
-        $count = $repo->findAllNextCount($soiree);
+        $count   = $repo->findAllNextCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_prochaines_soirees', [
                 'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
+                'id'   => $soiree->getId(),
                 'city' => $soiree->getPlace()->getCity()->getSlug(),
                 'page' => $page + 1,
             ]);
@@ -135,11 +135,11 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render('City/Hinclude/evenements_details.html.twig', [
-            'page' => $page,
-            'place' => $soiree->getPlace(),
-            'soirees' => $repo->findAllNext($soiree, $page, self::WIDGET_ITEM_LIMIT),
-            'current' => $current,
-            'count' => $count,
+            'page'        => $page,
+            'place'       => $soiree->getPlace(),
+            'soirees'     => $repo->findAllNext($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            'current'     => $current,
+            'count'       => $count,
             'hasNextLink' => $hasNextLink,
         ]);
 
@@ -156,7 +156,7 @@ class WidgetsController extends Controller
      * @param City $city
      * @param $slug
      * @param null $id
-     * @param int $page
+     * @param int  $page
      *
      * @return Agenda|null|object|RedirectResponse|Response
      */
@@ -172,17 +172,17 @@ class WidgetsController extends Controller
         }
         $soiree = $result;
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
-        $count = $repo->findAllSimilairesCount($soiree);
+        $count   = $repo->findAllSimilairesCount($soiree);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_similaires', [
                 'city' => $city->getSlug(),
                 'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
+                'id'   => $soiree->getId(),
                 'page' => $page + 1,
             ]);
         } else {
@@ -190,10 +190,10 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render('City/Hinclude/evenements.html.twig', [
-            'site' => $city,
-            'soirees' => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
-            'current' => $current,
-            'count' => $count,
+            'site'        => $city,
+            'soirees'     => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            'current'     => $current,
+            'count'       => $count,
             'hasNextLink' => $hasNextLink,
         ]);
 
@@ -208,7 +208,7 @@ class WidgetsController extends Controller
      * @BrowserCache(false)
      *
      * @param City $city
-     * @param int $page
+     * @param int  $page
      *
      * @return Response
      */
@@ -218,11 +218,11 @@ class WidgetsController extends Controller
             $page = 1;
         }
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
         $current = $page * self::WIDGET_ITEM_LIMIT;
-        $count = $repo->findTopSoireeCount($city);
+        $count   = $repo->findTopSoireeCount($city);
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('tbn_agenda_top_soirees', [
@@ -234,11 +234,11 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render('City/Hinclude/evenements.html.twig', [
-            'city' => $city,
-            'soirees' => $repo->findTopSoiree($city, $page, self::WIDGET_ITEM_LIMIT),
+            'city'        => $city,
+            'soirees'     => $repo->findTopSoiree($city, $page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
-            'current' => $current,
-            'count' => $count,
+            'current'     => $current,
+            'count'       => $count,
         ]);
 
         return $response
@@ -251,12 +251,12 @@ class WidgetsController extends Controller
      * @Route("/soiree/{slug}--{id}/membres/{page}", name="tbn_agenda_soirees_membres", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))
      * @BrowserCache(false)
      *
-     * @param City $city
-     * @param FacebookAdmin $facebookAdmin
+     * @param City                  $city
+     * @param FacebookAdmin         $facebookAdmin
      * @param SymfonyResponseTagger $responseTagger
      * @param $slug
      * @param null $id
-     * @param int $page
+     * @param int  $page
      *
      * @return Agenda|null|object|RedirectResponse|Response
      */
@@ -275,19 +275,19 @@ class WidgetsController extends Controller
         if (!$soiree->getFacebookEventId()) {
             return $this->redirectToRoute('tbn_agenda_details', [
                 'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
+                'id'   => $soiree->getId(),
                 'city' => $soiree->getPlace()->getCity()->getSlug(),
             ]);
         }
 
         $retour = $facebookAdmin->getEventMembres($soiree->getFacebookEventId(), ($page - 1) * self::FB_MEMBERS_LIMIT, self::FB_MEMBERS_LIMIT);
 
-        $membres = array_merge($retour['participations'], $retour['interets']);
-        if (self::FB_MEMBERS_LIMIT == count($retour['interets']) || self::FB_MEMBERS_LIMIT == count($retour['participations'])) {
+        $membres = \array_merge($retour['participations'], $retour['interets']);
+        if (self::FB_MEMBERS_LIMIT == \count($retour['interets']) || self::FB_MEMBERS_LIMIT == \count($retour['participations'])) {
             $hasNextLink = $this->generateUrl('tbn_agenda_soirees_membres', [
                 'city' => $soiree->getPlace()->getCity()->getSlug(),
                 'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
+                'id'   => $soiree->getId(),
                 'page' => $page + 1,
             ]);
         } else {
@@ -295,10 +295,10 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render('City/Hinclude/fb_membres.html.twig', [
-            'city' => $city,
-            'event' => $soiree,
-            'page' => $page,
-            'membres' => $membres,
+            'city'        => $city,
+            'event'       => $soiree,
+            'page'        => $page,
+            'membres'     => $membres,
             'hasNextLink' => $hasNextLink,
         ]);
 

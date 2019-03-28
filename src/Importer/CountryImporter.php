@@ -17,22 +17,14 @@ use App\Entity\ZipCity;
 use App\Utils\Monitor;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
-use function explode;
-use function fclose;
-use function fgetcsv;
-use function fopen;
-use function in_array;
-use function is_numeric;
-use function ltrim;
-use function preg_replace;
-use function sprintf;
-use function str_replace;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 class CountryImporter
 {
     private const ZIP_CODES_PER_TRANSACTION = 500;
+
     private const CITIES_PER_TRANSACTION = 50;
+
     /**
      * @var EntityManagerInterface
      */
@@ -45,12 +37,12 @@ class CountryImporter
 
     public function __construct(EntityManagerInterface $em, string $dataDir)
     {
-        $this->em = $em;
+        $this->em      = $em;
         $this->dataDir = $dataDir;
     }
 
     /**
-     * @param string $id
+     * @param string      $id
      * @param null|string $name
      * @param null|string $capital
      * @param null|string $locale
@@ -71,11 +63,11 @@ class CountryImporter
                 ->setCapital($capital)
                 ->setLocale($locale);
 
-            Monitor::writeln(sprintf('Création du pays <info>%s (%s)</info>', $id, $country->getName()));
+            Monitor::writeln(\sprintf('Création du pays <info>%s (%s)</info>', $id, $country->getName()));
             $this->em->persist($country);
             $this->em->flush();
         } else {
-            Monitor::writeln(sprintf('Mise à jour du pays <info>%s (%s)</info>', $id, $country->getName()));
+            Monitor::writeln(\sprintf('Mise à jour du pays <info>%s (%s)</info>', $id, $country->getName()));
             $this->deleteRelatedDatas($country);
         }
 
@@ -212,33 +204,33 @@ class CountryImporter
                     'libramont',
                     'spiere',
                     'wortegem',
-                    'amel' => 'ambleve-1',
-                    'brunehaut' => 'brunehault',
-                    'brainele-chateau' => 'braine-le-chateau',
-                    'bruxelles' => 'brussels',
-                    'bullingen' => 'bullange',
-                    'comines-warneton' => 'comines-1',
-                    'erpe-' => 'erpe',
-                    'estinnes' => 'estinnes-au-val',
-                    'ecaussinnes' => 'ecaussinnes-denghien',
-                    'honnelles' => 'onnezies',
-                    'kelmis' => 'la-calamine',
-                    'kluisbergen' => 'kruienberg',
-                    'bruyere' => 'bruyere-8',
-                    'la-louviere' => 'la-louviere-1',
-                    'roeulx' => 'roeulx-1',
-                    'leuze' => 'leuze-1',
-                    'lierde' => 'sint-maria-lierde',
-                    'lo-reninge' => 'reninge',
-                    'maarkedal' => 'maarke-kerkem',
-                    'montignyl-e-tilleul' => 'montigny-le-tilleul',
-                    'morlanwelz' => 'morlanwelz-mariemont',
+                    'amel'                 => 'ambleve-1',
+                    'brunehaut'            => 'brunehault',
+                    'brainele-chateau'     => 'braine-le-chateau',
+                    'bruxelles'            => 'brussels',
+                    'bullingen'            => 'bullange',
+                    'comines-warneton'     => 'comines-1',
+                    'erpe-'                => 'erpe',
+                    'estinnes'             => 'estinnes-au-val',
+                    'ecaussinnes'          => 'ecaussinnes-denghien',
+                    'honnelles'            => 'onnezies',
+                    'kelmis'               => 'la-calamine',
+                    'kluisbergen'          => 'kruienberg',
+                    'bruyere'              => 'bruyere-8',
+                    'la-louviere'          => 'la-louviere-1',
+                    'roeulx'               => 'roeulx-1',
+                    'leuze'                => 'leuze-1',
+                    'lierde'               => 'sint-maria-lierde',
+                    'lo-reninge'           => 'reninge',
+                    'maarkedal'            => 'maarke-kerkem',
+                    'montignyl-e-tilleul'  => 'montigny-le-tilleul',
+                    'morlanwelz'           => 'morlanwelz-mariemont',
                     'quevy-quevy-le-petit' => 'quevy-le-petit',
-                    'quevy' => 'quevy-le-grand',
-                    'sankt-vith' => 'saint-vith',
-                    'vleteren' => 'oostvleteren',
-                    'oostende' => 'mariakerke',
-                    'mont-de-lenclus' => 'orroir',
+                    'quevy'                => 'quevy-le-grand',
+                    'sankt-vith'           => 'saint-vith',
+                    'vleteren'             => 'oostvleteren',
+                    'oostende'             => 'mariakerke',
+                    'mont-de-lenclus'      => 'orroir',
                 ], $country);
                 $this->em->getConnection()->executeUpdate("
                     UPDATE zip_city zc 
@@ -259,8 +251,8 @@ class CountryImporter
                     'moneghetti',
                     'monte-carlo',
                     'fontvieille' => 'fontvieille-1',
-                    'condamine' => 'la-condamine',
-                    '98000-' => 'monaco',
+                    'condamine'   => 'la-condamine',
+                    '98000-'      => 'monaco',
                 ], $country);
 
                 break;
@@ -279,26 +271,26 @@ class CountryImporter
                     'montrevault',
                     'beaupreau',
                     'marne-la-vallee',
-                    'epagny-2' => 'epagny',
-                    'futuroscope' => 'chasseneuil-du-poitou',
-                    'chemille-en-anjou' => 'chemille-melay',
-                    'courtaboeuf' => 'villebon-sur-yvette',
-                    'ay-champagne' => 'chalons-en-champagne',
+                    'epagny-2'                    => 'epagny',
+                    'futuroscope'                 => 'chasseneuil-du-poitou',
+                    'chemille-en-anjou'           => 'chemille-melay',
+                    'courtaboeuf'                 => 'villebon-sur-yvette',
+                    'ay-champagne'                => 'chalons-en-champagne',
                     'bagnoles-de-lorne-normandie' => 'bagnoles-de-lorne',
-                    'boulazac' => 'boulazac-1',
-                    'la-plagne' => 'la-plagne-2',
-                    'carentan-les-marais' => 'carentan',
-                    'castelnau-dauzan-labarrere' => 'castelnau-dauzan',
-                    'charny-oree-de-puisaye' => 'charny-2',
-                    'chemery-chehery' => 'chemery-sur-bar',
-                    'conde-en-normandie' => 'conde-sur-noireau',
-                    'eurocentre' => 'fronton',
-                    'gennes-val-de-loire' => 'gennes',
-                    'groslee-saint-benoit' => 'groslee',
-                    'juvigny-val-dandaine' => 'juvigny-sous-andaine',
-                    'la-chailleuse' => 'chailleuse',
-                    'la-haye' => 'la-haye-du-puits',
-                    'le-bas-segala' => 'la-bastide-leveque',
+                    'boulazac'                    => 'boulazac-1',
+                    'la-plagne'                   => 'la-plagne-2',
+                    'carentan-les-marais'         => 'carentan',
+                    'castelnau-dauzan-labarrere'  => 'castelnau-dauzan',
+                    'charny-oree-de-puisaye'      => 'charny-2',
+                    'chemery-chehery'             => 'chemery-sur-bar',
+                    'conde-en-normandie'          => 'conde-sur-noireau',
+                    'eurocentre'                  => 'fronton',
+                    'gennes-val-de-loire'         => 'gennes',
+                    'groslee-saint-benoit'        => 'groslee',
+                    'juvigny-val-dandaine'        => 'juvigny-sous-andaine',
+                    'la-chailleuse'               => 'chailleuse',
+                    'la-haye'                     => 'la-haye-du-puits',
+                    'le-bas-segala'               => 'la-bastide-leveque',
                 ], $country);
 
                 break;
@@ -307,7 +299,7 @@ class CountryImporter
 
     private function insertCity($id, $name, $population, $latitude, $longitude, $adminCode1, $adminCode2, Country $country)
     {
-        $city = new City();
+        $city                          = new City();
         list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($adminCode1, $adminCode2);
         $city
             ->setId($id)
@@ -324,7 +316,7 @@ class CountryImporter
     }
 
     /**
-     * @param array $associations
+     * @param array   $associations
      * @param Country $country
      *
      * @throws DBALException
@@ -332,7 +324,7 @@ class CountryImporter
     private function manualAssociation(array $associations, Country $country)
     {
         foreach ($associations as $zipSlug => $citySlug) {
-            if (is_numeric($zipSlug)) {
+            if (\is_numeric($zipSlug)) {
                 $zipSlug = $citySlug;
             }
 
@@ -347,9 +339,9 @@ class CountryImporter
                 AND zc.slug LIKE :zip_slug
                 AND zc.country_id = :country
             ', [
-                'country' => $country->getId(),
+                'country'   => $country->getId(),
                 'city_slug' => $citySlug,
-                'zip_slug' => '%' . $zipSlug . '%',
+                'zip_slug'  => '%' . $zipSlug . '%',
             ]);
         }
     }
@@ -358,17 +350,17 @@ class CountryImporter
     {
         $filepath = $this->dataDir . '/' . $country->getId() . '/zip.csv';
 
-        if (!file_exists($filepath)) {
-            throw new IOException(sprintf("File %s does not exists", $filepath));
+        if (!\file_exists($filepath)) {
+            throw new IOException(\sprintf('File %s does not exists', $filepath));
         }
 
-        $fd = fopen($filepath, 'r');
+        $fd = \fopen($filepath, 'r');
         if (false === $fd) {
             return;
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 1000, "\t"))) {
+        while (false !== ($data = \fgetcsv($fd, 1000, "\t"))) {
             if (!$data[4] || !$data[6]) {
                 continue;
             }
@@ -376,8 +368,8 @@ class CountryImporter
 
             $city = new ZipCity();
 
-            $data[1] = explode(' ', $data[1])[0];
-            $data[2] = preg_replace("/ (\d+)$/", '', $data[2]);
+            $data[1] = \explode(' ', $data[1])[0];
+            $data[2] = \preg_replace("/ (\d+)$/", '', $data[2]);
 
             list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($data[4], $data[6]);
 
@@ -386,8 +378,8 @@ class CountryImporter
                 ->setName($data[2])
                 ->setAdmin1Code($adminCode1)
                 ->setAdmin2Code($adminCode2)
-                ->setLatitude((float)$data[9])
-                ->setLongitude((float)$data[10])
+                ->setLatitude((float) $data[9])
+                ->setLongitude((float) $data[10])
                 ->setCountry($country);
 
             $this->em->persist($city);
@@ -398,23 +390,23 @@ class CountryImporter
             }
         }
         $this->em->flush();
-        fclose($fd);
+        \fclose($fd);
     }
 
     private function createAdminZones(Country $country)
     {
         $filepath = $this->dataDir . '/' . $country->getId() . '/cities.csv';
-        if (!file_exists($filepath)) {
-            throw new IOException(sprintf("File %s does not exists", $filepath));
+        if (!\file_exists($filepath)) {
+            throw new IOException(\sprintf('File %s does not exists', $filepath));
         }
-        $fd = fopen($filepath, 'r');
+        $fd = \fopen($filepath, 'r');
         if (false === $fd) {
             return;
         }
 
         $i = 0;
-        while (false !== ($data = fgetcsv($fd, 3000, "\t"))) {
-            if (!(in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6])) {
+        while (false !== ($data = \fgetcsv($fd, 3000, "\t"))) {
+            if (!(\in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6])) {
                 continue;
             }
             ++$i;
@@ -430,11 +422,11 @@ class CountryImporter
             list($adminCode1, $adminCode2) = $this->formatAdminZoneCodes($data[10], $data[11]);
 
             $entity
-                ->setId((int)$data[0])
+                ->setId((int) $data[0])
                 ->setName($data[1])
-                ->setPopulation((int)$data[14])
-                ->setLatitude((float)$data[4])
-                ->setLongitude((float)$data[5])
+                ->setPopulation((int) $data[14])
+                ->setLatitude((float) $data[4])
+                ->setLongitude((float) $data[5])
                 ->setAdmin1Code($adminCode1)
                 ->setAdmin2Code($adminCode2)
                 ->setCountry($country);
@@ -452,7 +444,7 @@ class CountryImporter
             }
         }
         $this->em->flush();
-        fclose($fd);
+        \fclose($fd);
     }
 
     private function sanitizeAdminZone(AdminZone $entity)
@@ -460,7 +452,7 @@ class CountryImporter
         switch ($entity->getCountry()->getId()) {
             case 'FR':
                 if ($entity instanceof AdminZone2) {
-                    $entity->setName(str_replace([
+                    $entity->setName(\str_replace([
                             "Département d'",
                             "Département de l'",
                             'Département de la ',
@@ -490,7 +482,7 @@ class CountryImporter
             return $code;
         }
 
-        $code = ltrim($code, '0');
+        $code = \ltrim($code, '0');
 
         if ('' === $code) {
             return null;

@@ -4,15 +4,9 @@ namespace App\Parser\Toulouse;
 
 use App\Entity\Agenda;
 use App\Parser\AgendaParser;
-use function array_map;
 use DateTime;
-use function fgetcsv;
-use function file_get_contents;
-use function fopen;
 use ForceUTF8\Encoding;
-use function sprintf;
 use Symfony\Component\Filesystem\Filesystem;
-use function sys_get_temp_dir;
 
 /**
  * Description of ToulouseParser.
@@ -45,11 +39,11 @@ class ToulouseParser extends AgendaParser
     {
         $tab_agendas = [];
 
-        $fic = fopen($fichier, 'r');
-        fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
+        $fic = \fopen($fichier, 'r');
+        \fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
 
-        while ($cursor = fgetcsv($fic, 0, ';', '"', '"')) {
-            $tab = array_map(function ($e) {
+        while ($cursor = \fgetcsv($fic, 0, ';', '"', '"')) {
+            $tab = \array_map(function ($e) {
                 return Encoding::toUTF8($e);
             }, $cursor);
 
@@ -57,30 +51,30 @@ class ToulouseParser extends AgendaParser
                 $nom = $tab[1] ?: $tab[2];
 
                 $date_debut = new DateTime($tab[5]);
-                $date_fin = new DateTime($tab[6]);
+                $date_fin   = new DateTime($tab[6]);
 
                 $tab_agendas[] = [
-                    'nom' => $nom,
-                    'descriptif' => $tab[4],
-                    'date_debut' => $date_debut,
-                    'date_fin' => $date_fin,
-                    'horaires' => $tab[7],
+                    'nom'                          => $nom,
+                    'descriptif'                   => $tab[4],
+                    'date_debut'                   => $date_debut,
+                    'date_fin'                     => $date_fin,
+                    'horaires'                     => $tab[7],
                     'modification_derniere_minute' => $tab[9],
-                    'place.nom' => $tab[10],
-                    'place.rue' => $tab[12],
-                    'place.latitude' => $tab[20],
-                    'place.longitude' => $tab[21],
-                    'place.code_postal' => $tab[14],
-                    'place.ville' => $tab[15],
-                    'place.country_name' => 'France',
-                    'type_manifestation' => $tab[16],
-                    'categorie_manifestation' => $tab[17],
-                    'theme_manifestation' => $tab[18],
-                    'reservation_telephone' => $tab[22],
-                    'reservation_email' => $tab[23],
-                    'reservation_internet' => $tab[24],
-                    'tarif' => $tab[26],
-                    'source' => 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/export/',
+                    'place.nom'                    => $tab[10],
+                    'place.rue'                    => $tab[12],
+                    'place.latitude'               => $tab[20],
+                    'place.longitude'              => $tab[21],
+                    'place.code_postal'            => $tab[14],
+                    'place.ville'                  => $tab[15],
+                    'place.country_name'           => 'France',
+                    'type_manifestation'           => $tab[16],
+                    'categorie_manifestation'      => $tab[17],
+                    'theme_manifestation'          => $tab[18],
+                    'reservation_telephone'        => $tab[22],
+                    'reservation_email'            => $tab[23],
+                    'reservation_internet'         => $tab[24],
+                    'tarif'                        => $tab[26],
+                    'source'                       => 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/export/',
                 ];
             }
         }
@@ -95,9 +89,9 @@ class ToulouseParser extends AgendaParser
      */
     protected function downloadCSV()
     {
-        $data = file_get_contents($this->getURL());
-        $path_file = sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());
-        $fs = new Filesystem();
+        $data      = \file_get_contents($this->getURL());
+        $path_file = \sprintf('%s/data_manifestations/agenda.csv', \sys_get_temp_dir());
+        $fs        = new Filesystem();
         $fs->dumpFile($path_file, $data);
 
         return $path_file;

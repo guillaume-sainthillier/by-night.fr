@@ -2,7 +2,6 @@
 
 namespace App\Validator\Constraints;
 
-use function get_class;
 use Symfony\Component\Validator\Constraint;
 
 class ReCaptchaResponse extends Constraint
@@ -11,6 +10,6 @@ class ReCaptchaResponse extends Constraint
 
     public function validatedBy()
     {
-        return get_class($this) . 'Validator';
+        return \get_class($this) . 'Validator';
     }
 }

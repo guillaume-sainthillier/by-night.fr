@@ -28,8 +28,8 @@ class AssetExtension extends Extension
     public function __construct(BaseAssetExtension $assetExtension, array $mappingAssets, bool $debug)
     {
         $this->assetExtension = $assetExtension;
-        $this->debug = $debug;
-        $this->mappingAssets = $mappingAssets;
+        $this->debug          = $debug;
+        $this->mappingAssets  = $mappingAssets;
     }
 
     public function getFunctions()

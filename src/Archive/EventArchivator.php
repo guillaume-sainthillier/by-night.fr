@@ -5,7 +5,6 @@ namespace App\Archive;
 use App\Entity\Agenda;
 use App\Repository\AgendaRepository;
 use App\Utils\Monitor;
-use function ceil;
 use function count;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\NonUniqueResultException;
@@ -35,7 +34,7 @@ class EventArchivator
 
     public function __construct(ObjectManager $entityManager, ObjectPersisterInterface $objectPersister)
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager   = $entityManager;
         $this->objectPersister = $objectPersister;
     }
 
@@ -51,7 +50,7 @@ class EventArchivator
         /* Clone the query builder before altering its field selection and DQL,
          * lest we leave the query builder in a bad state for fetchSlice().
          */
-        $qb = clone $queryBuilder;
+        $qb          = clone $queryBuilder;
         $rootAliases = $queryBuilder->getRootAliases();
 
         return $qb
@@ -69,11 +68,11 @@ class EventArchivator
     public function archive()
     {
         /** @var AgendaRepository $repo */
-        $repo = $this->entityManager->getRepository(Agenda::class);
-        $qb = $repo->findNonIndexablesBuilder();
+        $repo      = $this->entityManager->getRepository(Agenda::class);
+        $qb        = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
 
-        $nbTransactions = ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
+        $nbTransactions = \ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
         Monitor::createProgressBar($nbTransactions);
         for ($i = 0; $i < $nbTransactions; ++$i) {
             $events = $qb
@@ -82,7 +81,7 @@ class EventArchivator
                 ->getQuery()
                 ->getResult();
 
-            if (!count($events)) {
+            if (!\count($events)) {
                 continue;
             }
 

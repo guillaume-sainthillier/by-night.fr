@@ -3,7 +3,6 @@
 namespace App\Controller\Old\City;
 
 use App\Controller\TBNController as Controller;
-use function str_replace;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +25,7 @@ class AgendaController extends Controller
     public function indexAction(Request $request)
     {
         $absoluteURL = $request->getUri();
-        $absoluteURL = str_replace('agenda/', '', $absoluteURL);
+        $absoluteURL = \str_replace('agenda/', '', $absoluteURL);
 
         return $this->redirect($absoluteURL, Response::HTTP_MOVED_PERMANENTLY);
     }

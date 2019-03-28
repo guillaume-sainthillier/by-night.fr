@@ -4,15 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Agenda;
 use App\Entity\City;
-use function array_merge;
 use DateTime;
-use function sprintf;
-use function strtotime;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use function time;
 
 class TBNController extends Controller
 {
@@ -28,9 +24,9 @@ class TBNController extends Controller
 
     protected function getSecondsUntilTomorrow()
     {
-        $minuit = strtotime('tomorrow 00:00:00');
+        $minuit = \strtotime('tomorrow 00:00:00');
 
-        return $minuit - time();
+        return $minuit - \time();
     }
 
     /**
@@ -38,13 +34,13 @@ class TBNController extends Controller
      * @param $slug
      * @param $id
      * @param string $routeName
-     * @param array $extraParams
+     * @param array  $extraParams
      *
      * @return null|object|RedirectResponse|Agenda
      */
     protected function checkEventUrl(City $city, $slug, $id, $routeName = 'tbn_agenda_details', array $extraParams = [])
     {
-        $em = $this->getDoctrine()->getManager();
+        $em       = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository(Agenda::class);
 
         if (!$id) {
@@ -58,8 +54,8 @@ class TBNController extends Controller
         }
 
         if (null === $this->requestStack->getParentRequest() && (!$id || $event->getSlug() !== $slug || $event->getPlace()->getCity()->getSlug() !== $city->getSlug())) {
-            $routeParams = array_merge([
-                'id' => $event->getId(),
+            $routeParams = \array_merge([
+                'id'   => $event->getId(),
                 'slug' => $event->getSlug(),
                 'city' => $event->getPlace()->getCity()->getSlug(),
             ], $extraParams);
@@ -72,12 +68,12 @@ class TBNController extends Controller
 
     protected function getSecondsUntil($hours)
     {
-        $time = time();
-        $now = new DateTime();
-        $minutes = $now->format('i');
+        $time     = \time();
+        $now      = new DateTime();
+        $minutes  = $now->format('i');
         $secondes = $now->format('s');
 
-        $string = 1 == $hours ? '+1 hour' : sprintf('+%d hours', $hours);
+        $string = 1 == $hours ? '+1 hour' : \sprintf('+%d hours', $hours);
         $now->modify($string);
 
         if ($minutes > 0) {

@@ -65,7 +65,7 @@ class SocialController extends Controller
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,
-            'url' => $this->generateUrl('tbn_administration_disconnect_service', ['service' => $service]),
+            'url'     => $this->generateUrl('tbn_administration_disconnect_service', ['service' => $service]),
         ]);
     }
 }

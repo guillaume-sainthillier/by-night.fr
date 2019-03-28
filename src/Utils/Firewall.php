@@ -2,7 +2,6 @@
 
 namespace App\Utils;
 
-use function acos;
 use App\Entity\Agenda;
 use App\Entity\Exploration;
 use App\Entity\Place;
@@ -11,15 +10,8 @@ use App\Geolocalize\BoundaryInterface;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use App\Repository\ExplorationRepository;
-use function cos;
 use DateTime;
-use function deg2rad;
 use Doctrine\Common\Persistence\ObjectManager;
-use function rad2deg;
-use function sin;
-use function strlen;
-use function strstr;
-use function trim;
 
 /**
  * Description of Firewall.
@@ -53,10 +45,10 @@ class Firewall
 
     public function __construct(ObjectManager $om, Comparator $comparator)
     {
-        $this->om = $om;
+        $this->om              = $om;
         $this->repoExploration = $this->om->getRepository(Exploration::class);
-        $this->comparator = $comparator;
-        $this->explorations = [];
+        $this->comparator      = $comparator;
+        $this->explorations    = [];
     }
 
     public function loadExplorations(array $ids)
@@ -83,7 +75,7 @@ class Firewall
 
     public function hasEventToBeUpdated(Exploration $exploration, Agenda $event)
     {
-        $explorationDate = $exploration->getLastUpdated();
+        $explorationDate       = $exploration->getLastUpdated();
         $eventDateModification = $event->getFbDateModification();
 
         if (!$explorationDate || !$eventDateModification) {
@@ -130,7 +122,7 @@ class Firewall
 
     public function filterEventLocation(Agenda $event)
     {
-        $place = $event->getPlace();
+        $place  = $event->getPlace();
         $reject = $place->getReject();
         if (!$reject->isValid()) {
             $event->getReject()->addReason($reject->getReason());
@@ -147,12 +139,12 @@ class Firewall
         }
 
         $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration);
-        $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
+        $hasToBeUpdated            = $this->hasEventToBeUpdated($exploration, $event);
 
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-            //L'événement a changé -> valide
+        //L'événement a changé -> valide
         } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
@@ -271,13 +263,13 @@ class Firewall
     private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
     {
         $theta = $entity->getLongitude() - $boundary->getLongitude();
-        $dist = sin(deg2rad($entity->getLatitude())) *
-            sin(deg2rad($boundary->getLatitude())) +
-            cos(deg2rad($entity->getLatitude())) *
-            cos(deg2rad($boundary->getLatitude())) *
-            cos(deg2rad($theta));
-        $dist = acos($dist);
-        $dist = rad2deg($dist);
+        $dist  = \sin(\deg2rad($entity->getLatitude())) *
+            \sin(\deg2rad($boundary->getLatitude())) +
+            \cos(\deg2rad($entity->getLatitude())) *
+            \cos(\deg2rad($boundary->getLatitude())) *
+            \cos(\deg2rad($theta));
+        $dist = \acos($dist);
+        $dist = \rad2deg($dist);
 
         return $dist * 111.189577; //60 * 1.1515 * 1.609344
     }
@@ -312,7 +304,7 @@ class Firewall
         ];
 
         foreach ($black_list as $black_word) {
-            if (strstr($content, $black_word)) {
+            if (\strstr($content, $black_word)) {
                 return true;
             }
         }
@@ -327,12 +319,12 @@ class Firewall
 
     private function checkLengthValidity($str, $length)
     {
-        return strlen($this->comparator->sanitize($str)) === $length;
+        return \strlen($this->comparator->sanitize($str)) === $length;
     }
 
     public function checkMinLengthValidity($str, $min)
     {
-        return isset(trim($str)[$min]);
+        return isset(\trim($str)[$min]);
     }
 
     public function addExploration(Exploration $exploration)

@@ -41,11 +41,11 @@ class SocialManager
 
     public function __construct(ObjectManager $entityManager, $facebookIdPage, $twitterIdPage, $googleIdPage)
     {
-        $this->entityManager = $entityManager;
+        $this->entityManager  = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
-        $this->twitterIdPage = $twitterIdPage;
-        $this->googleIdPage = $googleIdPage;
-        $this->siteInfo = false;
+        $this->twitterIdPage  = $twitterIdPage;
+        $this->googleIdPage   = $googleIdPage;
+        $this->siteInfo       = false;
     }
 
     /**

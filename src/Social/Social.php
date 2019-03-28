@@ -21,8 +21,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use function strtolower;
-use function ucfirst;
 
 /**
  * Description of Twitter.
@@ -93,17 +91,17 @@ abstract class Social
             throw new SocialException("Le paramètre 'secret' est absent");
         }
 
-        $this->id = $config['id'];
-        $this->secret = $config['secret'];
-        $this->config = $config;
-        $this->tokenStorage = $tokenStorage;
-        $this->router = $router;
-        $this->session = $session;
-        $this->requestStack = $requestStack;
-        $this->logger = $logger;
+        $this->id                  = $config['id'];
+        $this->secret              = $config['secret'];
+        $this->config              = $config;
+        $this->tokenStorage        = $tokenStorage;
+        $this->router              = $router;
+        $this->session             = $session;
+        $this->requestStack        = $requestStack;
+        $this->logger              = $logger;
         $this->eventProfilePicture = $eventProfilePicture;
-        $this->socialManager = $socialManager;
-        $this->isInitialized = false;
+        $this->socialManager       = $socialManager;
+        $this->isInitialized       = false;
     }
 
     protected function init()
@@ -118,7 +116,7 @@ abstract class Social
     {
         $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->removeRole('ROLE_' . strtolower($social_name)); //Suppression du role ROLE_TWITTER
+        $user->removeRole('ROLE_' . \strtolower($social_name)); //Suppression du role ROLE_TWITTER
         $this->disconnectInfo($user->getInfo());
     }
 
@@ -126,9 +124,9 @@ abstract class Social
     {
         if (null !== $info) {
             $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
-            $methods = ['Id', 'AccessToken', 'RefreshToken', 'TokenSecret', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
+            $methods     = ['Id', 'AccessToken', 'RefreshToken', 'TokenSecret', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
-                $setter = 'set' . ucfirst($social_name) . ucfirst($methode);
+                $setter = 'set' . \ucfirst($social_name) . \ucfirst($methode);
                 $info->$setter(null);
             }
         }
@@ -145,13 +143,13 @@ abstract class Social
         if (null !== $info) {
             $methods = ['AccessToken', 'RefreshToken', 'TokenSecret', 'ExpiresIn', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
             foreach ($methods as $methode) {
-                $setter = 'set' . ucfirst($social_name) . ucfirst($methode); // setSocialUsername
-                $getter = 'get' . ucfirst($methode); //getSocialUsername
+                $setter = 'set' . \ucfirst($social_name) . \ucfirst($methode); // setSocialUsername
+                $getter = 'get' . \ucfirst($methode); //getSocialUsername
 
                 $info->$setter($response->$getter());
             }
 
-            $setter_id = 'set' . ucfirst($social_name) . 'Id';
+            $setter_id = 'set' . \ucfirst($social_name) . 'Id';
             $info->$setter_id($response->getUsername());
         }
     }
@@ -160,7 +158,7 @@ abstract class Social
     {
         $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->addRole('ROLE_' . strtolower($social_name)); //Ajout du role ROLE_TWITTER
+        $user->addRole('ROLE_' . \strtolower($social_name)); //Ajout du role ROLE_TWITTER
         $this->connectInfo($user->getInfo(), $response);
     }
 
@@ -178,7 +176,7 @@ abstract class Social
     {
         return $this->router->generate('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
-            'id' => $agenda->getSlug(),
+            'id'   => $agenda->getSlug(),
             'city' => $agenda->getPlace()->getCity()->getSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }

@@ -11,11 +11,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
-use function sprintf;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use function ucfirst;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -164,8 +162,8 @@ class User extends BaseUser
         $this->setFromLogin(false);
         $this->setShowSocials(true);
         $this->date_creation = new DateTime();
-        $this->calendriers = new ArrayCollection();
-        $this->info = new UserInfo();
+        $this->calendriers   = new ArrayCollection();
+        $this->info          = new UserInfo();
     }
 
     /**
@@ -234,7 +232,7 @@ class User extends BaseUser
 
     public function getUsername()
     {
-        return ucfirst(parent::getUsername());
+        return \ucfirst(parent::getUsername());
     }
 
     /**
@@ -499,7 +497,7 @@ class User extends BaseUser
 
     public function __toString()
     {
-        return sprintf('#%s (%s)', $this->id ?: '?', $this->getUsername());
+        return \sprintf('#%s (%s)', $this->id ?: '?', $this->getUsername());
     }
 
     /**

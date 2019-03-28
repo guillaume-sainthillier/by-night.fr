@@ -12,8 +12,6 @@ use App\Entity\User;
 use App\Handler\UserHandler;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
-use function ceil;
-use function count;
 use Doctrine\Common\Persistence\ObjectManager;
 
 class UserUpdater extends Updater
@@ -31,14 +29,14 @@ class UserUpdater extends Updater
 
     public function update()
     {
-        $repo = $this->entityManager->getRepository(User::class);
+        $repo  = $this->entityManager->getRepository(User::class);
         $fbIds = $repo->getUserFbIds();
-        $count = count($fbIds);
+        $count = \count($fbIds);
 
         $fbStats = $this->facebookAdmin->getUserStatsFromIds($fbIds);
         unset($fbIds);
 
-        $nbBatchs = ceil($count / self::PAGINATION_SIZE);
+        $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
         for ($i = 0; $i < $nbBatchs; ++$i) {

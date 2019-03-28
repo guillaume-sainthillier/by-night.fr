@@ -2,8 +2,6 @@
 
 namespace App\Social;
 
-use App\Entity\Agenda;
-use App\Entity\User;
 use BadMethodCallException;
 use Google_Client;
 
@@ -23,9 +21,9 @@ class Google extends Social
 
     public function constructClient()
     {
-        $api_id = $this->id;
+        $api_id     = $this->id;
         $api_secret = $this->secret;
-        $this->key = $this->config['key'];
+        $this->key  = $this->config['key'];
 
         $this->client = new Google_Client();
         $this->client->setClientId($api_id);

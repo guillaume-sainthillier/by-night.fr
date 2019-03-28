@@ -31,13 +31,13 @@ class Coordinate implements GeolocalizeInterface
         Assert::notNull($latitude);
         Assert::notNull($longitude);
 
-        $latitude = (float)$latitude;
-        $longitude = (float)$longitude;
+        $latitude  = (float) $latitude;
+        $longitude = (float) $longitude;
 
         Assert::latitude($latitude);
         Assert::longitude($longitude);
 
-        $this->latitude = $latitude;
+        $this->latitude  = $latitude;
         $this->longitude = $longitude;
     }
 

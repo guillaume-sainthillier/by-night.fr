@@ -19,7 +19,7 @@ class InfoController extends Controller
      * @Route("/", name="tbn_administration_info_index")
      *
      * @param RouterInterface $router
-     * @param SocialManager $socialManager
+     * @param SocialManager   $socialManager
      *
      * @return RedirectResponse
      */
@@ -29,7 +29,7 @@ class InfoController extends Controller
 
         if (null === $info) {
             $info = new SiteInfo();
-            $em = $this->getDoctrine()->getManager();
+            $em   = $this->getDoctrine()->getManager();
             $em->persist($info);
             $em->flush();
         }

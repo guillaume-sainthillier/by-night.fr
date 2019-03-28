@@ -2,7 +2,6 @@
 
 namespace App\Twig;
 
-use function preg_replace;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
@@ -22,11 +21,11 @@ class TweetExtension extends Extension
 
     public function tweet($tweet)
     {
-        $linkified = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
-        $hashified = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
+        $linkified    = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
+        $hashified    = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
         $mentionified = '/(^|[\n\s])@([^\s"\t\n\r<:]*)/is';
 
-        $prettyTweet = preg_replace(
+        $prettyTweet = \preg_replace(
             array(
                 $linkified,
                 $hashified,

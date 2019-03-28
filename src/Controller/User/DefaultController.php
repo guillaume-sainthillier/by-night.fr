@@ -6,19 +6,14 @@ use App\Controller\TBNController as Controller;
 use App\Entity\Agenda;
 use App\Entity\User;
 use App\Repository\AgendaRepository;
-use function array_merge;
 use DateInterval;
 use DateTime;
-use function substr;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use function ucfirst;
-use function utf8_decode;
-use function utf8_encode;
 
 /**
  * @Route("/membres")
@@ -40,7 +35,7 @@ class DefaultController extends Controller
 
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
     {
-        $em = $this->getDoctrine()->getManager();
+        $em       = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository(User::class);
 
         if (!$id) {
@@ -54,7 +49,7 @@ class DefaultController extends Controller
         }
 
         if ($user->getSlug() !== $slug) {
-            $routeParams = array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
+            $routeParams = \array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
 
             return new RedirectResponse($this->generateUrl($routeName, $routeParams));
         }
@@ -80,16 +75,16 @@ class DefaultController extends Controller
         }
         $user = $result;
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
         return $this->render('User/index.html.twig', [
-            'user' => $user,
-            'next_events' => $repo->findAllNextEvents($user),
-            'previous_events' => $repo->findAllNextEvents($user, false),
-            'etablissements' => $repo->findAllPlaces($user),
+            'user'                 => $user,
+            'next_events'          => $repo->findAllNextEvents($user),
+            'previous_events'      => $repo->findAllNextEvents($user, false),
+            'etablissements'       => $repo->findAllPlaces($user),
             'count_participations' => $repo->getCountParticipations($user),
-            'count_interets' => $repo->getCountInterets($user),
+            'count_interets'       => $repo->getCountInterets($user),
         ]);
     }
 
@@ -113,8 +108,8 @@ class DefaultController extends Controller
         }
         $user = $result;
 
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
+        $em       = $this->getDoctrine()->getManager();
+        $repo     = $em->getRepository(Agenda::class);
         $str_date = $repo->getLastDateStatsUser($user);
 
         $response = $this->cacheVerif($str_date);
@@ -163,13 +158,13 @@ class DefaultController extends Controller
 
     protected function getDataOfWeek(AgendaRepository $repo, User $user)
     {
-        $now = new DateTime();
-        $date = $this->calculDate('P1W');
+        $now   = new DateTime();
+        $date  = $this->calculDate('P1W');
         $datas = $repo->getStatsUser($user, $date);
 
         $final_datas = [
             'categories' => [],
-            'data' => [],
+            'data'       => [],
             'full_categories',
         ];
 
@@ -181,10 +176,10 @@ class DefaultController extends Controller
                 }
             }
 
-            $cle = ucfirst($this->getDayName($date->format('N')));
+            $cle                              = \ucfirst($this->getDayName($date->format('N')));
             $final_datas['full_categories'][] = $cle . ' ' . $date->format('d') . ' ' . $this->getMonthName($date->format('m')) . ' ' . $date->format('Y');
-            $final_datas['categories'][] = $cle;
-            $final_datas['data'][] = (int)$nb_events;
+            $final_datas['categories'][]      = $cle;
+            $final_datas['data'][]            = (int) $nb_events;
 
             $date->add(new DateInterval('P1D'));
         }
@@ -194,13 +189,13 @@ class DefaultController extends Controller
 
     protected function getDataOfMonth(AgendaRepository $repo, User $user)
     {
-        $now = new DateTime();
-        $date = $this->calculDate('P1M');
+        $now   = new DateTime();
+        $date  = $this->calculDate('P1M');
         $datas = $repo->getStatsUser($user, $date);
 
         $final_datas = [
             'categories' => [],
-            'data' => [],
+            'data'       => [],
             'full_categories',
         ];
 
@@ -212,11 +207,11 @@ class DefaultController extends Controller
                 }
             }
 
-            $cle = ucfirst($this->getDayName($date->format('N'))) . ' ' . $date->format('d');
+            $cle = \ucfirst($this->getDayName($date->format('N'))) . ' ' . $date->format('d');
 
-            $final_datas['full_categories'][] = ucfirst($this->getDayName($date->format('N'))) . ' ' . $date->format('d') . ' ' . $this->getMonthName($date->format('m')) . ' ' . $date->format('Y');
-            $final_datas['categories'][] = $cle;
-            $final_datas['data'][] = (int)$nb_events;
+            $final_datas['full_categories'][] = \ucfirst($this->getDayName($date->format('N'))) . ' ' . $date->format('d') . ' ' . $this->getMonthName($date->format('m')) . ' ' . $date->format('Y');
+            $final_datas['categories'][]      = $cle;
+            $final_datas['data'][]            = (int) $nb_events;
 
             $date->add(new DateInterval('P1D'));
         }
@@ -226,13 +221,13 @@ class DefaultController extends Controller
 
     protected function getDataOfYear(AgendaRepository $repo, User $user)
     {
-        $now = new DateTime();
-        $date = $this->calculDate('P1Y');
+        $now   = new DateTime();
+        $date  = $this->calculDate('P1Y');
         $datas = $repo->getStatsUser($user, $date, false);
 
         $final_datas = [
             'categories' => [],
-            'data' => [],
+            'data'       => [],
             'full_categories',
         ];
 
@@ -244,10 +239,10 @@ class DefaultController extends Controller
                 }
             }
 
-            $cle = ucfirst(utf8_encode(substr(utf8_decode($this->getMonthName($date->format('m'))), 0, 3)));
-            $final_datas['full_categories'][] = ucfirst($this->getMonthName($date->format('m'))) . ' ' . $date->format('Y');
-            $final_datas['categories'][] = $cle;
-            $final_datas['data'][] = (int)$nb_events;
+            $cle                              = \ucfirst(\utf8_encode(\substr(\utf8_decode($this->getMonthName($date->format('m'))), 0, 3)));
+            $final_datas['full_categories'][] = \ucfirst($this->getMonthName($date->format('m'))) . ' ' . $date->format('Y');
+            $final_datas['categories'][]      = $cle;
+            $final_datas['data'][]            = (int) $nb_events;
 
             $date->add(new DateInterval('P1M'));
         }
@@ -259,14 +254,14 @@ class DefaultController extends Controller
     {
         $months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
-        return $months[((int)$number - 1)];
+        return $months[((int) $number - 1)];
     }
 
     protected function getDayName($number)
     {
         $days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
-        return $days[((int)$number - 1)];
+        return $days[((int) $number - 1)];
     }
 
     protected function calculDate($format)

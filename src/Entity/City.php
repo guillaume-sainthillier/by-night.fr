@@ -3,10 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use function implode;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
-use function sprintf;
 
 /**
  * City.
@@ -32,7 +30,7 @@ class City extends AdminZone
         }
         $parts[] = $this->getCountry()->getName();
 
-        return sprintf('%s (%s)', $this->getName(), implode(', ', $parts));
+        return \sprintf('%s (%s)', $this->getName(), \implode(', ', $parts));
     }
 
     /**

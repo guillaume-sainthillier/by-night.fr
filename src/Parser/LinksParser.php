@@ -3,11 +3,7 @@
 namespace App\Parser;
 
 use App\Utils\Monitor;
-use function array_filter;
-use function array_merge;
-use function count;
 use Exception;
-use function file_get_contents;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -24,9 +20,9 @@ abstract class LinksParser extends AgendaParser
 
     public function __construct()
     {
-        $this->url = null;
+        $this->url      = null;
         $this->base_url = null;
-        $this->parser = new Crawler();
+        $this->parser   = new Crawler();
 
         return $this;
     }
@@ -36,7 +32,7 @@ abstract class LinksParser extends AgendaParser
         $this->parser->clear();
 
         try {
-            $this->parser->addContent(file_get_contents($this->url), $type);
+            $this->parser->addContent(\file_get_contents($this->url), $type);
         } catch (Exception $e) {
             Monitor::writeException($e);
         }
@@ -61,7 +57,7 @@ abstract class LinksParser extends AgendaParser
                     $infosAgenda = [$infosAgenda];
                 }
 
-                $agendas = array_merge($agendas, $infosAgenda);
+                $agendas = \array_merge($agendas, $infosAgenda);
             } catch (Exception $e) {
                 Monitor::writeException($e);
             }
@@ -81,7 +77,7 @@ abstract class LinksParser extends AgendaParser
 
     private function isMultiArray($array)
     {
-        return count(array_filter($array, 'is_array')) > 0;
+        return \count(\array_filter($array, 'is_array')) > 0;
     }
 
     public function getBaseUrl()

@@ -13,7 +13,6 @@ use App\Geolocalize\Boundary;
 use App\Geolocalize\Coordinate;
 use App\Reject\Reject;
 use App\Utils\Firewall;
-use function count;
 use Doctrine\Common\Cache\CacheProvider;
 use Geocoder\Exception\InvalidCredentials;
 use Geocoder\Exception\InvalidServerResponse;
@@ -23,8 +22,6 @@ use Geocoder\Provider\GoogleMaps\Model\GoogleAddress;
 use Geocoder\Provider\Provider;
 use Geocoder\Query\GeocodeQuery;
 use Geocoder\Query\ReverseQuery;
-use function round;
-use function sprintf;
 
 class PlaceGeocoder
 {
@@ -45,14 +42,14 @@ class PlaceGeocoder
 
     public function __construct(CacheProvider $cache, Provider $geocoder, Firewall $firewall)
     {
-        $this->cache = $cache;
+        $this->cache    = $cache;
         $this->geocoder = $geocoder;
         $this->firewall = $firewall;
     }
 
     public function geocodeCoordinates(Place $place)
     {
-        $key = sprintf('%f;%f', round($place->getLatitude(), 6), round($place->getLongitude(), 6));
+        $key  = \sprintf('%f;%f', \round($place->getLatitude(), 6), \round($place->getLongitude(), 6));
         $data = $this->cache->fetch($key);
         if (false === $data) {
             try {
@@ -70,11 +67,12 @@ class PlaceGeocoder
             $data = [];
             foreach ($responses as $result) {
                 $data = $this->getPlaceInfos($result);
+
                 break;
             }
         }
 
-        if (!count($data)) {
+        if (!\count($data)) {
             $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
 
             return;
@@ -97,7 +95,7 @@ class PlaceGeocoder
         $data = $this->cache->fetch($nom);
         if (false === $data) {
             try {
-                $query = GeocodeQuery::create($nom);
+                $query     = GeocodeQuery::create($nom);
                 $responses = $this->geocoder->geocodeQuery($query);
             } catch (QuotaExceeded $e) {
                 $place->getReject()->addReason(Reject::GEOCODE_LIMIT);
@@ -112,12 +110,12 @@ class PlaceGeocoder
             $data = [];
             foreach ($responses as $response) {
                 /** @var GoogleAddress $response */
-                $result = array_merge([
+                $result = \array_merge([
                     'placeId' => $response->getId(),
                 ], $response->toArray());
 
                 if ($response->getCoordinates()) {
-                    $geometry = $response->getCoordinates();
+                    $geometry           = $response->getCoordinates();
                     $result['geometry'] = [
                         'lat' => $geometry->getLatitude(),
                         'lng' => $geometry->getLongitude(),
@@ -129,7 +127,7 @@ class PlaceGeocoder
             $this->cache->save($nom, $data);
         }
 
-        if (!count($data)) {
+        if (!\count($data)) {
             $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
 
             return;
@@ -140,7 +138,7 @@ class PlaceGeocoder
             $address = GoogleAddress::createFromArray($result);
             if ($address->getCoordinates()) {
                 $candidateCoordinate = new Coordinate($address->getCoordinates()->getLatitude(), $address->getCoordinates()->getLongitude());
-                $placeCoordinate = new Boundary($place->getLatitude(), $place->getLongitude());
+                $placeCoordinate     = new Boundary($place->getLatitude(), $place->getLongitude());
                 if ($this->firewall->isLocationBounded($candidateCoordinate, $placeCoordinate)) {
                     $candidatePlace = $address;
 
@@ -190,7 +188,7 @@ class PlaceGeocoder
         }
 
         if ($address->getStreetName()) {
-            $datas['rue'] = trim(sprintf('%s %s', $address->getStreetNumber(), $address->getStreetName()));
+            $datas['rue'] = \trim(\sprintf('%s %s', $address->getStreetNumber(), $address->getStreetName()));
         }
 
         if ($address->getCountry()) {
@@ -199,9 +197,9 @@ class PlaceGeocoder
 
         foreach ($address->getAdminLevels() as $adminLevel) {
             /** @var AdminLevel $adminLevel */
-            if ($adminLevel->getLevel() === 1) {
+            if (1 === $adminLevel->getLevel()) {
                 $datas['admin_zone_1'] = $adminLevel->getName();
-            } elseif ($adminLevel->getLevel() === 2) {
+            } elseif (2 === $adminLevel->getLevel()) {
                 $datas['admin_zone_2'] = $adminLevel->getName();
             }
         }

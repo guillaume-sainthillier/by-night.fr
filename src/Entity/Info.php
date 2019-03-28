@@ -178,7 +178,7 @@ abstract class Info
 
     public function __construct()
     {
-        $this->hasSeeTuto = false;
+        $this->hasSeeTuto         = false;
         $this->hasSeeAskingSocial = false;
     }
 

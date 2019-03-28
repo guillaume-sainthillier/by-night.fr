@@ -30,7 +30,7 @@ class AppEventsMigrateCommand extends AppCommand
         parent::__construct($name);
 
         $this->doctrineEventHandler = $doctrineEventHandler;
-        $this->entityManager = $entityManager;
+        $this->entityManager        = $entityManager;
     }
 
     /**
@@ -70,7 +70,7 @@ class AppEventsMigrateCommand extends AppCommand
         Monitor::createProgressBar($nbPlaces);
         foreach ($places as $i => $row) {
             /**
-             * @var Place $place
+             * @var Place
              */
             $place = $row[0];
             $place->setReject(new Reject())->setCountry($france);
@@ -100,32 +100,32 @@ class AppEventsMigrateCommand extends AppCommand
         return;
 
         $mapping = [
-            'basse-terre' => 'basse-terre',
-            'bordeaux' => 'bordeaux',
-            'brest' => 'brest',
-            'caen' => 'caen',
-            'cayenne' => 'cayenne',
-            'dijon' => 'dijon',
+            'basse-terre'    => 'basse-terre',
+            'bordeaux'       => 'bordeaux',
+            'brest'          => 'brest',
+            'caen'           => 'caen',
+            'cayenne'        => 'cayenne',
+            'dijon'          => 'dijon',
             'fort-de-france' => 'fort-de-france',
-            'grenoble' => 'grenoble',
-            'le-havre' => 'le-havre',
-            'lille' => 'lille',
-            'lyon' => 'lyon',
-            'mamoudzou' => 'mamoudzou',
-            'marseille' => 'marseille',
-            'montpellier' => 'montpellier',
-            'nantes' => 'nantes',
-            'narbonne' => 'narbonne',
-            'nice' => 'nice',
-            'paris' => 'paris',
-            'perpignan' => 'perpignan',
-            'poitiers' => 'poitiers',
-            'reims' => 'reims',
-            'rennes' => 'rennes',
-            'rouen' => 'rouen',
-            'saint-denis' => 'saint-denis-8',
-            'strasbourg' => 'strasbourg',
-            'toulouse' => 'toulouse',
+            'grenoble'       => 'grenoble',
+            'le-havre'       => 'le-havre',
+            'lille'          => 'lille',
+            'lyon'           => 'lyon',
+            'mamoudzou'      => 'mamoudzou',
+            'marseille'      => 'marseille',
+            'montpellier'    => 'montpellier',
+            'nantes'         => 'nantes',
+            'narbonne'       => 'narbonne',
+            'nice'           => 'nice',
+            'paris'          => 'paris',
+            'perpignan'      => 'perpignan',
+            'poitiers'       => 'poitiers',
+            'reims'          => 'reims',
+            'rennes'         => 'rennes',
+            'rouen'          => 'rouen',
+            'saint-denis'    => 'saint-denis-8',
+            'strasbourg'     => 'strasbourg',
+            'toulouse'       => 'toulouse',
         ];
 
         $places = $em->getRepository(Place::class)->findBy(['city' => null]);

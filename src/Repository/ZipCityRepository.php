@@ -3,11 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ZipCity;
-use function array_unique;
-use function count;
 use Doctrine\ORM\EntityRepository;
-use function preg_replace;
-use function str_replace;
 
 /**
  * ZipCityRepository.
@@ -20,7 +16,7 @@ class ZipCityRepository extends EntityRepository
     /**
      * @param string|null $postalCode
      * @param string|null $city
-     * @param string $country
+     * @param string      $country
      *
      * @return ZipCity[]
      */
@@ -38,14 +34,14 @@ class ZipCityRepository extends EntityRepository
         }
 
         if ($city) {
-            $cities = [];
-            $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-            $city = str_replace('’', "'", $city);
+            $cities   = [];
+            $city     = \preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
+            $city     = \str_replace('’', "'", $city);
             $cities[] = $city;
-            $cities[] = str_replace(' ', '-', $city);
-            $cities[] = str_replace('-', ' ', $city);
-            $cities[] = str_replace("'", '', $city);
-            $cities = array_unique($cities);
+            $cities[] = \str_replace(' ', '-', $city);
+            $cities[] = \str_replace('-', ' ', $city);
+            $cities[] = \str_replace("'", '', $city);
+            $cities   = \array_unique($cities);
 
             $query
                 ->andWhere('zc.name IN(:cities)')
@@ -60,16 +56,16 @@ class ZipCityRepository extends EntityRepository
     }
 
     /**
-     * @param string $postalCode
+     * @param string      $postalCode
      * @param string|null $city
-     * @param string $country
+     * @param string      $country
      *
      * @return ZipCity|null
      */
     public function findByPostalCodeAndCity($postalCode, $city, $country)
     {
         $cities = $this->findByPostalCodeOrCity($postalCode, $city, $country);
-        if (1 === count($cities)) {
+        if (1 === \count($cities)) {
             return $cities[0];
         }
 
@@ -78,7 +74,7 @@ class ZipCityRepository extends EntityRepository
 
     /**
      * @param string|null $city
-     * @param string $country
+     * @param string      $country
      *
      * @return ZipCity[]
      */

@@ -88,7 +88,7 @@ class EventListener
         }
 
         $entityManager = $args->getEntityManager();
-        $exploration = $entityManager->getRepository(Exploration::class)->find($entity->getFacebookEventId());
+        $exploration   = $entityManager->getRepository(Exploration::class)->find($entity->getFacebookEventId());
 
         if (!$exploration) {
             $exploration = (new Exploration())->setId($entity->getFacebookEventId());

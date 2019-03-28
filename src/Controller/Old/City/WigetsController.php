@@ -3,7 +3,6 @@
 namespace App\Controller\Old\City;
 
 use App\Controller\TBNController as Controller;
-use function max;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,7 +26,7 @@ class WigetsController extends Controller
      */
     public function topMembresAction($page = 1)
     {
-        $page = max(1, $page);
+        $page = \max(1, $page);
 
         return $this->redirectToRoute('tbn_agenda_top_membres', ['page' => $page], Response::HTTP_MOVED_PERMANENTLY);
     }

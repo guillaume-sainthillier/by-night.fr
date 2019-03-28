@@ -2,10 +2,7 @@
 
 namespace App\Parser;
 
-use function file_get_contents;
-use function str_replace;
 use Symfony\Component\DomCrawler\Crawler as Crawler;
-use function trim;
 
 class ProgrammeTVParser
 {
@@ -18,7 +15,7 @@ class ProgrammeTVParser
 
     public function getProgrammesTV()
     {
-        $this->parser->addContent(file_get_contents('http://www.programme-tv.net/programme/toutes-les-chaines/'), 'HTML');
+        $this->parser->addContent(\file_get_contents('http://www.programme-tv.net/programme/toutes-les-chaines/'), 'HTML');
 
         return $this->parser->filter('.p-v-md')->each(function (Crawler $channel) {
             $programmes = $channel->filter('.programme');
@@ -31,31 +28,31 @@ class ProgrammeTVParser
                 $nom = $programme->filter('.prog_name');
                 $type = $programme->filter('.prog_type');
 
-                $labelChaine = $chaine->count() ? str_replace('Programme de ', '', $chaine->attr('title')) : null;
+                $labelChaine = $chaine->count() ? \str_replace('Programme de ', '', $chaine->attr('title')) : null;
                 $css_chaine = $this->getCSSChaine($labelChaine);
 
                 return [
-                    'logo' => $logo->count() ? trim($logo->attr('data-src')) : null,
-                    'chaine' => $labelChaine,
+                    'logo'       => $logo->count() ? \trim($logo->attr('data-src')) : null,
+                    'chaine'     => $labelChaine,
                     'css_chaine' => $css_chaine ? 'icon-' . $css_chaine : null,
-                    'heure' => $heure->count() ? $heure->text() : null,
-                    'nom' => $nom->count() ? $nom->text() : null,
-                    'lien' => $nom->count() ? 'http://www.programme-tv.net/' . $nom->attr('href') : null,
-                    'type' => $type->count() ? $type->text() : null,
-                    'episode' => $episode->count() ? $episode->text() : null,
-                    'asset' => null,
+                    'heure'      => $heure->count() ? $heure->text() : null,
+                    'nom'        => $nom->count() ? $nom->text() : null,
+                    'lien'       => $nom->count() ? 'http://www.programme-tv.net/' . $nom->attr('href') : null,
+                    'type'       => $type->count() ? $type->text() : null,
+                    'episode'    => $episode->count() ? $episode->text() : null,
+                    'asset'      => null,
                 ];
             }
 
             return [
-                'logo' => null,
-                'chaine' => null,
-                'heure' => null,
-                'nom' => null,
-                'lien' => null,
-                'type' => null,
+                'logo'    => null,
+                'chaine'  => null,
+                'heure'   => null,
+                'nom'     => null,
+                'lien'    => null,
+                'type'    => null,
                 'episode' => null,
-                'asset' => null,
+                'asset'   => null,
             ];
         });
     }

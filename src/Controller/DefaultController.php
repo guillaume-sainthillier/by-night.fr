@@ -35,7 +35,7 @@ class DefaultController extends Controller
      * @BrowserCache(false)
      *
      * @param PaginatorInterface $paginator
-     * @param RepositoryManager $repositoryManager
+     * @param RepositoryManager  $repositoryManager
      *
      * @return Response
      */
