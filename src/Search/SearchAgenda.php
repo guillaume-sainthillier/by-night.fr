@@ -3,10 +3,7 @@
 namespace App\Search;
 
 use App\Entity\City;
-use function array_filter;
-use function array_unique;
 use DateTime;
-use function explode;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -66,12 +63,12 @@ class SearchAgenda
     public function __construct()
     {
         $this->page = 1;
-        $this->du = new DateTime();
+        $this->du   = new DateTime();
     }
 
     public function getTerms()
     {
-        return array_unique(array_filter(explode(' ', $this->getTerm())));
+        return \array_unique(\array_filter(\explode(' ', $this->getTerm())));
     }
 
     /**

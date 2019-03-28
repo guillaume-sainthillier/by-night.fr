@@ -46,7 +46,7 @@ class DefaultController extends BaseController
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,
-            'url' => $this->generateUrl('tbn_disconnect_service', ['service' => $service]),
+            'url'     => $this->generateUrl('tbn_disconnect_service', ['service' => $service]),
         ]);
     }
 

@@ -12,7 +12,6 @@ use App\Entity\Agenda;
 use App\Entity\Place;
 use App\Entity\Site;
 use App\Entity\User;
-use function call_user_func;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
@@ -45,13 +44,13 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     /**
      * @param UrlGeneratorInterface $urlGenerator
-     * @param ObjectManager $manager
+     * @param ObjectManager         $manager
      */
     public function __construct(UrlGeneratorInterface $urlGenerator, ObjectManager $manager)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->manager = $manager;
-        $this->now = new DateTime();
+        $this->manager      = $manager;
+        $this->now          = new DateTime();
     }
 
     /**
@@ -67,18 +66,18 @@ class SitemapSuscriber implements EventSubscriberInterface
     public function registerRoutes(SitemapPopulateEvent $event)
     {
         $this->urlContainer = $event->getUrlContainer();
-        $section = $event->getSection();
+        $section            = $event->getSection();
 
         $sections = [
-            'app' => [$this, 'registerStaticRoutes'],
+            'app'    => [$this, 'registerStaticRoutes'],
             'agenda' => [$this, 'registerAgendaRoutes'],
-            'users' => [$this, 'registerUserRoutes'],
+            'users'  => [$this, 'registerUserRoutes'],
 //            'events' => [$this, 'registerEventRoutes']
         ];
 
         foreach ($sections as $name => $generateFunction) {
             if (!$section || $name === $section) {
-                call_user_func($generateFunction, $name);
+                \call_user_func($generateFunction, $name);
             }
         }
     }
@@ -104,7 +103,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         $events = [];
         foreach ($events as $event) {
             $this->addUrl($section, 'tbn_agenda_details', [
-                'id' => $event['id'],
+                'id'   => $event['id'],
                 'slug' => $event['slug'],
                 'city' => $event['subdomain'],
             ]);
@@ -117,7 +116,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($events as $event) {
             $this->addUrl($section, 'tbn_agenda_details', [
-                'id' => $event['id'],
+                'id'   => $event['id'],
                 'slug' => $event['slug'],
                 'city' => $event['subdomain'],
             ]);
@@ -132,7 +131,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($users as $user) {
             $this->addUrl($section, 'tbn_user_details', [
-                'id' => $user->getId(),
+                'id'   => $user->getId(),
                 'slug' => $user->getSlug(),
             ], $user->getUpdatedAt());
         }

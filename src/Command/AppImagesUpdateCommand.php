@@ -17,7 +17,7 @@ class AppImagesUpdateCommand extends AppCommand
 
     public function __construct(UserUpdater $userUpdater, EventUpdater $eventUpdater)
     {
-        $this->userUpdater = $userUpdater;
+        $this->userUpdater  = $userUpdater;
         $this->eventUpdater = $eventUpdater;
 
         parent::__construct();

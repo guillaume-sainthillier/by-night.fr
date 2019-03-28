@@ -18,7 +18,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class WidgetsController extends Controller
 {
     const FB_MEMBERS_LIMIT = 100;
+
     const TWEET_LIMIT = 25;
+
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
@@ -56,10 +58,10 @@ class WidgetsController extends Controller
             $page = 1;
         }
 
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(User::class);
 
-        $count = $repo->findMembresCount();
+        $count   = $repo->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -71,10 +73,10 @@ class WidgetsController extends Controller
         }
 
         $response = $this->render('City/Hinclude/membres.html.twig', [
-            'membres' => $repo->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
+            'membres'     => $repo->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
-            'current' => $current,
-            'count' => $count,
+            'current'     => $current,
+            'count'       => $count,
         ]);
 
         list($future, $seconds) = $this->getSecondsUntil(6);

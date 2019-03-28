@@ -9,7 +9,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
-use function sprintf;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -476,7 +475,7 @@ class Place implements GeolocalizeInterface
 
     public function __toString()
     {
-        return sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
+        return \sprintf('#%s (%s)', $this->id ?: '?', $this->getNom());
     }
 
     /**

@@ -24,16 +24,16 @@ class DefaultController extends Controller
      */
     public function indexAction(City $city)
     {
-        $em = $this->getDoctrine()->getManager();
+        $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
-        $search = (new SearchAgenda())->setDu(null);
+        $search    = (new SearchAgenda())->setDu(null);
         $topEvents = $repo->findTopSoiree($city, 1, 7);
 
         return $this->render('City/Default/index.html.twig', [
-            'city' => $city,
+            'city'      => $city,
             'topEvents' => $topEvents,
-            'nbEvents' => $repo->findCountWithSearch($city, $search),
+            'nbEvents'  => $repo->findCountWithSearch($city, $search),
         ]);
     }
 }

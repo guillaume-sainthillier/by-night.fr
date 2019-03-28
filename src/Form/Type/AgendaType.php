@@ -31,77 +31,77 @@ class AgendaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $siteInfo = $options['site_info'];
-        $user = $options['user'];
+        $user     = $options['user'];
 
         $builder
             ->add('nom', TextType::class, [
                 'label' => 'Titre',
-                'attr' => [
+                'attr'  => [
                     'placeholder' => 'Choisissez un titre accrocheur...',
                 ],
             ])
             ->add('descriptif', TextareaType::class, [
-                'label' => 'Description',
+                'label'    => 'Description',
                 'required' => false,
-                'attr' => [
+                'attr'     => [
                     'placeholder' => 'Décrivez votre événement...',
                 ],
             ])
             ->add('file', VichImageType::class, [
-                'label' => 'Affiche / Flyer',
-                'required' => false,
+                'label'        => 'Affiche / Flyer',
+                'required'     => false,
                 'image_filter' => 'thumb_evenement',
             ])
             ->add('dateDebut', DateType::class, [
-                'label' => 'A partir du ',
-                'widget' => 'single_text',
+                'label'    => 'A partir du ',
+                'widget'   => 'single_text',
                 'required' => true,
-                'format' => 'dd/MM/yyyy',
-                'attr' => [
+                'format'   => 'dd/MM/yyyy',
+                'attr'     => [
                     'placeholder' => 'Le / Du...',
                 ],
             ])
             ->add('dateFin', DateType::class, [
-                'label' => "Jusqu'au",
-                'widget' => 'single_text',
+                'label'    => "Jusqu'au",
+                'widget'   => 'single_text',
                 'required' => false,
-                'format' => 'dd/MM/yyyy',
-                'attr' => [
+                'format'   => 'dd/MM/yyyy',
+                'attr'     => [
                     'placeholder' => 'Au...',
                 ],
             ])
             ->add('horaires', TextType::class, [
-                'label' => 'Horaires',
+                'label'    => 'Horaires',
                 'required' => false,
-                'attr' => [
+                'attr'     => [
                     'placeholder' => 'A 20h, de 21h à minuit',
                 ],
             ])
             ->add('tarif', TextType::class, [
-                'label' => 'Tarif',
+                'label'    => 'Tarif',
                 'required' => false,
-                'attr' => [
+                'attr'     => [
                     'placeholder' => '17€ avec préventes, 20€ sur place',
                 ],
             ])
             ->add('categorieManifestation', TextType::class, [
-                'label' => 'Catégorie',
+                'label'    => 'Catégorie',
                 'required' => false,
-                'attr' => [
+                'attr'     => [
                     'placeholder' => 'Concert, Spectacle, ...',
                 ],
             ])
             ->add('themeManifestation', TextType::class, [
-                'label' => 'Thèmes',
+                'label'    => 'Thèmes',
                 'required' => false,
-                'attr' => [
+                'attr'     => [
                     'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
                 ],
             ])
             ->add('adresse', TextType::class, [
                 'required' => false,
-                'label' => 'Adresse',
-                'attr' => [
+                'label'    => 'Adresse',
+                'attr'     => [
                     'placeholder' => 'Tapez votre adresse ici pour remplir les champs ci-dessous',
                 ],
             ])
@@ -109,23 +109,23 @@ class AgendaType extends AbstractType
                 'label' => false,
             ])
             ->add('reservationInternet', UrlType::class, [
-                'label' => 'Réservation par internet',
+                'label'    => 'Réservation par internet',
                 'required' => false,
-                'attr' => [
+                'attr'     => [
                     'placeholder' => "L'URL où trouver un billet",
                 ],
             ])
             ->add('reservationTelephone', TextType::class, [
-                'label' => 'Réservation téléphonique',
+                'label'    => 'Réservation téléphonique',
                 'required' => false,
-                'attr' => [
+                'attr'     => [
                     'placeholder' => 'Le numéro à appeler pour acheter un billet',
                 ],
             ])
             ->add('reservationEmail', EmailType::class, [
-                'label' => 'Réservation par mail',
+                'label'    => 'Réservation par mail',
                 'required' => false,
-                'attr' => [
+                'attr'     => [
                     'placeholder' => 'Le mail pour vous contacter',
                 ],
             ])
@@ -148,9 +148,9 @@ class AgendaType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Agenda::class,
-            'site_info' => null,
-            'user' => null,
-            'config' => [],
+            'site_info'  => null,
+            'user'       => null,
+            'config'     => [],
         ]);
     }
 

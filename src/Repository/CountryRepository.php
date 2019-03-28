@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use function strtolower;
 
 /**
  * CountryRepository.
@@ -18,7 +17,7 @@ class CountryRepository extends EntityRepository
         return $this
             ->createQueryBuilder('c')
             ->andWhere('LOWER(c.name) = :country')
-            ->setParameter('country', strtolower($country))
+            ->setParameter('country', \strtolower($country))
             ->getQuery()
             ->useResultCache(true)
             ->useQueryCache(true)

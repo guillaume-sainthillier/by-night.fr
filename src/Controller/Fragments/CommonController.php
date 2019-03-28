@@ -32,7 +32,7 @@ class CommonController extends TBNController
         parent::__construct($requestStack);
         $this->socials = [
             'facebook' => $facebookAdmin,
-            'twitter' => $twitter,
+            'twitter'  => $twitter,
         ];
     }
 
@@ -59,7 +59,7 @@ class CommonController extends TBNController
 
     public function footer()
     {
-        $cache = $this->get('memory_cache');
+        $cache  = $this->get('memory_cache');
         $params = [];
         foreach ($this->socials as $name => $service) {
             /**
@@ -73,9 +73,9 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo = $this->getDoctrine()->getRepository(City::class);
+        $repo             = $this->getDoctrine()->getRepository(City::class);
         $params['cities'] = $repo->findRandomNames();
-        $response = $this->render('City/footer.html.twig', $params);
+        $response         = $this->render('City/footer.html.twig', $params);
 
         $tomorrow = new DateTime('tomorrow');
 

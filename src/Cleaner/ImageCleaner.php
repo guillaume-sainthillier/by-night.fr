@@ -2,12 +2,7 @@
 
 namespace App\Cleaner;
 
-use function array_column;
-use function array_filter;
-use function array_merge;
-use function array_unique;
 use Doctrine\Common\Persistence\ObjectManager;
-use function in_array;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Finder\Finder;
 
@@ -37,8 +32,8 @@ class ImageCleaner
     public function __construct(ObjectManager $entityManager, CacheManager $cacheManager, $webDir)
     {
         $this->entityManager = $entityManager;
-        $this->webDir = $webDir;
-        $this->cacheManager = $cacheManager;
+        $this->webDir        = $webDir;
+        $this->cacheManager  = $cacheManager;
     }
 
     public function clean()
@@ -48,7 +43,7 @@ class ImageCleaner
             ->createQuery('SELECT a.path, a.systemPath FROM App:Agenda a WHERE a.path IS NOT NULL OR a.systemPath IS NOT NULL')
             ->getScalarResult();
 
-        $paths = array_unique(array_filter(array_merge(array_column($result, 'path'), array_column($result, 'systemPath'))));
+        $paths = \array_unique(\array_filter(\array_merge(\array_column($result, 'path'), \array_column($result, 'systemPath'))));
         $this->cleanPaths($paths, ['thumbs_evenement', 'thumb_evenement'], '/uploads/documents');
 
         $result = $this
@@ -56,14 +51,14 @@ class ImageCleaner
             ->createQuery('SELECT u.path, u.systemPath FROM App:User u WHERE u.path IS NOT NULL OR u.systemPath IS NOT NULL')
             ->getScalarResult();
 
-        $paths = array_unique(array_filter(array_merge(array_column($result, 'path'), array_column($result, 'systemPath'))));
+        $paths = \array_unique(\array_filter(\array_merge(\array_column($result, 'path'), \array_column($result, 'systemPath'))));
         $this->cleanPaths($paths, ['thumb_user_large', 'thumb_user_evenement', 'thumb_user', 'thumb_user_menu', 'thumb_user_50', 'thumb_user_115'], '/uploads/users');
     }
 
     protected function cleanPaths(array $paths, array $filters, $uri_prefix)
     {
         $finder = new Finder();
-        $files = $finder->in($this->webDir . $uri_prefix);
+        $files  = $finder->in($this->webDir . $uri_prefix);
         foreach ($files as $file) {
             /*
              * @var \SplFileObject
@@ -72,7 +67,7 @@ class ImageCleaner
                 continue;
             }
 
-            if (!in_array($file->getFilename(), $paths)) {
+            if (!\in_array($file->getFilename(), $paths)) {
                 $path = $uri_prefix . '/' . $file->getFilename();
                 foreach ($filters as $filter) {
                     if ($this->cacheManager->isStored($path, $filter)) {

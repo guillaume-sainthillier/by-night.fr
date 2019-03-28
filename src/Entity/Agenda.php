@@ -5,14 +5,10 @@ namespace App\Entity;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
-use function array_filter;
-use function array_map;
-use function array_unique;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use function explode;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
@@ -43,6 +39,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Agenda implements GeolocalizeInterface
 {
     const INDEX_FROM = '-6 months';
+
     const INDEX_TO = '+6 months';
 
     /**
@@ -510,10 +507,10 @@ class Agenda implements GeolocalizeInterface
     public function __construct()
     {
         $this->setDateDebut(new DateTime());
-        $this->place = new Place();
-        $this->calendriers = new ArrayCollection();
+        $this->place        = new Place();
+        $this->calendriers  = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
-        $this->isArchive = false;
+        $this->isArchive    = false;
     }
 
     public function setId($id)
@@ -527,7 +524,7 @@ class Agenda implements GeolocalizeInterface
     {
         $tags = $this->getCategorieManifestation() . ',' . $this->getTypeManifestation() . ',' . $this->getThemeManifestation();
 
-        return array_unique(array_map('trim', array_map('ucfirst', array_filter(explode(',', $tags)))));
+        return \array_unique(\array_map('trim', \array_map('ucfirst', \array_filter(\explode(',', $tags)))));
     }
 
     public function __toString()

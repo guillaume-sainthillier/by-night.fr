@@ -20,9 +20,9 @@ class ExplorationHandler
     public function __construct()
     {
         $this->stats = [
-            'nbBlacklists' => 0,
-            'nbInserts' => 0,
-            'nbUpdates' => 0,
+            'nbBlacklists'   => 0,
+            'nbInserts'      => 0,
+            'nbUpdates'      => 0,
             'nbExplorations' => 0,
         ];
 

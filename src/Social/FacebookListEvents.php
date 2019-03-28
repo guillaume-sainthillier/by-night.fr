@@ -5,7 +5,6 @@ namespace App\Social;
 use App\Entity\User;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use RuntimeException;
-use function sprintf;
 
 /**
  * Description of Facebook.
@@ -20,7 +19,7 @@ class FacebookListEvents extends Facebook
         $userInfo = $user->getInfo();
 
         if (!$userInfo || !$userInfo->getFacebookAccessToken()) {
-            throw new RuntimeException(sprintf(
+            throw new RuntimeException(\sprintf(
                 "Unable to find user social infos for user '%d'",
                 $user->getId()
             ));
@@ -29,9 +28,9 @@ class FacebookListEvents extends Facebook
         $this->client->setDefaultAccessToken($userInfo->getFacebookAccessToken());
 
         $request = $this->client->sendRequest('GET', '/' . $userInfo->getFacebookId() . '/events', [
-            'type' => 'created',
+            'type'   => 'created',
             'fields' => self::FIELDS,
-            'limit' => $limit,
+            'limit'  => $limit,
         ]);
 
         return $this->findPaginated($request->getGraphEdge());

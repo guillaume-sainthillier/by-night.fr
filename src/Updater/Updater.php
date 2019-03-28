@@ -19,6 +19,7 @@ use Psr\Http\Message\ResponseInterface;
 abstract class Updater
 {
     const PAGINATION_SIZE = 200;
+
     const POOL_SIZE = 10;
 
     /**
@@ -54,10 +55,10 @@ abstract class Updater
         }
 
         $responses = [];
-        $pool = new Pool($this->client, $requests, [
+        $pool      = new Pool($this->client, $requests, [
             'concurrency' => self::POOL_SIZE,
-            'fulfilled' => function (ResponseInterface $response, $index) use (&$responses) {
-                $responses[$index] = (string)$response->getBody();
+            'fulfilled'   => function (ResponseInterface $response, $index) use (&$responses) {
+                $responses[$index] = (string) $response->getBody();
             },
             'rejected' => function (RequestException $reason, $index) use (&$responses) {
                 $responses[$index] = null;

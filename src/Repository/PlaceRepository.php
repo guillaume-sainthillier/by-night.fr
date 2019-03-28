@@ -2,10 +2,6 @@
 
 namespace App\Repository;
 
-use function array_column;
-use function array_filter;
-use function array_unique;
-use function count;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr;
 
@@ -19,7 +15,7 @@ class PlaceRepository extends EntityRepository
 {
     public function findByCities(array $cityIds, array $fbIds)
     {
-        if (!count($cityIds)) {
+        if (!\count($cityIds)) {
             return [];
         }
 
@@ -28,7 +24,7 @@ class PlaceRepository extends EntityRepository
             ->where('p.city IN(:cities)')
             ->setParameter('cities', $cityIds);
 
-        if (count($fbIds)) {
+        if (\count($fbIds)) {
             $query
                 ->andWhere('p.facebookId NOT IN (:fbIds)')
                 ->setParameter('fbIds', $fbIds);
@@ -41,7 +37,7 @@ class PlaceRepository extends EntityRepository
 
     public function findByZipCities(array $zipCityIds, array $fbIds)
     {
-        if (!count($zipCityIds)) {
+        if (!\count($zipCityIds)) {
             return [];
         }
 
@@ -50,7 +46,7 @@ class PlaceRepository extends EntityRepository
             ->where('p.zipCity IN(:cities)')
             ->setParameter('cities', $zipCityIds);
 
-        if (count($fbIds)) {
+        if (\count($fbIds)) {
             $query
                 ->andWhere('p.facebookId NOT IN (:fbIds)')
                 ->setParameter('fbIds', $fbIds);
@@ -85,6 +81,6 @@ class PlaceRepository extends EntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_unique(array_filter(array_column($places, 'facebookId')));
+        return \array_unique(\array_filter(\array_column($places, 'facebookId')));
     }
 }

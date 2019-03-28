@@ -6,21 +6,11 @@ use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\Place;
 use App\Entity\ZipCity;
-use function call_user_func;
 use DateTime;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Exception;
-use function levenshtein;
-use function max;
-use function md5;
-use function preg_replace;
-use function similar_text;
-use function str_ireplace;
-use function strip_tags;
 use function strlen;
-use function strpos;
-use function trim;
 
 /**
  * @author guillaume
@@ -39,7 +29,7 @@ class Comparator
 
     public function __construct(Util $util, Cache $cache)
     {
-        $this->util = $util;
+        $this->util  = $util;
         $this->cache = $cache;
     }
 
@@ -133,15 +123,15 @@ class Comparator
         }
 
         $bestScore = 0;
-        $bestItem = null;
+        $bestItem  = null;
 
         foreach ($items as $item) {
-            $score = call_user_func($machingFunction, $item, $testedItem);
+            $score = \call_user_func($machingFunction, $item, $testedItem);
 
             if ($score >= 100) {
                 return $item;
             } elseif ($score >= $minScore && $score > $bestScore) {
-                $bestItem = $item;
+                $bestItem  = $item;
                 $bestScore = $score;
             }
         }
@@ -166,7 +156,7 @@ class Comparator
             return false;
         }
 
-        return false !== strpos($haystack, $needle);
+        return false !== \strpos($haystack, $needle);
     }
 
     protected function getMatchingScore($a, $b)
@@ -179,7 +169,7 @@ class Comparator
             }
 
             if (isset($a[250]) || isset($b[250])) {
-                similar_text($a, $b, $pourcentage);
+                \similar_text($a, $b, $pourcentage);
             } else {
                 try {
                     $pourcentage = $this->getDiffPourcentage($a, $b);
@@ -193,9 +183,9 @@ class Comparator
 
     private function getDiffPourcentage($a, $b)
     {
-        $hashA = md5($a);
-        $hashB = md5($b);
-        $keys = ['getDiffPourcentage.' . $hashA . '.' . $hashB, 'getDiffPourcentage.' . $hashB . '.' . $hashA];
+        $hashA = \md5($a);
+        $hashB = \md5($b);
+        $keys  = ['getDiffPourcentage.' . $hashA . '.' . $hashB, 'getDiffPourcentage.' . $hashB . '.' . $hashA];
 
         foreach ($keys as $key) {
             if ($this->cache->contains($key)) {
@@ -203,7 +193,7 @@ class Comparator
             }
         }
 
-        $score = (1 - levenshtein($a, $b) / max(strlen($a), strlen($b))) * 100;
+        $score = (1 - \levenshtein($a, $b) / \max(\strlen($a), \strlen($b))) * 100;
 
         $this->cache->save($keys[0], $score);
 
@@ -241,15 +231,15 @@ class Comparator
         }
 
         if ($cityA) {
-            $a = str_ireplace($cityA->getName(), '', $a);
+            $a = \str_ireplace($cityA->getName(), '', $a);
         } elseif ($zipCityA) {
-            $a = str_ireplace($zipCityA->getName(), '', $a);
+            $a = \str_ireplace($zipCityA->getName(), '', $a);
         }
 
         if ($cityB) {
-            $b = str_ireplace($cityB->getName(), '', $b);
+            $b = \str_ireplace($cityB->getName(), '', $b);
         } elseif ($zipCityB) {
-            $b = str_ireplace($zipCityB->getName(), '', $b);
+            $b = \str_ireplace($zipCityB->getName(), '', $b);
         }
 
         $a = $this->sanitize($a);
@@ -272,7 +262,7 @@ class Comparator
 
     public function sanitizeNumber($string)
     {
-        return preg_replace('/\D/', '', $string);
+        return \preg_replace('/\D/', '', $string);
     }
 
     public function isSameMoment(Agenda $a, Agenda $b)
@@ -296,17 +286,17 @@ class Comparator
         $step2 = $this->util->replaceAccents($step1);
         $step3 = $this->util->deleteMultipleSpaces($step2);
 
-        return trim($step3);
+        return \trim($step3);
     }
 
     public function sanitizeHTML($string)
     {
-        return $this->sanitize(strip_tags($string));
+        return $this->sanitize(\strip_tags($string));
     }
 
     public function sanitizeVille($string)
     {
-        $string = preg_replace("#-(\s*)st(\s*)-#i", 'saint', $string);
+        $string = \preg_replace("#-(\s*)st(\s*)-#i", 'saint', $string);
 
         return $this->sanitize($string);
     }
@@ -322,7 +312,7 @@ class Comparator
                 $string = $this->util->replaceNonAlphanumericChars($string);
                 $string = $this->util->deleteStopWords($string);
                 $string = $this->util->deleteMultipleSpaces($string);
-                $string = trim($string);
+                $string = \trim($string);
                 $this->cache->save($key, $string);
             }
 

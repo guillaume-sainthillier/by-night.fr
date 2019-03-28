@@ -64,11 +64,13 @@ class Location
 
     /**
      * @param string $name
+     *
      * @return Location
      */
-    public function setName(string $name): Location
+    public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
