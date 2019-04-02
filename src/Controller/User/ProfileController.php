@@ -38,11 +38,15 @@ class ProfileController extends BaseController
     /** @var UserManagerInterface */
     private $userManager;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $formFactory, UserManagerInterface $userManager)
+    /** @var FactoryInterface */
+    private $changePasswordFormFactory;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $formFactory, UserManagerInterface $userManager, FactoryInterface $changePasswordFormFactory)
     {
         $this->eventDispatcher = $eventDispatcher;
-        $this->formFactory     = $formFactory;
-        $this->userManager     = $userManager;
+        $this->formFactory = $formFactory;
+        $this->userManager = $userManager;
+        $this->changePasswordFormFactory = $changePasswordFormFactory;
 
         parent::__construct($eventDispatcher, $formFactory, $userManager);
     }
@@ -58,7 +62,7 @@ class ProfileController extends BaseController
     /**
      * @Route("/delete", name="tbn_user_delete")
      *
-     * @param Request              $request
+     * @param Request $request
      * @param UserManagerInterface $userManager
      *
      * @return RedirectResponse
@@ -77,7 +81,7 @@ class ProfileController extends BaseController
             $em = $this->getDoctrine()->getManager();
 
             $deleteEvents = $form->get('delete_events')->getData();
-            $events       = $this->getDoctrine()->getRepository(Agenda::class)->findBy([
+            $events = $this->getDoctrine()->getRepository(Agenda::class)->findBy([
                 'user' => $user,
             ]);
 
@@ -155,7 +159,7 @@ class ProfileController extends BaseController
             $this->userManager->updateUser($user);
 
             if (null === $response = $event->getResponse()) {
-                $url      = $this->generateUrl('fos_user_profile_show');
+                $url = $this->generateUrl('fos_user_profile_show');
                 $response = new RedirectResponse($url);
             }
 
@@ -164,16 +168,14 @@ class ProfileController extends BaseController
             return $response;
         }
 
-        /** @var $formFactory FactoryInterface */
-        $formChangePasswordFactory = $this->get('fos_user.change_password.form.factory');
-        $formChangePassword        = $formChangePasswordFactory->createForm();
+        $formChangePassword = $this->changePasswordFormFactory->createForm();
         $formChangePassword->setData($user);
         $formDelete = $this->createDeleteForm();
 
         return $this->render('@FOSUser/Profile/edit.html.twig', array(
-            'form'               => $form->createView(),
+            'form' => $form->createView(),
             'formChangePassword' => $formChangePassword->createView(),
-            'formDelete'         => $formDelete->createView(),
+            'formDelete' => $formDelete->createView(),
         ));
     }
 

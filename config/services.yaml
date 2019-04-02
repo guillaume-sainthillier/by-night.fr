@@ -20,6 +20,8 @@ services:
         autowire: true
         autoconfigure: true
         public: true
+        bind:
+            $changePasswordFormFactory: "@fos_user.change_password.form.factory"
 
     App\:
         resource: '../src/*'
