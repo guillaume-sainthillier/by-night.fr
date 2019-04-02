@@ -8,14 +8,14 @@
 
 namespace App\Controller\Old\User;
 
-use FOS\UserBundle\Controller\ProfileController as BaseController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class SecurityController extends BaseController
+class SecurityController extends AbstractController
 {
     /**
-     * @Route("/{city}/login", name="fos_user_security_login_old", requirements={"city": ".+"})
+     * @Route("/{city}/login", requirements={"city": ".+"})
      */
     public function loginAction()
     {
@@ -23,7 +23,7 @@ class SecurityController extends BaseController
     }
 
     /**
-     * @Route("/{city}/inscription", name="fos_user_registration_register_old", requirements={"city": ".+"})
+     * @Route("/{city}/inscription", requirements={"city": ".+"})
      */
     public function registerAction()
     {

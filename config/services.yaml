@@ -13,7 +13,6 @@ services:
     Symfony\Bridge\Twig\Extension\AssetExtension: "@twig.extension.assets"
     HWI\Bundle\OAuthBundle\Security\OAuthUtils: "@hwi_oauth.security.oauth_utils"
     FOS\UserBundle\Model\UserManagerInterface: "@fos_user.user_manager.default"
-    FOS\UserBundle\Form\Factory\FactoryInterface: "@fos_user.resetting.form.factory"
     FOS\ElasticaBundle\Doctrine\RepositoryManager: "@fos_elastica.manager.orm"
 
     _defaults:
@@ -22,6 +21,7 @@ services:
         public: true
         bind:
             $changePasswordFormFactory: "@fos_user.change_password.form.factory"
+            $profileFormFactory: "@fos_user.profile.form.factory"
 
     App\:
         resource: '../src/*'

@@ -33,7 +33,7 @@ class ProfileController extends BaseController
     private $eventDispatcher;
 
     /** @var FactoryInterface */
-    private $formFactory;
+    private $profileFormFactory;
 
     /** @var UserManagerInterface */
     private $userManager;
@@ -41,14 +41,14 @@ class ProfileController extends BaseController
     /** @var FactoryInterface */
     private $changePasswordFormFactory;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $formFactory, UserManagerInterface $userManager, FactoryInterface $changePasswordFormFactory)
+    public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $profileFormFactory, UserManagerInterface $userManager, FactoryInterface $changePasswordFormFactory)
     {
         $this->eventDispatcher = $eventDispatcher;
-        $this->formFactory = $formFactory;
+        $this->profileFormFactory = $profileFormFactory;
         $this->userManager = $userManager;
         $this->changePasswordFormFactory = $changePasswordFormFactory;
 
-        parent::__construct($eventDispatcher, $formFactory, $userManager);
+        parent::__construct($eventDispatcher, $profileFormFactory, $userManager);
     }
 
     /**
@@ -147,7 +147,7 @@ class ProfileController extends BaseController
             return $event->getResponse();
         }
 
-        $form = $this->formFactory->createForm();
+        $form = $this->profileFormFactory->createForm();
         $form->setData($user);
 
         $form->handleRequest($request);
