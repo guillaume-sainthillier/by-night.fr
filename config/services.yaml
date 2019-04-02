@@ -293,19 +293,6 @@ services:
     #Parsers
 #    tbn.parser.abstract:
 #        class: App\Parser\AgendaParser
-#    tbn.parser.abstracts.soonnight:
-#        class: App\Parser\Common\SoonNightParser
-#        calls:
-#            - ['addUrl', ["%url_soonnight_paris%"]]
-#            - ['addUrl', ["%url_soonnight_tlse%"]]
-#            - ['addUrl', ["%url_soonnight_marseille%"]]
-#            - ['addUrl', ["%url_soonnight_lyon%"]]
-#            - ['addUrl', ["%url_soonnight_brest%"]]
-#            - ['addUrl', ["%url_soonnight_nice%"]]
-#            - ['addUrl', ["%url_soonnight_nantes%"]]
-#            - ['addUrl', ["%url_soonnight_bordeaux%"]]
-#            - ['addUrl', ["%url_soonnight_lille%"]]
-#            - ['addUrl', ["%url_soonnight_montpellier%"]]
 
 #    tbn.parser.abstracts.facebook:
 #        class: App\Parser\Common\FaceBookParser
@@ -323,9 +310,6 @@ services:
 #    tbn.parser.toulouse.tourisme:
 #        class: App\Parser\Toulouse\ToulouseTourismeParser
     #Aliases
-#    tbn.soonnight_parser:
-#        alias: tbn.parser.abstracts.soonnight
-#        public: true #For PHPUnit
 #    tbn.toulouse_parser:
 #        alias: tbn.parser.toulouse.toulouse
 #    tbn.bikini_parser:
