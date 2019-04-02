@@ -16,7 +16,7 @@ docker/data/mysql/*.sql
 /public/media/*
 
 #Assets
-/config/mapping_assets.yaml
+/config/prod/mapping_assets.yaml
 
 #NodeJS
 node_modules/
