@@ -16,16 +16,19 @@ class ZipCityRepository extends EntityRepository
     /**
      * @param string|null $postalCode
      * @param string|null $city
-     * @param string      $country
+     * @param string $country
      *
      * @return ZipCity[]
      */
     private function findByPostalCodeOrCity($postalCode = null, $city = null, $country = null)
     {
         $query = $this
-            ->createQueryBuilder('zc')
-            ->where('zc.country = :country')
-            ->setParameter('country', $country);
+            ->createQueryBuilder('zc');
+
+        if ($country) {
+            $query->where('zc.country = :country')
+                ->setParameter('country', $country);
+        }
 
         if ($postalCode) {
             $query
@@ -34,14 +37,14 @@ class ZipCityRepository extends EntityRepository
         }
 
         if ($city) {
-            $cities   = [];
-            $city     = \preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-            $city     = \str_replace('’', "'", $city);
+            $cities = [];
+            $city = \preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
+            $city = \str_replace('’', "'", $city);
             $cities[] = $city;
             $cities[] = \str_replace(' ', '-', $city);
             $cities[] = \str_replace('-', ' ', $city);
             $cities[] = \str_replace("'", '', $city);
-            $cities   = \array_unique($cities);
+            $cities = \array_unique($cities);
 
             $query
                 ->andWhere('zc.name IN(:cities)')
@@ -56,13 +59,13 @@ class ZipCityRepository extends EntityRepository
     }
 
     /**
-     * @param string      $postalCode
+     * @param string $postalCode
      * @param string|null $city
-     * @param string      $country
+     * @param string $country
      *
      * @return ZipCity|null
      */
-    public function findByPostalCodeAndCity($postalCode, $city, $country)
+    public function findByPostalCodeAndCity($postalCode, $city, $country = null)
     {
         $cities = $this->findByPostalCodeOrCity($postalCode, $city, $country);
         if (1 === \count($cities)) {
@@ -74,11 +77,11 @@ class ZipCityRepository extends EntityRepository
 
     /**
      * @param string|null $city
-     * @param string      $country
+     * @param string $country
      *
      * @return ZipCity[]
      */
-    public function findByCity($city, $country)
+    public function findByCity($city, $country = null)
     {
         return $this->findByPostalCodeOrCity(null, $city, $country);
     }
@@ -89,7 +92,7 @@ class ZipCityRepository extends EntityRepository
      *
      * @return ZipCity[]
      */
-    public function findByPostalCode($postalCode, $country)
+    public function findByPostalCode($postalCode, $country = null)
     {
         return $this->findByPostalCodeOrCity($postalCode, null, $country);
     }

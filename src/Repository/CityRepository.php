@@ -42,23 +42,29 @@ class CityRepository extends EntityRepository
         return $results;
     }
 
-    public function findByName($city, $country)
+    public function findByName($city, $country = null)
     {
-        $cities   = [];
-        $city     = \preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-        $city     = \str_replace('’', "'", $city);
+        $cities = [];
+        $city = \preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
+        $city = \str_replace('’', "'", $city);
         $cities[] = $city;
         $cities[] = \str_replace(' ', '-', $city);
         $cities[] = \str_replace('-', ' ', $city);
         $cities[] = \str_replace("'", '', $city);
-        $cities   = \array_unique($cities);
+        $cities = \array_unique($cities);
 
-        return $this
+        $qb = $this
             ->createQueryBuilder('c')
             ->where('c.name IN (:cities)')
-            ->andWhere('c.country = :country')
-            ->setParameter('cities', $cities)
-            ->setParameter('country', $country)
+            ->setParameter('cities', $cities);
+
+        if ($country) {
+            $qb
+                ->andWhere('c.country = :country')
+                ->setParameter('country', $country);
+        }
+
+        return $qb
             ->getQuery()
             ->setCacheable(true)
             ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)

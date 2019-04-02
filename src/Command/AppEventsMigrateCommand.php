@@ -59,6 +59,7 @@ class AppEventsMigrateCommand extends AppCommand
             ->where('p.city IS NULL')
             ->getQuery()
             ->getSingleScalarResult();
+
         $places = $em->getRepository(Place::class)
             ->createQueryBuilder('p')
             ->select('p')
@@ -69,16 +70,11 @@ class AppEventsMigrateCommand extends AppCommand
         $france = $em->getRepository(Country::class)->find('FR');
         Monitor::createProgressBar($nbPlaces);
         foreach ($places as $i => $row) {
-            /**
-             * @var Place
-             */
+            /** @var Place $place */
             $place = $row[0];
-            $place->setReject(new Reject())->setCountry($france);
-            if ($place->getZipCity() && $place->getZipCity()->getParent()) {
-                $place->setCity($place->getZipCity()->getParent());
-            }
+            $place->setReject(new Reject());
 
-            $this->doctrineEventHandler->guessEventLocation($place);
+            $this->doctrineEventHandler->upgrade($place);
             $em->merge($place);
 
             Monitor::advanceProgressBar();
@@ -96,8 +92,6 @@ class AppEventsMigrateCommand extends AppCommand
         $em->clear(AdminZone::class);
         $em->clear(City::class);
         Monitor::finishProgressBar();
-
-        return;
 
         $mapping = [
             'basse-terre'    => 'basse-terre',
@@ -123,7 +117,7 @@ class AppEventsMigrateCommand extends AppCommand
             'reims'          => 'reims',
             'rennes'         => 'rennes',
             'rouen'          => 'rouen',
-            'saint-denis'    => 'saint-denis-8',
+            'saint-denis'    => 'saint-denis-9',
             'strasbourg'     => 'strasbourg',
             'toulouse'       => 'toulouse',
         ];

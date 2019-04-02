@@ -82,15 +82,15 @@ class DoctrineEventHandler
 
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, PlaceGeocoder $geocoder)
     {
-        $this->em                 = $em;
-        $this->repoAgenda         = $em->getRepository(Agenda::class);
-        $this->repoPlace          = $em->getRepository(Place::class);
-        $this->repoCity           = $em->getRepository(City::class);
-        $this->repoZipCity        = $em->getRepository(ZipCity::class);
-        $this->handler            = $handler;
-        $this->firewall           = $firewall;
+        $this->em = $em;
+        $this->repoAgenda = $em->getRepository(Agenda::class);
+        $this->repoPlace = $em->getRepository(Place::class);
+        $this->repoCity = $em->getRepository(City::class);
+        $this->repoZipCity = $em->getRepository(ZipCity::class);
+        $this->handler = $handler;
+        $this->firewall = $firewall;
         $this->echantillonHandler = $echantillonHandler;
-        $this->geocoder           = $geocoder;
+        $this->geocoder = $geocoder;
         $this->explorationHandler = new ExplorationHandler();
     }
 
@@ -136,9 +136,9 @@ class DoctrineEventHandler
         Monitor::writeln('');
         Monitor::displayStats();
         Monitor::displayTable([
-            'NEWS'         => $this->explorationHandler->getNbInserts(),
-            'UPDATES'      => $this->explorationHandler->getNbUpdates(),
-            'BLACKLISTS'   => $this->explorationHandler->getNbBlackLists(),
+            'NEWS' => $this->explorationHandler->getNbInserts(),
+            'UPDATES' => $this->explorationHandler->getNbUpdates(),
+            'BLACKLISTS' => $this->explorationHandler->getNbBlackLists(),
             'EXPLORATIONS' => $this->explorationHandler->getNbExplorations(),
         ]);
 
@@ -167,7 +167,7 @@ class DoctrineEventHandler
         //On met ensuite à jour le statut de ces explorations en base
         $this->flushExplorations();
 
-        $allowedEvents    = $this->getAllowedEvents($events);
+        $allowedEvents = $this->getAllowedEvents($events);
         $notAllowedEvents = $this->getNotAllowedEvents($events);
         unset($events);
 
@@ -253,7 +253,7 @@ class DoctrineEventHandler
     {
         $chunks = [];
         foreach ($events as $i => $event) {
-            $key              = 'city.' . $event->getPlace()->getCity()->getId();
+            $key = 'city.' . $event->getPlace()->getCity()->getId();
             $chunks[$key][$i] = $event;
         }
 
@@ -307,7 +307,7 @@ class DoctrineEventHandler
                     $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
 
                     $oldUser = $event->getUser();
-                    $event   = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
+                    $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
                     $this->firewall->filterEventIntegrity($event, $oldUser);
                     if (!$this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
@@ -470,7 +470,7 @@ class DoctrineEventHandler
 
         //Location fournie -> Vérification dans la base des villes existantes
         $zipCity = null;
-        $city    = null;
+        $city = null;
 
         //Ville + CP
         if ($place->getVille() && $place->getCodePostal()) {
@@ -530,9 +530,84 @@ class DoctrineEventHandler
         }
     }
 
-    /**
-     * @param Place $place
-     */
+
+    private function doUpgrade(Place $place) {
+        $zipCity = null;
+        $city = null;
+
+        //Ville + CP
+        if ($place->getVille() && $place->getCodePostal()) {
+            $zipCity = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille());
+        }
+
+        if (! $zipCity && $place->getVille()) {
+            $zipCities = $this->repoZipCity->findByCity($place->getVille());
+            if (0 === \count($zipCities)) {
+                $place->getReject()->addReason(Reject::BAD_PLACE_CITY_NAME);
+            } elseif (\count($zipCities) > 1) {
+                $place->getReject()->addReason(Reject::AMBIGOUS_CITY);
+            } else {
+                $zipCity = $zipCities[0];
+            }
+        }
+
+        if (! $zipCity && $place->getCodePostal()) {
+            $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal());
+            if (0 === \count($zipCities)) {
+                $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
+            } elseif (\count($zipCities) > 1) {
+                $place->getReject()->addReason(Reject::AMBIGOUS_ZIP);
+            } else {
+                $zipCity = $zipCities[0];
+            }
+        }
+
+        if ($zipCity) {
+            $city = $zipCity->getParent();
+        }
+
+        //Recherche de l'entité via sa ville ou son nom
+        if (!$city) {
+            $tries = \array_filter([$place->getVille(), $place->getNom()]);
+            foreach ($tries as $try) {
+                $cities = $this->repoCity->findByName($try);
+                if (1 === \count($cities)) {
+                    $city = $cities[0];
+
+                    break;
+                }
+            }
+        }
+
+        if ($city || $zipCity) {
+            $place->getReject()->setValid();
+        }
+
+        $place->setCity($city)->setZipCity($zipCity);
+        if ($city) {
+            $place->setCountry($city->getCountry());
+        } elseif ($zipCity) {
+            $place->setCountry($zipCity->getCountry());
+        }//On trouve la ville via le nom du lieu
+
+    }
+    public function upgrade(Place $place)
+    {
+        $this->doUpgrade($place);
+        if ($place->getCity()) {
+            return;
+        }
+
+        if ($place->getNom()) {
+            $this->geocoder->geocodePlace($place);
+        } elseif ($place->getLatitude() && $place->getLongitude()) {
+            //Sinon, on tente de trouver la ville via lat/long
+            $this->geocoder->geocodeCoordinates($place);
+        }
+
+        $this->doUpgrade($place);
+    }
+
     public function guessEventLocation(Place $place)
     {
         //Pas besoin de trouver un lieu déjà blacklisté
