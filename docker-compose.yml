@@ -14,7 +14,7 @@ services:
             - elk
             - redis
         volumes:
-            - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
+            - ${SYMFONY_APP_PATH}:/app:cached
 
     varnish:
         image: million12/varnish

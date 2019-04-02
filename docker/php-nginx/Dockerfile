@@ -75,28 +75,17 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 RUN apt-get update && apt-get install yarn
 RUN yarn global add grunt-cli
 
-# Permission fix
-RUN chmod 777 /var/www
-
 # Add some shortcuts
-RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
 RUN echo 'alias ls="ls --color=auto"' >> ~/.bashrc
 RUN echo 'alias ll="ls -alF"' >> ~/.bashrc
 
 # Install nginx
 COPY nginx.conf /etc/nginx/
-COPY symfony.conf /etc/nginx/sites-available/
 
-RUN ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony
-RUN rm /etc/nginx/sites-enabled/default
-
-RUN echo "upstream php-upstream { server 127.0.0.1:9000; }" > /etc/nginx/conf.d/upstream.conf
-RUN usermod -u 1000 www-data
-
-# remove log symlinks
-RUN rm /var/log/nginx/access.log /var/log/nginx/error.log
+# RUN usermod -u 1000 www-data
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-WORKDIR /var/www/symfony
+EXPOSE 80
+WORKDIR /app
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
