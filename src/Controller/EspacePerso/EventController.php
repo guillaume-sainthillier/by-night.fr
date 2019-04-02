@@ -406,26 +406,6 @@ class EventController extends Controller
         }
     }
 
-    private function updateFBEvent(Agenda $agenda, User $user, Calendrier $calendrier, FacebookAdmin $facebookAdmin)
-    {
-        if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookAccessToken()) {
-            $key   = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
-            $cache = $this->get('memory_cache');
-            $facebookAdmin->updateEventStatut(
-                $agenda->getFacebookEventId(),
-                $user->getInfo()->getFacebookAccessToken(),
-                $calendrier->getParticipe()
-            );
-
-            $datas = [
-                'participer' => $calendrier->getParticipe(),
-                'interet'    => $calendrier->getInteret(),
-            ];
-
-            $cache->save($key, $datas);
-        }
-    }
-
     /**
      * @Route("/participer/{id}", name="tbn_user_participer", defaults={"participer": true, "interet": false})
      * @Route("/interet/{id}", name="tbn_user_interesser", defaults={"participer": false, "interet": true})
@@ -449,7 +429,6 @@ class EventController extends Controller
             $calendrier->setUser($user)->setAgenda($agenda);
         }
         $calendrier->setParticipe($participer)->setInteret($interet);
-        $this->updateFBEvent($agenda, $user, $calendrier, $facebookAdmin);
 
         $em->persist($calendrier);
         $em->flush();

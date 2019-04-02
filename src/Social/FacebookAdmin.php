@@ -222,22 +222,6 @@ class FacebookAdmin extends FacebookListEvents
         return $this->getOjectsFromIds($ids_event, $requestFunction, $dataHandlerFunction, $idsPerRequest);
     }
 
-    public function updateEventStatut($id_event, $userAccessToken, $isParticiper)
-    {
-        $this->init();
-
-        try {
-            $url = $id_event . '/' . ($isParticiper ? 'attending' : 'maybe');
-            $this->client->sendRequest('POST', $url, [], $userAccessToken);
-
-            return true;
-        } catch (FacebookSDKException $ex) {
-            $this->logger->critical($ex);
-        }
-
-        return false;
-    }
-
     public function getUserEventStats($id_event, $id_user, $userAccessToken)
     {
         $this->init();

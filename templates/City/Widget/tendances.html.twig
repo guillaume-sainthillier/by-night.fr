@@ -28,9 +28,9 @@
                 <strong class="number number-xbig"> / {{ stats.count_interets }}</strong>
                 <span class="text-primary">interessé{{ stats.count_interets > 1 ? "s" : "" }}</span>
             </div>
+            <!-- ./Stats -->
         </div>
 
-        <!-- ./Stats -->
         <br/>
         <!-- Membres -->
         <div class="tendance">
@@ -40,17 +40,7 @@
             {% include "City/Hinclude/membres.html.twig" with({'membres': stats.tendancesInterets }) %}
         </div>
         <!-- ./Membres -->
-        <br/>
-        <!-- FB Membres -->
-        {% if soiree.facebookEventId %}
-            <div>
-                {{ render_esi(url('tbn_agenda_soirees_membres', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug})) }}
-            </div>
-        {% endif %}
-        <!-- ./FB Membres -->
     </div>
 {% endblock %}
 
-{% block footer %}
-    <div class="panel-footer"></div>
-{% endblock %}
+{% block footer %}{% endblock %}
