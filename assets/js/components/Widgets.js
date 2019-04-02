@@ -43,8 +43,12 @@ var Widgets = {
             var moreContentLink = container.find('.more-content');
             var containerBody = moreContentLink.parent();
 
+            if(! containerActions.length) {
+                return;
+            }
+
             if (!moreContentLink.length) {
-                containerActions.html('');
+                containerActions.remove();
             } else {
                 var newMoreContentLink = moreContentLink.clone();
                 containerActions.html(newMoreContentLink);
