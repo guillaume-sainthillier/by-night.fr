@@ -140,7 +140,7 @@ html body .full_width {
   width: 100%;
 }
 html body .no-padding {
-  padding: 0!important;
+  padding: 0 !important;
 }
 html body .padding-left-10 {
   padding-left: 10px;
@@ -149,7 +149,7 @@ html body .no_margin_bottom {
   margin-bottom: 0;
 }
 html body .no_margin {
-  margin: 0!important;
+  margin: 0 !important;
 }
 html body .bg-white {
   background-color: white !important;

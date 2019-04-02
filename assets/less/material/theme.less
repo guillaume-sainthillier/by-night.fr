@@ -1,243 +1,253 @@
 a, a:hover, a:focus {
-    color: @brand-primary;
+  color: @brand-primary;
 }
 
 // Forms ======================================================================
 .no-margin-form {
-    .form-group {
-        margin-top: 0;
-    }
+  .form-group {
+    margin-top: 0;
+  }
 }
 
 .btn {
-    &.btn-lg.btn-block {
-        line-height: 30px;
-    }
+  &.btn-lg.btn-block {
+    line-height: 30px;
+  }
 }
 
 .form-group label.control-label {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 
 // Typo =======================================================================
 .color-primary {
-    color: @color-primary;
+  color: @color-primary;
 }
+
 .color-success {
-    color: @color-success;
+  color: @color-success;
 }
+
 .color-info {
-    color: @color-info;
+  color: @color-info;
 }
+
 .color-warning {
-    color: @color-warning;
+  color: @color-warning;
 }
+
 .color-danger {
-    color: @color-danger;
+  color: @color-danger;
 }
+
 .color-second {
-    color: @secondary;
+  color: @secondary;
 }
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-    font-family: "Roboto Condensed";
-    font-weight: 300;
+  font-family: "Roboto Condensed";
+  font-weight: 300;
 }
 
 // Panels =====================================================================
-.panel-heading {    
-    .fa {
-        margin-top: .2em;
-        margin-right: .2em;
-    }
+.panel-heading {
+  .fa {
+    margin-top: .2em;
+    margin-right: .2em;
+  }
 }
 
 // Modals =====================================================================
 .modal-dialog {
-    .modal-header {
-        border-bottom: 1px solid #E5E5E5;
-        padding: 15px;
-        
-        .close {
-            margin-top: 7px;
-            margin-right: 7px;
-        }
+  .modal-header {
+    border-bottom: 1px solid #E5E5E5;
+    padding: 15px;
+
+    .close {
+      margin-top: 7px;
+      margin-right: 7px;
     }
+  }
 }
 
 // BootStrap-Select ===========================================================
 .bootstrap-select {
-    margin: 0;
+  margin: 0;
 
-    &.open>.dropdown-toggle.btn, .open>.dropdown-toggle.btn-default {
-        color: black;
-    }
+  &.open > .dropdown-toggle.btn, .open > .dropdown-toggle.btn-default {
+    color: black;
+  }
 
-    .btn {
-        padding-left: 0px;
-        line-height: 15px;
-        
-        &.btn-block {
-            white-space: normal;
-        }
+  .btn {
+    padding-left: 0px;
+    line-height: 15px;
+
+    &.btn-block {
+      white-space: normal;
     }
+  }
 }
 
 //Dropdown.js =================================================================
 .dropdownjs:after {
-    top: 15px;
-    font-size: 15px;
-    content: "\f0d7";
-    font-family: FontAwesome;
+  top: 15px;
+  font-size: 15px;
+  content: "\f0d7";
+  font-family: FontAwesome;
 }
 
 
 //Toggle
 .togglebutton label {
-    font-weight: 700;
+  font-weight: 700;
 
-    .toggle {
-        float: right;
-    }
+  .toggle {
+    float: right;
+  }
 }
 
-.panel-default>.panel-heading {
-    border-bottom: 1px solid #ddd;
+.panel-default > .panel-heading {
+  border-bottom: 1px solid #ddd;
 }
 
 // Navbar =====================================================================
 .navbar {
-    
-    &.shadow {
-        box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 0px 2px 2px rgba(0, 0, 0, 0.098), 0px 0px 5px 1px rgba(0, 0, 0, 0.084);
+
+  &.shadow {
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 0px 2px 2px rgba(0, 0, 0, 0.098), 0px 0px 5px 1px rgba(0, 0, 0, 0.084);
+  }
+
+  form .btn {
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  font-family: Roboto;
+
+  &, a {
+    font-weight: 300;
+  }
+
+  .navbar-brand {
+    padding: 5px 20px;
+  }
+
+  .navbar-nav > li > a, .navbar-header a {
+    strong {
+      font-weight: 400;
     }
-    
-    form .btn {
-        margin-bottom: 0;
-        margin-top: 0;
-        padding-top: 5px;
-        padding-bottom: 5px;
+
+    &:hover, &:focus {
+      color: white;
+      background-color: rgba(0, 0, 0, 0.05);
     }
-        
-    font-family: Roboto;
-    
-    &, a {
-        font-weight: 300;
-    } 
-    
-    .navbar-brand {
-        padding: 5px 20px;
-    }
-    
-    .navbar-nav>li>a, .navbar-header a {
-        strong {
-            font-weight: 400;
-        }
-        &:hover, &:focus {
-            color: white;
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-    }    
-    
-    .navbar-nav > li.profile > a {
-        padding-top: 15px;
-        padding-bottom: 15px;
-    }
+  }
+
+  .navbar-nav > li.profile > a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
 }
+
 // BreadCrumb =================================================================
 #bread {
 
-    padding: 8px 0px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  
-    &, #fil-ariane {
-        background-color: white;
-    }
+  padding: 8px 0px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 
-    #fil-ariane {
-        padding-left: 0;
-        margin:0;
-        line-height: 1.75em;
+  &, #fil-ariane {
+    background-color: white;
+  }
 
-        a{
-            color: @brand-primary;
-            &:hover, &:focus {
-                color: #222;
-            }
-        }
-        li {
-            padding: 5px;
-            display: inline;
-        }
-    }
+  #fil-ariane {
+    padding-left: 0;
+    margin: 0;
+    line-height: 1.75em;
 
-    .breadcrumb>li+li:before {
-        content: '>';
+    a {
+      color: @brand-primary;
+
+      &:hover, &:focus {
         color: #222;
+      }
     }
+
+    li {
+      padding: 5px;
+      display: inline;
+    }
+  }
+
+  .breadcrumb > li + li:before {
+    content: '>';
+    color: #222;
+  }
 }
 
 // Footer =====================================================================
 #footer {
-    border-top: solid 5px @brand-primary;
+  border-top: solid 5px @brand-primary;
 
-    .social:hover a{
-        color: @brand-warning;
-    }
+  .social:hover a {
+    color: @brand-warning;
+  }
 
-    a{
-        color: @brand-info;
-        &:hover, &:focus {
-            color: @brand-warning;
-        }
+  a {
+    color: @brand-info;
+
+    &:hover, &:focus {
+      color: @brand-warning;
     }
+  }
 }
 
 // Header =====================================================================
 div.divider {
-    span:after {
-        color: @brand-info;
-    }
+  span:after {
+    color: @brand-info;
+  }
 }
 
 // Alerts =====================================================================
 .alert a {
-    &:hover, &:focus {
-        text-decoration: underline;
-    }    
+  &:hover, &:focus {
+    text-decoration: underline;
+  }
 }
 
 // Pagination =================================================================
 .pagination {
-    > li {
-        > a,
-        > span {
-            color: @brand-primary;
-        }
+  > li {
+    > a,
+    > span {
+      color: @brand-primary;
     }
+  }
 
-    > .active > a,
-    > .active > span {
-        &,
-        &:hover,
-            &:focus {
-            background-color: @brand-info;
-            border-color: @brand-info;
-        }
+  > .active > a,
+  > .active > span {
+    &,
+    &:hover,
+    &:focus {
+      background-color: @brand-info;
+      border-color: @brand-info;
     }
+  }
 }
 
 // Typeahead ==================================================================
 .twitter-typeahead {
-    width: 100%;
+  width: 100%;
 }
 
 .tt-suggestion.tt-cursor {
-    color: #fff;
-    background-color: @brand-info;
-    cursor: pointer;
+  color: #fff;
+  background-color: @brand-info;
+  cursor: pointer;
 }
 
 // Toggle =====================================================================
@@ -245,25 +255,26 @@ div.divider {
 
 // DatePicker =================================================================
 html body .datepicker table tr td {
-    &.active,
-    &.active:hover,
-        &.active.disabled,
-        &.active.disabled:hover {
-        background-color: @brand-primary!important;
-    }
+  &.active,
+  &.active:hover,
+  &.active.disabled,
+  &.active.disabled:hover {
+    background-color: @brand-primary !important;
+  }
 }
 
 // Tables =====================================================================
 .table {
-    tbody tr td {
-        vertical-align: middle;
+  tbody tr td {
+    vertical-align: middle;
 
-        .btn {
-            margin-top: 0;
-            margin-bottom: 0;
-            &.btn-xs {
-                padding: 5px 10px;
-            }
-        }
+    .btn {
+      margin-top: 0;
+      margin-bottom: 0;
+
+      &.btn-xs {
+        padding: 5px 10px;
+      }
     }
+  }
 }
