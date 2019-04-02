@@ -214,11 +214,11 @@ module.exports = function (grunt) {
         //gr des fichiers js / css
         watch: {
             css: {
-                files: ['<%= pkg.baseCss %>/*.css'],
+                files: ['<%= pkg.baseCss %>/**'],
                 tasks: ['css']
             },
             javascript: {
-                files: ['<%= pkg.baseJs %>/*.js'],
+                files: ['<%= pkg.baseJs %>/**'],
                 tasks: ['js']
             }
         },
