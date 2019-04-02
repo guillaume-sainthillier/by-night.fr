@@ -41,7 +41,7 @@ html body {
   -webkit-font-smoothing: antialiased;
 }
 html body {
-  background-color: #f0f0f0;
+  background-color: #F0F0F0;
   padding-top: 60px;
   word-break: break-word;
   /* To fill the container and nothing else */
@@ -81,7 +81,7 @@ html body div.divider {
   background-color: #e3e3e3;
 }
 html body div.divider span {
-  background: #f0f0f0;
+  background: #F0F0F0;
   position: relative;
   margin: 0 auto;
   display: block;

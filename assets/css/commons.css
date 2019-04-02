@@ -132,7 +132,6 @@ html body .big-icon > span:before {
 }
 html body .paginate {
   margin-bottom: 0;
-  line-height: 60px;
 }
 html body .shadow {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);

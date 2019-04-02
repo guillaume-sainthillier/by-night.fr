@@ -21,7 +21,6 @@
     }
 })(jQuery);
 
-
 var App = {
     init: function (selecteur)
     {
