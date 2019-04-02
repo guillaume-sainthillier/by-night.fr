@@ -20,21 +20,18 @@ class SocialProvider
 
     const TWITTER = 'twitter';
 
-    const GOOGLE = 'google';
-
     /**
      * @var array
      */
     private $socials;
 
-    public function __construct(Facebook $facebook, FacebookListEvents $facebookListEvents, FacebookAdmin $facebookAdmin, Twitter $twitter, Google $google)
+    public function __construct(Facebook $facebook, FacebookListEvents $facebookListEvents, FacebookAdmin $facebookAdmin, Twitter $twitter)
     {
         $this->socials = [
             self::FACEBOOK             => $facebook,
             self::FACEBOOK_LIST_EVENTS => $facebookListEvents,
             self::FACEBOOK_ADMIN       => $facebookAdmin,
-            self::TWITTER              => $twitter,
-            self::GOOGLE               => $google,
+            self::TWITTER              => $twitter
         ];
     }
 

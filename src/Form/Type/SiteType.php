@@ -37,10 +37,6 @@ class SiteType extends AbstractType
                 'label'    => 'N° Page FaceBook',
                 'required' => false,
             ])
-            ->add('googleIdPage', TextType::class, [
-                'label'    => 'N° Page Google+',
-                'required' => false,
-            ])
             ->add('twitterIdPage', TextType::class, [
                 'label'    => 'N° Page Twitter',
                 'required' => false,

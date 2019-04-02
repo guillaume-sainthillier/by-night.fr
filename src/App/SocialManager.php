@@ -25,11 +25,6 @@ class SocialManager
     private $twitterIdPage;
 
     /**
-     * @var string
-     */
-    private $googleIdPage;
-
-    /**
      * @var SiteInfo
      */
     private $siteInfo;
@@ -39,12 +34,11 @@ class SocialManager
      */
     private $entityManager;
 
-    public function __construct(ObjectManager $entityManager, $facebookIdPage, $twitterIdPage, $googleIdPage)
+    public function __construct(ObjectManager $entityManager, $facebookIdPage, $twitterIdPage)
     {
         $this->entityManager  = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
         $this->twitterIdPage  = $twitterIdPage;
-        $this->googleIdPage   = $googleIdPage;
         $this->siteInfo       = false;
     }
 
@@ -76,13 +70,5 @@ class SocialManager
     public function getTwitterIdPage(): string
     {
         return $this->twitterIdPage;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGoogleIdPage(): string
-    {
-        return $this->googleIdPage;
     }
 }

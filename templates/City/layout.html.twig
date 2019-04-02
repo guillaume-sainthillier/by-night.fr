@@ -33,12 +33,6 @@
     {% endif %}
 {% endblock %}
 
-{% block google %}
-    {% if social_manager.googleIdPage %}
-        <link rel="author" href="https://plus.google.com/u/{{ social_manager.googleIdPage }}"/>
-    {% endif %}
-{% endblock %}
-
 {% block facebook %}
     {% if social_manager.facebookIdPage %}
         <meta property="fb:page_id" content="{{ social_manager.facebookIdPage }}"/>

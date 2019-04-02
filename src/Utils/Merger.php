@@ -66,8 +66,6 @@ class Merger
             'fb_post_system_id',
             'tweet_post_id',
             'tweet_post_system_id',
-            'google_post_id',
-            'google_system_post_id',
             'source',
             'fb_date_modification' => self::MERGE_RIGHT_IF_DIFFERENT,
             'place',

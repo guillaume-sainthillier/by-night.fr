@@ -67,7 +67,6 @@ services:
         arguments:
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
-            $googleIdPage: "%google_id_page%"
 
     App\Social\FacebookAdmin:
         arguments:
@@ -79,7 +78,7 @@ services:
 
     App\Social\Google:
         arguments:
-            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(TWITTER_API_SECRET)%"}
+            $config: { id: "unused", secret: "unused"}
 
     App\Social\Facebook:
         arguments:

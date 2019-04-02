@@ -128,8 +128,7 @@ class EventController extends Controller
         return $this->render('City/Hinclude/shares.html.twig', [
             'shares' => [
                 'facebook'    => $page->facebook,
-                'twitter'     => $page->twitter,
-                'google-plus' => $page->plus,
+                'twitter'     => $page->twitter
             ],
         ]);
     }

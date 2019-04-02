@@ -22,7 +22,6 @@
         "friendsofsymfony/http-cache-bundle": "^2.6",
         "friendsofsymfony/user-bundle": "^2.1",
         "geocoder-php/google-maps-provider": "^4.2",
-        "google/apiclient": "^2.2",
         "google/recaptcha": "^1.2",
         "guzzlehttp/guzzle": "^6.3",
         "hwi/oauth-bundle": "^0.6",

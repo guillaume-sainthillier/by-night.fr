@@ -104,9 +104,6 @@
     "fig/link-util": {
         "version": "1.0.0"
     },
-    "firebase/php-jwt": {
-        "version": "v5.0.0"
-    },
     "friendsofsymfony/elastica-bundle": {
         "version": "5.0",
         "recipe": {
@@ -136,15 +133,6 @@
     },
     "geocoder-php/plugin": {
         "version": "1.1.0"
-    },
-    "google/apiclient": {
-        "version": "v2.2.1"
-    },
-    "google/apiclient-services": {
-        "version": "v0.37"
-    },
-    "google/auth": {
-        "version": "v1.1.0"
     },
     "google/recaptcha": {
         "version": "1.1.3"
@@ -277,9 +265,6 @@
     },
     "phpoption/phpoption": {
         "version": "1.5.0"
-    },
-    "phpseclib/phpseclib": {
-        "version": "2.0.9"
     },
     "presta/sitemap-bundle": {
         "version": "1.5.x-dev"

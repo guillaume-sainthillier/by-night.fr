@@ -302,20 +302,6 @@ class Agenda implements GeolocalizeInterface
     protected $fbPostSystemId;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="google_post_id", type="string", length=127, nullable=true)
-     */
-    protected $googlePostId;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="google_post_system_id", type="string", length=127, nullable=true)
-     */
-    protected $googleSystemPostId;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      */
     protected $calendriers;
@@ -1260,54 +1246,6 @@ class Agenda implements GeolocalizeInterface
     public function getFbPostSystemId()
     {
         return $this->fbPostSystemId;
-    }
-
-    /**
-     * Set googlePostId.
-     *
-     * @param string $googlePostId
-     *
-     * @return Agenda
-     */
-    public function setGooglePostId($googlePostId)
-    {
-        $this->googlePostId = $googlePostId;
-
-        return $this;
-    }
-
-    /**
-     * Get googlePostId.
-     *
-     * @return string
-     */
-    public function getGooglePostId()
-    {
-        return $this->googlePostId;
-    }
-
-    /**
-     * Set googleSystemPostId.
-     *
-     * @param string $googleSystemPostId
-     *
-     * @return Agenda
-     */
-    public function setGoogleSystemPostId($googleSystemPostId)
-    {
-        $this->googleSystemPostId = $googleSystemPostId;
-
-        return $this;
-    }
-
-    /**
-     * Get googleSystemPostId.
-     *
-     * @return string
-     */
-    public function getGoogleSystemPostId()
-    {
-        return $this->googleSystemPostId;
     }
 
     /**
