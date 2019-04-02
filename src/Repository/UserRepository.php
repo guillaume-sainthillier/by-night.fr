@@ -12,6 +12,12 @@ use Doctrine\ORM\EntityRepository;
  */
 class UserRepository extends EntityRepository
 {
+    public function findSiteMap() {
+        return $this->createQueryBuilder('u')
+            ->getQuery()
+            ->iterate();
+    }
+
     public function getUserFbIds()
     {
         $datas = $this->createQueryBuilder('u')

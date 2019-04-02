@@ -13,6 +13,17 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class CityRepository extends EntityRepository
 {
+    public function findSiteMap()
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.slug')
+            ->join('App:Place', 'p', 'WITH', 'p.city = c')
+            ->join('App:Agenda', 'a', 'WITH', 'a.place = p')
+            ->groupBy('c.slug')
+            ->getQuery()
+            ->iterate();
+    }
+
     public function findRandomNames($limit = 5)
     {
         $results = $this

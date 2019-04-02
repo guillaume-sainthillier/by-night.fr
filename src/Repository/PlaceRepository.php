@@ -13,6 +13,15 @@ use Doctrine\ORM\Query\Expr;
  */
 class PlaceRepository extends EntityRepository
 {
+    public function findSiteMap()
+    {
+        return $this->createQueryBuilder('p')
+            ->select('p.slug, c.slug AS city_slug')
+            ->join('p.city', 'c')
+            ->getQuery()
+            ->iterate();
+    }
+
     public function findByCities(array $cityIds, array $fbIds)
     {
         if (!\count($cityIds)) {

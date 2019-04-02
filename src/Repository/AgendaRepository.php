@@ -63,10 +63,9 @@ class AgendaRepository extends EntityRepository
     public function findSiteMap()
     {
         return $this->createQueryBuilder('a')
-            ->select('a.slug, a.id, s.subdomain')
-            ->leftJoin('App:Site', 's', 'WITH', 's = a.site')
+            ->select('a.slug, a.id, c.slug AS city_slug')
             ->getQuery()
-            ->getArrayResult();
+            ->iterate();
     }
 
     public function updateNonIndexables()

@@ -9,11 +9,11 @@
 namespace App\EventListener;
 
 use App\Entity\Agenda;
+use App\Entity\City;
 use App\Entity\Place;
-use App\Entity\Site;
 use App\Entity\User;
 use DateTime;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
@@ -28,9 +28,9 @@ class SitemapSuscriber implements EventSubscriberInterface
     private $urlGenerator;
 
     /**
-     * @var ObjectManager
+     * @var ManagerRegistry
      */
-    private $manager;
+    private $doctrine;
 
     /**
      * @var UrlContainerInterface
@@ -42,15 +42,11 @@ class SitemapSuscriber implements EventSubscriberInterface
      */
     private $now;
 
-    /**
-     * @param UrlGeneratorInterface $urlGenerator
-     * @param ObjectManager         $manager
-     */
-    public function __construct(UrlGeneratorInterface $urlGenerator, ObjectManager $manager)
+    public function __construct(UrlGeneratorInterface $urlGenerator, ManagerRegistry $doctrine)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->manager      = $manager;
-        $this->now          = new DateTime();
+        $this->doctrine = $doctrine;
+        $this->now = new DateTime();
     }
 
     /**
@@ -66,13 +62,14 @@ class SitemapSuscriber implements EventSubscriberInterface
     public function registerRoutes(SitemapPopulateEvent $event)
     {
         $this->urlContainer = $event->getUrlContainer();
-        $section            = $event->getSection();
+        $section = $event->getSection();
 
         $sections = [
-            'app'    => [$this, 'registerStaticRoutes'],
+            'app' => [$this, 'registerStaticRoutes'],
             'agenda' => [$this, 'registerAgendaRoutes'],
-            'users'  => [$this, 'registerUserRoutes'],
-//            'events' => [$this, 'registerEventRoutes']
+            'places' => [$this, 'registerPlacesRoutes'],
+            'users' => [$this, 'registerUserRoutes'],
+            'events' => [$this, 'registerEventRoutes']
         ];
 
         foreach ($sections as $name => $generateFunction) {
@@ -84,41 +81,40 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerAgendaRoutes($section)
     {
-        $sites = $this->manager->getRepository(Site::class)->findAll();
+        $cities = $this->doctrine->getRepository(City::class)->findSiteMap();
 
-        foreach ($sites as $site) {
-            $this->addUrl($section, 'tbn_agenda_agenda', ['city' => $site->getSubdomain()]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'concert', 'city' => $site->getSubdomain()]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'etudiant', 'city' => $site->getSubdomain()]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'famille', 'city' => $site->getSubdomain()]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'spectacle', 'city' => $site->getSubdomain()]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'exposition', 'city' => $site->getSubdomain()]);
+        foreach ($cities as $city) {
+            $city = current($city);
+            $this->addUrl($section, 'tbn_agenda_index', ['city' => $city['slug']]);
+            $this->addUrl($section, 'tbn_agenda_agenda', ['city' => $city['slug']]);
+            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'concert', 'city' => $city['slug']]);
+            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'etudiant', 'city' => $city['slug']]);
+            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'famille', 'city' => $city['slug']]);
+            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'spectacle', 'city' => $city['slug']]);
+            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'exposition', 'city' => $city['slug']]);
         }
+    }
 
-        $places = $this->manager->getRepository(Place::class)->findAll();
+    private function registerPlacesRoutes($section)
+    {
+        $places = $this->doctrine->getRepository(Place::class)->findSiteMap();
+
         foreach ($places as $place) {
-            $this->addUrl($section, 'tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $place->getCity()->getSlug()]);
-        }
-
-        $events = [];
-        foreach ($events as $event) {
-            $this->addUrl($section, 'tbn_agenda_details', [
-                'id'   => $event['id'],
-                'slug' => $event['slug'],
-                'city' => $event['subdomain'],
-            ]);
+            $place = current($place);
+            $this->addUrl($section, 'tbn_agenda_place', ['slug' => $place['slug'], 'city' => $place['city_slug']]);
         }
     }
 
     private function registerEventRoutes($section)
     {
-        $events = $this->manager->getRepository(Agenda::class)->findSiteMap();
+        $events = $this->doctrine->getRepository(Agenda::class)->findSiteMap();
 
         foreach ($events as $event) {
+            $event = current($event);
             $this->addUrl($section, 'tbn_agenda_details', [
-                'id'   => $event['id'],
+                'id' => $event['id'],
                 'slug' => $event['slug'],
-                'city' => $event['subdomain'],
+                'city' => $event['city_slug'],
             ]);
         }
 
@@ -127,11 +123,12 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerUserRoutes($section)
     {
-        $users = $this->manager->getRepository(User::class)->findAll();
-
+        $users = $this->doctrine->getRepository(User::class)->findSiteMap();
         foreach ($users as $user) {
+            /** @var User $user */
+            $user = $user[0];
             $this->addUrl($section, 'tbn_user_details', [
-                'id'   => $user->getId(),
+                'id' => $user->getId(),
                 'slug' => $user->getSlug(),
             ], $user->getUpdatedAt());
         }
@@ -140,12 +137,13 @@ class SitemapSuscriber implements EventSubscriberInterface
     private function registerStaticRoutes($section)
     {
         $staticRoutes = [
+            'tbn_search_query',
             'tbn_main_index',
             'tbn_agenda_about',
             'tbn_agenda_plus',
             'tbn_main_cookie',
-            'fos_user_security_login',
-            'fos_user_registration_register',
+            'tbn_agenda_mention_legales',
+            'tbn_agenda_programme_tv',
         ];
 
         foreach ($staticRoutes as $route) {
