@@ -121,7 +121,7 @@ class User extends BaseUser
     private $imageFile;
 
     /**
-     * @Vich\UploadableField(mapping="user_system_image", fileNameProperty="systemPath")
+     * @Vich\UploadableField(mapping="user_image", fileNameProperty="systemPath")
      * @Assert\Valid()
      * @Assert\File(maxSize = "6M")
      * @Assert\Image()

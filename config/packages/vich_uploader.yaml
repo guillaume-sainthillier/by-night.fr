@@ -12,27 +12,7 @@ vich_uploader:
             directory_namer:
                 service: vich_uploader.directory_namer_subdir
                 options: {chars_per_dir: 3, dirs: 3} # will create directory "a/b" for "abcdef.jpg"
-        user_system_image:
-            uri_prefix:         /uploads/users
-            upload_destination: "%app_public_root%/uploads/users"
-            namer:              vich_uploader.namer_uniqid
-            inject_on_load:     false
-            delete_on_update:   true
-            delete_on_remove:   true
-            directory_namer:
-                service: vich_uploader.directory_namer_subdir
-                options: {chars_per_dir: 3, dirs: 3} # will create directory "a/b" for "abcdef.jpg"
         event_image:
-            uri_prefix:         /uploads/documents
-            upload_destination: "%app_public_root%/uploads/documents"
-            namer:              vich_uploader.namer_uniqid
-            inject_on_load:     false
-            delete_on_update:   true
-            delete_on_remove:   true
-            directory_namer:
-                service: vich_uploader.directory_namer_subdir
-                options: {chars_per_dir: 3, dirs: 3} # will create directory "a/b" for "abcdef.jpg"
-        event_system_image:
             uri_prefix:         /uploads/documents
             upload_destination: "%app_public_root%/uploads/documents"
             namer:              vich_uploader.namer_uniqid

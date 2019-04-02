@@ -224,7 +224,7 @@ class Agenda implements GeolocalizeInterface
     protected $file;
 
     /**
-     * @Vich\UploadableField(mapping="event_system_image", fileNameProperty="systemPath")
+     * @Vich\UploadableField(mapping="event_image", fileNameProperty="systemPath")
      * @Assert\Valid()
      * @Assert\File(maxSize = "6M")
      * @Assert\Image()

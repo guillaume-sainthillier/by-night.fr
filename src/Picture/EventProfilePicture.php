@@ -9,6 +9,7 @@
 namespace App\Picture;
 
 use App\Entity\Agenda;
+use App\Twig\AssetExtension;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
@@ -31,8 +32,8 @@ class EventProfilePicture
     public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages)
     {
         $this->cacheManager = $cacheManager;
-        $this->helper       = $helper;
-        $this->packages     = $packages;
+        $this->helper = $helper;
+        $this->packages = $packages;
     }
 
     public function getOriginalPictureUrl(Agenda $agenda)
@@ -53,7 +54,7 @@ class EventProfilePicture
             return $agenda->getUrl();
         }
 
-        return $this->packages->getUrl('/img/empty_event.png');
+        return $this->packages->getUrl('img/empty_event.png');
     }
 
     public function getOriginalPicture(Agenda $agenda)
@@ -74,7 +75,7 @@ class EventProfilePicture
             return $agenda->getUrl();
         }
 
-        return $this->packages->getUrl('/img/empty_event.png');
+        return $this->packages->getUrl('img/empty_event.png');
     }
 
     public function getPictureUrl(Agenda $agenda, $thumb = 'thumbs_evenement')
@@ -101,12 +102,7 @@ class EventProfilePicture
             return $agenda->getUrl();
         }
 
-        $webPath = $this->cacheManager->getBrowserPath('img/empty_event.png', $thumb);
-        $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
-
-        return $this->packages->getUrl(
-            $webPath
-        );
+        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', $thumb);
     }
 
     public function getPicture(Agenda $agenda, $thumb = 'thumbs_evenement')
@@ -123,6 +119,6 @@ class EventProfilePicture
             return $agenda->getUrl();
         }
 
-        return $this->cacheManager->getBrowserPath('img/empty_event.png', $thumb);
+        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', $thumb);
     }
 }

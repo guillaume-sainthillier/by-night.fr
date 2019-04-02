@@ -8,7 +8,7 @@ use Twig\TwigFunction;
 
 class AssetExtension extends Extension
 {
-    const ASSET_PREFIX = 'prod/';
+    const ASSET_PREFIX = 'prod';
 
     /**
      * @var BaseAssetExtension
@@ -28,8 +28,8 @@ class AssetExtension extends Extension
     public function __construct(BaseAssetExtension $assetExtension, array $mappingAssets, bool $debug)
     {
         $this->assetExtension = $assetExtension;
-        $this->debug          = $debug;
-        $this->mappingAssets  = $mappingAssets;
+        $this->debug = $debug;
+        $this->mappingAssets = $mappingAssets;
     }
 
     public function getFunctions()
@@ -41,7 +41,7 @@ class AssetExtension extends Extension
 
     public function appAsset($path, $packageName = null)
     {
-        $path = self::ASSET_PREFIX . $path;
+        $path = self::ASSET_PREFIX . '/' . $path;
         if (true === $this->debug) {
             return $this->assetExtension->getAssetUrl($path, $packageName);
         }

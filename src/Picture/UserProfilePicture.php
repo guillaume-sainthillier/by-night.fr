@@ -9,6 +9,7 @@
 namespace App\Picture;
 
 use App\Entity\User;
+use App\Twig\AssetExtension;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -50,6 +51,6 @@ class UserProfilePicture
             }
         }
 
-        return $this->cacheManager->getBrowserPath('img/empty_user.png', $thumb);
+        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_user.png', $thumb);
     }
 }

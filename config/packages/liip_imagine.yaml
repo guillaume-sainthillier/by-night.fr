@@ -5,7 +5,9 @@ liip_imagine:
     loaders:
         default:
             filesystem:
-                data_root: '%app_public_root%'
+                data_root:
+                    - "%kernel.project_dir%/public"
+                    - "%kernel.project_dir%/"
 
     filter_sets:
         cache: ~
