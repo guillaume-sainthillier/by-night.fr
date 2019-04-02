@@ -49,74 +49,73 @@ var UserEventHandler = {
     },
     initGMap: function () {
         //Google Maps
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode({'address': ville}, function (results, status) {
-            if (status === google.maps.GeocoderStatus.OK && results.length) {
-                // instantiate the addressPicker suggestion engine (based on bloodhound)
-                var addressPicker = new AddressPicker({
-                    map: {
-                        id: '#map',
-                        zoom: 12,
-                        center: results[0].geometry.location,
-                        scrollwheel: true,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP
-                    },
-                    autocompleteService: {
-                        types: ['geocode'],
-                        componentRestrictions: {country: 'FR'}
-                    },
-                    marker: {
-                        draggable: true,
-                        visible: false
-                    }
-                });
-
-                var $field = $('#agenda_adresse');
-                // Proxy inputs typeahead events to addressPicker
-                addressPicker.bindDefaultTypeaheadEvent($field);
-                $(addressPicker).on('addresspicker:selected', function (event, result) {
-                    UserEventHandler.assignGMapInfo(event, result);
-                });
-
-                // instantiate the typeahead UI
-                $field.typeahead(null, {
-                    displayKey: 'description',
-                    source: addressPicker.ttAdapter()
-                });
-
-                //Lieux
-                var $field = $('#agenda_place_nom');
-                // instantiate the placePicker suggestion engine (based on bloodhound)
-                var placePicker = new AddressPicker({
-                    autocompleteService: {
-                        types: ['establishment'],
-                        componentRestrictions: {country: 'FR'}
-                    }
-                });
-
-                // Proxy inputs typeahead events to addressPicker
-                placePicker.bindDefaultTypeaheadEvent($field);
-                $(placePicker).on('addresspicker:selected', function (event, result) {
-                    UserEventHandler.assignGMapInfo(event, result);
-
-                    if (typeof result.placeResult.formatted_address !== "undefined" && result.placeResult.formatted_address) {
-                        $('#agenda_adresse').typeahead('val', result.placeResult.formatted_address);
-                        addressPicker.updateMap(event, result.placeResult);
-                    }
-
-                    if (typeof result.placeResult.name !== "undefined" && result.placeResult.name) {
-                        $field.data('name', result.placeResult.name);
-                    }
-                });
-
-                $field.typeahead(null, {
-                    displayKey: 'description',
-                    source: placePicker.ttAdapter()
-                }).on('typeahead:selected', function (e, data) {
-                    $(this).typeahead('val', data.terms[0].value).blur();
-                });
+        // instantiate the addressPicker suggestion engine (based on bloodhound)
+        var addressPicker = new AddressPicker({
+            map: {
+                id: '#map',
+                zoom: 12,
+                scrollwheel: true,
+                center: {
+                    lat: 43.6,
+                    lng: 1.433333
+                },
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            },
+            autocompleteService: {
+                types: ['geocode'],
+                componentRestrictions: {country: 'FR'}
+            },
+            marker: {
+                draggable: true,
+                visible: true
             }
         });
+
+        var $field = $('#agenda_adresse');
+        // Proxy inputs typeahead events to addressPicker
+        addressPicker.bindDefaultTypeaheadEvent($field);
+        $(addressPicker).on('addresspicker:selected', function (event, result) {
+            UserEventHandler.assignGMapInfo(event, result);
+        });
+
+        // instantiate the typeahead UI
+        $field.typeahead(null, {
+            displayKey: 'description',
+            source: addressPicker.ttAdapter()
+        });
+
+        //Lieux
+        var $field = $('#agenda_place_nom');
+        // instantiate the placePicker suggestion engine (based on bloodhound)
+        var placePicker = new AddressPicker({
+            autocompleteService: {
+                types: ['establishment'],
+                componentRestrictions: {country: 'FR'}
+            }
+        });
+
+        // Proxy inputs typeahead events to addressPicker
+        placePicker.bindDefaultTypeaheadEvent($field);
+        $(placePicker).on('addresspicker:selected', function (event, result) {
+            UserEventHandler.assignGMapInfo(event, result);
+
+            if (typeof result.placeResult.formatted_address !== "undefined" && result.placeResult.formatted_address) {
+                $('#agenda_adresse').typeahead('val', result.placeResult.formatted_address);
+                addressPicker.updateMap(event, result.placeResult);
+            }
+
+            if (typeof result.placeResult.name !== "undefined" && result.placeResult.name) {
+                $field.data('name', result.placeResult.name);
+            }
+        });
+
+        $field.typeahead(null, {
+            displayKey: 'description',
+            source: placePicker.ttAdapter()
+        }).on('typeahead:selected', function (e, data) {
+            $(this).typeahead('val', data.terms[0].value).blur();
+        });
+
     },
     assignGMapInfo: function (event, result) {
         $('#agenda_place_latitude').val(result.lat());
