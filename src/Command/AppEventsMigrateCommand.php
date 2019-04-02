@@ -133,9 +133,10 @@ class AppEventsMigrateCommand extends AppCommand
 
         $users = $em->getRepository(User::class)->findBy(['city' => null]);
         foreach ($users as $user) {
-            /**
-             * @var User
-             */
+            /** @var User $user */
+            if($user->getSite() === null) {
+                continue;
+            }
             $city = $em->getRepository(City::class)->findBySlug($mapping[$user->getSite()->getSubdomain()]);
             $user->setCity($city);
             $em->merge($user);

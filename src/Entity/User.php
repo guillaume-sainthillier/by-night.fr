@@ -80,7 +80,7 @@ class User extends BaseUser
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Site")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     protected $site;
 
@@ -424,30 +424,6 @@ class User extends BaseUser
     }
 
     /**
-     * Set site.
-     *
-     * @param Site $site
-     *
-     * @return User
-     */
-    public function setSite(Site $site)
-    {
-        $this->site = $site;
-
-        return $this;
-    }
-
-    /**
-     * Get site.
-     *
-     * @return Site
-     */
-    public function getSite()
-    {
-        return $this->site;
-    }
-
-    /**
      * Set showSocials.
      *
      * @param bool $showSocials
@@ -618,5 +594,17 @@ class User extends BaseUser
     public function getCity()
     {
         return $this->city;
+    }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): self
+    {
+        $this->site = $site;
+
+        return $this;
     }
 }
