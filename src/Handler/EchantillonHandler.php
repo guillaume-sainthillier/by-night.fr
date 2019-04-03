@@ -143,8 +143,7 @@ class EchantillonHandler
 
     public function prefetchEventEchantillons(Agenda $event)
     {
-        if ($event->getId()) {
-            $this->addEvent($event);
+        if ($event->getUser()) {
             return;
         }
 
@@ -175,8 +174,8 @@ class EchantillonHandler
 
     public function getEventEchantillons(Agenda $event)
     {
-        if ($event->getId()) {
-            return isset($this->agendas[$event->getId()]) ? [$this->agendas[$event->getId()]] : [];
+        if ($event->getUser()) {
+            return [];
         }
 
         if ($event->getExternalId()) {
