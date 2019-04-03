@@ -7,7 +7,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     git \
     gnupg \
+    libfreetype6-dev \
     libicu-dev \
+    libjpeg62-turbo-dev \
     libpng-dev \
     nginx \
     python \
@@ -26,24 +28,20 @@ RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN "date"
 
 # Install PDO
-RUN docker-php-ext-install pdo pdo_mysql 
+RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql
 
 # Install OPCache
-RUN docker-php-ext-install opcache 
+RUN docker-php-ext-install -j$(nproc) opcache
 
 # Install INTL 
-RUN docker-php-ext-install intl
-
-# Install APCu
-RUN pecl install apcu
-RUN echo "extension=apcu.so" > /usr/local/etc/php/conf.d/apcu.ini
+RUN docker-php-ext-install -j$(nproc) intl
 
 # Install Redis
 RUN pecl install redis
-RUN echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
+RUN docker-php-ext-enable redis
 
 # Install BCMatch (RabbitMQ)
-RUN docker-php-ext-install bcmath
+RUN docker-php-ext-install -j$(nproc) bcmath
 
 # Install Blackfire probe
 RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
@@ -59,10 +57,11 @@ RUN mkdir -p /tmp/blackfire \
     && rm -Rf /tmp/blackfire
 
 # Install GD + EXIF
-RUN docker-php-ext-install gd exif
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
+RUN docker-php-ext-install -j$(nproc) gd exif
 
 #Zip (PhpUnit)
-RUN docker-php-ext-install zip
+RUN docker-php-ext-install -j$(nproc) zip
 
 COPY php.ini /usr/local/etc/php/php.ini
 
