@@ -15,7 +15,7 @@ abstract class ContainerTestCase extends KernelTestCase
 {
     protected function setUp()
     {
-        (new Dotenv())->load(__DIR__.'/../.env');
+        (new Dotenv())->load(__DIR__.'/../.env.test');
         static::bootKernel();
     }
 }
