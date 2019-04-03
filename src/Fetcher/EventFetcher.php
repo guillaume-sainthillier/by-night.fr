@@ -15,19 +15,13 @@ use Doctrine\Common\Persistence\ObjectManager;
 class EventFetcher
 {
     /**
-     * @var ObjectManager
-     */
-    protected $entityManager;
-
-    /**
      * @var ParserManager
      */
     protected $parserManager;
 
-    public function __construct(ParserManager $parserManager, ObjectManager $entityManager)
+    public function __construct(ParserManager $parserManager)
     {
         $this->parserManager = $parserManager;
-        $this->entityManager = $entityManager;
     }
 
     /**

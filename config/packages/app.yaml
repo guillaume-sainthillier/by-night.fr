@@ -9,4 +9,3 @@ parameters:
     class.guzzle.client: Guzzle\Http\Client
     class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
     twitter.baseurl: https://api.twitter.com/1.1
-    url_opendata_toulouse: https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true

@@ -27,7 +27,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
  *   @ORM\Index(name="agenda_categorie_manifestation_idx", columns={"categorie_manifestation"}),
  *   @ORM\Index(name="agenda_search_idx", columns={"place_id", "date_fin", "date_debut"}),
- *   @ORM\Index(name="agenda_fb_participations", columns={"date_fin", "fb_participations", "fb_interets"})
+ *   @ORM\Index(name="agenda_fb_participations", columns={"date_fin", "fb_participations", "fb_interets"}),
+ *   @ORM\Index(name="agenda_external_id_idx", columns={"external_id"})
  * })
  *
  * @ORM\Entity(repositoryClass="App\Repository\AgendaRepository")
@@ -50,6 +51,11 @@ class Agenda implements GeolocalizeInterface
      * @Expose
      */
     protected $id;
+
+    /**
+     * @ORM\Column(type="string", length=127, nullable=true)
+     */
+    protected $externalId;
 
     /**
      * @Gedmo\Slug(fields={"nom"})
@@ -1553,5 +1559,17 @@ class Agenda implements GeolocalizeInterface
     public function getPlace()
     {
         return $this->place;
+    }
+
+    public function getExternalId(): ?string
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(?string $externalId): self
+    {
+        $this->externalId = $externalId;
+
+        return $this;
     }
 }

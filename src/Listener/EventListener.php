@@ -83,15 +83,18 @@ class EventListener
 
         $this->eventInvalidator->addEvent($entity);
 
-        if (!$entity->getFacebookEventId()) {
+        if (!$entity->getExternalId()) {
             return;
         }
 
         $entityManager = $args->getEntityManager();
-        $exploration   = $entityManager->getRepository(Exploration::class)->find($entity->getFacebookEventId());
+        $exploration   = $entityManager->getRepository(Exploration::class)->findOneBy([
+            'externalId' => $entity->getFacebookEventId()
+        ]);
 
         if (!$exploration) {
-            $exploration = (new Exploration())->setId($entity->getFacebookEventId());
+            $exploration = (new Exploration())
+                ->setExternalId($entity->getExternalId());
         }
 
         $exploration

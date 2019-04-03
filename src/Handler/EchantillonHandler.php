@@ -34,7 +34,7 @@ class EchantillonHandler
     /**
      * @var Place[]
      */
-    private $fbPlaces;
+    private $cityPlaces;
 
     /**
      * @var Place[]
@@ -59,22 +59,22 @@ class EchantillonHandler
     public function __construct(EntityManagerInterface $em)
     {
         $this->repoAgenda = $em->getRepository(Agenda::class);
-        $this->repoPlace  = $em->getRepository(Place::class);
+        $this->repoPlace = $em->getRepository(Place::class);
 
         $this->init();
     }
 
     private function initEvents()
     {
-        $this->agendas    = [];
-        $this->fbAgendas  = [];
+        $this->agendas = [];
+        $this->fbAgendas = [];
         $this->newAgendas = [];
     }
 
     private function initPlaces()
     {
-        $this->places    = [];
-        $this->fbPlaces  = [];
+        $this->places = [];
+        $this->cityPlaces = [];
         $this->newPlaces = [];
     }
 
@@ -104,84 +104,53 @@ class EchantillonHandler
 
         unset($events);
 
-        $byFbIdPlaces = [];
-        $byCityPlaces = [];
-
+        $withExternalIdPlaces = [];
+        $withoutExternalIdPlaces = [];
         foreach ($places as $place) {
-            /*
-             * @var Place
-             */
-            if ($place->getFacebookId()) {
-                $byFbIdPlaces[$place->getFacebookId()] = true;
+            /** @var Place $place */
+            if ($place->getExternalId()) {
+                $withExternalIdPlaces[$place->getExternalId()] = true;
+            } else {
+                $withoutExternalIdPlaces[$place->getCity()->getId()] = true;
             }
         }
-        $byFbIdPlaces = \array_keys($byFbIdPlaces);
+        $withExternalIdPlaces = \array_keys($withExternalIdPlaces);
+        $withoutExternalIdPlaces = \array_keys($withoutExternalIdPlaces);
 
-        //On prend toutes les places déjà connues par leur ID FB
-        if (\count($byFbIdPlaces) > 0) {
-            $fbPlaces = $this->repoPlace->findBy([
-                'facebookId' => $byFbIdPlaces,
+        //On prend toutes les places déjà connues par leur external ID
+        if (\count($withExternalIdPlaces) > 0) {
+            $places = $this->repoPlace->findBy([
+                'externalId' => $withExternalIdPlaces,
             ]);
 
-            foreach ($fbPlaces as $place) {
-                $this->addFbPlace($place);
+            foreach ($places as $place) {
+                $this->addPlace($place);
             }
         }
 
         //On prend ensuite toutes les places selon leur localisation
-        foreach ($places as $place) {
-            $key                = $place->getCity()->getId();
-            $byCityPlaces[$key] = true;
-        }
+        if (\count($withoutExternalIdPlaces) > 0) {
+            $places = $this->repoPlace->findBy([
+                'city' => $withoutExternalIdPlaces,
+                'externalId' => null
+            ]);
 
-        $byCityPlaces = \array_keys($byCityPlaces);
-
-        $sitePlaces = [];
-        if (\count($byCityPlaces)) {
-            $sitePlaces = $this->repoPlace->findByCities($byCityPlaces, $byFbIdPlaces);
-        }
-
-        foreach ($sitePlaces as $place) {
-            $this->addPlace($place);
+            foreach ($places as $place) {
+                $this->addPlace($place);
+            }
         }
     }
 
-    public function prefetchEventEchantillons(array $events)
+    public function prefetchEventEchantillons(Agenda $event)
     {
-        $byFbIdEvents = [];
-        $byDateEvents = [];
-        foreach ($events as $event) {
-            /*
-             * @var Agenda
-             */
-            if ($event->getFacebookEventId()) {
-                $byFbIdEvents[$event->getFacebookEventId()] = true;
-            }
-        }
-        $byFbIdEvents = \array_keys($byFbIdEvents);
-
-        if (\count($byFbIdEvents) > 0) {
-            $fbEvents = $this->repoAgenda->findBy([
-                'facebookEventId' => $byFbIdEvents,
-            ]);
-
-            foreach ($fbEvents as $event) {
-                $this->addFbEvent($event);
-            }
+        if (!$event->getExternalId()) {
+            throw new \RuntimeException("Unable to find echantillon without an external ID");
         }
 
-        foreach ($events as $event) {
-            if (!$event->getFacebookEventId()) {
-                $key                = $this->getAgendaCacheKey($event);
-                $byDateEvents[$key] = $event;
-            }
-        }
-
-        if (\count($byDateEvents)) {
-            $dateEvents = $this->repoAgenda->findAllByDates($byDateEvents, $byFbIdEvents);
-            foreach ($dateEvents as $event) {
-                $this->addEvent($event);
-            }
+        /** @var Agenda $candidate */
+        $candidate = $this->repoAgenda->findOneBy(['externalId' => $event->getExternalId()]);
+        if (null !== $candidate) {
+            $this->addEvent($candidate);
         }
     }
 
@@ -192,87 +161,39 @@ class EchantillonHandler
      */
     public function getPlaceEchantillons(Place $place)
     {
-        if ($place->getFacebookId() && isset($this->fbPlaces[$place->getFacebookId()])) {
-            return [$this->fbPlaces[$place->getFacebookId()]];
+        if ($place->getExternalId()) {
+            return isset($this->places[$place->getExternalId()]) ? [$this->places[$place->getExternalId()]] : [];
         }
 
-        return \array_merge(
-            $this->places,
-            $this->newPlaces,
-            $this->fbPlaces
-        );
+        return $this->cityPlaces[$place->getCity()->getId()] ?? [];
     }
 
     public function getEventEchantillons(Agenda $event)
     {
-        if ($event->getFacebookEventId()) {
-            if (isset($this->fbAgendas[$event->getFacebookEventId()])) {
-                return [$this->fbAgendas[$event->getFacebookEventId()]];
-            }
-
-            //Pas d'ID fb trouvé -> Pas de chances pour trouver un doublon, on ajoute alors l'événement
-            return [];
+        if ($event->getExternalId()) {
+            return isset($this->agendas[$event->getExternalId()]) ? [$this->agendas[$event->getExternalId()]] : [];
         }
 
-        return \array_merge(
-            $this->agendas,
-            $this->newAgendas,
-            $this->fbAgendas
-        );
-    }
-
-    private function addFbEvent(Agenda $event)
-    {
-        $this->fbAgendas[$event->getFacebookEventId()] = $event;
+        return [];
     }
 
     private function addEvent(Agenda $event)
     {
-        $this->agendas[$event->getId()] = $event;
+        $this->agendas[$event->getExternalId()] = $event;
     }
 
     public function addNewEvent(Agenda $event)
     {
-        if ($event->getFacebookEventId()) {
-            $this->addFbEvent($event);
-        } elseif ($event->getId()) {
-            $this->agendas[$event->getId()] = $event;
-        } else {
-            $key                    = \spl_object_hash($event);
-            $this->newAgendas[$key] = $event;
-        }
-
-        $this->addNewPlace($event->getPlace());
-    }
-
-    private function addFbPlace(Place $place)
-    {
-        $this->fbPlaces[$place->getFacebookId()] = $place;
+        $this->addEvent($event);
+        $this->addPlace($event->getPlace());
     }
 
     private function addPlace(Place $place)
     {
-        $this->places[$place->getId()] = $place;
-    }
-
-    public function addNewPlace(Place $place)
-    {
-        if ($place->getFacebookId()) {
-            $this->fbPlaces[$place->getFacebookId()] = $place;
-        } elseif ($place->getId()) {
-            $this->places[$place->getId()] = $place;
+        if ($place->getExternalId()) {
+            $this->places[$place->getExternalId()] = $place;
         } else {
-            $key                   = \spl_object_hash($place);
-            $this->newPlaces[$key] = $place;
+            $this->cityPlaces[$place->getCity()->getId()][$place->getId()] = $place;
         }
-    }
-
-    private function getAgendaCacheKey(Agenda $agenda)
-    {
-        return \sprintf(
-            '%s.%s',
-            $agenda->getDateDebut()->format('Y-m-d'),
-            $agenda->getDateFin()->format('Y-m-d')
-        );
     }
 }

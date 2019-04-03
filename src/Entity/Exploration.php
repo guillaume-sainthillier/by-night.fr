@@ -9,19 +9,24 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Exploration.
  *
- * @ORM\Table(name="Exploration")
- * @ORM\Entity
+ * @ORM\Table(name="Exploration", indexes={
+ *      @ORM\Index(name="exploration_external_id_idx", columns={"external_id"})
+ * })
  * @ORM\Entity(repositoryClass="App\Repository\ExplorationRepository", readOnly=true)
  */
 class Exploration
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="bigint", options={"unsigned"=true})
      * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @ORM\Column(type="string", length=127)
+     */
+    protected $externalId;
 
     /**
      * @var DateTime
@@ -59,23 +64,6 @@ class Exploration
     public function getReject()
     {
         return $this->reject;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
@@ -148,5 +136,22 @@ class Exploration
     public function getFirewallVersion()
     {
         return $this->firewallVersion;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getExternalId(): ?string
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(string $externalId): self
+    {
+        $this->externalId = $externalId;
+
+        return $this;
     }
 }

@@ -127,6 +127,7 @@ class DoctrineEventHandler
      */
     public function handleManyCLI(array $events)
     {
+        $this->explorationHandler->start();
         $events = $this->handleMany($events);
 
         $historique = $this->explorationHandler->stop();
@@ -152,8 +153,6 @@ class DoctrineEventHandler
      */
     public function handleMany(array $events)
     {
-        $this->explorationHandler->start();
-
         if (!\count($events)) {
             return [];
         }
@@ -171,9 +170,11 @@ class DoctrineEventHandler
         $notAllowedEvents = $this->getNotAllowedEvents($events);
         unset($events);
 
-        $nbNotAllowedEvents = \count($notAllowedEvents);
-        for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
-            $this->explorationHandler->addBlackList();
+        if ($this->explorationHandler->isStarted()) {
+            $nbNotAllowedEvents = \count($notAllowedEvents);
+            for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
+                $this->explorationHandler->addBlackList();
+            }
         }
 
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
@@ -195,9 +196,7 @@ class DoctrineEventHandler
 
         $events = \array_merge($events, $eventOwners);
         foreach ($events as $event) {
-            /*
-             * @var Agenda
-             */
+            /** @var Agenda $event */
             if (isset($ids[$event->getFacebookEventId()])) {
                 $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
             }
@@ -213,8 +212,11 @@ class DoctrineEventHandler
         ]);
 
         foreach ($places as $place) {
+            /** @var Place $place */
             if (isset($ids[$place->getFacebookId()])) {
-                $place->setFacebookId($ids[$place->getFacebookId()]);
+                $place
+                    ->setFacebookId($ids[$place->getFacebookId()])
+                    ->setExternalId('FB-' . $ids[$place->getFacebookId()]);
             }
             $this->em->persist($place);
         }
@@ -298,17 +300,17 @@ class DoctrineEventHandler
             foreach ($chunk as $currentEvents) {
                 //Par événement
                 foreach ($currentEvents as $i => $event) {
-                    $this->echantillonHandler->prefetchEventEchantillons([$event]);
+                    $this->echantillonHandler->prefetchEventEchantillons($event);
 
                     /**
-                     * @var Agenda
+                     * @var Agenda $event
                      */
                     $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event->getPlace());
                     $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
 
-                    $oldUser = $event->getUser();
+                    //$oldUser = $event->getUser();
                     $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
-                    $this->firewall->filterEventIntegrity($event, $oldUser);
+                    //$this->firewall->filterEventIntegrity($event, $oldUser);
                     if (!$this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
                     } else {
@@ -362,10 +364,10 @@ class DoctrineEventHandler
 
     private function loadExplorations(array $events)
     {
-        $fb_ids = $this->getExplorationsFBIds($events);
+        $ids = $this->getExplorationsIds($events);
 
-        if (\count($fb_ids)) {
-            $this->firewall->loadExplorations($fb_ids);
+        if (\count($ids)) {
+            $this->firewall->loadExplorations($ids);
         }
     }
 
@@ -380,7 +382,7 @@ class DoctrineEventHandler
         for ($i = 0; $i < $nbBatches; ++$i) {
             $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
             foreach ($currentExplorations as $exploration) {
-                /*
+                /**
                  * @var Exploration $exploration
                  */
                 $exploration->setReason($exploration->getReject()->getReason());
@@ -423,8 +425,8 @@ class DoctrineEventHandler
             }
 
             //Même algorithme pour le lieu
-            if ($event->getPlace() && $event->getPlace()->getFacebookId()) {
-                $exploration = $this->firewall->getExploration($event->getPlace()->getFacebookId());
+            if ($event->getPlace() && $event->getPlace()->getExternalId()) {
+                $exploration = $this->firewall->getExploration($event->getPlace()->getExternalId());
 
                 if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration) && !$exploration->getReject()->isValid()) {
                     $event->getReject()->addReason($exploration->getReject()->getReason());
@@ -531,7 +533,8 @@ class DoctrineEventHandler
     }
 
 
-    private function doUpgrade(Place $place) {
+    private function doUpgrade(Place $place)
+    {
         $zipCity = null;
         $city = null;
 
@@ -540,7 +543,7 @@ class DoctrineEventHandler
             $zipCity = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille());
         }
 
-        if (! $zipCity && $place->getVille()) {
+        if (!$zipCity && $place->getVille()) {
             $zipCities = $this->repoZipCity->findByCity($place->getVille());
             if (0 === \count($zipCities)) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_CITY_NAME);
@@ -551,7 +554,7 @@ class DoctrineEventHandler
             }
         }
 
-        if (! $zipCity && $place->getCodePostal()) {
+        if (!$zipCity && $place->getCodePostal()) {
             $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal());
             if (0 === \count($zipCities)) {
                 $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
@@ -591,6 +594,7 @@ class DoctrineEventHandler
         }//On trouve la ville via le nom du lieu
 
     }
+
     public function upgrade(Place $place)
     {
         $this->doUpgrade($place);
@@ -639,19 +643,19 @@ class DoctrineEventHandler
      *
      * @return int[]
      */
-    private function getExplorationsFBIds(array $events)
+    private function getExplorationsIds(array $events)
     {
-        $fbIds = [];
+        $ids = [];
         foreach ($events as $event) {
-            if ($event->getFacebookEventId()) {
-                $fbIds[$event->getFacebookEventId()] = true;
+            if ($event->getExternalId()) {
+                $ids[$event->getExternalId()] = true;
             }
 
-            if ($event->getPlace() && $event->getPlace()->getFacebookId()) {
-                $fbIds[$event->getPlace()->getFacebookId()] = true;
+            if ($event->getPlace() && $event->getPlace()->getExternalId()) {
+                $ids[$event->getPlace()->getExternalId()] = true;
             }
         }
 
-        return \array_keys($fbIds);
+        return \array_keys($ids);
     }
 }

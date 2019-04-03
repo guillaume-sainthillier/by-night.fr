@@ -63,6 +63,9 @@ RUN docker-php-ext-install -j$(nproc) gd exif
 #Zip (PhpUnit)
 RUN docker-php-ext-install -j$(nproc) zip
 
+# Sockets
+RUN docker-php-ext-install -j$(nproc) sockets
+
 COPY php.ini /usr/local/etc/php/php.ini
 
 # NPM, Yarn and Grunt

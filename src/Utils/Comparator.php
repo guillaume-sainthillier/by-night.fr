@@ -77,14 +77,14 @@ class Comparator
 
     protected function getStrictMatchingEvent(Agenda $a, Agenda $b)
     {
-        return ($a->getFacebookEventId() && $a->getFacebookEventId() == $b->getFacebookEventId()) ||
-            ($a->getId() && $a->getId() == $b->getId());
+        return ($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
+            ($a->getId() && $a->getId() === $b->getId());
     }
 
     protected function getStrictMatchingPlace(Place $a, Place $b)
     {
-        return ($a->getFacebookId() && $a->getFacebookId() == $b->getFacebookId()) ||
-            ($a->getId() && $a->getId() == $b->getId());
+        return ($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
+            ($a->getId() && $a->getId() === $b->getId());
     }
 
     public function getBestEvent(array $events, Agenda $testedEvent)

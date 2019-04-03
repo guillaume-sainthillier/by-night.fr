@@ -20,9 +20,9 @@ class ExplorationHandler
     public function __construct()
     {
         $this->stats = [
-            'nbBlacklists'   => 0,
-            'nbInserts'      => 0,
-            'nbUpdates'      => 0,
+            'nbBlacklists' => 0,
+            'nbInserts' => 0,
+            'nbUpdates' => 0,
             'nbExplorations' => 0,
         ];
 
@@ -51,7 +51,9 @@ class ExplorationHandler
 
     protected function add($key)
     {
-        ++$this->stats[$key];
+        if($this->isStarted()) {
+            ++$this->stats[$key];
+        }
 
         return $this;
     }
@@ -84,6 +86,11 @@ class ExplorationHandler
         return $this->historique;
     }
 
+    public function isStarted()
+    {
+        return null !== $this->historique;
+    }
+
     /**
      * @return HistoriqueMaj
      */
@@ -96,7 +103,7 @@ class ExplorationHandler
             ->setUpdateSoirees($this->getNbUpdates())
             ->setFromData('?');
 
-        return $this->getHistorique();
+        return $this->historique;
     }
 
     public function start()

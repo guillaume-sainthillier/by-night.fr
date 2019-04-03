@@ -539,44 +539,6 @@ class AgendaRepository extends EntityRepository
             ->execute();
     }
 
-    //Appelé par DoctrineEventParser
-    public function findAllByDates(array $events, array $fbIds)
-    {
-        if (!\count($events)) {
-            return [];
-        }
-
-        $params = [];
-        $query  = $this
-            ->createQueryBuilder('a');
-
-        $i = 0;
-        foreach ($events as $event) {
-            ++$i;
-            /**
-             * @var Agenda
-             */
-            $where                   = "a.dateDebut = :date_debut_$i AND a.dateFin = :date_fin_$i";
-            $params["date_debut_$i"] = $event->getDateDebut()->format('Y-m-d');
-            $params["date_fin_$i"]   = $event->getDateFin()->format('Y-m-d');
-            if ($event->getPlace() && $event->getPlace()->getCity()) {
-                $where .= " AND p.city = :city_$i";
-                $params["city_$i"] = $event->getPlace()->getCity()->getId();
-            }
-            $query->andWhere($where);
-        }
-
-        if (\count($fbIds) > 0) {
-            $query->andWhere('a.facebookEventId NOT IN (:fbIds)');
-            $params['fbIds'] = $fbIds;
-        }
-
-        return $query
-            ->setParameters($params)
-            ->getQuery()
-            ->getResult();
-    }
-
     //Appelé par AgendaParser
     public function findOneByPlace($lieuNom, DateTime $dateDebut, DateTime $dateFin)
     {

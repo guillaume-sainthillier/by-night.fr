@@ -9,7 +9,6 @@ use App\Entity\User;
 use App\Geolocalize\BoundaryInterface;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
-use App\Repository\ExplorationRepository;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -22,38 +21,31 @@ class Firewall
 {
     const VERSION = '1.1';
 
-    protected $toSaveExplorations;
-
-    protected $explorations;
-
-    protected $fbExploration;
+    private $explorations;
 
     /**
      * @var Comparator
      */
-    protected $comparator;
+    private $comparator;
 
     /**
-     * @var ObjectManager|object
+     * @var ObjectManager
      */
-    protected $om;
-
-    /**
-     * @var ExplorationRepository
-     */
-    protected $repoExploration;
+    private $om;
 
     public function __construct(ObjectManager $om, Comparator $comparator)
     {
-        $this->om              = $om;
-        $this->repoExploration = $this->om->getRepository(Exploration::class);
-        $this->comparator      = $comparator;
-        $this->explorations    = [];
+        $this->om = $om;
+        $this->comparator = $comparator;
+        $this->explorations = [];
     }
 
     public function loadExplorations(array $ids)
     {
-        $explorations = $this->repoExploration->findAllByFBIds($ids);
+        $explorations = $this->om->getRepository(Exploration::class)->findBy([
+            'externalId' => $ids
+        ]);
+
         foreach ($explorations as $exploration) {
             $this->addExploration($exploration);
         }
@@ -75,7 +67,7 @@ class Firewall
 
     public function hasEventToBeUpdated(Exploration $exploration, Agenda $event)
     {
-        $explorationDate       = $exploration->getLastUpdated();
+        $explorationDate = $exploration->getLastUpdated();
         $eventDateModification = $event->getFbDateModification();
 
         if (!$explorationDate || !$eventDateModification) {
@@ -122,7 +114,7 @@ class Firewall
 
     public function filterEventLocation(Agenda $event)
     {
-        $place  = $event->getPlace();
+        $place = $event->getPlace();
         $reject = $place->getReject();
         if (!$reject->isValid()) {
             $event->getReject()->addReason($reject->getReason());
@@ -139,12 +131,12 @@ class Firewall
         }
 
         $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration);
-        $hasToBeUpdated            = $this->hasEventToBeUpdated($exploration, $event);
+        $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
 
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-        //L'événement a changé -> valide
+            //L'événement a changé -> valide
         } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
@@ -173,11 +165,11 @@ class Firewall
         }
 
         //Observation du lieu
-        if ($place->getFacebookId()) {
-            $exploration = $this->getExploration($place->getFacebookId());
+        if ($place->getExternalId()) {
+            $exploration = $this->getExploration($place->getExternalId());
             if (!$exploration) {
                 $exploration = (new Exploration())
-                    ->setId($place->getFacebookId())
+                    ->setExternalId($place->getExternalId())
                     ->setReject($place->getReject())
                     ->setReason($place->getReject()->getReason())
                     ->setFirewallVersion(self::VERSION);
@@ -224,11 +216,11 @@ class Firewall
         }
 
         //Observation de l'événément
-        if ($event->getFacebookEventId()) {
+        if ($event->getExternalId()) {
             $exploration = $this->getExploration($event->getFacebookEventId());
             if (!$exploration) {
                 $exploration = (new Exploration())
-                    ->setId($event->getFacebookEventId())
+                    ->setExternalId($event->getExternalId())
                     ->setLastUpdated($event->getFbDateModification())
                     ->setReject($event->getReject())
                     ->setReason($event->getReject()->getReason())
@@ -263,7 +255,7 @@ class Firewall
     private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
     {
         $theta = $entity->getLongitude() - $boundary->getLongitude();
-        $dist  = \sin(\deg2rad($entity->getLatitude())) *
+        $dist = \sin(\deg2rad($entity->getLatitude())) *
             \sin(\deg2rad($boundary->getLatitude())) +
             \cos(\deg2rad($entity->getLatitude())) *
             \cos(\deg2rad($boundary->getLatitude())) *
@@ -280,17 +272,17 @@ class Firewall
     }
 
     /**
-     * @param int $fbId
+     * @param $externalId
      *
      * @return Exploration|null
      */
-    public function getExploration($fbId)
+    public function getExploration($externalId)
     {
-        if (!isset($this->explorations[$fbId])) {
+        if (!isset($this->explorations[$externalId])) {
             return null;
         }
 
-        return $this->explorations[$fbId];
+        return $this->explorations[$externalId];
     }
 
     private function isSPAMContent($content)
@@ -332,7 +324,7 @@ class Firewall
         $reject = new Reject();
         $reject->setReason($exploration->getReason());
 
-        $this->explorations[$exploration->getId()] = $exploration->setReject($reject);
+        $this->explorations[$exploration->getExternalId()] = $exploration->setReject($reject);
     }
 
     /**

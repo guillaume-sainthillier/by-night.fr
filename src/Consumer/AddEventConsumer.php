@@ -30,15 +30,29 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 
     public function __construct(EventFactory $eventFactory, DoctrineEventHandler $doctrineEventHandler)
     {
-        $this->eventFactory         = $eventFactory;
+        $this->eventFactory = $eventFactory;
         $this->doctrineEventHandler = $doctrineEventHandler;
     }
 
     public function execute(AMQPMessage $msg)
     {
-        $datas = \unserialize($msg->body);
+        $datas = \json_decode($msg->getBody(), true);
         $event = $this->eventFactory->fromArray($datas);
-        dump($event);
+
+        $this->doctrineEventHandler->handleOne($event);
+
+        /*
+        dump(
+            $event->getId(),
+            $event->getExternalId(),
+            $event->getNom(),
+            $event->getPlace()->getId(),
+            $event->getPlace()->getNom(),
+            $event->getPlace()->getReject()->isValid(),
+            $event->getReject()->isValid()
+        );
+        die;
+        */
 
         return ConsumerInterface::MSG_ACK;
     }
@@ -46,10 +60,10 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
     public function batchExecute(array $messages)
     {
         Monitor::$output = new ConsoleOutput();
-        $events          = [];
+        $events = [];
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {
-            $events[] = $this->eventFactory->fromArray(\unserialize($message->body));
+            $events[] = $this->eventFactory->fromArray(\json_decode($message->body, true));
         }
 
         $this->doctrineEventHandler->handleManyCLI($events);

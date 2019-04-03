@@ -18,7 +18,7 @@ class BikiniParser extends LinksParser
         parent::__construct();
 
         $this->cache = [];
-        $this->setURL('http://www.lebikini.com/programmation/rss');
+        $this->setURL('https://www.lebikini.com/programmation/rss');
     }
 
     /**
@@ -42,6 +42,7 @@ class BikiniParser extends LinksParser
         $adresse                          = $this->parser->filter('#salle #adresse')->html();
         $tab_retour['descriptif']         = $this->parser->filter('#texte')->html();
         $tab_retour['url']                = $this->parser->filter('#blocImage a[rel=shadowbox]')->attr('href');
+        $tab_retour['external_id']        = 'BKN-'.str_replace('img', '', $this->parser->filter('#blocImage a[rel=shadowbox] img')->attr('id'));
         $tab_retour['source']             = $this->url;
         $tab_retour['type_manifestation'] = 'Concert, Musique';
 
@@ -70,6 +71,7 @@ class BikiniParser extends LinksParser
 
             return false;
         });
+
         $this->parser->filter('#blocContenu')->children()->each(function (Crawler $sibling) use (&$tab_retour) {
             if ('type' === $sibling->attr('id')) {
                 $tab_retour['theme_manifestation'] = \preg_replace('/style\s?:\s?/i', '', \trim($sibling->text()));

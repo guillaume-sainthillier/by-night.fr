@@ -27,7 +27,6 @@ class UpdateFBIdConsumer implements BatchConsumerInterface
 
     public function batchExecute(array $messages)
     {
-        dump('OK');
         $ids = [];
 
         /** @var AMQPMessage $message */
@@ -36,7 +35,6 @@ class UpdateFBIdConsumer implements BatchConsumerInterface
             $ids[$data['old']] = $ids[$data['new']];
         }
 
-        dump($ids);
         $this->doctrineEventHandler->handleIdsToMigrate($ids);
 
         return ConsumerInterface::MSG_ACK;

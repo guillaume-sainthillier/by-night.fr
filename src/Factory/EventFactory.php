@@ -34,6 +34,11 @@ class EventFactory
         $agenda = new Agenda();
 
         foreach ($datas as $field => $value) {
+
+            //Cas spécial : traitement d'un datetime
+            if (is_array($value) && isset($value['date'])) {
+                $value = new \DateTime($value['date'], new \DateTimeZone($value['timezone']));
+            }
             $this->propertyAccessor->setValue($agenda, $field, $value);
         }
 

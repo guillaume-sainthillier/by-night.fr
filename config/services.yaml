@@ -15,6 +15,8 @@ services:
     HWI\Bundle\OAuthBundle\Security\OAuthUtils: "@hwi_oauth.security.oauth_utils"
     FOS\UserBundle\Model\UserManagerInterface: "@fos_user.user_manager.default"
     FOS\ElasticaBundle\Doctrine\RepositoryManager: "@fos_elastica.manager.orm"
+    App\Producer\EventProducer: "@old_sound_rabbit_mq.add_event_producer"
+    App\Producer\UpdateFacebookIdProducer: "@old_sound_rabbit_mq.update_fb_id_producer"
 
     _defaults:
         autowire: true
@@ -26,7 +28,7 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{Annotation,Entity,Exception,Kernel.php,Migrations,Geolocalize,Reject,Repository,Search}'
+        exclude: '../src/{Annotation,Entity,Exception,Kernel.php,Migrations,Geolocalize,Producer,Reject,Repository,Search}'
 
     App\Controller\:
         resource: '../src/Controller'
@@ -104,7 +106,11 @@ services:
     App\Command\AppEventsImportCommand:
         arguments:
             $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
-            $updateFbIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'
+            $updateFacebookIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'
+            $parsers:
+                toulouse.opendata: '@App\Parser\Toulouse\ToulouseParser'
+                toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'
+                facebook: '@App\Parser\Common\FaceBookParser'
 
     App\Importer\CountryImporter:
         arguments:

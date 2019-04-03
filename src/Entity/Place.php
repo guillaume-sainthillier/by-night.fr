@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="Place", indexes={
  *   @ORM\Index(name="place_nom_idx", columns={"nom"}),
  *   @ORM\Index(name="place_slug_idx", columns={"slug"}),
+ *   @ORM\Index(name="place_external_id_idx", columns={"external_id"})
  * })
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
@@ -35,6 +36,11 @@ class Place implements GeolocalizeInterface
      * @Expose
      */
     protected $id;
+
+    /**
+     * @ORM\Column(type="string", length=127, nullable=true)
+     */
+    protected $externalId;
 
     /**
      * @var string
@@ -596,5 +602,17 @@ class Place implements GeolocalizeInterface
     public function getIsJunk()
     {
         return $this->isJunk;
+    }
+
+    public function getExternalId(): ?string
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(?string $externalId): self
+    {
+        $this->externalId = $externalId;
+
+        return $this;
     }
 }
