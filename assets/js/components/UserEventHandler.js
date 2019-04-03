@@ -89,8 +89,7 @@ var UserEventHandler = {
         // instantiate the placePicker suggestion engine (based on bloodhound)
         var placePicker = new AddressPicker({
             autocompleteService: {
-                types: ['establishment'],
-                componentRestrictions: {country: 'FR'}
+                types: ['establishment']
             }
         });
 
@@ -118,6 +117,7 @@ var UserEventHandler = {
 
     },
     assignGMapInfo: function (event, result) {
+        console.log(result);
         $('#agenda_place_latitude').val(result.lat());
         $('#agenda_place_longitude').val(result.lng());
         $('#agenda_place_ville').val(result.nameForType('locality'));
@@ -125,6 +125,8 @@ var UserEventHandler = {
 
         var rue = ((result.nameForType('street_number') ? result.nameForType('street_number') : '') + ' ' + (result.nameForType('route') || '')).trim();
         $('#agenda_place_rue').val(rue);
+
+        $("#agenda_place_country").val(result.nameForType('country', true) || '');
     }
 };
 

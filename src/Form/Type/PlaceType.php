@@ -2,7 +2,10 @@
 
 namespace App\Form\Type;
 
+use App\Entity\Country;
 use App\Entity\Place;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -17,8 +20,8 @@ class PlaceType extends AbstractType
         $builder
             ->add('nom', TextType::class, [
                 'required' => true,
-                'label'    => 'Où ça ?',
-                'attr'     => [
+                'label' => 'Où ça ?',
+                'attr' => [
                     'placeholder' => 'Indiquez le nom du lieu',
                 ],
             ])
@@ -36,23 +39,33 @@ class PlaceType extends AbstractType
             ])
             ->add('codePostal', TextType::class, [
                 'required' => false,
+            ])
+            ->add('country', EntityType::class, [
+                'label' => 'Pays',
+                'placeholder' => '?',
+                'class' => Country::class,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->orderBy('c.name', 'ASC');
+                },
+                'choice_label' => 'name',
             ]);
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             },
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             }
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             },
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             }
         ));
     }

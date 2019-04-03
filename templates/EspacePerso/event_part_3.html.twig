@@ -7,12 +7,15 @@
     {{ form_row(form.place.nom) }}
     {{ form_row(form.adresse) }}
 
-    {% include "EspacePerso/inline-block.html.twig" with({'elem' : (form.place.rue) }) %}
-    {% include "EspacePerso/inline-block.html.twig" with({'elem' : (form.place.codePostal) }) %}
-    {% include "EspacePerso/inline-block.html.twig" with({'elem' : (form.place.ville) }) %}
+    <div class="form-horizontal">
+        {% include "EspacePerso/inline-block.html.twig" with({'elem' : (form.place.rue) }) %}
+        {% include "EspacePerso/inline-block.html.twig" with({'elem' : (form.place.codePostal) }) %}
+        {% include "EspacePerso/inline-block.html.twig" with({'elem' : (form.place.ville) }) %}
+        {% include "EspacePerso/inline-block.html.twig" with({'elem' : (form.place.country) }) %}
+    </div>
 
-    <br/>
-    <br/>
+    <br />
+    <br />
     <div id="map"></div>
 {% endblock %}
 

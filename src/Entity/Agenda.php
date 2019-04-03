@@ -1116,7 +1116,7 @@ class Agenda implements GeolocalizeInterface
      *
      * @return Agenda
      */
-    public function setIsBrouillon($isBrouillon)
+    public function setBrouillon($isBrouillon)
     {
         $this->isBrouillon = $isBrouillon;
 

@@ -3,9 +3,11 @@
 {% block titre %}Communiquez{% endblock %}
 {% block icone %}fa-bullhorn{% endblock %}
 {% block body %}
-    {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
-    {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
-    {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
+    <div class="form-horizontal">
+        {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
+        {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
+        {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
+    </div>
 {% endblock %}
 
 {% block footer '' %}

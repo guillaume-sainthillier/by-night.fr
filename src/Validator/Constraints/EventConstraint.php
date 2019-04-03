@@ -29,7 +29,7 @@ class EventConstraint extends Constraint
 
     public $badPlaceLocation = "Le lieu de l'événément n'est pas compris dans la liste des lieux autorisés.";
 
-    public $badPlaceCityName = 'unused.';
+    public $badPlaceCityName = "La ville de l'événement est inconnue dans le pays.";
 
     public $badPlacePostalCode = 'Le code postal du lieu est incorrect.';
 

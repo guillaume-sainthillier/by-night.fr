@@ -1,7 +1,7 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
-<br/>
-<br/>
+<br />
+<br />
 <div class="row text-center">
     <div class="col-xs-4 preserve">
         <a class="social-facebook social big-social tbn_tooltip" title="Inscrivez-vous avec Facebook"
@@ -22,89 +22,68 @@
         </a>
     </div>
 </div>
-<br/>
-<br/>
+<br />
+<br />
 
 <div class="no-margin-form">
     {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
-        {% if error is defined and error %}
-            <div class="alert alert-danger">
-                <i class="fa fa-warning"></i>
-                {{ error }}
-            </div>
-        {% endif %}
-
-        <div class="form-group form-group-lg">
-            {{ form_label(form.username) }}
-            {{ form_errors(form.username) }}
-            {{ form_widget(form.username, { 'attr': { 'placeholder': '2 caractères au minimum, sans espace'} } ) }}
+    {% if error is defined and error %}
+        <div class="alert alert-danger">
+            <i class="fa fa-warning"></i>
+            {{ error }}
         </div>
+    {% endif %}
 
-        <div class="form-group form-group-lg">
-            {{ form_label(form.email) }}
-            {{ form_errors(form.email) }}
-            {{ form_widget(form.email, { 'attr': { 'placeholder': 'Veuillez saisir une adresse mail valide'} } ) }}
-        </div>
+    {{ form_row(form.username, { 'widget_class': 'form-group-lg', 'attr': { 'placeholder': '2 caractères au minimum, sans espace'} }) }}
+    {{ form_row(form.email, { 'widget_class': 'form-group-lg', 'attr': { 'placeholder': 'Veuillez saisir une adresse mail valide'} } ) }}
+    {{ form_row(form.plainPassword.first, { 'widget_class': 'form-group-lg', 'attr': { 'placeholder': 'Soyez malin et adoptez un mot de passe sûr'} } ) }}
+    {{ form_row(form.plainPassword.second, { 'widget_class': 'form-group-lg', 'attr': { 'placeholder': 'Saisissez à nouveau votre mot de passe'} } ) }}
+    {{ form_row(form.recaptcha) }}
 
-        <div class="form-group form-group-lg">
-            {{ form_label(form.plainPassword.first) }}
-            {{ form_errors(form.plainPassword.first) }}
-            {{ form_widget(form.plainPassword.first, { 'attr': { 'placeholder': 'Soyez malin et adoptez un mot de passe sûr'} } ) }}
-        </div>
+    <script>
+        if (document.getElementById('google-recaptcha')) {
+            onCaptchaReady();
+        }
+        window.grecaptcha = (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0],
+                t = window.grecaptcha || {};
+            if (d.getElementById(id)) return t;
+            js = d.createElement(s);
+            js.id = id;
+            js.async = true;
+            js.defer = true;
+            js.src = "//www.google.com/recaptcha/api.js?onload=onCaptchaReady&render=explicit";
+            fjs.parentNode.insertBefore(js, fjs);
 
-        <div class="form-group form-group-lg">
-            {{ form_label(form.plainPassword.second) }}
-            {{ form_errors(form.plainPassword.second) }}
-            {{ form_widget(form.plainPassword.second, { 'attr': { 'placeholder': 'Saisissez à nouveau votre mot de passe'} } ) }}
-        </div>
+            t._e = [];
+            t.ready = function (f) {
+                t._e.push(f);
+            };
 
-        {{ form_label(form.recaptcha) }}
-        {{ form_errors(form.recaptcha) }}
-        {{ form_widget(form.recaptcha) }}
+            return t;
+        }(document, "script", "google-recaptcha"));
 
-        <script>
-            if (document.getElementById('google-recaptcha')) {
-                onCaptchaReady();
-            }
-            window.grecaptcha = (function (d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0],
-                    t = window.grecaptcha || {};
-                if (d.getElementById(id)) return t;
-                js = d.createElement(s);
-                js.id = id;
-                js.async = true;
-                js.defer = true;
-                js.src = "//www.google.com/recaptcha/api.js?onload=onCaptchaReady&render=explicit";
-                fjs.parentNode.insertBefore(js, fjs);
+        function onCaptchaReady() {
+            grecaptcha.render('{{ form.recaptcha.vars.id }}', {
+                'sitekey': document.getElementById('{{ form.recaptcha.vars.id }}').dataset.sitekey
+            });
+        }
+    </script>
 
-                t._e = [];
-                t.ready = function (f) {
-                    t._e.push(f);
-                };
+    {% if not partial %}
+        <button id="_register" class="btn btn-primary {{ partial ? 'btn-flat' : 'btn-raised' }}" type="submit">
+            Créer mon profil
+        </button>
+    {% endif %}
 
-                return t;
-            }(document, "script", "google-recaptcha"));
-            function onCaptchaReady() {
-                grecaptcha.render('{{ form.recaptcha.vars.id }}', {
-                    'sitekey': document.getElementById('{{ form.recaptcha.vars.id }}').dataset.sitekey
-                });
-            }
-        </script>
-
-        {% if not partial %}
-            <button id="_register" class="btn btn-primary {{ partial ? 'btn-flat' : 'btn-raised' }}" type="submit">
-                Créer mon profil
-            </button>
-        {% endif %}
-
-        {{ form_rest(form) }}
-        <br/>
-        <br/>
-        <p>
-            Vous avez déjà un compte ?
-            <a class="connexion" href="{{ path('fos_user_security_login') }}" title="Connectez-vous sur By Night">
-                Connectez-vous!
-            </a>
-        </p>
+    {{ form_rest(form) }}
+    <br />
+    <br />
+    <p>
+        Vous avez déjà un compte ?
+        <a class="connexion" href="{{ path('fos_user_security_login') }}" title="Connectez-vous sur By Night">
+            Connectez-vous!
+        </a>
+    </p>
     {{ form_end(form) }}
 </div>

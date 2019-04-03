@@ -1,5 +1,5 @@
 {
-    "name": "ByNight",
+    "name": "bynight",
     "version": "2.0.0",
     "author": "Guillaume Sainthillier <guillaume@sainthillier.fr>",
     "private": true,
@@ -17,17 +17,6 @@
         "dropdown.js": "https://github.com/FezVrasta/dropdown.js/archive/master.tar.gz",
         "fancybox": "^3.0.0",
         "font-awesome": "^4.7.0",
-        "grunt": "^1.0.1",
-        "grunt-cache-bust": "^1.6.0",
-        "grunt-contrib-clean": "^1.1.0",
-        "grunt-contrib-concat": "^1.0.1",
-        "grunt-contrib-cssmin": "^2.2.1",
-        "grunt-contrib-jshint": "^1.1.0",
-        "grunt-contrib-symlink": "^1.0.0",
-        "grunt-contrib-uglify": "^4.0.0",
-        "grunt-contrib-watch": "^1.0.0",
-        "grunt-merge-json": "^0.9.6",
-        "grunt-spritesmith": "^6.5.1",
         "highcharts": "^6.0.3",
         "iscroll": "^5.2.0",
         "jquery": "^3.2.1",
@@ -40,7 +29,20 @@
         "raphael": "^2.2.7",
         "summernote": "^0.8.8",
         "typeahead-addresspicker": "^1.0.1",
-        "typeahead.js": "^0.11.1",
+        "typeahead.js": "^0.10.5"
+    },
+    "devDependencies": {
+        "grunt": "^1.0.1",
+        "grunt-cache-bust": "^1.6.0",
+        "grunt-contrib-clean": "^1.1.0",
+        "grunt-contrib-concat": "^1.0.1",
+        "grunt-contrib-cssmin": "^2.2.1",
+        "grunt-contrib-jshint": "^1.1.0",
+        "grunt-contrib-symlink": "^1.0.0",
+        "grunt-contrib-uglify": "^4.0.0",
+        "grunt-contrib-watch": "^1.0.0",
+        "grunt-merge-json": "^0.9.6",
+        "grunt-spritesmith": "^6.5.1",
         "yamljs": "^0.3.0"
     }
 }

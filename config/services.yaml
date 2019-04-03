@@ -223,25 +223,6 @@ services:
 #        tags:
 #            - { name: twig.extension }
 
-    #Forms
-    #Collections
-    App\Form\Extension\CollectionExtension:
-        tags:
-            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\CollectionType }
-
-    #Surcouche globale des formulaires
-    App\Form\Extension\WidgetFormTypeExtension:
-        tags:
-            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
-
-    #Datepicker
-    App\Form\Extension\DateTypeExtension:
-        tags:
-            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\DateType }
-    #Image
-    App\Form\Extension\ImageTypeExtension:
-        tags:
-            - { name: form.type_extension, extended_type: Vich\UploaderBundle\Form\Type\VichImageType }
 
 #   App\Form\Type\AgendaType:
 #        tags:

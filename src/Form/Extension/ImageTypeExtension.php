@@ -11,11 +11,7 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 class ImageTypeExtension extends AbstractTypeExtension
 {
     /**
-     * Pass the image URL to the view.
-     *
-     * @param FormView      $view
-     * @param FormInterface $form
-     * @param array         $options
+     * {@inheritdoc}
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
@@ -23,9 +19,7 @@ class ImageTypeExtension extends AbstractTypeExtension
     }
 
     /**
-     * Add the image_path option.
-     *
-     * @param OptionsResolver $resolver
+     * {@inheritdoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -33,12 +27,10 @@ class ImageTypeExtension extends AbstractTypeExtension
     }
 
     /**
-     * Returns the name of the type being extended.
-     *
-     * @return string The name of the type being extended
+     * {@inheritdoc}
      */
-    public function getExtendedType()
+    public static function getExtendedTypes()
     {
-        return VichImageType::class;
+        return [VichImageType::class];
     }
 }

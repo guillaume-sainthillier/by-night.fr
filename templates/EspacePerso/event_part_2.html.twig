@@ -3,6 +3,7 @@
 {% block titre %}Informations{% endblock %}
 {% block icone %}fa-calendar{% endblock %}
 {% block body %}
+    <div class="form-horizontal">
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.dateDebut}) %}
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.dateFin}) %}
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.horaires}) %}
@@ -10,6 +11,7 @@
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.categorieManifestation}) %}
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.themeManifestation}) %}
     {% include "EspacePerso/inline-block.html.twig" with({'elem' : form.tarif}) %}
+    </div>
 {% endblock %}
 
 {% block footer '' %}

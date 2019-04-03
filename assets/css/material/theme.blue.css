@@ -3098,6 +3098,12 @@ a:focus {
 .form-group label.control-label {
   margin-top: 0;
 }
+.form-group .help-block {
+  display: block;
+}
+.delete-image .checkbox {
+  padding-top: 0;
+}
 .color-primary {
   color: #36A9E1;
 }

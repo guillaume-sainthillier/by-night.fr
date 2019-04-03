@@ -8,13 +8,13 @@
 
 namespace App\Controller\Fragments;
 
+use App\App\CityManager;
 use App\Controller\TBNController;
 use App\Entity\City;
 use App\Social\FacebookAdmin;
 use App\Social\Social;
 use App\Social\Twitter;
 use DateTime;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,17 +24,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class CommonController extends TBNController
 {
     const LIFE_TIME_CACHE = 86400; // 3600*24
-
-    private $socials;
-
-    public function __construct(RequestStack $requestStack, FacebookAdmin $facebookAdmin, Twitter $twitter)
-    {
-        parent::__construct($requestStack);
-        $this->socials = [
-            'facebook' => $facebookAdmin,
-            'twitter'  => $twitter,
-        ];
-    }
 
     /**
      * @Route("/header/{city}", name="tbn_private_header_site")
@@ -57,14 +46,16 @@ class CommonController extends TBNController
             ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
-    public function footer()
+    public function footer(CityManager $cityManager, FacebookAdmin $facebookAdmin, Twitter $twitter)
     {
-        $cache  = $this->get('memory_cache');
+        $cache = $this->get('memory_cache');
+        $socials = [
+            'facebook' => $facebookAdmin,
+            'twitter' => $twitter
+        ];
         $params = [];
-        foreach ($this->socials as $name => $service) {
-            /**
-             * @var Social
-             */
+        foreach ($socials as $name => $service) {
+            /** @var Social $service */
             $key = 'app.social_counts.' . $name;
             if (!$cache->contains($key)) {
                 $cache->save($key, $service->getNumberOfCount(), self::LIFE_TIME_CACHE);
@@ -73,9 +64,9 @@ class CommonController extends TBNController
             $params['count_' . $name] = $cache->fetch($key);
         }
 
-        $repo             = $this->getDoctrine()->getRepository(City::class);
-        $params['cities'] = $repo->findRandomNames();
-        $response         = $this->render('City/footer.html.twig', $params);
+        $repo = $this->getDoctrine()->getRepository(City::class);
+        $params['cities'] = $repo->findRandomNames($cityManager->getCity() ? $cityManager->getCity()->getCountry() : null);
+        $response = $this->render('City/footer.html.twig', $params);
 
         $tomorrow = new DateTime('tomorrow');
 

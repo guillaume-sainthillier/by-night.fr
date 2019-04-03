@@ -143,6 +143,11 @@ class EchantillonHandler
 
     public function prefetchEventEchantillons(Agenda $event)
     {
+        if ($event->getId()) {
+            $this->addEvent($event);
+            return;
+        }
+
         if (!$event->getExternalId()) {
             throw new \RuntimeException("Unable to find echantillon without an external ID");
         }
@@ -170,6 +175,10 @@ class EchantillonHandler
 
     public function getEventEchantillons(Agenda $event)
     {
+        if ($event->getId()) {
+            return isset($this->agendas[$event->getId()]) ? [$this->agendas[$event->getId()]] : [];
+        }
+
         if ($event->getExternalId()) {
             return isset($this->agendas[$event->getExternalId()]) ? [$this->agendas[$event->getExternalId()]] : [];
         }

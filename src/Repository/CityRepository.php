@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Country;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -24,18 +25,30 @@ class CityRepository extends EntityRepository
             ->iterate();
     }
 
-    public function findRandomNames($limit = 5)
+    public function findRandomNames(Country $country = null, $limit = 5)
     {
-        $results = $this
-            ->createQueryBuilder('c')
-            ->select('c.name, c.slug')
-            ->orderBy('c.population', 'DESC')
-            ->setMaxResults(50)
-            ->getQuery()
-            ->getScalarResult();
+        if ($country) {
+            $results = $this
+                ->createQueryBuilder('c')
+                ->select('c.name, c.slug')
+                ->join('c.country', 'c2')
+                ->where('c2 = :country')
+                ->setParameter('country', $country->getId())
+                ->orderBy('c.population', 'DESC')
+                ->setMaxResults(50)
+                ->getQuery()
+                ->getScalarResult();
+        } else {
+            $results = $this
+                ->createQueryBuilder('c')
+                ->select('c.name, c.slug')
+                ->orderBy('c.population', 'DESC')
+                ->setMaxResults(50)
+                ->getQuery()
+                ->getScalarResult();
+        }
 
         \shuffle($results);
-
         return \array_slice($results, 0, $limit);
     }
 
