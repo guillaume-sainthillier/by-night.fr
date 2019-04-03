@@ -4,6 +4,7 @@ namespace App\Cleaner;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -57,24 +58,24 @@ class ImageCleaner
 
     protected function cleanPaths(array $paths, array $filters, $uri_prefix)
     {
+        $fs = new Filesystem();
         $finder = new Finder();
-        $files  = $finder->in($this->webDir . $uri_prefix);
+        $files  = $finder->files()->in($this->webDir . $uri_prefix);
         foreach ($files as $file) {
-            /*
-             * @var \SplFileObject
-             */
-            if (!$file->getFilename()) {
+            /** @var \SplFileObject $file */
+            if (\in_array($file->getFilename(), $paths)) {
                 continue;
             }
 
-            if (!\in_array($file->getFilename(), $paths)) {
-                $path = $uri_prefix . '/' . $file->getFilename();
-                foreach ($filters as $filter) {
-                    if ($this->cacheManager->isStored($path, $filter)) {
-                        $this->cacheManager->remove($path, $filter);
-                    }
+            //Orphan file
+            $path = ltrim(str_replace($this->webDir, '', $file->getPathname()), DIRECTORY_SEPARATOR);
+            foreach ($filters as $filter) {
+                if ($this->cacheManager->isStored($path, $filter)) {
+                    $this->cacheManager->remove($path, $filter);
                 }
             }
+
+            $fs->remove($file->getPathname());
         }
     }
 }
