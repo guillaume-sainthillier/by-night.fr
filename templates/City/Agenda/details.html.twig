@@ -2,9 +2,9 @@
 
 {% block start_container %}
 <div itemscope itemtype="http://schema.org/Event">{{ parent() }}
-{% endblock %}
+    {% endblock %}
 
-{% block end_container %}{{ parent() }}</div>{% endblock %}
+    {% block end_container %}{{ parent() }}</div>{% endblock %}
 
 {% set nomSoiree = event_seo.getEventShortTitle(soiree) %}
 {% set horaires = event_seo.getEventDateTime(soiree) %}
@@ -39,19 +39,18 @@
 {% block meta_description %}{{ event_seo.getEventDescription(soiree) }}{% endblock %}
 
 {% block metas %}
-    <link rel="image_src" href="{{ original }}"/>
-    <link rel="thumbnail" href="{{ thumb }}"/>
+    <link rel="image_src" href="{{ original }}" />
+    <link rel="thumbnail" href="{{ thumb }}" />
     {% if soiree.dateModification %}
-        <meta property="article:published_time"  content="{{ soiree.dateModification.format('Y-m-d') }}" />{% endif %}
-    <meta property="article:publisher"
-          content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}"/>
+        <meta property="article:published_time" content="{{ soiree.dateModification.format('Y-m-d') }}" />
+    {% endif %}
+    <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}" />
     {% if soiree.user %}
-        <meta property="article:author"
-              content="{{ url('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug, 'city': city.slug}) }}"/>
+        <meta property="article:author" content="{{ url('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug, 'city': city.slug}) }}" />
     {% endif %}
 
     {% for tag in distinctTags %}
-        <meta property="article:tag" content="{{ tag }}"/>
+        <meta property="article:tag" content="{{ tag }}" />
     {% endfor %}
 {% endblock %}
 {% block og_titre %}{{ nomSoiree }}{% endblock %}
@@ -109,7 +108,7 @@
                 <div class="row margin_bottom_30">
                     <div class="col-sm-4">
                         <a href="{{ original }}" title="{{ nomSoiree }}">
-                            <img class="img img-responsive" src="{{ thumb }}" itemprop="image" alt="{{ nomSoiree }}"/>
+                            <img class="img img-responsive" src="{{ thumb }}" itemprop="image" alt="{{ nomSoiree }}" />
                         </a>
                     </div>
                     <div class="col-sm-8 block_infos">
@@ -140,7 +139,7 @@
                                                     <div>
                                                         {% if place.codePostal %}
                                                             <span itemprop="postalCode">{{ place.codePostal }} </span>
-                                                            <meta itemprop="addressCountry" content="FR"/>
+                                                            <meta itemprop="addressCountry" content="FR" />
                                                         {% endif %}
                                                         {% if place.ville %}
                                                             <a itemprop="url"
@@ -158,8 +157,8 @@
 
                                         {% if place.latitude and place.longitude %}
                                             <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                                    <meta itemprop="latitude" content="{{ place.latitude }}"/>
-                                    <meta itemprop="longitude" content="{{ place.longitude }}"/>
+                                    <meta itemprop="latitude" content="{{ place.latitude }}" />
+                                    <meta itemprop="longitude" content="{{ place.longitude }}" />
                                 </span>
                                         {% endif %}
                                     </div>
@@ -196,7 +195,7 @@
                                         <li>
                                             <i class="fa fa-li fa-globe"></i>
                                             <a title="Aller sur le site internet de la réservation" rel="nofollow"
-                                               href="http://{{ lien|replace({'http://' : ''}) }}">{{ lien[:50] ~ (lien|length > 50 ? "..." : "") }}</a>
+                                               href="{{ lien|ensure_protocol }}">{{ lien[:50] ~ (lien|length > 50 ? "..." : "") }}</a>
                                         </li>
                                     {% endif %}
                                 {% endfor %}
@@ -258,7 +257,7 @@
                 </h3>
             </div>
             <div class="panel-body">
-                <br/>
+                <br />
                 {{ render_esi(controller('App\\Controller\\City\\EventController::shareAction', {
                     'slug': soiree.slug,
                     'city': soiree.place.city.slug
@@ -272,7 +271,7 @@
                             <small>Soyez le premier à réagir</small>
                         {% endif %}
                     </h4>
-                    <br/>
+                    <br />
                     {% include "Comment/post.html.twig" %}
                     {% if nb_comments > 0 %}
                         {{ render_esi(url('tbn_comment_list', {'id': soiree.id})) }}

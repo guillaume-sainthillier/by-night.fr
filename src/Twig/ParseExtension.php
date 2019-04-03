@@ -8,7 +8,6 @@
 
 namespace App\Twig;
 
-use function trim;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
@@ -23,8 +22,18 @@ class ParseExtension extends Extension
     {
         return [
             new TwigFilter('parse_tags', [$this, 'parseTags']),
+            new TwigFilter('ensure_protocol', [$this, 'ensureProtocol']),
             new TwigFilter('resume', [$this, 'resume']),
         ];
+    }
+
+    public function ensureProtocol($link)
+    {
+        if (!preg_match("#^(http|https|ftp)#", $link)) {
+            return 'http://' . $link;
+        }
+
+        return $link;
     }
 
     public function parseTags($texte)
@@ -43,7 +52,7 @@ class ParseExtension extends Extension
     {
         $replaced_text = \str_replace('&#13;', '<br>', $texte);
         $stripped_text = \strip_tags($replaced_text);
-        $shorted_text  = \substr($stripped_text, 0, 250);
+        $shorted_text = \substr($stripped_text, 0, 250);
 
         //striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
         $linked_text = \preg_replace("
