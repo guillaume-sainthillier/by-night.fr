@@ -16,7 +16,7 @@ use Symfony\Component\Routing\RouterInterface;
 class InfoController extends AbstractController
 {
     /**
-     * @Route("/", name="tbn_administration_info_index")
+     * @Route("/", name="app_administration_info_index")
      *
      * @param RouterInterface $router
      * @param SocialManager   $socialManager
@@ -34,13 +34,13 @@ class InfoController extends AbstractController
             $em->flush();
         }
 
-        return $this->redirectToRoute('tbn_administration_info_edit', [
+        return $this->redirectToRoute('app_administration_info_edit', [
             'id' => $info->getId(),
         ]);
     }
 
     /**
-     * @Route("/{id}", name="tbn_administration_info_edit", requirements={"id": "\d+"})
+     * @Route("/{id}", name="app_administration_info_edit", requirements={"id": "\d+"})
      *
      * @param SiteInfo $info
      *

@@ -30,7 +30,7 @@ class WidgetsController extends BaseController
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/tweeter-feed/{max_id}", name="tbn_agenda_tweeter_feed", requirements={"max_id": "\d+"})
+     * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"})
      * @BrowserCache(false)
      *
      * @param City         $city
@@ -49,7 +49,7 @@ class WidgetsController extends BaseController
             \parse_str($results['search_metadata']['next_results'], $infos);
 
             if (isset($infos['?max_id'])) {
-                $nextLink = $this->generateUrl('tbn_agenda_tweeter_feed', [
+                $nextLink = $this->generateUrl('app_agenda_tweeter_feed', [
                     'city'   => $city->getSlug(),
                     'max_id' => $infos['?max_id'],
                 ]);
@@ -61,7 +61,7 @@ class WidgetsController extends BaseController
         }
 
         if (!\count($results['statuses']) && null === $requestStack->getParentRequest()) {
-            return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
+            return $this->redirectToRoute('app_agenda_agenda', ['city' => $city->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         $response = $this->render('City/Hinclude/tweets.html.twig', [
@@ -83,7 +83,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="tbn_agenda_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
+     * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_agenda_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
      * @BrowserCache(false)
      *
      * @param City $city
@@ -99,7 +99,7 @@ class WidgetsController extends BaseController
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($city, $slug, $id, 'tbn_agenda_prochaines_soirees', [
+        $result = $this->checkEventUrl($city, $slug, $id, 'app_agenda_prochaines_soirees', [
             'page' => $page,
         ]);
 
@@ -109,7 +109,7 @@ class WidgetsController extends BaseController
         $soiree = $result;
 
         if (!$soiree->getPlace()) {
-            return $this->redirectToRoute('tbn_agenda_details', [
+            return $this->redirectToRoute('app_agenda_details', [
                 'id'   => $soiree->getId(),
                 'slug' => $soiree->getSlug(),
                 'city' => $city->getSlug(),
@@ -123,7 +123,7 @@ class WidgetsController extends BaseController
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('tbn_agenda_prochaines_soirees', [
+            $hasNextLink = $this->generateUrl('app_agenda_prochaines_soirees', [
                 'slug' => $soiree->getSlug(),
                 'id'   => $soiree->getId(),
                 'city' => $soiree->getPlace()->getCity()->getSlug(),
@@ -149,7 +149,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="tbn_agenda_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))3
+     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_agenda_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))3
      * @BrowserCache(false)
      *
      * @param City $city
@@ -165,7 +165,7 @@ class WidgetsController extends BaseController
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($city, $slug, $id, 'tbn_agenda_soirees_similaires', [
+        $result = $this->checkEventUrl($city, $slug, $id, 'app_agenda_soirees_similaires', [
             'page' => $page
         ]);
         if ($result instanceof Response) {
@@ -180,7 +180,7 @@ class WidgetsController extends BaseController
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('tbn_agenda_soirees_similaires', [
+            $hasNextLink = $this->generateUrl('app_agenda_soirees_similaires', [
                 'city' => $city->getSlug(),
                 'slug' => $soiree->getSlug(),
                 'id'   => $soiree->getId(),
@@ -205,7 +205,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/top/soirees/{page}", name="tbn_agenda_top_soirees", requirements={"page": "\d+"})
+     * @Route("/top/soirees/{page}", name="app_agenda_top_soirees", requirements={"page": "\d+"})
      * @BrowserCache(false)
      *
      * @param City $city
@@ -226,7 +226,7 @@ class WidgetsController extends BaseController
         $count   = $repo->findTopSoireeCount($city);
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('tbn_agenda_top_soirees', [
+            $hasNextLink = $this->generateUrl('app_agenda_top_soirees', [
                 'page' => $page + 1,
                 'city' => $city->getSlug(),
             ]);

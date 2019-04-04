@@ -18,7 +18,7 @@ use Symfony\Component\Security\Core\Exception\AccountStatusException;
 class DefaultController extends AbstractController
 {
     /**
-     * @Route("/deconnexion", name="tbn_disconnect_service")
+     * @Route("/deconnexion", name="app_disconnect_service")
      * @ParamConverter("social", options={"default_facebook_name": "facebook"})
      *
      * @param Social $social
@@ -36,7 +36,7 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/deconnexion/confirmation", name="tbn_disconnect_service_confirm")
+     * @Route("/deconnexion/confirmation", name="app_disconnect_service_confirm")
      *
      * @param $service
      *
@@ -46,7 +46,7 @@ class DefaultController extends AbstractController
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,
-            'url'     => $this->generateUrl('tbn_disconnect_service', ['service' => $service]),
+            'url'     => $this->generateUrl('app_disconnect_service', ['service' => $service]),
         ]);
     }
 

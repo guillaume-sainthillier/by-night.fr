@@ -6,7 +6,7 @@
 {% block nom_site %}{{ city.name }} {{ parent() }}{% endblock %}
 {% block titre %}{% block titre_agenda %}{% endblock %}{% endblock %}
 {% block meta_keywords %}{{ city.name|lower }}{% endblock %}
-{% block og_url %}{{ url('tbn_agenda_index', {'city': city.slug}) }}{% endblock %}
+{% block og_url %}{{ url('app_agenda_index', {'city': city.slug}) }}{% endblock %}
 
 {% block meta_description -%}
     Sortir à {{ city.name }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ city.name }}.
@@ -19,7 +19,7 @@
 {% block widgets %}{% block widgets_agenda %}{% endblock %}{% endblock %}
 
 {% block breadcrumb_content -%}
-    {% set item = menu.addItem('Sortir à ' ~ city.name, path('tbn_agenda_index', {'city': city.slug})) %}
+    {% set item = menu.addItem('Sortir à ' ~ city.name, path('app_agenda_index', {'city': city.slug})) %}
     {% block breadcrumb_city_content %}{% endblock %}
 {%- endblock %}
 
@@ -52,10 +52,10 @@
         {
             "@context": "http://schema.org",
             "@type": "WebSite",
-            "url": "{{ url('tbn_agenda_index', {'city': city.slug}) }}",
+            "url": "{{ url('app_agenda_index', {'city': city.slug}) }}",
             "potentialAction": {
                 "@type": "SearchAction",
-                "target": "{{ url('tbn_search_query', {'q': '{search_term_string}', 'city': city.slug})|url_decode }}",
+                "target": "{{ url('app_search_query', {'q': '{search_term_string}', 'city': city.slug})|url_decode }}",
                 "query-input": "required name=search_term_string"
             }
         }

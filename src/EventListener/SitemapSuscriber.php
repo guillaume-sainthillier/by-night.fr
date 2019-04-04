@@ -85,13 +85,13 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($cities as $city) {
             $city = current($city);
-            $this->addUrl($section, 'tbn_agenda_index', ['city' => $city['slug']]);
-            $this->addUrl($section, 'tbn_agenda_agenda', ['city' => $city['slug']]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'concert', 'city' => $city['slug']]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'etudiant', 'city' => $city['slug']]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'famille', 'city' => $city['slug']]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'spectacle', 'city' => $city['slug']]);
-            $this->addUrl($section, 'tbn_agenda_sortir', ['type' => 'exposition', 'city' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_index', ['city' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_agenda', ['city' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'concert', 'city' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'etudiant', 'city' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'famille', 'city' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'spectacle', 'city' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'exposition', 'city' => $city['slug']]);
         }
     }
 
@@ -101,7 +101,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($places as $place) {
             $place = current($place);
-            $this->addUrl($section, 'tbn_agenda_place', ['slug' => $place['slug'], 'city' => $place['city_slug']]);
+            $this->addUrl($section, 'app_agenda_place', ['slug' => $place['slug'], 'city' => $place['city_slug']]);
         }
     }
 
@@ -111,7 +111,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($events as $event) {
             $event = current($event);
-            $this->addUrl($section, 'tbn_agenda_details', [
+            $this->addUrl($section, 'app_agenda_details', [
                 'id' => $event['id'],
                 'slug' => $event['slug'],
                 'city' => $event['city_slug'],
@@ -127,7 +127,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         foreach ($users as $user) {
             /** @var User $user */
             $user = $user[0];
-            $this->addUrl($section, 'tbn_user_details', [
+            $this->addUrl($section, 'app_user_details', [
                 'id' => $user->getId(),
                 'slug' => $user->getSlug(),
             ], $user->getUpdatedAt());
@@ -137,13 +137,13 @@ class SitemapSuscriber implements EventSubscriberInterface
     private function registerStaticRoutes($section)
     {
         $staticRoutes = [
-            'tbn_search_query',
-            'tbn_main_index',
-            'tbn_agenda_about',
-            'tbn_agenda_plus',
-            'tbn_main_cookie',
-            'tbn_agenda_mention_legales',
-            'tbn_agenda_programme_tv',
+            'app_search_query',
+            'app_main_index',
+            'app_agenda_about',
+            'app_agenda_plus',
+            'app_main_cookie',
+            'app_agenda_mention_legales',
+            'app_agenda_programme_tv',
         ];
 
         foreach ($staticRoutes as $route) {

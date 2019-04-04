@@ -8,7 +8,7 @@
                 </div>
                 <div class="col-xs-9 col-sm-10">
                     <div class="infos">
-                        <a href="{{ path('tbn_user_details', {'id': comment.user.id, 'slug': comment.user.slug}) }}">{{ comment.user.username }}</a>
+                        <a href="{{ path('app_user_details', {'id': comment.user.id, 'slug': comment.user.slug}) }}">{{ comment.user.username }}</a>
                         <span title="{{ comment.dateCreation|localizeddate('medium','medium')|capitalize }}">
                             <i class="fa fa-clock-o"></i> {{ comment.dateCreation|diff_date }}
                         </span>
@@ -21,12 +21,12 @@
                             <div class="infos">
                                 <span class="label label-primary nb_reponses">{{ comment.reponses.count }}</span>
                                 <button type="button" class="btn btn-default btn-xs btn-list btn-raised"
-                                        data-url="{{ path('tbn_comment_reponse_list', {'id' : comment.id }) }}">
+                                        data-url="{{ path('app_comment_reponse_list', {'id' : comment.id }) }}">
                                     <i class="fa fa-angle-up icon_list"></i>
                                 </button>
                                 |
                                 <a href="#" class="repondre"
-                                   data-url="{{ path('tbn_comment_reponse_new', {'id' : comment.id }) }}">Répondre</a>
+                                   data-url="{{ path('app_comment_reponse_new', {'id' : comment.id }) }}">Répondre</a>
                             </div>
                             <div class="block_poster_reponse"></div>
                             <div class="block_reponses"></div>
@@ -39,7 +39,7 @@
 
     {% if nb_comments > ((page)*offset) %}
         {% block load_more %}
-            <div class="load_more" data-url="{{ path('tbn_comment_list',{'id': soiree.id ,'page': (page+1) }) }}">
+            <div class="load_more" data-url="{{ path('app_comment_list',{'id': soiree.id ,'page': (page+1) }) }}">
                 <button type="button" class="btn btn-primary btn-raised btn-lg btn-block btn-raised">
                     Plus
                 </button>

@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ReplyController extends AbstractController
 {
     /**
-     * @Route("/{id}/reponses/{page}", name="tbn_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})
+     * @Route("/{id}/reponses/{page}", name="app_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})
      *
      * @param Comment $comment
      * @param $page
@@ -38,7 +38,7 @@ class ReplyController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/repondre", name="tbn_comment_reponse_new", requirements={"id": "\d+"})
+     * @Route("/{id}/repondre", name="app_comment_reponse_new", requirements={"id": "\d+"})
      *
      * @param Request $request
      * @param Comment $comment
@@ -136,7 +136,7 @@ class ReplyController extends AbstractController
     protected function getCreateForm(Comment $reponse, Comment $comment)
     {
         return $this->createForm(CommentType::class, $reponse, [
-            'action' => $this->generateUrl('tbn_comment_reponse_new', ['id' => $comment->getId()]),
+            'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
             'method' => 'POST',
         ])
             ->add('poster', SubmitType::class, [

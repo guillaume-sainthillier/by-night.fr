@@ -1,6 +1,6 @@
 {{ fos_httpcache_tag('detail-place-' ~ place.id ) }}
 {% if page == 1 and soirees|length == 0 %}
-    <p>Aucun événement prévu à {{ place.nom }} pour le moment ! Vous souhaitez <a href="{{ path('tbn_agenda_new') }}">créer
+    <p>Aucun événement prévu à {{ place.nom }} pour le moment ! Vous souhaitez <a href="{{ path('app_agenda_new') }}">créer
             un événement à {{ place.nom }}</a> ?</p>
 {% else %}
     {% include "City/Event/block_preview_event.html.twig" with({"events": soirees, "microdata" : false}) %}

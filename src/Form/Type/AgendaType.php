@@ -156,6 +156,6 @@ class AgendaType extends AbstractType
 
     public function getName()
     {
-        return 'tbn_agenda';
+        return 'app_agenda';
     }
 }

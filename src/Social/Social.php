@@ -174,7 +174,7 @@ abstract class Social
 
     protected function getLink(Agenda $agenda)
     {
-        return $this->router->generate('tbn_agenda_details', [
+        return $this->router->generate('app_agenda_details', [
             'slug' => $agenda->getSlug(),
             'id'   => $agenda->getSlug(),
             'city' => $agenda->getPlace()->getCity()->getSlug(),
@@ -183,7 +183,7 @@ abstract class Social
 
     protected function getMembreLink(User $user)
     {
-        return $this->router->generate('tbn_user_details', ['id' => $user->getId(), 'slug' => $user->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
+        return $this->router->generate('app_user_details', ['id' => $user->getId(), 'slug' => $user->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 
     abstract public function getNumberOfCount();

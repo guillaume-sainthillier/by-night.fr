@@ -14,8 +14,8 @@
 
 {% block breadcrumb_content -%}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", path('tbn_agenda_list')) %}
-    {% set item = menu.addItem("Nouveau", path('tbn_agenda_new')) %}
+    {% set item = menu.addItem("Mes événements", path('app_agenda_list')) %}
+    {% set item = menu.addItem("Nouveau", path('app_agenda_new')) %}
 {%- endblock %}
 
 {% block body -%}
@@ -39,7 +39,7 @@
                     {% block button_submit %}
                         {{ form_row(form.ajouter) }}
                     {% endblock %}
-                    <a class="btn btn-default btn-raised bg-white" href="{{ path('tbn_agenda_list') }}"
+                    <a class="btn btn-default btn-raised bg-white" href="{{ path('app_agenda_list') }}"
                        title="Retourner à mes soirées">
                         <i class="fa fa-chevron-left"></i>
                         Retour

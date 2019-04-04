@@ -60,9 +60,9 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
                     $user = $token->getUser();
 
                     if ($user->getCity()) {
-                        $url = $this->router->generate('tbn_agenda_index', ['city' => $user->getCity()->getSlug()]);
+                        $url = $this->router->generate('app_agenda_index', ['city' => $user->getCity()->getSlug()]);
                     } else {
-                        $url = $this->router->generate('tbn_main_index');
+                        $url = $this->router->generate('app_main_index');
                     }
                 }
             }

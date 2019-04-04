@@ -24,7 +24,7 @@ class WidgetsController extends BaseController
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/programme-tv", name="tbn_agenda_programme_tv")
+     * @Route("/programme-tv", name="app_agenda_programme_tv")
      *
      * @param ProgrammeTVParser $parser
      *
@@ -45,7 +45,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/top/membres/{page}", name="tbn_agenda_top_membres", requirements={"page": "\d+"})
+     * @Route("/top/membres/{page}", name="app_agenda_top_membres", requirements={"page": "\d+"})
      * @BrowserCache(false)
      *
      * @param int $page
@@ -65,7 +65,7 @@ class WidgetsController extends BaseController
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('tbn_agenda_top_membres', [
+            $hasNextLink = $this->generateUrl('app_agenda_top_membres', [
                 'page' => $page + 1,
             ]);
         } else {

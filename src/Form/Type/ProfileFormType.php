@@ -69,6 +69,6 @@ class ProfileFormType extends BaseType
 
     public function getName()
     {
-        return 'tbn_user_profile';
+        return 'app_user_profile';
     }
 }

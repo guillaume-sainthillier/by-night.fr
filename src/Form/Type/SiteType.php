@@ -76,6 +76,6 @@ class SiteType extends AbstractType
 
     public function getName()
     {
-        return 'tbn_administration_site';
+        return 'app_administration_site';
     }
 }

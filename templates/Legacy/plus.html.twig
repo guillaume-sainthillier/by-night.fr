@@ -2,7 +2,7 @@
 {% extends "base.html.twig" %}
 
 {% block breadcrumb %}
-    {% set item = menu.addItem("En savoir plus", path('tbn_agenda_plus')) %}
+    {% set item = menu.addItem("En savoir plus", path('app_agenda_plus')) %}
 {% endblock %}
 
 {% block title -%}
@@ -81,7 +81,7 @@
             <br/>
             <br/>
             <div class="text-center">
-                <a class="btn btn-primary btn-raised btn-block btn-lg" href="{{ path('tbn_agenda_new') }}">Créez votre
+                <a class="btn btn-primary btn-raised btn-block btn-lg" href="{{ path('app_agenda_new') }}">Créez votre
                     événement dès maintenant</a>
             </div>
             <br/>

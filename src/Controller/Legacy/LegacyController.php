@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class LegacyController extends BaseController
 {
     /**
-     * @Route("/mentions-legales", name="tbn_agenda_mention_legales")
+     * @Route("/mentions-legales", name="app_agenda_mention_legales")
      */
     public function mentionLegalesAction()
     {
@@ -16,7 +16,7 @@ class LegacyController extends BaseController
     }
 
     /**
-     * @Route("/a-propos", name="tbn_agenda_about")
+     * @Route("/a-propos", name="app_agenda_about")
      */
     public function aboutAction()
     {
@@ -24,7 +24,7 @@ class LegacyController extends BaseController
     }
 
     /**
-     * @Route("/en-savoir-plus", name="tbn_agenda_plus")
+     * @Route("/en-savoir-plus", name="app_agenda_plus")
      */
     public function plusAction()
     {

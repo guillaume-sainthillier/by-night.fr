@@ -40,16 +40,16 @@
 {% endblock %}
 
 {% block breadcrumb_city_content %}
-    {% set item = menu.addItem('Agenda', path('tbn_agenda_agenda', {'city': city.slug})) %}
+    {% set item = menu.addItem('Agenda', path('app_agenda_agenda', {'city': city.slug})) %}
     {% if placeName is not null %}
-        {% set item = menu.addItem(placeName|capitalize, path('tbn_agenda_place', {'slug' : placeSlug,'city': city.slug})) %}
+        {% set item = menu.addItem(placeName|capitalize, path('app_agenda_place', {'slug' : placeSlug,'city': city.slug})) %}
     {% elseif tag is not null %}
-        {% set item = menu.addItem(tag|capitalize, path('tbn_agenda_tags', {'tag' : tag,'city': city.slug})) %}
+        {% set item = menu.addItem(tag|capitalize, path('app_agenda_tags', {'tag' : tag,'city': city.slug})) %}
     {% elseif type is not null %}
-        {% set item = menu.addItem(type|capitalize, path('tbn_agenda_sortir', {'type' : type,'city': city.slug})) %}
+        {% set item = menu.addItem(type|capitalize, path('app_agenda_sortir', {'type' : type,'city': city.slug})) %}
     {% endif %}
     {% if page > 1 %}
-        {% set item = menu.addItem("Page " ~ page, path('tbn_agenda_pagination', {'page': page,'city': city.slug})) %}
+        {% set item = menu.addItem("Page " ~ page, path('app_agenda_pagination', {'page': page,'city': city.slug})) %}
     {% endif %}
 {% endblock %}
 

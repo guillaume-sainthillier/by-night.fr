@@ -6,7 +6,7 @@
              data-src="{{ imageURL }}"/>
         <div class="caption">
             <h3><a class="thin"
-                   href="{{ path('tbn_user_details', {'id' : user.id, 'slug': user.slug}) }}">{{ user.username[:22] }}</a>
+                   href="{{ path('app_user_details', {'id' : user.id, 'slug': user.slug}) }}">{{ user.username[:22] }}</a>
             </h3>
             <p>Membre depuis le <span class="date text-primary">{{ user.dateCreation|date('d/m/Y') }}</span></p>
             {% include "Social/user.html.twig" %}

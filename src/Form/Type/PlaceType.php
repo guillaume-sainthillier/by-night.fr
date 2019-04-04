@@ -79,6 +79,6 @@ class PlaceType extends AbstractType
 
     public function getName()
     {
-        return 'tbn_place';
+        return 'app_place';
     }
 }

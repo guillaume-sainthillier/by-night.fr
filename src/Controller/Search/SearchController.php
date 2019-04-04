@@ -49,7 +49,7 @@ class SearchController extends AbstractController
     }
 
     /**
-     * @Route("/", name="tbn_search_query")
+     * @Route("/", name="app_search_query")
      *
      * @param Request            $request
      * @param RepositoryManagerInterface  $rm

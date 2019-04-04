@@ -6,7 +6,7 @@
         <input type="checkbox"
                class="onoffswitch-checkbox"
                 {{ isGranted ? "checked": "" }}
-               data-href-disconnect="{% block url_disconnect %}{{ path('tbn_disconnect_service_confirm', { 'service': service}) }}{% endblock %}"
+               data-href-disconnect="{% block url_disconnect %}{{ path('app_disconnect_service_confirm', { 'service': service}) }}{% endblock %}"
                data-href-connect="{% block url_connect %}{{ hwi_oauth_login_url(service) }}{% endblock %}">
     </label>
     <span class="when_on {{ isGranted ? "show" : "hidden" }} help-block text-primary">

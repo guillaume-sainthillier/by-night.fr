@@ -9,7 +9,7 @@
 {%- endblock %}
 
 {% block breadcrumb_content_admin -%}
-    {% set item = menu.addItem(info.id, path('tbn_administration_info_edit', {'id': info.id})) %}
+    {% set item = menu.addItem(info.id, path('app_administration_info_edit', {'id': info.id})) %}
 {%- endblock %}
 
 {% block body -%}

@@ -31,7 +31,7 @@ class EventController extends BaseController
     protected function getCreateCommentForm(Comment $comment, Agenda $soiree)
     {
         return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('tbn_comment_new', ['id' => $soiree->getId()]),
+            'action' => $this->generateUrl('app_comment_new', ['id' => $soiree->getId()]),
             'method' => 'POST',
         ])
             ->add('poster', SubmitType::class, [
@@ -45,8 +45,8 @@ class EventController extends BaseController
 
     /**
      * @Tag("detail-event")
-     * @Route("/soiree/{slug}--{id}", name="tbn_agenda_details", requirements={"slug": "[^/]+", "id": "\d+"})
-     * @Route("/soiree/{slug}", name="tbn_agenda_details_old", requirements={"slug": "[^/]+"})
+     * @Route("/soiree/{slug}--{id}", name="app_agenda_details", requirements={"slug": "[^/]+", "id": "\d+"})
+     * @Route("/soiree/{slug}", name="app_agenda_details_old", requirements={"slug": "[^/]+"})
      * @BrowserCache(false)
      *
      * @param City $city
@@ -109,7 +109,7 @@ class EventController extends BaseController
      */
     public function shareAction(Agenda $agenda, EventProfilePicture $eventProfilePicture)
     {
-        $link = $this->generateUrl('tbn_agenda_details', [
+        $link = $this->generateUrl('app_agenda_details', [
             'slug' => $agenda->getSlug(),
             'id' => $agenda->getId(),
             'city' => $agenda->getPlace()->getCity()->getSlug(),

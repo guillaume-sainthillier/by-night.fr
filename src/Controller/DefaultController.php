@@ -20,7 +20,7 @@ class DefaultController extends AbstractController
     const EVENT_PER_CATEGORY = 7;
 
     /**
-     * @Route("/", name="tbn_main_index")
+     * @Route("/", name="app_main_index")
      * @Cache(expires="tomorrow", maxage="86400", smaxage="86400", public=true)
      * @BrowserCache(false)
      *
@@ -81,11 +81,11 @@ class DefaultController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $datas = $form->getData();
 
-            return $this->redirectToRoute('tbn_agenda_index', ['city' => $datas['city']]);
+            return $this->redirectToRoute('app_agenda_index', ['city' => $datas['city']]);
         }
 
         $this->addFlash('error', 'Veuillez seléctionner une ville');
 
-        return $this->redirectToRoute('tbn_main_index');
+        return $this->redirectToRoute('app_main_index');
     }
 }

@@ -17,8 +17,8 @@
 {% block meta_keywords %}{{ username }},{% endblock %}
 
 {% block breadcrumb_content %}
-    {% set item = menu.addItem("Membres", path('tbn_search_query', {'type' : 'membres'})) %}
-    {% set item = menu.addItem(username, path('tbn_user_details', {'id' : user.id, 'slug': user.slug })) %}
+    {% set item = menu.addItem("Membres", path('app_search_query', {'type' : 'membres'})) %}
+    {% set item = menu.addItem(username, path('app_user_details', {'id' : user.id, 'slug': user.slug })) %}
 {% endblock %}
 
 {% set totalCount = count_participations + count_interets %}
@@ -122,7 +122,7 @@
                             <div class="tab-content">
                                 <div class="tab-pane" id="semaine">
                                     <div id="chart-semaine" class="chart"
-                                         data-url="{{ path("tbn_user_stats", {'type': 'semaine', 'id' : user.id, 'slug': user.slug }) }}">
+                                         data-url="{{ path("app_user_stats", {'type': 'semaine', 'id' : user.id, 'slug': user.slug }) }}">
                                         <div class="text-center">
                                             <i class="fa fa-spin fa-spinner fa-5x color-second"></i>
                                         </div>
@@ -130,7 +130,7 @@
                                 </div>
                                 <div class="tab-pane" id="mois">
                                     <div id="chart-mois" class="chart"
-                                         data-url="{{ path("tbn_user_stats", {'type': 'mois', 'id' : user.id, 'slug': user.slug }) }}">
+                                         data-url="{{ path("app_user_stats", {'type': 'mois', 'id' : user.id, 'slug': user.slug }) }}">
                                         <div class="text-center">
                                             <i class="fa fa-spin fa-spinner fa-5x color-success"></i>
                                         </div>
@@ -138,7 +138,7 @@
                                 </div>
                                 <div class="tab-pane active" id="annee">
                                     <div id="chart-annee" class="chart"
-                                         data-url="{{ path("tbn_user_stats", {'type': 'annee', 'id' : user.id, 'slug': user.slug }) }}">
+                                         data-url="{{ path("app_user_stats", {'type': 'annee', 'id' : user.id, 'slug': user.slug }) }}">
                                         <div class="text-center">
                                             <i class="fa fa-spin fa-spinner fa-5x color-info"></i>
                                         </div>

@@ -28,17 +28,17 @@ class AgendaController extends BaseController
         if (null !== $ville) {
             $term = null;
             $search->setCommune([$ville]);
-            $formAction = $this->generateUrl('tbn_agenda_ville', ['ville' => $ville, 'city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_ville', ['ville' => $ville, 'city' => $city->getSlug()]);
         } elseif (null !== $place) {
             $term = null;
             $search->setLieux([$place->getId()]);
-            $formAction = $this->generateUrl('tbn_agenda_place', ['slug' => $place->getSlug(), 'city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_place', ['slug' => $place->getSlug(), 'city' => $city->getSlug()]);
         } elseif (null !== $tag) {
             $term = null;
             $search->setTag($tag);
-            $formAction = $this->generateUrl('tbn_agenda_tags', ['tag' => $tag, 'city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_tags', ['tag' => $tag, 'city' => $city->getSlug()]);
         } elseif (null !== $type) {
-            $formAction = $this->generateUrl('tbn_agenda_sortir', ['type' => $type, 'city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_sortir', ['type' => $type, 'city' => $city->getSlug()]);
             switch ($type) {
                 case 'exposition':
                     $term = \App\SearchRepository\AgendaRepository::EXPO_TERMS;
@@ -62,7 +62,7 @@ class AgendaController extends BaseController
                     break;
             }
         } else {
-            $formAction = $this->generateUrl('tbn_agenda_agenda', ['city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_agenda', ['city' => $city->getSlug()]);
         }
 
         $search->setTerm($term);
@@ -72,14 +72,14 @@ class AgendaController extends BaseController
 
     /**
      * @Cache(expires="+30 minutes", smaxage="1800")
-     * @Route("/agenda/{page}", name="tbn_agenda_pagination", requirements={"page": "\d+"})
-     * @Route("/agenda", name="tbn_agenda_agenda")
-     * @Route("/agenda/sortir/{type}/{page}", name="tbn_agenda_sortir_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
-     * @Route("/agenda/sortir/{type}", name="tbn_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
-     * @Route("/agenda/sortir-a/{slug}/{page}", name="tbn_agenda_place_pagination", requirements={"page": "\d+"})
-     * @Route("/agenda/sortir-a/{slug}", name="tbn_agenda_place")
-     * @Route("/agenda/tag/{tag}/{page}", name="tbn_agenda_tags_pagination", requirements={"page": "\d+"})
-     * @Route("/agenda/tag/{tag}", name="tbn_agenda_tags")
+     * @Route("/agenda/{page}", name="app_agenda_pagination", requirements={"page": "\d+"})
+     * @Route("/agenda", name="app_agenda_agenda")
+     * @Route("/agenda/sortir/{type}/{page}", name="app_agenda_sortir_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
+     * @Route("/agenda/sortir/{type}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
+     * @Route("/agenda/sortir-a/{slug}/{page}", name="app_agenda_place_pagination", requirements={"page": "\d+"})
+     * @Route("/agenda/sortir-a/{slug}", name="app_agenda_place")
+     * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags_pagination", requirements={"page": "\d+"})
+     * @Route("/agenda/tag/{tag}", name="app_agenda_tags")
      * @BrowserCache(false)
      *
      * @param Request $request
@@ -94,7 +94,7 @@ class AgendaController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(Request $request, City $city, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
+    public function indexAction(Request $request, City $city, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'app_agenda_pagination')
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -106,13 +106,13 @@ class AgendaController extends BaseController
             'city' => $city->getSlug(),
         ];
 
-        if ('tbn_agenda_sortir_pagination' === $paginateRoute) {
+        if ('app_agenda_sortir_pagination' === $paginateRoute) {
             $routeParams['type'] = $type;
-        } elseif ('tbn_agenda_tags_pagination' === $paginateRoute) {
+        } elseif ('app_agenda_tags_pagination' === $paginateRoute) {
             $routeParams['tag'] = $tag;
-        } elseif ('tbn_agenda_place_pagination' === $paginateRoute) {
+        } elseif ('app_agenda_place_pagination' === $paginateRoute) {
             $routeParams['slug'] = $slug;
-        } elseif ('tbn_agenda_ville_pagination' === $paginateRoute) {
+        } elseif ('app_agenda_ville_pagination' === $paginateRoute) {
             $routeParams['ville'] = $ville;
         }
         $paginateURL = $this->generateUrl($paginateRoute, $routeParams);
@@ -129,11 +129,11 @@ class AgendaController extends BaseController
         if (null !== $slug) {
             $place = $em->getRepository(Place::class)->findOneBy(['slug' => $slug]);
             if (!$place) {
-                return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()]);
+                return $this->redirectToRoute('app_agenda_agenda', ['city' => $city->getSlug()]);
             }
 
             if ($place->getCity()->getId() !== $city->getId()) {
-                return $this->redirectToRoute('tbn_agenda_place', ['city' => $place->getCity()->getSlug(), 'slug' => $slug]);
+                return $this->redirectToRoute('app_agenda_place', ['city' => $place->getCity()->getSlug(), 'slug' => $slug]);
             }
         }
         $formAction = $this->handleSearch($search, $city, $type, $tag, $ville, $place);

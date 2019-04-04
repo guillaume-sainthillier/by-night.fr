@@ -101,6 +101,6 @@ class SearchType extends AbstractType
 
     public function getName()
     {
-        return 'tbn_search_agenda';
+        return 'app_search_agenda';
     }
 }

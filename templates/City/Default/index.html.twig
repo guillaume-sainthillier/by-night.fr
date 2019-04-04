@@ -16,8 +16,8 @@
             <h1 class="titrebloc text-center">{{ block('titre_agenda') }}</h1>
             <div class="row">
                 <div class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2 col-lg-6 col-lg-push-3 no-margin-form panel panel-primary search_container img-rounded">
-                    <form name="tbn_search_agenda" role="search"
-                          action="{{ path('tbn_agenda_agenda', {'city': city.slug}) }}" method="POST">
+                    <form name="app_search_agenda" role="search"
+                          action="{{ path('app_agenda_agenda', {'city': city.slug}) }}" method="POST">
                         <div class="row">
                             <div class="col-md-8">
                                 <input type="hidden" id="search_du" name="search[du]" value="" />
@@ -76,7 +76,7 @@
                 offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
             </p>
             <br />
-            <a href="{{ path('tbn_agenda_agenda', {'city': city.slug}) }}"
+            <a href="{{ path('app_agenda_agenda', {'city': city.slug}) }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i>
                 Agenda des événéments<span class="hidden-xs hidden-sm">, concerts, spectacles à {{ city.name }}</span>
@@ -92,7 +92,7 @@
                     'title': 'Concert',
                     'icon': 'flaticon-microphone47',
                     'color': 'red',
-                    'link': path('tbn_agenda_sortir', {'type': 'concert', 'city': city.slug}),
+                    'link': path('app_agenda_sortir', {'type': 'concert', 'city': city.slug}),
                     'title_link': 'Concerts à ' ~ city.name,
                     'text': "Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples à
                             " ~ city.name ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et
@@ -101,7 +101,7 @@
                     'title': 'Etudiant',
                     'icon': 'flaticon-students17',
                     'color': 'orange',
-                    'link': path('tbn_agenda_sortir', {'type': 'etudiant', 'city': city.slug}),
+                    'link': path('app_agenda_sortir', {'type': 'etudiant', 'city': city.slug}),
                     'title_link': 'Soirées étudiantes à ' ~ city.name,
                     'text': "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>,
                             d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en 
@@ -111,7 +111,7 @@
                     'title': 'Famille',
                     'icon': 'flaticon-father16',
                     'color': 'green',
-                    'link': path('tbn_agenda_sortir', {'type': 'famille', 'city': city.slug}),
+                    'link': path('app_agenda_sortir', {'type': 'famille', 'city': city.slug}),
                     'title_link': 'Sorties familles à ' ~ city.name,
                     'text': "Trouvez des idées pour <strong>sortir en famille</strong> à " ~ city.name ~ " avec tous les
                             <strong>spectacles enfants</strong>. Découvrez de nouveaux <strong>spectacles jeune public</strong>,
@@ -120,7 +120,7 @@
                     'title': 'Spectacle',
                     'icon': 'flaticon-tickets',
                     'color': 'blue',
-                    'link': path('tbn_agenda_sortir', {'type': 'spectacle', 'city': city.slug}),
+                    'link': path('app_agenda_sortir', {'type': 'spectacle', 'city': city.slug}),
                     'title_link': 'Spectacles à ' ~ city.name,
                     'text': city.name ~ " regorge de <strong>spectacles en " ~ "now"|date('Y') ~ "</strong> ! Divertissement & culture,
                             trouvez votre spectacle préféré ou votre animation favorie grâce à 
@@ -129,7 +129,7 @@
                     'title': 'Exposition',
                     'icon': 'flaticon-theater1',
                     'color': 'darkblue',
-                    'link': path('tbn_agenda_sortir', {'type': 'exposition', 'city': city.slug}),
+                    'link': path('app_agenda_sortir', {'type': 'exposition', 'city': city.slug}),
                     'title_link': 'Les expos à ' ~ city.name,
                     'text': "Les <strong>expos à " ~ city.name ~ "</strong> sont nombreuses ! Envie d'aller visiter les
                     <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir 
@@ -138,7 +138,7 @@
                     'title': 'Organisateur',
                     'icon': 'flaticon-calendar60',
                     'color': 'purple',
-                    'link': path('tbn_agenda_new'),
+                    'link': path('app_agenda_new'),
                     'title_link': 'Créer un événément',
                     'text': "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence
                             de communication</strong> à " ~ city.name ~ " ? <strong>Publiez facilement</strong>
@@ -175,7 +175,7 @@
             {% include 'City/Event/block_preview_event.html.twig' with({'events': topEvents, 'page': 1}) %}
             <br />
             <br />
-            <a href="{{ path('tbn_agenda_agenda', {'city': city.slug}) }}"
+            <a href="{{ path('app_agenda_agenda', {'city': city.slug}) }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i>
                 Tous les événements<span class="hidden-xs hidden-sm">, concerts, spectacles</span>

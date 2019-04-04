@@ -6,16 +6,16 @@
                 <ul class="fa-ul">
                     <li>
                         <i class="fa fa-li fa-angle-right"></i>
-                        <a title="A propos de By Night" href="{{ path('tbn_agenda_about') }}">A propos</a>
+                        <a title="A propos de By Night" href="{{ path('app_agenda_about') }}">A propos</a>
                     </li>
                     <li>
                         <i class="fa fa-li fa-angle-right"></i>
-                        <a title="En savoir plus sur la création d'événements" href="{{ path('tbn_agenda_plus') }}">En
+                        <a title="En savoir plus sur la création d'événements" href="{{ path('app_agenda_plus') }}">En
                             savoir plus</a>
                     </li>
                     <li>
                         <i class="fa fa-li fa-angle-right"></i>
-                        <a title="Accéder aux mentions légales" href="{{ path('tbn_agenda_mention_legales') }}">Mentions
+                        <a title="Accéder aux mentions légales" href="{{ path('app_agenda_mention_legales') }}">Mentions
                             légales</a>
                     </li>
                     <li>
@@ -35,7 +35,7 @@
                     {% for city in cities %}
                         <li>
                             <i class="fa fa-li fa-angle-right"></i>
-                            <a title="Découvrir les événements sur {{ city.name }}" href="{{ path('tbn_agenda_index', {'city' : city.slug}) }}">
+                            <a title="Découvrir les événements sur {{ city.name }}" href="{{ path('app_agenda_index', {'city' : city.slug}) }}">
                                 {{ city.name }}
                             </a>
                         </li>

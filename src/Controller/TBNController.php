@@ -39,7 +39,7 @@ class TBNController extends AbstractController
      *
      * @return null|object|RedirectResponse|Agenda
      */
-    protected function checkEventUrl(City $city, $slug, $id, $routeName = 'tbn_agenda_details', array $extraParams = [])
+    protected function checkEventUrl(City $city, $slug, $id, $routeName = 'app_agenda_details', array $extraParams = [])
     {
         $em       = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository(Agenda::class);

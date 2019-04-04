@@ -34,7 +34,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class EventController extends BaseController
 {
     /**
-     * @Route("/annuler/{slug}", name="tbn_agenda_annuler", requirements={"slug": ".+"})
+     * @Route("/annuler/{slug}", name="app_agenda_annuler", requirements={"slug": ".+"})
      *
      * @param Request $request
      * @param Agenda  $agenda
@@ -57,7 +57,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/brouillon/{slug}", name="tbn_agenda_brouillon", requirements={"slug": ".+"})
+     * @Route("/brouillon/{slug}", name="app_agenda_brouillon", requirements={"slug": ".+"})
      *
      * @param Request $request
      * @param Agenda  $agenda
@@ -80,7 +80,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/mes-soirees", name="tbn_agenda_list")
+     * @Route("/mes-soirees", name="app_agenda_list")
      */
     public function indexAction()
     {
@@ -96,7 +96,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/supprimer/{id}", name="tbn_agenda_delete", requirements={"id": "\d+"})
+     * @Route("/supprimer/{id}", name="app_agenda_delete", requirements={"id": "\d+"})
      *
      * @param Agenda $agenda
      *
@@ -114,11 +114,11 @@ class EventController extends BaseController
             'Votre événement a bien été supprimé'
         );
 
-        return $this->redirect($this->generateUrl('tbn_agenda_list'));
+        return $this->redirect($this->generateUrl('app_agenda_list'));
     }
 
     /**
-     * @Route("/corriger/{slug}", name="tbn_agenda_edit", requirements={"slug": ".+"})
+     * @Route("/corriger/{slug}", name="app_agenda_edit", requirements={"slug": ".+"})
      *
      * @param Request                  $request
      * @param Agenda                   $agenda
@@ -148,7 +148,7 @@ class EventController extends BaseController
                     'Votre événement a bien été modifié'
                 );
 
-                return $this->redirect($this->generateUrl('tbn_agenda_list'));
+                return $this->redirect($this->generateUrl('app_agenda_list'));
             } catch (FileException $exception) {
                 $logger->critical($exception);
                 $this->addFlash('error', 'Un problème a eu lieu avec l\'envoi de votre pièce jointe');
@@ -168,7 +168,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/import", name="tbn_agenda_import_events")
+     * @Route("/import", name="app_agenda_import_events")
      * @Security("has_role('ROLE_FACEBOOK_LIST_EVENTS')")
      *
      * @param FacebookListEvents   $importer
@@ -218,7 +218,7 @@ class EventController extends BaseController
             }
         }
 
-        return $this->redirectToRoute('tbn_agenda_list');
+        return $this->redirectToRoute('app_agenda_list');
     }
 
     protected function addImportMessage(ExplorationHandler $explorationHandler)
@@ -265,7 +265,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/espace-perso/nouvelle-soiree", name="tbn_agenda_new")
+     * @Route("/espace-perso/nouvelle-soiree", name="app_agenda_new")
      *
      * @param Request                  $request
      * @param EventConstraintValidator $validator
@@ -319,7 +319,7 @@ class EventController extends BaseController
                 );
             }
 
-            return $this->redirect($this->generateUrl('tbn_agenda_list'));
+            return $this->redirect($this->generateUrl('app_agenda_list'));
         }
 
         return $this->render('EspacePerso/new.html.twig', [
@@ -331,7 +331,7 @@ class EventController extends BaseController
     protected function createDeleteForm(Agenda $agenda)
     {
         return $this->createFormBuilder($agenda, [
-            'action' => $this->generateUrl('tbn_agenda_delete', [
+            'action' => $this->generateUrl('app_agenda_delete', [
                 'id' => $agenda->getId(),
             ]),
             'method' => 'DELETE',
@@ -348,7 +348,7 @@ class EventController extends BaseController
     protected function createEditForm(Agenda $agenda, SocialManager $socialManager)
     {
         $options = \array_merge($this->getAgendaOptions($socialManager), [
-            'action' => $this->generateUrl('tbn_agenda_edit', [
+            'action' => $this->generateUrl('app_agenda_edit', [
                 'slug' => $agenda->getSlug(),
             ]),
             'method' => 'POST',
@@ -383,7 +383,7 @@ class EventController extends BaseController
     protected function createCreateForm(Agenda $agenda, SocialManager $socialManager)
     {
         $options = \array_merge($this->getAgendaOptions($socialManager), [
-            'action' => $this->generateUrl('tbn_agenda_new'),
+            'action' => $this->generateUrl('app_agenda_new'),
             'method' => 'POST',
         ]);
 
@@ -407,8 +407,8 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/participer/{id}", name="tbn_user_participer", defaults={"participer": true, "interet": false})
-     * @Route("/interet/{id}", name="tbn_user_interesser", defaults={"participer": false, "interet": true})
+     * @Route("/participer/{id}", name="app_user_participer", defaults={"participer": true, "interet": false})
+     * @Route("/interet/{id}", name="app_user_interesser", defaults={"participer": false, "interet": true})
      *
      * @param Agenda        $agenda
      * @param FacebookAdmin $facebookAdmin

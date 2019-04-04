@@ -27,7 +27,7 @@ class CommentController extends BaseController
     }
 
     /**
-     * @Route("/{id}/{page}", name="tbn_comment_list", requirements={"id": "\d+", "page": "\d+"})
+     * @Route("/{id}/{page}", name="app_comment_list", requirements={"id": "\d+", "page": "\d+"})
      * @BrowserCache(false)
      *
      * @param Agenda $soiree
@@ -58,7 +58,7 @@ class CommentController extends BaseController
     }
 
     /**
-     * @Route("/{id}/nouveau", name="tbn_comment_new", requirements={"id": "\d+"})
+     * @Route("/{id}/nouveau", name="app_comment_new", requirements={"id": "\d+"})
      *
      * @param Request          $request
      * @param Agenda           $soiree
@@ -140,7 +140,7 @@ class CommentController extends BaseController
     protected function getCreateForm(Comment $comment, Agenda $soiree)
     {
         return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('tbn_comment_new', ['id' => $soiree->getId()]),
+            'action' => $this->generateUrl('app_comment_new', ['id' => $soiree->getId()]),
             'method' => 'POST',
         ])
             ->add('poster', SubmitType::class, [

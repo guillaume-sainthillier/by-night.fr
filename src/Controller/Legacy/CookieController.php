@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CookieController extends AbstractController
 {
     /**
-     * @Route("/cookie", name="tbn_main_cookie")
+     * @Route("/cookie", name="app_main_cookie")
      */
     public function indexAction()
     {

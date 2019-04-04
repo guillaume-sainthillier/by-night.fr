@@ -15,7 +15,7 @@ class DefaultController extends BaseController
 {
     /**
      * @Cache(expires="+2 hours", smaxage="7200")
-     * @Route("/", name="tbn_agenda_index")
+     * @Route("/", name="app_agenda_index")
      * @BrowserCache(false)
      *
      * @param City $city

@@ -26,8 +26,8 @@ class CommonController extends TBNController
     const LIFE_TIME_CACHE = 86400; // 3600*24
 
     /**
-     * @Route("/header/{city}", name="tbn_private_header_site")
-     * @Route("/header", name="tbn_private_header")
+     * @Route("/header/{city}", name="app_private_header_site")
+     * @Route("/header", name="app_private_header")
      *
      * @param City|null $city
      *

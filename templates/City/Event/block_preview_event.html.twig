@@ -30,7 +30,7 @@
                 {% endif %}
                 <h3 class="modal-title nom_soiree">
                     <a title="Tous les détails de {{ soiree.nom }} "
-                       href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug}) }}"
+                       href="{{ path('app_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug}) }}"
                        {% if microdata %}itemprop="url"{% endif %}>
                         <span {% if microdata %}itemprop="name"{% endif %}>{{ soiree.nom }}</span>
                     </a>
@@ -74,7 +74,7 @@
                          itemtype="http://schema.org/Place"{% endif %}>
                         <i class="fa fa-map-marker pull-left"></i>
                         <a {% if microdata %}itemprop="name"{% endif %}
-                           href="{{ path('tbn_agenda_place', {'slug': place.slug, 'city': soiree.place.city.slug}) }}"
+                           href="{{ path('app_agenda_place', {'slug': place.slug, 'city': soiree.place.city.slug}) }}"
                            title="Sortir à {{ place.nom }}"><strong>{{ place.nom }}</strong></a>
                         {% if microdata and place.latitude and place.longitude %}
                             <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
@@ -101,7 +101,7 @@
                         <i class="fa fa-tag pull-left"></i>
                         {% for tag in distinctTags %}
                             <a class="label label-info" title="{{ tag }} à {{ soiree.place.city.name }}"
-                               href="{{ path('tbn_agenda_tags', {'tag' : tag|trim, 'city': soiree.place.city.slug}) }}">
+                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'city': soiree.place.city.slug}) }}">
                                 <strong>{{ tag }}</strong>
                             </a>
                         {% endfor %}
@@ -118,7 +118,7 @@
                         <i class="fa fa-user pull-left"></i>
                         Par
                         <a class="display_inline"
-                           href="{{ path('tbn_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug} ) }}"
+                           href="{{ path('app_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug} ) }}"
                            title="Accédez au profil de {{ soiree.user.username }}">
                             {{ soiree.user.username }}
                         </a>

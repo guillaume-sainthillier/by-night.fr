@@ -30,7 +30,7 @@ class DefaultController extends BaseController
             $params['q'] = $term;
         }
 
-        return new RedirectResponse($this->generateUrl('tbn_search_query', $params));
+        return new RedirectResponse($this->generateUrl('app_search_query', $params));
     }
 
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
@@ -58,8 +58,8 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @Route("/{slug}--{id}", name="tbn_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
-     * @Route("/{username}", name="tbn_user_details_old", requirements={"username": "[^/]+"})
+     * @Route("/{slug}--{id}", name="app_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
+     * @Route("/{username}", name="app_user_details_old", requirements={"username": "[^/]+"})
      *
      * @param null $id
      * @param null $slug
@@ -69,7 +69,7 @@ class DefaultController extends BaseController
      */
     public function indexAction($id = null, $slug = null, $username = null)
     {
-        $result = $this->checkUserUrl($slug, $username, $id, 'tbn_user_details');
+        $result = $this->checkUserUrl($slug, $username, $id, 'app_user_details');
         if ($result instanceof Response) {
             return $result;
         }
@@ -89,8 +89,8 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @Route("/{slug}--{id}/stats/{type}", name="tbn_user_stats", requirements={"slug": "[^/]+", "id": "\d+", "type": "semaine|mois|annee"})
-     * @Route("/{username}/stats/{type}", name="tbn_user_stats_old", requirements={"username": "[^/]+", "type": "semaine|mois|annee"})
+     * @Route("/{slug}--{id}/stats/{type}", name="app_user_stats", requirements={"slug": "[^/]+", "id": "\d+", "type": "semaine|mois|annee"})
+     * @Route("/{username}/stats/{type}", name="app_user_stats_old", requirements={"username": "[^/]+", "type": "semaine|mois|annee"})
      *
      * @param Request $request
      * @param $type
@@ -102,7 +102,7 @@ class DefaultController extends BaseController
      */
     public function statsAction(Request $request, $type, $id = null, $slug = null, $username = null)
     {
-        $result = $this->checkUserUrl($slug, $username, $id, 'tbn_user_stats', ['type' => $type]);
+        $result = $this->checkUserUrl($slug, $username, $id, 'app_user_stats', ['type' => $type]);
         if ($result instanceof Response) {
             return $result;
         }

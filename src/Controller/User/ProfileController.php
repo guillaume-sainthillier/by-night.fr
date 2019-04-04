@@ -60,7 +60,7 @@ class ProfileController extends BaseController
     }
 
     /**
-     * @Route("/delete", name="tbn_user_delete")
+     * @Route("/delete", name="app_user_delete")
      *
      * @param Request $request
      * @param UserManagerInterface $userManager
@@ -115,7 +115,7 @@ class ProfileController extends BaseController
 
             $this->addFlash('info', 'Votre compte a bien été supprimé. A bientôt sur By Night !');
 
-            return $this->redirectToRoute('tbn_main_index');
+            return $this->redirectToRoute('app_main_index');
         } else {
             $errors = $form->getErrors(true);
             foreach ($errors as $error) {

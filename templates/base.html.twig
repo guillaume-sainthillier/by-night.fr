@@ -31,7 +31,7 @@ _______     __  _   _ _____ _____ _    _ _______
         <meta property="og:description" content="{% spaceless %}{% block og_description %}{{ block('description') }}{% endblock %}{% endspaceless %}">
         <meta property="og:title" content="{% spaceless %}{% block og_titre %}{{ block('title') }}{% endblock %}{% endspaceless %}">
         <meta property="og:type" content="{% spaceless %}{% block og_type %}website{% endblock %}{% endspaceless %}">
-        <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('tbn_main_index') }}{% endblock %}{% endspaceless %}">
+        <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('app_main_index') }}{% endblock %}{% endspaceless %}">
         <meta property="og:locale" content="fr" />
         <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(app_asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
         <!-- ./OpenGraph -->
@@ -110,19 +110,19 @@ _______     __  _   _ _____ _____ _    _ _______
             <header>
                 <!-- Menu -->
                 {% if city %}
-                    {{ render_esi(url('tbn_private_header_site', {'city' : city.slug})) }}
+                    {{ render_esi(url('app_private_header_site', {'city' : city.slug})) }}
                 {% else %}
-                    {{ render_esi(url('tbn_private_header')) }}
+                    {{ render_esi(url('app_private_header')) }}
                 {% endif %}
                 <!-- ./Menu -->
                 {% block breadcrumb %}
                     <div id="bread" class="bg-white">
                         <div class="container">
                             {% if city %}
-                                {% set item = menu.addItem(city.country.name, path('tbn_main_index')) %}
-                                {% set item = menu.addItem(city.name, path('tbn_agenda_index', {'city': city.slug})) %}
+                                {% set item = menu.addItem(city.country.name, path('app_main_index')) %}
+                                {% set item = menu.addItem(city.name, path('app_agenda_index', {'city': city.slug})) %}
                             {% else %}
-                                {% set item = menu.addItem('By Night', path('tbn_main_index')) %}
+                                {% set item = menu.addItem('By Night', path('app_main_index')) %}
                             {% endif %}
                             {% block breadcrumb_content %}{% endblock %}
                             {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
@@ -179,7 +179,7 @@ _______     __  _   _ _____ _____ _    _ _______
                 <div class="container sous-header">
                         {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer')) }}
                         <p class="pull-left">
-                            <a href="{{ path('tbn_main_index') }}"><strong>By Night</strong> v{{ app_version }}</a>
+                            <a href="{{ path('app_main_index') }}"><strong>By Night</strong> v{{ app_version }}</a>
                             | © {{ "now"|date('Y') }} - Tous droits réservés
                         </p>
                         <p class="pull-right">
@@ -207,7 +207,7 @@ _______     __  _   _ _____ _____ _    _ _______
                     fixed: true,
                     policyButton: true,
                     policyText: 'En savoir plus',
-                    policyURL: '{{ path('tbn_main_cookie') }}'
+                    policyURL: '{{ path('app_main_cookie') }}'
                 });
             });
         </script>

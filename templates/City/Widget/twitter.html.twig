@@ -25,7 +25,7 @@
             }(document, "script", "twitter-wjs"));
         </script>
         <div>
-            {{ render_esi(url('tbn_agenda_tweeter_feed', {'city': city.slug})) }}
+            {{ render_esi(url('app_agenda_tweeter_feed', {'city': city.slug})) }}
         </div>
     </div>
 {% endblock %}

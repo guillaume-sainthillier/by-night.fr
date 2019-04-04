@@ -40,6 +40,6 @@ class CommentType extends AbstractType
      */
     public function getName()
     {
-        return 'tbn_commentbundle_comment';
+        return 'app_commentbundle_comment';
     }
 }

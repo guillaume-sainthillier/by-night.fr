@@ -14,22 +14,22 @@
 
 {% block breadcrumb_content %}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", path('tbn_agenda_list')) %}
+    {% set item = menu.addItem("Mes événements", path('app_agenda_list')) %}
 {% endblock %}
 
 {% block body -%}
     <div class="text-center">
-        <a class="btn btn-success btn-raised" href="{{ path('tbn_agenda_new') }}">
+        <a class="btn btn-success btn-raised" href="{{ path('app_agenda_new') }}">
             <i class="fa fa-plus"></i>
             Nouvel événement
         </a>
         {% if canSynchro %}
-            <a class="btn btn-info btn-raised" href="{{ path('tbn_agenda_import_events') }}">
+            <a class="btn btn-info btn-raised" href="{{ path('app_agenda_import_events') }}">
                 <i class="fa fa-refresh"></i>
                 Synchroniser mes événements Facebook
             </a>
         {% else %}
-            <a id="connect-fb" class="btn btn-info btn-raised" href="{{ hwi_oauth_login_url('facebook_list_events') }}" data-href="{{ path('tbn_agenda_import_events') }}">
+            <a id="connect-fb" class="btn btn-info btn-raised" href="{{ hwi_oauth_login_url('facebook_list_events') }}" data-href="{{ path('app_agenda_import_events') }}">
                 <i class="fa fa-facebook"></i>
                 Me connecter à Facebook pour synchroniser mes événéments
             </a>
@@ -56,12 +56,12 @@
             {% for soiree in soirees %}
                 <tr>
                     <td>
-                        <a class="btn btn-primary" href="{{ path('tbn_agenda_edit', {'slug': soiree.slug}) }}"
+                        <a class="btn btn-primary" href="{{ path('app_agenda_edit', {'slug': soiree.slug}) }}"
                            title="Corriger l'événement">
                             <i class="fa fa-pencil"></i>
                         </a>
                     </td>
-                    <td><a href="{{ path('tbn_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug}) }}"
+                    <td><a href="{{ path('app_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug}) }}"
                            title="Accéder à l'événement">{{ soiree.nom }}</a></td>
                     <td>{{ soiree.place ? soiree.place.nom : '' }}</td>
                     <td>{{ soiree.place ? soiree.place.ville : '' }}</td>
@@ -72,7 +72,7 @@
                         <div class="togglebutton">
                             <label>
                                 <input type="checkbox" class="brouillon"
-                                       data-href="{{ path('tbn_agenda_brouillon', {'slug': soiree.slug}) }}" {{ not soiree.isBrouillon ? 'checked' : '' }} />
+                                       data-href="{{ path('app_agenda_brouillon', {'slug': soiree.slug}) }}" {{ not soiree.isBrouillon ? 'checked' : '' }} />
                             </label>
                         </div>
                     </td>
@@ -80,7 +80,7 @@
                         <div class="togglebutton">
                             <label>
                                 <input type="checkbox" class="annuler"
-                                       data-href="{{ path('tbn_agenda_annuler', {'slug': soiree.slug}) }}" {{ soiree.modificationDerniereMinute ? 'checked' : '' }} />
+                                       data-href="{{ path('app_agenda_annuler', {'slug': soiree.slug}) }}" {{ soiree.modificationDerniereMinute ? 'checked' : '' }} />
                             </label>
                         </div>
                     </td>

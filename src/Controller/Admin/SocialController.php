@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SocialController extends AbstractController
 {
     /**
-     * @Route("/connexion", name="tbn_administration_connect_site")
+     * @Route("/connexion", name="app_administration_connect_site")
      *
      * @param $service
      * @param SessionInterface $session
@@ -38,7 +38,7 @@ class SocialController extends AbstractController
     }
 
     /**
-     * @Route("/deconnexion", name="tbn_administration_disconnect_service")
+     * @Route("/deconnexion", name="app_administration_disconnect_service")
      * @ParamConverter("social", options={"default_facebook_name": "facebook_admin"})
      *
      * @return JsonResponse
@@ -55,7 +55,7 @@ class SocialController extends AbstractController
     }
 
     /**
-     * @Route("/deconnexion/confirmation", name="tbn_administration_disconnect_service_confirm")
+     * @Route("/deconnexion/confirmation", name="app_administration_disconnect_service_confirm")
      *
      * @param $service
      *
@@ -65,7 +65,7 @@ class SocialController extends AbstractController
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,
-            'url'     => $this->generateUrl('tbn_administration_disconnect_service', ['service' => $service]),
+            'url'     => $this->generateUrl('app_administration_disconnect_service', ['service' => $service]),
         ]);
     }
 }

@@ -215,7 +215,7 @@ var App = {
     //Deps: ['bootstrap']
     initTooltips: function (selecteur)
     {
-        $(".tbn_tooltip", selecteur || document).tooltip();
+        $(".app_tooltip", selecteur || document).tooltip();
     },
     //Deps: ['scrollTo']
     initScrollTo: function ()

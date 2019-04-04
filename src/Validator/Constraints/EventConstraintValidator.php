@@ -102,7 +102,7 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         if ($reject->isBadUser()) {
-            $link = $this->router->generate('tbn_agenda_details', [
+            $link = $this->router->generate('app_agenda_details', [
                 'slug' => $event->getSlug(),
                 'id'   => $event->getId(),
                 'city' => $event->getPlace()->getCity()->getSlug(),

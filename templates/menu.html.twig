@@ -6,7 +6,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="{{ path('tbn_main_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand">
+            <a href="{{ path('app_main_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand">
                 <img src="{{ app_asset('img/by-night_40x40.png') }}" width="40" height="40" alt="By Night" />
             </a>
         </div>
@@ -14,23 +14,23 @@
             <ul class="nav navbar-nav">
                 {% if city %}
                 <li>
-                    <a href="{{ path('tbn_agenda_index', {'city': city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>
+                    <a href="{{ path('app_agenda_index', {'city': city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>
                 </li>
                     <li>
-                    <a href="{{ path('tbn_agenda_agenda', {'city': city.slug}) }}" title="L'agenda des sorties à {{ city.name }}, c'est par ici !">Agenda</a>
+                    <a href="{{ path('app_agenda_agenda', {'city': city.slug}) }}" title="L'agenda des sorties à {{ city.name }}, c'est par ici !">Agenda</a>
                 </li>
                 {% endif %}
                 <li>
-                    <a title="Créez votre événement en 1 clic !" href="{{ path('tbn_agenda_new') }}">Créer un événement</a>
+                    <a title="Créez votre événement en 1 clic !" href="{{ path('app_agenda_new') }}">Créer un événement</a>
                 </li>
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") -%}
                     <li>
-                        <a title="Voir mes soirées" href="{{ path('tbn_agenda_list') }}">Mes événements</a>
+                        <a title="Voir mes soirées" href="{{ path('app_agenda_list') }}">Mes événements</a>
                     </li>
                 {%- endif %}
             </ul>
 
-            <form action="{{ path('tbn_search_query') }}" method="GET" class="navbar-form navbar-left" role="search">
+            <form action="{{ path('app_search_query') }}" method="GET" class="navbar-form navbar-left" role="search">
                 <div class="form-group">
                     <input type="text" class="form-control col-md-8" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
                 </div>
@@ -42,7 +42,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ path('easyadmin') }}">Administration</a></li>
-                        <li><a href="{{ path('tbn_administration_info_index') }}">Réseaux Sociaux</a></li>
+                        <li><a href="{{ path('app_administration_info_index') }}">Réseaux Sociaux</a></li>
                     </ul>
                 </li>
                 {% endif %}
@@ -56,7 +56,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a title="Accéder à mon compte" href="{{ path('fos_user_profile_edit') }}"><i class="fa fa-cogs"></i> Mon compte</a></li>
-                            <li><a title="Accéder à mon profil public" href="{{ path('tbn_user_details', {'id' : app.user.id, 'slug': app.user.slug}) }}"><i class="fa fa-user"></i> Mon profil</a></li>
+                            <li><a title="Accéder à mon profil public" href="{{ path('app_user_details', {'id' : app.user.id, 'slug': app.user.slug}) }}"><i class="fa fa-user"></i> Mon profil</a></li>
                             <li class="divider"></li>
                             <li><a href="{{ path('fos_user_security_logout') }}"><i class="fa fa-power-off"></i> Déconnexion</a></li>                                     
                         </ul>
