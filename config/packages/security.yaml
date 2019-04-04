@@ -16,45 +16,45 @@ security:
             security: false
 
         main:
+            anonymous: true
             pattern: ^/
-            anonymous:    true
 
             form_login:
                 provider: fos_userbundle
                 csrf_token_generator: security.csrf.token_manager
-                login_path: /login
-                check_path: /login_check
+                use_referer: true
+                login_path: fos_user_security_login
+                check_path: fos_user_security_check
                 success_handler: App\Handler\AuthenticationHandler
                 failure_handler: App\Handler\AuthenticationHandler
 
             oauth:
                 remember_me: true
                 resource_owners:
-                    facebook_admin:    "/login-social/check-facebook-admin"
-                    facebook_list_events:    "/login-social/check-facebook-list-events"
-                    facebook:           "/login-social/check-facebook"
-                    google:             "/login-social/check-google"
-                    twitter:            "/login-social/check-twitter"
-                login_path:        /login
-                failure_path:      /login
+                    facebook_admin: "/login-social/check-facebook-admin"
+                    facebook_list_events: "/login-social/check-facebook-list-events"
+                    facebook: "/login-social/check-facebook"
+                    google: "/login-social/check-google"
+                    twitter: "/login-social/check-twitter"
+                login_path: fos_user_security_login
+                failure_path: fos_user_security_login
 
                 oauth_user_provider:
-                    #this is my custom user provider, created from FOSUBUserProvider - will manage the
-                    #automatic user registration on your site, with data from the provider (facebook. google, etc.)
                     service: App\Security\Core\User\FOSUBUserProvider
-            logout:
-                invalidate_session:   true
 
             remember_me:
                 secret:   '%kernel.secret%'
                 lifetime: 604800 # 1 week in seconds
                 path:     /
 
+            logout: true
+
     access_control:
-        - { path: ^/espace-perso, role: IS_AUTHENTICATED_REMEMBERED }
-        - { path: ^/commentaire, role: IS_AUTHENTICATED_REMEMBERED }
-        - { path: ^/social, role: IS_AUTHENTICATED_REMEMBERED }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/_administration, role: ROLE_ADMIN }
-        - { path: ^/_private, roles: [IS_AUTHENTICATED_ANONYMOUSLY], ips: [127.0.0.1] }
+        - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/inscription, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/espace-perso, roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/commentaire, roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/social, roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/_administration, roles: ROLE_ADMIN }
+        - { path: ^/_private, roles: IS_AUTHENTICATED_ANONYMOUSLY, ips: [127.0.0.1, ::1, 192.168.0.1/24] }

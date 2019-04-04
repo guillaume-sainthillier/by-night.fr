@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Migrations;
+namespace DoctrineMigrations;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Migrations\AbortMigrationException;

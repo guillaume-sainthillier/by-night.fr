@@ -1,9 +1,5 @@
-framework:
-    templating:
-        engines: ['twig']
-
 twig:
-    paths: ['%kernel.project_dir%/templates']
+    default_path: '%kernel.project_dir%/templates'
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     form_themes:
@@ -17,5 +13,5 @@ twig:
         eventProfilePicture: '@App\Picture\EventProfilePicture'
         facebook_app_id: "%facebook_id_app%"
         googleMapKey: "%google_map_key%"
-        app_version: "v%application_version%"
+        app_version: "%application_version%"
         event_seo: '@App\SEO\EventSEO'

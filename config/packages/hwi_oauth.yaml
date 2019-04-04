@@ -5,6 +5,7 @@ hwi_oauth:
     connect:
         account_connector: App\Security\Core\User\FOSUBUserProvider
         confirmation: false
+
     # name of the firewall in which this bundle is active, this setting MUST be set
     firewall_names: [main]
     fosub:
@@ -14,6 +15,7 @@ hwi_oauth:
             facebook: facebook_id
             google:   google_id
             twitter:  twitter_id
+
     resource_owners:
         twitter:
             type:               twitter

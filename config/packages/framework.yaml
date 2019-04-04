@@ -1,20 +1,27 @@
 framework:
     secret: '%env(APP_SECRET)%'
     default_locale: fr
-    csrf_protection: ~
-    http_method_override: true
+    #csrf_protection: ~
+    #http_method_override: true
+
+    templating:
+        engines: ['twig']
 
     cache:
         app: cache.adapter.redis
+
     session:
         handler_id: ~
+        cookie_secure: auto
+        cookie_samesite: lax
         save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"
 
     assets:
         base_url: '%env(APP_ASSET_URL)%'
         packages:
             asset: ~
-    esi: { enabled: true }
+
+    esi: true
     fragments: ~
     php_errors:
         log: true

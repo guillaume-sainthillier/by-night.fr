@@ -2,13 +2,9 @@
 fos_http_cache:
     tags:
         enabled: true
+
     proxy_client:
         varnish:
-            http:
-                servers:
-                    - 127.0.0.1
-                base_url: '%env(APP_URL)%'
-        symfony:
             http:
                 servers:
                     - 127.0.0.1
