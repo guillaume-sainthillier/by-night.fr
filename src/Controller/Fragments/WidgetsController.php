@@ -3,7 +3,7 @@
 namespace App\Controller\Fragments;
 
 use App\Annotation\BrowserCache;
-use App\Controller\TBNController as Controller;
+use App\Controller\TBNController as BaseController;
 use App\Entity\User;
 use App\Parser\ProgrammeTVParser;
 use DateTime;
@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author guillaume
  */
-class WidgetsController extends Controller
+class WidgetsController extends BaseController
 {
     const FB_MEMBERS_LIMIT = 100;
 

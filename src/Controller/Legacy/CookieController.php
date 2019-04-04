@@ -2,10 +2,10 @@
 
 namespace App\Controller\Legacy;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-class CookieController extends Controller
+class CookieController extends AbstractController
 {
     /**
      * @Route("/cookie", name="tbn_main_cookie")

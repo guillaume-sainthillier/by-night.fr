@@ -9,7 +9,7 @@ use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/api")
  */
-class ApiController extends Controller
+class ApiController extends AbstractController
 {
     const MAX_RESULTS = 7;
 

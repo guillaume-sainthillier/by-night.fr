@@ -3,7 +3,7 @@
 namespace App\Controller\City;
 
 use App\Annotation\BrowserCache;
-use App\Controller\TBNController as Controller;
+use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\Calendrier;
 use App\Entity\City;
@@ -14,6 +14,7 @@ use App\Invalidator\EventInvalidator;
 use App\Picture\EventProfilePicture;
 use App\Social\FacebookAdmin;
 use DateTime;
+use Doctrine\Common\Cache\Cache as DoctrineCache;
 use Exception;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use FOS\HttpCacheBundle\Http\SymfonyResponseTagger;
@@ -25,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class EventController extends Controller
+class EventController extends BaseController
 {
     protected function getCreateCommentForm(Comment $comment, Agenda $soiree)
     {
@@ -35,8 +36,8 @@ class EventController extends Controller
         ])
             ->add('poster', SubmitType::class, [
                 'label' => 'Poster',
-                'attr'  => [
-                    'class'             => 'btn btn-primary btn-submit btn-raised',
+                'attr' => [
+                    'class' => 'btn btn-primary btn-submit btn-raised',
                     'data-loading-text' => 'En cours...',
                 ],
             ]);
@@ -48,15 +49,15 @@ class EventController extends Controller
      * @Route("/soiree/{slug}", name="tbn_agenda_details_old", requirements={"slug": "[^/]+"})
      * @BrowserCache(false)
      *
-     * @param City                  $city
+     * @param City $city
      * @param SymfonyResponseTagger $responseTagger
-     * @param FacebookAdmin         $facebookAdmin
+     * @param FacebookAdmin $facebookAdmin
      * @param $slug
      * @param null $id
      *
      * @return Agenda|null|object|RedirectResponse|Response
      */
-    public function detailsAction(City $city, SymfonyResponseTagger $responseTagger, FacebookAdmin $facebookAdmin, $slug, $id = null)
+    public function detailsAction(City $city, DoctrineCache $memoryCache, SymfonyResponseTagger $responseTagger, FacebookAdmin $facebookAdmin, $slug, $id = null)
     {
         $result = $this->checkEventUrl($city, $slug, $id);
         if ($result instanceof Response) {
@@ -64,16 +65,16 @@ class EventController extends Controller
         }
         $agenda = $result;
 
-        $comment    = new Comment();
-        $form       = $this->getCreateCommentForm($comment, $agenda);
+        $comment = new Comment();
+        $form = $this->getCreateCommentForm($comment, $agenda);
         $nbComments = $agenda->getCommentaires()->count();
 
         $response = $this->render('City/Agenda/details.html.twig', [
-            'city'        => $city,
-            'soiree'      => $agenda,
-            'form'        => $form->createView(),
+            'city' => $city,
+            'soiree' => $agenda,
+            'form' => $form->createView(),
             'nb_comments' => $nbComments,
-            'stats'       => $this->getAgendaStats($agenda, $facebookAdmin),
+            'stats' => $this->getAgendaStats($agenda, $memoryCache, $facebookAdmin),
         ]);
 
         $now = new DateTime();
@@ -99,7 +100,7 @@ class EventController extends Controller
     /**
      * @Cache(expires="+12 hours", smaxage="43200")
      *
-     * @param Agenda              $agenda
+     * @param Agenda $agenda
      * @param EventProfilePicture $eventProfilePicture
      *
      * @return Response
@@ -110,16 +111,16 @@ class EventController extends Controller
     {
         $link = $this->generateUrl('tbn_agenda_details', [
             'slug' => $agenda->getSlug(),
-            'id'   => $agenda->getId(),
+            'id' => $agenda->getId(),
             'city' => $agenda->getPlace()->getCity()->getSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $eventProfile = $eventProfilePicture->getOriginalPictureUrl($agenda);
 
         $page = new Page([
-            'url'   => $link,
+            'url' => $link,
             'title' => $agenda->getNom(),
-            'text'  => $agenda->getDescriptif(),
+            'text' => $agenda->getDescriptif(),
             'image' => $eventProfile,
         ]);
 
@@ -127,19 +128,19 @@ class EventController extends Controller
 
         return $this->render('City/Hinclude/shares.html.twig', [
             'shares' => [
-                'facebook'    => $page->facebook,
-                'twitter'     => $page->twitter
+                'facebook' => $page->facebook,
+                'twitter' => $page->twitter
             ],
         ]);
     }
 
-    protected function getAgendaStats(Agenda $agenda, FacebookAdmin $facebookAdmin)
+    protected function getAgendaStats(Agenda $agenda, DoctrineCache $cache, FacebookAdmin $facebookAdmin)
     {
-        $em   = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
         $participer = false;
-        $interet    = false;
+        $interet = false;
 
         $user = $this->getUser();
         if ($user) {
@@ -147,15 +148,14 @@ class EventController extends Controller
              * @var User
              */
             $repoCalendrier = $em->getRepository(Calendrier::class);
-            $calendrier     = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
+            $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
             if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();
-                $interet    = $calendrier->getInteret();
+                $interet = $calendrier->getInteret();
             }
 
             if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
-                $cache = $this->get('memory_cache');
-                $key   = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
+                $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
                 if (!$cache->contains($key)) {
                     $stats = $facebookAdmin->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
                     $cache->save($key, $stats);
@@ -169,7 +169,7 @@ class EventController extends Controller
                     }
 
                     $participer = $calendrier->getParticipe() || $stats['participer'];
-                    $interet    = $calendrier->getInteret() || $stats['interet'];
+                    $interet = $calendrier->getInteret() || $stats['interet'];
 
                     $calendrier
                         ->setParticipe($participer)
@@ -183,11 +183,11 @@ class EventController extends Controller
 
         return [
             'tendancesParticipations' => $repo->findAllTendancesParticipations($agenda),
-            'tendancesInterets'       => $repo->findAllTendancesInterets($agenda),
-            'count_participer'        => $agenda->getParticipations() + $agenda->getFbParticipations(),
-            'count_interets'          => $agenda->getInterets() + $agenda->getFbInterets(),
-            'participer'              => $participer,
-            'interet'                 => $interet,
+            'tendancesInterets' => $repo->findAllTendancesInterets($agenda),
+            'count_participer' => $agenda->getParticipations() + $agenda->getFbParticipations(),
+            'count_interets' => $agenda->getInterets() + $agenda->getFbInterets(),
+            'participer' => $participer,
+            'interet' => $interet,
         ];
     }
 }

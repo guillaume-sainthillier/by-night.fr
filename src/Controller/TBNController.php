@@ -5,13 +5,13 @@ namespace App\Controller;
 use App\Entity\Agenda;
 use App\Entity\City;
 use DateTime;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class TBNController extends Controller
+class TBNController extends AbstractController
 {
     /**
      * @var RequestStack

@@ -6,7 +6,7 @@ use App\Entity\Agenda;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ReplyController extends Controller
+class ReplyController extends AbstractController
 {
     /**
      * @Route("/{id}/reponses/{page}", name="tbn_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})

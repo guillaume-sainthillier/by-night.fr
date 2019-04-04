@@ -4,7 +4,7 @@ namespace App\Controller\Admin;
 
 use App\App\SocialManager;
 use App\Entity\SiteInfo;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,7 +13,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @Route("/info")
  */
-class InfoController extends Controller
+class InfoController extends AbstractController
 {
     /**
      * @Route("/", name="tbn_administration_info_index")

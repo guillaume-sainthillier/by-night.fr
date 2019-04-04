@@ -2,7 +2,7 @@
 
 namespace App\Controller\User;
 
-use App\Controller\TBNController as Controller;
+use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\User;
 use App\Repository\AgendaRepository;
@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/membres")
  */
-class DefaultController extends Controller
+class DefaultController extends BaseController
 {
     public function urlRedirectAction($term)
     {

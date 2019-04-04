@@ -3,13 +3,14 @@
 namespace App\Controller\City;
 
 use App\Annotation\BrowserCache;
-use App\Controller\TBNController as Controller;
+use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\Place;
 use App\Form\Type\SearchType;
 use App\Repository\AgendaRepository;
 use App\Search\SearchAgenda;
+use Doctrine\Common\Cache\Cache as DoctrineCache;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AgendaController extends Controller
+class AgendaController extends BaseController
 {
     const EVENT_PER_PAGE = 15;
 
@@ -93,7 +94,7 @@ class AgendaController extends Controller
      *
      * @return Response
      */
-    public function indexAction(Request $request, City $city, PaginatorInterface $paginator, RepositoryManager $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
+    public function indexAction(Request $request, City $city, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManager $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -138,9 +139,9 @@ class AgendaController extends Controller
         $formAction = $this->handleSearch($search, $city, $type, $tag, $ville, $place);
 
         //Récupération des lieux, types événéments et villes
-        $lieux = $this->getPlaces($repo, $city);
-        $types_manif = $this->getTypesEvenements($repo, $city);
-        $communes = $this->getVilles($repo, $city);
+        $lieux = $this->getPlaces($city, $repo, $city);
+        $types_manif = $this->getTypesEvenements($memoryCache, $repo, $city);
+        $communes = $this->getVilles($city, $repo, $city);
 
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
@@ -186,9 +187,8 @@ class AgendaController extends Controller
         ]);
     }
 
-    protected function getTypesEvenements(AgendaRepository $repo, City $city)
+    protected function getTypesEvenements(Cache $cache, AgendaRepository $repo, City $city)
     {
-        $cache = $this->get('memory_cache');
         $key = 'categories_evenements.' . $city->getSlug();
 
         if (!$cache->contains($key)) {
@@ -211,9 +211,8 @@ class AgendaController extends Controller
         return $cache->fetch($key);
     }
 
-    protected function getVilles(AgendaRepository $repo, City $city)
+    protected function getVilles(Cache $cache, AgendaRepository $repo, City $city)
     {
-        $cache = $this->get('memory_cache');
         $key = 'villes.' . $city->getSlug();
 
         if (!$cache->contains($key)) {
@@ -229,9 +228,8 @@ class AgendaController extends Controller
         return $cache->fetch($key);
     }
 
-    protected function getPlaces(AgendaRepository $repo, City $city)
+    protected function getPlaces(Cache $cache, AgendaRepository $repo, City $city)
     {
-        $cache = $this->get('memory_cache');
         $key = 'places.' . $city->getSlug();
 
         if (!$cache->contains($key)) {

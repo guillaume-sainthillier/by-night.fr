@@ -3,7 +3,7 @@
 namespace App\Controller\Comment;
 
 use App\Annotation\BrowserCache;
-use App\Controller\TBNController as Controller;
+use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class CommentController extends Controller
+class CommentController extends BaseController
 {
     public function detailsAction(Comment $comment)
     {

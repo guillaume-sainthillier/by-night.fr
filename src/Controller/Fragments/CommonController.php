@@ -15,6 +15,7 @@ use App\Social\FacebookAdmin;
 use App\Social\Social;
 use App\Social\Twitter;
 use DateTime;
+use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -46,9 +47,8 @@ class CommonController extends TBNController
             ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
-    public function footer(CityManager $cityManager, FacebookAdmin $facebookAdmin, Twitter $twitter)
+    public function footer(CityManager $cityManager, Cache $memoryCache, FacebookAdmin $facebookAdmin, Twitter $twitter)
     {
-        $cache = $this->get('memory_cache');
         $socials = [
             'facebook' => $facebookAdmin,
             'twitter' => $twitter
@@ -57,11 +57,11 @@ class CommonController extends TBNController
         foreach ($socials as $name => $service) {
             /** @var Social $service */
             $key = 'app.social_counts.' . $name;
-            if (!$cache->contains($key)) {
-                $cache->save($key, $service->getNumberOfCount(), self::LIFE_TIME_CACHE);
+            if (!$memoryCache->contains($key)) {
+                $memoryCache->save($key, $service->getNumberOfCount(), self::LIFE_TIME_CACHE);
             }
 
-            $params['count_' . $name] = $cache->fetch($key);
+            $params['count_' . $name] = $memoryCache->fetch($key);
         }
 
         $repo = $this->getDoctrine()->getRepository(City::class);

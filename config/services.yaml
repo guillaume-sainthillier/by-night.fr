@@ -25,6 +25,7 @@ services:
         bind:
             $changePasswordFormFactory: "@fos_user.change_password.form.factory"
             $profileFormFactory: "@fos_user.profile.form.factory"
+            $memoryCache: "@memory_cache"
 
     App\:
         resource: '../src/*'

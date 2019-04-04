@@ -9,25 +9,15 @@ use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
     const EVENT_PER_CATEGORY = 7;
-
-    /**
-     * @var CityManager
-     */
-    private $cityManager;
-
-    public function __construct(CityManager $cityManager)
-    {
-        $this->cityManager = $cityManager;
-    }
 
     /**
      * @Route("/", name="tbn_main_index")
@@ -39,7 +29,7 @@ class DefaultController extends Controller
      *
      * @return Response
      */
-    public function indexAction(PaginatorInterface $paginator, RepositoryManager $repositoryManager)
+    public function indexAction(CityManager $cityManager, PaginatorInterface $paginator, RepositoryManager $repositoryManager)
     {
         /*
         $search = new SearchAgenda();
@@ -58,7 +48,7 @@ class DefaultController extends Controller
         */
 
         $datas = [];
-        if ($city = $this->cityManager->getCity()) {
+        if ($city = $cityManager->getCity()) {
             $datas = [
                 'name' => $city->getFullName(),
                 'city' => $city->getSlug(),

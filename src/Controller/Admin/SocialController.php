@@ -6,7 +6,7 @@ use App\App\SocialManager;
 use App\Social\Social;
 use App\Social\SocialProvider;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/social/{service}", requirements={"service": "facebook|twitter|google"})
  */
-class SocialController extends Controller
+class SocialController extends AbstractController
 {
     /**
      * @Route("/connexion", name="tbn_administration_connect_site")

@@ -8,13 +8,12 @@ use App\SearchRepository\UserRepository;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Knp\Component\Pager\PaginatorInterface;
 use Pagerfanta\Pagerfanta;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class SearchController extends Controller
+class SearchController extends AbstractController
 {
     /**
      * @param RepositoryManager $rm

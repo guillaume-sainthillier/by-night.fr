@@ -3,7 +3,7 @@
 namespace App\Controller\City;
 
 use App\Annotation\BrowserCache;
-use App\Controller\TBNController as Controller;
+use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\City;
 use App\Social\FacebookAdmin;
@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
  *
  * @author guillaume
  */
-class WidgetsController extends Controller
+class WidgetsController extends BaseController
 {
     const FB_MEMBERS_LIMIT = 100;
 

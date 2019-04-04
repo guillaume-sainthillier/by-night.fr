@@ -3,7 +3,7 @@
 namespace App\Controller\EspacePerso;
 
 use App\App\SocialManager;
-use App\Controller\TBNController as Controller;
+use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\Calendrier;
 use App\Entity\User;
@@ -31,7 +31,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class EventController extends Controller
+class EventController extends BaseController
 {
     /**
      * @Route("/annuler/{slug}", name="tbn_agenda_annuler", requirements={"slug": ".+"})

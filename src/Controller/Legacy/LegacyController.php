@@ -2,10 +2,10 @@
 
 namespace App\Controller\Legacy;
 
-use App\Controller\TBNController as Controller;
+use App\Controller\TBNController as BaseController;
 use Symfony\Component\Routing\Annotation\Route;
 
-class LegacyController extends Controller
+class LegacyController extends BaseController
 {
     /**
      * @Route("/mentions-legales", name="tbn_agenda_mention_legales")
