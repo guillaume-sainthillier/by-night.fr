@@ -143,5 +143,3 @@ services:
     App\Security\Core\User\FOSUBUserProvider:
         arguments:
             $properties: {facebook: facebook_id, google: google_id, twitter: twitter_id}
-            $socials: {google: '@App\Social\Google', twitter: '@App\Social\Twitter', facebook_admin: '@App\Social\FacebookAdmin', facebook_list_events: '@App\Social\FacebookListEvents', facebook: '@App\Social\Facebook'}
-

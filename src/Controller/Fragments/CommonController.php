@@ -11,9 +11,8 @@ namespace App\Controller\Fragments;
 use App\App\CityManager;
 use App\Controller\TBNController;
 use App\Entity\City;
-use App\Social\FacebookAdmin;
 use App\Social\Social;
-use App\Social\Twitter;
+use App\Social\SocialProvider;
 use DateTime;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,12 +46,13 @@ class CommonController extends TBNController
             ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
-    public function footer(CityManager $cityManager, Cache $memoryCache, FacebookAdmin $facebookAdmin, Twitter $twitter)
+    public function footer(CityManager $cityManager, Cache $memoryCache, SocialProvider $socialProvider)
     {
         $socials = [
-            'facebook' => $facebookAdmin,
-            'twitter' => $twitter
+            'facebook' => $socialProvider->getSocial(SocialProvider::FACEBOOK_ADMIN),
+            'twitter' => $socialProvider->getSocial(SocialProvider::TWITTER),
         ];
+
         $params = [];
         foreach ($socials as $name => $service) {
             /** @var Social $service */

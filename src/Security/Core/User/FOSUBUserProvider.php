@@ -7,6 +7,7 @@ use App\Entity\Info;
 use App\Entity\User;
 use App\Entity\UserInfo;
 use App\Social\Social;
+use App\Social\SocialProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
@@ -17,9 +18,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class FOSUBUserProvider extends BaseClass
 {
     /**
-     * @var array
+     * @var SocialProvider
      */
-    private $socials;
+    private $socialProvider;
 
     /**
      * @var EntityManagerInterface
@@ -31,13 +32,13 @@ class FOSUBUserProvider extends BaseClass
      */
     private $cityManager;
 
-    public function __construct(UserManagerInterface $userManager, array $properties, CityManager $cityManager, EntityManagerInterface $entityManager, array $socials)
+    public function __construct(UserManagerInterface $userManager, array $properties, CityManager $cityManager, EntityManagerInterface $entityManager, SocialProvider $socialProvider)
     {
         parent::__construct($userManager, $properties);
 
-        $this->cityManager   = $cityManager;
+        $this->cityManager = $cityManager;
         $this->entityManager = $entityManager;
-        $this->socials       = $socials;
+        $this->socialProvider = $socialProvider;
     }
 
     public function connectSite(UserResponseInterface $response)
@@ -45,7 +46,7 @@ class FOSUBUserProvider extends BaseClass
         //on connect - get the access token and the user ID
         $service = $response->getResourceOwner()->getName(); //google, facebook,...
 
-        $social = $this->getSocialService($service);
+        $social = $this->socialProvider->getSocial($service);
         $social->connectSite($response);
     }
 
@@ -60,7 +61,7 @@ class FOSUBUserProvider extends BaseClass
         $service = $response->getResourceOwner()->getName(); //google, facebook,...
 
         //On récupère le service gérant les infos
-        $social = $this->getSocialService($service);
+        $social = $this->socialProvider->getSocial($service);
 
         $previousUser = $this->findUserBySocialInfo($response, $username);
         if (null !== $previousUser) {
@@ -70,21 +71,6 @@ class FOSUBUserProvider extends BaseClass
 
         $this->hydrateUser($user, $response, $service);
         $this->userManager->updateUser($user);
-    }
-
-    /**
-     * @param string $service
-     *
-     * @return Social
-     */
-    protected function getSocialService($service)
-    {
-        $key = \strtolower($service);
-        if (!isset($this->socials[$key])) {
-            throw new RuntimeException(\sprintf('Le service %s est introuvable', $service));
-        }
-
-        return $this->socials[$key];
     }
 
     protected function findUserBySocialInfo(UserResponseInterface $cle, $valeur)
@@ -116,7 +102,7 @@ class FOSUBUserProvider extends BaseClass
     public function loadUserByOAuthUserResponse(UserResponseInterface $response)
     {
         $username = $response->getUsername();
-        $service  = $response->getResourceOwner()->getName();
+        $service = $response->getResourceOwner()->getName();
 
         // Recherche de l'user par son id sur les réseaux sociaux (facebook_id)
         $user = $this->findUserBySocialInfo($response, $username);
@@ -185,7 +171,7 @@ class FOSUBUserProvider extends BaseClass
             $user->setUsername($response->getNickname());
         }
 
-        $social = $this->getSocialService($service);
+        $social = $this->socialProvider->getSocial($service);
         $social->connectUser($user, $response);
     }
 }
