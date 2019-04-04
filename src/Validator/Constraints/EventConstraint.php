@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class EventConstraint extends Constraint
 {
-    public $badEventName = "Le nom de l'événément est incorrect.";
+    public $badEventName = "Le nom de l'événement est incorrect.";
 
     public $badEventDate = "Les date de début et de fin de l'événement doivent être remplies.";
 
@@ -27,13 +27,13 @@ class EventConstraint extends Constraint
 
     public $badPlaceName = 'Le nom du lieu est incorrect.';
 
-    public $badPlaceLocation = "Le lieu de l'événément n'est pas compris dans la liste des lieux autorisés.";
+    public $badPlaceLocation = "Le lieu de l'événement n'est pas compris dans la liste des lieux autorisés.";
 
     public $badPlaceCityName = "La ville de l'événement est inconnue dans le pays.";
 
     public $badPlacePostalCode = 'Le code postal du lieu est incorrect.';
 
-    public $badUser = 'Un [link]événément[/link] similaire au vôtre a déjà été créé sur la plateforme.';
+    public $badUser = 'Un [link]événement[/link] similaire au vôtre a déjà été créé sur la plateforme.';
 
     public $eventDeleted = "L'événement facebook a été supprimé par son créateur. Il ne peut plus être mis à jour sur la plateforme.";
 

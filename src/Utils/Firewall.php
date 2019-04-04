@@ -215,7 +215,7 @@ class Firewall
             $event->getReject()->addReason(Reject::NO_PLACE_PROVIDED);
         }
 
-        //Observation de l'événément
+        //Observation de l'événement
         if ($event->getExternalId()) {
             $exploration = $this->getExploration($event->getFacebookEventId());
             if (!$exploration) {

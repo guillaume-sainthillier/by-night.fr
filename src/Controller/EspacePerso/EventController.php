@@ -210,7 +210,7 @@ class EventController extends BaseController
                     );
                 }
                 $this->addFlash('info', \sprintf(
-                    "Informations sur l'événément <a href='https://facebook.com/events/%s/'>%s</a> : <ul>%s</ul>",
+                    "Informations sur l'événement <a href='https://facebook.com/events/%s/'>%s</a> : <ul>%s</ul>",
                     $event->getFacebookEventId(),
                     $event->getNom(),
                     \implode('', $errorsString)
@@ -231,7 +231,7 @@ class EventController extends BaseController
             $message         = null;
             if ($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
                 $message = \sprintf(
-                    '<strong>%d</strong> événément%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !',
+                    '<strong>%d</strong> événement%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !',
                     $explorationHandler->getNbInserts(),
                     $plurielInsert,
                     $indicatifInsert,
@@ -241,7 +241,7 @@ class EventController extends BaseController
                 );
             } elseif ($explorationHandler->getNbInserts() > 0) {
                 $message = \sprintf(
-                    '<strong>%d</strong> événément%s %s été ajouté%s sur By Night !',
+                    '<strong>%d</strong> événement%s %s été ajouté%s sur By Night !',
                     $explorationHandler->getNbInserts(),
                     $plurielInsert,
                     $indicatifInsert,
@@ -249,7 +249,7 @@ class EventController extends BaseController
                 );
             } elseif ($explorationHandler->getNbUpdates() > 0) {
                 $message = \sprintf(
-                    '<strong>%d</strong> événément%s %s été mis à jour sur By Night !',
+                    '<strong>%d</strong> événement%s %s été mis à jour sur By Night !',
                     $explorationHandler->getNbUpdates(),
                     $plurielUpdate,
                     $indicatifUpdate
@@ -258,7 +258,7 @@ class EventController extends BaseController
 
             $this->addFlash('success', $message);
         } elseif (0 === $explorationHandler->getNbBlackLists()) {
-            $message = "Aucun événément n'a été retrouvé sur votre compte.";
+            $message = "Aucun événement n'a été retrouvé sur votre compte.";
 
             $this->addFlash('info', $message);
         }

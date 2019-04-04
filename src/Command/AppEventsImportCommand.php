@@ -51,7 +51,7 @@ class AppEventsImportCommand extends AppCommand
 
         $this
             ->setName('app:events:import')
-            ->setDescription('Ajouter / mettre à jour des nouveaux événéments sur By Night')
+            ->setDescription('Ajouter / mettre à jour des nouveaux événements sur By Night')
             ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer');
     }
 

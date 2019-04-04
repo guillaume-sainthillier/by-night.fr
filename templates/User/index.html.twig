@@ -78,7 +78,7 @@
                             {% if not next_events|length %}
                                 <div class="alert alert-info">
                                     <i class="fa fa-info-circle"></i>
-                                    Aucun événément de prévu pour {{ username }} !
+                                    Aucun événement de prévu pour {{ username }} !
                                 </div>
                             {% else %}
                                 {% include "City/Event/block_preview_event.html.twig" with({'events' : next_events}) %}
@@ -88,7 +88,7 @@
                             {% if not previous_events|length %}
                                 <div class="alert alert-info">
                                     <i class="fa fa-info-circle"></i>
-                                    Aucun événément passé pour {{ username }} !
+                                    Aucun événement passé pour {{ username }} !
                                 </div>
                             {% else %}
                                 {% include "City/Event/block_preview_event.html.twig" with({'events' : previous_events}) %}

@@ -117,7 +117,7 @@ class AgendaController extends BaseController
         }
         $paginateURL = $this->generateUrl($paginateRoute, $routeParams);
 
-        //Récupération du repo des événéments
+        //Récupération du repo des événements
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
@@ -138,7 +138,7 @@ class AgendaController extends BaseController
         }
         $formAction = $this->handleSearch($search, $city, $type, $tag, $ville, $place);
 
-        //Récupération des lieux, types événéments et villes
+        //Récupération des lieux, types événements et villes
         $lieux = $this->getPlaces($memoryCache, $repo, $city);
         $types_manif = $this->getTypesEvenements($memoryCache, $repo, $city);
         $communes = $this->getVilles($memoryCache, $repo, $city);

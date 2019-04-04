@@ -16,7 +16,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Facebook\GraphNodes\GraphNode;
 
 /**
- * Classe de parsing des événéments FB.
+ * Classe de parsing des événements FB.
  *
  * @author Guillaume SAINTHILLIER
  */
@@ -160,12 +160,12 @@ class FaceBookParser extends AgendaParser
         //Recherche d'événements de l'API en fonction des users
         $user_events = $this->getEventsFromUsers($place_users, $now);
 
-        //Recherche d'événéments de l'API en fonction des villes
+        //Recherche d'événements de l'API en fonction des villes
         $cities_events = $this->getEventFromCities($now);
 
         $events = $this->getUniqueEvents(\array_merge($place_events, $user_events, $cities_events));
         Monitor::writeln(\sprintf(
-            '<info>%d</info> événément(s) à traiter au total',
+            '<info>%d</info> événement(s) à traiter au total',
             \count($events)
         ));
 
