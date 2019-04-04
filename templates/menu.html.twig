@@ -30,21 +30,12 @@
                 {%- endif %}
             </ul>
 
-            {% if city %}
-            <form title="Que cherchez-vous à {{ city.name }} ?" action="{{ path('tbn_search_query_city', {'city': city.slug}) }}" method="GET" class="navbar-form navbar-left" role="search">
-                <div class="form-group">
-                    <input type="text" class="form-control col-md-8" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
-                </div>
-                <button class="btn btn-raised btn-primary" type="submit"><i class="fa fa-search"></i></button>
-            </form>
-            {% else %}
             <form action="{{ path('tbn_search_query') }}" method="GET" class="navbar-form navbar-left" role="search">
                 <div class="form-group">
                     <input type="text" class="form-control col-md-8" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
                 </div>
                 <button class="btn btn-raised btn-primary" type="submit"><i class="fa fa-search"></i></button>
             </form>
-            {% endif %}
             <ul class="nav navbar-nav navbar-right">
                 {% if is_granted("ROLE_ADMIN") %}
                 <li class="dropdown">

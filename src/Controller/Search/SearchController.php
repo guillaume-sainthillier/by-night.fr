@@ -17,32 +17,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class SearchController extends Controller
 {
     /**
-     * @Route("/evenements", name="tbn_old_search_query")
-     *
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     */
-    public function oldSearchAction(Request $request)
-    {
-        $params = [
-            'type' => 'evenements',
-        ];
-
-        $term = $request->get('q');
-        $page = $request->get('page');
-        if ($term) {
-            $params['q'] = $term;
-        }
-
-        if ($page) {
-            $params['page'] = $page;
-        }
-
-        return $this->redirectToRoute('tbn_search_query', $params);
-    }
-
-    /**
      * @param RepositoryManager $rm
      * @param string            $q
      *

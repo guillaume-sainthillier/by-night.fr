@@ -61,7 +61,7 @@ class WidgetsController extends Controller
         }
 
         if (!\count($results['statuses']) && null === $requestStack->getParentRequest()) {
-            return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()]);
+            return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         $response = $this->render('City/Hinclude/tweets.html.twig', [
@@ -101,7 +101,6 @@ class WidgetsController extends Controller
 
         $result = $this->checkEventUrl($city, $slug, $id, 'tbn_agenda_prochaines_soirees', [
             'page' => $page,
-            'city' => $city->getSlug(),
         ]);
 
         if ($result instanceof Response) {
@@ -114,7 +113,7 @@ class WidgetsController extends Controller
                 'id'   => $soiree->getId(),
                 'slug' => $soiree->getSlug(),
                 'city' => $city->getSlug(),
-            ]);
+            ], Response::HTTP_MOVED_PERMANENTLY);
         }
 
         $em   = $this->getDoctrine()->getManager();
@@ -166,7 +165,9 @@ class WidgetsController extends Controller
             $page = 1;
         }
 
-        $result = $this->checkEventUrl($city, $slug, $id, 'tbn_agenda_soirees_similaires', ['page' => $page, 'city' => $city->getSlug()]);
+        $result = $this->checkEventUrl($city, $slug, $id, 'tbn_agenda_soirees_similaires', [
+            'page' => $page
+        ]);
         if ($result instanceof Response) {
             return $result;
         }

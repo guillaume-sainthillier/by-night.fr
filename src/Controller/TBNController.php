@@ -8,6 +8,7 @@ use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TBNController extends Controller
@@ -60,7 +61,7 @@ class TBNController extends Controller
                 'city' => $event->getPlace()->getCity()->getSlug(),
             ], $extraParams);
 
-            return new RedirectResponse($this->generateUrl($routeName, $routeParams));
+            return $this->redirectToRoute($routeName, $routeParams, Response::HTTP_MOVED_PERMANENTLY);
         }
 
         return $event;

@@ -130,24 +130,25 @@
                                         {% endif %}
 
                                         {% if place.rue or place.ville or place.codePostal %}
-                                            <div itemprop="address" itemscope
-                                                 itemtype="http://schema.org/PostalAddress">
+                                            <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                                                {% if place.city %}
+                                                    <meta itemprop="addressCountry" content="{{ place.city.country.id }}" />
+                                                {% endif %}
                                                 {% if place.rue %}
                                                     <div itemprop="streetAddress">{{ place.rue }}</div>
                                                 {% endif %}
+
                                                 {% if place.ville or place.codePostal %}
                                                     <div>
                                                         {% if place.codePostal %}
                                                             <span itemprop="postalCode">{{ place.codePostal }} </span>
-                                                            <meta itemprop="addressCountry" content="FR" />
                                                         {% endif %}
                                                         {% if place.ville %}
                                                             <a itemprop="url"
-                                                               href="{{ path('tbn_agenda_ville', {'ville': place.ville, 'city': city.slug}) }}"
-                                                               title="Sortir à {{ place.ville }}">
+                                                               href="{{ path('tbn_agenda_agenda', {'city': place.city.slug}) }}"
+                                                               title="Sortir à {{ city.name }}">
                                                                 {% set readableAdresse = readableAdresse ~ " " ~ place.ville %}
-                                                                <span><strong
-                                                                            itemprop="addressLocality">{{ place.ville }}</strong></span>
+                                                                <span><strong itemprop="addressLocality">{{ place.ville }}</strong></span>
                                                             </a>
                                                         {% endif %}
                                                     </div>
@@ -157,9 +158,9 @@
 
                                         {% if place.latitude and place.longitude %}
                                             <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                                    <meta itemprop="latitude" content="{{ place.latitude }}" />
-                                    <meta itemprop="longitude" content="{{ place.longitude }}" />
-                                </span>
+                                                <meta itemprop="latitude" content="{{ place.latitude }}" />
+                                                <meta itemprop="longitude" content="{{ place.longitude }}" />
+                                            </span>
                                         {% endif %}
                                     </div>
                                     {% if readableAdresse %}

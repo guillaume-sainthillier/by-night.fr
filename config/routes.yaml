@@ -115,7 +115,3 @@ app.city:
     resource: "../src/Controller/City"
     prefix:   /{city}
     type:     annotation
-
-app.old:
-    resource: "../src/Controller/Old"
-    type:     annotation

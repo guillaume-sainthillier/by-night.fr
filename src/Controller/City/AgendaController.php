@@ -13,7 +13,6 @@ use App\Search\SearchAgenda;
 use FOS\ElasticaBundle\Doctrine\RepositoryManager;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -72,14 +71,14 @@ class AgendaController extends Controller
 
     /**
      * @Cache(expires="+30 minutes", smaxage="1800")
+     * @Route("/agenda/{page}", name="tbn_agenda_pagination", requirements={"page": "\d+"})
      * @Route("/agenda", name="tbn_agenda_agenda")
-     * @Route("/agenda/page/{page}", name="tbn_agenda_pagination", requirements={"page": "\d+"})
-     * @Route("/sortir/{type}", name="tbn_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
-     * @Route("/sortir/{type}/page/{page}", name="tbn_agenda_sortir_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
-     * @Route("/sortir-a/{slug}", name="tbn_agenda_place", requirements={"slug": ".+"})
-     * @Route("/sortir-a/{slug}/page/{page}", name="tbn_agenda_place_pagination", requirements={"slug": ".+", "page": "\d+"})
-     * @Route("/tag/{tag}", name="tbn_agenda_tags", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
-     * @Route("/tag/{tag}/page/{page}", name="tbn_agenda_tags_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
+     * @Route("/agenda/sortir/{type}/{page}", name="tbn_agenda_sortir_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
+     * @Route("/agenda/sortir/{type}", name="tbn_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
+     * @Route("/agenda/sortir-a/{slug}/{page}", name="tbn_agenda_place_pagination", requirements={"page": "\d+"})
+     * @Route("/agenda/sortir-a/{slug}", name="tbn_agenda_place")
+     * @Route("/agenda/tag/{tag}/{page}", name="tbn_agenda_tags_pagination", requirements={"page": "\d+"})
+     * @Route("/agenda/tag/{tag}", name="tbn_agenda_tags")
      * @BrowserCache(false)
      *
      * @param Request $request
@@ -105,6 +104,7 @@ class AgendaController extends Controller
             'page' => $page + 1,
             'city' => $city->getSlug(),
         ];
+
         if ('tbn_agenda_sortir_pagination' === $paginateRoute) {
             $routeParams['type'] = $type;
         } elseif ('tbn_agenda_tags_pagination' === $paginateRoute) {
@@ -124,14 +124,15 @@ class AgendaController extends Controller
         $search = new SearchAgenda();
         $search->setCity($city);
         $place = null;
+
         if (null !== $slug) {
             $place = $em->getRepository(Place::class)->findOneBy(['slug' => $slug]);
             if (!$place) {
-                return new RedirectResponse($this->generateUrl('tbn_agenda_agenda', ['city' => $city->getSlug()]));
+                return $this->redirectToRoute('tbn_agenda_agenda', ['city' => $city->getSlug()]);
             }
 
             if ($place->getCity()->getId() !== $city->getId()) {
-                return new RedirectResponse($this->generateUrl('tbn_agenda_place', ['city' => $place->getCity()->getSlug(), 'slug' => $slug]));
+                return $this->redirectToRoute('tbn_agenda_place', ['city' => $place->getCity()->getSlug(), 'slug' => $slug]);
             }
         }
         $formAction = $this->handleSearch($search, $city, $type, $tag, $ville, $place);
