@@ -72,14 +72,10 @@ class AgendaController extends BaseController
 
     /**
      * @Cache(expires="+30 minutes", smaxage="1800")
-     * @Route("/agenda/{page}", name="app_agenda_pagination", requirements={"page": "\d+"})
-     * @Route("/agenda", name="app_agenda_agenda")
-     * @Route("/agenda/sortir/{type}/{page}", name="app_agenda_sortir_pagination", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
-     * @Route("/agenda/sortir/{type}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
-     * @Route("/agenda/sortir-a/{slug}/{page}", name="app_agenda_place_pagination", requirements={"page": "\d+"})
-     * @Route("/agenda/sortir-a/{slug}", name="app_agenda_place")
-     * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags_pagination", requirements={"page": "\d+"})
-     * @Route("/agenda/tag/{tag}", name="app_agenda_tags")
+     * @Route("/agenda/{page}", name="app_agenda_agenda", requirements={"page": "\d+"})
+     * @Route("/agenda/sortir/{type}/{page}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
+     * @Route("/agenda/sortir-a/{slug}/{page}", name="app_agenda_place", requirements={"page": "\d+"})
+     * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags", requirements={"page": "\d+"})
      * @BrowserCache(false)
      *
      * @param Request $request
@@ -89,12 +85,11 @@ class AgendaController extends BaseController
      * @param null $tag
      * @param null $ville
      * @param null $slug
-     * @param string $paginateRoute
      * @param RepositoryManagerInterface $repositoryManager
      *
      * @return Response
      */
-    public function indexAction(Request $request, City $city, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'app_agenda_pagination')
+    public function indexAction(Request $request, City $city, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null)
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -106,16 +101,17 @@ class AgendaController extends BaseController
             'city' => $city->getSlug(),
         ];
 
-        if ('app_agenda_sortir_pagination' === $paginateRoute) {
+        if (null !== $type) {
             $routeParams['type'] = $type;
-        } elseif ('app_agenda_tags_pagination' === $paginateRoute) {
+        } elseif (null !== $tag) {
             $routeParams['tag'] = $tag;
-        } elseif ('app_agenda_place_pagination' === $paginateRoute) {
+        } elseif (null !== $slug) {
             $routeParams['slug'] = $slug;
-        } elseif ('app_agenda_ville_pagination' === $paginateRoute) {
+        } elseif (null !== $ville) {
             $routeParams['ville'] = $ville;
         }
-        $paginateURL = $this->generateUrl($paginateRoute, $routeParams);
+
+        $paginateURL = $this->generateUrl($request->attributes->get('_route'), $routeParams);
 
         //Récupération du repo des événements
         $em = $this->getDoctrine()->getManager();

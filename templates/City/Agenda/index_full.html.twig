@@ -49,7 +49,7 @@
         {% set item = menu.addItem(type|capitalize, path('app_agenda_sortir', {'type' : type,'city': city.slug})) %}
     {% endif %}
     {% if page > 1 %}
-        {% set item = menu.addItem("Page " ~ page, path('app_agenda_pagination', {'page': page,'city': city.slug})) %}
+        {% set item = menu.addItem("Page " ~ page, path('app_agenda_agenda', {'page': page,'city': city.slug})) %}
     {% endif %}
 {% endblock %}
 
