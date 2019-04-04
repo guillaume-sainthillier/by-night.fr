@@ -5,7 +5,7 @@ namespace App\Controller\Api;
 use App\Annotation\BrowserCache;
 use App\Entity\City;
 use App\SearchRepository\CityRepository;
-use FOS\ElasticaBundle\Doctrine\RepositoryManager;
+use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -29,19 +29,17 @@ class ApiController extends AbstractController
      *
      * @param Request            $request
      * @param PaginatorInterface $paginator
-     * @param RepositoryManager  $repositoryManager
+     * @param RepositoryManagerInterface  $repositoryManager
      *
      * @return JsonResponse
      */
-    public function cityAutocompleteAction(Request $request, PaginatorInterface $paginator, RepositoryManager $repositoryManager)
+    public function cityAutocompleteAction(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
     {
         $term = \trim($request->get('q'));
         if (!$term) {
             $results = [];
         } else {
-            /**
-             * @var CityRepository
-             */
+            /** @var CityRepository $repo */
             $repo    = $repositoryManager->getRepository(City::class);
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
@@ -49,9 +47,7 @@ class ApiController extends AbstractController
 
         $jsonResults = [];
         foreach ($results as $result) {
-            /*
-             * @var City
-             */
+            /** @var City $result */
             $jsonResults[] = [
                 'slug' => $result->getSlug(),
                 'name' => $result->getFullName(),

@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use Symfony\Bridge\Twig\Extension\AssetExtension as BaseAssetExtension;
+use Symfony\Component\Asset\Packages;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFunction;
 
@@ -11,9 +11,9 @@ class AssetExtension extends Extension
     const ASSET_PREFIX = 'prod';
 
     /**
-     * @var BaseAssetExtension
+     * @var Packages
      */
-    private $assetExtension;
+    private $packages;
 
     /**
      * @var bool
@@ -25,9 +25,9 @@ class AssetExtension extends Extension
      */
     private $mappingAssets;
 
-    public function __construct(BaseAssetExtension $assetExtension, array $mappingAssets, bool $debug)
+    public function __construct(Packages $packages, array $mappingAssets, bool $debug)
     {
-        $this->assetExtension = $assetExtension;
+        $this->packages = $packages;
         $this->debug = $debug;
         $this->mappingAssets = $mappingAssets;
     }
@@ -43,13 +43,13 @@ class AssetExtension extends Extension
     {
         $path = self::ASSET_PREFIX . '/' . $path;
         if (true === $this->debug) {
-            return $this->assetExtension->getAssetUrl($path, $packageName);
+            return $this->packages->getUrl($path, $packageName);
         }
 
         if (isset($this->mappingAssets[$path])) {
             $path = $this->mappingAssets[$path];
         }
 
-        return $this->assetExtension->getAssetUrl($path, $packageName);
+        return $this->packages->getUrl($path, $packageName);
     }
 }

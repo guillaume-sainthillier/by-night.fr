@@ -11,7 +11,7 @@ use App\Form\Type\SearchType;
 use App\Repository\AgendaRepository;
 use App\Search\SearchAgenda;
 use Doctrine\Common\Cache\Cache as DoctrineCache;
-use FOS\ElasticaBundle\Doctrine\RepositoryManager;
+use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,11 +90,11 @@ class AgendaController extends BaseController
      * @param null $ville
      * @param null $slug
      * @param string $paginateRoute
-     * @param RepositoryManager $repositoryManager
+     * @param RepositoryManagerInterface $repositoryManager
      *
      * @return Response
      */
-    public function indexAction(Request $request, City $city, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManager $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
+    public function indexAction(Request $request, City $city, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null, $paginateRoute = 'tbn_agenda_pagination')
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -139,9 +139,9 @@ class AgendaController extends BaseController
         $formAction = $this->handleSearch($search, $city, $type, $tag, $ville, $place);
 
         //Récupération des lieux, types événéments et villes
-        $lieux = $this->getPlaces($city, $repo, $city);
+        $lieux = $this->getPlaces($memoryCache, $repo, $city);
         $types_manif = $this->getTypesEvenements($memoryCache, $repo, $city);
-        $communes = $this->getVilles($city, $repo, $city);
+        $communes = $this->getVilles($memoryCache, $repo, $city);
 
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
@@ -187,7 +187,7 @@ class AgendaController extends BaseController
         ]);
     }
 
-    protected function getTypesEvenements(Cache $cache, AgendaRepository $repo, City $city)
+    protected function getTypesEvenements(DoctrineCache $cache, AgendaRepository $repo, City $city)
     {
         $key = 'categories_evenements.' . $city->getSlug();
 
@@ -211,7 +211,7 @@ class AgendaController extends BaseController
         return $cache->fetch($key);
     }
 
-    protected function getVilles(Cache $cache, AgendaRepository $repo, City $city)
+    protected function getVilles(DoctrineCache $cache, AgendaRepository $repo, City $city)
     {
         $key = 'villes.' . $city->getSlug();
 
@@ -228,7 +228,7 @@ class AgendaController extends BaseController
         return $cache->fetch($key);
     }
 
-    protected function getPlaces(Cache $cache, AgendaRepository $repo, City $city)
+    protected function getPlaces(DoctrineCache $cache, AgendaRepository $repo, City $city)
     {
         $key = 'places.' . $city->getSlug();
 

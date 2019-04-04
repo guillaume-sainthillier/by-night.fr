@@ -15,10 +15,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class RegistrationListener implements EventSubscriberInterface
 {
-    public function __construct()
-    {
-    }
-
     /**
      * {@inheritdoc}
      */

@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Annotation\BrowserCache;
 use App\App\CityManager;
 use App\Form\Type\CityAutocompleteType;
-use FOS\ElasticaBundle\Doctrine\RepositoryManager;
+use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -25,11 +25,11 @@ class DefaultController extends AbstractController
      * @BrowserCache(false)
      *
      * @param PaginatorInterface $paginator
-     * @param RepositoryManager  $repositoryManager
+     * @param RepositoryManagerInterface  $repositoryManager
      *
      * @return Response
      */
-    public function indexAction(CityManager $cityManager, PaginatorInterface $paginator, RepositoryManager $repositoryManager)
+    public function indexAction(CityManager $cityManager, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
     {
         /*
         $search = new SearchAgenda();

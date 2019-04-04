@@ -5,7 +5,7 @@ namespace App\Controller\Search;
 use App\Search\SearchAgenda;
 use App\SearchRepository\AgendaRepository;
 use App\SearchRepository\UserRepository;
-use FOS\ElasticaBundle\Doctrine\RepositoryManager;
+use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,12 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class SearchController extends AbstractController
 {
     /**
-     * @param RepositoryManager $rm
+     * @param RepositoryManagerInterface $rm
      * @param string            $q
      *
      * @return Pagerfanta
      */
-    private function searchEvents(RepositoryManager $rm, $q)
+    private function searchEvents(RepositoryManagerInterface $rm, $q)
     {
         /**
          * @var AgendaRepository
@@ -33,12 +33,12 @@ class SearchController extends AbstractController
     }
 
     /**
-     * @param RepositoryManager $rm
+     * @param RepositoryManagerInterface $rm
      * @param string            $q
      *
      * @return Pagerfanta
      */
-    private function searchUsers(RepositoryManager $rm, $q)
+    private function searchUsers(RepositoryManagerInterface $rm, $q)
     {
         /**
          * @var UserRepository
@@ -52,12 +52,12 @@ class SearchController extends AbstractController
      * @Route("/", name="tbn_search_query")
      *
      * @param Request            $request
-     * @param RepositoryManager  $rm
+     * @param RepositoryManagerInterface  $rm
      * @param PaginatorInterface $paginator
      *
      * @return Response
      */
-    public function searchAction(Request $request, RepositoryManager $rm, PaginatorInterface $paginator)
+    public function searchAction(Request $request, RepositoryManagerInterface $rm, PaginatorInterface $paginator)
     {
         $q        = \trim($request->get('q', null));
         $type     = $request->get('type', null);
