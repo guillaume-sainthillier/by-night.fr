@@ -42,18 +42,6 @@ services:
         tags:
             - { name: request.param_converter, priority: 0 }
 
-    App\SearchRepository\AgendaRepository:
-        arguments:
-            $finder: "@fos_elastica.finder.event.event"
-
-    App\SearchRepository\CityRepository:
-        arguments:
-            $finder: "@fos_elastica.finder.city.city"
-
-    App\SearchRepository\UserRepository:
-        arguments:
-            $finder: "@fos_elastica.finder.user.user"
-
     App\Social\FacebookAdmin:
         arguments:
             $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
@@ -143,3 +131,13 @@ services:
     App\Security\Core\User\FOSUBUserProvider:
         arguments:
             $properties: {facebook: facebook_id, google: google_id, twitter: twitter_id}
+
+
+    #Twig extensions
+    Twig\Extensions\IntlExtension:
+        tags:
+            - { name: twig.extension }
+
+    Twig\Extensions\TextExtension:
+        tags:
+            - { name: twig.extension }
