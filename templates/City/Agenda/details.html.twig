@@ -9,8 +9,8 @@
 {% set nomSoiree = event_seo.getEventShortTitle(soiree) %}
 {% set horaires = event_seo.getEventDateTime(soiree) %}
 {% set descriptionSoiree =  soiree.descriptif|parse_tags|raw %}
-{% set original = eventProfilePicture.getOriginalPictureURL(soiree) %}
-{% set thumb = eventProfilePicture.getPicture(soiree) %}
+{% set original = eventProfilePicture.originalPictureURL(soiree) %}
+{% set thumb = eventProfilePicture.picture(soiree) %}
 
 {% set distinctTags = soiree.distinctTags %}
 

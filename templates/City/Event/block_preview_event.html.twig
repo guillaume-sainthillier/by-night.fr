@@ -6,18 +6,24 @@
     <div {% if microdata %}itemscope itemtype="http://schema.org/Event"{% endif %}>
         <div class="row event">
             <div class="col-xs-3 image_soiree">
-                {% set original = eventProfilePicture.getOriginalPicture(soiree) %}
-                {% set thumb = eventProfilePicture.getPicture(soiree) %}
+                {% set original = eventProfilePicture.originalPicture(soiree) %}
+                {% set thumb = eventProfilePicture.picture(soiree) %}
                 {% if microdata %}
                     <meta itemprop="image" content="{{ original }}"/>{% endif %}
                 <div class="image-container">
                     {% if soiree.fbParticipations %}
-                        <span class="label label-warning"><i class="fa fa-facebook"></i> <span
-                                    class="number">{{ soiree.fbParticipations }}</span></span>
+                        <span class="label label-warning">
+                            <i class="fa fa-facebook"></i>
+                            <span class="number">{{ soiree.fbParticipations }}</span>
+                        </span>
                     {% endif %}
                     <a class="image-gallery" href="{{ original }}" title="{{ soiree.nom }}">
-                        <img class="img img-responsive loading" width="200" height="200"
-                             src="{{ app_asset('img/loading_event.gif') }}" data-src="{{ thumb }}" alt="{{ soiree.nom }}"/>
+                        <img class="img img-responsive loading"
+                             width="200"
+                             height="200"
+                             src="{{ app_asset('img/loading_event.gif') }}"
+                             data-src="{{ thumb }}"
+                             alt="{{ soiree.nom }}"/>
                     </a>
                 </div>
             </div>

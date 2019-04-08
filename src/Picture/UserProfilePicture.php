@@ -27,7 +27,7 @@ class UserProfilePicture
     public function __construct(CacheManager $cacheManager, UploaderHelper $helper)
     {
         $this->cacheManager = $cacheManager;
-        $this->helper       = $helper;
+        $this->helper = $helper;
     }
 
     public function getProfilePicture(User $user, $thumb = 'thumb_user')
@@ -51,6 +51,11 @@ class UserProfilePicture
             }
         }
 
+        return $this->getDefaultProfilePicture($thumb);
+    }
+
+    public function getDefaultProfilePicture($thumb = 'thumb_user')
+    {
         return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_user.png', $thumb);
     }
 }

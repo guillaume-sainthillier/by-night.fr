@@ -54,7 +54,7 @@ class EventProfilePicture
             return $agenda->getUrl();
         }
 
-        return $this->packages->getUrl('img/empty_event.png');
+        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png');
     }
 
     public function getOriginalPicture(Agenda $agenda)
@@ -75,7 +75,7 @@ class EventProfilePicture
             return $agenda->getUrl();
         }
 
-        return $this->packages->getUrl('img/empty_event.png');
+        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png');
     }
 
     public function getPictureUrl(Agenda $agenda, $thumb = 'thumbs_evenement')
