@@ -30,6 +30,12 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         src: ['*'],
+                        dest: '<%= pkg.baseDist %>/main/img',
+                        cwd: '<%= pkg.baseVendor %>/fancybox/dist/img'
+                    },
+                    {
+                        expand: true,
+                        src: ['*'],
                         dest: '<%= pkg.baseDist %>/evenements/font',
                         cwd: '<%= pkg.baseFont %>'
                     },
