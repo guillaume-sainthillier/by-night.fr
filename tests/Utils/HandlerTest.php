@@ -20,7 +20,7 @@ class HandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->handler = static::$kernel->getContainer()->get(EventHandler::class);
+        $this->handler = static::$container->get(EventHandler::class);
     }
 
     public function testHandleEvent()
@@ -30,7 +30,7 @@ class HandlerTest extends ContainerTestCase
         $oclub      = (new Place())->setId(1)->setNom('Oclub')->setRue('101 Route d\'Agde')->setVille('Toulouse')->setCodePostal('31500');
         $oclubEvent = (new Agenda())->setId(1)->setNom('Super Event')->setDateDebut($now)->setDateFin($now)->setPlace($oclub);
 
-        //Evenement à des lieux différents -> nouvel événément
+        //Evenement à des lieux différents -> nouvel événement
         $opium      = (new Place())->setNom('Opium Club')->setRue('20 Rue Denfert Rochereau')->setVille('Toulouse')->setCodePostal('31000');
         $opiumEvent = (new Agenda())->setNom('Super Event')->setDateDebut($now)->setDateFin($now)->setPlace($opium);
         $opiumEvent = $this->handler->handleEvent([$oclubEvent], $opiumEvent);
@@ -38,7 +38,7 @@ class HandlerTest extends ContainerTestCase
         $this->assertEquals($opiumEvent->getPlace()->getId(), null);
         $this->assertEquals($oclubEvent->getPlace()->getNom(), 'Oclub');
 
-        //Mêmes événéments -> pas de nouvel événément
+        //Mêmes événements -> pas de nouvel événement
         $newOclubEvent = clone $oclubEvent;
         $newOclubEvent->setId(null)->setNom('Mon Super Event');
         $newOclubEvent = $this->handler->handleEvent([$oclubEvent], $newOclubEvent);
@@ -46,13 +46,13 @@ class HandlerTest extends ContainerTestCase
         $this->assertEquals($newOclubEvent->getPlace()->getId(), 1);
         $this->assertEquals($newOclubEvent->getPlace()->getNom(), 'Oclub');
 
-        //Mêmes événéments FB -> pas de nouvel événément
+        //Mêmes événements FB -> pas de nouvel événement
         $tomorrow = clone $now;
         $tomorrow->modify('+1 day');
         $oclub      = (new Place())->setId(1)->setNom('Oclub')->setRue('101 Route d\'Agde')->setVille('Toulouse')->setCodePostal('31500');
         $opium      = (new Place())->setNom('Opium Club')->setRue('20 Rue Denfert Rochereau')->setVille('Toulouse')->setCodePostal('31000');
-        $fbEvent    = $oclubEvent    = (new Agenda())->setId(1)->setNom('Super Event')->setDateDebut($now)->setDateFin($now)->setPlace($oclub)->setFacebookEventId(1);
-        $newFbEvent = $oclubEvent = (new Agenda())->setNom('Mon Mega Event')->setDateDebut($tomorrow)->setDateFin($tomorrow)->setPlace($opium)->setFacebookEventId(1);
+        $fbEvent    = $oclubEvent    = (new Agenda())->setId(1)->setNom('Super Event')->setDateDebut($now)->setDateFin($now)->setPlace($oclub)->setExternalId(1);
+        $newFbEvent = $oclubEvent = (new Agenda())->setNom('Mon Mega Event')->setDateDebut($tomorrow)->setDateFin($tomorrow)->setPlace($opium)->setExternalId(1);
         $newFbEvent = $this->handler->handleEvent([$fbEvent], $newFbEvent);
         $this->assertEquals($newFbEvent->getId(), 1);
         $this->assertEquals($newFbEvent->getPlace()->getId(), null);

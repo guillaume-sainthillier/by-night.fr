@@ -21,7 +21,7 @@ class DoctrineHandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->doctrineHandler = static::$kernel->getContainer()->get(DoctrineEventHandler::class);
+        $this->doctrineHandler = static::$container->get(DoctrineEventHandler::class);
     }
 
     public function testGuessEventLocation()
@@ -96,21 +96,21 @@ class DoctrineHandlerTest extends ContainerTestCase
     private function assertZipCity(ZipCity $zipCity = null, $postalCode = null, $city = null)
     {
         if (null === $postalCode && null === $city) {
-            $this->assertEquals($zipCity, null);
+            $this->assertNull($zipCity, 'Le Zip ne doit pas exister');
         } else {
-            $this->assertNotEquals($zipCity, null);
-            $this->assertEquals($postalCode, $zipCity->getPostalCode());
-            $this->assertEquals($city, $zipCity->getName());
+            $this->assertNotNull($zipCity, 'Le Zip doit exister');
+            $this->assertEquals($postalCode, $zipCity->getPostalCode(), 'Les codes postaux doivet concorder');
+            $this->assertEquals($city, $zipCity->getName(), 'Les villes doivet concorder');
         }
     }
 
     private function assertCountry(Country $country = null, $value = null)
     {
         if (null === $value) {
-            $this->assertEquals($country, null);
+            $this->assertNull($country, 'Le pays ne doit pas exister');
         } else {
-            $this->assertNotEquals($country, null);
-            $this->assertEquals($value, $country->getId());
+            $this->assertNotNull($country, 'Le pays doit exister');
+            $this->assertEquals($value, $country->getId(), 'Les pays doivet concorder');
         }
     }
 }

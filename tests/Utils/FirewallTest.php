@@ -19,7 +19,7 @@ class FirewallTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->firewall = static::$kernel->getContainer()->get(Firewall::class);
+        $this->firewall = static::$container->get(Firewall::class);
     }
 
     public function testExplorations()
@@ -31,7 +31,7 @@ class FirewallTest extends ContainerTestCase
 
         $now = new \DateTime();
 
-        //L'événément ne doit pas être valide car il n'a pas changé
+        //L'événement ne doit pas être valide car il n'a pas changé
         $exploration = (new Exploration())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion(Firewall::VERSION);
         $event       = (new Agenda())->setFbDateModification($now);
         $this->firewall->filterEventExploration($exploration, $event);
@@ -59,7 +59,7 @@ class FirewallTest extends ContainerTestCase
         $this->assertEquals($exploration->getReject()->getReason(), $validReject->getReason());
         $this->assertEquals($exploration->getFirewallVersion(), Firewall::VERSION);
 
-        //L'événément ne doit pas être mis à jour car son créateur l'a supprimé
+        //L'événement ne doit pas être mis à jour car son créateur l'a supprimé
         $exploration = (new Exploration())->setReject(clone $deletedReject)->setLastUpdated($now)->setFirewallVersion('old version');
         $event       = (new Agenda())->setReject(new Reject());
         $this->firewall->filterEventExploration($exploration, $event);

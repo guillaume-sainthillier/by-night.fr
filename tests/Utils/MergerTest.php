@@ -18,7 +18,7 @@ class MergerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->merger = static::$kernel->getContainer()->get(Merger::class);
+        $this->merger = static::$container->get(Merger::class);
     }
 
     public function testPlaceMerge()
