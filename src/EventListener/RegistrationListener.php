@@ -6,7 +6,7 @@
  * Time: 20:06.
  */
 
-namespace App\Listener;
+namespace App\EventListener;
 
 use App\Entity\User;
 use FOS\UserBundle\Event\GetResponseUserEvent;

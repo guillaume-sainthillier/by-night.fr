@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Listener;
+namespace App\EventListener;
 
 use App\Entity\Agenda;
 use App\Entity\Site;
 use App\Entity\User;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Vich\UploaderBundle\Event\Event;
+use Vich\UploaderBundle\Event\Events;
 
-class ImageListener
+class ImageListener implements EventSubscriberInterface
 {
     private $cacheManager;
 
@@ -17,9 +19,17 @@ class ImageListener
         $this->cacheManager = $cacheManager;
     }
 
+    public static function getSubscribedEvents()
+    {
+        return [
+            Events::PRE_REMOVE => 'onImageDelete',
+        ];
+    }
+
     public function onImageDelete(Event $event)
     {
         $object = $event->getObject();
+        $mapping = $event->getMapping();
 
         if ($object instanceof User) {
             $filters = ['thumb_user_large', 'thumb_user_evenement', 'thumb_user', 'thumb_user_menu', 'thumb_user_50', 'thumb_user_115'];
@@ -28,13 +38,14 @@ class ImageListener
         } elseif ($object instanceof Site) {
             $filters = ['thumb_site', 'thumb_site_large'];
         } else {
-            $filters = [];
+            return;
         }
 
-        $prefix = $event->getMapping()->getUriPrefix();
-        $path   = $prefix . '/' . $event->getMapping()->getFileName($object);
+        $path = $mapping->getUriPrefix() . DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . DIRECTORY_SEPARATOR . $mapping->getFileName($object);
 
+        dump($path);
         foreach ($filters as $filter) {
+            dump($filter, $this->cacheManager->isStored($path, $filter));
             if ($this->cacheManager->isStored($path, $filter)) {
                 $this->cacheManager->remove($path, $filter);
             }

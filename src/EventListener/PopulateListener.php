@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Listener;
+namespace App\EventListener;
 
 use FOS\ElasticaBundle\Event\IndexPopulateEvent;
 use FOS\ElasticaBundle\Index\IndexManager;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class PopulateListener
+class PopulateListener implements EventSubscriberInterface
 {
     /**
      * @var IndexManager
@@ -18,6 +19,14 @@ class PopulateListener
     public function __construct(IndexManager $indexManager)
     {
         $this->indexManager = $indexManager;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            IndexPopulateEvent::PRE_INDEX_POPULATE => 'preIndexPopulate',
+            IndexPopulateEvent::POST_INDEX_POPULATE => 'postIndexPopulate',
+        ];
     }
 
     public function preIndexPopulate(IndexPopulateEvent $event)

@@ -113,6 +113,10 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
 
+    App\EventListener\EventExplorationListener:
+        tags:
+            - { name: doctrine.event_listener, event: preRemove }
+
     App\EventListener\EntityTagger:
         tags:
             - { name: doctrine.event_listener, event: postPersist }

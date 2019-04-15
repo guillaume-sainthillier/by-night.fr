@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Listener;
+namespace App\EventListener;
 
 use App\Entity\Exploration;
 use App\Reject\Reject;
 use App\Utils\Firewall;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
-class EventListener
+class EventExplorationListener
 {
     public function preRemove(LifecycleEventArgs $args)
     {
