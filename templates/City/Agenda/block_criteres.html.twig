@@ -54,7 +54,7 @@
                 {{ form_widget(form.chercher) }}
             </div>
         </div>
-        {% if isPost and (search.au or search.lieux or search.commune or search.term) %}
+        {% if isPost and (search.au or search.lieux or search.term) %}
             {% set options = {hiddenClass: '', iconClass: 'fa-chevron-up'} %}
         {% else %}
             {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}
@@ -93,12 +93,6 @@
                     {{ form_label(form.lieux) }}
                     <div class="col-sm-7">
                         {{ form_widget(form.lieux) }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    {{ form_label(form.commune) }}
-                    <div class="col-sm-7">
-                        {{ form_widget(form.commune) }}
                     </div>
                 </div>
                 <div class="form-group">

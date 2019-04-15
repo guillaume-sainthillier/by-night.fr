@@ -2,17 +2,14 @@
 
 namespace App\Security\Core\User;
 
-use App\App\CityManager;
 use App\Entity\Info;
 use App\Entity\User;
 use App\Entity\UserInfo;
-use App\Social\Social;
 use App\Social\SocialProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use HWI\Bundle\OAuthBundle\Security\Core\User\FOSUBUserProvider as BaseClass;
-use Symfony\Component\PropertyAccess\Exception\RuntimeException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class FOSUBUserProvider extends BaseClass
@@ -27,16 +24,10 @@ class FOSUBUserProvider extends BaseClass
      */
     private $entityManager;
 
-    /**
-     * @var CityManager
-     */
-    private $cityManager;
-
-    public function __construct(UserManagerInterface $userManager, array $properties, CityManager $cityManager, EntityManagerInterface $entityManager, SocialProvider $socialProvider)
+    public function __construct(UserManagerInterface $userManager, array $properties, EntityManagerInterface $entityManager, SocialProvider $socialProvider)
     {
         parent::__construct($userManager, $properties);
 
-        $this->cityManager = $cityManager;
         $this->entityManager = $entityManager;
         $this->socialProvider = $socialProvider;
     }
@@ -149,10 +140,6 @@ class FOSUBUserProvider extends BaseClass
 
         if (null === $user->getInfo()) {
             $user->setInfo(new UserInfo());
-        }
-
-        if (null === $user->getCity() && $this->cityManager->getCurrentCity()) {
-            $user->setCity($this->cityManager->getCurrentCity());
         }
 
         if (null === $user->getEmail()) {

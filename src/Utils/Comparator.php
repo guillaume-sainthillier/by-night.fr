@@ -2,15 +2,10 @@
 
 namespace App\Utils;
 
-use App\Entity\Agenda;
 use App\Entity\City;
 use App\Entity\Place;
 use App\Entity\ZipCity;
-use DateTime;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\Cache;
 use Exception;
-use function strlen;
 
 /**
  * @author guillaume
@@ -18,120 +13,34 @@ use function strlen;
 class Comparator
 {
     /**
-     * @var ArrayCache
-     */
-    private $cache;
-
-    /**
      * @var Util
      */
     private $util;
 
-    public function __construct(Util $util, Cache $cache)
+    public function __construct(Util $util)
     {
-        $this->util  = $util;
-        $this->cache = $cache;
+        $this->util = $util;
     }
 
-    public function deleteCache()
+    /**
+     * @return Place|null
+     */
+    public function getBestPlace(array $places, Place $testedPlace = null, $minScore = 90)
     {
-        $this->cache->deleteAll();
-        $this->cache->flushAll();
-    }
-
-    public function getBestPlace(array $places, Place $testedPlace = null)
-    {
-        return $this->getBest($places, [$this, 'getMatchingScorePlace'], $testedPlace, 90);
-    }
-
-    public function getMatchingScorePlace(Place $a = null, Place $b = null)
-    {
-        if (null !== $a && null !== $b) {
-            if ($this->getStrictMatchingPlace($a, $b)) {
-                return 100;
-            }
-
-            //Même ville
-            if (($a->getCity() && $b->getCity() && $a->getCity()->getId() === $b->getCity()->getId()) ||
-                ($a->getZipCity() && $b->getZipCity() && $a->getZipCity()->getId() === $b->getZipCity()->getId())) {
-                $matchinScoreNom = $this->getMatchingScoreTextWithoutCity(
-                    $a->getNom(), $a->getCity(), $a->getZipCity(),
-                    $b->getNom(), $b->getCity(), $b->getZipCity()
-                );
-
-                //Même rue & ~ même nom
-                if ($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 100 &&
-                    $matchinScoreNom >= 80) {
-                    return 100;
-                }
-
-                //~ Même nom
-                if ($matchinScoreNom >= 80) {
-                    return 90;
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    protected function getStrictMatchingEvent(Agenda $a, Agenda $b)
-    {
-        return ($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
-            ($a->getId() && $a->getId() === $b->getId());
-    }
-
-    protected function getStrictMatchingPlace(Place $a, Place $b)
-    {
-        return ($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
-            ($a->getId() && $a->getId() === $b->getId());
-    }
-
-    public function getBestEvent(array $events, Agenda $testedEvent)
-    {
-        return $this->getBest($events, [$this, 'getMatchingScoreEvent'], $testedEvent);
-    }
-
-    public function getMatchingScoreEvent(Agenda $a, Agenda $b)
-    {
-        //Fort taux de ressemblance du nom ou descriptif ou égalité de l'id FB
-        if ($this->getStrictMatchingEvent($a, $b)) {
-            return 100;
-        }
-
-        $placeA = $a->getPlace();
-        $placeB = $b->getPlace();
-        if ($this->getMatchingScorePlace($placeA, $placeB) >= 80) {
-            if ($this->getMatchingScoreText($a->getNom(), $b->getNom()) >= 75 ||
-                $this->getMatchingScoreHTML($a->getDescriptif(), $b->getDescriptif()) >= 75
-            ) {
-                return 90;
-            }
-
-            if ($this->isSubInSub($a->getNom(), $b->getNom())) {
-                return 85;
-            }
-        }
-
-        return 0;
-    }
-
-    private function getBest(array $items, callable $machingFunction, $testedItem = null, $minScore = 75)
-    {
-        if (null === $testedItem) {
+        if (null === $testedPlace) {
             return null;
         }
 
         $bestScore = 0;
-        $bestItem  = null;
+        $bestItem = null;
 
-        foreach ($items as $item) {
-            $score = \call_user_func($machingFunction, $item, $testedItem);
+        foreach ($places as $place) {
+            $score = $this->getMatchingScorePlace($place, $testedPlace);
 
             if ($score >= 100) {
-                return $item;
+                return $place;
             } elseif ($score >= $minScore && $score > $bestScore) {
-                $bestItem  = $item;
+                $bestItem = $place;
                 $bestScore = $score;
             }
         }
@@ -139,27 +48,43 @@ class Comparator
         return $bestItem;
     }
 
-    public function isSubInSub($str1, $str2)
+    public function getMatchingScorePlace(Place $a = null, Place $b = null)
     {
-        if ($this->isSubstrInStr($str1, $str2) || $this->isSubstrInStr($str2, $str1)) {
-            return true;
-        }
-        $sanitized1 = $this->sanitize($str1);
-        $sanitized2 = $this->sanitize($str2);
-
-        return $this->isSubstrInStr($sanitized1, $sanitized2) || $this->isSubstrInStr($sanitized2, $sanitized1);
-    }
-
-    protected function isSubstrInStr($needle, $haystack)
-    {
-        if (!$needle) {
-            return false;
+        if (null === $a || null === $b) {
+            return 0;
         }
 
-        return false !== \strpos($haystack, $needle);
+        if (($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
+            ($a->getId() && $a->getId() === $b->getId())) {
+            return 100;
+        }
+
+        if (($a->getCity() && $b->getCity() && $a->getCity()->getId() === $b->getCity()->getId()) ||
+            ($a->getZipCity() && $b->getZipCity() && $a->getZipCity()->getId() === $b->getZipCity()->getId()) ||
+            (!$a->getCity() && ! $b->getCity() && !$a->getZipCity() && !$b->getZipCity() && $a->getCountry() && $b->getCountry() && $a->getCountry()->getId() === $b->getCountry()->getId())) {
+
+            $matchingScoreNom = $this->getMatchingScoreTextWithoutCity(
+                $a->getNom(), $a->getCity(), $a->getZipCity(),
+                $b->getNom(), $b->getCity(), $b->getZipCity()
+            );
+
+            //Même rue & ~ même nom
+            if ($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 90 &&
+                $matchingScoreNom >= 80) {
+                return 100;
+            }
+
+            //~ Même nom
+            if ($matchingScoreNom >= 80) {
+                return 90;
+            }
+        }
+
+
+        return 0;
     }
 
-    protected function getMatchingScore($a, $b)
+    private function getMatchingScore($a, $b)
     {
         $pourcentage = 0;
         // = strlen > 0
@@ -183,26 +108,12 @@ class Comparator
 
     private function getDiffPourcentage($a, $b)
     {
-        $hashA = \md5($a);
-        $hashB = \md5($b);
-        $keys  = ['getDiffPourcentage.' . $hashA . '.' . $hashB, 'getDiffPourcentage.' . $hashB . '.' . $hashA];
-
-        foreach ($keys as $key) {
-            if ($this->cache->contains($key)) {
-                return $this->cache->fetch($key);
-            }
-        }
-
-        $score = (1 - \levenshtein($a, $b) / \max(\strlen($a), \strlen($b))) * 100;
-
-        $this->cache->save($keys[0], $score);
-
-        return $score;
+        return (1 - \levenshtein($a, $b) / \max(\strlen($a), \strlen($b))) * 100;
     }
 
-    protected function getMatchingScoreRue($a, $b)
+    private function getMatchingScoreRue($a, $b)
     {
-        if ($a === $b) {
+        if ($a && $a === $b) {
             return 100;
         }
 
@@ -212,21 +123,9 @@ class Comparator
         return $this->getMatchingScore($trimedA, $trimedB);
     }
 
-    protected function getMatchingScoreHTML($a, $b)
+    private function getMatchingScoreTextWithoutCity($a, City $cityA = null, ZipCity $zipCityA = null, $b = null, City $cityB = null, ZipCity $zipCityB = null)
     {
-        if ($a === $b) {
-            return 100;
-        }
-
-        $trimedA = $this->sanitizeHTML($a);
-        $trimedB = $this->sanitizeHTML($b);
-
-        return $this->getMatchingScore($trimedA, $trimedB);
-    }
-
-    protected function getMatchingScoreTextWithoutCity($a, City $cityA = null, ZipCity $zipCityA = null, $b = null, City $cityB = null, ZipCity $zipCityB = null)
-    {
-        if ($a === $b) {
+        if ($a && $a === $b) {
             return 100;
         }
 
@@ -248,36 +147,9 @@ class Comparator
         return $this->getMatchingScore($a, $b);
     }
 
-    protected function getMatchingScoreText($a, $b)
-    {
-        if ($a === $b) {
-            return 100;
-        }
-
-        $trimedA = $this->sanitize($a);
-        $trimedB = $this->sanitize($b);
-
-        return $this->getMatchingScore($trimedA, $trimedB);
-    }
-
     public function sanitizeNumber($string)
     {
         return \preg_replace('/\D/', '', $string);
-    }
-
-    public function isSameMoment(Agenda $a, Agenda $b)
-    {
-        $dateDebutA = $a->getDateDebut();
-        $dateDebutB = $b->getDateDebut();
-
-        $dateFinA = $a->getDateFin();
-        $dateFinB = $b->getDateFin();
-
-        if (false === $dateDebutA || false === $dateDebutB) {
-            return false;
-        }
-
-        return $this->isSameDate($dateDebutA, $dateDebutB) && $this->isSameDate($dateFinA, $dateFinB);
     }
 
     public function sanitizeRue($string)
@@ -289,14 +161,10 @@ class Comparator
         return \trim($step3);
     }
 
-    public function sanitizeHTML($string)
-    {
-        return $this->sanitize(\strip_tags($string));
-    }
-
     public function sanitizeVille($string)
     {
-        $string = \preg_replace("#-(\s*)st(\s*)-#i", 'saint', $string);
+        $string = \preg_replace("#(^|[\s-]+)st([\s-]+)#i", 'saint', $string);
+        $string = str_replace(' ', '', $string);
 
         return $this->sanitize($string);
     }
@@ -304,24 +172,15 @@ class Comparator
     public function sanitize($string)
     {
         return Monitor::bench('Sanitize', function () use ($string) {
-            $key = 'sanitize.' . $string;
-            if (!$this->cache->contains($key)) {
-                $string = $this->util->deleteStopWords($string);
-                $string = $this->util->utf8LowerCase($string);
-                $string = $this->util->replaceAccents($string);
-                $string = $this->util->replaceNonAlphanumericChars($string);
-                $string = $this->util->deleteStopWords($string);
-                $string = $this->util->deleteMultipleSpaces($string);
-                $string = \trim($string);
-                $this->cache->save($key, $string);
-            }
+            $string = $this->util->deleteStopWords($string);
+            $string = $this->util->utf8LowerCase($string);
+            $string = $this->util->replaceAccents($string);
+            $string = $this->util->replaceNonAlphanumericChars($string);
+            $string = $this->util->deleteStopWords($string);
+            $string = $this->util->deleteMultipleSpaces($string);
+            $string = \trim($string);
 
-            return $this->cache->fetch($key);
+            return $string;
         });
-    }
-
-    private function isSameDate(DateTime $a, DateTime $b)
-    {
-        return $a->format('Y-m-d') === $b->format('Y-m-d');
     }
 }

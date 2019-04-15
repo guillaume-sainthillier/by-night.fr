@@ -44,10 +44,13 @@ class ZipCityRepository extends EntityRepository
             $cities[] = \str_replace(' ', '-', $city);
             $cities[] = \str_replace('-', ' ', $city);
             $cities[] = \str_replace("'", '', $city);
+            $cities[] = \str_replace('’', '\'', $city);
+            $cities[] = \str_replace('\'', '’', $city);
+            $cities = array_map('strtolower', $cities);
             $cities = \array_unique($cities);
 
             $query
-                ->andWhere('zc.name IN(:cities)')
+                ->andWhere('LOWER(zc.name) IN(:cities)')
                 ->setParameter('cities', $cities);
         }
 

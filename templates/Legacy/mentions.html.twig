@@ -1,47 +1,42 @@
 {% set no_ads = true %}
-{% extends "base.html.twig" %}
+{% extends "layouts/default.html.twig" %}
 
-{% block breadcrumb -%}
+{% block breadcrumb %}
     {% set item = menu.addItem("Mentions Légales", url('app_agenda_mention_legales')) %}
 {%- endblock %}
 
-{% block title -%}
-    Mentions Légales
-{%- endblock %}
-    
-{% block titre -%}
-    Mentions Légales
-{%- endblock %}
+{% block title 'Mentions Légales' %}
+{% block titre 'Mentions Légales' %}
     
 {% block body %}
     {% set nomSite = 'By Night' %}
-    <br/>
+    <br />
     <h2>1. Présentation de notre site web</h2>
     <p>Conformément à la loi n° 2004-2005 du 21 juin 2004 pour la confiance dans l'économie numérique, notre site web
         créé par <a href="http://by-night.fr" title="By Night"><strong>By Night</strong></a>, propriétaire du site <a
                 href="http://by-night.fr" title="By Night"><strong>by-night.fr</strong></a>, met à disposition du public
-        les informations concernant notre entreprise.<br/>
+        les informations concernant notre entreprise.<br />
         Eventuellement modifiables, nous vous invitons donc à consulter nos mentions légales le plus souvent possible,
         de manière à en prendre connaissance fréquemment</p>
 
     <p>Le site <a href="{{ url('app_main_index') }}" title="By Night"><strong>{{ nomSite }}</strong></a> appartient à
-        By Night, dont le siège social est situé à l'adresse suivante : Toulouse.<br/>
+        By Night, dont le siège social est situé à l'adresse suivante : Toulouse.<br />
         Personne physique ou morale, By Night est responsable de la publication, dont l'adresse e-mail est la suivante :
-        <a href="mailto:support@by-night.fr"><strong>support@by-night.fr</strong></a><br/>
+        <a href="mailto:support@by-night.fr"><strong>support@by-night.fr</strong></a><br />
         Le webmaster, <strong>Guillaume Sainthillier</strong>, est responsable de l'administration du site, dont
         l'adresse e-mail est la suivante : <a
-                href="mailto:guillaume@sainthillier.fr"><strong>guillaume@sainthillier.fr</strong></a>.<br/>
+                href="mailto:guillaume@sainthillier.fr"><strong>guillaume@sainthillier.fr</strong></a>.<br />
         Le site <a href="{{ url('app_main_index') }}" title="By Night"><strong>{{ nomSite }}</strong></a> est hébergé
         par OVH :
-        <br/>
+        <br />
         SAS au capital de 10 000 000 € RCS Roubaix – Tourcoing 424 761 419 00045
-        <br/>
+        <br />
         Code APE 6202A - N° TVA : FR 22 424 761 419.
-        <br/>
+        <br />
         Siège social : 2 rue Kellermann 59100 Roubaix - France.
     </p>
 
-    <br/>
+    <br />
     <h2>2. Conditions générales d’utilisation du site et des services proposés.</h2>
 
     <p>En utilisant notre site web <a href="{{ url('app_main_index') }}"
@@ -50,7 +45,7 @@
         de visiteurs, il est important de préciser toutefois qu'une interruption pour maintenance du site web peut-être
         décidée par By Night. Les dates et heures d'interruptions seront néanmoins précisées à l'avance aux
         utilisateurs.</p>
-    <br/>
+    <br />
     <h2>3. Les produits ou services proposés par <a href="{{ url('app_main_index') }}"
                                                     title="By Night"><strong>{{ nomSite }}</strong></a></h2>
 
@@ -60,13 +55,13 @@
         des informations précises sur son activité. Cependant, des inexactitudes ou des omissions peuvent exister : la
         société ne pourra en aucun cas être tenue pour responsable pour toute erreur présente sur le site <a
                 href="{{ url('app_main_index') }}" title="By Night"><strong>{{ nomSite }}</strong></a>.</p>
-    <br/>
+    <br />
     <h2>4. Limitations contractuelles</h2>
 
     <p>Les informations retranscrites sur notre site web <a href="{{ url('app_main_index') }}"
                                                             title="By Night"><strong>{{ nomSite }}</strong></a> font
         l’objet de démarches qualitatives, en vue de nous assurer de leur fiabilité. Cependant, nous ne pourrons
-        encourir de responsabilités en cas d’inexactitudes techniques lors de nos explications.<br/>
+        encourir de responsabilités en cas d’inexactitudes techniques lors de nos explications.<br />
         Si vous constatez une erreur concernant des informations que nous auront pu omettre, n’hésitez pas à nous le
         signaler par mail à <a href="mailto:support@by-night.fr"><strong>support@by-night.fr</strong></a>.</p>
 
@@ -81,7 +76,7 @@
         de conséquence liée à l'exploitation du site <a href="{{ url('app_main_index') }}"
                                                         title="By Night"><strong>{{ nomSite }}</strong></a>, qu'elle
         soit direct ou indirect (bug, incompatibilité, virus, perte de marché, etc.).</p>
-    <br/>
+    <br />
     <h2>5. Propriété intellectuelle et contenu du site Internet</h2>
 
     <p>Le contenu rédactionnel du site web <a href="{{ url('app_main_index') }}"
@@ -94,16 +89,17 @@
         espaces interactifs. La société se réserve également le droit de supprimer tout contenu contraire aux valeurs de
         l'entreprise ou à la législation applicable en France.</p>
 
-    <p>En naviguant sur le site <a href="{{ url('app_main_index') }}" title="By Night"><strong>{{ nomSite }}</strong></a>,
+    <p>En naviguant sur le site
+        <a href="{{ url('app_main_index') }}" title="By Night"><strong>{{ nomSite }}</strong></a>,
         l'utilisateur accepte également l'installation de cookies éventuelle sur son ordinateur.</p>
-    <br/>
+    <br />
     <h2>6. Données personnelles, respect de votre vie privée et de vos libertés</h2>
 
     <p>Toute informations recueillie sur le site web <a href="{{ url('app_main_index') }}"
                                                         title="By Night"><strong>{{ nomSite }}</strong></a> se font dans
         le cadre des besoins liés à l'utilisation de notre plateforme, tels que le formulaire de commande ou la demande
         d'inscription à la Newsletter. Par ailleurs, le désabonnement de la Newsletter se fait grâce au lien situé en
-        pied de page.<br/>
+        pied de page.<br />
         By Night s'engage à ne céder en aucun cas les informations concernant les utilisateurs du site Internet, de
         quelque façon qu'il soit (vente, échange, prêt, location, don).</p>
 
@@ -113,8 +109,7 @@
                 href="mailto:guillaume@sainthillier.fr"><strong>guillaume@sainthillier.fr</strong></a>, ou en effectuant
         sa demande par courrier, à l’adresse suivante : Toulouse.</p>
 
-
-    <br/>
+    <br />
     <h2>7. Droit applicable et lois concernées</h2>
 
     <p>Soumis au droit français, le site web <a href="{{ url('app_main_index') }}"

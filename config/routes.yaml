@@ -58,10 +58,6 @@ app_user_profile:
     prefix: /profile
     type:     annotation
 
-#app.user_profile:
-#    resource: "@UserBundle/Controller"
-#    prefix:   /profile
-
 #Inscription
 fos_user_register:
     resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
@@ -113,5 +109,5 @@ google_login:
 #La ville est définie à partir d'ici
 app.city:
     resource: "../src/Controller/City"
-    prefix:   /{city}
+    prefix:   /{location}
     type:     annotation

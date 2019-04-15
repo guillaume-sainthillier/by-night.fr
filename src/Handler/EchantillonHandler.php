@@ -10,26 +10,16 @@ namespace App\Handler;
 
 use App\Entity\Agenda;
 use App\Entity\Place;
-use App\Repository\AgendaRepository;
-use App\Repository\PlaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EchantillonHandler
 {
-    /**
-     * @var AgendaRepository
-     */
-    private $repoAgenda;
-
-    /**
-     * @var PlaceRepository
-     */
-    private $repoPlace;
-
+    /** @var EntityManagerInterface */
+    private $em;
     /**
      * @var Place[]
      */
-    private $places;
+    private $countryPlaces;
 
     /**
      * @var Place[]
@@ -37,45 +27,25 @@ class EchantillonHandler
     private $cityPlaces;
 
     /**
-     * @var Place[]
-     */
-    private $newPlaces;
-
-    /**
      * @var Agenda[]
      */
     private $agendas;
 
-    /**
-     * @var Agenda[]
-     */
-    private $fbAgendas;
-
-    /**
-     * @var Agenda[]
-     */
-    private $newAgendas;
-
     public function __construct(EntityManagerInterface $em)
     {
-        $this->repoAgenda = $em->getRepository(Agenda::class);
-        $this->repoPlace = $em->getRepository(Place::class);
-
+        $this->em = $em;
         $this->init();
     }
 
     private function initEvents()
     {
         $this->agendas = [];
-        $this->fbAgendas = [];
-        $this->newAgendas = [];
     }
 
     private function initPlaces()
     {
-        $this->places = [];
+        $this->countryPlaces = [];
         $this->cityPlaces = [];
-        $this->newPlaces = [];
     }
 
     private function init()
@@ -86,41 +56,36 @@ class EchantillonHandler
 
     public function clearEvents()
     {
-        unset($this->agendas, $this->newAgendas, $this->fbAgendas);
+        unset($this->agendas);
         $this->initEvents();
     }
 
     public function clearPlaces()
     {
-        unset($this->places, $this->newPlaces, $this->fbPlaces);
+        unset($this->newPlaces, $this->fbPlaces);
         $this->initPlaces();
     }
 
     public function prefetchPlaceEchantillons(array $events)
     {
-        $places = \array_map(function (Agenda $event) {
-            return $event->getPlace();
-        }, $events);
+        $cityIds = [];
+        $countryIds = [];
 
-        unset($events);
-
-        $withExternalIdPlaces = [];
-        $withoutExternalIdPlaces = [];
-        foreach ($places as $place) {
-            /** @var Place $place */
-            if ($place->getExternalId()) {
-                $withExternalIdPlaces[$place->getExternalId()] = true;
-            } else {
-                $withoutExternalIdPlaces[$place->getCity()->getId()] = true;
+        foreach ($events as $event) {
+            /** @var Agenda $event */
+            if ($event->getPlace() && $event->getPlace()->getCity()) {
+                $cityIds[$event->getPlace()->getCity()->getId()] = true;
+            } elseif ($event->getPlace() && $event->getPlace()->getCountry()) {
+                $countryIds[$event->getPlace()->getCountry()->getId()] = true;
             }
         }
-        $withExternalIdPlaces = \array_keys($withExternalIdPlaces);
-        $withoutExternalIdPlaces = \array_keys($withoutExternalIdPlaces);
 
-        //On prend toutes les places déjà connues par leur external ID
-        if (\count($withExternalIdPlaces) > 0) {
-            $places = $this->repoPlace->findBy([
-                'externalId' => $withExternalIdPlaces,
+        $repoPlace = $this->em->getRepository(Place::class);
+
+        //On prend toutes les places déjà connues par leur city ID
+        if (\count($cityIds) > 0) {
+            $places = $repoPlace->findBy([
+                'city' => array_keys($cityIds),
             ]);
 
             foreach ($places as $place) {
@@ -129,10 +94,10 @@ class EchantillonHandler
         }
 
         //On prend ensuite toutes les places selon leur localisation
-        if (\count($withoutExternalIdPlaces) > 0) {
-            $places = $this->repoPlace->findBy([
-                'city' => $withoutExternalIdPlaces,
-                'externalId' => null
+        if (\count($countryIds) > 0) {
+            $places = $repoPlace->findBy([
+                'country' => array_keys($countryIds),
+                'city' => null
             ]);
 
             foreach ($places as $place) {
@@ -141,40 +106,76 @@ class EchantillonHandler
         }
     }
 
-    public function prefetchEventEchantillons(Agenda $event)
+    public function prefetchEventEchantillons(array $events)
     {
-        if ($event->getUser()) {
-            return;
+        $externalIds = [];
+        foreach ($events as $event) {
+            if ($event->getId() || $event->getUser()) {
+                continue;
+            }
+
+            if (!$event->getExternalId()) {
+                throw new \RuntimeException("Unable to find echantillon without an external ID");
+            }
+
+            $externalIds[$event->getExternalId()] = true;
         }
 
-        if (!$event->getExternalId()) {
-            throw new \RuntimeException("Unable to find echantillon without an external ID");
-        }
-
-        /** @var Agenda $candidate */
-        $candidate = $this->repoAgenda->findOneBy(['externalId' => $event->getExternalId()]);
-        if (null !== $candidate) {
-            $this->addEvent($candidate);
+        if (count($externalIds) > 0) {
+            $repoAgenda = $this->em->getRepository(Place::class);
+            $candidates = $repoAgenda->findBy(['externalId' => array_keys($externalIds)]);
+            foreach ($candidates as $candidate) {
+                /** @var Agenda $candidate */
+                $this->addEvent($candidate);
+            }
         }
     }
 
     /**
-     * @param Place $place
+     * @param Agenda $agenda
      *
      * @return Place[]
      */
-    public function getPlaceEchantillons(Place $place)
+    public function getPlaceEchantillons(Agenda $agenda)
     {
-        if ($place->getExternalId()) {
-            return isset($this->places[$place->getExternalId()]) ? [$this->places[$place->getExternalId()]] : [];
+        if ($agenda->getPlace()) {
+            $place = $this->searchPlaceByExternalId($agenda->getPlace()->getExternalId());
+
+            if ($place) {
+                return [$place];
+            }
         }
 
-        return $this->cityPlaces[$place->getCity()->getId()] ?? [];
+        if ($agenda->getPlace() && $agenda->getPlace()->getCity()) {
+            return $this->cityPlaces[$agenda->getPlace()->getCity()->getId()] ?? [];
+        } elseif ($agenda->getPlace() && $agenda->getPlace()->getCountry()) {
+            return $this->countryPlaces[$agenda->getPlace()->getCountry()->getId()] ?? [];
+        }
+
+        return [];
+    }
+
+    private function searchPlaceByExternalId(?string $placeExternalId): ?Place
+    {
+        if (null === $placeExternalId) {
+            return null;
+        }
+
+        foreach (array_merge($this->cityPlaces, $this->countryPlaces) as $key => $places) {
+            foreach ($places as $place) {
+                /** @var Place $place */
+                if ($place->getExternalId() === $placeExternalId) {
+                    return $place;
+                }
+            }
+        }
+
+        return null;
     }
 
     public function getEventEchantillons(Agenda $event)
     {
-        if ($event->getUser()) {
+        if ($event->getId() || $event->getUser()) {
             return [];
         }
 
@@ -187,21 +188,27 @@ class EchantillonHandler
 
     private function addEvent(Agenda $event)
     {
-        $this->agendas[$event->getExternalId()] = $event;
+        if ($event->getExternalId()) {
+            $this->agendas[$event->getExternalId()] = $event;
+        }
     }
 
     public function addNewEvent(Agenda $event)
     {
         $this->addEvent($event);
-        $this->addPlace($event->getPlace());
+        if ($event->getPlace()) {
+            $this->addPlace($event->getPlace());
+        }
     }
 
     private function addPlace(Place $place)
     {
-        if ($place->getExternalId()) {
-            $this->places[$place->getExternalId()] = $place;
-        } else {
-            $this->cityPlaces[$place->getCity()->getId()][$place->getId()] = $place;
+        $key = $place->getId() ?: spl_object_hash($place);
+
+        if ($place->getCity()) {
+            $this->cityPlaces[$place->getCity()->getId()][$key] = $place;
+        } elseif ($place->getCountry()) {
+            $this->countryPlaces[$place->getCountry()->getId()][$key] = $place;
         }
     }
 }

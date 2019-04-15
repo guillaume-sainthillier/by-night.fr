@@ -177,7 +177,7 @@ abstract class Social
         return $this->router->generate('app_agenda_details', [
             'slug' => $agenda->getSlug(),
             'id'   => $agenda->getSlug(),
-            'city' => $agenda->getPlace()->getCity()->getSlug(),
+            'location' => $agenda->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 

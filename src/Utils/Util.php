@@ -2,8 +2,6 @@
 
 namespace App\Utils;
 
-use function preg_quote;
-
 /**
  * Description of Merger.
  *
@@ -41,36 +39,38 @@ class Util
             "you're", "you've", 'your', 'yours', 'yourself', 'yourselves',
         ];
 
-        $parts                = \array_map('preg_quote', $stopWords);
+        $parts = \array_map(function ($stopWord) {
+            return preg_quote($stopWord, '/');
+        }, $stopWords);
         $this->stopWordsRegex = "/\b(" . \implode('|', $parts) . ")\b/imu";
     }
 
     public function replaceNonNumericChars($string)
     {
-        return \preg_replace('/[^\d.-]/u', '', $string);
+        return trim(\preg_replace('/[^\d.-]/u', '', $string));
     }
 
     public function replaceNonAlphanumericChars($string)
     {
-        return \preg_replace('/[^A-Za-z0-9 ]/u', '', $string);
+        return trim(\preg_replace('/[^A-Za-z0-9 ]/u', '', $string));
     }
 
     public function deleteSpaceBetween($string, $delimiters = '-')
     {
         if (\is_string($delimiters) && isset($delimiters[0])) { //Strlen > 0
-            return \preg_replace('/\s+(' . \preg_quote($delimiters) . '\s+/u', '$1', $string);
+            return trim(\preg_replace('/\s+(' . \preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
         } elseif (\is_array($delimiters) && \count($delimiters) > 0) {
-            return \preg_replace_callback('/\s+([' . \implode('', (array) $delimiters) . '])\s+/u', function ($matches) {
+            return trim(\preg_replace_callback('/\s+([' . \implode('', $delimiters) . '])\s+/u', function ($matches) {
                 return $matches[1];
-            }, $string);
+            }, $string));
         }
 
-        return $string;
+        return trim($string);
     }
 
     public function deleteStopWords($string)
     {
-        return \preg_replace($this->stopWordsRegex, ' ', $string);
+        return trim(\preg_replace($this->stopWordsRegex, ' ', $string));
     }
 
     public function deleteMultipleSpaces($string)
@@ -79,17 +79,17 @@ class Util
             $string = \str_replace('  ', ' ', $string);
         }
 
-        return $string;
+        return trim($string);
     }
 
     public function utf8TitleCase($string)
     {
-        return \mb_convert_case($string, MB_CASE_TITLE, 'UTF-8');
+        return trim(\mb_convert_case($string, MB_CASE_TITLE, 'UTF-8'));
     }
 
     public function utf8LowerCase($string)
     {
-        return \mb_convert_case($string, MB_CASE_LOWER, 'UTF-8');
+        return trim(\mb_convert_case($string, MB_CASE_LOWER, 'UTF-8'));
     }
 
     public function replaceAccents($string)
@@ -102,6 +102,6 @@ class Util
             'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y',
         ];
 
-        return \strtr($string, $unwanted_array);
+        return trim(\strtr($string, $unwanted_array));
     }
 }

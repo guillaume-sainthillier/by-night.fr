@@ -10,33 +10,31 @@ use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
-use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
 
 class AgendaRepository extends Repository
 {
-    const EXPO_TERMS = 'expo, exposition';
-
+    const EXPO_TERMS = 'exposition, salon';
     const CONCERT_TERMS = 'concert, musique, artiste';
-
     const FAMILY_TERMS = 'famille, enfants';
-
     const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
-
     const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
-    /**
-     * @param $search SearchAgenda
-     *
-     * @return PaginatorAdapterInterface
-     */
-    public function findWithSearch(SearchAgenda $search)
+    public function findWithSearch(SearchAgenda $search, bool $sortByScore = false)
     {
         $mainQuery = new BoolQuery();
 
-        if ($search->getCity()) {
+        if ($search->getLieux()) {
             $mainQuery->addMust(
-                new Term(['place.city.id' => $search->getCity()->getId()])
+                new Terms('place.id', $search->getLieux())
+            );
+        } elseif ($search->getLocation() && $search->getLocation()->isCountry()) {
+            $mainQuery->addMust(
+                new Term(['place.country.id' => strtolower($search->getLocation()->getCountry()->getId())])
+            );
+        } elseif ($search->getLocation() && $search->getLocation()->isCity()) {
+            $mainQuery->addMust(
+                new Term(['place.city.id' => $search->getLocation()->getCity()->getId()])
             );
         }
 
@@ -100,23 +98,17 @@ class AgendaRepository extends Repository
             $query = new MultiMatch();
             $query->setQuery($search->getTerm())
                 ->setFields([
-                    'nom', 'descriptif', 'type_manifestation',
-                    'theme_manifestation', 'categorie_manifestation', 'place.nom',
-                    'place.rue', 'place.ville', 'place.code_postal',
+                    'nom', 'descriptif',
+                    'type_manifestation', 'theme_manifestation', 'categorie_manifestation',
+                    'place.nom', 'place.rue', 'place.ville', 'place.code_postal',
+                    'place_name', 'place_street', 'place_city', 'place_postal_code',
                 ])
-                ->setOperator(false !== \strstr($search->getTerm(), ',') ? 'or' : 'and')
-                ->setFuzziness(0.8)
-                ->setMinimumShouldMatch('80%');
-            $mainQuery->addMust($query);
-        }
-
-        if ($search->getLieux()) {
-            $placeQuery = new Terms('place.id', $search->getLieux());
-            $mainQuery->addMust($placeQuery);
-        }
-
-        if ($search->getCommune()) {
-            $query = (new Match())->setField('place.ville', \implode(',', $search->getCommune()));
+                //->setAnalyzer('event_analyzer')
+                //->setOperator(false === \strstr($search->getTerm(), ',') ? MultiMatch::OPERATOR_OR : MultiMatch::OPERATOR_AND)
+                //->setOperator(MultiMatch::OPERATOR_AND)
+                //->setFuzziness(0.8)
+                //->setMinimumShouldMatch('80%');
+            ;
             $mainQuery->addMust($query);
         }
 
@@ -134,9 +126,13 @@ class AgendaRepository extends Repository
         }
 
         //Construction de la requête finale
-        $finalQuery = Query::create($mainQuery)
-            ->addSort(['date_fin' => 'asc'])
-            ->addSort(['fb_participations' => ['order' => 'desc', 'unmapped_type' => 'integer']]);
+        $finalQuery = Query::create($mainQuery);
+
+        if (false === $sortByScore) {
+            $finalQuery
+                ->addSort(['date_fin' => 'asc'])
+                ->addSort(['fb_participations' => ['order' => 'desc', 'unmapped_type' => 'long']]);
+        }
 
         return $this->createPaginatorAdapter($finalQuery);
     }

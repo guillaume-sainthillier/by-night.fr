@@ -6,7 +6,6 @@ use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\User;
 use App\Repository\AgendaRepository;
-use DateInterval;
 use DateTime;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -35,7 +34,7 @@ class DefaultController extends BaseController
 
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
     {
-        $em       = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository(User::class);
 
         if (!$id) {
@@ -75,16 +74,16 @@ class DefaultController extends BaseController
         }
         $user = $result;
 
-        $em   = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
         return $this->render('User/index.html.twig', [
-            'user'                 => $user,
-            'next_events'          => $repo->findAllNextEvents($user),
-            'previous_events'      => $repo->findAllNextEvents($user, false),
-            'etablissements'       => $repo->findAllPlaces($user),
+            'user' => $user,
+            'next_events' => $repo->findAllNextEvents($user),
+            'previous_events' => $repo->findAllNextEvents($user, false),
+            'etablissements' => $repo->findAllPlaces($user),
             'count_participations' => $repo->getCountParticipations($user),
-            'count_interets'       => $repo->getCountInterets($user),
+            'count_interets' => $repo->getCountInterets($user),
         ]);
     }
 
@@ -108,8 +107,8 @@ class DefaultController extends BaseController
         }
         $user = $result;
 
-        $em       = $this->getDoctrine()->getManager();
-        $repo     = $em->getRepository(Agenda::class);
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository(Agenda::class);
         $str_date = $repo->getLastDateStatsUser($user);
 
         $response = $this->cacheVerif($str_date);
@@ -132,6 +131,7 @@ class DefaultController extends BaseController
                 $datas = $this->getDataOfMonth($repo, $user);
 
                 break;
+            default:
             case 'annee':
                 $datas = $this->getDataOfYear($repo, $user);
 
@@ -158,117 +158,89 @@ class DefaultController extends BaseController
 
     protected function getDataOfWeek(AgendaRepository $repo, User $user)
     {
-        $now   = new DateTime();
-        $date  = $this->calculDate('P1W');
-        $datas = $repo->getStatsUser($user, $date);
+        $datas = $repo->getStatsUser($user, 'DAYOFWEEK');
 
         $final_datas = [
             'categories' => [],
-            'data'       => [],
-            'full_categories',
+            'data' => [],
+            'full_categories' => [],
         ];
 
-        for ($i = 1; $date <= $now; ++$i) {
-            $nb_events = 0;
-            foreach ($datas as $data) {
-                if ($data['date_event'] == $date->format('m-d')) {
-                    $nb_events = $data['nbEvents'];
-                }
-            }
+        foreach (range(1, 7) as $day) {
+            $date = new DateTime('0' . $day . '-01-' . date('Y'));
+            $dayNumber = $date->format('w');
+            $dateFormatter = \IntlDateFormatter::create(
+                \Locale::getDefault(),
+                \IntlDateFormatter::NONE,
+                \IntlDateFormatter::NONE
+            );
 
-            $cle                              = \ucfirst($this->getDayName($date->format('N')));
-            $final_datas['full_categories'][] = $cle . ' ' . $date->format('d') . ' ' . $this->getMonthName($date->format('m')) . ' ' . $date->format('Y');
-            $final_datas['categories'][]      = $cle;
-            $final_datas['data'][]            = (int) $nb_events;
-
-            $date->add(new DateInterval('P1D'));
+            $dateFormatter->setPattern('EEE');
+            $final_datas['categories'][$dayNumber] = $dateFormatter->format($date);
+            $dateFormatter->setPattern('EEEE');
+            $final_datas['full_categories'][$dayNumber] = $dateFormatter->format($date);
         }
 
-        return $final_datas;
+        ksort($final_datas['categories']);
+        ksort($final_datas['full_categories']);
+
+        return $this->fillDatas($final_datas, $datas);
     }
 
     protected function getDataOfMonth(AgendaRepository $repo, User $user)
     {
-        $now   = new DateTime();
-        $date  = $this->calculDate('P1M');
-        $datas = $repo->getStatsUser($user, $date);
+        $datas = $repo->getStatsUser($user, 'MONTH');
 
         $final_datas = [
             'categories' => [],
-            'data'       => [],
-            'full_categories',
+            'data' => [],
+            'full_categories' => [],
         ];
 
-        for ($i = 1; $date <= $now; ++$i) {
-            $nb_events = 0;
-            foreach ($datas as $data) {
-                if ($data['date_event'] == $date->format('m-d')) {
-                    $nb_events = $data['nbEvents'];
-                }
-            }
+        foreach (range(1, 12) as $month) {
+            $date = new DateTime('01-' . $month . '-' . date('Y'));
+            $dateFormatter = \IntlDateFormatter::create(
+                \Locale::getDefault(),
+                \IntlDateFormatter::NONE,
+                \IntlDateFormatter::NONE
+            );
 
-            $cle = \ucfirst($this->getDayName($date->format('N'))) . ' ' . $date->format('d');
-
-            $final_datas['full_categories'][] = \ucfirst($this->getDayName($date->format('N'))) . ' ' . $date->format('d') . ' ' . $this->getMonthName($date->format('m')) . ' ' . $date->format('Y');
-            $final_datas['categories'][]      = $cle;
-            $final_datas['data'][]            = (int) $nb_events;
-
-            $date->add(new DateInterval('P1D'));
+            $dateFormatter->setPattern('MMM');
+            $final_datas['categories'][$month] = $dateFormatter->format($date);
+            $dateFormatter->setPattern('MMMM');
+            $final_datas['full_categories'][$month] = $dateFormatter->format($date);
         }
 
-        return $final_datas;
+        return $this->fillDatas($final_datas, $datas);
     }
 
     protected function getDataOfYear(AgendaRepository $repo, User $user)
     {
-        $now   = new DateTime();
-        $date  = $this->calculDate('P1Y');
-        $datas = $repo->getStatsUser($user, $date, false);
+        $datas = $repo->getStatsUser($user, 'YEAR');
 
         $final_datas = [
             'categories' => [],
-            'data'       => [],
-            'full_categories',
+            'data' => [],
+            'full_categories' => [],
         ];
 
-        for ($i = 1; $date <= $now; ++$i) {
-            $nb_events = 0;
-            foreach ($datas as $data) {
-                if ($data['date_event'] == $date->format('Y-m')) {
-                    $nb_events = $data['nbEvents'];
-                }
-            }
+        $minYear = min(array_keys($datas));
+        $maxYear = max(array_keys($datas));
 
-            $cle                              = \ucfirst(\utf8_encode(\substr(\utf8_decode($this->getMonthName($date->format('m'))), 0, 3)));
-            $final_datas['full_categories'][] = \ucfirst($this->getMonthName($date->format('m'))) . ' ' . $date->format('Y');
-            $final_datas['categories'][]      = $cle;
-            $final_datas['data'][]            = (int) $nb_events;
-
-            $date->add(new DateInterval('P1M'));
+        foreach (range($minYear, $maxYear) as $year) {
+            $final_datas['categories'][$year] = $year;
+            $final_datas['full_categories'][$year] = $year;
         }
 
-        return $final_datas;
+        return $this->fillDatas($final_datas, $datas);
     }
 
-    protected function getMonthName($number)
+    private function fillDatas(array $final_datas, array $datas)
     {
-        $months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+        foreach (array_keys($final_datas['categories']) as $key) {
+            $final_datas['data'][$key] = $datas[$key] ?? 0;
+        }
 
-        return $months[((int) $number - 1)];
-    }
-
-    protected function getDayName($number)
-    {
-        $days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
-
-        return $days[((int) $number - 1)];
-    }
-
-    protected function calculDate($format)
-    {
-        $debut = new DateTime();
-        $debut->sub(new DateInterval($format));
-
-        return $debut;
+        return array_map('array_values', $final_datas);
     }
 }

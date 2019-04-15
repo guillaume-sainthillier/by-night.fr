@@ -3,6 +3,7 @@
 namespace App\Controller\City;
 
 use App\Annotation\BrowserCache;
+use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\City;
@@ -22,23 +23,19 @@ class AgendaController extends BaseController
 {
     const EVENT_PER_PAGE = 15;
 
-    protected function handleSearch(SearchAgenda $search, City $city, $type, $tag, $ville, Place $place = null)
+    protected function handleSearch(SearchAgenda $search, Location $location, $type, $tag, Place $place = null)
     {
         $term = null;
-        if (null !== $ville) {
-            $term = null;
-            $search->setCommune([$ville]);
-            $formAction = $this->generateUrl('app_agenda_ville', ['ville' => $ville, 'city' => $city->getSlug()]);
-        } elseif (null !== $place) {
+        if (null !== $place) {
             $term = null;
             $search->setLieux([$place->getId()]);
-            $formAction = $this->generateUrl('app_agenda_place', ['slug' => $place->getSlug(), 'city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_place', ['slug' => $place->getSlug(), 'location' => $location->getSlug()]);
         } elseif (null !== $tag) {
             $term = null;
             $search->setTag($tag);
-            $formAction = $this->generateUrl('app_agenda_tags', ['tag' => $tag, 'city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_tags', ['tag' => $tag, 'location' => $location->getSlug()]);
         } elseif (null !== $type) {
-            $formAction = $this->generateUrl('app_agenda_sortir', ['type' => $type, 'city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_sortir', ['type' => $type, 'location' => $location->getSlug()]);
             switch ($type) {
                 case 'exposition':
                     $term = \App\SearchRepository\AgendaRepository::EXPO_TERMS;
@@ -62,9 +59,10 @@ class AgendaController extends BaseController
                     break;
             }
         } else {
-            $formAction = $this->generateUrl('app_agenda_agenda', ['city' => $city->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_agenda', ['location' => $location->getSlug()]);
         }
 
+        $search->setLocation($location);
         $search->setTerm($term);
 
         return $formAction;
@@ -89,7 +87,7 @@ class AgendaController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(Request $request, City $city, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, $page = 1, $type = null, $tag = null, $ville = null, $slug = null)
+    public function indexAction(Location $location, Request $request, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, $page = 1, $type = null, $tag = null, $slug = null)
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -98,7 +96,7 @@ class AgendaController extends BaseController
 
         $routeParams = [
             'page' => $page + 1,
-            'city' => $city->getSlug(),
+            'location' => $location->getSlug(),
         ];
 
         if (null !== $type) {
@@ -107,8 +105,6 @@ class AgendaController extends BaseController
             $routeParams['tag'] = $tag;
         } elseif (null !== $slug) {
             $routeParams['slug'] = $slug;
-        } elseif (null !== $ville) {
-            $routeParams['ville'] = $ville;
         }
 
         $paginateURL = $this->generateUrl($request->attributes->get('_route'), $routeParams);
@@ -119,32 +115,29 @@ class AgendaController extends BaseController
 
         //Recherche des événements
         $search = new SearchAgenda();
-        $search->setCity($city);
         $place = null;
 
         if (null !== $slug) {
             $place = $em->getRepository(Place::class)->findOneBy(['slug' => $slug]);
             if (!$place) {
-                return $this->redirectToRoute('app_agenda_agenda', ['city' => $city->getSlug()]);
+                return $this->redirectToRoute('app_agenda_agenda', ['location' => $location->getSlug()]);
             }
 
-            if ($place->getCity()->getId() !== $city->getId()) {
-                return $this->redirectToRoute('app_agenda_place', ['city' => $place->getCity()->getSlug(), 'slug' => $slug]);
+            if ($location->getSlug() !== $place->getLocationSlug()) {
+                return $this->redirectToRoute('app_agenda_place', ['location' => $place->getLocationSlug(), 'slug' => $place->getSlug()]);
             }
         }
-        $formAction = $this->handleSearch($search, $city, $type, $tag, $ville, $place);
+        $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
 
         //Récupération des lieux, types événements et villes
-        $lieux = $this->getPlaces($memoryCache, $repo, $city);
-        $types_manif = $this->getTypesEvenements($memoryCache, $repo, $city);
-        $communes = $this->getVilles($memoryCache, $repo, $city);
+        $lieux = $this->getPlaces($memoryCache, $repo, $location);
+        $types_manif = $this->getTypesEvenements($memoryCache, $repo, $location);
 
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
             'action' => $formAction,
             'lieux' => $lieux,
             'types_manif' => $types_manif,
-            'communes' => $communes,
         ]);
 
         //Bind du formulaire avec la requête courante
@@ -164,8 +157,7 @@ class AgendaController extends BaseController
         $soirees = $pagination;
 
         return $this->render('City/Agenda/index.html.twig', [
-            'city' => $city,
-            'villeName' => $ville,
+            'location' => $location,
             'placeName' => (null !== $place) ? $place->getNom() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,
             'place' => $place,
@@ -183,16 +175,16 @@ class AgendaController extends BaseController
         ]);
     }
 
-    protected function getTypesEvenements(DoctrineCache $cache, AgendaRepository $repo, City $city)
+    private function getTypesEvenements(DoctrineCache $cache, AgendaRepository $repo, Location $location)
     {
-        $key = 'categories_evenements.' . $city->getSlug();
+        $key = 'categories_evenements.' . $location->getSlug();
 
         if (!$cache->contains($key)) {
-            $soirees_type_manifestation = $repo->getTypesEvenements($city);
+            $soirees_type_manifestation = $repo->getTypesEvenements($location);
             $type_manifestation = [];
 
             foreach ($soirees_type_manifestation as $soiree_type_manifestation) {//
-                $types_manifestation = \preg_split('/,/', $soiree_type_manifestation);
+                $types_manifestation = \explode(',', $soiree_type_manifestation);
                 foreach ($types_manifestation as $type) {
                     $type = \array_map('trim', \explode('//', $type))[0];
                     if (!\in_array($type, $type_manifestation) && '' != $type) {
@@ -207,29 +199,12 @@ class AgendaController extends BaseController
         return $cache->fetch($key);
     }
 
-    protected function getVilles(DoctrineCache $cache, AgendaRepository $repo, City $city)
+    private function getPlaces(DoctrineCache $cache, AgendaRepository $repo, Location $location)
     {
-        $key = 'villes.' . $city->getSlug();
+        $key = 'places.' . $location->getSlug();
 
         if (!$cache->contains($key)) {
-            $places = $repo->getAgendaVilles($city);
-            $tab_villes = [];
-            foreach ($places as $place) {
-                $tab_villes[$place->getCity()->getName()] = $place->getCity()->getName();
-            }
-
-            $cache->save($key, $tab_villes, 24 * 60 * 60);
-        }
-
-        return $cache->fetch($key);
-    }
-
-    protected function getPlaces(DoctrineCache $cache, AgendaRepository $repo, City $city)
-    {
-        $key = 'places.' . $city->getSlug();
-
-        if (!$cache->contains($key)) {
-            $places = $repo->getAgendaPlaces($city);
+            $places = $repo->getAgendaPlaces($location);
             $lieux = array();
             foreach ($places as $place) {
                 $lieux[$place->getNom()] = $place->getId();

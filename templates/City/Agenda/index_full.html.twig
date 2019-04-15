@@ -1,14 +1,62 @@
-{% extends "City/layout-fluid.html.twig" %}
+{% extends "layouts/with-widget.html.twig" %}
 
-{% block helper -%}
-    {% include "City/Agenda/block_criteres.html.twig" %}
+{% block title %}
+    {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
+    {% elseif tag is not null %}{{- tag|capitalize -}}
+    {% elseif type == 'exposition' %}Expositions
+    {% elseif type == 'concert' %}Concerts
+    {% elseif type == 'famille' %}Sorties familles
+    {% elseif type == 'spectacle' %}Spectacles
+    {% elseif type == 'etudiant' %}Soirées étudiantes
+    {% else %}Agenda des événements{% endif %}
+    {% if placeName is null %} {{ location.atName }}{% endif %}
+    {% if page > 1 %} (Page {{ page }}){% endif %}
+{% endblock %}
+
+{% block titre -%}
+    {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
+    {% elseif tag is not null %}{{- tag|capitalize -}}
+    {% elseif type == 'exposition' %}Expositions
+    {% elseif type == 'concert' %}Concerts
+    {% elseif type == 'famille' %}Sorties familles
+    {% elseif type == 'spectacle' %}Spectacles
+    {% elseif type == 'etudiant' %}Soirées étudiantes
+    {% else %}Agenda des <strong>événements</strong>{% endif %}
+    {% if placeName is null %} {{ location.atValue }} <strong>{{- location.name -}}</strong>{% endif %}
 {%- endblock %}
 
-{% block widgets -%}
-    {% include "City/MenuDroit/accueil.html.twig" %}
+{% block breadcrumb %}
+    {% if location.isCountry %}
+        {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.country.slug})) %}
+    {% else %}
+        {% set item = menu.addItem(location.city.country.name, path('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.city.slug})) %}
+    {% endif %}
+    {% set item = menu.addItem('Agenda', path('app_agenda_agenda', {'location': location.slug})) %}
+
+    {% if placeName is not null %}
+        {% set item = menu.addItem(placeName|capitalize, path('app_agenda_place', {'slug' : placeSlug, 'location': location.slug})) %}
+    {% elseif tag is not null %}
+        {% set item = menu.addItem(tag|capitalize, path('app_agenda_tags', {'tag' : tag, 'location': location.slug})) %}
+    {% elseif type is not null %}
+        {% set item = menu.addItem(type|capitalize, path('app_agenda_sortir', {'type' : type, 'location': location.slug})) %}
+    {% endif %}
+    {% if page > 1 %}
+        {% set item = menu.addItem("Page " ~ page, path('app_agenda_agenda', {'page': page, 'location': location.slug})) %}
+    {% endif %}
+{% endblock %}
+
+{% block og_titre block('titre')|striptags %}
+
+{% block meta_description -%}
+    {{ block('titre')|striptags }}.
+    {% if location.isCountry %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir en {{ location.country.name }}.{% endif %}
+    {% if location.isCity %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir à {{ location.city.name }}.{% endif %}
 {%- endblock %}
 
 {% block body %}
+    {% include "City/Agenda/block_criteres.html.twig" %}
+
     {% if soirees|length == 0 %}
         <div class="alert alert-info">
             <i class="fa fa-info-circle"></i>
@@ -25,54 +73,38 @@
     {% endif %}
 {% endblock %}
 
-{% block title %}
-    {% if villeName is not null %}Sortir à {{ villeName|capitalize -}}
-    {% elseif placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
-    {% elseif tag is not null %}{{- tag|capitalize -}}
-    {% elseif type == 'exposition' %}Expositions
-    {% elseif type == 'concert' %}Concerts
-    {% elseif type == 'famille' %}Sorties familles
-    {% elseif type == 'spectacle' %}Spectacles
-    {% elseif type == 'etudiant' %}Soirées étudiantes
-    {% else %}Agenda des événements{% endif %}
-    {% if placeName is null and villeName is null %} à {{ city.name }}{% endif %}
-    {% if page > 1 %} (Page {{ page }}){% endif %}
-{% endblock %}
+{% block widgets -%}
+    <div class="row">
+        <div class="col-sm-6 col-md-12">
+            <!-- Twitter -->
+            {% include "City/Widget/twitter.html.twig" %}
+            <!-- ./Twitter -->
 
-{% block breadcrumb_city_content %}
-    {% set item = menu.addItem('Agenda', path('app_agenda_agenda', {'city': city.slug})) %}
-    {% if placeName is not null %}
-        {% set item = menu.addItem(placeName|capitalize, path('app_agenda_place', {'slug' : placeSlug,'city': city.slug})) %}
-    {% elseif tag is not null %}
-        {% set item = menu.addItem(tag|capitalize, path('app_agenda_tags', {'tag' : tag,'city': city.slug})) %}
-    {% elseif type is not null %}
-        {% set item = menu.addItem(type|capitalize, path('app_agenda_sortir', {'type' : type,'city': city.slug})) %}
-    {% endif %}
-    {% if page > 1 %}
-        {% set item = menu.addItem("Page " ~ page, path('app_agenda_agenda', {'page': page,'city': city.slug})) %}
-    {% endif %}
-{% endblock %}
+            {% include "City/Widget/ads.html.twig" %}
 
-{% block titre -%}
-    {% if villeName is not null %}Sortir à {{ villeName|capitalize -}}
-    {% elseif placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
-    {% elseif tag is not null %}{{- tag|capitalize -}}
-    {% elseif type == 'exposition' %}Expositions
-    {% elseif type == 'concert' %}Concerts
-    {% elseif type == 'famille' %}Sorties familles
-    {% elseif type == 'spectacle' %}Spectacles
-    {% elseif type == 'etudiant' %}Soirées étudiantes
-    {% else %}Agenda des <strong>événements</strong>{% endif %}
-    {% if placeName is null and villeName is null %} à <strong>{{- city.name -}}</strong>{% endif %}
+            {% if social_manager.facebookIdPage %}
+                <!-- Facebook -->
+                {% include "City/Widget/facebook.html.twig" %}
+                <!-- ./Facebook -->
+            {% endif %}
+        </div>
+
+        <div class="col-sm-6 col-md-12">
+            <!-- Top Evénements -->
+            {% include "City/Widget/top_evenements.html.twig" %}
+            <!-- ./Top Evénements -->
+
+            <!-- Top Membres -->
+            {% include "City/Widget/top_membres.html.twig" %}
+            <!-- ./Top Membres -->
+
+            <!-- Programme TV -->
+            {% include "City/Widget/programme_tv.html.twig" %}
+            <!-- ./Programme TV -->
+        </div>
+    </div>
 {%- endblock %}
 
-{% block og_titre -%}
-    {{ block('titre')|striptags }}
-{%- endblock %}
-
-{% block meta_description -%}
-    {{ block('og_titre')|striptags }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir sur {{ city.name }}.
-{%- endblock %}
 
 {% block css %}
     <link rel="stylesheet" href="{{ app_asset('widgets/css/widgets.min.css', 'asset') }}" type="text/css">

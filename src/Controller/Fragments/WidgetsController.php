@@ -6,15 +6,9 @@ use App\Annotation\BrowserCache;
 use App\Controller\TBNController as BaseController;
 use App\Entity\User;
 use App\Parser\ProgrammeTVParser;
-use DateTime;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Description of MenuDroitController.
- *
- * @author guillaume
- */
 class WidgetsController extends BaseController
 {
     const FB_MEMBERS_LIMIT = 100;
@@ -39,7 +33,7 @@ class WidgetsController extends BaseController
         ]);
 
         return $response
-            ->setExpires(new DateTime('tomorrow'))
+            ->setExpires(new \DateTime('tomorrow'))
             ->setSharedMaxAge($this->getSecondsUntilTomorrow())
             ->setPublic();
     }
@@ -58,10 +52,10 @@ class WidgetsController extends BaseController
             $page = 1;
         }
 
-        $em   = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(User::class);
 
-        $count   = $repo->findMembresCount();
+        $count = $repo->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -73,10 +67,10 @@ class WidgetsController extends BaseController
         }
 
         $response = $this->render('City/Hinclude/membres.html.twig', [
-            'membres'     => $repo->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
+            'membres' => $repo->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
-            'current'     => $current,
-            'count'       => $count,
+            'current' => $current,
+            'count' => $count,
         ]);
 
         list($future, $seconds) = $this->getSecondsUntil(6);

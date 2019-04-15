@@ -1,4 +1,3 @@
-{% if city is not defined or not city %}{% set city = city_manager.city %}{% endif %}
 <!DOCTYPE HTML>
 <!--
 _______     __  _   _ _____ _____ _    _ _______
@@ -10,208 +9,194 @@ _______     __  _   _ _____ _____ _    _ _______
 
 -->
 <html prefix="og: http://ogp.me/ns#" lang="fr" xmlns:fb="http://ogp.me/ns/fb#">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta http-equiv="Content-Language" content="fr">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta http-equiv="Content-Language" content="fr">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- Chrome mobile -->
-        <meta name="theme-color" content="#3f51b5">
-        <link rel="icon" sizes="192x192" href="{{ app_asset('img/by-night_192x192.png') }}">
-        <!-- ./Chrome mobile -->
+    <!-- Chrome mobile -->
+    <meta name="theme-color" content="#3f51b5">
+    <link rel="icon" sizes="192x192" href="{{ app_asset('img/by-night_192x192.png') }}">
+    <!-- ./Chrome mobile -->
 
-        <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
-        <meta name="title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}">
-        <meta name="keywords" content="{% block meta_full_keywords %}{% spaceless %}{% block meta_keywords %}{% endblock %},aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endspaceless %}{% endblock %}">
-        <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
+    <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
+    <meta name="title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}">
+    <meta name="keywords" content="{% block meta_full_keywords %}{% spaceless %}{% block meta_keywords %}{% endblock %},aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endspaceless %}{% endblock %}">
+    <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
 
-        <!-- OpenGraph -->
-        <meta property="og:site_name" content="{% spaceless %}{{ block('nom_site') }}{% endspaceless %}">
-        <meta property="og:description" content="{% spaceless %}{% block og_description %}{{ block('description') }}{% endblock %}{% endspaceless %}">
-        <meta property="og:title" content="{% spaceless %}{% block og_titre %}{{ block('title') }}{% endblock %}{% endspaceless %}">
-        <meta property="og:type" content="{% spaceless %}{% block og_type %}website{% endblock %}{% endspaceless %}">
-        <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('app_main_index') }}{% endblock %}{% endspaceless %}">
-        <meta property="og:locale" content="fr" />
-        <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(app_asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
-        <!-- ./OpenGraph -->
+    <!-- OpenGraph -->
+    <meta property="og:site_name" content="{% spaceless %}{{ block('nom_site') }}{% endspaceless %}">
+    <meta property="og:description" content="{% spaceless %}{% block og_description %}{{ block('description') }}{% endblock %}{% endspaceless %}">
+    <meta property="og:title" content="{% spaceless %}{% block og_titre %}{{ block('title') }}{% endblock %}{% endspaceless %}">
+    <meta property="og:type" content="{% spaceless %}{% block og_type %}website{% endblock %}{% endspaceless %}">
+    <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('app_main_index') }}{% endblock %}{% endspaceless %}">
+    <meta property="og:locale" content="fr" />
+    <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(app_asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
+    <!-- ./OpenGraph -->
 
-        <!-- IE10+ -->
-        <meta name="application-name" content="{{ block('nom_site') }}">
-        <meta name="msapplication-config" content="browserconfig.xml" >
-        <!-- ./IE10+ -->
+    <!-- IE10+ -->
+    <meta name="application-name" content="{{ block('nom_site') }}">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    <!-- ./IE10+ -->
 
-        <!-- Twitter -->
-        {% if social_manager.twitterIdPage %}
-            <meta name="twitter:card" content="summary"/>
-            <meta name="twitter:site" content="@{{ social_manager.twitterIdPage }}"/>
-            <meta name="twitter:title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}"/>
-            <meta name="twitter:description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}"/>
-            <meta name="twitter:image:src" content="{% spaceless %}{{ block('og_image') }}{% endspaceless %}"/>
-        {% endif %}
-        {% block twitter %}{% endblock %}
-        <!-- ./Twitter -->
-        
-        <!-- FB -->
-        {% block facebook %}{% endblock %}
-        <!-- ./FB -->
-        
-        <!-- Google -->
-        {% block google %}{% endblock %}
-        <!-- ./Google -->
+    <!-- Twitter -->
+    {% if social_manager.twitterIdPage %}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@{{ social_manager.twitterIdPage }}" />
+        <meta name="twitter:title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}" />
+        <meta name="twitter:description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}" />
+        <meta name="twitter:image:src" content="{% spaceless %}{{ block('og_image') }}{% endspaceless %}" />
+    {% endif %}
+    {% block twitter %}{% endblock %}
+    <!-- ./Twitter -->
 
-        <!-- DC -->
-        <meta name="dc.description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}" >
-        <meta name="dc.title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}">
-        <meta name="dc.keywords" content="{% spaceless %}{{ block('meta_full_keywords') }}{% endspaceless %}"/>
-        <!-- ./DC -->
-        
-        {% block metas %}{% endblock %}
+    <!-- FB -->
+    {% if social_manager.facebookIdPage %}
+        <meta property="fb:page_id" content="{{ social_manager.facebookIdPage }}" />
+    {% endif %}
+    {% block facebook %}{% endblock %}
+    <!-- ./FB -->
 
-        <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
-        <link rel="shortcut icon" type="image/png" href="{{ absolute_url(asset('favicon.png')) }}" >
-        <link rel="apple-touch-icon" href="{{ absolute_url(asset('apple-touch-icon.png')) }}" >
-        
-        <!-- CSS -->
-        <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400%7CRoboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="{{ app_asset('main/css/style.min.css', 'asset') }}" type="text/css" >
-        {% block css %}{% endblock %}
-        <link rel="stylesheet" href="{{ app_asset('css/print.min.css', 'asset') }}" type="text/css" media="print">
-        <!-- ./CSS -->
-        
-        <!--[if lt IE 9]>
-            <script src="//oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
-            <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
+    <!-- Google -->
+    {% block google %}{% endblock %}
+    <!-- ./Google -->
+
+    <!-- DC -->
+    <meta name="dc.description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}">
+    <meta name="dc.title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}">
+    <meta name="dc.keywords" content="{% spaceless %}{{ block('meta_full_keywords') }}{% endspaceless %}" />
+    <!-- ./DC -->
+
+    {% block metas %}{% endblock %}
+
+    <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
+    <link rel="shortcut icon" type="image/png" href="{{ absolute_url(asset('favicon.png')) }}">
+    <link rel="apple-touch-icon" href="{{ absolute_url(asset('apple-touch-icon.png')) }}">
+
+    <!-- CSS -->
+    <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400%7CRoboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ app_asset('main/css/style.min.css', 'asset') }}" type="text/css">
+    {% block css_layout %}{% endblock %}
+    {% block css %}{% endblock %}
+    <link rel="stylesheet" href="{{ app_asset('css/print.min.css', 'asset') }}" type="text/css" media="print">
+    <!-- ./CSS -->
+
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    {% if no_ads is not defined %}
         <script async defer src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <script>
             (adsbygoogle = window.adsbygoogle || []).push({
                 google_ad_client: "ca-pub-2072406985754187",
                 enable_page_level_ads: true
             });
-
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-            ga('create', 'UA-45716709-2', 'by-night.fr');
-            ga('require', 'displayfeatures');
-            ga('send', 'pageview');
-
-            var AppConfig = {
-                "apiCityURL" : "{{ url('app_api_city') }}?q=%QUERY"
-            };
         </script>
-        {% block head_js %}{% endblock %}
-    </head>
-    <body itemscope itemtype="http://schema.org/WebPage">
-        <div id="wrap">
-            <header>
-                <!-- Menu -->
-                {% if city %}
-                    {{ render_esi(url('app_private_header_site', {'city' : city.slug})) }}
-                {% else %}
-                    {{ render_esi(url('app_private_header')) }}
-                {% endif %}
-                <!-- ./Menu -->
-                {% block breadcrumb %}
-                    <div id="bread" class="bg-white">
-                        <div class="container">
-                            {% if city %}
-                                {% set item = menu.addItem(city.country.name, path('app_main_index')) %}
-                                {% set item = menu.addItem(city.name, path('app_agenda_index', {'city': city.slug})) %}
-                            {% else %}
-                                {% set item = menu.addItem('By Night', path('app_main_index')) %}
-                            {% endif %}
-                            {% block breadcrumb_content %}{% endblock %}
-                            {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
-                        </div>
-                    </div>
-                {% endblock %}
-            </header>
-            {% block container_titre %}
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-10 col-md-offset-1">
-                        <h1 class="titrebloc">{% spaceless %}{% block titre %}{% endblock %}{% endspaceless %}</h1>
-                        <div class="divider">
-                            <span class="text-primary divider-icon"></span>
-                        </div>
-                    </div>
-                </div>                            
+    {% endif %}
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-45716709-2', 'by-night.fr');
+        ga('require', 'displayfeatures');
+        ga('send', 'pageview');
+    </script>
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "url": "{{ url('app_main_index') }}",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "{{ url('app_search_query', {'q': '{search_term_string}'})|url_decode }}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+
+    </script>
+    {% block head_js_layout %}{% endblock %}
+    {% block head_js %}{% endblock %}
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+<div id="wrap">
+    <header>
+        <!-- Menu -->
+        {% if city_manager.city %}
+            {{ render_esi(url('app_private_header_site', {'slug' : city_manager.city.slug })) }}
+        {% else %}
+            {{ render_esi(url('app_private_header')) }}
+        {% endif %}
+        <!-- ./Menu -->
+
+        {% block full_breadcrumb %}
+        <div id="bread" class="bg-white">
+            <div class="container">
+                {% set item = menu.addItem('By Night', path('app_main_index')) %}
+
+                {% block breadcrumb %}{% endblock %}
+                {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
             </div>
-            {% endblock %}
-            
-            <!-- Main -->
-            {% block helper_top %}{% endblock %}
-            {%- block start_container -%}
-            <div class="container panel panel-primary" id="container">
-            {%- endblock -%}
-                {% if app.request.hasPreviousSession %}
-                {% for key, messages in app.session.flashbag.all() %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ key == "error" ? "danger" : key }}">
-                            <i class="fa fa-{{ key == 'info' ? 'info-circle' : (key == 'error' ? 'warning' : key == 'success' ? 'check' : key) }}"></i> 
-                            {{ message|trans|raw }}
-                        </div>
-                    {% endfor %}
-                {% endfor %}
-                {% endif %}
-                {%- block helper -%}{%- endblock -%}
-                {% block ad %}{% if no_ads is not defined %}{% include 'ad.html.twig' %}{% endif %}{% endblock %}
-                {%- block body -%}{%- endblock -%}
-                {% block ad2 %}{% if no_ads is not defined %}{% include 'ad2.html.twig' %}{% endif %}{% endblock %}
-            {% block end_container -%}
-            </div>
-            {%- endblock -%}
-            <!-- ./Main -->
         </div>
-            
-        <!-- Modals -->
-        <div class="modal fade" id="dialog_details" tabindex="-1" role="dialog" aria-labelledby="dialog_titre" aria-hidden="true">
-            {% include "modals.html.twig" %}
-        </div>
-        <!-- ./Modals -->
-        
-        <footer>
-            <div id="footer">
-                <div class="container sous-header">
-                        {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer')) }}
-                        <p class="pull-left">
-                            <a href="{{ path('app_main_index') }}"><strong>By Night</strong> v{{ app_version }}</a>
-                            | © {{ "now"|date('Y') }} - Tous droits réservés
-                        </p>
-                        <p class="pull-right">
-                            Fait avec <span class="number text-danger">♥</span> à Toulouse - 
-                           <a href="http://sainthillier.fr">GS</a>
-                        </p>
-                </div>                   
-            </div>
-        </footer>
-        <a href="#" id="toTop" class="btn btn-primary btn-fab btn-raised">
-            <span id="toTopHover">
-                <i class="fa fa-chevron-up"></i>
-            </span>
-        </a>
-        
-        <!-- JS -->
-        <script type="text/javascript" src="{{ app_asset('main/js/scripts.min.js', 'asset') }}"></script>
-        {%- block js -%}{%- endblock -%}
-        <script type="text/javascript"> 
-            $(document).ready(function(){
-                $.cookieBar({
-                    message: 'En poursuivant votre navigation, vous acceptez l\'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d\'intérêts et mesurer la fréquentation de nos services.',
-                    acceptText: 'J\'ai compris',
-                    bottom: true,
-                    fixed: true,
-                    policyButton: true,
-                    policyText: 'En savoir plus',
-                    policyURL: '{{ path('app_main_cookie') }}'
-                });
-            });
-        </script>
-        <!-- ./JS -->
-    </body>
+        {% endblock %}
+    </header>
+
+    <!-- Main -->
+    {% block layout %}{% endblock %}
+    <!-- ./Main -->
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="dialog_details" tabindex="-1" role="dialog" aria-labelledby="dialog_titre" aria-hidden="true">
+    {% include "modals.html.twig" %}
+</div>
+<!-- ./Modals -->
+
+<!-- Footer -->
+{% set countryId = null %}
+{% if location is defined %}
+    {% set countryId = location.isCountry ? location.country.id : location.city.country.id %}
+    {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer', {'id': countryId})) }}
+{% else %}
+    {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer')) }}
+{% endif %}
+<!-- ./Footer -->
+
+<a href="#" id="toTop" class="btn btn-primary btn-fab btn-raised">
+    <span id="toTopHover">
+        <i class="fa fa-chevron-up"></i>
+    </span>
+</a>
+
+<!-- JS -->
+<script type="text/javascript" src="{{ app_asset('main/js/scripts.min.js', 'asset') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.cookieBar({
+            message: 'En poursuivant votre navigation, vous acceptez l\'utilisation de cookies pour vous proposer des services et offres adaptés à vos centres d\'intérêts et mesurer la fréquentation de nos services.',
+            acceptText: 'J\'ai compris',
+            bottom: true,
+            fixed: true,
+            policyButton: true,
+            policyText: 'En savoir plus',
+            policyURL: '{{ path('app_main_cookie') }}'
+        });
+    });
+</script>
+{%- block js_layout -%}{%- endblock -%}
+{%- block js -%}{%- endblock -%}
+<!-- ./JS -->
+</body>
 </html>
 

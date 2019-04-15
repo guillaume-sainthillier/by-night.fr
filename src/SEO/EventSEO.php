@@ -9,7 +9,6 @@
 namespace App\SEO;
 
 use App\Entity\Agenda;
-use DateTime;
 use IntlDateFormatter;
 
 class EventSEO
@@ -32,10 +31,10 @@ class EventSEO
     {
         $description = \sprintf('Découvrez %s.', $agenda->getNom());
 
-        if ($agenda->getPlace()) {
+        if ($agenda->getPlaceName() && $agenda->getPlaceCity()) {
             $description .= \sprintf(' %s à %s.',
-                $agenda->getPlace()->getNom(),
-                $agenda->getPlace()->getVille()
+                $agenda->getPlaceName(),
+                $agenda->getPlaceCity()
             );
         }
 
@@ -71,7 +70,7 @@ class EventSEO
     {
         $shortTitle = $event->getNom();
         if ($event->getModificationDerniereMinute()) {
-            $shortTitle .= \sprintf(' [%s]', $event->getModificationDerniereMinute());
+            $shortTitle = \sprintf('[%s] %s', $event->getModificationDerniereMinute(), $shortTitle);
         }
 
         return $shortTitle;
@@ -81,14 +80,14 @@ class EventSEO
     {
         $title = $this->getEventShortTitle($event);
 
-        if ($event->getPlace()) {
-            $title .= \sprintf(' - %s', $event->getPlace()->getNom());
+        if ($event->getPlaceName()) {
+            $title .= \sprintf(' - %s', $event->getPlaceName());
         }
 
         return $title;
     }
 
-    private function formatDate(DateTime $date, $dateFormat, $timeFormat)
+    private function formatDate(\DateTimeInterface $date, $dateFormat, $timeFormat)
     {
         $formatter = IntlDateFormatter::create(null, $dateFormat, $timeFormat);
 

@@ -2,11 +2,10 @@
 
 {% trans_default_domain 'FOSUserBundle' %}
 
-{% block title_espace %}Inscription réussie{% endblock %}
-
-{% block titre_espace %}Inscription réussie{% endblock %}
+{% block title_espace 'Inscription réussie' %}
+{% block titre_espace 'Inscription réussie' %}
     
-{% block breadcrumb_espace %}
+{% block breadcrumb %}
     {% set item = menu.addItem("Inscription", path('fos_user_registration_register')) %}
 {% endblock %}
 

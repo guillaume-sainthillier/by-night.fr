@@ -62,8 +62,7 @@ var UserEventHandler = {
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             },
             autocompleteService: {
-                types: ['geocode'],
-                componentRestrictions: {country: 'FR'}
+                types: ['address']
             },
             marker: {
                 draggable: true,
@@ -85,7 +84,7 @@ var UserEventHandler = {
         });
 
         //Lieux
-        var $field = $('#agenda_place_nom');
+        var $field = $('#agenda_placeName');
         // instantiate the placePicker suggestion engine (based on bloodhound)
         var placePicker = new AddressPicker({
             autocompleteService: {
@@ -118,15 +117,14 @@ var UserEventHandler = {
     },
     assignGMapInfo: function (event, result) {
         console.log(result);
-        $('#agenda_place_latitude').val(result.lat());
-        $('#agenda_place_longitude').val(result.lng());
-        $('#agenda_place_ville').val(result.nameForType('locality'));
-        $('#agenda_place_codePostal').val(result.nameForType('postal_code'));
+        $('#agenda_latitude').val(result.lat());
+        $('#agenda_longitude').val(result.lng());
+        $('#agenda_placeCity').val(result.nameForType('locality'));
+        $('#agenda_placePostalCode').val(result.nameForType('postal_code'));
 
         var rue = ((result.nameForType('street_number') ? result.nameForType('street_number') : '') + ' ' + (result.nameForType('route') || '')).trim();
-        $('#agenda_place_rue').val(rue);
-
-        $("#agenda_place_country").val(result.nameForType('country', true) || '');
+        $('#agenda_placeStreet').val(rue);
+        $("#agenda_placeCountry").val(result.nameForType('country', true) || '');
     }
 };
 

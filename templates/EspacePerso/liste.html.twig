@@ -1,21 +1,9 @@
-{% extends "base.html.twig" %}
+{% extends "EspacePerso/layout.html.twig" %}
 
-{% block start_container -%}
-<div class="container" id="container">
-{%- endblock %}
+{% block titre 'Mes événements' %}
+{% block title 'Mes événements' %}
 
-{% block titre -%}
-    Mes événements
-{%- endblock %}
-
-{% block title -%}
-    Mes événements
-{%- endblock %}
-
-{% block breadcrumb_content %}
-    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", path('app_agenda_list')) %}
-{% endblock %}
+{% block container_class '' %}
 
 {% block body -%}
     <div class="text-center">
@@ -35,8 +23,8 @@
             </a>
         {% endif %}
     </div>
-    <br/>
-    <br/>
+    <br />
+    <br />
 
     {% import "Form/macros.html.twig" as macros %}
     {% if soirees|length > 0 %}
@@ -61,17 +49,19 @@
                             <i class="fa fa-pencil"></i>
                         </a>
                     </td>
-                    <td><a href="{{ path('app_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug}) }}"
+                    <td>
+                        <a href="{{ path('app_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug}) }}"
                            title="Accéder à l'événement">{{ soiree.nom }}</a></td>
-                    <td>{{ soiree.place ? soiree.place.nom : '' }}</td>
-                    <td>{{ soiree.place ? soiree.place.ville : '' }}</td>
+                    <td>{{ soiree.placeName }}</td>
+                    <td>{{ soiree.placeCity }}</td>
                     <td>
                         {{ macros.dates(soiree.dateDebut, soiree.dateFin) }}
                     </td>
                     <td>
                         <div class="togglebutton">
                             <label>
-                                <input type="checkbox" class="brouillon"
+                                <input type="checkbox"
+                                       class="brouillon"
                                        data-href="{{ path('app_agenda_brouillon', {'slug': soiree.slug}) }}" {{ not soiree.isBrouillon ? 'checked' : '' }} />
                             </label>
                         </div>
@@ -79,7 +69,8 @@
                     <td>
                         <div class="togglebutton">
                             <label>
-                                <input type="checkbox" class="annuler"
+                                <input type="checkbox"
+                                       class="annuler"
                                        data-href="{{ path('app_agenda_annuler', {'slug': soiree.slug}) }}" {{ soiree.modificationDerniereMinute ? 'checked' : '' }} />
                             </label>
                         </div>

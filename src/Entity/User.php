@@ -31,7 +31,7 @@ class User extends BaseUser
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serializer\Groups({"list_even", "list_user"})
+     * @Serializer\Groups({"list_event", "list_user"})
      * @Expose
      */
     protected $id;

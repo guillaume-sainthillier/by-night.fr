@@ -1,9 +1,9 @@
 {% extends "City/Widget/template.html.twig" %}
 
-{% block titre %}On est aussi sur Facebook{% endblock %}
-{% block icone %}fa-facebook{% endblock %}
+{% block titre 'On est aussi sur Facebook' %}
+{% block icone 'fa-facebook' %}
+
 {% block body %}
-    <div id="fb-root"></div>
     <script>(function (d, s, id) {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
@@ -27,4 +27,5 @@
         </div>
     </div>
 {% endblock %}
-{% block footer %}{% endblock %}
+
+{% block footer '' %}

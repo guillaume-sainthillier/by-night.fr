@@ -1,23 +1,35 @@
-{% extends "City/layout.html.twig" %}
+{% extends "layouts/full.html.twig" %}
 
-{% block titre_agenda -%}
-    <strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong> & <strong>soirées</strong> à
-    <strong>{{ city.name }}</strong>
+{% block titre -%}
+    <strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong> &
+    <strong>soirées</strong> {{ location.atValue }}
+    <strong>{{ location.name }}</strong>
 {%- endblock %}
 
-{% block title_agenda %}{{ block('titre_agenda')|striptags }}{% endblock %}
+{% block title block('titre')|striptags %}
 
-{% block container_titre %}{% endblock %}
+{% block meta_description -%}
+    Sortir {{ location.atName }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir {{ location.atName }}.
+{%- endblock %}
 
-{% block helper_top %}
-    <section class="full_wrapper" style="background-image: url({{ app_asset('img/sites/' ~ city.slug ~ '.jpg') }})">
+{% block breadcrumb %}
+    {% if location.isCountry %}
+        {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.country.slug})) %}
+    {% else %}
+        {% set item = menu.addItem(location.city.country.name, path('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.slug})) %}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <section class="full_wrapper" style="background-image: url({{ app_asset('img/sites/' ~ location.slug ~ '.jpg') }})">
         <div class="fade-black-transp"></div>
         <div class="wrapper">
-            <h1 class="titrebloc text-center">{{ block('titre_agenda') }}</h1>
+            <h1 class="titrebloc text-center">{{ block('titre') }}</h1>
             <div class="row">
                 <div class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2 col-lg-6 col-lg-push-3 no-margin-form panel panel-primary search_container img-rounded">
                     <form name="app_search_agenda" role="search"
-                          action="{{ path('app_agenda_agenda', {'city': city.slug}) }}" method="POST">
+                          action="{{ path('app_agenda_agenda', {'location': location.slug}) }}" method="POST">
                         <div class="row">
                             <div class="col-md-8">
                                 <input type="hidden" id="search_du" name="search[du]" value="" />
@@ -56,30 +68,41 @@
             </div>
         </div>
         <div class="footer_wrapper">
-            <h2 class="text-primary number number-xbig">{{ nbEvents }} événements et bons plans culturels
-                à {{ city.name }}</h2>
+            <h2 class="text-primary number number-xbig">{{ nbEvents }} événements et bons plans culturels {{ location.atName }}</h2>
         </div>
     </section>
     <section class="bg-white padding-tb-30">
         <div class="container">
-            <h2 class="text-primary">Envie de sortir aujourd'hui ou ce soir à {{ city.name }} ?</h2>
-            <p>Si vous cherchez <strong>que faire à {{ city.name }}</strong>, trouvez facilement un
-                <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>, <strong>café</strong> ou
+            <h2 class="text-primary">Envie de sortir aujourd'hui ou ce soir {{ location.atName }} ?</h2>
+            <p>Si vous cherchez <strong>que faire {{ location.atName }}</strong>, trouvez facilement un
+                <strong>concert</strong>, <strong>expo</strong>, <strong>spectacle</strong>,
+                <strong>café</strong> ou
                 <strong>sortie</strong> dans votre ville préférée.
-                Il y en a pour tous les goûts, pour toutes les couleurs et pour tous les âges ! De la <strong>visite de
+                Il y en a pour tous les goûts, pour toutes les couleurs et pour tous les âges ! De la
+                <strong>visite de
                     parcs en famille</strong> aux <strong>soirées étudiantes</strong> les plus branchées dans les
-                <strong>discothèques</strong> de {{ city.name }}, trouvez l'événement qui vous correspond !
+                <strong>discothèques</strong> de {{ location.name }}, trouvez l'événement qui vous correspond !
             </p>
-            <p>{{ city.name }} By Night est une solution alternative pour chercher et trouver facilement des <strong>événements
-                    & bons plans culturels</strong> sur la ville de {{ city.name }} et ses environs.
-                Notre but est avant tout de centraliser les <strong>choses à faire à {{ city.name }}</strong> et vous
-                offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
-            </p>
+            {% if location.isCity %}
+                <p>{{ location.appName }} est une solution alternative pour chercher et trouver facilement des
+                    <strong>événements & bons plans culturels</strong> sur la ville de {{ location.name }} et ses environs.
+                    Notre but est avant tout de centraliser les
+                    <strong>choses à faire à {{ location.name }}</strong> et vous
+                    offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
+                </p>
+            {% else %}
+                <p>{{ location.appName }} est une solution alternative pour chercher et trouver facilement des
+                    <strong>événements & bons plans culturels</strong> dans toutes les villes de {{ location.name }}.
+                    Notre but est avant tout de centraliser les
+                    <strong>choses à faire en {{ location.name }}</strong> et vous
+                    offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
+                </p>
+            {% endif %}
             <br />
-            <a href="{{ path('app_agenda_agenda', {'city': city.slug}) }}"
+            <a href="{{ path('app_agenda_agenda', {'location': location.slug}) }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i>
-                Agenda des événements<span class="hidden-xs hidden-sm">, concerts, spectacles à {{ city.name }}</span>
+                Agenda des événements<span class="hidden-xs hidden-sm">, concerts, spectacles {{ location.atName }}</span>
             </a>
         </div>
     </section>
@@ -92,48 +115,48 @@
                     'title': 'Concert',
                     'icon': 'flaticon-microphone47',
                     'color': 'red',
-                    'link': path('app_agenda_sortir', {'type': 'concert', 'city': city.slug}),
-                    'title_link': 'Concerts à ' ~ city.name,
-                    'text': "Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples à
-                            " ~ city.name ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et
-                            soirées et pour <strong>sortir se détendre</strong> à " ~ city.name ~ "."
+                    'link': path('app_agenda_sortir', {'type': 'concert', 'location': location.slug}),
+                    'title_link': 'Concerts ' ~ location.atName,
+                    'text': "Les <strong>concerts</strong>, <strong>spectacles</strong> et <strong>soirées</strong> sont multiples
+                            " ~ location.atName ~ " ! Trouvez ici <strong>l'agenda des concerts</strong>, <strong>spectacles</strong> et
+                            soirées et pour <strong>sortir se détendre</strong> " ~ location.atName ~ "."
                 }, {
                     'title': 'Etudiant',
                     'icon': 'flaticon-students17',
                     'color': 'orange',
-                    'link': path('app_agenda_sortir', {'type': 'etudiant', 'city': city.slug}),
-                    'title_link': 'Soirées étudiantes à ' ~ city.name,
+                    'link': path('app_agenda_sortir', {'type': 'etudiant', 'location': location.slug}),
+                    'title_link': 'Soirées étudiantes ' ~ location.atName,
                     'text': "Envie de <strong>soiree étudiante</strong>, de <strong>soirée gratuite</strong>,
                             d'<strong>after work</strong>, de tournée des <strong>bars</strong> ou de sortir en 
-                            <strong>discothèque</strong> ce soir ? " ~ city.name ~ " By Night regroupe
+                            <strong>discothèque</strong> ce soir ? " ~ location.appName ~ " regroupe
                             <strong>l'agenda des soirées</strong> rien que pour vous !"
                 }, {
                     'title': 'Famille',
                     'icon': 'flaticon-father16',
                     'color': 'green',
-                    'link': path('app_agenda_sortir', {'type': 'famille', 'city': city.slug}),
-                    'title_link': 'Sorties familles à ' ~ city.name,
-                    'text': "Trouvez des idées pour <strong>sortir en famille</strong> à " ~ city.name ~ " avec tous les
+                    'link': path('app_agenda_sortir', {'type': 'famille', 'location': location.slug}),
+                    'title_link': 'Sorties familles ' ~ location.atName,
+                    'text': "Trouvez des idées pour <strong>sortir en famille</strong> " ~ location.atName ~ " avec tous les
                             <strong>spectacles enfants</strong>. Découvrez de nouveaux <strong>spectacles jeune public</strong>,
-                             des <strong>parcs </strong> ou de jolies <strong>balades</strong> près de " ~ city.name ~ " !"
+                             des <strong>parcs </strong> ou de jolies <strong>balades</strong> près de " ~ location.name ~ " !"
                 }, {
                     'title': 'Spectacle',
                     'icon': 'flaticon-tickets',
                     'color': 'blue',
-                    'link': path('app_agenda_sortir', {'type': 'spectacle', 'city': city.slug}),
-                    'title_link': 'Spectacles à ' ~ city.name,
-                    'text': city.name ~ " regorge de <strong>spectacles en " ~ "now"|date('Y') ~ "</strong> ! Divertissement & culture,
-                            trouvez votre spectacle préféré ou votre animation favorie grâce à 
-                            <strong>l'agenda des spectacles à  " ~ city.name ~ "</strong>."
+                    'link': path('app_agenda_sortir', {'type': 'spectacle', 'location': location.slug}),
+                    'title_link': 'Spectacles ' ~ location.atName,
+                    'text': location.atName ~ ", il y a pleins de <strong>spectacles en " ~ "now"|date('Y') ~ "</strong> ! Divertissement & culture,
+                            trouvez votre spectacle préféré ou votre animation favorite grâce à
+                            <strong>l'agenda des spectacles " ~ location.atName ~ "</strong>."
                 }, {
                     'title': 'Exposition',
                     'icon': 'flaticon-theater1',
                     'color': 'darkblue',
-                    'link': path('app_agenda_sortir', {'type': 'exposition', 'city': city.slug}),
-                    'title_link': 'Les expos à ' ~ city.name,
-                    'text': "Les <strong>expos à " ~ city.name ~ "</strong> sont nombreuses ! Envie d'aller visiter les
+                    'link': path('app_agenda_sortir', {'type': 'exposition', 'location': location.slug}),
+                    'title_link': 'Les expos ' ~ location.atName,
+                    'text': "Les <strong>expos " ~ location.atName ~ "</strong> sont nombreuses ! Envie d'aller visiter les
                     <strong>expos peinture</strong> de votre ville ? Ou simplement de sortir découvrir 
-                    les <strong>expos à voir à " ~ city.name ~ "</strong> ? C'est par ici !"
+                    les <strong>expos à voir " ~ location.atName ~ "</strong> ? C'est par ici !"
                 }, {
                     'title': 'Organisateur',
                     'icon': 'flaticon-calendar60',
@@ -141,7 +164,7 @@
                     'link': path('app_agenda_new'),
                     'title_link': 'Créer un événement',
                     'text': "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence
-                            de communication</strong> à " ~ city.name ~ " ? <strong>Publiez facilement</strong>
+                            de communication</strong> " ~ location.atName ~ " ? <strong>Publiez facilement</strong>
                             votre événement sur notre plateforme et donnez lui un maximum de <strong>visibilité</strong> !"
                 }] %}
 
@@ -171,11 +194,11 @@
     </section>
     <section class="bg-white padding-tb-30">
         <div class="container">
-            <h2 class="text-primary">Les concerts, spectacles et sorties cette semaine à {{ city.name }}</h2>
+            <h2 class="text-primary">Les concerts, spectacles et sorties cette semaine {{ location.atName }}</h2>
             {% include 'City/Event/block_preview_event.html.twig' with({'events': topEvents, 'page': 1}) %}
             <br />
             <br />
-            <a href="{{ path('app_agenda_agenda', {'city': city.slug}) }}"
+            <a href="{{ path('app_agenda_agenda', {'location': location.slug}) }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i>
                 Tous les événements<span class="hidden-xs hidden-sm">, concerts, spectacles</span>
@@ -184,14 +207,10 @@
     </section>
 {% endblock %}
 
-{% block ad %}{% endblock %}
-{% block start_container -%}
-<div>{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{{ app_asset('evenements/css/index.min.css', 'asset') }}" type="text/css">
+{% endblock %}
 
-    {% block css_agenda %}
-        <link rel="stylesheet" href="{{ app_asset('evenements/css/index.min.css', 'asset') }}" type="text/css">
-    {% endblock %}
-
-    {% block js_agenda %}
-        <script src="{{ app_asset('evenements/js/index.min.js', 'asset') }}" type="text/javascript"></script>
-    {% endblock %}
+{% block js %}
+    <script src="{{ app_asset('evenements/js/index.min.js', 'asset') }}" type="text/javascript"></script>
+{% endblock %}

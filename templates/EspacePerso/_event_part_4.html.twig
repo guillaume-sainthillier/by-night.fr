@@ -1,0 +1,14 @@
+{% extends "City/Widget/template.html.twig" %}
+
+{% block titre 'Communiquez' %}
+{% block icone 'fa-bullhorn' %}
+
+{% block body %}
+    <div class="form-horizontal">
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
+    </div>
+{% endblock %}
+
+{% block footer '' %}

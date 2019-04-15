@@ -10,8 +10,9 @@ use JMS\Serializer\Annotation\Expose;
 /**
  * Site.
  *
- * @ORM\Table(name="Site",
- *      indexes={@ORM\Index(name="recherche_site_idx", columns={"subdomain"})})
+ * @ORM\Table(name="Site", indexes={
+ *     @ORM\Index(name="recherche_site_idx", columns={"subdomain"})
+ * })
  * @ORM\Entity(repositoryClass="App\Repository\SiteRepository")
  * @ExclusionPolicy("all")
  */

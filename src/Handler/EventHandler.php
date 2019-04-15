@@ -100,10 +100,7 @@ class EventHandler
 
     public function handleEvent(array $persistedEvents, Agenda $notPersistedEvent)
     {
-        //Evenement persisté
-        $bestEvent = Monitor::bench('getBestEvent', function () use ($persistedEvents, $notPersistedEvent) {
-            return $this->comparator->getBestEvent($persistedEvents, $notPersistedEvent);
-        });
+        $bestEvent = count($persistedEvents) > 0 ? current($persistedEvents) : null;
 
         //On fusionne l'event existant avec celui découvert (même si NULL)
         return Monitor::bench('mergeEvent', function () use ($bestEvent, $notPersistedEvent) {

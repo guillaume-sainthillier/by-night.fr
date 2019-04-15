@@ -40,8 +40,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Agenda implements GeolocalizeInterface
 {
     const INDEX_FROM = '-6 months';
-
-    const INDEX_TO = '+6 months';
+    const INDEX_TO = '+2 years';
 
     /**
      * @ORM\Id
@@ -258,10 +257,8 @@ class Agenda implements GeolocalizeInterface
     protected $url;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
      */
     protected $user;
 
@@ -369,7 +366,7 @@ class Agenda implements GeolocalizeInterface
     protected $source;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"}, fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -378,7 +375,7 @@ class Agenda implements GeolocalizeInterface
     protected $place;
 
     /**
-     * @var Reject
+     * @var Reject|null
      */
     protected $reject;
 
@@ -389,16 +386,102 @@ class Agenda implements GeolocalizeInterface
      */
     protected $isArchive;
 
-    public function setReject(Reject $reject = null)
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
+     * @Groups({"list_event"})
+     * @Expose
+     */
+    protected $placeName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=127, nullable=true)
+     * @Groups({"list_event"})
+     * @Expose
+     */
+    protected $placeStreet;
+
+    /**
+     * @ORM\Column(type="string", length=127, nullable=true)
+     * @Groups({"list_event"})
+     * @Expose
+     */
+    protected $placeCity;
+
+    /**
+     * @ORM\Column(type="string", length=7, nullable=true)
+     * @Groups({"list_event"})
+     * @Expose
+     */
+    protected $placePostalCode;
+
+    /**
+     * @ORM\Column(type="string", length=127, nullable=true)
+     */
+    protected $placeExternalId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $placeFacebookId;
+
+    /**
+     * @var Reject|null
+     */
+    protected $placeReject;
+
+    /**
+     * @var string|null
+     */
+    protected $placeCountryName;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country")
+     * @ORM\JoinColumn(nullable=true)
+     * @var Country|null
+     */
+    protected $placeCountry;
+
+    /**
+     * @return Reject|null
+     */
+    public function getReject(): ?Reject
+    {
+        return $this->reject;
+    }
+
+    /**
+     * @param Reject|null $reject
+     * @return Agenda
+     */
+    public function setReject(?Reject $reject): Agenda
     {
         $this->reject = $reject;
-
         return $this;
     }
 
-    public function getReject()
+    /**
+     * @return Reject|null
+     */
+    public function getPlaceReject(): ?Reject
     {
-        return $this->reject;
+        return $this->placeReject;
+    }
+
+    /**
+     * @param Reject|null $placeReject
+     * @return Agenda
+     */
+    public function setPlaceReject(?Reject $placeReject): Agenda
+    {
+        $this->placeReject = $placeReject;
+        return $this;
     }
 
     public function isIndexable()
@@ -436,12 +519,9 @@ class Agenda implements GeolocalizeInterface
         return $this;
     }
 
-    /**
-     * @return File
-     */
-    public function getSystemFile()
+    public function getFile()
     {
-        return $this->systemFile;
+        return $this->file;
     }
 
     /**
@@ -468,12 +548,9 @@ class Agenda implements GeolocalizeInterface
         return $this;
     }
 
-    /**
-     * @return File
-     */
-    public function getFile()
+    public function getSystemFile()
     {
-        return $this->file;
+        return $this->systemFile;
     }
 
     /**
@@ -482,8 +559,8 @@ class Agenda implements GeolocalizeInterface
      */
     public function majDateFin()
     {
-        if (null === $this->getDateFin()) {
-            $this->setDateFin($this->getDateDebut());
+        if (null === $this->dateFin) {
+            $this->dateFin = $this->dateDebut;
         }
     }
 
@@ -498,11 +575,22 @@ class Agenda implements GeolocalizeInterface
 
     public function __construct()
     {
-        $this->setDateDebut(new DateTime());
-        $this->place        = new Place();
-        $this->calendriers  = new ArrayCollection();
+        $this->dateDebut = new DateTime();
+        $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
-        $this->isArchive    = false;
+        $this->isArchive = false;
+    }
+
+    public function getLocationSlug() {
+        if($this->getPlace() && $this->getPlace()->getCity()) {
+            return $this->getPlace()->getCity()->getSlug();
+        }
+
+        if($this->getPlace() && $this->getPlace()->getCountry()) {
+            return $this->getPlace()->getCountry()->getSlug();
+        }
+
+        return 'unknown';
     }
 
     public function setId($id)
@@ -514,8 +602,19 @@ class Agenda implements GeolocalizeInterface
 
     public function getDistinctTags()
     {
-        $tags = $this->getCategorieManifestation() . ',' . $this->getTypeManifestation() . ',' . $this->getThemeManifestation();
+        $tags = $this->categorieManifestation . ',' . $this->typeManifestation . ',' . $this->themeManifestation;
         return \array_unique(\array_map('trim', \array_map('ucfirst', \array_filter(\preg_split('#[,/]#', $tags)))));
+    }
+
+    public function getPlaceCountryName(): ?string
+    {
+        return $this->placeCountryName;
+    }
+
+    public function setPlaceCountryName(?string $placeCountryName): self
+    {
+        $this->placeCountryName = $placeCountryName;
+        return $this;
     }
 
     public function __toString()
@@ -523,1042 +622,9 @@ class Agenda implements GeolocalizeInterface
         return '#' . $this->id ?: '?';
     }
 
-    /**
-     * Set latitude.
-     *
-     * @param float $latitude
-     *
-     * @return Agenda
-     */
-    public function setLatitude($latitude)
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    /**
-     * Get latitude.
-     *
-     * @return float
-     */
-    public function getLatitude()
-    {
-        return $this->latitude;
-    }
-
-    /**
-     * Set longitude.
-     *
-     * @param float $longitude
-     *
-     * @return Agenda
-     */
-    public function setLongitude($longitude)
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
-    /**
-     * Get longitude.
-     *
-     * @return float
-     */
-    public function getLongitude()
-    {
-        return $this->longitude;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * Set slug.
-     *
-     * @param string $slug
-     *
-     * @return Agenda
-     */
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    /**
-     * Get slug.
-     *
-     * @return string
-     */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
-
-    /**
-     * Set nom.
-     *
-     * @param string $nom
-     *
-     * @return Agenda
-     */
-    public function setNom($nom)
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    /**
-     * Get nom.
-     *
-     * @return string
-     */
-    public function getNom()
-    {
-        return $this->nom;
-    }
-
-    /**
-     * Set descriptif.
-     *
-     * @param string $descriptif
-     *
-     * @return Agenda
-     */
-    public function setDescriptif($descriptif)
-    {
-        $this->descriptif = $descriptif;
-
-        return $this;
-    }
-
-    /**
-     * Get descriptif.
-     *
-     * @return string
-     */
-    public function getDescriptif()
-    {
-        return $this->descriptif;
-    }
-
-    /**
-     * Set dateModification.
-     *
-     * @param DateTime $dateModification
-     *
-     * @return Agenda
-     */
-    public function setDateModification($dateModification)
-    {
-        $this->dateModification = $dateModification;
-
-        return $this;
-    }
-
-    /**
-     * Get dateModification.
-     *
-     * @return DateTime
-     */
-    public function getDateModification()
-    {
-        return $this->dateModification;
-    }
-
-    /**
-     * Set fbDateModification.
-     *
-     * @param DateTime $fbDateModification
-     *
-     * @return Agenda
-     */
-    public function setFbDateModification($fbDateModification)
-    {
-        $this->fbDateModification = $fbDateModification;
-
-        return $this;
-    }
-
-    /**
-     * Get fbDateModification.
-     *
-     * @return DateTime
-     */
-    public function getFbDateModification()
-    {
-        return $this->fbDateModification;
-    }
-
-    /**
-     * Set dateDebut.
-     *
-     * @param DateTime $dateDebut
-     *
-     * @return Agenda
-     */
-    public function setDateDebut($dateDebut)
-    {
-        $this->dateDebut = $dateDebut;
-
-        return $this;
-    }
-
-    /**
-     * Get dateDebut.
-     *
-     * @return DateTime
-     */
-    public function getDateDebut()
-    {
-        return $this->dateDebut;
-    }
-
-    /**
-     * Set dateFin.
-     *
-     * @param DateTime $dateFin
-     *
-     * @return Agenda
-     */
-    public function setDateFin($dateFin)
-    {
-        $this->dateFin = $dateFin;
-
-        return $this;
-    }
-
-    /**
-     * Get dateFin.
-     *
-     * @return DateTime
-     */
-    public function getDateFin()
-    {
-        return $this->dateFin;
-    }
-
-    /**
-     * Set horaires.
-     *
-     * @param string $horaires
-     *
-     * @return Agenda
-     */
-    public function setHoraires($horaires)
-    {
-        $this->horaires = $horaires;
-
-        return $this;
-    }
-
-    /**
-     * Get horaires.
-     *
-     * @return string
-     */
-    public function getHoraires()
-    {
-        return $this->horaires;
-    }
-
-    /**
-     * Set modificationDerniereMinute.
-     *
-     * @param string $modificationDerniereMinute
-     *
-     * @return Agenda
-     */
-    public function setModificationDerniereMinute($modificationDerniereMinute)
-    {
-        $this->modificationDerniereMinute = $modificationDerniereMinute;
-
-        return $this;
-    }
-
-    /**
-     * Get modificationDerniereMinute.
-     *
-     * @return string
-     */
-    public function getModificationDerniereMinute()
-    {
-        return $this->modificationDerniereMinute;
-    }
-
-    /**
-     * Set adresse.
-     *
-     * @param string $adresse
-     *
-     * @return Agenda
-     */
-    public function setAdresse($adresse)
-    {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
-    /**
-     * Get adresse.
-     *
-     * @return string
-     */
-    public function getAdresse()
-    {
-        return $this->adresse;
-    }
-
-    /**
-     * Set typeManifestation.
-     *
-     * @param string $typeManifestation
-     *
-     * @return Agenda
-     */
-    public function setTypeManifestation($typeManifestation)
-    {
-        $this->typeManifestation = $typeManifestation;
-
-        return $this;
-    }
-
-    /**
-     * Get typeManifestation.
-     *
-     * @return string
-     */
-    public function getTypeManifestation()
-    {
-        return $this->typeManifestation;
-    }
-
-    /**
-     * Set categorieManifestation.
-     *
-     * @param string $categorieManifestation
-     *
-     * @return Agenda
-     */
-    public function setCategorieManifestation($categorieManifestation)
-    {
-        $this->categorieManifestation = $categorieManifestation;
-
-        return $this;
-    }
-
-    /**
-     * Get categorieManifestation.
-     *
-     * @return string
-     */
-    public function getCategorieManifestation()
-    {
-        return $this->categorieManifestation;
-    }
-
-    /**
-     * Set themeManifestation.
-     *
-     * @param string $themeManifestation
-     *
-     * @return Agenda
-     */
-    public function setThemeManifestation($themeManifestation)
-    {
-        $this->themeManifestation = $themeManifestation;
-
-        return $this;
-    }
-
-    /**
-     * Get themeManifestation.
-     *
-     * @return string
-     */
-    public function getThemeManifestation()
-    {
-        return $this->themeManifestation;
-    }
-
-    /**
-     * Set reservationTelephone.
-     *
-     * @param string $reservationTelephone
-     *
-     * @return Agenda
-     */
-    public function setReservationTelephone($reservationTelephone)
-    {
-        $this->reservationTelephone = $reservationTelephone;
-
-        return $this;
-    }
-
-    /**
-     * Get reservationTelephone.
-     *
-     * @return string
-     */
-    public function getReservationTelephone()
-    {
-        return $this->reservationTelephone;
-    }
-
-    /**
-     * Set reservationEmail.
-     *
-     * @param string $reservationEmail
-     *
-     * @return Agenda
-     */
-    public function setReservationEmail($reservationEmail)
-    {
-        $this->reservationEmail = $reservationEmail;
-
-        return $this;
-    }
-
-    /**
-     * Get reservationEmail.
-     *
-     * @return string
-     */
-    public function getReservationEmail()
-    {
-        return $this->reservationEmail;
-    }
-
-    /**
-     * Set reservationInternet.
-     *
-     * @param string $reservationInternet
-     *
-     * @return Agenda
-     */
-    public function setReservationInternet($reservationInternet)
-    {
-        $this->reservationInternet = $reservationInternet;
-
-        return $this;
-    }
-
-    /**
-     * Get reservationInternet.
-     *
-     * @return string
-     */
-    public function getReservationInternet()
-    {
-        return $this->reservationInternet;
-    }
-
-    /**
-     * Set tarif.
-     *
-     * @param string $tarif
-     *
-     * @return Agenda
-     */
-    public function setTarif($tarif)
-    {
-        $this->tarif = $tarif;
-
-        return $this;
-    }
-
-    /**
-     * Get tarif.
-     *
-     * @return string
-     */
-    public function getTarif()
-    {
-        return $this->tarif;
-    }
-
-    /**
-     * Set fromData.
-     *
-     * @param string $fromData
-     *
-     * @return Agenda
-     */
-    public function setFromData($fromData)
-    {
-        $this->fromData = $fromData;
-
-        return $this;
-    }
-
-    /**
-     * Get fromData.
-     *
-     * @return string
-     */
-    public function getFromData()
-    {
-        return $this->fromData;
-    }
-
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Agenda
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set path.
-     *
-     * @param string $path
-     *
-     * @return Agenda
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
-    /**
-     * Get path.
-     *
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Set systemPath.
-     *
-     * @param string $systemPath
-     *
-     * @return Agenda
-     */
-    public function setSystemPath($systemPath)
-    {
-        $this->systemPath = $systemPath;
-
-        return $this;
-    }
-
-    /**
-     * Get systemPath.
-     *
-     * @return string
-     */
-    public function getSystemPath()
-    {
-        return $this->systemPath;
-    }
-
-    /**
-     * Set url.
-     *
-     * @param string $url
-     *
-     * @return Agenda
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * Get url.
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * Set isBrouillon.
-     *
-     * @param bool $isBrouillon
-     *
-     * @return Agenda
-     */
-    public function setBrouillon($isBrouillon)
-    {
-        $this->isBrouillon = $isBrouillon;
-
-        return $this;
-    }
-
-    /**
-     * Get isBrouillon.
-     *
-     * @return bool
-     */
-    public function getIsBrouillon()
-    {
-        return $this->isBrouillon;
-    }
-
-    /**
-     * Set tweetPostId.
-     *
-     * @param string $tweetPostId
-     *
-     * @return Agenda
-     */
-    public function setTweetPostId($tweetPostId)
-    {
-        $this->tweetPostId = $tweetPostId;
-
-        return $this;
-    }
-
-    /**
-     * Get tweetPostId.
-     *
-     * @return string
-     */
-    public function getTweetPostId()
-    {
-        return $this->tweetPostId;
-    }
-
-    /**
-     * Set facebookEventId.
-     *
-     * @param string $facebookEventId
-     *
-     * @return Agenda
-     */
-    public function setFacebookEventId($facebookEventId)
-    {
-        $this->facebookEventId = $facebookEventId;
-
-        return $this;
-    }
-
-    /**
-     * Get facebookEventId.
-     *
-     * @return string
-     */
-    public function getFacebookEventId()
-    {
-        return $this->facebookEventId;
-    }
-
-    /**
-     * Set tweetPostSystemId.
-     *
-     * @param string $tweetPostSystemId
-     *
-     * @return Agenda
-     */
-    public function setTweetPostSystemId($tweetPostSystemId)
-    {
-        $this->tweetPostSystemId = $tweetPostSystemId;
-
-        return $this;
-    }
-
-    /**
-     * Get tweetPostSystemId.
-     *
-     * @return string
-     */
-    public function getTweetPostSystemId()
-    {
-        return $this->tweetPostSystemId;
-    }
-
-    /**
-     * Set fbPostId.
-     *
-     * @param string $fbPostId
-     *
-     * @return Agenda
-     */
-    public function setFbPostId($fbPostId)
-    {
-        $this->fbPostId = $fbPostId;
-
-        return $this;
-    }
-
-    /**
-     * Get fbPostId.
-     *
-     * @return string
-     */
-    public function getFbPostId()
-    {
-        return $this->fbPostId;
-    }
-
-    /**
-     * Set fbPostSystemId.
-     *
-     * @param string $fbPostSystemId
-     *
-     * @return Agenda
-     */
-    public function setFbPostSystemId($fbPostSystemId)
-    {
-        $this->fbPostSystemId = $fbPostSystemId;
-
-        return $this;
-    }
-
-    /**
-     * Get fbPostSystemId.
-     *
-     * @return string
-     */
-    public function getFbPostSystemId()
-    {
-        return $this->fbPostSystemId;
-    }
-
-    /**
-     * Set facebookOwnerId.
-     *
-     * @param string $facebookOwnerId
-     *
-     * @return Agenda
-     */
-    public function setFacebookOwnerId($facebookOwnerId)
-    {
-        $this->facebookOwnerId = $facebookOwnerId;
-
-        return $this;
-    }
-
-    /**
-     * Get facebookOwnerId.
-     *
-     * @return string
-     */
-    public function getFacebookOwnerId()
-    {
-        return $this->facebookOwnerId;
-    }
-
-    /**
-     * Set fbParticipations.
-     *
-     * @param int $fbParticipations
-     *
-     * @return Agenda
-     */
-    public function setFbParticipations($fbParticipations)
-    {
-        $this->fbParticipations = $fbParticipations;
-
-        return $this;
-    }
-
-    /**
-     * Get fbParticipations.
-     *
-     * @return int
-     */
-    public function getFbParticipations()
-    {
-        return $this->fbParticipations;
-    }
-
-    /**
-     * Set fbInterets.
-     *
-     * @param int $fbInterets
-     *
-     * @return Agenda
-     */
-    public function setFbInterets($fbInterets)
-    {
-        $this->fbInterets = $fbInterets;
-
-        return $this;
-    }
-
-    /**
-     * Get fbInterets.
-     *
-     * @return int
-     */
-    public function getFbInterets()
-    {
-        return $this->fbInterets;
-    }
-
-    /**
-     * Set participations.
-     *
-     * @param int $participations
-     *
-     * @return Agenda
-     */
-    public function setParticipations($participations)
-    {
-        $this->participations = $participations;
-
-        return $this;
-    }
-
-    /**
-     * Get participations.
-     *
-     * @return int
-     */
-    public function getParticipations()
-    {
-        return $this->participations;
-    }
-
-    /**
-     * Set interets.
-     *
-     * @param int $interets
-     *
-     * @return Agenda
-     */
-    public function setInterets($interets)
-    {
-        $this->interets = $interets;
-
-        return $this;
-    }
-
-    /**
-     * Get interets.
-     *
-     * @return int
-     */
-    public function getInterets()
-    {
-        return $this->interets;
-    }
-
-    /**
-     * Set source.
-     *
-     * @param string $source
-     *
-     * @return Agenda
-     */
-    public function setSource($source)
-    {
-        $this->source = $source;
-
-        return $this;
-    }
-
-    /**
-     * Get source.
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return $this->source;
-    }
-
-    /**
-     * Set isArchive.
-     *
-     * @param bool $isArchive
-     *
-     * @return Agenda
-     */
-    public function setIsArchive($isArchive)
-    {
-        $this->isArchive = $isArchive;
-
-        return $this;
-    }
-
-    /**
-     * Get isArchive.
-     *
-     * @return bool
-     */
-    public function getIsArchive()
-    {
-        return $this->isArchive;
-    }
-
-    /**
-     * Set user.
-     *
-     * @param User $user
-     *
-     * @return Agenda
-     */
-    public function setUser(User $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user.
-     *
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Add calendrier.
-     *
-     * @param Calendrier $calendrier
-     *
-     * @return Agenda
-     */
-    public function addCalendrier(Calendrier $calendrier)
-    {
-        $this->calendriers[] = $calendrier;
-
-        return $this;
-    }
-
-    /**
-     * Remove calendrier.
-     *
-     * @param Calendrier $calendrier
-     */
-    public function removeCalendrier(Calendrier $calendrier)
-    {
-        $this->calendriers->removeElement($calendrier);
-    }
-
-    /**
-     * Get calendriers.
-     *
-     * @return Collection
-     */
-    public function getCalendriers()
-    {
-        return $this->calendriers;
-    }
-
-    /**
-     * Set site.
-     *
-     * @param Site $site
-     *
-     * @return Agenda
-     */
-    public function setSite(Site $site)
-    {
-        $this->site = $site;
-
-        return $this;
-    }
-
-    /**
-     * Get site.
-     *
-     * @return Site
-     */
-    public function getSite()
-    {
-        return $this->site;
-    }
-
-    /**
-     * Add commentaire.
-     *
-     * @param Comment $commentaire
-     *
-     * @return Agenda
-     */
-    public function addCommentaire(Comment $commentaire)
-    {
-        $this->commentaires[] = $commentaire;
-
-        return $this;
-    }
-
-    /**
-     * Remove commentaire.
-     *
-     * @param Comment $commentaire
-     */
-    public function removeCommentaire(Comment $commentaire)
-    {
-        $this->commentaires->removeElement($commentaire);
-    }
-
-    /**
-     * Get commentaires.
-     *
-     * @return Collection
-     */
-    public function getCommentaires()
-    {
-        return $this->commentaires;
-    }
-
-    /**
-     * Set place.
-     *
-     * @param Place $place
-     *
-     * @return Agenda
-     */
-    public function setPlace(Place $place = null)
-    {
-        $this->place = $place;
-
-        return $this;
-    }
-
-    /**
-     * Get place.
-     *
-     * @return Place
-     */
-    public function getPlace()
-    {
-        return $this->place;
     }
 
     public function getExternalId(): ?string
@@ -1572,4 +638,631 @@ class Agenda implements GeolocalizeInterface
 
         return $this;
     }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getDescriptif(): ?string
+    {
+        return $this->descriptif;
+    }
+
+    public function setDescriptif(?string $descriptif): self
+    {
+        $this->descriptif = $descriptif;
+
+        return $this;
+    }
+
+    public function getDateModification(): ?\DateTimeInterface
+    {
+        return $this->dateModification;
+    }
+
+    public function setDateModification(?\DateTimeInterface $dateModification): self
+    {
+        $this->dateModification = $dateModification;
+
+        return $this;
+    }
+
+    public function getFbDateModification(): ?\DateTimeInterface
+    {
+        return $this->fbDateModification;
+    }
+
+    public function setFbDateModification(?\DateTimeInterface $fbDateModification): self
+    {
+        $this->fbDateModification = $fbDateModification;
+
+        return $this;
+    }
+
+    public function getDateDebut(): ?\DateTimeInterface
+    {
+        return $this->dateDebut;
+    }
+
+    public function setDateDebut(?\DateTimeInterface $dateDebut): self
+    {
+        $this->dateDebut = $dateDebut;
+
+        return $this;
+    }
+
+    public function getDateFin(): ?\DateTimeInterface
+    {
+        return $this->dateFin;
+    }
+
+    public function setDateFin(?\DateTimeInterface $dateFin): self
+    {
+        $this->dateFin = $dateFin;
+
+        return $this;
+    }
+
+    public function getHoraires(): ?string
+    {
+        return $this->horaires;
+    }
+
+    public function setHoraires(?string $horaires): self
+    {
+        $this->horaires = $horaires;
+
+        return $this;
+    }
+
+    public function getModificationDerniereMinute(): ?string
+    {
+        return $this->modificationDerniereMinute;
+    }
+
+    public function setModificationDerniereMinute(?string $modificationDerniereMinute): self
+    {
+        $this->modificationDerniereMinute = $modificationDerniereMinute;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?string $adresse): self
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getTypeManifestation(): ?string
+    {
+        return $this->typeManifestation;
+    }
+
+    public function setTypeManifestation(?string $typeManifestation): self
+    {
+        $this->typeManifestation = $typeManifestation;
+
+        return $this;
+    }
+
+    public function getCategorieManifestation(): ?string
+    {
+        return $this->categorieManifestation;
+    }
+
+    public function setCategorieManifestation(?string $categorieManifestation): self
+    {
+        $this->categorieManifestation = $categorieManifestation;
+
+        return $this;
+    }
+
+    public function getThemeManifestation(): ?string
+    {
+        return $this->themeManifestation;
+    }
+
+    public function setThemeManifestation(?string $themeManifestation): self
+    {
+        $this->themeManifestation = $themeManifestation;
+
+        return $this;
+    }
+
+    public function getReservationTelephone(): ?string
+    {
+        return $this->reservationTelephone;
+    }
+
+    public function setReservationTelephone(?string $reservationTelephone): self
+    {
+        $this->reservationTelephone = $reservationTelephone;
+
+        return $this;
+    }
+
+    public function getReservationEmail(): ?string
+    {
+        return $this->reservationEmail;
+    }
+
+    public function setReservationEmail(?string $reservationEmail): self
+    {
+        $this->reservationEmail = $reservationEmail;
+
+        return $this;
+    }
+
+    public function getReservationInternet(): ?string
+    {
+        return $this->reservationInternet;
+    }
+
+    public function setReservationInternet(?string $reservationInternet): self
+    {
+        $this->reservationInternet = $reservationInternet;
+
+        return $this;
+    }
+
+    public function getTarif(): ?string
+    {
+        return $this->tarif;
+    }
+
+    public function setTarif(?string $tarif): self
+    {
+        $this->tarif = $tarif;
+
+        return $this;
+    }
+
+    public function getFromData(): ?string
+    {
+        return $this->fromData;
+    }
+
+    public function setFromData(?string $fromData): self
+    {
+        $this->fromData = $fromData;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(?string $path): self
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    public function getSystemPath(): ?string
+    {
+        return $this->systemPath;
+    }
+
+    public function setSystemPath(?string $systemPath): self
+    {
+        $this->systemPath = $systemPath;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): self
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getIsBrouillon(): ?bool
+    {
+        return $this->isBrouillon;
+    }
+
+    public function setIsBrouillon(?bool $isBrouillon): self
+    {
+        $this->isBrouillon = $isBrouillon;
+
+        return $this;
+    }
+
+    public function getTweetPostId(): ?string
+    {
+        return $this->tweetPostId;
+    }
+
+    public function setTweetPostId(?string $tweetPostId): self
+    {
+        $this->tweetPostId = $tweetPostId;
+
+        return $this;
+    }
+
+    public function getFacebookEventId(): ?string
+    {
+        return $this->facebookEventId;
+    }
+
+    public function setFacebookEventId(?string $facebookEventId): self
+    {
+        $this->facebookEventId = $facebookEventId;
+
+        return $this;
+    }
+
+    public function getTweetPostSystemId(): ?string
+    {
+        return $this->tweetPostSystemId;
+    }
+
+    public function setTweetPostSystemId(?string $tweetPostSystemId): self
+    {
+        $this->tweetPostSystemId = $tweetPostSystemId;
+
+        return $this;
+    }
+
+    public function getFbPostId(): ?string
+    {
+        return $this->fbPostId;
+    }
+
+    public function setFbPostId(?string $fbPostId): self
+    {
+        $this->fbPostId = $fbPostId;
+
+        return $this;
+    }
+
+    public function getFbPostSystemId(): ?string
+    {
+        return $this->fbPostSystemId;
+    }
+
+    public function setFbPostSystemId(?string $fbPostSystemId): self
+    {
+        $this->fbPostSystemId = $fbPostSystemId;
+
+        return $this;
+    }
+
+    public function getFacebookOwnerId(): ?string
+    {
+        return $this->facebookOwnerId;
+    }
+
+    public function setFacebookOwnerId(?string $facebookOwnerId): self
+    {
+        $this->facebookOwnerId = $facebookOwnerId;
+
+        return $this;
+    }
+
+    public function getFbParticipations(): ?int
+    {
+        return $this->fbParticipations;
+    }
+
+    public function setFbParticipations(?int $fbParticipations): self
+    {
+        $this->fbParticipations = $fbParticipations;
+
+        return $this;
+    }
+
+    public function getFbInterets(): ?int
+    {
+        return $this->fbInterets;
+    }
+
+    public function setFbInterets(?int $fbInterets): self
+    {
+        $this->fbInterets = $fbInterets;
+
+        return $this;
+    }
+
+    public function getParticipations(): ?int
+    {
+        return $this->participations;
+    }
+
+    public function setParticipations(?int $participations): self
+    {
+        $this->participations = $participations;
+
+        return $this;
+    }
+
+    public function getInterets(): ?int
+    {
+        return $this->interets;
+    }
+
+    public function setInterets(?int $interets): self
+    {
+        $this->interets = $interets;
+
+        return $this;
+    }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function setSource(?string $source): self
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    public function getIsArchive(): ?bool
+    {
+        return $this->isArchive;
+    }
+
+    public function setIsArchive(?bool $isArchive): self
+    {
+        $this->isArchive = $isArchive;
+
+        return $this;
+    }
+
+    public function getPlaceName(): ?string
+    {
+        return $this->placeName;
+    }
+
+    public function setPlaceName(string $placeName): self
+    {
+        $this->placeName = $placeName;
+
+        return $this;
+    }
+
+    public function getPlaceStreet(): ?string
+    {
+        return $this->placeStreet;
+    }
+
+    public function setPlaceStreet(?string $placeStreet): self
+    {
+        $this->placeStreet = $placeStreet;
+
+        return $this;
+    }
+
+    public function getPlaceCity(): ?string
+    {
+        return $this->placeCity;
+    }
+
+    public function setPlaceCity(?string $placeCity): self
+    {
+        $this->placeCity = $placeCity;
+
+        return $this;
+    }
+
+    public function getPlacePostalCode(): ?string
+    {
+        return $this->placePostalCode;
+    }
+
+    public function setPlacePostalCode(?string $placePostalCode): self
+    {
+        $this->placePostalCode = $placePostalCode;
+
+        return $this;
+    }
+
+    public function getPlaceExternalId(): ?string
+    {
+        return $this->placeExternalId;
+    }
+
+    public function setPlaceExternalId(?string $placeExternalId): self
+    {
+        $this->placeExternalId = $placeExternalId;
+
+        return $this;
+    }
+
+    public function getPlaceFacebookId(): ?string
+    {
+        return $this->placeFacebookId;
+    }
+
+    public function setPlaceFacebookId(?string $placeFacebookId): self
+    {
+        $this->placeFacebookId = $placeFacebookId;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Calendrier[]
+     */
+    public function getCalendriers(): Collection
+    {
+        return $this->calendriers;
+    }
+
+    public function addCalendrier(Calendrier $calendrier): self
+    {
+        if (!$this->calendriers->contains($calendrier)) {
+            $this->calendriers[] = $calendrier;
+            $calendrier->setAgenda($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCalendrier(Calendrier $calendrier): self
+    {
+        if ($this->calendriers->contains($calendrier)) {
+            $this->calendriers->removeElement($calendrier);
+            // set the owning side to null (unless already changed)
+            if ($calendrier->getAgenda() === $this) {
+                $calendrier->setAgenda(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    public function setSite(?Site $site): self
+    {
+        $this->site = $site;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+
+    public function addCommentaire(Comment $commentaire): self
+    {
+        if (!$this->commentaires->contains($commentaire)) {
+            $this->commentaires[] = $commentaire;
+            $commentaire->setAgenda($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(Comment $commentaire): self
+    {
+        if ($this->commentaires->contains($commentaire)) {
+            $this->commentaires->removeElement($commentaire);
+            // set the owning side to null (unless already changed)
+            if ($commentaire->getAgenda() === $this) {
+                $commentaire->setAgenda(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPlace(): ?Place
+    {
+        return $this->place;
+    }
+
+    public function setPlace(?Place $place): self
+    {
+        $this->place = $place;
+
+        return $this;
+    }
+
+    public function getPlaceCountry(): ?Country
+    {
+        return $this->placeCountry;
+    }
+
+    public function setPlaceCountry(?Country $placeCountry): self
+    {
+        $this->placeCountry = $placeCountry;
+
+        return $this;
+    }
+
 }

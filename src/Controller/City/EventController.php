@@ -3,6 +3,7 @@
 namespace App\Controller\City;
 
 use App\Annotation\BrowserCache;
+use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\Calendrier;
@@ -57,9 +58,9 @@ class EventController extends BaseController
      *
      * @return Agenda|null|object|RedirectResponse|Response
      */
-    public function detailsAction(City $city, DoctrineCache $memoryCache, SymfonyResponseTagger $responseTagger, FacebookAdmin $facebookAdmin, $slug, $id = null)
+    public function detailsAction(Location $location, DoctrineCache $memoryCache, SymfonyResponseTagger $responseTagger, FacebookAdmin $facebookAdmin, $slug, $id = null)
     {
-        $result = $this->checkEventUrl($city, $slug, $id);
+        $result = $this->checkEventUrl($location->getSlug(), $slug, $id);
         if ($result instanceof Response) {
             return $result;
         }
@@ -69,8 +70,8 @@ class EventController extends BaseController
         $form = $this->getCreateCommentForm($comment, $agenda);
         $nbComments = $agenda->getCommentaires()->count();
 
-        $response = $this->render('City/Agenda/details.html.twig', [
-            'city' => $city,
+        $response = $this->render('City/Event/get.html.twig', [
+            'location' => $location,
             'soiree' => $agenda,
             'form' => $form->createView(),
             'nb_comments' => $nbComments,
@@ -112,7 +113,7 @@ class EventController extends BaseController
         $link = $this->generateUrl('app_agenda_details', [
             'slug' => $agenda->getSlug(),
             'id' => $agenda->getId(),
-            'city' => $agenda->getPlace()->getCity()->getSlug(),
+            'location' => $agenda->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $eventProfile = $eventProfilePicture->getOriginalPictureUrl($agenda);
@@ -182,8 +183,7 @@ class EventController extends BaseController
         }
 
         return [
-            'tendancesParticipations' => $repo->findAllTendancesParticipations($agenda),
-            'tendancesInterets' => $repo->findAllTendancesInterets($agenda),
+            'tendances' => $repo->findAllTendances($agenda),
             'count_participer' => $agenda->getParticipations() + $agenda->getFbParticipations(),
             'count_interets' => $agenda->getInterets() + $agenda->getFbInterets(),
             'participer' => $participer,

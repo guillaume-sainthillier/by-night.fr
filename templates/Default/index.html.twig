@@ -1,32 +1,87 @@
-{% set no_ad = true %}
-{% extends "base.html.twig" %}
+{% set no_ads = true %}
+{% extends "layouts/full.html.twig" %}
 
-{% block start_container -%}
-<div>
-{%- endblock %}
-
-{% block titre "Découvrez où sortir dans votre ville"%}
+{% block full_breadcrumb '' %}
+{% block titre "Découvrez où sortir dans votre ville" %}
 {% block title "Choisissez votre ville" %}
+{% block meta_description 'Choisissez votre ville et découvrez les événements du moment !' %}
 
-{% block meta_description -%}
-    Choisissez votre ville et découvrez les événements du moment !
-{%- endblock %}
-
-{% block container_titre %}{% endblock %}
+{% block body %}
+    <section class="full_wrapper" style="background-image: url({{ app_asset('img/landing.jpg') }})">
+        <div class="fade-black-transp"></div>
+        <div class="wrapper">
+            <h1 class="titrebloc text-center">{{ block('titre') }}</h1>
+            <div class="row">
+                <div class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2 col-lg-6 col-lg-push-3 no-margin-form panel panel-primary search_container img-rounded">
+                    {{ form_start(autocomplete_form, { 'action': path('app_change_city'), 'attr': {'class': 'form-city-picker'} }) }}
+                    <div class="form-group">
+                        <div class="input-group">
+                            {{ form_errors(autocomplete_form.city) }}
+                            {{ form_widget(autocomplete_form.name) }}
+                            <div class="input-group-btn">
+                                <button class="btn btn-lg btn-block btn-primary btn-raised choose-city-action" type="submit" disabled>C'est parti</button>
+                            </div>
+                        </div>
+                    </div>
+                    {{ form(autocomplete_form) }}
+                    {{ form_end(autocomplete_form) }}
+                </div>
+            </div>
+        </div>
+        <div class="footer_wrapper">
+            <h2 class="text-primary number number-xbig">Trouvez votre idée de sortie parmis plus de 600K événements</h2>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <h2 class="text-primary">Vos événements classés par pays</h2>
+            <div class="row">
+                {% for stat in stats %}
+                    <div class="col-sm-6 col-md-4">
+                        <div class="panel panel-primary">
+                            <div class="panel-body text-center">
+                                <h2 class="text-primary">{{ stat.name }}</h2>
+                                <p>
+                                    <span class="number">{{ stat.events }}</span> événement{{ stat.events > 1 ? 's': '' }} à venir
+                                </p>
+                                <a class="btn btn-flat btn-block btn-primary" href="{{ path('app_agenda_agenda', {'location': stat.slug}) }}" title="L'agenda des événements en {{ stat.name }}">
+                                    <i class="fa fa-chevron-right"></i>
+                                    Agenda des événements
+                                </a>
+                                <a class="btn btn-flat btn-block btn-info" href="{{ path('app_agenda_index', {'location': stat.slug}) }}" title="Découvrez toutes les infos sorties en {{ stat.name }}">
+                                    <i class="fa fa-chevron-right"></i>
+                                    Plus d'infos
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
 
 {% block css %}
     <link rel="stylesheet" href="{{ app_asset('evenements/css/index.min.css', 'asset') }}" type="text/css">
 {% endblock %}
 
+{% block head_js %}
+    <script>
+        var AppConfig = {
+            "apiCityURL": "{{ url('app_api_city') }}?q=%QUERY"
+        };
+    </script>
+{% endblock %}
+
 {% block js -%}
     <script>
-        $(document).ready(function() {
-            $('.form-city-picker').each(function() {
+        $(document).ready(function () {
+            $('.form-city-picker').each(function () {
                 var form = $(this);
                 var btn = form.find('.choose-city-action');
                 btn.attr('disabled', false);
 
-                $(this).submit(function() {
+                $(this).submit(function () {
                     return !btn.attr('disabled');
                 });
 
@@ -62,8 +117,8 @@
             VENDOR_ID: 'gmap',
             VENDOR_SCRIPT_URL: "//maps.googleapis.com/maps/api/js?key=" + AppConfig.googleMapKey + "&language=fr&libraries=places&callback=initMap",
 
-            init: function() {
-                $(".form-city-picker").each(function() {
+            init: function () {
+                $(".form-city-picker").each(function () {
                     var $btn = $(this).find('.choose-city-action');
                     $btn.attr('disabled', false);
 
@@ -83,20 +138,20 @@
                         displayKey: 'description',
                         source: placePicker.ttAdapter()
                     }).on('typeahead:selected', function (e, data) {
-                            console.log("SELECTION", data);
+                        console.log("SELECTION", data);
 //                        $(this).typeahead('val', data.terms[0].value).blur();
                     });
                 });
             },
-            load: function() {
-                if(! CityPicker.isLoaded()) {
+            load: function () {
+                if (!CityPicker.isLoaded()) {
                     CityPicker.loadScript(CityPicker.VENDOR_SCRIPT_URL);
                 }
             },
-            isLoaded: function() {
+            isLoaded: function () {
                 return $("#" + CityPicker.VENDOR_ID).length > 0;
             },
-            loadScript: function(src) {
+            loadScript: function (src) {
                 var s = document.createElement('script');
                 s.id = CityPicker.VENDOR_ID;
                 s.async = true;
@@ -111,30 +166,3 @@
     </script>
 {%- endblock %}
 
-{% block helper_top %}
-<section class="full_wrapper" style="background-image: url({{ app_asset('img/landing.jpg') }})">
-    <div class="fade-black-transp"></div>
-    <div class="wrapper">
-        <h1 class="titrebloc text-center">{{ block('titre') }}</h1>
-        <div class="row">
-            <div class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2 col-lg-6 col-lg-push-3 no-margin-form panel panel-primary search_container img-rounded">
-                {{ form_start(autocomplete_form, { 'action': path('app_change_city'), 'attr': {'class': 'form-city-picker'} }) }}
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ form_errors(autocomplete_form.city) }}
-                            {{ form_widget(autocomplete_form.name) }}
-                            <div class="input-group-btn">
-                                <button class="btn btn-lg btn-block btn-primary btn-raised choose-city-action" type="submit" disabled>Choisir</button>
-                            </div>
-                        </div>
-                    </div>
-                {{ form(autocomplete_form) }}
-                {{ form_end(autocomplete_form) }}
-            </div>
-        </div>
-    </div>
-    <div class="footer_wrapper">
-        <h2 class="text-primary number number-xbig">Trouvez votre idée de sortie parmis plus de 400K événements</h2>
-    </div>
-</section>
-{% endblock %}

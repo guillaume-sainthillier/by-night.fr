@@ -14,9 +14,18 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class CityRepository extends EntityRepository
 {
+    public function createQueryBuilder($alias, $indexBy = null)
+    {
+        return parent::createQueryBuilder($alias, $indexBy)
+            ->addSelect('p')
+            ->addSelect('country')
+            ->leftJoin($alias . '.parent', 'p')
+            ->join($alias . '.country', 'country');
+    }
+
     public function findSiteMap()
     {
-        return $this->createQueryBuilder('c')
+        return parent::createQueryBuilder('c')
             ->select('c.slug')
             ->join('App:Place', 'p', 'WITH', 'p.city = c')
             ->join('App:Agenda', 'a', 'WITH', 'a.place = p')
@@ -27,26 +36,21 @@ class CityRepository extends EntityRepository
 
     public function findRandomNames(Country $country = null, $limit = 5)
     {
+        $qb = parent::createQueryBuilder('c')
+            ->select('c.name, c.slug, c2.name AS country')
+            ->join('c.country', 'c2');
+
         if ($country) {
-            $results = $this
-                ->createQueryBuilder('c')
-                ->select('c.name, c.slug')
-                ->join('c.country', 'c2')
+            $qb
                 ->where('c2 = :country')
-                ->setParameter('country', $country->getId())
-                ->orderBy('c.population', 'DESC')
-                ->setMaxResults(50)
-                ->getQuery()
-                ->getScalarResult();
-        } else {
-            $results = $this
-                ->createQueryBuilder('c')
-                ->select('c.name, c.slug')
-                ->orderBy('c.population', 'DESC')
-                ->setMaxResults(50)
-                ->getQuery()
-                ->getScalarResult();
+                ->setParameter('country', $country->getId());
         }
+
+        $results = $qb
+            ->orderBy('c.population', 'DESC')
+            ->setMaxResults(50)
+            ->getQuery()
+            ->getScalarResult();
 
         \shuffle($results);
         return \array_slice($results, 0, $limit);
@@ -54,7 +58,7 @@ class CityRepository extends EntityRepository
 
     public function findLocations()
     {
-        $results = $this->createQueryBuilder('c')
+        $results = parent::createQueryBuilder('c')
             ->select('c.latitude, c.longitude')
             ->where('c.latitude IS NOT NULL')
             ->andWhere('c.longitude IS NOT NULL')
@@ -77,8 +81,7 @@ class CityRepository extends EntityRepository
         $cities[] = \str_replace("'", '', $city);
         $cities = \array_unique($cities);
 
-        $qb = $this
-            ->createQueryBuilder('c')
+        $qb = parent::createQueryBuilder('c')
             ->where('c.name IN (:cities)')
             ->setParameter('cities', $cities);
 
@@ -99,8 +102,7 @@ class CityRepository extends EntityRepository
 
     public function findTopPopulation($maxResults)
     {
-        return $this
-            ->createQueryBuilder('c')
+        return parent::createQueryBuilder('c')
             ->orderBy('c.population', 'DESC')
             ->setMaxResults($maxResults)
             ->getQuery()
@@ -113,8 +115,7 @@ class CityRepository extends EntityRepository
 
     public function findBySlug($slug)
     {
-        return $this
-            ->createQueryBuilder('c')
+        return parent::createQueryBuilder('c')
             ->where('c.slug = :slug')
             ->setParameter('slug', $slug)
             ->getQuery()
@@ -127,8 +128,7 @@ class CityRepository extends EntityRepository
 
     public function findAllCities()
     {
-        $cities = $this
-            ->createQueryBuilder('c')
+        $cities = parent::createQueryBuilder('c')
             ->select('c.name')
             ->where('c.population > 10000')
             ->groupBy('c.name')

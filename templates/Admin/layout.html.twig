@@ -1,16 +1,17 @@
-{% extends "base.html.twig" %}
+{% set no_ads = true %}
+{% extends "layouts/default.html.twig" %}
 
-{% block breadcrumb_content -%}
+{% block breadcrumb -%}
     {% set item = menu.addItem("Administration", path('easyadmin')) %}
     {% block breadcrumb_admin %}{% endblock %}
 {%- endblock %}
 
 {% block title -%}
     Administration -
-    {% block title_admin %}{% endblock %}
+    {% block title_admin '' %}
 {%- endblock %}
     
 {% block titre -%}
     Administration -
-    {% block titre_admin %}{% endblock %}
+    {% block titre_admin '' %}
 {%- endblock %}

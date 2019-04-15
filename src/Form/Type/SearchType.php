@@ -2,6 +2,7 @@
 
 namespace App\Form\Type;
 
+use App\Search\SearchAgenda;
 use function date;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -63,14 +64,6 @@ class SearchType extends AbstractType
                 'expanded'   => false,
                 'required'   => false,
                 'attr'       => ['title' => 'Tous', 'class' => 'form-control', 'data-style' => 'btn-primary btn-flat', 'data-live-search' => true], ])
-            ->add('commune', ChoiceType::class, [
-                'choices'    => $options['communes'],
-                'label'      => 'Villes',
-                'label_attr' => array('class' => 'col-sm-3 control-label'),
-                'multiple'   => true,
-                'expanded'   => false,
-                'required'   => false,
-                'attr'       => ['title' => 'Toutes', 'class' => 'form-control', 'data-style' => 'btn-primary btn-flat', 'data-live-search' => true], ])
             ->add('term', TextType::class, [
                 'required'   => false,
                 'label'      => 'Mot-clés',
@@ -91,10 +84,9 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'communes'        => [],
             'lieux'           => [],
             'types_manif'     => [],
-            'data_class'      => 'App\Search\SearchAgenda',
+            'data_class'      => SearchAgenda::class,
             'csrf_protection' => false,
         ]);
     }

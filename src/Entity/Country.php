@@ -20,7 +20,7 @@ class Country
     /**
      * @var string
      *
-     * @ORM\Column(name="id", type="string", length=2)
+     * @ORM\Column(type="string", length=2)
      * @ORM\Id
      * @Serializer\Groups({"list_event", "list_user", "list_city"})
      */
@@ -31,12 +31,12 @@ class Country
      * @ORM\Column(length=63, unique=true)
      * @Exclude
      */
-    protected $slug;
+    private $slug;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="locale", type="string", length=5, nullable=true)
+     * @ORM\Column(type="string", length=5, nullable=true)
      * @Exclude
      */
     private $locale;
@@ -44,7 +44,7 @@ class Country
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=63)
+     * @ORM\Column(type="string", length=63)
      * @Serializer\Groups({"list_city"})
      */
     private $name;
@@ -52,10 +52,18 @@ class Country
     /**
      * @var string
      *
-     * @ORM\Column(name="capital", type="string", length=63)
+     * @ORM\Column(type="string", length=63)
      * @Exclude
      */
     private $capital;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(type="string", length=511, nullable=true)
+     * @Exclude
+     */
+    private $postalCodeRegex;
 
     /**
      * Set id.
@@ -175,5 +183,23 @@ class Country
     public function getSlug()
     {
         return $this->slug;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPostalCodeRegex(): ?string
+    {
+        return $this->postalCodeRegex;
+    }
+
+    /**
+     * @param string|null $postalCodeRegex
+     * @return Country
+     */
+    public function setPostalCodeRegex(?string $postalCodeRegex): Country
+    {
+        $this->postalCodeRegex = $postalCodeRegex;
+        return $this;
     }
 }

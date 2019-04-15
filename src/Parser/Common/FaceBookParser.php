@@ -232,18 +232,19 @@ class FaceBookParser extends AgendaParser
         //Place
         $place = $event->getField('place');
         if ($place) {
-            $tab_retour['place.nom']        = $place->getField('name');
-            $tab_retour['place.facebookId'] = $place->getField('id');
+            $tab_retour['placeName']        = $place->getField('name');
+            $tab_retour['placeName']        = $place->getField('name');
+            $tab_retour['placeExternalId']  = 'FB-'.$place->getField('id');
 
             //Location
             $location = $place->getField('location');
             if ($location) {
-                $tab_retour['place.rue']          = $this->api->ensureGoodValue($location->getField('street'));
-                $tab_retour['place.latitude']     = $this->api->ensureGoodValue($location->getField('latitude'));
-                $tab_retour['place.longitude']    = $this->api->ensureGoodValue($location->getField('longitude'));
-                $tab_retour['place.code_postal']  = $this->api->ensureGoodValue($location->getField('zip'));
-                $tab_retour['place.ville']        = $this->api->ensureGoodValue($location->getField('city'));
-                $tab_retour['place.country_name'] = $this->api->ensureGoodValue($location->getField('country'));
+                $tab_retour['placeStreet']          = $this->api->ensureGoodValue($location->getField('street'));
+                $tab_retour['latitude']     = $this->api->ensureGoodValue($location->getField('latitude'));
+                $tab_retour['longitude']    = $this->api->ensureGoodValue($location->getField('longitude'));
+                $tab_retour['placePostalCode']  = $this->api->ensureGoodValue($location->getField('zip'));
+                $tab_retour['placeCity']        = $this->api->ensureGoodValue($location->getField('city'));
+                $tab_retour['placeCountryName'] = $this->api->ensureGoodValue($location->getField('country'));
             }
         }
 

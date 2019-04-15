@@ -6,7 +6,7 @@
 {% block body %}
     <div>
         {{ render_esi(controller('App\\Controller\\City\\WidgetsController::topSoireesAction', {
-            'city': city.slug
+            'location': location.slug
         })) }}
     </div>
 {% endblock %}

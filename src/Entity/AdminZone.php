@@ -12,8 +12,8 @@ use JMS\Serializer\Annotation\Groups;
  * Info.
  *
  * @ORM\Table(name="admin_zone", indexes={
-@ORM\Index(name="admin_zone_type_name_idx", columns={"type", "name"}),
-@ORM\Index(name="admin_zone_type_population_idx", columns={"type", "population"})
+ *     @ORM\Index(name="admin_zone_type_name_idx", columns={"type", "name"}),
+ *     @ORM\Index(name="admin_zone_type_population_idx", columns={"type", "population"})
  * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
@@ -49,28 +49,24 @@ abstract class AdminZone
     /**
      * @var float
      * @ORM\Column(name="latitude", type="float")
-     * @Groups({"list_city"})
      */
     protected $latitude;
 
     /**
      * @var float
      * @ORM\Column(name="longitude", type="float")
-     * @Groups({"list_city"})
      */
     protected $longitude;
 
     /**
      * @var int
      * @ORM\Column(name="population", type="integer")
-     * @Groups({"list_city"})
      */
     protected $population;
 
     /**
      * @var Country
      * @ORM\ManyToOne(targetEntity="App\Entity\Country", fetch="EXTRA_LAZY")
-     * @Groups({"list_city"})
      */
     protected $country;
 

@@ -1,7 +1,7 @@
 $.fn.extend($.fn.modal.Constructor.prototype, {
     loading: function ()
     {
-        this.setTitle((typeof ville !== "undefined" ? ville : "") + " By Night");
+        this.setTitle("By Night");
         this.setBody('<h3 class="text-center"><i class="fa fa-spinner text-primary fa-spin fa-3x"></i></h3>');
         this.hideButtons();
     },

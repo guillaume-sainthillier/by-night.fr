@@ -1,5 +1,4 @@
 {% for soiree in soirees %}
-    {% set nomSoiree = soiree.nom %}
     <div class="widget_item">
         <div class="row">
             <div class="col-xs-3 col-md-2 min_membre preserve text-center color-second"
@@ -9,19 +8,23 @@
             </div>
             <div class="col-xs-9 col-md-10 preserve">
                 <h4 class="modal-title">
-                    <a title="Tous les détails de {{ nomSoiree }}"
-                       href="{{ path('app_agenda_details', {'slug' : soiree.slug, 'id': soiree.id, 'city': soiree.place.city.slug}) }}">{{ nomSoiree }}</a>
+                    <a title="Tous les détails de {{ soiree.nom }}"
+                       href="{{ path('app_agenda_details', {'slug' : soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug}) }}">{{ soiree.nom }}</a>
                 </h4>
-                <strong class="text-primary" style="font-weight: normal"
-                        title="{{ soiree.place and soiree.place.ville ? soiree.place.ville : '' }}">{{ soiree.place ? soiree.place.nom : '' }}</strong>
+                <strong class="text-primary"
+                        style="font-weight: normal"
+                        title="{{ soiree.placeCity }}">{{ soiree.placeName }}</strong>
                 {% set distinctTags = soiree.distinctTags %}
                 {% if distinctTags|length %}
                     <br/>
                     {% for tag in distinctTags %}
-                        <a class="label label-info" title="{{ tag }} à {{ soiree.place.city.name }}"
-                           href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'city': soiree.place.city.slug}) }}">
-                            <strong>{{ tag }}</strong>
-                        </a>
+                        {% if soiree.place and soiree.place.city %}
+                            <a class="label label-info"
+                               title="{{ tag }} à {{ soiree.place.city.name }}"
+                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': soiree.place.locationSlug}) }}">
+                                <strong>{{ tag }}</strong>
+                            </a>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
             </div>

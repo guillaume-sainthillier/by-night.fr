@@ -1,0 +1,7 @@
+doctrine:
+    orm:
+        dql:
+            datetime_functions:
+                dayofweek: DoctrineExtensions\Query\Mysql\DayOfWeek
+                month: DoctrineExtensions\Query\Mysql\Month
+                year: DoctrineExtensions\Query\Mysql\Year

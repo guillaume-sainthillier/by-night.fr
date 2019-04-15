@@ -128,7 +128,8 @@ class Place implements GeolocalizeInterface
     protected $facebookId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\City")
+     * @var City|null
+     * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -136,10 +137,7 @@ class Place implements GeolocalizeInterface
     protected $city;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\ZipCity")
-     * @ORM\JoinColumn(nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
+     * @var ZipCity|null
      */
     protected $zipCity;
 
@@ -165,6 +163,19 @@ class Place implements GeolocalizeInterface
      * @var Reject
      */
     protected $reject;
+
+    public function getLocationSlug()
+    {
+        if ($this->getCity()) {
+            return $this->getCity()->getSlug();
+        }
+
+        if ($this->getCountry()) {
+            return $this->getCountry()->getSlug();
+        }
+
+        return 'unknown';
+    }
 
     public function setReject(Reject $reject = null)
     {

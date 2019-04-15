@@ -9,11 +9,6 @@ use FOS\ElasticaBundle\Repository;
 
 class UserRepository extends Repository
 {
-    /**
-     * @param string $q
-     *
-     * @return PaginatorAdapterInterface
-     */
     public function findWithSearch($q)
     {
         $query = new BoolQuery();

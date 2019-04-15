@@ -4,13 +4,13 @@ namespace App\Utils;
 
 use App\Entity\Agenda;
 use App\Entity\Exploration;
-use App\Entity\Place;
 use App\Entity\User;
 use App\Geolocalize\BoundaryInterface;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Description of Firewall.
@@ -29,20 +29,20 @@ class Firewall
     private $comparator;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
-    private $om;
+    private $em;
 
-    public function __construct(ObjectManager $om, Comparator $comparator)
+    public function __construct(EntityManagerInterface $em, Comparator $comparator)
     {
-        $this->om = $om;
+        $this->em = $em;
         $this->comparator = $comparator;
         $this->explorations = [];
     }
 
     public function loadExplorations(array $ids)
     {
-        $explorations = $this->om->getRepository(Exploration::class)->findBy([
+        $explorations = $this->em->getRepository(Exploration::class)->findBy([
             'externalId' => $ids
         ]);
 
@@ -51,7 +51,7 @@ class Firewall
         }
     }
 
-    protected function hasExplorationToBeUpdated(Exploration $exploration)
+    private function hasExplorationToBeUpdated(Exploration $exploration)
     {
         if (self::VERSION !== $exploration->getFirewallVersion()) {
             return true;
@@ -83,7 +83,7 @@ class Firewall
 
     public function isValid(Agenda $event)
     {
-        return $event->getReject()->isValid() && $event->getPlace()->getReject()->isValid();
+        return $event->getReject()->isValid() && $event->getPlaceReject()->isValid();
     }
 
     public function isPersisted($object)
@@ -107,17 +107,18 @@ class Firewall
     public function filterEvent(Agenda $event)
     {
         $this->filterEventInfos($event);
-        if ($event->getPlace()) {
-            $this->filterEventPlace($event->getPlace());
-        }
+        $this->filterEventPlace($event);
     }
 
     public function filterEventLocation(Agenda $event)
     {
-        $place = $event->getPlace();
-        $reject = $place->getReject();
+        if (!$event->getPlace() || !$event->getPlace()->getReject()) {
+            return;
+        }
+
+        $reject = $event->getPlace()->getReject();
         if (!$reject->isValid()) {
-            $event->getReject()->addReason($reject->getReason());
+            $event->getPlaceReject()->addReason($reject->getReason());
         }
     }
 
@@ -152,32 +153,32 @@ class Firewall
         }
     }
 
-    protected function filterEventPlace(Place $place)
+    private function filterEventPlace(Agenda $event)
     {
         //Le nom du lieu doit comporter au moins 2 caractères
-        if (!$this->checkMinLengthValidity($place->getNom(), 2)) {
-            $place->getReject()->addReason(Reject::BAD_PLACE_NAME);
+        if (!$this->checkMinLengthValidity($event->getPlaceName(), 2)) {
+            $event->getPlaceReject()->addReason(Reject::BAD_PLACE_NAME);
         }
 
-        $codePostal = $this->comparator->sanitizeNumber($place->getCodePostal());
+        $codePostal = $this->comparator->sanitizeNumber($event->getPlacePostalCode());
         if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
-            $place->getReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
+            $event->getPlaceReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
         }
 
         //Observation du lieu
-        if ($place->getExternalId()) {
-            $exploration = $this->getExploration($place->getExternalId());
+        if ($event->getPlaceExternalId()) {
+            $exploration = $this->getExploration($event->getPlaceExternalId());
             if (!$exploration) {
                 $exploration = (new Exploration())
-                    ->setExternalId($place->getExternalId())
-                    ->setReject($place->getReject())
-                    ->setReason($place->getReject()->getReason())
+                    ->setExternalId($event->getPlaceExternalId())
+                    ->setReject($event->getPlaceReject())
+                    ->setReason($event->getPlaceReject()->getReason())
                     ->setFirewallVersion(self::VERSION);
                 $this->addExploration($exploration);
             } else {
                 $exploration
-                    ->setReject($place->getReject())
-                    ->setReason($place->getReject()->getReason());
+                    ->setReject($event->getPlaceReject())
+                    ->setReason($event->getPlaceReject()->getReason());
             }
         }
     }
@@ -185,7 +186,7 @@ class Firewall
     /**
      * @param Agenda $event
      */
-    protected function filterEventInfos(Agenda $event)
+    private function filterEventInfos(Agenda $event)
     {
         //Le nom de l'événement doit comporter au moins 3 caractères
         if (!$this->checkMinLengthValidity($event->getNom(), 3)) {
@@ -211,13 +212,9 @@ class Firewall
             $event->getReject()->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
         }
 
-        if (!$event->getPlace()) {
-            $event->getReject()->addReason(Reject::NO_PLACE_PROVIDED);
-        }
-
         //Observation de l'événement
         if ($event->getExternalId()) {
-            $exploration = $this->getExploration($event->getFacebookEventId());
+            $exploration = $this->getExploration($event->getExternalId());
             if (!$exploration) {
                 $exploration = (new Exploration())
                     ->setExternalId($event->getExternalId())
@@ -264,11 +261,6 @@ class Firewall
         $dist = \rad2deg($dist);
 
         return $dist * 111.189577; //60 * 1.1515 * 1.609344
-    }
-
-    public function deleteCache()
-    {
-        $this->comparator->deleteCache();
     }
 
     /**

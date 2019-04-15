@@ -23,9 +23,3 @@ doctrine_cache:
             namespace: array_ns
             aliases:
                 - array_cache
-        comparator:
-            type: array
-            namespace: comparator_ns
-            aliases:
-                - comparator_cache
-        

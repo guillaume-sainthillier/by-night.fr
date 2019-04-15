@@ -6,6 +6,7 @@ bazinga_geocoder:
     providers:
         app:
             factory: Bazinga\GeocoderBundle\ProviderFactory\GoogleMapsFactory
+            locale: 'fr_FR'
             options:
                 api_key: '%env(GOOGLE_MAP_KEY_CRON)%'
             aliases:

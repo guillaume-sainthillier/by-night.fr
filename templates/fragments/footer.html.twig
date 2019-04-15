@@ -1,0 +1,84 @@
+<footer>
+    <div id="footer">
+        <div class="container sous-header">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-xs-6 footer_border">
+                            <h3 class="modal-title color-second">By Night</h3>
+                            <ul class="fa-ul">
+                                <li>
+                                    <i class="fa fa-li fa-angle-right"></i>
+                                    <a title="A propos de By Night" href="{{ path('app_agenda_about') }}">
+                                        A propos
+                                    </a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-li fa-angle-right"></i>
+                                    <a title="En savoir plus sur la création d'événements" href="{{ path('app_agenda_plus') }}">
+                                        En savoir plus
+                                    </a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-li fa-angle-right"></i>
+                                    <a title="Accéder aux mentions légales" href="{{ path('app_agenda_mention_legales') }}">
+                                        Mentions légales
+                                    </a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-li fa-angle-right"></i>
+                                    <a title="Découvrir le blog By Night" href="http://blog.by-night.fr">
+                                        Actualités By Night
+                                    </a>
+                                </li>
+                                <li>
+                                    <i class="fa fa-li fa-angle-right"></i>
+                                    <a title="Offre de parrainage Boursorama" href="https://parrainages-boursorama.fr">
+                                        Bon plan Boursorama
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-6 sites footer_border">
+                            <h3 class="modal-title color-second">Recherche par ville</h3>
+                            <ul class="fa-ul">
+                                {% for city in cities %}
+                                    <li>
+                                        <i class="fa fa-li fa-angle-right"></i>
+                                        <a title="Sortir à {{ city.name }}, {{ city.country }}" href="{{ path('app_agenda_index', {'location' : city.slug}) }}">
+                                            {{ city.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    {% if social_manager.facebookIdPage %}
+                        <a class="social" title="By Night sur Facebook" href="https://www.facebook.com/{{ social_manager.facebookIdPage }}">
+                            <i class="fa fa-facebook"></i>
+                            <span class="number number-xbig">{{ count_facebook }}</span>
+                        </a>
+                    {% endif %}
+
+                    {% if social_manager.twitterIdPage %}
+                        <a class="social" title="By Night sur Twitter" href="https://twitter.com/{{ social_manager.twitterIdPage }}">
+                            <i class="fa fa-twitter"></i>
+                            <span class="number number-xbig">{{ count_twitter }}</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <hr />
+            <p class="pull-left">
+                <a href="{{ path('app_main_index') }}"><strong>By Night</strong> v{{ app_version }}</a>
+                | © {{ "now"|date('Y') }} - Tous droits réservés
+            </p>
+            <p class="pull-right">
+                Fait avec <span class="number text-danger">♥</span> à Toulouse -
+                <a href="http://sainthillier.fr">GS</a>
+            </p>
+        </div>
+    </div>
+</footer>

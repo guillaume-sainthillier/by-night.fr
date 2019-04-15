@@ -2,8 +2,7 @@
 
 namespace App\SearchRepository;
 
-use Elastica\Query;
-use Elastica\Query\Match;
+use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
 
@@ -16,8 +15,14 @@ class CityRepository extends Repository
      */
     public function findWithSearch($q)
     {
-        $match = new Match('name', $q);
-        $query = Query::create($match);
+        $query = new MultiMatch();
+        $query
+            ->setQuery($q)
+            ->setFields([
+                'name',
+                'parent.name',
+                'country.name',
+            ]);
 
         return $this->createPaginatorAdapter($query);
     }

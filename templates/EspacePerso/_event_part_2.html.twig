@@ -1,0 +1,18 @@
+{% extends "City/Widget/template.html.twig" %}
+
+{% block titre 'Informations' %}
+{% block icone 'fa-calendar' %}
+
+{% block body %}
+    <div class="form-horizontal">
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.dateDebut}) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.dateFin}) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.horaires}) %}
+
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.categorieManifestation}) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.themeManifestation}) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.tarif}) %}
+    </div>
+{% endblock %}
+
+{% block footer '' %}

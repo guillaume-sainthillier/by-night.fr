@@ -4,11 +4,11 @@ namespace App\Controller;
 
 use App\Annotation\BrowserCache;
 use App\App\CityManager;
+use App\Entity\Agenda;
 use App\Form\Type\CityAutocompleteType;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,28 +25,12 @@ class DefaultController extends AbstractController
      * @BrowserCache(false)
      *
      * @param PaginatorInterface $paginator
-     * @param RepositoryManagerInterface  $repositoryManager
+     * @param RepositoryManagerInterface $repositoryManager
      *
      * @return Response
      */
-    public function indexAction(CityManager $cityManager, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
+    public function indexAction(CityManager $cityManager)
     {
-        /*
-        $search = new SearchAgenda();
-
-        $search->setTerm(AgendaRepository::CONCERT_TERMS);
-        $concerts = $this->getResults($search, $paginator, $repositoryManager);
-
-        $search->setTerm(AgendaRepository::SHOW_TERMS);
-        $spectacles = $this->getResults($search, $paginator, $repositoryManager);
-
-        $search->setTerm(AgendaRepository::STUDENT_TERMS);
-        $etudiants = $this->getResults($search, $paginator, $repositoryManager);
-
-        $search->setTerm(AgendaRepository::FAMILY_TERMS);
-        $familles = $this->getResults($search, $paginator, $repositoryManager);
-        */
-
         $datas = [];
         if ($city = $cityManager->getCity()) {
             $datas = [
@@ -54,20 +38,17 @@ class DefaultController extends AbstractController
                 'city' => $city->getSlug(),
             ];
         }
-        $form = $this->createForm(CityAutocompleteType::class, $datas);
 
+        $stats = $this->getDoctrine()->getManager()->getRepository(Agenda::class)->getCountryEvents();
+        $form = $this->createForm(CityAutocompleteType::class, $datas);
         return $this->render('Default/index.html.twig', [
-//            'concerts'          => $concerts,
-//            'spectacles'        => $spectacles,
-//            'etudiants'         => $etudiants,
-//            'familles'          => $familles,
             'autocomplete_form' => $form->createView(),
+            'stats' => $stats
         ]);
     }
 
     /**
-     * @Route("/change-city", name="app_change_city")
-     * @Method("POST")
+     * @Route("/change-city", name="app_change_city", methods={"POST"})
      *
      * @param Request $request
      *
@@ -76,12 +57,12 @@ class DefaultController extends AbstractController
     public function changeCityAction(Request $request)
     {
         $form = $this->createForm(CityAutocompleteType::class);
-        $form->handleRequest($request);
 
+        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $datas = $form->getData();
 
-            return $this->redirectToRoute('app_agenda_index', ['city' => $datas['city']]);
+            return $this->redirectToRoute('app_agenda_index', ['location' => $datas['city']]);
         }
 
         $this->addFlash('error', 'Veuillez seléctionner une ville');

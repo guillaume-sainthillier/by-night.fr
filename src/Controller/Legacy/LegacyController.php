@@ -8,9 +8,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class LegacyController extends BaseController
 {
     /**
+     * @Route("/cookie", name="app_main_cookie")
+     */
+    public function cookie()
+    {
+        return $this->render('Legacy/cookies.html.twig');
+    }
+
+    /**
      * @Route("/mentions-legales", name="app_agenda_mention_legales")
      */
-    public function mentionLegalesAction()
+    public function mentionLegales()
     {
         return $this->render('Legacy/mentions.html.twig');
     }
@@ -18,7 +26,7 @@ class LegacyController extends BaseController
     /**
      * @Route("/a-propos", name="app_agenda_about")
      */
-    public function aboutAction()
+    public function about()
     {
         return $this->render('Legacy/about.html.twig');
     }
@@ -26,7 +34,7 @@ class LegacyController extends BaseController
     /**
      * @Route("/en-savoir-plus", name="app_agenda_plus")
      */
-    public function plusAction()
+    public function plus()
     {
         return $this->render('Legacy/plus.html.twig');
     }

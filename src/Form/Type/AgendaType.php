@@ -3,10 +3,15 @@
 namespace App\Form\Type;
 
 use App\Entity\Agenda;
+use App\Entity\Country;
 use App\Handler\DoctrineEventHandler;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -30,106 +35,152 @@ class AgendaType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $siteInfo = $options['site_info'];
-        $user     = $options['user'];
-
         $builder
             ->add('nom', TextType::class, [
                 'label' => 'Titre',
-                'attr'  => [
+                'attr' => [
                     'placeholder' => 'Choisissez un titre accrocheur...',
                 ],
             ])
             ->add('descriptif', TextareaType::class, [
-                'label'    => 'Description',
+                'label' => 'Description',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Décrivez votre événement...',
                 ],
             ])
             ->add('file', VichImageType::class, [
-                'label'        => 'Affiche / Flyer',
-                'required'     => false,
+                'label' => 'Affiche / Flyer',
+                'required' => false,
                 'image_filter' => 'thumb_evenement',
             ])
             ->add('dateDebut', DateType::class, [
-                'label'    => 'A partir du ',
-                'widget'   => 'single_text',
+                'label' => 'A partir du ',
+                'widget' => 'single_text',
                 'required' => true,
-                'format'   => 'dd/MM/yyyy',
-                'attr'     => [
+                'format' => 'dd/MM/yyyy',
+                'attr' => [
                     'placeholder' => 'Le / Du...',
                 ],
             ])
             ->add('dateFin', DateType::class, [
-                'label'    => "Jusqu'au",
-                'widget'   => 'single_text',
+                'label' => "Jusqu'au",
+                'widget' => 'single_text',
                 'required' => false,
-                'format'   => 'dd/MM/yyyy',
-                'attr'     => [
+                'format' => 'dd/MM/yyyy',
+                'attr' => [
                     'placeholder' => 'Au...',
                 ],
             ])
             ->add('horaires', TextType::class, [
-                'label'    => 'Horaires',
+                'label' => 'Horaires',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'A 20h, de 21h à minuit',
                 ],
             ])
             ->add('tarif', TextType::class, [
-                'label'    => 'Tarif',
+                'label' => 'Tarif',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => '17€ avec préventes, 20€ sur place',
                 ],
             ])
             ->add('categorieManifestation', TextType::class, [
-                'label'    => 'Catégorie',
+                'label' => 'Catégorie',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Concert, Spectacle, ...',
                 ],
             ])
             ->add('themeManifestation', TextType::class, [
-                'label'    => 'Thèmes',
+                'label' => 'Thèmes',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Humour, Tragédie, Jazz, Rock, Rap, ...',
                 ],
             ])
             ->add('adresse', TextType::class, [
                 'required' => false,
-                'label'    => 'Adresse',
-                'attr'     => [
+                'label' => 'Adresse',
+                'attr' => [
                     'placeholder' => 'Tapez votre adresse ici pour remplir les champs ci-dessous',
                 ],
             ])
-            ->add('place', PlaceType::class, [
-                'label' => false,
+            ->add('placeName', TextType::class, [
+                'required' => true,
+                'label' => 'Nom du lieu',
+                'attr' => [
+                    'placeholder' => 'Indiquez le nom du lieu',
+                ],
+            ])
+            ->add('placeStreet', TextType::class, [
+                'label' => 'Rue',
+                'required' => false,
+            ])
+            ->add('latitude', HiddenType::class, [
+                'required' => false,
+            ])
+            ->add('longitude', HiddenType::class, [
+                'required' => false,
+            ])
+            ->add('placeCity', TextType::class, [
+                'label' => 'Ville',
+                'required' => false,
+            ])
+            ->add('placePostalCode', TextType::class, [
+                'required' => false,
+            ])
+            ->add('placeCountry', EntityType::class, [
+                'label' => 'Pays',
+                'placeholder' => '?',
+                'class' => Country::class,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->orderBy('c.name', 'ASC');
+                },
+                'choice_label' => 'name',
             ])
             ->add('reservationInternet', UrlType::class, [
-                'label'    => 'Réservation par internet',
+                'label' => 'Réservation par internet',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => "L'URL où trouver un billet",
                 ],
             ])
             ->add('reservationTelephone', TextType::class, [
-                'label'    => 'Réservation téléphonique',
+                'label' => 'Réservation téléphonique',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Le numéro à appeler pour acheter un billet',
                 ],
             ])
             ->add('reservationEmail', EmailType::class, [
-                'label'    => 'Réservation par mail',
+                'label' => 'Réservation par mail',
                 'required' => false,
-                'attr'     => [
+                'attr' => [
                     'placeholder' => 'Le mail pour vous contacter',
                 ],
             ])
             ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
+
+        $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
+            function ($latitude) {
+                return (float)$latitude ?: null;
+            },
+            function ($latitude) {
+                return (float)$latitude ?: null;
+            }
+        ));
+
+        $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
+            function ($latitude) {
+                return (float)$latitude ?: null;
+            },
+            function ($latitude) {
+                return (float)$latitude ?: null;
+            }
+        ));
     }
 
     public function onSubmit(FormEvent $event)
@@ -140,17 +191,13 @@ class AgendaType extends AbstractType
             return;
         }
 
-        $evenement = $this->doctrineEventHandler->handleOne($data);
-        $event->setData($evenement);
+        $this->doctrineEventHandler->handleOne($data);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => Agenda::class,
-            'site_info'  => null,
-            'user'       => null,
-            'config'     => [],
         ]);
     }
 

@@ -1,7 +1,7 @@
 {% set partial = app.request.xmlHttpRequest %}
 
 {% if partial %}
-    {% include "Search/index_partial.html.twig" %}
+    {% include "Search/_index_content.html.twig" %}
 {% else %}
-    {% include "Search/index_full.html.twig" %}
+    {% include "Search/_index_full.html.twig" %}
 {% endif %}

@@ -62,10 +62,6 @@ services:
         arguments:
             $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
 
-    App\Utils\Comparator:
-        arguments:
-            $cache: '@comparator_cache'
-
     App\Geocoder\PlaceGeocoder:
         arguments:
             $cache: '@doctrine_cache.providers.location_cache'

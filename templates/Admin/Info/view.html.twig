@@ -1,15 +1,10 @@
 {% extends "Admin/layout.html.twig" %}
 
-{% block titre_admin -%}
-    Réseaux Sociaux
-{%- endblock %}
+{% block titre_admin 'Réseaux Sociaux' %}
+{% block title_admin 'Paramétrage des Réseaux Sociaux' %}
 
-{% block title_admin -%}
-    Paramétrage des Réseaux Sociaux
-{%- endblock %}
-
-{% block breadcrumb_content_admin -%}
-    {% set item = menu.addItem(info.id, path('app_administration_info_edit', {'id': info.id})) %}
+{% block breadcrumb_admin -%}
+    {% set item = menu.addItem('Réseaux Sociaux', path('app_administration_info_edit', {'id': info.id})) %}
 {%- endblock %}
 
 {% block body -%}

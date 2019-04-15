@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation as Serializer;
  * ZipCity.
  *
  * @ORM\Table(name="zip_city", indexes={
-@ORM\Index(name="zip_city_postal_code_name_idx", columns={"name", "postal_code"})
+ *     @ORM\Index(name="zip_city_postal_code_name_idx", columns={"country_id", "postal_code", "name"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\ZipCityRepository", readOnly=true)
  * @Serializer\ExclusionPolicy("ALL")
@@ -70,10 +70,22 @@ class ZipCity
     protected $admin1Code;
 
     /**
+     * @var string|null
+     * @ORM\Column(name="admin1_name", type="string", length=100, nullable=true)
+     */
+    protected $admin1Name;
+
+    /**
      * @var string
      * @ORM\Column(name="admin2_code", type="string", length=80)
      */
     protected $admin2Code;
+
+    /**
+     * @var string|null
+     * @ORM\Column(name="admin2_name", type="string", length=100, nullable=true)
+     */
+    protected $admin2Name;
 
     /**
      * @var City
@@ -317,5 +329,41 @@ class ZipCity
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAdmin1Name(): ?string
+    {
+        return $this->admin1Name;
+    }
+
+    /**
+     * @param string|null $admin1Name
+     * @return ZipCity
+     */
+    public function setAdmin1Name(?string $admin1Name): ZipCity
+    {
+        $this->admin1Name = $admin1Name;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAdmin2Name(): ?string
+    {
+        return $this->admin2Name;
+    }
+
+    /**
+     * @param string|null $admin2Name
+     * @return ZipCity
+     */
+    public function setAdmin2Name(?string $admin2Name): ZipCity
+    {
+        $this->admin2Name = $admin2Name;
+        return $this;
     }
 }

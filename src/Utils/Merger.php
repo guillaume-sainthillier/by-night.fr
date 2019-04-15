@@ -42,8 +42,6 @@ class Merger
     public function mergeEvent(Agenda $a = null, Agenda $b = null)
     {
         return $this->merge($a, $b, [
-//            'id' => self::FORCE_MERGE_LEFT,
-//            'slug' => self::FORCE_MERGE_LEFT,
             'nom',
             'date_debut' => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
             'date_fin'   => self::MERGE_RIGHT_IF_DATE_DIFFERENT,
@@ -60,21 +58,11 @@ class Merger
             'url',
             'facebook_event_id',
             'facebook_owner_id',
-            'fb_participations' => self::MERGE_MAX,
-            'fb_interets'       => self::MERGE_MAX,
-            'fb_post_id',
-            'fb_post_system_id',
-            'tweet_post_id',
-            'tweet_post_system_id',
             'source',
             'fb_date_modification' => self::MERGE_RIGHT_IF_DIFFERENT,
-            'place',
-            'user' => self::FORCE_MERGE_LEFT,
-            'path',
-            'system_path',
-            'file' => self::MERGE_LEFT,
             'from_data',
             'reject',
+            'placeReject',
         ]);
     }
 
@@ -89,6 +77,7 @@ class Merger
             'ville'       => self::MERGE_LEFT,
             'codePostal'  => self::MERGE_LEFT,
             'facebook_id' => self::MERGE_LEFT,
+            'external_id' => self::MERGE_LEFT,
             'reject',
         ]);
     }
@@ -135,7 +124,7 @@ class Merger
         return $a;
     }
 
-    protected function getBestContent($valueA, $valueB, $mergeType)
+    private function getBestContent($valueA, $valueB, $mergeType)
     {
         if (\is_callable($mergeType)) {
             return \call_user_func($mergeType, $valueA, $valueB);

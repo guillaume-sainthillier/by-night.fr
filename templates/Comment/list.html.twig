@@ -4,7 +4,7 @@
             <div class="row comment">
                 <div class="col-xs-3 col-sm-2">
                     {% set imageURL = userProfilePicture.getProfilePicture(comment.user) %}
-                    <img class="img-rounded img-responsive pull-right" src="{{ imageURL }}" alt=""/>
+                    <img class="img-rounded img-responsive" src="{{ imageURL }}" alt="{{ comment.user.username }}" />
                 </div>
                 <div class="col-xs-9 col-sm-10">
                     <div class="infos">

@@ -22,6 +22,11 @@ class City extends AdminZone
      */
     protected $parent;
 
+    /**
+     * @Groups({"list_city"})
+     */
+    protected $country;
+
     public function getFullName()
     {
         $parts = [];

@@ -1,24 +1,19 @@
 {% set no_ads = true %}
-{% extends "base.html.twig" %}
+{% extends "layouts/default.html.twig" %}
 
-{% block breadcrumb_content %}
+{% block breadcrumb %}
     {% set item = menu.addItem("A propos", url('app_agenda_about')) %}
 {% endblock %}
 
-{% block title %}
-    A propos de By Night
-{% endblock %}
-
-{% block titre %}
-    A propos de By Night
-{% endblock %}
+{% block title 'A propos de By Night' %}
+{% block titre 'A propos de By Night' %}
 
 {% block body %}
-    <br/>
+    <br />
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <h2>{{ site is defined and site ? site.nom : ''}} By Quoi ?</h2>
-            <br/>
+            <h2>By Quoi ?</h2>
+            <br />
             <p class="lead">
                 <strong>By Night</strong> est une solution
                 de création d'événements en ligne sur-mesure et self service.

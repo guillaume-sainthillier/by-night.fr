@@ -15,6 +15,7 @@ use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 {
@@ -41,25 +42,12 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 
         $this->doctrineEventHandler->handleOne($event);
 
-        /*
-        dump(
-            $event->getId(),
-            $event->getExternalId(),
-            $event->getNom(),
-            $event->getPlace()->getId(),
-            $event->getPlace()->getNom(),
-            $event->getPlace()->getReject()->isValid(),
-            $event->getReject()->isValid()
-        );
-        die;
-        */
-
         return ConsumerInterface::MSG_ACK;
     }
 
     public function batchExecute(array $messages)
     {
-        Monitor::$output = new ConsoleOutput();
+        Monitor::$output = new ConsoleOutput(OutputInterface::VERBOSITY_VERY_VERBOSE);
         $events = [];
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {

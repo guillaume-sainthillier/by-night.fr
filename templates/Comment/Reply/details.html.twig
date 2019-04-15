@@ -1,11 +1,10 @@
 {% extends "Comment/details.html.twig" %}
 
 {% set username = comment.user.username %}
-{% block success_confirmation_message %}
-    Vous avez bien répondu au commentaire de {{ username }}
-{% endblock %}
+{% block success_confirmation_message 'Vous avez bien répondu au commentaire de ' ~ username %}
+
 {% block form_commentaire %}
-    {{ form_widget(form.commentaire, {'attr' : {'placeholder': 'Répondez à '~ username}}) }}
+    {{ form_widget(form.commentaire, {'attr' : {'placeholder': 'Répondez à ' ~ username}}) }}
 {% endblock %}
 
-{% block comment_reponses %}{% endblock %}
+{% block comment_reponses '' %}

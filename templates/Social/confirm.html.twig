@@ -4,9 +4,7 @@
     Me déconnecter de {{ service|capitalize }}
 {%- endblock %}
 
-{% block form_action -%}
-    {{ url }}
-{%- endblock %}
+{% block form_action url %}
 
 {% block body -%}
     <p class="lead">

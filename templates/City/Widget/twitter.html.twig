@@ -1,9 +1,13 @@
 {% extends "City/Widget/template.html.twig" %}
 
-{% block titre %}Les actus à {{ city.name }}{% endblock %}
-{% block icone %}fa-twitter{% endblock %}
-{% block widget_class %}{% endblock %}
-{% block widget_body_class %}panel-twitter scrollable no-padding padding-left-10 scrollable{% endblock %}
+{% block titre -%}
+    {% if location.isCity %}Les actus à {{ location.city.name }}{% endif %}
+    {% if location.isCountry %}Les actus en {{ location.country.name }}{% endif %}
+{%- endblock %}
+{% block icone 'fa-twitter' %}
+{% block widget_class '' %}
+{% block widget_body_class 'panel-twitter scrollable no-padding padding-left-10 scrollable' %}
+
 {% block body %}
     <div>
         <script>window.twttr = (function (d, s, id) {
@@ -25,7 +29,7 @@
             }(document, "script", "twitter-wjs"));
         </script>
         <div>
-            {{ render_esi(url('app_agenda_tweeter_feed', {'city': city.slug})) }}
+            {{ render_esi(url('app_agenda_tweeter_feed', {'location': location.slug})) }}
         </div>
     </div>
 {% endblock %}

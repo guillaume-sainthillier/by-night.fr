@@ -1,20 +1,11 @@
-{% extends "base.html.twig" %}
+{% extends "EspacePerso/layout.html.twig" %}
 
-{% block start_container -%}
-<div class="container" id="container">
-{%- endblock %}
+{% block titre 'Créer un nouvel événement' %}
+{% block title 'Nouvel événement' %}
 
-{% block titre -%}
-    Créer un nouvel événement
-{%- endblock %}
+{% block container_class '' %}
 
-{% block title -%}
-    Nouvel événement
-{%- endblock %}
-
-{% block breadcrumb_content -%}
-    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", path('app_agenda_list')) %}
+{% block breadcrumb_espace -%}
     {% set item = menu.addItem("Nouveau", path('app_agenda_new')) %}
 {%- endblock %}
 
@@ -25,12 +16,12 @@
             {{ form_errors(form) }}
             <div class="row">
                 <div class="col-md-6">
-                    {% include "EspacePerso/event_part_1.html.twig" %}
-                    {% include "EspacePerso/event_part_4.html.twig" %}
+                    {% include "EspacePerso/_event_part_1.html.twig" %}
+                    {% include "EspacePerso/_event_part_4.html.twig" %}
                 </div>
                 <div class="col-md-6">
-                    {% include "EspacePerso/event_part_2.html.twig" %}
-                    {% include "EspacePerso/event_part_3.html.twig" %}
+                    {% include "EspacePerso/_event_part_2.html.twig" %}
+                    {% include "EspacePerso/_event_part_3.html.twig" %}
                 </div>
             </div>
             <hr/>
@@ -61,6 +52,5 @@
 {%- endblock %}
 
 {% block js -%}
-    <script type="text/javascript">var ville = "";</script>
     <script src="{{ app_asset('espace-perso/evenements/js/manager.min.js', 'asset') }}" type="text/javascript"></script>
 {%- endblock %}

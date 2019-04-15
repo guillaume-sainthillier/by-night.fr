@@ -2,6 +2,7 @@
 
 namespace App\Social;
 
+use App\App\Location;
 use App\Entity\City;
 use Exception;
 use TwitterOAuth\Auth\SingleUserAuth;
@@ -51,13 +52,14 @@ class Twitter extends Social
         return 0;
     }
 
-    public function getTimeline(City $city, $max_id, $limit)
+    public function getTimeline(Location $location, $max_id, $limit)
     {
         $this->init();
 
+        $name = $location->isCountry() ? $location->getCountry()->getName() :  $location->getCity()->getName();
         try {
             $params = [
-                'q'           => \sprintf('#%s filter:safe', $city->getName()),
+                'q'           => \sprintf('#%s filter:safe', $name),
                 'lang'        => 'fr',
                 'result_type' => 'recent',
                 'count'       => $limit,

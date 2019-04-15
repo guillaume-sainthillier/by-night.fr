@@ -8,14 +8,13 @@
 
 namespace App\Controller\Fragments;
 
-use App\App\CityManager;
 use App\Controller\TBNController;
 use App\Entity\City;
+use App\Entity\Country;
 use App\Social\Social;
 use App\Social\SocialProvider;
 use DateTime;
 use Doctrine\Common\Cache\Cache;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -26,16 +25,12 @@ class CommonController extends TBNController
     const LIFE_TIME_CACHE = 86400; // 3600*24
 
     /**
-     * @Route("/header/{city}", name="app_private_header_site")
+     * @Route("/header/{slug}", name="app_private_header_site")
      * @Route("/header", name="app_private_header")
-     *
-     * @param City|null $city
-     *
-     * @return Response
      */
     public function header(City $city = null)
     {
-        $response = $this->render('menu.html.twig', [
+        $response = $this->render('fragments/menu.html.twig', [
             'city' => $city,
         ]);
 
@@ -46,7 +41,7 @@ class CommonController extends TBNController
             ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
-    public function footer(CityManager $cityManager, Cache $memoryCache, SocialProvider $socialProvider)
+    public function footer(Cache $memoryCache, SocialProvider $socialProvider, Country $country = null)
     {
         $socials = [
             'facebook' => $socialProvider->getSocial(SocialProvider::FACEBOOK_ADMIN),
@@ -65,8 +60,8 @@ class CommonController extends TBNController
         }
 
         $repo = $this->getDoctrine()->getRepository(City::class);
-        $params['cities'] = $repo->findRandomNames($cityManager->getCity() ? $cityManager->getCity()->getCountry() : null);
-        $response = $this->render('City/footer.html.twig', $params);
+        $params['cities'] = $repo->findRandomNames($country);
+        $response = $this->render('fragments/footer.html.twig', $params);
 
         $tomorrow = new DateTime('tomorrow');
 

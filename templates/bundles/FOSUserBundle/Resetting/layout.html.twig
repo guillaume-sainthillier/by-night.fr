@@ -8,7 +8,7 @@
     Mot de passe oublié ? {% block title_reset %}{% endblock %}
 {%- endblock %}
 
-{% block breadcrumb_content -%}
-    {% set item = menu.addItem("Récupération du mot de passe", path('fos_user_resetting_request')) %}
+{% block breadcrumb -%}
+    {% set item = menu.addItem("Mot de passe oublié", path('fos_user_resetting_request')) %}
     {% block breadcrumb_reset %}{% endblock %}
 {%- endblock %}

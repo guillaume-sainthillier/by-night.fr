@@ -3,13 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Agenda;
-use App\Entity\City;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TBNController extends AbstractController
 {
@@ -30,35 +27,30 @@ class TBNController extends AbstractController
         return $minuit - \time();
     }
 
-    /**
-     * @param City $city
-     * @param $slug
-     * @param $id
-     * @param string $routeName
-     * @param array  $extraParams
-     *
-     * @return null|object|RedirectResponse|Agenda
-     */
-    protected function checkEventUrl(City $city, $slug, $id, $routeName = 'app_agenda_details', array $extraParams = [])
+    protected function checkEventUrl($locationSlug, $eventSlug, $eventId, $routeName = 'app_agenda_details', array $extraParams = [])
     {
         $em       = $this->getDoctrine()->getManager();
-        $repoUser = $em->getRepository(Agenda::class);
+        $repoEvent = $em->getRepository(Agenda::class);
 
-        if (!$id) {
-            $event = $repoUser->findOneBy(['slug' => $slug]);
+        if (!$eventId) {
+            $event = $repoEvent->findOneBy(['slug' => $eventSlug]);
         } else {
-            $event = $repoUser->find($id);
+            $event = $repoEvent->find($eventId);
         }
 
         if (!$event || !$event->getSlug()) {
-            throw new NotFoundHttpException('Event not found');
+            throw $this->createNotFoundException('Event not found');
         }
 
-        if (null === $this->requestStack->getParentRequest() && (!$id || $event->getSlug() !== $slug || $event->getPlace()->getCity()->getSlug() !== $city->getSlug())) {
+        if (null === $this->requestStack->getParentRequest() && (
+            !$eventId
+            || $event->getSlug() !== $eventSlug
+            || $event->getLocationSlug() !== $locationSlug
+        )) {
             $routeParams = \array_merge([
                 'id'   => $event->getId(),
                 'slug' => $event->getSlug(),
-                'city' => $event->getPlace()->getCity()->getSlug(),
+                'location' => $event->getLocationSlug(),
             ], $extraParams);
 
             return $this->redirectToRoute($routeName, $routeParams, Response::HTTP_MOVED_PERMANENTLY);

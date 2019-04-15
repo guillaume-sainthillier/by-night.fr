@@ -86,26 +86,26 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         if ($reject->isBadPlaceName()) {
-            $this->context->buildViolation($constraint->badPlaceName)->atPath('place.nom')->addViolation();
+            $this->context->buildViolation($constraint->badPlaceName)->atPath('placeName')->addViolation();
         }
 
         if ($reject->isBadPlaceLocation()) {
-            $this->context->buildViolation($constraint->badPlaceLocation)->atPath('place.ville')->addViolation();
+            $this->context->buildViolation($constraint->badPlaceLocation)->atPath('placeCity')->addViolation();
         }
 
         if ($reject->isBadPlaceCityName()) {
-            $this->context->buildViolation($constraint->badPlaceCityName)->atPath('place.ville')->addViolation();
+            $this->context->buildViolation($constraint->badPlaceCityName)->atPath('placeCity')->addViolation();
         }
 
         if ($reject->isBadPlaceCityPostalCode()) {
-            $this->context->buildViolation($constraint->badPlacePostalCode)->atPath('place.codePostal')->addViolation();
+            $this->context->buildViolation($constraint->badPlacePostalCode)->atPath('placePostalCode')->addViolation();
         }
 
         if ($reject->isBadUser()) {
             $link = $this->router->generate('app_agenda_details', [
                 'slug' => $event->getSlug(),
                 'id'   => $event->getId(),
-                'city' => $event->getPlace()->getCity()->getSlug(),
+                'location' => $event->getLocationSlug(),
             ]);
             $message = \str_replace([
                 '[link]',

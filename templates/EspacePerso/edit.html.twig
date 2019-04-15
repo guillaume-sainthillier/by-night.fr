@@ -1,12 +1,8 @@
 {% extends "EspacePerso/new.html.twig" %}
 
-{% block title -%}
-    {{ agenda.nom }}
-{%- endblock %}
+{% block title agenda.nom %}
 
-{% block titre -%}
-    {{ agenda.nom }}
-{%- endblock %}
+{% block titre agenda.nom %}
 
 {% block breadcrumb_content -%}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}

@@ -1,0 +1,22 @@
+{% extends "City/Widget/template.html.twig" %}
+
+{% block titre 'Lieux' %}
+{% block icone 'fa-map-marker' %}
+
+{% block body %}
+    {{ form_row(form.placeName) }}
+    {{ form_row(form.adresse) }}
+
+    <div class="form-horizontal">
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeStreet) }) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placePostalCode) }) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeCity) }) %}
+        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeCountry) }) %}
+    </div>
+
+    <br />
+    <br />
+    <div id="map"></div>
+{% endblock %}
+
+{% block footer '' %}

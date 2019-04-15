@@ -5,8 +5,10 @@ fos_elastica:
             host: '%env(ES_HOST)%'
             port: '%env(ES_PORT)%'
             compression: true
+
     serializer:
-        serializer: "jms_serializer"
+        serializer: jms_serializer
+
     indexes:
         event:
             index_name: "app.event"
@@ -27,12 +29,12 @@ fos_elastica:
                             event_city_analyzer:
                                 type: custom
                                 tokenizer: nGram_event
-                                filter: [lowercase, asciifolding]
+                                filter: [lowercase, asciifolding, elision]
                         tokenizer:
                             nGram_event:
                                 type:     nGram
                                 min_gram: 3
-                                max_gram: 8
+                                max_gram: 4
                         filter:
                             snowball:
                                 type:     snowball
@@ -61,12 +63,12 @@ fos_elastica:
                                 rue: { analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
                                 ville: { boost: 2, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
                     persistence:
-                        driver: orm # orm, mongodb, propel are available
+                        driver: orm
                         model:  App\Entity\Agenda
                         repository: App\SearchRepository\AgendaRepository
                         provider:
                             query_builder_method: createIsActiveQueryBuilder
-                            batch_size: 5000
+                            batch_size: 500
         city:
             index_name: "app.city"
             client: default
@@ -77,24 +79,36 @@ fos_elastica:
                             nGram_city:
                                 type:     nGram
                                 min_gram: 3
-                                max_gram: 8
+                                max_gram: 4
+                        filter:
+                            elision:
+                                type:     elision
+                                articles: [l, m, t, qu, n, s, j, d]
                         analyzer:
                             city_analyzer:
                                 type: custom
                                 tokenizer: nGram_city
-                                filter: [lowercase, asciifolding]
+                                filter: [lowercase, asciifolding, elision]
             types:
                 city:
                     serializer:
                         groups: [list_city]
                     properties:
-                        name: { type: "text", analyzer: city_analyzer, search_analyzer: city_analyzer }
+                        name: { type: "text", boost: 3, analyzer: city_analyzer, search_analyzer: city_analyzer }
+                        country:
+                            type: "object"
+                            properties:
+                                name: { boost: 5, type: "text" }
+                        parent:
+                            type: "object"
+                            properties:
+                                name: { type: "text" }
                     persistence:
                         driver: orm
                         model:  App\Entity\City
                         repository: App\SearchRepository\CityRepository
                         provider:
-                            batch_size: 10000
+                            batch_size: 500
         user:
             index_name: "app.user"
             client: default

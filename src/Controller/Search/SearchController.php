@@ -15,34 +15,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SearchController extends AbstractController
 {
-    /**
-     * @param RepositoryManagerInterface $rm
-     * @param string            $q
-     *
-     * @return Pagerfanta
-     */
     private function searchEvents(RepositoryManagerInterface $rm, $q)
     {
-        /**
-         * @var AgendaRepository
-         */
+        /** @var AgendaRepository $repoSearch */
         $repoSearch = $rm->getRepository('App:Agenda');
         $search     = (new SearchAgenda())->setTerm($q);
 
-        return $repoSearch->findWithSearch($search);
+        return $repoSearch->findWithSearch($search, true);
     }
 
-    /**
-     * @param RepositoryManagerInterface $rm
-     * @param string            $q
-     *
-     * @return Pagerfanta
-     */
     private function searchUsers(RepositoryManagerInterface $rm, $q)
     {
-        /**
-         * @var UserRepository
-         */
+        /** @var UserRepository $repo */
         $repo = $rm->getRepository('App:User');
 
         return $repo->findWithSearch($q);

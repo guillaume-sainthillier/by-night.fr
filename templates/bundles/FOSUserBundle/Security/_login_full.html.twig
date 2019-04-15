@@ -1,0 +1,16 @@
+{% extends "@FOSUser/layout.html.twig" %}
+
+{% block title 'Connexion' %}
+{% block titre -%}
+    Connectez-vous sur <strong>By Night</strong>
+{%- endblock %}
+
+{% block breadcrumb -%}
+    {% set item = menu.addItem("Connexion", path('fos_user_security_login')) %}
+{%- endblock %}
+
+{% block meta_description 'Connectez-vous sur By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}
+
+{% block fos_user_content %}
+    {% include "@FOSUser/Security/login_content.html.twig" with({'partial': false}) %}
+{% endblock %}

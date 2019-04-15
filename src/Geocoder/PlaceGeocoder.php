@@ -70,6 +70,7 @@ class PlaceGeocoder
 
                 break;
             }
+            $this->cache->save($key, $data);
         }
 
         if (!\count($data)) {
@@ -170,10 +171,6 @@ class PlaceGeocoder
         if (isset($gmapPlace['postal_code'])) {
             $place->setCodePostal($gmapPlace['postal_code']);
         }
-
-        if (isset($gmapPlace['rue'])) {
-            $place->setRue($gmapPlace['rue']);
-        }
     }
 
     private function getPlaceInfos(GoogleAddress $address)
@@ -192,7 +189,7 @@ class PlaceGeocoder
         }
 
         if ($address->getCountry()) {
-            $datas['country'] = $address->getCountry()->getName();
+            $datas['country'] = $address->getCountry()->getCode();
         }
 
         foreach ($address->getAdminLevels() as $adminLevel) {

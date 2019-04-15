@@ -3,6 +3,7 @@
 namespace App\Controller\City;
 
 use App\Annotation\BrowserCache;
+use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\City;
@@ -22,18 +23,18 @@ class DefaultController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(City $city)
+    public function indexAction(Location $location)
     {
         $em   = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
         $search    = (new SearchAgenda())->setDu(null);
-        $topEvents = $repo->findTopSoiree($city, 1, 7);
+        $topEvents = $repo->findTopSoiree($location, 1, 7);
 
         return $this->render('City/Default/index.html.twig', [
-            'city'      => $city,
+            'location'      => $location,
             'topEvents' => $topEvents,
-            'nbEvents'  => $repo->findCountWithSearch($city, $search),
+            'nbEvents'  => $repo->findCountWithSearch($location, $search),
         ]);
     }
 }

@@ -65,7 +65,6 @@ class LocationCacheProvider extends CacheProvider
             ->setValues((array) $data);
 
         $this->em->persist($location);
-        $this->em->flush();
 
         return true;
     }
@@ -78,7 +77,6 @@ class LocationCacheProvider extends CacheProvider
         $location = $this->doFetch($id);
         if (false !== $location) {
             $this->em->remove($location);
-            $this->em->flush();
         }
 
         return true;
@@ -89,6 +87,7 @@ class LocationCacheProvider extends CacheProvider
      */
     protected function doFlush()
     {
+        $this->em->flush();
         $this->em->clear(Location::class);
 
         return true;

@@ -23,6 +23,7 @@ security:
                 provider: fos_userbundle
                 csrf_token_generator: security.csrf.token_manager
                 use_referer: true
+                default_target_path: app_main_index
                 login_path: fos_user_security_login
                 check_path: fos_user_security_check
                 success_handler: App\Handler\AuthenticationHandler

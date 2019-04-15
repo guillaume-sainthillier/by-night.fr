@@ -2,6 +2,13 @@ jms_serializer:
     visitors:
         xml_serialization:
             format_output: '%kernel.debug%'
+
+    metadata:
+        auto_detection: true
+        directories:
+            FOSUserBundle:
+                namespace_prefix: "FOS\\UserBundle"
+                path: "%kernel.project_dir%/config/serializer/fos"
 #    metadata:
 #        auto_detection: false
 #        directories:

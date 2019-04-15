@@ -1,12 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block titre -%}
-    Connexion réussie
-{%- endblock %}
-    
-{% block title -%}
-    {{ block('titre') }}
-{%- endblock %}
+{% block titre 'Connexion réussie' %}
+{% block title 'Connexion réussie' %}
 
 {% set userInfo = {
     'username' : userInformation.realName,

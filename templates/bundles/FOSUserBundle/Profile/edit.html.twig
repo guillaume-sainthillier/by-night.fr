@@ -1,13 +1,10 @@
 {% extends "@FOSUser/layout.html.twig" %}
 
-{% block start_container -%}
-<div class="container" id="container">
-{%- endblock %}
+{% block container_class '' %}
+{% block titre app.user.username %}
+{% block title app.user.username %}
 
-{% block titre -%}{{ app.user.username }}{%- endblock %}
-{% block title -%}{{ app.user.username }}{%- endblock %}
-
-{% block breadcrumb_content -%}
+{% block breadcrumb -%}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_edit')) %}
 {%- endblock %}
 

@@ -1,22 +1,17 @@
 {% set no_ads = true %}
-{% extends "base.html.twig" %}
+{% extends "layouts/default.html.twig" %}
 
 {% block breadcrumb %}
     {% set item = menu.addItem("En savoir plus", path('app_agenda_plus')) %}
 {% endblock %}
 
-{% block title -%}
-    En savoir plus
-{%- endblock %}
-    
-{% block titre -%}
-    Comment ça marche ?
-{%- endblock %}
+{% block title 'En savoir plus' %}
+{% block titre 'Comment ça marche ?' %}
     
 {% block body %}
-    <br/>
+    <br />
     <h2 class="text-center">Vos événements en 4 actions : </h2>
-    <br/>
+    <br />
     <div class="row en-savoir-plus">
         <div class="col-md-8 col-md-offset-2">
             <div class="row bloc">
@@ -31,12 +26,12 @@
                         technique quelque soit votre événement et sa taille.
                         Éditez plusieurs types (entrées, tarifs réduits),
                         rendez votre événement public ou privé, créez vos brouillons...
-                        {{ block('nom_site') }} vous propose tout un panel de fonctionnalités pour garantir
+                        By Night vous propose tout un panel de fonctionnalités pour garantir
                         le succès de vos événements !
                     </p>
                 </div>
             </div>
-            <hr/>
+            <hr />
             <div class="row bloc">
                 <div class="col-sm-4 text-center">
                     <span class="icon odd"><i class="fa fa-5x fa-bullhorn"></i></span>
@@ -48,11 +43,11 @@
                         Personnalisez vos événements à votre image, et la plateforme
                         s'occupe pour vous de les diffuser sur les réseaux sociaux !
                         Créez une communauté autour de vos évènements et développez votre audience
-                        grâce aux membres de {{ block('nom_site') }} !
+                        grâce aux membres de By Night !
                     </p>
                 </div>
             </div>
-            <hr/>
+            <hr />
             <div class="row bloc">
                 <div class="col-sm-4 text-center">
                     <span class="icon even"><i class="fa fa-5x fa-eye"></i></span>
@@ -64,7 +59,7 @@
                     </p>
                 </div>
             </div>
-            <hr/>
+            <hr />
             <div class="row bloc">
                 <div class="col-sm-4 text-center">
                     <span class="icon odd"><i class="fa fa-5x fa-bar-chart-o"></i></span>
@@ -78,16 +73,15 @@
                     </p>
                 </div>
             </div>
-            <br/>
-            <br/>
+            <br />
+            <br />
             <div class="text-center">
                 <a class="btn btn-primary btn-raised btn-block btn-lg" href="{{ path('app_agenda_new') }}">Créez votre
                     événement dès maintenant</a>
             </div>
-            <br/>
+            <br />
         </div>
     </div>
-
 {% endblock %}
 
 {% block css %}

@@ -2,9 +2,9 @@
 
 namespace App\Tests\Utils;
 
-use App\Tests\ContainerTestCase;
-use App\Entity\Place;
 use App\Entity\Agenda;
+use App\Entity\Place;
+use App\Tests\ContainerTestCase;
 use App\Utils\Merger;
 
 class MergerTest extends ContainerTestCase
@@ -23,50 +23,47 @@ class MergerTest extends ContainerTestCase
 
     public function testPlaceMerge()
     {
-        $oldPlace = (new Place())->setId(1)->setNom('Dynamo')->setVille('Toulouse')->setCodePostal('31000');
+        //Simple places
+        $persistedPlace = (new Place())->setId(1)->setNom('Dynamo')->setVille('Toulouse')->setCodePostal('31000');
+        $parsedPlace = (new Place())->setNom('La Dynamo')->setVille('Toulouse')->setCodePostal('31000')->setLatitude(43.6)->setUrl('https://www.google.com')->setFacebookId('FB ID');
 
-        $newPlace = (new Place())->setNom('La Dynamo')->setVille('Toulouse')->setCodePostal('31000')->setLatitude(43.6);
+        $this->merger->mergePlace($persistedPlace, $parsedPlace);
 
-        $this->merger->mergePlace($oldPlace, $newPlace);
-
-        $this->assertEquals($oldPlace->getId(), 1);
-        $this->assertEquals($oldPlace->getNom(), 'Dynamo');
-        $this->assertEquals($oldPlace->getLatitude(), 43.6);
+        $this->assertEquals($persistedPlace->getId(), 1);
+        $this->assertEquals($persistedPlace->getNom(), 'Dynamo');
+        $this->assertEquals($persistedPlace->getVille(), 'Toulouse');
+        $this->assertEquals($persistedPlace->getCodePostal(), '31000');
+        $this->assertEquals($persistedPlace->getLatitude(), 43.6);
+        $this->assertEquals($persistedPlace->getUrl(), 'https://www.google.com');
+        $this->assertEquals($persistedPlace->getFacebookId(), 'FB ID');
     }
 
-    public function testSimpleMerge()
+    public function testEventMerge()
     {
-        $oldEvent = (new Agenda())
-            ->setId(1)
-            ->setNom('Lorem Ipsum')
-            ->setDateDebut(\DateTime::createFromFormat('Y-m-d', '2016-29-11'));
+        $persistedEvent = (new Agenda())->setId(1)->setNom('My Event')->setDescriptif('Event description');
+        $parsedEvent = (new Agenda())->setId(2)->setNom('My Event V2')->setDescriptif('Event description V2');
 
-        $newEvent = (new Agenda())
-            ->setNom('New Lorem Ipsum')
-            ->setDateDebut(\DateTime::createFromFormat('Y-m-d', '2016-29-11'));
+        $this->merger->mergeEvent($persistedEvent, $parsedEvent);
+        $this->assertEquals($persistedEvent->getId(), 1); //ID is intact
+        $this->assertEquals($persistedEvent->getNom(), 'My Event V2'); //Newest field
+        $this->assertEquals($persistedEvent->getDescriptif(), 'Event description V2'); //Newest field
 
-        $this->merger->mergeEvent($oldEvent, $newEvent);
+        $databaseDate = new \DateTime('now');
+        $parsedDate = new \DateTime('now');
 
-        $this->assertEquals($oldEvent->getId(), 1);
-        $this->assertEquals($oldEvent->getNom(), $newEvent->getNom());
-        $this->assertEquals($oldEvent->getDateDebut(), $newEvent->getDateDebut());
+        $persistedEvent = (new Agenda())->setDateDebut($databaseDate);
+        $parsedEvent = (new Agenda())->setDateDebut($parsedDate);
 
-        /*
-        //Construction des places
-        $dynamo = (new Place)->setId(1)->setNom('Dynamo')->setVille('Toulouse')->setCodePostal('31000')->setSite($site);
-        $bikini = (new Place)->setId(2)->setNom('Le bikini')->setVille('Toulouse')->setCodePostal('31000')->setSite($site);
-        $persistedPlaces = [$dynamo, $bikini];
+        $this->merger->mergeEvent($persistedEvent, $parsedEvent);
+        $this->assertEquals($persistedEvent->getDateDebut(), $databaseDate); //DateTime have not changed (prevents ORM panic)
 
+        $databaseDate = new \DateTime('now');
+        $parsedDate = new \DateTime('tomorrow');
 
-        //Construction des événements
-        $now = new \DateTime;
-        $soiree1 = (new Agenda)->setId(1)->setNom('Soirée chez moi')->setDescriptif('Ca va être trop cool on va tous se marrer')->setDateFin($now)->setDateDebut($now)->setPlace($dynamo);
+        $persistedEvent = (new Agenda())->setDateDebut($databaseDate);
+        $parsedEvent = (new Agenda())->setDateDebut($parsedDate);
 
-        $dynamoBis = (new Place)->setNom('La dynamo')->setRue('6 rue Amélie')->setVille('Toulouse')->setCodePostal('31000');
-        $soiree = (new Agenda)->setNom('Soirée chez toi')->setDescriptif('Ca va être trop cool on va tous se marrer')->setDateFin($now)->setDateDebut($now)->setPlace($dynamoBis);
-        $handler->handle($persistedPlaces, $site, $soiree);
-        $this->assertEquals($soiree->getPlace()->getId(), 1);
-        $this->assertEquals($soiree->getPlace()->getRue(), '6 Rue Amélie'); //Rue mise à jour
-        */
+        $this->merger->mergeEvent($persistedEvent, $parsedEvent);
+        $this->assertEquals($persistedEvent->getDateDebut(), $parsedDate); //DateTime have changed because it's not same day
     }
 }

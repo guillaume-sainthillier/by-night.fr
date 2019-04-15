@@ -2,9 +2,7 @@
     <div class="alert alert-success alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true" title="Fermer">&times;</button>
         <i class="fa fa-check"></i>
-        {% block success_confirmation_message %}
-            Merci d'avoir donné votre avis !
-        {% endblock %}
+        {% block success_confirmation_message 'Merci d\'avoir donné votre avis !' %}
     </div>
 {% endif %}
 
