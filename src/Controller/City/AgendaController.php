@@ -3,6 +3,7 @@
 namespace App\Controller\City;
 
 use App\Annotation\BrowserCache;
+use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
@@ -69,12 +70,11 @@ class AgendaController extends BaseController
     }
 
     /**
-     * @Cache(expires="+30 minutes", smaxage="1800")
      * @Route("/agenda/{page}", name="app_agenda_agenda", requirements={"page": "\d+"})
      * @Route("/agenda/sortir/{type}/{page}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
      * @Route("/agenda/sortir-a/{slug}/{page}", name="app_agenda_place", requirements={"page": "\d+"})
      * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags", requirements={"page": "\d+"})
-     * @BrowserCache(false)
+     * @ReverseProxy(expires="+30 minutes")
      *
      * @param Request $request
      * @param City $city

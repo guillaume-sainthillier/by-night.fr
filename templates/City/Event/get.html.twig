@@ -58,6 +58,7 @@
 {% block og_image original %}
 
 {% block body -%}
+    {{ fos_httpcache_tag(tags('event', soiree) ) }}
     {% if soiree.isBrouillon %}
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i>
@@ -329,7 +330,6 @@
             {% endif %}
 
             <!-- Événements similaires -->
-
             {% include "City/Widget/evenements_similaires.html.twig" %}
             <!-- ./Événements similaires -->
         </div>

@@ -8,7 +8,6 @@ twig:
     globals:
         menu: "@white_october_breadcrumbs"
         social_manager: '@App\App\SocialManager'
-        city_manager: '@App\App\CityManager'
         userProfilePicture: '@App\Picture\UserProfilePicture'
         eventProfilePicture: '@App\Picture\EventProfilePicture'
         facebook_app_id: "%facebook_id_app%"

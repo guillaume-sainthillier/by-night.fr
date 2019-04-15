@@ -3,14 +3,18 @@ vcl 4.0;
 import std;
 import directors;
 
+include "/etc/varnish/fos/fos_ban.vcl";
+include "/etc/varnish/fos/fos_custom_ttl.vcl";
+include "/etc/varnish/fos/fos_purge.vcl";
+include "/etc/varnish/fos/fos_refresh.vcl";
+
 # by-night.fr
 backend default {
     .host = "app";
     .port = "80";
 }
 
-acl purge {
-    # ACL we'll use later to allow purges
+acl invalidators {
     "app";
     "localhost";
     "127.0.0.1";
@@ -22,12 +26,6 @@ acl purge {
 # which backend to use.
 # also used to modify the request
 sub vcl_recv {
-
-    # Delegating static files to nginx
-    if (req.http.host ~ "^(www\.)?static\.") {
-        unset req.http.Cookie;
-        return (pass);
-    }
 
     # Pass real client ip to request
     if (req.restarts == 0) {
@@ -47,44 +45,16 @@ sub vcl_recv {
     # Normalize the query arguments
     set req.url = std.querysort(req.url);
 
-    # Allow purging
-    if (req.method == "PURGE") {
-        if (!client.ip ~ purge) { # purge is the ACL defined at the begining
-            # Not from an allowed IP? Then die with an error.
-            return (synth(405, "This IP is not allowed to send PURGE requests."));
-        }
-
-        # If you got this stage (and didn't error out above), purge the cached result
-        return (purge);
+    # Delegating static files to nginx
+    if (req.http.host ~ "^(www\.)?static\.") {
+        unset req.http.Cookie;
+        return (pass);
     }
 
-    # Allow banning from fos_http_cache
-    if (req.method == "BAN") {
-        if (!client.ip ~ purge) {
-            return (synth(405, "This IP is not allowed to send BAN requests."));
-        }
-
-        # Ban handle from tags / url
-        if (req.http.X-Cache-Tags) {
-            ban("obj.http.X-Host ~ " + req.http.X-Host
-                + " && obj.http.X-Url ~ " + req.http.X-Url
-                + " && obj.http.content-type ~ " + req.http.X-Content-Type
-                + " && obj.http.X-Cache-Tags ~ " + req.http.X-Cache-Tags
-            );
-        } else {
-            ban("obj.http.X-Host ~ " + req.http.X-Host
-                + " && obj.http.X-Url ~ " + req.http.X-Url
-                + " && obj.http.content-type ~ " + req.http.X-Content-Type
-            );
-        }
-
-        return (synth(200, "Banned"));
-    }
-
-    # Allow refreshing
-    if (req.http.Cache-Control ~ "no-cache" && client.ip ~ purge) {
-        set req.hash_always_miss = true;
-    }
+    # FOS purge & ban
+    call fos_purge_recv;
+    call fos_ban_recv;
+    call fos_refresh_recv;
 
     # Only deal with "normal" types
     if (req.method != "GET" &&
@@ -121,38 +91,35 @@ sub vcl_recv {
         set req.url = regsub(req.url, "\?$", "");
     }
 
+    # Suppression de tous les cookies sur les pages publiques
+    if( req.http.host ~ "^by-night\." &&
+        ! req.url ~ "^/(login|inscription|logout|profile|commentaire|espace-perso)" &&
+        ! req.url ~ "^/(_administration|_private)"
+    ) {
+        unset req.http.Cookie;
+        set req.http.X-Cookie-State = "Deleted";
+    }
+
     # Remove all cookies but no PHPSESSID
     if (req.http.Cookie) {
         set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
-        set req.http.Cookie = regsuball(req.http.Cookie, ";(PHPSESSID)=", "; \1=");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";(PHPSESSID|REMEMBERME|app_city)=", "; \1=");
         set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
         set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
 
         # Remove a ";" prefix in the cookie if present
         set req.http.Cookie = regsuball(req.http.Cookie, "^;\s*", "");
 
-        # Suppression de tous les cookies sur les pages publiques
-//        if( (req.url ~ "^/(login|inscription|commentaire|logout|_administration|espace-perso|profile)" ||
-//            req.url ~ "^/_private/header" ||
-//            req.url ~ "^/soiree/(.+)\.html$") &&
-//            ! req.http.host ~ "^static\."
-//        ) {
-//            set req.http.Cookie = ";" + req.http.Cookie;
-//            set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
-//            set req.http.Cookie = regsuball(req.http.Cookie, ";(PHPSESSID)=", "; \1=");
-//            set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
-//            set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
-//        } else {
-//            unset req.http.Cookie;
-//        }
-
         # Are there cookies left with only spaces or that are empty?
         if (req.http.Cookie ~ "^\s*$") {
             unset req.http.Cookie;
         }
-    }
 
-    set req.http.X-Cookie = req.http.Cookie;
+        set req.http.X-Cookie-State = "Vanished";
+        set req.http.X-Cookie = req.http.Cookie;
+    } else if(! req.http.X-Cookie-State) {
+        set req.http.X-Cookie-State = "Empty";
+    }
 
     # Send Surrogate-Capability headers to announce ESI support to backend
     set req.http.Surrogate-Capability = "abc=ESI/1.0";
@@ -255,22 +222,13 @@ sub vcl_backend_response {
         unset beresp.http.set-cookie;
     }
 
-	# Used for purging cache by URL
-	set beresp.http.X-Url = bereq.url;
-	set beresp.http.X-Host = bereq.http.host;
-
   	# Don't cache 50x responses
   	if (beresp.status == 500 || beresp.status == 502 || beresp.status == 503 || beresp.status == 504) {
 		return (abandon);
   	}
 
-	if (beresp.http.X-No-Browser-Cache) {
-        # Remove magik marker
-        unset beresp.http.X-No-Browser-Cache;
-
-        /* Set the clients TTL on this object */
-        set beresp.http.cache-control = "no-store, no-cache, must-revalidate";
-    }
+    call fos_ban_backend_response;
+    call fos_custom_ttl_backend_response;
 
   	# Allow stale content, in case the backend goes down.
   	# make Varnish keep all objects for 6 hours beyond their TTL
@@ -288,36 +246,24 @@ sub vcl_deliver {
     # Add debug header to see if it's a HIT/MISS and the number of hits, disable when not needed
     if (obj.hits > 0) {
         set resp.http.X-Cache = "HIT";
+        set resp.http.X-Cache-Hits = obj.hits;
     } else {
         set resp.http.X-Cache = "MISS";
     }
 
-    set resp.http.X-Cache-Hits = obj.hits;
     set resp.http.Server = "By Night";
 
 	unset resp.http.Via;
 	unset resp.http.X-Varnish;
 
-	# Keep ban-lurker headers only if debugging is enabled
-    if (!resp.http.X-Cache-Debug) {
-        # Remove ban-lurker friendly custom headers when delivering to client
-        unset resp.http.X-Url;
-        unset resp.http.X-Host;
-        unset resp.http.X-Cache-Tags;
-    }else {
+	call fos_ban_deliver;
+
+    if (resp.http.X-Cache-Debug) {
         set resp.http.X-Cookie-Debug = req.http.X-Cookie;
+        set resp.http.X-Cookie-State = req.http.X-Cookie-State;
     }
 
     return (deliver);
-}
-
-sub vcl_purge {
-    # Only handle actual PURGE HTTP methods, everything else is discarded
-    if (req.method != "PURGE") {
-        # restart request
-        set req.http.X-Purge = "Yes";
-        return(restart);
-    }
 }
 
 sub vcl_synth {

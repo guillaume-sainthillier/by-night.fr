@@ -6,39 +6,10 @@
 
 {% block body %}
     <div>
-        <div class="text-center">
-            <div class="btn-group btn-group-justified" data-toggle="buttons">
-                <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
-                   class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.participer ? "btn-primary" : "btn-default" }}"
-                   data-href="{{ path('app_user_participer', {'id' : soiree.id}) }}">
-                    <i class="fa fa-check check{{ stats.participer ? '' : ' hidden' }}"></i>
-                    <input type="radio" name="interet"/> J'y serai
-                </a>
-                <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
-                   class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ stats.interet ? "btn-primary" : "btn-default" }}"
-                   data-href="{{ path('app_user_interesser', {'id' : soiree.id}) }}">
-                    <i class="fa fa-check check{{ stats.interet ? '' : ' hidden' }}"></i>
-                    <input type="radio" name="interet"/> Ça m'interesse
-                </a>
-            </div>
-
-            <!-- Stats -->
-            <div>
-                <strong class="number number-xbig">{{ stats.count_participer }}</strong>
-                <span class="text-primary">participant{{ stats.count_participer > 1 ? "s" : "" }}</span>
-                <strong class="number number-xbig"> / {{ stats.count_interets }}</strong>
-                <span class="text-primary">interessé{{ stats.count_interets > 1 ? "s" : "" }}</span>
-            </div>
-            <!-- ./Stats -->
-        </div>
-
-        <br/>
-        <!-- Membres -->
-        <div class="tendance">
-            {% include "City/Hinclude/membres.html.twig" with({'membres': stats.tendances }) %}
-        </div>
-        <!-- ./Membres -->
+        {{ render_esi(controller('App\\Controller\\City\\EventController::tendances', {
+            'id': soiree.id
+        })) }}
     </div>
 {% endblock %}
 
-{% block footer %}{% endblock %}
+{% block footer '' %}

@@ -1,4 +1,7 @@
+{{ fos_httpcache_tag('widget-event') }}
 {% for soiree in soirees %}
+    {{ fos_httpcache_tag(tags('event', soiree)) }}
+    {{ fos_httpcache_tag(tags('place', soiree.place)) }}
     <div class="widget_item">
         <div class="row">
             <div class="col-xs-3 col-md-2 min_membre preserve text-center color-second"

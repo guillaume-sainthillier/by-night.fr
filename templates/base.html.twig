@@ -133,8 +133,8 @@ _______     __  _   _ _____ _____ _    _ _______
 <div id="wrap">
     <header>
         <!-- Menu -->
-        {% if city_manager.city %}
-            {{ render_esi(url('app_private_header_site', {'slug' : city_manager.city.slug })) }}
+        {% if location is defined and location.isCity %}
+            {{ render_esi(url('app_private_header', {'id': location.city.id})) }}
         {% else %}
             {{ render_esi(url('app_private_header')) }}
         {% endif %}
@@ -164,7 +164,6 @@ _______     __  _   _ _____ _____ _    _ _______
 <!-- ./Modals -->
 
 <!-- Footer -->
-{% set countryId = null %}
 {% if location is defined %}
     {% set countryId = location.isCountry ? location.country.id : location.city.country.id %}
     {{ render_esi(controller('App\\Controller\\Fragments\\CommonController::footer', {'id': countryId})) }}

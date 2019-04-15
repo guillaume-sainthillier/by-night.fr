@@ -4,11 +4,15 @@ namespace App\Controller\Legacy;
 
 use App\Controller\TBNController as BaseController;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Annotation\ReverseProxy;
 
+/**
+ * @ReverseProxy(expires="1 year")
+ */
 class LegacyController extends BaseController
 {
     /**
-     * @Route("/cookie", name="app_main_cookie")
+     * @Route("/cookie", name="app_main_cookie", methods={"GET"})
      */
     public function cookie()
     {
@@ -16,7 +20,7 @@ class LegacyController extends BaseController
     }
 
     /**
-     * @Route("/mentions-legales", name="app_agenda_mention_legales")
+     * @Route("/mentions-legales", name="app_agenda_mention_legales", methods={"GET"})
      */
     public function mentionLegales()
     {
@@ -24,7 +28,7 @@ class LegacyController extends BaseController
     }
 
     /**
-     * @Route("/a-propos", name="app_agenda_about")
+     * @Route("/a-propos", name="app_agenda_about", methods={"GET"})
      */
     public function about()
     {
@@ -32,7 +36,7 @@ class LegacyController extends BaseController
     }
 
     /**
-     * @Route("/en-savoir-plus", name="app_agenda_plus")
+     * @Route("/en-savoir-plus", name="app_agenda_plus", methods={"GET"})
      */
     public function plus()
     {

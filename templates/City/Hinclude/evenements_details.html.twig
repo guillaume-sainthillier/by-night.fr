@@ -1,4 +1,5 @@
-{{ fos_httpcache_tag('detail-place-' ~ place.id ) }}
+{{ fos_httpcache_tag('block-place' ) }}
+{{ fos_httpcache_tag(tags('place', place)) }}
 {% if page == 1 and soirees|length == 0 %}
     <p>Aucun événement prévu à {{ place.nom }} pour le moment ! Vous souhaitez <a href="{{ path('app_agenda_new') }}">créer
             un événement à {{ place.nom }}</a> ?</p>

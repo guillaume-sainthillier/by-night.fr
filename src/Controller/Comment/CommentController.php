@@ -3,11 +3,12 @@
 namespace App\Controller\Comment;
 
 use App\Annotation\BrowserCache;
+use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
-use App\Invalidator\EventInvalidator;
+use App\Invalidator\TagsInvalidator;
 use App\Repository\CommentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -28,13 +29,7 @@ class CommentController extends BaseController
 
     /**
      * @Route("/{id}/{page}", name="app_comment_list", requirements={"id": "\d+", "page": "\d+"})
-     * @BrowserCache(false)
-     *
-     * @param Agenda $soiree
-     * @param $page
-     *
-     * @return Response
-     * @Cache(expires="tomorrow")
+     * @ReverseProxy(expires="tomorrow")
      */
     public function listAction(Agenda $soiree, $page = 1)
     {
@@ -42,7 +37,7 @@ class CommentController extends BaseController
         $comment = new Comment();
         $form    = $this->getCreateForm($comment, $soiree);
 
-        $response = $this->render('Comment/list.html.twig', [
+        return $this->render('Comment/list.html.twig', [
             'nb_comments' => $this->getNbComments($soiree),
             'comments'    => $this->getCommentaires($soiree, $page, $offset),
             'soiree'      => $soiree,
@@ -50,11 +45,6 @@ class CommentController extends BaseController
             'offset'      => $offset,
             'form'        => $form->createView(),
         ]);
-
-        $tomorrow = $this->getSecondsUntilTomorrow();
-        $response->setSharedMaxAge($tomorrow);
-
-        return $response;
     }
 
     /**
@@ -62,11 +52,11 @@ class CommentController extends BaseController
      *
      * @param Request          $request
      * @param Agenda           $soiree
-     * @param EventInvalidator $eventInvalidator
+     * @param TagsInvalidator $eventInvalidator
      *
      * @return Response
      */
-    public function newAction(Request $request, Agenda $soiree, EventInvalidator $eventInvalidator)
+    public function newAction(Request $request, Agenda $soiree, TagsInvalidator $eventInvalidator)
     {
         $comment = new Comment();
         $form    = $this->getCreateForm($comment, $soiree);

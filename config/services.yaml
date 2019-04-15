@@ -113,6 +113,14 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
 
+    App\EventListener\EntityTagger:
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: preRemove }
+            - { name: doctrine.event_listener, event: postFlush }
+
     App\EventListener\ReCaptchaListener:
         arguments:
             $formName: "fos_user_registration_form"

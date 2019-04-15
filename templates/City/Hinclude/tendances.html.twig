@@ -1,18 +1,33 @@
-<div class="widget_item">
-    <strong class="number number-xbig">{{ count_participer }}</strong>
-    <span class="text-primary">participant{{ count_participer > 1 ? "s" : "" }}</span>
-    <strong class="number number-xbig"> / {{ count_interets }}</strong>
-    <span class="text-primary">interessé{{ count_interets > 1 ? "s" : "" }}</span>
+{{ fos_httpcache_tag(tags('tendances', soiree)) }}
+<div class="text-center">
+    <div class="btn-group btn-group-justified" data-toggle="buttons">
+        <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
+           class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ participer ? "btn-primary" : "btn-default" }}"
+           data-href="{{ path('app_user_participer', {'id' : soiree.id}) }}">
+            <i class="fa fa-check check{{ participer ? '' : ' hidden' }}"></i>
+            <input type="radio" name="interet"/> J'y serai
+        </a>
+        <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
+           class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ interet ? "btn-primary" : "btn-default" }}"
+           data-href="{{ path('app_user_interesser', {'id' : soiree.id}) }}">
+            <i class="fa fa-check check{{ interet ? '' : ' hidden' }}"></i>
+            <input type="radio" name="interet"/> Ça m'interesse
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div>
+        <strong class="number number-xbig">{{ count_participer }}</strong>
+        <span class="text-primary">participant{{ count_participer > 1 ? "s" : "" }}</span>
+        <strong class="number number-xbig"> / {{ count_interets }}</strong>
+        <span class="text-primary">interessé{{ count_interets > 1 ? "s" : "" }}</span>
+    </div>
+    <!-- ./Stats -->
 </div>
 
-<div class="tendance">
-    {% include "City/Hinclude/membres.html.twig" with({'membres': tendancesParticipations }) %}
-</div>
 <br/>
+<!-- Membres -->
 <div class="tendance">
-    {% include "City/Hinclude/membres.html.twig" with({'membres': tendancesInterets }) %}
+    {% include "City/Hinclude/membres.html.twig" with({'membres': tendances }) %}
 </div>
-
-<div class="fb_membres">
-    {% include "City/Hinclude/fb_membres.html.twig" %}
-</div>
+<!-- ./Membres -->

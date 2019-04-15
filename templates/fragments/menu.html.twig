@@ -1,3 +1,7 @@
+{{ fos_httpcache_tag(tags('menu')) }}
+{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+    {{ fos_httpcache_tag(tags('user', app.user)) }}
+{% endif %}
 <nav class="navbar shadow navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -47,7 +51,6 @@
                     </li>
                 {% endif %}
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                    {{ fos_httpcache_tag('menu-' ~ app.user.id) }}
                     <li class="dropdown profile">
                         <a href="#" title="{{ app.user.username }}" class="dropdown-toggle" data-toggle="dropdown">
                             {% set imageURL = userProfilePicture.getProfilePicture(app.user, 'thumb_user_menu') %}
@@ -68,21 +71,16 @@
                         </ul>
                     </li>
                 {% else %}
-                    {% set route = app.request.attributes.get('_route') %}
-                    {% if route != "fos_user_registration_register" %}
-                        <li>
-                            <a class="register" title="Inscrivez-vous sur By Night" href="{{ path('fos_user_registration_register') }}">
-                                Rejoignez-nous
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% if route != "fos_user_security_login" %}
-                        <li>
-                            <a class="connexion" title="Connectez-vous sur By Night" href="{{ path('fos_user_security_login') }}">
-                                Connexion
-                            </a>
-                        </li>
-                    {% endif %}
+                    <li>
+                        <a class="register" title="Inscrivez-vous sur By Night" href="{{ path('fos_user_registration_register') }}">
+                            Rejoignez-nous
+                        </a>
+                    </li>
+                    <li>
+                        <a class="connexion" title="Connectez-vous sur By Night" href="{{ path('fos_user_security_login') }}">
+                            Connexion
+                        </a>
+                    </li>
                 {% endif %}
             </ul>
         </div>

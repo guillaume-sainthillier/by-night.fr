@@ -2,13 +2,12 @@
 
 namespace App\Controller;
 
-use App\Annotation\BrowserCache;
+use App\Annotation\ReverseProxy;
 use App\App\CityManager;
 use App\Entity\Agenda;
 use App\Form\Type\CityAutocompleteType;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,8 +20,7 @@ class DefaultController extends AbstractController
 
     /**
      * @Route("/", name="app_main_index")
-     * @Cache(expires="tomorrow", maxage="86400", smaxage="86400", public=true)
-     * @BrowserCache(false)
+     * @ReverseProxy(expires="tomorrow")
      *
      * @param PaginatorInterface $paginator
      * @param RepositoryManagerInterface $repositoryManager
@@ -41,6 +39,7 @@ class DefaultController extends AbstractController
 
         $stats = $this->getDoctrine()->getManager()->getRepository(Agenda::class)->getCountryEvents();
         $form = $this->createForm(CityAutocompleteType::class, $datas);
+
         return $this->render('Default/index.html.twig', [
             'autocomplete_form' => $form->createView(),
             'stats' => $stats

@@ -1,8 +1,10 @@
 {% if microdata is not defined %}
     {% set microdata = true %}
 {% endif %}
+{{ fos_httpcache_tag('block-event') }}
 {% for i, soiree in events %}
-    {{ fos_httpcache_tag('detail-event-' ~ soiree.id ) }}
+    {{ fos_httpcache_tag(tags('event', soiree)) }}
+    {{ fos_httpcache_tag(tags('place', soiree.place)) }}
     <div {% if microdata %}itemscope itemtype="http://schema.org/Event"{% endif %}>
         <div class="row event">
             <div class="col-xs-3 image_soiree">

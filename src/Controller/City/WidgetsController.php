@@ -2,13 +2,11 @@
 
 namespace App\Controller\City;
 
-use App\Annotation\BrowserCache;
+use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
-use App\Entity\City;
 use App\Social\Twitter;
-use DateTime;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,7 +26,7 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"})
-     * @BrowserCache(false)
+     * @ReverseProxy(expires="1 hour")
      */
     public function twitterAction(Location $location, Twitter $twitter, RequestStack $requestStack, $max_id = null)
     {
@@ -54,28 +52,16 @@ class WidgetsController extends BaseController
             return $this->redirectToRoute('app_agenda_agenda', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
         }
 
-        $response = $this->render('City/Hinclude/tweets.html.twig', [
+        return $this->render('City/Hinclude/tweets.html.twig', [
             'tweets' => $results['statuses'],
             'hasNextLink' => $nextLink,
             'location' => $location
         ]);
-
-        if (!$max_id || self::TWEET_LIMIT !== \count($results['statuses'])) {
-            list($expire, $ttl) = $this->getSecondsUntil(1);
-        } else {
-            $expire = new DateTime();
-            $expire->modify('+1 year');
-            $ttl = 31536000;
-        }
-
-        return $response
-            ->setSharedMaxAge($ttl)
-            ->setExpires($expire);
     }
 
     /**
      * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_agenda_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
-     * @BrowserCache(false)
+     * @ReverseProxy(expires="1 year")
      */
     public function nextEventsAction(Location $location, $slug, $id = null, $page = 1)
     {
@@ -113,7 +99,7 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        $response = $this->render('City/Hinclude/evenements_details.html.twig', [
+        return $this->render('City/Hinclude/evenements_details.html.twig', [
             'page' => $page,
             'place' => $soiree->getPlace(),
             'soirees' => $repo->findAllNext($soiree, $page, self::WIDGET_ITEM_LIMIT),
@@ -121,16 +107,11 @@ class WidgetsController extends BaseController
             'count' => $count,
             'hasNextLink' => $hasNextLink,
         ]);
-
-        return $response
-            ->setExpires(new DateTime('+1 year'))
-            ->setSharedMaxAge(31536000)
-            ->setPublic();
     }
 
     /**
      * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_agenda_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))3
-     * @BrowserCache(false)
+     * @ReverseProxy(expires="tomorrow")
      */
     public function soireesSimilairesAction(Location $location, $slug, $id = null, $page = 1)
     {
@@ -160,22 +141,17 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        $response = $this->render('City/Hinclude/evenements.html.twig', [
+        return $this->render('City/Hinclude/evenements.html.twig', [
             'soirees' => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
             'current' => $current,
             'count' => $count,
             'hasNextLink' => $hasNextLink,
         ]);
-
-        return $response
-            ->setExpires(new DateTime('tomorrow'))
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-            ->setPublic();
     }
 
     /**
      * @Route("/top/soirees/{page}", name="app_agenda_top_soirees", requirements={"page": "\d+"})
-     * @BrowserCache(false)
+     * @ReverseProxy(expires="tomorrow")
      */
     public function topSoireesAction(Location $location, $page = 1)
     {
@@ -194,17 +170,12 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        $response = $this->render('City/Hinclude/evenements.html.twig', [
+        return $this->render('City/Hinclude/evenements.html.twig', [
             'location' => $location,
             'soirees' => $repo->findTopSoiree($location, $page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
             'count' => $count,
         ]);
-
-        return $response
-            ->setExpires(new DateTime('tomorrow'))
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-            ->setPublic();
     }
 }

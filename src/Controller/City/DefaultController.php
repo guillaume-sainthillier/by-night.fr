@@ -3,6 +3,7 @@
 namespace App\Controller\City;
 
 use App\Annotation\BrowserCache;
+use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
@@ -15,13 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends BaseController
 {
     /**
-     * @Cache(expires="+2 hours", smaxage="7200")
      * @Route("/", name="app_agenda_index")
-     * @BrowserCache(false)
-     *
-     * @param City $city
-     *
-     * @return Response
+     * @ReverseProxy(expires="+2 hours")
      */
     public function indexAction(Location $location)
     {

@@ -1,4 +1,6 @@
+{{ fos_httpcache_tag('block-user') }}
 {% for user in membres %}
+    {{ fos_httpcache_tag(tags('user', user)) }}
     {% set imageURL = userProfilePicture.getProfilePicture(user, 'thumb_user_50') %}
     <div class="widget_item">
         <div class="row">

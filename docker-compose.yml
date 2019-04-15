@@ -22,6 +22,7 @@ services:
             - app
         volumes:
             - ${DOCKER_PATH}/varnish/default.vcl:/etc/varnish/default.vcl
+            - ${DOCKER_PATH}/varnish/fos:/etc/varnish/fos
             - /var/lib/varnish
 
     redis:

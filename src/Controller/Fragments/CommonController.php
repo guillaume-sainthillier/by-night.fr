@@ -8,37 +8,35 @@
 
 namespace App\Controller\Fragments;
 
+use App\Annotation\ReverseProxy;
+use App\App\CityManager;
 use App\Controller\TBNController;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Social\Social;
 use App\Social\SocialProvider;
-use DateTime;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/_internal")
- */
 class CommonController extends TBNController
 {
     const LIFE_TIME_CACHE = 86400; // 3600*24
 
     /**
-     * @Route("/header/{slug}", name="app_private_header_site")
-     * @Route("/header", name="app_private_header")
+     * @Route("/_private/header/{id}", name="app_private_header", requirements={"id": "\d+"})
+     * @ReverseProxy(expires="+1 day")
      */
-    public function header(City $city = null)
+    public function header(CityManager $cityManager, $id = null)
     {
-        $response = $this->render('fragments/menu.html.twig', [
+        $city = null;
+        if ($id) {
+            $city = $this->getDoctrine()->getRepository(City::class)->find($id);
+        }
+
+        $city = $city ?: $cityManager->getCity();
+        return $this->render('fragments/menu.html.twig', [
             'city' => $city,
         ]);
-
-        $tomorrow = new DateTime('tomorrow');
-
-        return $response
-            ->setExpires($tomorrow)
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow());
     }
 
     public function footer(Cache $memoryCache, SocialProvider $socialProvider, Country $country = null)
@@ -61,12 +59,7 @@ class CommonController extends TBNController
 
         $repo = $this->getDoctrine()->getRepository(City::class);
         $params['cities'] = $repo->findRandomNames($country);
-        $response = $this->render('fragments/footer.html.twig', $params);
 
-        $tomorrow = new DateTime('tomorrow');
-
-        return $response
-            ->setExpires($tomorrow)
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow());
+        return $this->render('fragments/footer.html.twig', $params);
     }
 }

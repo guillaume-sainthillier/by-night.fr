@@ -7,5 +7,5 @@ fos_http_cache:
         varnish:
             http:
                 servers:
-                    - 127.0.0.1
+                    - varnish
                 base_url: '%env(APP_URL)%'

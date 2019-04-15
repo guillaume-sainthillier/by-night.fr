@@ -3,12 +3,12 @@
 namespace App\Controller\Api;
 
 use App\Annotation\BrowserCache;
+use App\Annotation\ReverseProxy;
 use App\Entity\City;
 use App\SearchRepository\CityRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Knp\Component\Pager\PaginatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +23,8 @@ class ApiController extends AbstractController
 
     /**
      * @Route("/villes", name="app_api_city")
-     * @Cache(expires="+1 month", maxage="2592000", smaxage="2592000", public=true)
-     * @BrowserCache(false)
-     * @Tag("autocomplete_city")
+     * @ReverseProxy(expires="1 year")
+     * @Tag("autocomplete-city")
      *
      * @param Request            $request
      * @param PaginatorInterface $paginator
