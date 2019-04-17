@@ -85,13 +85,13 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($cities as $city) {
             $city = current($city);
-            $this->addUrl($section, 'app_agenda_index', ['city' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_agenda', ['city' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'concert', 'city' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'etudiant', 'city' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'famille', 'city' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'spectacle', 'city' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'exposition', 'city' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_agenda', ['location' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'concert', 'location' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'etudiant', 'location' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'famille', 'location' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'spectacle', 'location' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'exposition', 'location' => $city['slug']]);
         }
     }
 
@@ -101,7 +101,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($places as $place) {
             $place = current($place);
-            $this->addUrl($section, 'app_agenda_place', ['slug' => $place['slug'], 'city' => $place['city_slug']]);
+            $this->addUrl($section, 'app_agenda_place', ['slug' => $place['slug'], 'location' => $place['city_slug']]);
         }
     }
 
@@ -114,7 +114,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $this->addUrl($section, 'app_agenda_details', [
                 'id' => $event['id'],
                 'slug' => $event['slug'],
-                'city' => $event['city_slug'],
+                'location' => $event['city_slug'],
             ]);
         }
 
