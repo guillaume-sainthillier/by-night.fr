@@ -25,6 +25,10 @@ class SearchType extends AbstractType
             $data['du'] = \date('d/m/Y');
         }
 
+        if(empty($data['page'])) {
+            $data['page'] = 1;
+        }
+
         $event->setData($data);
     }
 

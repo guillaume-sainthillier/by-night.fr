@@ -224,9 +224,6 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v2.7.1"
     },
-    "lexik/maintenance-bundle": {
-        "version": "v2.1.2"
-    },
     "liip/imagine-bundle": {
         "version": "1.8",
         "recipe": {

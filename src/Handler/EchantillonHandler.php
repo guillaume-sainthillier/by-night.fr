@@ -122,7 +122,7 @@ class EchantillonHandler
         }
 
         if (count($externalIds) > 0) {
-            $repoAgenda = $this->em->getRepository(Place::class);
+            $repoAgenda = $this->em->getRepository(Agenda::class);
             $candidates = $repoAgenda->findBy(['externalId' => array_keys($externalIds)]);
             foreach ($candidates as $candidate) {
                 /** @var Agenda $candidate */

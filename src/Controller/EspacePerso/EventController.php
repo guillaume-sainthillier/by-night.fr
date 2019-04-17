@@ -110,7 +110,7 @@ class EventController extends BaseController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->addFlash('success', 'Votre événement a bien été modifié');
 
-            //return $this->redirect($this->generateUrl('app_agenda_list'));
+            return $this->redirect($this->generateUrl('app_agenda_list'));
         }
 
         $formDelete = $this->createDeleteForm($agenda);
@@ -230,7 +230,7 @@ class EventController extends BaseController
                 'Votre événement a bien été créé. Merci !'
             );
 
-            //return $this->redirect($this->generateUrl('app_agenda_list'));
+            return $this->redirect($this->generateUrl('app_agenda_list'));
         }
 
         return $this->render('EspacePerso/new.html.twig', [

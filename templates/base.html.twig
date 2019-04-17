@@ -76,10 +76,10 @@ _______     __  _   _ _____ _____ _    _ _______
 
     <!-- CSS -->
     <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400%7CRoboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="{{ app_asset('main/css/style.min.css', 'asset') }}" type="text/css">
+    <link rel="stylesheet" href="{{ app_asset('main/css/style.min.css') }}" type="text/css">
     {% block css_layout %}{% endblock %}
     {% block css %}{% endblock %}
-    <link rel="stylesheet" href="{{ app_asset('css/print.min.css', 'asset') }}" type="text/css" media="print">
+    <link rel="stylesheet" href="{{ app_asset('css/print.min.css') }}" type="text/css" media="print">
     <!-- ./CSS -->
 
     <!--[if lt IE 9]>
@@ -179,7 +179,7 @@ _______     __  _   _ _____ _____ _    _ _______
 </a>
 
 <!-- JS -->
-<script type="text/javascript" src="{{ app_asset('main/js/scripts.min.js', 'asset') }}"></script>
+<script type="text/javascript" src="{{ app_asset('main/js/scripts.min.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $.cookieBar({

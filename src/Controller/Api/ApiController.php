@@ -2,7 +2,6 @@
 
 namespace App\Controller\Api;
 
-use App\Annotation\BrowserCache;
 use App\Annotation\ReverseProxy;
 use App\Entity\City;
 use App\SearchRepository\CityRepository;

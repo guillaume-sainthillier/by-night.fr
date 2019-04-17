@@ -2,7 +2,6 @@
 
 namespace App\Controller\City;
 
-use App\Annotation\BrowserCache;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
@@ -15,7 +14,6 @@ use App\Search\SearchAgenda;
 use Doctrine\Common\Cache\Cache as DoctrineCache;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

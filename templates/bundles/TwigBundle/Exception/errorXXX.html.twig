@@ -20,18 +20,16 @@
                     <h1>{{ code }}</h1>
                     <h2>{{ message }}</h2>
                     <p>{{ description }}</p>
-                     
-                    {% if site %}
-                        <form method="get" action="{{ path('app_search_query') }}">
-                            <div class="input-prepend input-group">                        
-                                <span class="input-group-addon clear"><i class="fa fa-search"></i></span>
-                                <input name="q" class="form-control" size="16" type="text" placeholder="Que cherchez vous ?" />
-                                <span class="input-group-btn">
-                                    <input class="btn btn-info" type="submit" value="Rechercher" />
-                                </span>                        
-                            </div>
-                        </form>
-                    {% endif %}                    
+
+                    <form method="get" action="{{ path('app_search_query') }}">
+                        <div class="input-prepend input-group">
+                            <span class="input-group-addon clear"><i class="fa fa-search"></i></span>
+                            <input name="q" class="form-control" size="16" type="text" placeholder="Que cherchez vous ?" />
+                            <span class="input-group-btn">
+                                <input class="btn btn-info" type="submit" value="Rechercher" />
+                            </span>
+                        </div>
+                    </form>
                 </div><!--/col-->
             </div><!--/row-->
         </div>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cb8b0629b06303a10b2e0703657a7b0",
+    "content-hash": "82c3abce2765903085290c6e9bf66d48",
     "packages": [
         {
             "name": "beberlei/DoctrineExtensions",
@@ -3969,67 +3969,6 @@
                 "symfony"
             ],
             "time": "2019-02-28T13:51:20+00:00"
-        },
-        {
-            "name": "lexik/maintenance-bundle",
-            "version": "v2.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/lexik/LexikMaintenanceBundle.git",
-                "reference": "3a3e916776934a95834235e4a1d71e4595d515f5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/lexik/LexikMaintenanceBundle/zipball/3a3e916776934a95834235e4a1d71e4595d515f5",
-                "reference": "3a3e916776934a95834235e4a1d71e4595d515f5",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.9",
-                "symfony/framework-bundle": "~2.7|~3.0|^4.0",
-                "symfony/translation": "~2.7|~3.0|^4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.8|~5.7.11",
-                "symfony/phpunit-bridge": "~2.7|~3.0|^4.0"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Lexik\\Bundle\\MaintenanceBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dev Lexik",
-                    "email": "dev@lexik.fr"
-                },
-                {
-                    "name": "Gilles Gauthier",
-                    "email": "g.gauthier@lexik.fr"
-                },
-                {
-                    "name": "Djuri Baars",
-                    "email": "info@djurict.nl"
-                }
-            ],
-            "description": "This bundle allows you to place your website in maintenance mode by calling two commands from your console.",
-            "homepage": "https://github.com/lexik/LexikMaintenanceBundle",
-            "keywords": [
-                "Symfony2",
-                "bundle",
-                "maintenance"
-            ],
-            "time": "2018-02-14T10:18:33+00:00"
         },
         {
             "name": "liip/imagine-bundle",

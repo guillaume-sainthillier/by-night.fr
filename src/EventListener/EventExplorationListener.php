@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\Entity\Agenda;
 use App\Entity\Exploration;
 use App\Reject\Reject;
 use App\Utils\Firewall;
@@ -12,6 +13,9 @@ class EventExplorationListener
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
+        if (!$entity instanceof Agenda) {
+            return;
+        }
         $entityManager = $args->getEntityManager();
         $exploration = $entityManager->getRepository(Exploration::class)->findOneBy([
             'externalId' => $entity->getExternalId()

@@ -6,7 +6,7 @@
 
 {% block body %}
     <div>
-        {{ render_esi(controller('App\\Controller\\City\\EventController::tendances', {
+        {{ render_esi(path('app_event_tendances', {
             'id': soiree.id
         })) }}
     </div>

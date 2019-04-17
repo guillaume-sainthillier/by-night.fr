@@ -2,9 +2,9 @@
 {% extends "layouts/full.html.twig" %}
 
 {% block full_breadcrumb '' %}
-{% block titre "Découvrez où sortir dans votre ville" %}
-{% block title "Choisissez votre ville" %}
-{% block meta_description 'Choisissez votre ville et découvrez les événements du moment !' %}
+{% block titre "Les événements dans votre ville" %}
+{% block title "Le compagnon de vos sorties et soirées en France" %}
+{% block meta_description 'Le compagnon pour vos sorties. Choisissez votre ville et découvrez les événements du moment !' %}
 
 {% block body %}
     <section class="full_wrapper" style="background-image: url({{ app_asset('img/landing.jpg') }})">
@@ -34,7 +34,7 @@
     </section>
     <section>
         <div class="container">
-            <h2 class="text-primary">Vos événements classés par pays</h2>
+            <h2 class="text-primary">Les événements en cours par pays</h2>
             <div class="row">
                 {% for stat in stats %}
                     <div class="col-sm-6 col-md-4">
@@ -62,7 +62,7 @@
 {% endblock %}
 
 {% block css %}
-    <link rel="stylesheet" href="{{ app_asset('evenements/css/index.min.css', 'asset') }}" type="text/css">
+    <link rel="stylesheet" href="{{ app_asset('evenements/css/index.min.css') }}" type="text/css">
 {% endblock %}
 
 {% block head_js %}

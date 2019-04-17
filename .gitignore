@@ -1,6 +1,3 @@
-# Docker private datas
-docker/data/mysql/*.sql
-
 ###> symfony/framework-bundle ###
 .env
 /public/bundles/
@@ -16,7 +13,7 @@ docker/data/mysql/*.sql
 /public/media/*
 
 #Assets
-/config/prod/mapping_assets.yaml
+/config/packages/prod/mapping_assets.yaml
 
 #NodeJS
 node_modules/

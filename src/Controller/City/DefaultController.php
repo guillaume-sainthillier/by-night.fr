@@ -2,15 +2,11 @@
 
 namespace App\Controller\City;
 
-use App\Annotation\BrowserCache;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
-use App\Entity\City;
 use App\Search\SearchAgenda;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends BaseController
@@ -21,16 +17,16 @@ class DefaultController extends BaseController
      */
     public function indexAction(Location $location)
     {
-        $em   = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
-        $search    = (new SearchAgenda())->setDu(null);
+        $search = (new SearchAgenda())->setDu(null);
         $topEvents = $repo->findTopSoiree($location, 1, 7);
 
         return $this->render('City/Default/index.html.twig', [
-            'location'      => $location,
+            'location' => $location,
             'topEvents' => $topEvents,
-            'nbEvents'  => $repo->findCountWithSearch($location, $search),
+            'nbEvents' => $repo->findCountWithSearch($location, $search),
         ]);
     }
 }

@@ -30,7 +30,6 @@
         "hwi/oauth-bundle": "^0.6",
         "jms/serializer-bundle": "^3.2",
         "knplabs/knp-paginator-bundle": "^3.0",
-        "lexik/maintenance-bundle": "^2.1",
         "liip/imagine-bundle": "^2.1",
         "neitanod/forceutf8": "^2.0",
         "php-amqplib/rabbitmq-bundle": "^1.14",

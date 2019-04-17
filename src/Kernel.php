@@ -34,6 +34,13 @@ class Kernel extends BaseKernel
         }
     }
 
+    protected function build(ContainerBuilder $container): void
+    {
+        if (!$container->hasParameter('mapping_assets')) {
+            $container->setParameter('mapping_assets', []);
+        }
+    }
+
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader)
     {
         $container->setParameter('container.autowiring.strict_mode', true);

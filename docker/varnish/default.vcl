@@ -230,6 +230,13 @@ sub vcl_backend_response {
     call fos_ban_backend_response;
     call fos_custom_ttl_backend_response;
 
+    # Set 2min cache if unset for static files
+    if (beresp.ttl <= 0s || beresp.http.Vary == "*") {
+        set beresp.ttl = 0s; # Important, you shouldn't rely on this, SET YOUR HEADERS in the backend
+        set beresp.uncacheable = true;
+        return (deliver);
+    }
+
   	# Allow stale content, in case the backend goes down.
   	# make Varnish keep all objects for 6 hours beyond their TTL
   	set beresp.grace = 6h;

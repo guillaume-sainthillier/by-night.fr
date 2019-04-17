@@ -1,12 +1,7 @@
 {% extends "layouts/full.html.twig" %}
 
-{% block titre -%}
-    <strong>Concerts</strong>, <strong>spectacles</strong>, <strong>sorties</strong> &
-    <strong>soirées</strong> {{ location.atValue }}
-    <strong>{{ location.name }}</strong>
-{%- endblock %}
-
-{% block title block('titre')|striptags %}
+{% block titre 'Trouvez votre idée de sortie ' ~ location.atName %}
+{% block title 'Concerts, soirées : toutes les sorties ' ~ location.atName %}
 
 {% block meta_description -%}
     Sortir {{ location.atName }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir {{ location.atName }}.
@@ -22,7 +17,12 @@
 {% endblock %}
 
 {% block body %}
-    <section class="full_wrapper" style="background-image: url({{ app_asset('img/sites/' ~ location.slug ~ '.jpg') }})">
+    {% if location.slug in ['basse-terre', 'bordeaux', 'brest', 'caen', 'cayenne', 'dijon', 'fort-de-france', 'grenoble', 'le-havre', 'lille', 'lyon', 'mamoudzou', 'marseille', 'montpellier', 'nantes', 'narbonne', 'nice', 'paris', 'perpignan', 'poitiers', 'reims', 'rennes', 'rouen', 'saint-denis', 'strasbourg', 'toulouse'] %}
+        {% set locationUrl = app_asset('img/sites/' ~ location.slug ~ '.jpg') %}
+    {% else %}
+        {% set locationUrl = app_asset('img/landing.jpg') %}
+    {% endif %}
+    <section class="full_wrapper" style="background-image: url({{ locationUrl }})">
         <div class="fade-black-transp"></div>
         <div class="wrapper">
             <h1 class="titrebloc text-center">{{ block('titre') }}</h1>
@@ -201,16 +201,16 @@
             <a href="{{ path('app_agenda_agenda', {'location': location.slug}) }}"
                class="btn btn-raised btn-lg btn-block btn-primary">
                 <i class="fa fa-chevron-right"></i>
-                Tous les événements<span class="hidden-xs hidden-sm">, concerts, spectacles</span>
+                Toutes les sorties <span class="hidden-xs hidden-sm">{{ location.atName }}</span>
             </a>
         </div>
     </section>
 {% endblock %}
 
 {% block css %}
-    <link rel="stylesheet" href="{{ app_asset('evenements/css/index.min.css', 'asset') }}" type="text/css">
+    <link rel="stylesheet" href="{{ app_asset('evenements/css/index.min.css') }}" type="text/css">
 {% endblock %}
 
 {% block js %}
-    <script src="{{ app_asset('evenements/js/index.min.js', 'asset') }}" type="text/javascript"></script>
+    <script src="{{ app_asset('evenements/js/index.min.js') }}" type="text/javascript"></script>
 {% endblock %}

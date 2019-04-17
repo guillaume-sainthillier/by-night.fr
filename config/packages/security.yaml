@@ -55,7 +55,6 @@ security:
         - { path: ^/inscription, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/espace-perso, roles: IS_AUTHENTICATED_REMEMBERED }
-        - { path: ^/commentaire, roles: IS_AUTHENTICATED_REMEMBERED }
         - { path: ^/social, roles: IS_AUTHENTICATED_REMEMBERED }
         - { path: ^/_administration, roles: ROLE_ADMIN }
         - { path: ^/_private, roles: IS_AUTHENTICATED_ANONYMOUSLY, ips: [127.0.0.1, ::1, 192.168.0.1/24] }

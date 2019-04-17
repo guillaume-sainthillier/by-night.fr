@@ -6,13 +6,9 @@ use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Agenda;
-use App\Entity\Calendrier;
 use App\Entity\Comment;
-use App\Entity\User;
 use App\Form\Type\CommentType;
 use App\Picture\EventProfilePicture;
-use App\Social\FacebookAdmin;
-use Doctrine\Common\Cache\Cache as DoctrineCache;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use SocialLinks\Page;
@@ -51,73 +47,9 @@ class EventController extends BaseController
         }
         $agenda = $result;
 
-        $comment = new Comment();
-        $form = $this->getCreateCommentForm($comment, $agenda);
-        $nbComments = $agenda->getCommentaires()->count();
-
         return $this->render('City/Event/get.html.twig', [
             'location' => $location,
             'soiree' => $agenda,
-            'form' => $form->createView(),
-            'nb_comments' => $nbComments,
-        ]);
-    }
-
-    /**
-     * @ReverseProxy(expires="1 year")
-     */
-    public function tendances(Agenda $agenda, DoctrineCache $memoryCache, FacebookAdmin $facebookAdmin)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
-
-        $participer = false;
-        $interet = false;
-
-        /** @var User $user */
-        $user = $this->getUser();
-        if ($user) {
-            $repoCalendrier = $em->getRepository(Calendrier::class);
-            $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
-            if (null !== $calendrier) {
-                $participer = $calendrier->getParticipe();
-                $interet = $calendrier->getInteret();
-            }
-
-            if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
-                $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
-                if (!$memoryCache->contains($key)) {
-                    $stats = $facebookAdmin->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
-                    $memoryCache->save($key, $stats);
-                }
-                $stats = $memoryCache->fetch($key);
-
-                if ($stats['participer'] || $stats['interet']) {
-                    if (null === $calendrier) {
-                        $calendrier = new Calendrier();
-                        $calendrier->setUser($user)->setAgenda($agenda);
-                    }
-
-                    $participer = $calendrier->getParticipe() || $stats['participer'];
-                    $interet = $calendrier->getInteret() || $stats['interet'];
-
-                    $calendrier
-                        ->setParticipe($participer)
-                        ->setInteret($interet);
-
-                    $em->persist($calendrier);
-                    $em->flush();
-                }
-            }
-        }
-
-        return $this->render('City/Hinclude/tendances.html.twig', [
-            'soiree' => $agenda,
-            'tendances' => $repo->findAllTendances($agenda),
-            'count_participer' => $agenda->getParticipations() + $agenda->getFbParticipations(),
-            'count_interets' => $agenda->getInterets() + $agenda->getFbInterets(),
-            'participer' => $participer,
-            'interet' => $interet,
         ]);
     }
 

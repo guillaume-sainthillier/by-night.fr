@@ -116,7 +116,6 @@ var UserEventHandler = {
 
     },
     assignGMapInfo: function (event, result) {
-        console.log(result);
         $('#agenda_latitude').val(result.lat());
         $('#agenda_longitude').val(result.lng());
         $('#agenda_placeCity').val(result.nameForType('locality'));

@@ -12,6 +12,7 @@
 
 {% block title event_seo.eventFullTitle(soiree) %}
 {% block titre -%}
+    {#
     {% if is_granted('ROLE_ADMIN') or (soiree.user and soiree.user == app.user) %}
         <a class="btn btn-lg btn-primary btn-raised"
            href="{{ path('app_agenda_edit', {'slug': soiree.slug}) }}"
@@ -19,6 +20,7 @@
             <i class="fa fa-pencil"></i>
         </a>
     {% endif %}
+    #}
     {{ block('title') }}
 {%- endblock %}
 
@@ -274,20 +276,9 @@
                     'id': soiree.id,
                 })) }}
 
-                <div class="comments">
-                    <h4 class="heading">
-                        {{ nb_comments }} Commentaire{{ nb_comments > 1 ? "s" : "" }}
-                        {% if nb_comments == 0 %}
-                            |
-                            <small>Soyez le premier à réagir</small>
-                        {% endif %}
-                    </h4>
-                    <br />
-                    {% include "Comment/post.html.twig" %}
-                    {% if nb_comments > 0 %}
-                        {{ render_esi(url('app_comment_list', {'id': soiree.id})) }}
-                    {% endif %}
-                </div>
+                {{ render_esi(path('app_comment_form', {
+                    'id': soiree.id,
+                })) }}
             </div>
         </div>
 
@@ -337,11 +328,11 @@
 {%- endblock %}
 
 {% block css %}
-    <link rel="stylesheet" href="{{ app_asset('widgets/css/widgets.min.css', 'asset') }}" type="text/css">
-    <link rel="stylesheet" href="{{ app_asset('evenements/css/details.min.css', 'asset') }}" type="text/css">
+    <link rel="stylesheet" href="{{ app_asset('widgets/css/widgets.min.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ app_asset('evenements/css/details.min.css') }}" type="text/css">
 {% endblock %}
         
 {% block js %}
-    <script src="{{ app_asset('widgets/js/widgets.min.js', 'asset') }}" type="text/javascript"></script>
-    <script src="{{ app_asset('evenements/js/details.min.js', 'asset') }}" type="text/javascript"></script>
+    <script src="{{ app_asset('widgets/js/widgets.min.js') }}" type="text/javascript"></script>
+    <script src="{{ app_asset('evenements/js/details.min.js') }}" type="text/javascript"></script>
 {% endblock %}

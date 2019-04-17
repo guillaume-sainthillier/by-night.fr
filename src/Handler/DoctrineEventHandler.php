@@ -410,8 +410,8 @@ class DoctrineEventHandler
                 ->setReject(new Reject());
             $event->setPlace($place);
 
-            if ($event->getFacebookEventId()) {
-                $exploration = $this->firewall->getExploration($event->getFacebookEventId());
+            if ($event->getExternalId()) {
+                $exploration = $this->firewall->getExploration($event->getExternalId());
 
                 //Une exploration a déjà eu lieu
                 if ($exploration) {

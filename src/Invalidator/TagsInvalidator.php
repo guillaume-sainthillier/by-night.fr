@@ -9,6 +9,7 @@
 namespace App\Invalidator;
 
 use App\Entity\Agenda;
+use App\Entity\Calendrier;
 use App\Entity\City;
 use App\Entity\Place;
 use App\Entity\User;
@@ -81,9 +82,9 @@ class TagsInvalidator
         $this->tags[] = self::getUserTag($user);
     }
 
-    public function addCalendrier(Agenda $event)
+    public function addCalendrier(Calendrier $calendrier)
     {
-        $this->tags[] = self::getTendanceTag($event);
+        $this->tags[] = self::getTendanceTag($calendrier->getAgenda());
     }
 
     public function addEvent(Agenda $event)
@@ -106,11 +107,12 @@ class TagsInvalidator
 
     public function flush()
     {
-        /*
         if ($this->debug) {
+            unset($this->tags); //Call GC
+            $this->tags = [];
+
             return;
         }
-        */
 
         $tags = \array_filter(\array_unique($this->tags));
 

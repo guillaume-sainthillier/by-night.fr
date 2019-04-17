@@ -20,6 +20,11 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false
     Request::setTrustedHosts([$trustedHosts]);
 }
 
+if($_SERVER['APP_MAINTENANCE']) {
+    require_once __DIR__. '/maintenance.html';
+    die;
+}
+
 $kernel   = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
 $request  = Request::createFromGlobals();
 $response = $kernel->handle($request);
