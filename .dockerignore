@@ -5,9 +5,7 @@
 .sensiolabs.yml
 docker-compose.*
 node_modules
-package.json
 phpunit.xml.dist
 tests
 var
 vendor
-yarn.lock
