@@ -30,14 +30,40 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         src: ['*'],
-                        dest: '<%= pkg.baseDist %>/main/img',
-                        cwd: '<%= pkg.baseVendor %>/fancybox/dist/img'
+                        dest: '<%= pkg.baseDist %>/evenements/font',
+                        cwd: '<%= pkg.baseFont %>'
                     },
                     {
                         expand: true,
+                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*'],
+                        dest: '<%= pkg.baseDist %>/evenements/images',
+                        cwd: '<%= pkg.baseImg %>'
+                    },
+                    {
+                        expand: true,
+                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*', '!**/spritesheet.png'],
+                        dest: '<%= pkg.baseDist %>/widgets/images',
+                        cwd: '<%= pkg.baseDist %>/img'
+                    },
+                    {
+                        expand: true,
+                        src: ['spritesheet.png'],
+                        dest: '<%= pkg.baseDist %>/widgets/img',
+                        cwd: '<%= pkg.baseDist %>/img'
+                    },
+
+                ]
+            }
+        },
+
+        copy: {
+            main: {
+                files: [
+                    {
+                        expand: true,
                         src: ['*'],
-                        dest: '<%= pkg.baseDist %>/evenements/font',
-                        cwd: '<%= pkg.baseFont %>'
+                        dest: '<%= pkg.baseDist %>/main/img',
+                        cwd: '<%= pkg.baseVendor %>/fancybox/dist/img'
                     },
                     {
                         expand: true,
@@ -59,28 +85,16 @@ module.exports = function (grunt) {
                     },
                     {
                         expand: true,
-                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*'],
-                        dest: '<%= pkg.baseDist %>/evenements/images',
-                        cwd: '<%= pkg.baseImg %>'
-                    },
-                    {
-                        expand: true,
-                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*', '!**/spritesheet.png'],
-                        dest: '<%= pkg.baseDist %>/widgets/images',
-                        cwd: '<%= pkg.baseDist %>/img'
-                    },
-                    {
-                        expand: true,
-                        src: ['spritesheet.png'],
-                        dest: '<%= pkg.baseDist %>/widgets/img',
-                        cwd: '<%= pkg.baseDist %>/img'
+                        src: ['*'],
+                        dest: '<%= pkg.baseDist %>/main/img',
+                        cwd: '<%= pkg.baseVendor %>/fancybox/dist/img'
                     },
                     {
                         expand: true,
                         src: ['*'],
-                        dest: '<%= pkg.baseDist %>/espace-perso/evenements/css/font',
-                        cwd: '<%= pkg.baseVendor %>/summernote/dist/font'
-                    }
+                        dest: '<%= pkg.baseDist %>/main/img',
+                        cwd: '<%= pkg.baseVendor %>/fancybox/dist/img'
+                    },
                 ]
             }
         },
@@ -386,7 +400,7 @@ module.exports = function (grunt) {
                 options: {
                     jsonOutput: true,
                     jsonOutputFilename: '<%= pkg.baseDist %>/js_mapping.json',
-                    assets: [ '<%= pkg.baseDist %>/**/*.min.js' ]
+                    assets: ['<%= pkg.baseDist %>/**/*.min.js']
                 },
                 src: []
             },
@@ -394,7 +408,7 @@ module.exports = function (grunt) {
                 options: {
                     jsonOutput: true,
                     jsonOutputFilename: '<%= pkg.baseDist %>/css_mapping.json',
-                    assets: [ '<%= pkg.baseDist %>/**/*.min.css' ]
+                    assets: ['<%= pkg.baseDist %>/**/*.min.css']
                 },
                 src: []
             },
@@ -402,13 +416,13 @@ module.exports = function (grunt) {
                 options: {
                     jsonOutput: true,
                     jsonOutputFilename: '<%= pkg.baseDist %>/images_mapping.json',
-                    assets: [ '<%= pkg.baseDist %>/**/*.{jpg,jpeg,png,gif}', '!<%= pkg.baseDist %>/**/programmes/*.{jpg,jpeg,png,gif}' ]
+                    assets: ['<%= pkg.baseDist %>/**/*.{jpg,jpeg,png,gif}', '!<%= pkg.baseDist %>/**/programmes/*.{jpg,jpeg,png,gif}']
                 },
                 src: ['<%= pkg.baseDist %>/**/*.min.*.css']
             },
             fonts: {
                 options: {
-                    assets: [ '<%= pkg.baseDist %>/**/*.{otf,eot,svg,ttf,woff,woff2}' ]
+                    assets: ['<%= pkg.baseDist %>/**/*.{otf,eot,svg,ttf,woff,woff2}']
                 },
                 src: ['<%= pkg.baseDist %>/**/*.min.*.css']
             }
@@ -416,14 +430,14 @@ module.exports = function (grunt) {
         "merge-json": {
             "mapping": {
                 files: {
-                    "<%= pkg.baseDist %>/mapping.json": [ "<%= pkg.baseDist %>/*_mapping.json" ],
+                    "<%= pkg.baseDist %>/mapping.json": ["<%= pkg.baseDist %>/*_mapping.json"],
                 }
             }
         }
     });
 
     // Default task(s).
-    grunt.registerTask('convert_mapping', 'Converti le fichier issu de cache pour intégration dans Symfony ', function() {
+    grunt.registerTask('convert_mapping', 'Converti le fichier issu de cache pour intégration dans Symfony ', function () {
         var mapping = grunt.file.readJSON(grunt.config.get('pkg.baseDist') + "/mapping.json");
         var config = {
             'parameters': {
@@ -435,9 +449,8 @@ module.exports = function (grunt) {
         grunt.file.write('config/packages/prod/mapping_assets.yaml', content);
     });
 
-    grunt.registerTask('default', ['sprite', 'css', 'js', 'symlink', 'cache']);
+    grunt.registerTask('default', ['sprite', 'css', 'js', 'copy', 'symlink', 'cache']);
     grunt.registerTask('css', ['concat', 'cssmin']);
     grunt.registerTask('js', ['uglify']);
     grunt.registerTask('cache', ['clean', 'cacheBust', 'merge-json', 'convert_mapping']);
-    grunt.registerTask('assets:install', ['symlink']);
 };

@@ -17,6 +17,7 @@
         "dropdown.js": "https://github.com/FezVrasta/dropdown.js/archive/master.tar.gz",
         "fancybox": "^3.0.0",
         "font-awesome": "^4.7.0",
+        "grunt-contrib-copy": "^1.0.0",
         "highcharts": "^6.0.3",
         "iscroll": "^5.2.0",
         "jquery": "^3.2.1",
