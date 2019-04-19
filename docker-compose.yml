@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
     app:
-        build: ${DOCKER_PATH}/php-nginx
+        build: ./docker/dev
         ports:
             - 8000:80
         environment:
@@ -21,8 +21,8 @@ services:
         depends_on:
             - app
         volumes:
-            - ${DOCKER_PATH}/varnish/default.vcl:/etc/varnish/default.vcl
-            - ${DOCKER_PATH}/varnish/fos:/etc/varnish/fos
+            - ./docker/dev/varnish/default.vcl:/etc/varnish/default.vcl
+            - ./docker/dev/varnish/fos:/etc/varnish/fos
             - /var/lib/varnish
 
     redis:

@@ -1,9 +1,14 @@
 FROM php:7.2-fpm
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
+ENV TERM="xterm" \
+    DEBIAN_FRONTEND="noninteractive" \
+    COMPOSER_ALLOW_SUPERUSER=1
+
+EXPOSE 80
+WORKDIR /app
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update -q && apt-get install -qy \
     curl \
     git \
     gnupg \
@@ -19,7 +24,6 @@ RUN apt-get update && apt-get install -y \
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer --version
 RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 
 # Set timezone
@@ -43,19 +47,6 @@ RUN docker-php-ext-enable redis
 # Install BCMatch (RabbitMQ)
 RUN docker-php-ext-install -j$(nproc) bcmath
 
-# Install Blackfire probe
-RUN version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
-    && curl -A "Docker" -o /tmp/blackfire-probe.tar.gz -D - -L -s https://blackfire.io/api/v1/releases/probe/php/linux/amd64/$version \
-    && tar zxpf /tmp/blackfire-probe.tar.gz -C /tmp \
-    && mv /tmp/blackfire-*.so $(php -r "echo ini_get('extension_dir');")/blackfire.so \
-    && printf "extension=blackfire.so\nblackfire.agent_socket=tcp://blackfire:8707\n" > $PHP_INI_DIR/conf.d/blackfire.ini
-
-# Blackfire for CLI
-RUN mkdir -p /tmp/blackfire \
-    && curl -A "Docker" -L https://blackfire.io/api/v1/releases/client/linux_static/amd64 | tar zxp -C /tmp/blackfire \
-    && mv /tmp/blackfire/blackfire /usr/bin/blackfire \
-    && rm -Rf /tmp/blackfire
-
 # Install GD + EXIF
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
 RUN docker-php-ext-install -j$(nproc) gd exif
@@ -66,7 +57,7 @@ RUN docker-php-ext-install -j$(nproc) zip
 # Sockets
 RUN docker-php-ext-install -j$(nproc) sockets
 
-COPY php.ini /usr/local/etc/php/php.ini
+COPY docker/prod/php.ini /usr/local/etc/php/php.ini
 
 # NPM, Yarn and Grunt
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
@@ -77,17 +68,27 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 RUN apt-get update && apt-get install yarn
 RUN yarn global add grunt-cli
 
-# Add some shortcuts
-RUN echo 'alias ls="ls --color=auto"' >> ~/.bashrc
-RUN echo 'alias ll="ls -alF"' >> ~/.bashrc
-
 # Install nginx
-COPY nginx.conf /etc/nginx/
+COPY docker/prod/nginx.conf /etc/nginx/
 
-# RUN usermod -u 1000 www-data
+# PHP FPM
+COPY docker/prod/pool.conf /usr/local/etc/php-fpm.d/www.conf
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/prod/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-EXPOSE 80
-WORKDIR /app
-CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+COPY . /app
+COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+RUN mkdir -p var public/media public/uploads && \
+    APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
+    APP_ENV=prod bin/console cache:clear --no-warmup && \
+    APP_ENV=prod bin/console cache:warmup && \
+    chown -R www-data:www-data var public/media public/uploads && \
+    yarn install && \
+    grunt
+
+# Reduce container size
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN rm -rf .git node_modules assets docker

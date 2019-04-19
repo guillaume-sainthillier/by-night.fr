@@ -1,9 +1,0 @@
-[mysqld]
-collation-server = utf8mb4_unicode_ci
-character-set-server=utf8mb4
-innodb_buffer_pool_size = 2G # (adjust value here, 50%-70% of total RAM)
-innodb_log_file_size = 512M
-innodb_flush_log_at_trx_commit = 0 # may change to 2 or 0
-innodb_flush_method = O_DIRECT
-innodb_buffer_pool_instances=8
-sql-mode=""

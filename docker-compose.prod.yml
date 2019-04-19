@@ -1,0 +1,12 @@
+version: '3.2'
+
+services:
+    app:
+        build: .
+
+    varnish:
+        image: million12/varnish
+        volumes:
+            - ./docker/prod/varnish/default.vcl:/etc/varnish/default.vcl
+            - ./docker/prod/varnish/fos:/etc/varnish/fos
+            - /var/lib/varnish
