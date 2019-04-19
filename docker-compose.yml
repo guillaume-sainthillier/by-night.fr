@@ -12,7 +12,7 @@ services:
             - elasticsearch
             - redis
         volumes:
-            - ${SYMFONY_APP_PATH}:/app:cached
+            - .:/app:cached
 
     varnish:
         image: million12/varnish
