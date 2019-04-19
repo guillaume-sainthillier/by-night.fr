@@ -13,7 +13,7 @@ class EventExplorationListener
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
-        if (!$entity instanceof Agenda) {
+        if (!$entity instanceof Agenda || null === $entity->getExternalId()) {
             return;
         }
         $entityManager = $args->getEntityManager();
