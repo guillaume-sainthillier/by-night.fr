@@ -91,4 +91,4 @@ RUN mkdir -p var public/media public/uploads && \
 
 # Reduce container size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN rm -rf .git node_modules assets docker
+RUN rm -rf .git node_modules docker
