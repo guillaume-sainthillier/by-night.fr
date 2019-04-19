@@ -83,10 +83,6 @@ services:
         arguments:
             $dataDir: "%kernel.project_dir%/var/datas"
 
-    Monolog\Formatter\LineFormatter:
-        calls:
-            - [includeStacktraces]
-
     App\Twig\AssetExtension:
         arguments:
             $mappingAssets: "%mapping_assets%"
