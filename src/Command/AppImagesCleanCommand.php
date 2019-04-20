@@ -10,6 +10,7 @@ namespace App\Command;
 
 use App\Cleaner\ImageCleaner;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class AppImagesCleanCommand extends AppCommand
@@ -35,7 +36,8 @@ class AppImagesCleanCommand extends AppCommand
 
         $this
             ->setName('app:images:clean')
-            ->setDescription('Supprime les images inutilisées sur le serveur');
+            ->setDescription('Supprime les images inutilisées sur le serveur')
+            ->addOption('dry', 'dry-run', InputOption::VALUE_NONE, 'Active le monitor des fonctions');
     }
 
     /**
@@ -43,6 +45,6 @@ class AppImagesCleanCommand extends AppCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->imageCleaner->clean();
+        $this->imageCleaner->clean($input->getOption('dry'));
     }
 }
