@@ -81,11 +81,11 @@ COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-RUN ls -alh
 RUN mkdir -p var public/media public/uploads && \
-    APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
-    APP_ENV=prod bin/console cache:clear --no-warmup && \
-    APP_ENV=prod bin/console cache:warmup && \
+    composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
+    composer dump-env prod && \
+    bin/console cache:clear --no-warmup && \
+    bin/console cache:warmup && \
     chown -R www-data:www-data var public/media public/uploads && \
     yarn install && \
     grunt
