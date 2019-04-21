@@ -126,7 +126,7 @@
                         <i class="fa fa-tag pull-left"></i>
                         {% for tag in distinctTags %}
                             <a class="label label-info"
-                               title="{{ tag }} à {{ soiree.place.city.name }}"
+                               title="{{ tag }} {{ soiree.place.city ? ('à ' ~ soiree.place.city.name) : ('en ' ~ soiree.place.country.name) }}"
                                href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': soiree.locationSlug}) }}">
                                 <strong>{{ tag }}</strong>
                             </a>
