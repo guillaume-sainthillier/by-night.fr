@@ -16,6 +16,8 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class UserUpdater extends Updater
 {
+    const PAGINATION_SIZE = 50;
+
     /**
      * @var UserHandler
      */
@@ -27,47 +29,45 @@ class UserUpdater extends Updater
         $this->userHandler = $userHandler;
     }
 
-    public function update()
+    public function update(\DateTime $from)
     {
-        $repo  = $this->entityManager->getRepository(User::class);
-        $fbIds = $repo->getUserFbIds();
-        $count = \count($fbIds);
-
-        $fbStats = $this->facebookAdmin->getUserStatsFromIds($fbIds);
-        unset($fbIds);
+        $repo = $this->entityManager->getRepository(User::class);
+        $count = $repo->getUserFbIdsCount($from);
 
         $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
-        for ($i = 0; $i < $nbBatchs; ++$i) {
-            $users = $repo->getUsersWithInfo($i, self::PAGINATION_SIZE);
+        foreach (range(1, $nbBatchs) as $i) {
+            $users = $repo->getUsersWithInfo($from, $i, self::PAGINATION_SIZE);
+            $fbIds = $this->extractFbIds($users);
+            $fbStats = $this->facebookAdmin->getUserImagesFromIds($fbIds);
+
             $this->doUpdate($users, $fbStats);
             $this->doFlush();
             Monitor::advanceProgressBar();
         }
     }
 
-    protected function doUpdate(array $users, array $fbStats)
+    private function extractFbIds(array $users)
     {
-        $downloadUrls = [];
-        foreach ($users as $user) {
-            /** @var User $user */
-            $userInfo = $user->getInfo();
-            $imageURL = null;
-            if ($userInfo && $userInfo->getFacebookId() && isset($fbStats[$userInfo->getFacebookId()])) {
-                $imageURL = $fbStats[$userInfo->getFacebookId()]['url'];
-            }
+        return array_filter(array_unique(array_map(function (User $user) {
+            return $user->getInfo()->getFacebookId();
+        }, $users)));
+    }
 
-            if ($this->userHandler->hasToDownloadImage($imageURL, $user)) {
-                $userInfo->setFacebookProfilePicture($imageURL);
-                $downloadUrls[$user->getId()] = $imageURL;
-            }
-        }
-
+    protected function doUpdate(array $users, array $downloadUrls)
+    {
         $responses = $this->downloadUrls($downloadUrls);
         foreach ($users as $user) {
-            if (isset($responses[$user->getId()])) {
-                $this->userHandler->uploadFile($user, $responses[$user->getId()]);
+            /** @var User $user */
+            if (empty($responses[$user->getInfo()->getFacebookId()])) {
+                continue;
+            }
+
+            $response = $responses[$user->getInfo()->getFacebookId()];
+            if($this->userHandler->hasToUploadNewImage($response['content'], $user)) {
+                $this->userHandler->uploadFile($user, $response['content'], $response['contentType']);
+                dump($user->getId(), $user->getUsername());
             }
         }
     }

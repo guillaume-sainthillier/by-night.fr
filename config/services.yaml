@@ -23,6 +23,7 @@ services:
             $changePasswordFormFactory: "@fos_user.change_password.form.factory"
             $profileFormFactory: "@fos_user.profile.form.factory"
             $memoryCache: "@memory_cache"
+            $webDir: "%kernel.project_dir%/public"
             $tempPath: "%kernel.project_dir%/public/uploads/temp"
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
@@ -99,10 +100,6 @@ services:
         arguments:
             $siteKey: '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
 
-    #Cleaner
-    App\Cleaner\ImageCleaner:
-        arguments:
-            $webDir: "%kernel.project_dir%/public"
 
     App\Validator\Constraints\EventConstraintValidator:
         tags:

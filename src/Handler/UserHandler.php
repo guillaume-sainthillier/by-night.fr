@@ -10,25 +10,48 @@ namespace App\Handler;
 
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserHandler
 {
     private $tempPath;
+    private $webDir;
 
-    public function __construct($tempPath)
+    /** @var UploaderHelper
+     */
+    private $helper;
+
+    public function __construct(UploaderHelper $helper, string $webDir, string $tempPath)
     {
+        $this->helper = $helper;
         $this->tempPath = $tempPath;
+        $this->webDir = $webDir;
     }
 
-    public function hasToDownloadImage($newURL, User $user)
+    public function hasToUploadNewImage(?string $newContent, User $user)
     {
-        return $newURL && (
-                !$user->getSystemPath() ||
-                ($user->getInfo() && $user->getInfo()->getFacebookProfilePicture() != $newURL)
-            );
+        if ($user->getPath() || !$user->getInfo()) {
+            return false;
+        }
+
+        if (!$user->getSystemPath()) {
+            return true;
+        }
+
+        $image = $this->helper->asset($user, 'imageSystemFile');
+        if (null === $image) {
+            return true;
+        }
+
+        $imagePath = $this->webDir . DIRECTORY_SEPARATOR . ltrim($image, DIRECTORY_SEPARATOR);
+        if (!file_exists($imagePath)) {
+            return true;
+        }
+
+        return md5_file($imagePath) !== md5($newContent);
     }
 
-    public function uploadFile(User $user, $content)
+    public function uploadFile(User $user, $content, $contentType)
     {
         if (!$user->getInfo()) {
             return;
@@ -37,13 +60,24 @@ class UserHandler
         if (!$content) {
             $user->getInfo()->setFacebookProfilePicture(null);
         } else {
-            $url      = $user->getInfo()->getFacebookProfilePicture();
-            $path     = \parse_url($url, PHP_URL_PATH);
-            $ext      = \pathinfo($path, PATHINFO_EXTENSION);
-            $filename = \sha1(\uniqid(\mt_rand(), true)) . '.' . $ext;
+            switch ($contentType) {
+                case 'image/gif':
+                    $ext = 'gif';
+                    break;
+                case 'image/png':
+                    $ext = 'png';
+                    break;
+                case 'image/jpg':
+                case 'image/jpeg':
+                    $ext = 'jpeg';
+                    break;
+                default:
+                    throw new \RuntimeException(sprintf("Unable to find extension for mime type %s", $contentType));
+            }
 
-            $tempPath = $this->tempPath . '/' . $filename;
-            $octets   = \file_put_contents($tempPath, $content);
+            $filename = $user->getId() . '.' . $ext;
+            $tempPath = $this->tempPath . DIRECTORY_SEPARATOR . $filename;
+            $octets = \file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
                 $file = new UploadedFile($tempPath, $filename, null, null, true);

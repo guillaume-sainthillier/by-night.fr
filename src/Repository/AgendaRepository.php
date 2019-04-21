@@ -202,34 +202,21 @@ class AgendaRepository extends EntityRepository
         return $this
             ->createQueryBuilder('a')
             ->where('a.dateFin >= :since')
+            ->andWhere('a.facebookEventId IS NOT NULL')
             ->setParameters([':since' => $since->format('Y-m-d')])
-            ->setFirstResult($page * $offset)
+            ->setFirstResult(($page - 1) * $offset)
             ->setMaxResults($offset)
             ->getQuery()
             ->getResult();
     }
 
-    public function getNextEventsFbIds(DateTime $since)
-    {
-        $datas = $this->_em
-            ->createQueryBuilder()
-            ->select('DISTINCT(a.facebookEventId)')
-            ->from('App:Agenda', 'a')
-            ->where('a.dateFin >= :since')
-            ->setParameters([':since' => $since->format('Y-m-d')])
-            ->getQuery()
-            ->getScalarResult();
-
-        return \array_filter(\array_map('current', $datas));
-    }
-
     public function getNextEventsCount(DateTime $since)
     {
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('count(a.id)')
-            ->from('App:Agenda', 'a')
+        return $this
+            ->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
             ->where('a.dateFin >= :since')
+            ->andWhere('a.facebookEventId IS NOT NULL')
             ->setParameters([':since' => $since->format('Y-m-d')])
             ->getQuery()
             ->getSingleScalarResult();

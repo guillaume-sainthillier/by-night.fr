@@ -18,6 +18,8 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class EventUpdater extends Updater
 {
+    const PAGINATION_SIZE = 5;
+
     /**
      * @var EventHandler
      */
@@ -29,39 +31,39 @@ class EventUpdater extends Updater
         $this->eventHandler = $eventHandler;
     }
 
-    public function update(DateTime $since = null)
+    public function update(DateTime $from)
     {
-        if (!$since) {
-            $since = new DateTime();
-        }
-
         /** @var AgendaRepository $repo */
-        $repo  = $this->entityManager->getRepository(Agenda::class);
-        $count = $repo->getNextEventsCount($since);
-
-        $fbIds   = $repo->getNextEventsFbIds($since);
-        $fbStats = $this->facebookAdmin->getEventStatsFromIds($fbIds);
-
-        unset($fbIds);
+        $repo = $this->entityManager->getRepository(Agenda::class);
+        $count = $repo->getNextEventsCount($from);
 
         $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
-        for ($i = 0; $i < $nbBatchs; ++$i) {
-            $events = $repo->getNextEvents($since, $i, self::PAGINATION_SIZE);
+        foreach (range(1, $nbBatchs) as $i) {
+            $events = $repo->getNextEvents($from, $i, self::PAGINATION_SIZE);
+            $fbIds = $this->extractFbIds($events);
+            $fbStats = $this->facebookAdmin->getEventStatsFromIds($fbIds);
+
+            dump($fbIds, $fbStats);die;
             $this->doUpdate($events, $fbStats);
             $this->doFlush();
             Monitor::advanceProgressBar();
         }
     }
 
+    private function extractFbIds(array $events)
+    {
+        return array_filter(array_unique(array_map(function (Agenda $event) {
+            return $event->getFacebookEventId();
+        }, $events)));
+    }
+
     protected function doUpdate(array $events, array $fbStats)
     {
         $downloadUrls = [];
         foreach ($events as $event) {
-            /**
-             * @var Agenda
-             */
+            /** @var Agenda $event */
             $imageURL = $event->getUrl();
             $imageURL = \preg_replace('#(jp|jpe|pn)$#', '$1g', $imageURL);
             if ($event->getFacebookEventId() && isset($fbStats[$event->getFacebookEventId()])) {

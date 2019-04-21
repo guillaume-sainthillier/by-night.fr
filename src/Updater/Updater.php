@@ -13,14 +13,13 @@ use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
+use function GuzzleHttp\Psr7\copy_to_string;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class Updater
 {
-    const PAGINATION_SIZE = 200;
-
-    const POOL_SIZE = 10;
+    const POOL_SIZE = 5;
 
     /**
      * @var Client
@@ -42,23 +41,27 @@ abstract class Updater
         $this->entityManager = $entityManager;
         $this->facebookAdmin = $facebookAdmin;
 
-        $this->client = new Client([
-            'verify' => false,
-        ]);
+        $this->client = new Client();
     }
+
+    public abstract function update(\DateTime $from);
 
     protected function downloadUrls(array $urls)
     {
-        $requests = [];
-        foreach ($urls as $i => $url) {
-            $requests[$i] = new Request('GET', $url);
-        }
+        $requests = function($urls) {
+            foreach ($urls as $i => $url) {
+                yield $i => new Request('GET', $url);
+            }
+        };
 
         $responses = [];
-        $pool      = new Pool($this->client, $requests, [
+        $pool      = new Pool($this->client, $requests($urls), [
             'concurrency' => self::POOL_SIZE,
             'fulfilled'   => function (ResponseInterface $response, $index) use (&$responses) {
-                $responses[$index] = (string) $response->getBody();
+                $responses[$index] = [
+                    'contentType' => current($response->getHeader('Content-Type')),
+                    'content' => copy_to_string($response->getBody())
+                ];
             },
             'rejected' => function (RequestException $reason, $index) use (&$responses) {
                 $responses[$index] = null;

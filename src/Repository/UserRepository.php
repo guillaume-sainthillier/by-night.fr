@@ -12,30 +12,36 @@ use Doctrine\ORM\EntityRepository;
  */
 class UserRepository extends EntityRepository
 {
-    public function findSiteMap() {
+    public function findSiteMap()
+    {
         return $this->createQueryBuilder('u')
             ->getQuery()
             ->iterate();
     }
 
-    public function getUserFbIds()
+    public function getUserFbIdsCount(\DateTime $from)
     {
-        $datas = $this->createQueryBuilder('u')
-            ->select('DISTINCT(i.facebook_id)')
+        return (int) $this->createQueryBuilder('u')
+            ->select('count(i.facebook_id)')
             ->join('u.info', 'i')
-            ->where('i.facebook_id IS NOT NULL')
+            ->where('u.updatedAt >= :from')
+            ->andWhere('i.facebook_id IS NOT NULL')
+            ->andWhere('u.path IS NULL')
+            ->setParameter('from', $from->format('Y-m-d'))
             ->getQuery()
-            ->getScalarResult();
-
-        return \array_filter(\array_map('current', $datas));
+            ->getSingleScalarResult();
     }
 
-    public function getUsersWithInfo($page, $limit)
+    public function getUsersWithInfo(\DateTime $from, int $page, int $limit)
     {
         return $this->createQueryBuilder('u')
             ->select('u', 'i')
             ->join('u.info', 'i')
-            ->setFirstResult($page * $limit)
+            ->where('u.updatedAt >= :from')
+            ->andWhere('i.facebook_id IS NOT NULL')
+            ->andWhere('u.path IS NULL')
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
