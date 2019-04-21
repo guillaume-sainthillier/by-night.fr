@@ -74,14 +74,6 @@ class WidgetsController extends BaseController
         }
         $soiree = $result;
 
-        if (!$soiree->getPlace()) {
-            return $this->redirectToRoute('app_agenda_details', [
-                'id' => $soiree->getId(),
-                'slug' => $soiree->getSlug(),
-                'location' => $location->getSlug(),
-            ], Response::HTTP_MOVED_PERMANENTLY);
-        }
-
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Agenda::class);
 
