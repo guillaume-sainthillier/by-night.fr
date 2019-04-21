@@ -48,7 +48,8 @@ security:
                 lifetime: 604800 # 1 week in seconds
                 path:     /
 
-            logout: true
+            logout:
+                invalidate_session: true
 
     access_control:
         - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
