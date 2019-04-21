@@ -75,17 +75,17 @@ fos_user_change_password:
 
 #Login réseaux sociaux
 hwi_oauth_security:
-    resource: "@HWIOAuthBundle/Resources/config/routing/login.xml"
+    resource: "@HWIOAuthBundle/Resources/config/routing/login_41.xml"
     prefix: /login-social
 
 #Login réseaux sociaux
 hwi_oauth_connect:
-    resource: "@HWIOAuthBundle/Resources/config/routing/connect.xml"
+    resource: "@HWIOAuthBundle/Resources/config/routing/connect_41.xml"
     prefix: /login-social
 
 #Login réseaux sociaux
 hwi_oauth_redirect:
-    resource: "@HWIOAuthBundle/Resources/config/routing/redirect.xml"
+    resource: "@HWIOAuthBundle/Resources/config/routing/redirect_41.xml"
     prefix:   /login-social
 
 #Login réseaux sociaux override
