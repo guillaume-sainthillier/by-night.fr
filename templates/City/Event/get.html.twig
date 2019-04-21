@@ -112,76 +112,74 @@
                     </div>
                     <div class="col-sm-8 block_infos">
                         <ul class="fa-ul">
-                            {% if soiree.place %}
-                                <li>
-                                    <i class="fa fa-li fa-map-marker"></i>
-                                    <div itemprop="location" itemscope itemtype="http://schema.org/Place">
-                                        {% set mapParameter = "search?q=" %}
-                                        {% set mapValue = "" %}
-                                        {% if soiree.placeName %}
-                                            {% set mapValue = soiree.placeName %}
-                                            <h2 class="modal-title" style="font-size: 115%">
-                                                <a itemprop="url"
-                                                   href="{{ path('app_agenda_place', {'slug': place.slug, 'location': place.locationSlug}) }}"
-                                                   title="Sortir à {{ soiree.placeName }}">
-                                                    <strong itemprop="name">{{ soiree.placeName }}</strong>
-                                                </a>
-                                            </h2>
-                                        {% endif %}
-
-                                        {% if soiree.placeCity %}
-                                            <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                                                {% if soiree.place and soiree.place.city %}
-                                                    <meta itemprop="addressCountry" content="{{ soiree.place.city.country.id }}" />
-                                                {% endif %}
-
-                                                {% if soiree.placeStreet %}
-                                                    <div itemprop="streetAddress">{{ soiree.placeStreet }}</div>
-                                                {% endif %}
-
-                                                {% if soiree.placeCity or soiree.placePostalCode %}
-                                                    <div>
-                                                        {% if soiree.placePostalCode %}
-                                                            <span itemprop="postalCode">{{ soiree.placePostalCode }}</span>
-                                                        {% endif %}
-
-                                                        {% if soiree.placeCity %}
-                                                            {% set mapValue = mapValue ~ " " ~ soiree.placeCity %}
-                                                            {% if soiree.place and soiree.place.city %}
-                                                                <a itemprop="url"
-                                                                   href="{{ path('app_agenda_agenda', {'location': soiree.place.locationSlug}) }}"
-                                                                   title="Sortir à {{ soiree.placeCity }}">
-                                                                    <span><strong itemprop="addressLocality">{{ soiree.placeCity }}</strong></span>
-                                                                </a>
-                                                            {% endif %}
-                                                        {% endif %}
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-
-                                        {% if soiree.latitude and soiree.longitude %}
-                                            <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                                                <meta itemprop="latitude" content="{{ soiree.latitude }}" />
-                                                <meta itemprop="longitude" content="{{ soiree.longitude }}" />
-                                            </span>
-                                            {% if not place.city %}
-                                                {% set mapParameter = "view?center=" %}
-                                                {% set mapValue = soiree.latitude ~ ',' ~ soiree.longitude %}
-                                            {% endif %}
-                                        {% endif %}
-                                    </div>
-                                    {% if mapValue %}
-                                        <button
-                                                class="btn btn-primary btn-raised btn-sm"
-                                                id="loadMap"
-                                                data-map="https://www.google.com/maps/embed/v1/{{ mapParameter }}{{ mapValue|raw|url_encode }}&key={{ googleMapKey }}&zoom=16"
-                                        >Afficher sur une carte
-                                        </button>
-                                        <div id="googleMap"></div>
+                            <li>
+                                <i class="fa fa-li fa-map-marker"></i>
+                                <div itemprop="location" itemscope itemtype="http://schema.org/Place">
+                                    {% set mapParameter = "search?q=" %}
+                                    {% set mapValue = "" %}
+                                    {% if soiree.placeName %}
+                                        {% set mapValue = soiree.placeName %}
+                                        <h2 class="modal-title" style="font-size: 115%">
+                                            <a itemprop="url"
+                                               href="{{ path('app_agenda_place', {'slug': place.slug, 'location': place.locationSlug}) }}"
+                                               title="Sortir à {{ soiree.placeName }}">
+                                                <strong itemprop="name">{{ soiree.placeName }}</strong>
+                                            </a>
+                                        </h2>
                                     {% endif %}
-                                </li>
-                            {% endif %}
+
+                                    {% if soiree.placeCity %}
+                                        <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                                            {% if soiree.place and soiree.place.city %}
+                                                <meta itemprop="addressCountry" content="{{ soiree.place.city.country.id }}" />
+                                            {% endif %}
+
+                                            {% if soiree.placeStreet %}
+                                                <div itemprop="streetAddress">{{ soiree.placeStreet }}</div>
+                                            {% endif %}
+
+                                            {% if soiree.placeCity or soiree.placePostalCode %}
+                                                <div>
+                                                    {% if soiree.placePostalCode %}
+                                                        <span itemprop="postalCode">{{ soiree.placePostalCode }}</span>
+                                                    {% endif %}
+
+                                                    {% if soiree.placeCity %}
+                                                        {% set mapValue = mapValue ~ " " ~ soiree.placeCity %}
+                                                        {% if soiree.place and soiree.place.city %}
+                                                            <a itemprop="url"
+                                                               href="{{ path('app_agenda_agenda', {'location': soiree.place.locationSlug}) }}"
+                                                               title="Sortir à {{ soiree.placeCity }}">
+                                                                <span><strong itemprop="addressLocality">{{ soiree.placeCity }}</strong></span>
+                                                            </a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                    {% if soiree.latitude and soiree.longitude %}
+                                        <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+                                            <meta itemprop="latitude" content="{{ soiree.latitude }}" />
+                                            <meta itemprop="longitude" content="{{ soiree.longitude }}" />
+                                        </span>
+                                        {% if not place.city %}
+                                            {% set mapParameter = "view?center=" %}
+                                            {% set mapValue = soiree.latitude ~ ',' ~ soiree.longitude %}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                {% if mapValue %}
+                                    <button
+                                            class="btn btn-primary btn-raised btn-sm"
+                                            id="loadMap"
+                                            data-map="https://www.google.com/maps/embed/v1/{{ mapParameter }}{{ mapValue|raw|url_encode }}&key={{ googleMapKey }}&zoom=16"
+                                    >Afficher sur une carte
+                                    </button>
+                                    <div id="googleMap"></div>
+                                {% endif %}
+                            </li>
                             {% if soiree.tarif %}
                                 <li>
                                     <div>
@@ -227,9 +225,15 @@
                                 <li class="tags">
                                     <i class="fa fa-li fa-tags"></i>
                                     {% for tag in distinctTags %}
-                                        {% if soiree.place and soiree.place.city %}
+                                        {% if soiree.place.city %}
                                             <a class="label label-info"
                                                title="{{ tag }} à {{ soiree.place.city.name }}"
+                                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': soiree.place.locationSlug}) }}">
+                                                <strong>{{ tag }}</strong>
+                                            </a>
+                                        {% else %}
+                                            <a class="label label-info"
+                                               title="{{ tag }} en {{ soiree.place.country.name }}"
                                                href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': soiree.place.locationSlug}) }}">
                                                 <strong>{{ tag }}</strong>
                                             </a>

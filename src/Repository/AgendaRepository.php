@@ -266,7 +266,7 @@ class AgendaRepository extends EntityRepository
             ->from('App:Calendrier', 'c')
             ->leftJoin('c.user', 'u')
             ->leftJoin('c.agenda', 'a')
-            ->leftJoin('a.place', 'p')
+            ->join('a.place', 'p')
             ->where('c.user = :user')
             ->groupBy('p.nom')
             ->orderBy('nbEtablissements', 'DESC')

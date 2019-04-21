@@ -367,7 +367,7 @@ class Agenda implements GeolocalizeInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"}, fetch="EAGER")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn(nullable=false)
      * @Groups({"list_event"})
      * @Expose
      * @Assert\Valid()

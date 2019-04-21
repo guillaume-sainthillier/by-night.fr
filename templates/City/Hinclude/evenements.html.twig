@@ -21,9 +21,15 @@
                 {% if distinctTags|length %}
                     <br/>
                     {% for tag in distinctTags %}
-                        {% if soiree.place and soiree.place.city %}
+                        {% if soiree.place.city %}
                             <a class="label label-info"
                                title="{{ tag }} à {{ soiree.place.city.name }}"
+                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': soiree.place.locationSlug}) }}">
+                                <strong>{{ tag }}</strong>
+                            </a>
+                        {% else %}
+                            <a class="label label-info"
+                               title="{{ tag }} en {{ soiree.place.country.name }}"
                                href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': soiree.place.locationSlug}) }}">
                                 <strong>{{ tag }}</strong>
                             </a>
