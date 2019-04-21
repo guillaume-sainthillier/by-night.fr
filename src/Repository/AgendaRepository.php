@@ -401,12 +401,13 @@ class AgendaRepository extends EntityRepository
 
     public function findAllNext(Agenda $soiree, $page = 1, $limit = 7)
     {
+        $from = new DateTime();
         return $this
             ->createQueryBuilder('a')
             ->where('a.dateFin >= :date_fin AND a.id != :id AND a.place = :place')
             ->orderBy('a.dateFin', 'ASC')
             ->addOrderBy('a.fbParticipations', 'DESC')
-            ->setParameters([':date_fin' => $soiree->getDateFin()->format('Y-m-d'), ':id' => $soiree->getId(), ':place' => $soiree->getPlace()->getId()])
+            ->setParameters([':date_fin' => $from->format('Y-m-d'), ':id' => $soiree->getId(), ':place' => $soiree->getPlace()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -415,12 +416,13 @@ class AgendaRepository extends EntityRepository
 
     public function findAllNextCount(Agenda $soiree)
     {
+        $from = new DateTime();
         return $this->_em
             ->createQueryBuilder()
             ->select('count(a.id)')
             ->from('App:Agenda', 'a')
             ->where('a.dateFin >= :date_fin AND a.id != :id AND a.place = :place')
-            ->setParameters([':date_fin' => $soiree->getDateFin()->format('Y-m-d'), ':id' => $soiree->getId(), ':place' => $soiree->getPlace()->getId()])
+            ->setParameters([':date_fin' => $from->format('Y-m-d'), ':id' => $soiree->getId(), ':place' => $soiree->getPlace()->getId()])
             ->getQuery()
             ->getSingleScalarResult();
     }

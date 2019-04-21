@@ -61,7 +61,7 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_agenda_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
-     * @ReverseProxy(expires="1 year")
+     * @ReverseProxy(expires="tomorrow")
      */
     public function nextEventsAction(Location $location, $slug, $id = null, $page = 1)
     {
@@ -92,7 +92,7 @@ class WidgetsController extends BaseController
             $hasNextLink = $this->generateUrl('app_agenda_prochaines_soirees', [
                 'slug' => $soiree->getSlug(),
                 'id' => $soiree->getId(),
-                'location' => $soiree->getPlace()->getCity()->getSlug(),
+                'location' => $location->getSlug(),
                 'page' => $page + 1,
             ]);
         } else {
