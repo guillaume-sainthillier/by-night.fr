@@ -71,8 +71,6 @@ RUN docker-php-ext-install -j$(nproc) zip
 # Sockets
 RUN docker-php-ext-install -j$(nproc) sockets
 
-COPY php.ini /usr/local/etc/php/php.ini
-
 # NPM, Yarn and Grunt
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
@@ -90,6 +88,7 @@ RUN echo 'alias ll="ls -alF"' >> ~/.bashrc
 COPY nginx.conf /etc/nginx/
 
 # PHP FPM
+COPY php.ini /usr/local/etc/php/php.ini
 COPY pool.conf /usr/local/etc/php-fpm.d/www.conf
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
