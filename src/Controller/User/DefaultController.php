@@ -224,8 +224,14 @@ class DefaultController extends BaseController
             'full_categories' => [],
         ];
 
-        $minYear = min(array_keys($datas));
-        $maxYear = max(array_keys($datas));
+        if (count($datas)) {
+            $minYear = min(array_keys($datas));
+            $maxYear = max(array_keys($datas));
+        } else {
+            $minYear = (int)date('Y');
+            $maxYear = (int)date('Y');
+        }
+
 
         foreach (range($minYear, $maxYear) as $year) {
             $final_datas['categories'][$year] = $year;
