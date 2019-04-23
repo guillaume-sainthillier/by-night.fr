@@ -585,32 +585,6 @@ class DoctrineEventHandler
         }
     }
 
-    public function upgrade(Place $place)
-    {
-        $this->guessEventCityUpgrade($place);
-        if ($place->getCity()) {
-            return;
-        }
-
-        if ($place->getLatitude() && $place->getLongitude()) {
-            $this->geocoder->geocodeCoordinates($place);
-            $this->guessEventCityUpgrade($place);
-            if ($place->getCity()) {
-                return;
-            }
-        }
-
-        return;
-
-        if ($place->getNom()) {
-            $this->geocoder->geocodePlace($place);
-            $this->guessEventCityUpgrade($place);
-            if ($place->getCity()) {
-                return;
-            }
-        }
-    }
-
     public function guessEventLocation(Place $place)
     {
         //Pas besoin de trouver un lieu déjà blacklisté
