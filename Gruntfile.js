@@ -119,7 +119,7 @@ module.exports = function (grunt) {
             },
             mainCss: {
                 src: [
-                    '<%= pkg.baseVendor %>/jquery.cookiebar/cookieBar.min.css',
+                    '<%= pkg.baseVendor %>/jquery-cookiebar/jquery.cookiebar.css',
                     '<%= pkg.baseVendor %>/bootstrap/dist/css/bootstrap.min.css',
                     '<%= pkg.baseVendor %>/bootstrap-material-design/dist/css/ripples.min.css',
                     '<%= pkg.baseVendor %>/font-awesome/css/font-awesome.min.css',
@@ -247,7 +247,7 @@ module.exports = function (grunt) {
                         '<%= pkg.baseVendor %>/bootstrap/dist/js/bootstrap.min.js',
                         '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/ripples.min.js',
                         '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/material.min.js',
-                        '<%= pkg.baseVendor %>/jquery.cookiebar/jquery.cookieBar.min.js',
+                        '<%= pkg.baseVendor %>/jquery-cookiebar/jquery.cookiebar.js',
                         '<%= pkg.baseVendor %>/jquery.scrollTo/jquery.scrollTo.min.js',
                         '<%= pkg.baseVendor %>/jquery-unveil/jquery.unveil.js',
                         '<%= pkg.baseVendor %>/fancybox/dist/js/jquery.fancybox.pack.js',
