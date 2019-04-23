@@ -296,7 +296,7 @@
                 </div>
                 <div class="panel-body scrollable scrollable-large">
                     <div>
-                        {{ render_esi(url('app_agenda_prochaines_soirees', {'slug': soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug} )) }}
+                        {{ render_esi(path('app_agenda_prochaines_soirees', {'slug': soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug} )) }}
                     </div>
                 </div>
                 <div class="panel-footer"></div>

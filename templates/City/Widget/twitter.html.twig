@@ -29,7 +29,7 @@
             }(document, "script", "twitter-wjs"));
         </script>
         <div>
-            {{ render_esi(url('app_agenda_tweeter_feed', {'location': location.slug})) }}
+            {{ render_esi(path('app_agenda_tweeter_feed', {'location': location.slug})) }}
         </div>
     </div>
 {% endblock %}

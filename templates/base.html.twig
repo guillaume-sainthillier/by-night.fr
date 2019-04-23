@@ -134,9 +134,9 @@ _______     __  _   _ _____ _____ _    _ _______
     <header>
         <!-- Menu -->
         {% if location is defined and location.isCity %}
-            {{ render_esi(url('app_private_header', {'id': location.city.id})) }}
+            {{ render_esi(path('app_private_header', {'id': location.city.id})) }}
         {% else %}
-            {{ render_esi(url('app_private_header')) }}
+            {{ render_esi(path('app_private_header')) }}
         {% endif %}
         <!-- ./Menu -->
 

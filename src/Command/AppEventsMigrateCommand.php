@@ -2,34 +2,29 @@
 
 namespace App\Command;
 
-use App\Entity\AdminZone;
 use App\Entity\Agenda;
-use App\Entity\City;
-use App\Entity\Place;
-use App\Entity\ZipCity;
-use App\Handler\DoctrineEventHandler;
-use App\Reject\Reject;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Pool;
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class AppEventsMigrateCommand extends AppCommand
 {
-    private const PLACES_PER_TRANSACTION = 500;
-
-    /** @var DoctrineEventHandler */
-    private $doctrineEventHandler;
+    private const EVENTS_PER_TRANSACTION = 500;
 
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    public function __construct(DoctrineEventHandler $doctrineEventHandler, EntityManagerInterface $entityManager, ?string $name = null)
+    public function __construct(EntityManagerInterface $entityManager, ?string $name = null)
     {
         parent::__construct($name);
 
-        $this->doctrineEventHandler = $doctrineEventHandler;
-        $this->entityManager        = $entityManager;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -51,43 +46,75 @@ class AppEventsMigrateCommand extends AppCommand
     {
         $em = $this->entityManager;
 
-        $nbPlaces = $em->getRepository(Place::class)
-            ->createQueryBuilder('p')
-            ->select('count(p)')
-            ->where('p.city IS NULL')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $events = $em->createQuery('SELECT
+                a.id
+                FROM App:Agenda a
+                WHERE a.url IS NOT NULL')
+            ->getArrayResult();
 
-        $places = $em->getRepository(Place::class)
-            ->createQueryBuilder('p')
-            ->select('p')
-            ->where('p.country IS NULL')
-            ->getQuery()
-            ->iterate();
+        $events = array_map('current', $events);
+        $chunks = array_chunk($events, self::EVENTS_PER_TRANSACTION);
 
-        Monitor::createProgressBar($nbPlaces);
-        foreach ($places as $i => $row) {
-            /** @var Place $place */
-            $place = $row[0];
-            $place->setReject(new Reject());
+        Monitor::createProgressBar(count($chunks));
+        foreach ($chunks as $chunk) {
+            $events = $em->getRepository(Agenda::class)
+                ->findBy(['id' => $chunk]);
 
-            $this->doctrineEventHandler->upgrade($place);
-            $em->merge($place);
+            $urls = [];
 
             Monitor::advanceProgressBar();
-            if (self::PLACES_PER_TRANSACTION - 1 === $i % self::PLACES_PER_TRANSACTION) {
-                $em->flush();
-                $em->clear(Place::class);
-                $em->clear(ZipCity::class);
-                $em->clear(AdminZone::class);
-                $em->clear(City::class);
+            foreach ($events as $i => $event) {
+                /** @var Agenda $event */
+
+                $url = $event->getUrl();
+                $url = str_replace('http://', 'https://', $url);
+                $url = str_replace('https://images1.soonnight.com', 'https://www.soonnight.com', $url);
+                $url = str_replace('https://static-site.soonnight.com', 'https://www.soonnight.com', $url);
+
+                $urls[$i] = $url;
+                $event->setUrl($url);
             }
+
+            $responses = $this->ping($urls);
+
+            foreach ($responses as $i => $response) {
+                $event = $events[$i];
+                $responseCode = $response;
+
+                if ($responseCode < 200 || $responseCode > 302) {
+                    Monitor::writeln(sprintf('<error>%s</error> Not found', $event->getUrl()));
+                    $event->setUrl(null);
+                }
+            }
+
+            $em->flush();
+            $em->clear(Agenda::class);
         }
-        $em->flush();
-        $em->clear(Place::class);
-        $em->clear(ZipCity::class);
-        $em->clear(AdminZone::class);
-        $em->clear(City::class);
         Monitor::finishProgressBar();
+    }
+
+    protected function ping(array $urls)
+    {
+        $client = new Client();
+        $requests = function ($urls) {
+            foreach ($urls as $i => $url) {
+                yield $i => new Request('HEAD', $url);
+            }
+        };
+
+        $responses = [];
+        $pool = new Pool($client, $requests($urls), [
+            'concurrency' => 10,
+            'fulfilled' => function (ResponseInterface $response, $index) use (&$responses) {
+                $responses[$index] = $response->getStatusCode();
+            },
+            'rejected' => function (RequestException $reason, $index) use (&$responses) {
+                $responses[$index] = $reason->getResponse() ? $reason->getResponse()->getStatusCode() : 404;
+            },
+        ]);
+
+        $promise = $pool->promise();
+        $promise->wait();
+        return $responses;
     }
 }
