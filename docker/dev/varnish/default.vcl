@@ -87,7 +87,7 @@ sub vcl_recv {
 
     # Suppression de tous les cookies sur les pages publiques
     if( req.http.host ~ "^by-night\." &&
-        ! req.url ~ "^/(login|inscription|logout|profile|commentaire|espace-perso)" &&
+        ! req.url ~ "^/(login|inscription|resetting|logout|profile|commentaire|espace-perso|social)" &&
         ! req.url ~ "^/(_administration|_private)"
     ) {
         unset req.http.Cookie;
