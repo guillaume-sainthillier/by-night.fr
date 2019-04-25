@@ -45,12 +45,6 @@ sub vcl_recv {
     # Normalize the query arguments
     set req.url = std.querysort(req.url);
 
-    # Delegating static files to nginx
-    if (req.http.host ~ "^(www\.)?static\.") {
-        unset req.http.Cookie;
-        return (pass);
-    }
-
     # FOS purge & ban
     call fos_purge_recv;
     call fos_ban_recv;

@@ -9,3 +9,5 @@ phpunit.xml.dist
 tests
 var
 vendor
+docker/*/assets
+docker/*/varnish

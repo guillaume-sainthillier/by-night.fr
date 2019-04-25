@@ -4,6 +4,10 @@ services:
     app:
         build: .
 
+    assets:
+        volumes:
+            - ./docker/prod/assets/nginx.conf:/etc/nginx/nginx.conf:ro
+
     varnish:
         image: million12/varnish
         volumes:

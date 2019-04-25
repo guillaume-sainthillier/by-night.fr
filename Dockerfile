@@ -81,7 +81,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 RUN mkdir -p var public/media public/uploads && \
-    composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
+    APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
     composer dump-env prod && \
     bin/console cache:clear --no-warmup && \
     bin/console cache:warmup && \
@@ -91,4 +91,6 @@ RUN mkdir -p var public/media public/uploads && \
 
 # Reduce container size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN rm -rf .git node_modules docker
+RUN rm -rf .git node_modules docker *.lock
+
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
