@@ -49,7 +49,7 @@ security:
                 path:     /
 
             logout:
-                invalidate_session: true
+                delete_cookies: ['PHPSESSID']
 
     access_control:
         - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
