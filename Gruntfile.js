@@ -23,6 +23,25 @@ module.exports = function (grunt) {
                 files: [
                     {
                         expand: true,
+                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*', '!**/spritesheet.png'],
+                        dest: '<%= pkg.baseDist %>/widgets/images',
+                        cwd: '<%= pkg.baseDist %>/img'
+                    },
+                    {
+                        expand: true,
+                        src: ['spritesheet.png'],
+                        dest: '<%= pkg.baseDist %>/widgets/img',
+                        cwd: '<%= pkg.baseDist %>/img'
+                    },
+                ]
+            }
+        },
+
+        copy: {
+            main: {
+                files: [
+                    {
+                        expand: true,
                         src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*'],
                         dest: '<%= pkg.baseDist %>/img',
                         cwd: '<%= pkg.baseImg %>'
@@ -39,26 +58,6 @@ module.exports = function (grunt) {
                         dest: '<%= pkg.baseDist %>/evenements/images',
                         cwd: '<%= pkg.baseImg %>'
                     },
-                    {
-                        expand: true,
-                        src: ['**/*.*', '!**/programmes/*', '!**/sites/originals/*', '!**/spritesheet.png'],
-                        dest: '<%= pkg.baseDist %>/widgets/images',
-                        cwd: '<%= pkg.baseDist %>/img'
-                    },
-                    {
-                        expand: true,
-                        src: ['spritesheet.png'],
-                        dest: '<%= pkg.baseDist %>/widgets/img',
-                        cwd: '<%= pkg.baseDist %>/img'
-                    },
-
-                ]
-            }
-        },
-
-        copy: {
-            main: {
-                files: [
                     {
                         expand: true,
                         src: ['*'],

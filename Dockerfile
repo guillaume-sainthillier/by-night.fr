@@ -91,6 +91,6 @@ RUN mkdir -p var public/media public/uploads && \
 
 # Reduce container size
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN rm -rf .git node_modules docker *.lock
+RUN rm -rf .git assets node_modules docker *.lock
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
