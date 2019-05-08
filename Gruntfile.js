@@ -79,6 +79,12 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         src: ['*'],
+                        dest: '<%= pkg.baseDist %>/espace-perso/evenements/css/font',
+                        cwd: '<%= pkg.baseVendor %>/summernote/dist/font'
+                    },
+                    {
+                        expand: true,
+                        src: ['*'],
                         dest: '<%= pkg.baseDist %>/main/fonts',
                         cwd: '<%= pkg.baseVendor %>/bootstrap/dist/fonts'
                     },
