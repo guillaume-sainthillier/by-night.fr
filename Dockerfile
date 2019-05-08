@@ -59,14 +59,15 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 RUN mkdir -p /run/php var public/media public/uploads && \
+    yarn install && \
+    grunt && \
     APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
     composer dump-env prod && \
     bin/console cache:clear --no-warmup && \
     bin/console cache:warmup && \
     chown -R www-data:www-data var public/media public/uploads && \
-    yarn install && \
-    grunt && \
     # Reduce container size
     rm -rf .git assets node_modules docker /root/.composer /root/.npm /tmp/*
 
+VOLUME /app/public/prod
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
