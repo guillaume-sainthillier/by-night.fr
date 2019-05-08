@@ -8,7 +8,8 @@ EXPOSE 80
 WORKDIR /app
 
 # Install dependencies
-RUN apt-get update -q && apt-get install -qy \
+RUN apt-get update -q && \
+    apt-get install -qy \
     curl \
     git \
     gnupg \
@@ -16,63 +17,40 @@ RUN apt-get update -q && apt-get install -qy \
     libicu-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
+    libxml2-dev \
     nginx \
     python \
     supervisor \
     unzip \
-    wget
+    wget && \
+    cp /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo "Europe/Paris" > /etc/timezone && \
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer global require hirak/prestissimo --no-plugins --no-scripts
+    #Composer
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    composer global require hirak/prestissimo --no-plugins --no-scripts && \
 
-# Set timezone
-RUN rm /etc/localtime
-RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
-RUN "date"
+    #NPM
+    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+    apt-get install -y nodejs && \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    npm install -g grunt-cli yarn && \
 
-# Install PDO
-RUN docker-php-ext-install -j$(nproc) pdo pdo_mysql
+    # Reduce layer size
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install OPCache
-RUN docker-php-ext-install -j$(nproc) opcache
+# PHP Extensions
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+    docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pdo pdo_mysql soap sockets zip && \
+    pecl install apcu && \
+    docker-php-ext-enable apcu && \
+    pecl install redis && \
+    docker-php-ext-enable redis
 
-# Install INTL 
-RUN docker-php-ext-install -j$(nproc) intl
-
-# Install Redis
-RUN pecl install redis
-RUN docker-php-ext-enable redis
-
-# Install BCMatch (RabbitMQ)
-RUN docker-php-ext-install -j$(nproc) bcmath
-
-# Install GD + EXIF
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/
-RUN docker-php-ext-install -j$(nproc) gd exif
-
-#Zip (PhpUnit)
-RUN docker-php-ext-install -j$(nproc) zip
-
-# Sockets
-RUN docker-php-ext-install -j$(nproc) sockets
-
-# NPM, Yarn and Grunt
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install -y nodejs
-
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get install yarn
-RUN yarn global add grunt-cli
-
-# Install nginx
+# Config
 COPY docker/prod/nginx.conf /etc/nginx/
-
-# PHP FPM
 COPY docker/prod/php.ini /usr/local/etc/php/php.ini
 COPY docker/prod/pool.conf /usr/local/etc/php-fpm.d/www.conf
-
 COPY docker/prod/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY . /app
@@ -80,17 +58,15 @@ COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-RUN mkdir -p var public/media public/uploads && \
+RUN mkdir -p /run/php var public/media public/uploads && \
     APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
     composer dump-env prod && \
     bin/console cache:clear --no-warmup && \
     bin/console cache:warmup && \
     chown -R www-data:www-data var public/media public/uploads && \
     yarn install && \
-    grunt
-
-# Reduce container size
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN rm -rf .git assets node_modules docker *.lock
+    grunt && \
+    # Reduce container size
+    rm -rf .git assets node_modules docker /root/.composer /root/.npm /tmp/*
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
