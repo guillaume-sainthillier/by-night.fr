@@ -38,7 +38,7 @@ class EventController extends BaseController
         $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
 
         $em = $this->getDoctrine()->getManager();
-        $agenda->setModificationDerniereMinute($modificationDerniereMinute)->setDateModification(new DateTime());
+        $agenda->setModificationDerniereMinute($modificationDerniereMinute);
         $em->merge($agenda);
         $em->flush();
 
@@ -53,10 +53,10 @@ class EventController extends BaseController
         $this->checkIfOwner($agenda);
 
         $brouillon = $request->get('brouillon', 'true');
-        $isBrouillon = ('true' === $brouillon);
+        $isBrouillon = 'true' === $brouillon;
 
         $em = $this->getDoctrine()->getManager();
-        $agenda->setIsBrouillon($isBrouillon)->setDateModification(new DateTime());
+        $agenda->setIsBrouillon($isBrouillon);
         $em->merge($agenda);
         $em->flush();
 

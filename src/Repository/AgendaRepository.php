@@ -74,7 +74,7 @@ class AgendaRepository extends EntityRepository
             ->createQuery('UPDATE App:Agenda a
             SET a.isArchive = :archive
             WHERE (a.dateFin < :from OR a.dateFin > :to)
-            AND a.isArchive IS NULL ')
+            AND a.isArchive = false')
             ->setParameters([
                 'archive' => true,
                 'from' => $from->format('Y-m-d'),
@@ -93,10 +93,9 @@ class AgendaRepository extends EntityRepository
 
         return $this
             ->createElasticaQueryBuilder('a')
-            ->where('a.isArchive IS NULL OR a.isArchive = :archive')
+            ->where('a.isArchive = false')
             ->andWhere('a.dateFin < :from OR a.dateFin > :to')
             ->setParameters([
-                'archive' => false,
                 'from' => $from->format('Y-m-d'),
                 'to' => $to->format('Y-m-d'),
             ])

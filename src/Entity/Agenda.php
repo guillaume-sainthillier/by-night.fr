@@ -265,7 +265,9 @@ class Agenda implements GeolocalizeInterface
     /**
      * @var bool
      *
-     * @ORM\Column(name="isBrouillon", type="boolean", nullable=true)
+     * @ORM\Column(name="isBrouillon", type="boolean")
+     * @Groups({"list_event"})
+     * @Expose
      */
     protected $isBrouillon;
 
@@ -382,7 +384,7 @@ class Agenda implements GeolocalizeInterface
     /**
      * @var bool
      *
-     * @ORM\Column(name="is_archive", type="boolean", nullable=true)
+     * @ORM\Column(name="is_archive", type="boolean")
      */
     protected $isArchive;
 
@@ -578,6 +580,7 @@ class Agenda implements GeolocalizeInterface
         $this->dateDebut = new DateTime();
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
+        $this->isBrouillon = false;
         $this->isArchive = false;
     }
 

@@ -24,6 +24,10 @@ class AgendaRepository extends Repository
     {
         $mainQuery = new BoolQuery();
 
+        $mainQuery->addMust(new Term([
+            'is_brouillon' => false
+        ]));
+
         if ($search->getLieux()) {
             $mainQuery->addMust(
                 new Terms('place.id', $search->getLieux())
