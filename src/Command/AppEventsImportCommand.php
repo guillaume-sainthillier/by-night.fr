@@ -77,7 +77,6 @@ class AppEventsImportCommand extends AppCommand
         }
 
         $events = $this->eventFetcher->fetchEvents($service);
-        $this->eventProducer->reconnect();
         foreach ($events as $event) {
             $this->eventProducer->scheduleEvent($event);
         }
