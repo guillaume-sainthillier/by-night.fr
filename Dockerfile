@@ -67,7 +67,6 @@ RUN mkdir -p /run/php var public/media public/uploads && \
     bin/console cache:warmup && \
     chown -R www-data:www-data var public/media public/uploads && \
     # Reduce container size
-    rm -rf .git assets node_modules docker /root/.composer /root/.npm /tmp/*
+    rm -rf .git docker /root/.composer /root/.npm /tmp/*
 
-VOLUME /app/public/prod
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
