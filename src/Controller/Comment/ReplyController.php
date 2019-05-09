@@ -29,11 +29,11 @@ class ReplyController extends AbstractController
         $limit = 5;
 
         return $this->render('Comment/Reply/list.html.twig', [
-            'comments'     => $this->getReponses($comment, $page, $limit),
+            'comments' => $this->getReponses($comment, $page, $limit),
             'main_comment' => $comment,
-            'nb_comments'  => $this->getNbReponses($comment),
-            'page'         => $page,
-            'offset'       => $limit,
+            'nb_comments' => $this->getNbReponses($comment),
+            'page' => $page,
+            'offset' => $limit,
         ]);
     }
 
@@ -48,7 +48,7 @@ class ReplyController extends AbstractController
     public function newAction(Request $request, Comment $comment)
     {
         $reponse = new Comment();
-        $form    = $this->getCreateForm($reponse, $comment);
+        $form = $this->getCreateForm($reponse, $comment);
 
         if ('POST' == $request->getMethod()) {
             $user = $this->getUser();
@@ -75,7 +75,7 @@ class ReplyController extends AbstractController
                 return new JsonResponse([
                     'success' => true,
                     'comment' => $this->renderView('Comment/Reply/details.html.twig', [
-                        'comment'              => $reponse,
+                        'comment' => $reponse,
                         'success_confirmation' => true,
                     ]),
                     'nb_reponses' => $this->getNbReponses($comment),
@@ -83,9 +83,9 @@ class ReplyController extends AbstractController
             } else {
                 return new JsonResponse([
                     'success' => false,
-                    'post'    => $this->renderView('Comment/Reply/post.html.twig', [
+                    'post' => $this->renderView('Comment/Reply/post.html.twig', [
                         'comment' => $comment,
-                        'form'    => $form->createView(),
+                        'form' => $form->createView(),
                     ]),
                 ]);
             }
@@ -93,7 +93,7 @@ class ReplyController extends AbstractController
 
         return $this->render('Comment/Reply/post.html.twig', [
             'comment' => $comment,
-            'form'    => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 
@@ -128,7 +128,7 @@ class ReplyController extends AbstractController
     public function detailsAction(Comment $comment)
     {
         return $this->render('Comment/Reply/details.html.twig', [
-            'comment'     => $comment,
+            'comment' => $comment,
             'nb_reponses' => $this->getNbReponses($comment),
         ]);
     }
@@ -141,8 +141,8 @@ class ReplyController extends AbstractController
         ])
             ->add('poster', SubmitType::class, [
                 'label' => 'Répondre',
-                'attr'  => [
-                    'class'             => 'btn btn-primary btn-submit btn-raised',
+                'attr' => [
+                    'class' => 'btn btn-primary btn-submit btn-raised',
                     'data-loading-text' => 'En cours...',
                 ],
             ]);

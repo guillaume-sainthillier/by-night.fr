@@ -27,7 +27,7 @@ class LocationCacheProvider extends CacheProvider
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em   = $em;
+        $this->em = $em;
         $this->repo = $em->getRepository(Location::class);
     }
 
@@ -62,7 +62,7 @@ class LocationCacheProvider extends CacheProvider
         $location
             ->setId(\md5($id))
             ->setName($id)
-            ->setValues((array) $data);
+            ->setValues((array)$data);
 
         $this->em->persist($location);
 

@@ -20,9 +20,9 @@ abstract class LinksParser extends AgendaParser
 
     public function __construct()
     {
-        $this->url      = null;
+        $this->url = null;
         $this->base_url = null;
-        $this->parser   = new Crawler();
+        $this->parser = new Crawler();
 
         return $this;
     }

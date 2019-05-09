@@ -9,7 +9,6 @@ use App\Geolocalize\BoundaryInterface;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use DateTime;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**

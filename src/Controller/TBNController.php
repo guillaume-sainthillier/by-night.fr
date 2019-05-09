@@ -29,7 +29,7 @@ class TBNController extends AbstractController
 
     protected function checkEventUrl($locationSlug, $eventSlug, $eventId, $routeName = 'app_agenda_details', array $extraParams = [])
     {
-        $em       = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
         $repoEvent = $em->getRepository(Agenda::class);
 
         if (!$eventId) {
@@ -43,12 +43,12 @@ class TBNController extends AbstractController
         }
 
         if (null === $this->requestStack->getParentRequest() && (
-            !$eventId
-            || $event->getSlug() !== $eventSlug
-            || $event->getLocationSlug() !== $locationSlug
-        )) {
+                !$eventId
+                || $event->getSlug() !== $eventSlug
+                || $event->getLocationSlug() !== $locationSlug
+            )) {
             $routeParams = \array_merge([
-                'id'   => $event->getId(),
+                'id' => $event->getId(),
                 'slug' => $event->getSlug(),
                 'location' => $event->getLocationSlug(),
             ], $extraParams);
@@ -61,9 +61,9 @@ class TBNController extends AbstractController
 
     protected function getSecondsUntil($hours)
     {
-        $time     = \time();
-        $now      = new DateTime();
-        $minutes  = $now->format('i');
+        $time = \time();
+        $now = new DateTime();
+        $minutes = $now->format('i');
         $secondes = $now->format('s');
 
         $string = 1 == $hours ? '+1 hour' : \sprintf('+%d hours', $hours);

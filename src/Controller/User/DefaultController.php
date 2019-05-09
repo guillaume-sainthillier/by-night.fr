@@ -234,7 +234,7 @@ class DefaultController extends BaseController
 
         $minYear--;
         $maxYear++;
-        
+
         foreach (range($minYear, $maxYear) as $year) {
             $final_datas['categories'][$year] = $year;
             $final_datas['full_categories'][$year] = $year;

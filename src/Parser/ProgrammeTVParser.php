@@ -32,27 +32,27 @@ class ProgrammeTVParser
                 $css_chaine = $this->getCSSChaine($labelChaine);
 
                 return [
-                    'logo'       => $logo->count() ? \trim($logo->attr('data-src')) : null,
-                    'chaine'     => $labelChaine,
+                    'logo' => $logo->count() ? \trim($logo->attr('data-src')) : null,
+                    'chaine' => $labelChaine,
                     'css_chaine' => $css_chaine ? 'icon-' . $css_chaine : null,
-                    'heure'      => $heure->count() ? $heure->text() : null,
-                    'nom'        => $nom->count() ? $nom->text() : null,
-                    'lien'       => $nom->count() ? 'http://www.programme-tv.net/' . $nom->attr('href') : null,
-                    'type'       => $type->count() ? $type->text() : null,
-                    'episode'    => $episode->count() ? $episode->text() : null,
-                    'asset'      => null,
+                    'heure' => $heure->count() ? $heure->text() : null,
+                    'nom' => $nom->count() ? $nom->text() : null,
+                    'lien' => $nom->count() ? 'http://www.programme-tv.net/' . $nom->attr('href') : null,
+                    'type' => $type->count() ? $type->text() : null,
+                    'episode' => $episode->count() ? $episode->text() : null,
+                    'asset' => null,
                 ];
             }
 
             return [
-                'logo'    => null,
-                'chaine'  => null,
-                'heure'   => null,
-                'nom'     => null,
-                'lien'    => null,
-                'type'    => null,
+                'logo' => null,
+                'chaine' => null,
+                'heure' => null,
+                'nom' => null,
+                'lien' => null,
+                'type' => null,
                 'episode' => null,
-                'asset'   => null,
+                'asset' => null,
             ];
         });
     }

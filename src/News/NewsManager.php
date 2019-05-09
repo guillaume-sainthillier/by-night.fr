@@ -41,11 +41,11 @@ class NewsManager
 
     public function __construct(ObjectManager $em, Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
     {
-        $this->em       = $em;
-        $this->twig     = $twig;
+        $this->em = $em;
+        $this->twig = $twig;
         $this->facebook = $facebook;
-        $this->twitter  = $twitter;
-        $this->logger   = $logger;
+        $this->twitter = $twitter;
+        $this->logger = $logger;
     }
 
     public function postNews(News $news, $wordpressPostId, $shortTitle, $longTitle, $url, $imageUrl)
@@ -99,27 +99,27 @@ class NewsManager
 
         $news = $this->em->getRepository(News::class)->findOneBy([
             'dateDebut' => $from,
-            'dateFin'   => $to,
+            'dateFin' => $to,
         ]);
 
         if (!$news) {
             $nextEdition = $this->em->getRepository(News::class)->findNextEdition();
-            $news        = (new News())
+            $news = (new News())
                 ->setDateDebut($from)
                 ->setDateFin($to)
                 ->setNumeroEdition($nextEdition);
         }
 
         $content = $this->twig->render('News/news.html.twig', [
-            'datas'           => $datas,
+            'datas' => $datas,
             'topParticipants' => \array_slice($participants, 0, 5),
-            'participants'    => $totalPartcipants,
+            'participants' => $totalPartcipants,
         ]);
 
         return [
             'content' => $content,
-            'events'  => $datas,
-            'news'    => $news,
+            'events' => $datas,
+            'news' => $news,
         ];
     }
 }

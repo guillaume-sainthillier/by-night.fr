@@ -584,12 +584,13 @@ class Agenda implements GeolocalizeInterface
         $this->isArchive = false;
     }
 
-    public function getLocationSlug() {
-        if($this->getPlace() && $this->getPlace()->getCity()) {
+    public function getLocationSlug()
+    {
+        if ($this->getPlace() && $this->getPlace()->getCity()) {
             return $this->getPlace()->getCity()->getSlug();
         }
 
-        if($this->getPlace() && $this->getPlace()->getCountry()) {
+        if ($this->getPlace() && $this->getPlace()->getCountry()) {
             return $this->getPlace()->getCountry()->getSlug();
         }
 

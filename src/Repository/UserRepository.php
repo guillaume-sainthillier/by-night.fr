@@ -21,7 +21,7 @@ class UserRepository extends EntityRepository
 
     public function getUserFbIdsCount(\DateTime $from)
     {
-        return (int) $this->createQueryBuilder('u')
+        return (int)$this->createQueryBuilder('u')
             ->select('count(i.facebook_id)')
             ->join('u.info', 'i')
             ->where('u.updatedAt >= :from')

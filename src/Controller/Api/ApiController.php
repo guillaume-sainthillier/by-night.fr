@@ -25,9 +25,9 @@ class ApiController extends AbstractController
      * @ReverseProxy(expires="1 year")
      * @Tag("autocomplete-city")
      *
-     * @param Request            $request
+     * @param Request $request
      * @param PaginatorInterface $paginator
-     * @param RepositoryManagerInterface  $repositoryManager
+     * @param RepositoryManagerInterface $repositoryManager
      *
      * @return JsonResponse
      */
@@ -38,7 +38,7 @@ class ApiController extends AbstractController
             $results = [];
         } else {
             /** @var CityRepository $repo */
-            $repo    = $repositoryManager->getRepository(City::class);
+            $repo = $repositoryManager->getRepository(City::class);
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }

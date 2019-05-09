@@ -28,9 +28,9 @@ class FacebookListEvents extends Facebook
         $this->client->setDefaultAccessToken($userInfo->getFacebookAccessToken());
 
         $request = $this->client->sendRequest('GET', '/' . $userInfo->getFacebookId() . '/events', [
-            'type'   => 'created',
+            'type' => 'created',
             'fields' => self::FIELDS,
-            'limit'  => $limit,
+            'limit' => $limit,
         ]);
 
         return $this->findPaginated($request->getGraphEdge());

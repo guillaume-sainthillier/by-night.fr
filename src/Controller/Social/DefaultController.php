@@ -46,7 +46,7 @@ class DefaultController extends AbstractController
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,
-            'url'     => $this->generateUrl('app_disconnect_service', ['service' => $service]),
+            'url' => $this->generateUrl('app_disconnect_service', ['service' => $service]),
         ]);
     }
 

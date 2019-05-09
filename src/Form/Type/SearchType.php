@@ -3,7 +3,6 @@
 namespace App\Form\Type;
 
 use App\Search\SearchAgenda;
-use function date;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -25,7 +24,7 @@ class SearchType extends AbstractType
             $data['du'] = \date('d/m/Y');
         }
 
-        if(empty($data['page'])) {
+        if (empty($data['page'])) {
             $data['page'] = 1;
         }
 
@@ -37,45 +36,45 @@ class SearchType extends AbstractType
         $builder
             ->add('page', HiddenType::class)
             ->add('du', DateType::class, [
-                'required'   => true,
-                'label'      => 'Du',
+                'required' => true,
+                'label' => 'Du',
                 'label_attr' => array('class' => 'col-sm-6 control-label'),
-                'widget'     => 'single_text',
-                'format'     => 'dd/MM/yyyy',
-                'attr'       => ['data-date-format' => 'dd/mm/yyyy'],
+                'widget' => 'single_text',
+                'format' => 'dd/MM/yyyy',
+                'attr' => ['data-date-format' => 'dd/mm/yyyy'],
             ])
             ->add('au', DateType::class, [
-                'required'   => false,
-                'label'      => 'Au',
+                'required' => false,
+                'label' => 'Au',
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
-                'widget'     => 'single_text',
-                'format'     => 'dd/MM/yyyy',
-                'attr'       => ['data-date-format' => 'dd/mm/yyyy'],
+                'widget' => 'single_text',
+                'format' => 'dd/MM/yyyy',
+                'attr' => ['data-date-format' => 'dd/mm/yyyy'],
             ])
             ->add('type_manifestation', ChoiceType::class, [
-                'choices'    => $options['types_manif'],
-                'label'      => 'Quoi ?',
+                'choices' => $options['types_manif'],
+                'label' => 'Quoi ?',
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
-                'multiple'   => true,
-                'expanded'   => false,
-                'required'   => false,
-                'attr'       => ['title' => 'Tous', 'class' => 'form-control', 'data-style' => 'btn-primary btn-flat', 'data-live-search' => true], ])
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'attr' => ['title' => 'Tous', 'class' => 'form-control', 'data-style' => 'btn-primary btn-flat', 'data-live-search' => true],])
             ->add('lieux', ChoiceType::class, [
-                'choices'    => $options['lieux'],
-                'label'      => 'Lieux',
+                'choices' => $options['lieux'],
+                'label' => 'Lieux',
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
-                'multiple'   => true,
-                'expanded'   => false,
-                'required'   => false,
-                'attr'       => ['title' => 'Tous', 'class' => 'form-control', 'data-style' => 'btn-primary btn-flat', 'data-live-search' => true], ])
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'attr' => ['title' => 'Tous', 'class' => 'form-control', 'data-style' => 'btn-primary btn-flat', 'data-live-search' => true],])
             ->add('term', TextType::class, [
-                'required'   => false,
-                'label'      => 'Mot-clés',
+                'required' => false,
+                'label' => 'Mot-clés',
                 'label_attr' => array('class' => 'col-sm-3 control-label'),
-                'attr'       => ['class' => 'form-control', 'placeholder' => 'Quel événement cherchez-vous ?'], ])
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Quel événement cherchez-vous ?'],])
             ->add('chercher', SubmitType::class, [
                 'label' => 'Go !',
-                'attr'  => [
+                'attr' => [
                     'class' => 'btn btn-raised btn-lg btn-primary btn-block',
                 ],
             ])
@@ -88,9 +87,9 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'lieux'           => [],
-            'types_manif'     => [],
-            'data_class'      => SearchAgenda::class,
+            'lieux' => [],
+            'types_manif' => [],
+            'data_class' => SearchAgenda::class,
             'csrf_protection' => false,
         ]);
     }

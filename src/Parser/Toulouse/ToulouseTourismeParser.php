@@ -41,7 +41,7 @@ class ToulouseTourismeParser extends LinksParser
             $node_date = $nodes_date->eq(0);
         }
 
-        $dates             = \trim($node_date->text());
+        $dates = \trim($node_date->text());
         $date_format_regex = "(\d{2})\/(\d{2})\/(\d{4})";
         if (\preg_match('/le ' . $date_format_regex . '/i', $dates)) { //le 27/09/2014
             //le 27/09/2014 -> 27/09/2014
@@ -63,7 +63,7 @@ class ToulouseTourismeParser extends LinksParser
 
         //Tarifs
         $tarifs = $this->parser->filter('.tarifs .main_info');
-        $tarif  = $tarifs->count() ? $tarifs->text() : null;
+        $tarif = $tarifs->count() ? $tarifs->text() : null;
         if ('Gratuit' === $tarif) {
             $tarif = null;
         }
@@ -73,9 +73,9 @@ class ToulouseTourismeParser extends LinksParser
             return $info->text();
         });
 
-        $resa_internet  = [];
+        $resa_internet = [];
         $resa_telephone = [];
-        $resa_email     = [];
+        $resa_email = [];
 
         foreach ($infos_resa as $info_resa) {
             $info_resa = \trim($info_resa);
@@ -90,21 +90,21 @@ class ToulouseTourismeParser extends LinksParser
 
         //Description complète
         $description_start = \trim(\preg_replace("/(\.\.\.)(\s*)$/i", '', $this->parser->filter('#start_desc')->text()));
-        $description_end   = $this->parser->filter('#end_desc')->count() ? \trim($this->parser->filter('#end_desc')->text()) : '';
+        $description_end = $this->parser->filter('#end_desc')->count() ? \trim($this->parser->filter('#end_desc')->text()) : '';
 
         //Lieux
         $lieux = $this->parser->filter('ul.contact li');
-        $rue   = null;
-        $lieu  = null;
+        $rue = null;
+        $lieu = null;
 
         if ($lieux->count() > 0) {
             $lieu = $lieux->eq(0)->text();
         }
         if (5 === $lieux->count()) { //La Rue est renseignée
-            $rue      = $lieux->eq(1)->text();
+            $rue = $lieux->eq(1)->text();
             $cp_ville = $lieux->eq(3)->text();
         } elseif (4 === $lieux->count()) { //La Rue est renseignée
-            $rue      = $lieux->eq(1)->text();
+            $rue = $lieux->eq(1)->text();
             $cp_ville = $lieux->eq(2)->text();
         } elseif ($lieux->count() > 1) {
             $cp_ville = $lieux->eq(1)->text();
@@ -117,21 +117,21 @@ class ToulouseTourismeParser extends LinksParser
         //31500 Toulouse -> Toulouse
         $ville = \preg_replace("/^(\d+)(.+)/i", '$2', $cp_ville);
 
-        $tab_retour['date_debut']            = DateTime::createFromFormat('d/m/Y', $date_debut) ?: null;
-        $tab_retour['url']                   = $this->parser->filter('#pictures_img .smoothbox')->count() ? $this->parser->filter('#pictures_img .smoothbox')->attr('href') : null;
-        $tab_retour['nom']                   = $this->parser->filter('h1.gotham_black')->count() ? $this->parser->filter('h1.gotham_black')->text() : null;
-        $tab_retour['theme_manifestation']   = $this->parser->filter('.localisation')->count() ? $this->parser->filter('.localisation')->eq(0)->text() : null;
-        $tab_retour['place.nom']             = $lieu;
-        $tab_retour['place.rue']             = $rue;
-        $tab_retour['place.codePostal']      = $cp;
-        $tab_retour['place.ville']           = $ville;
-        $tab_retour['place.country_name']    = 'France';
-        $tab_retour['descriptif']            = $description_start . ' ' . $description_end;
+        $tab_retour['date_debut'] = DateTime::createFromFormat('d/m/Y', $date_debut) ?: null;
+        $tab_retour['url'] = $this->parser->filter('#pictures_img .smoothbox')->count() ? $this->parser->filter('#pictures_img .smoothbox')->attr('href') : null;
+        $tab_retour['nom'] = $this->parser->filter('h1.gotham_black')->count() ? $this->parser->filter('h1.gotham_black')->text() : null;
+        $tab_retour['theme_manifestation'] = $this->parser->filter('.localisation')->count() ? $this->parser->filter('.localisation')->eq(0)->text() : null;
+        $tab_retour['place.nom'] = $lieu;
+        $tab_retour['place.rue'] = $rue;
+        $tab_retour['place.codePostal'] = $cp;
+        $tab_retour['place.ville'] = $ville;
+        $tab_retour['place.country_name'] = 'France';
+        $tab_retour['descriptif'] = $description_start . ' ' . $description_end;
         $tab_retour['reservation_telephone'] = \implode(',', $resa_telephone);
-        $tab_retour['reservation_internet']  = \implode(',', $resa_internet);
-        $tab_retour['reservation_email']     = \implode(',', $resa_email);
-        $tab_retour['tarif']                 = $tarif;
-        $tab_retour['source']                = $this->url;
+        $tab_retour['reservation_internet'] = \implode(',', $resa_internet);
+        $tab_retour['reservation_email'] = \implode(',', $resa_email);
+        $tab_retour['tarif'] = $tarif;
+        $tab_retour['source'] = $this->url;
 
         return $tab_retour;
     }
@@ -143,7 +143,7 @@ class ToulouseTourismeParser extends LinksParser
         $urls = [];
         while (null !== $this->url) {
             $events = $this->parser->filter('.list_results .link_parent');
-            $urls   = \array_merge($urls, $events->each(function (Crawler $item) {
+            $urls = \array_merge($urls, $events->each(function (Crawler $item) {
                 return $this->getBaseUrl() . $item->filter('a.link_block')->attr('href');
             }));
 

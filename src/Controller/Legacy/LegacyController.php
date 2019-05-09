@@ -2,9 +2,9 @@
 
 namespace App\Controller\Legacy;
 
+use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Annotation\ReverseProxy;
 
 /**
  * @ReverseProxy(expires="1 year")

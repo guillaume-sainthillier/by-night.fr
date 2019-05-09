@@ -33,13 +33,13 @@ class ProfileFormType extends BaseType
      * Builds the embedded form representing the user.
      *
      * @param FormBuilderInterface $builder
-     * @param array                $options
+     * @param array $options
      */
     protected function buildUserForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('username', TextType::class, [
-                'label'              => 'profile.show.username',
+                'label' => 'profile.show.username',
                 'translation_domain' => 'FOSUserBundle',
             ])
             ->add('email', EmailType::class, ['label' => 'profile.show.email', 'translation_domain' => 'FOSUserBundle'])
@@ -47,22 +47,22 @@ class ProfileFormType extends BaseType
             ->add('lastname', TextType::class, ['required' => false, 'label' => 'Nom'])
             ->add('description', TextareaType::class, [
                 'required' => false,
-                'label'    => 'Description',
-                'attr'     => [
+                'label' => 'Description',
+                'attr' => [
                     'placeholder' => 'Écrivez une courte description',
                 ],
             ])
             ->add('website', UrlType::class, [
                 'required' => false,
-                'label'    => 'Site Web',
+                'label' => 'Site Web',
             ])
             ->add('showSocials', CheckboxType::class, [
                 'required' => false,
-                'label'    => 'Afficher un lien vers mes réseaux sociaux',
+                'label' => 'Afficher un lien vers mes réseaux sociaux',
             ])
             ->add('imageFile', VichImageType::class, [
-                'required'     => false,
-                'label'        => 'Photo de profil',
+                'required' => false,
+                'label' => 'Photo de profil',
                 'image_filter' => 'thumb_user_large',
             ]);
     }

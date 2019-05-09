@@ -3,7 +3,6 @@
 namespace App\Social;
 
 use App\App\Location;
-use App\Entity\City;
 use Exception;
 use TwitterOAuth\Auth\SingleUserAuth;
 use TwitterOAuth\Serializer\ArraySerializer;
@@ -27,9 +26,9 @@ class Twitter extends Social
     public function constructClient()
     {
         $config = [
-            'consumer_key'       => $this->id,
-            'consumer_secret'    => $this->secret,
-            'oauth_token'        => '',
+            'consumer_key' => $this->id,
+            'consumer_secret' => $this->secret,
+            'oauth_token' => '',
             'oauth_token_secret' => '',
         ];
 
@@ -56,13 +55,13 @@ class Twitter extends Social
     {
         $this->init();
 
-        $name = $location->isCountry() ? $location->getCountry()->getName() :  $location->getCity()->getName();
+        $name = $location->isCountry() ? $location->getCountry()->getName() : $location->getCity()->getName();
         try {
             $params = [
-                'q'           => \sprintf('#%s filter:safe', $name),
-                'lang'        => 'fr',
+                'q' => \sprintf('#%s filter:safe', $name),
+                'lang' => 'fr',
                 'result_type' => 'recent',
-                'count'       => $limit,
+                'count' => $limit,
             ];
 
             if ($max_id) {
@@ -82,9 +81,9 @@ class Twitter extends Social
         $info = $this->socialManager->getSiteInfo();
         if (null !== $info->getTwitterAccessToken()) {
             $config = [
-                'consumer_key'       => $this->id,
-                'consumer_secret'    => $this->secret,
-                'oauth_token'        => $info->getTwitterAccessToken(),
+                'consumer_key' => $this->id,
+                'consumer_secret' => $this->secret,
+                'oauth_token' => $info->getTwitterAccessToken(),
                 'oauth_token_secret' => $info->getTwitterTokenSecret(),
             ];
 

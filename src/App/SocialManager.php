@@ -36,10 +36,10 @@ class SocialManager
 
     public function __construct(ObjectManager $entityManager, $facebookIdPage, $twitterIdPage)
     {
-        $this->entityManager  = $entityManager;
+        $this->entityManager = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
-        $this->twitterIdPage  = $twitterIdPage;
-        $this->siteInfo       = false;
+        $this->twitterIdPage = $twitterIdPage;
+        $this->siteInfo = false;
     }
 
     /**

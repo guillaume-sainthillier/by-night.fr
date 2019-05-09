@@ -23,7 +23,7 @@ class EventConstraintValidator extends ConstraintValidator
 
     public function __construct(RouterInterface $router)
     {
-        $this->router        = $router;
+        $this->router = $router;
         $this->checkIfUpdate = true;
     }
 
@@ -33,7 +33,7 @@ class EventConstraintValidator extends ConstraintValidator
     }
 
     /**
-     * @param Agenda     $event
+     * @param Agenda $event
      * @param Constraint $constraint
      */
     public function validate($event, Constraint $constraint)
@@ -104,7 +104,7 @@ class EventConstraintValidator extends ConstraintValidator
         if ($reject->isBadUser()) {
             $link = $this->router->generate('app_agenda_details', [
                 'slug' => $event->getSlug(),
-                'id'   => $event->getId(),
+                'id' => $event->getId(),
                 'location' => $event->getLocationSlug(),
             ]);
             $message = \str_replace([

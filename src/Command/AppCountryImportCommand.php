@@ -55,7 +55,7 @@ class AppCountryImportCommand extends AppCommand
             }
 
             $optionalParams[] = $name;
-            $atLeastOneInfo   = $atLeastOneInfo || !empty($value);
+            $atLeastOneInfo = $atLeastOneInfo || !empty($value);
         }
 
         if ($atLeastOneInfo) {

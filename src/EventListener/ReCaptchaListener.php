@@ -20,7 +20,7 @@ class ReCaptchaListener
     public function __construct($formName, $field)
     {
         $this->formName = $formName;
-        $this->field    = $field;
+        $this->field = $field;
     }
 
     public function onKernelController(FilterControllerEvent $event)
@@ -40,7 +40,7 @@ class ReCaptchaListener
 
             $captchaResponse = $request->get('g-recaptcha-response');
             if ($captchaResponse) {
-                $formData               = $request->get($this->formName);
+                $formData = $request->get($this->formName);
                 $formData[$this->field] = $captchaResponse;
                 $request->set($this->formName, $formData);
                 $request->remove('g-recaptcha-response');

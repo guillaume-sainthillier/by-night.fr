@@ -42,7 +42,7 @@ class Facebook extends Social
     protected function constructClient()
     {
         $this->client = new Client([
-            'app_id'     => $this->id,
+            'app_id' => $this->id,
             'app_secret' => $this->secret,
         ]);
     }
@@ -58,8 +58,8 @@ class Facebook extends Social
                     $graph = null;
                 } else {
                     $currentData = $graph->all();
-                    $datas       = \array_merge($datas, $currentData);
-                    $graph       = $this->client->next($graph);
+                    $datas = \array_merge($datas, $currentData);
+                    $graph = $this->client->next($graph);
                 }
             } catch (FacebookSDKException $ex) {
                 $graph = null;
@@ -72,7 +72,7 @@ class Facebook extends Social
 
     protected function findAssociativeEvents(FacebookResponse $response)
     {
-        $graph   = $response->getGraphNode();
+        $graph = $response->getGraphNode();
         $indexes = $graph->getFieldNames();
 
         return \array_map(function ($index) use ($graph) {
@@ -82,12 +82,12 @@ class Facebook extends Social
 
     protected function findPaginatedNodes(FacebookResponse $response)
     {
-        $datas   = [];
-        $graph   = $response->getGraphNode();
+        $datas = [];
+        $graph = $response->getGraphNode();
         $indexes = $graph->getFieldNames();
         foreach ($indexes as $index) {
             $subGraph = $graph->getField($index);
-            $datas    = \array_merge($datas, $this->next($subGraph));
+            $datas = \array_merge($datas, $this->next($subGraph));
         }
 
         return $datas;
@@ -99,7 +99,7 @@ class Facebook extends Social
             return [];
         }
 
-        $datas       = $graph->all();
+        $datas = $graph->all();
         $nextRequest = $graph->getNextPageRequest();
 
         if (!$nextRequest) {
@@ -108,7 +108,7 @@ class Facebook extends Social
 
         try {
             $response = $this->client->getClient()->sendRequest($nextRequest);
-            $nodes    = $response->getGraphNode();
+            $nodes = $response->getGraphNode();
             foreach ($nodes as $node) {
                 $datas = \array_merge($datas, $this->next($node));
             }
@@ -121,12 +121,12 @@ class Facebook extends Social
 
     protected function findAssociativePaginated(FacebookResponse $response)
     {
-        $datas   = [];
-        $graph   = $response->getGraphNode();
+        $datas = [];
+        $graph = $response->getGraphNode();
         $indexes = $graph->getFieldNames();
         foreach ($indexes as $index) {
             $subGraph = $graph->getField($index);
-            $datas    = \array_merge($datas, $this->findPaginated($subGraph));
+            $datas = \array_merge($datas, $this->findPaginated($subGraph));
         }
 
         return $datas;

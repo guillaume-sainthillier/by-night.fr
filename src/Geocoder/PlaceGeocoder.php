@@ -42,14 +42,14 @@ class PlaceGeocoder
 
     public function __construct(CacheProvider $cache, Provider $geocoder, Firewall $firewall)
     {
-        $this->cache    = $cache;
+        $this->cache = $cache;
         $this->geocoder = $geocoder;
         $this->firewall = $firewall;
     }
 
     public function geocodeCoordinates(Place $place)
     {
-        $key  = \sprintf('%f;%f', \round($place->getLatitude(), 6), \round($place->getLongitude(), 6));
+        $key = \sprintf('%f;%f', \round($place->getLatitude(), 6), \round($place->getLongitude(), 6));
         $data = $this->cache->fetch($key);
         if (false === $data) {
             try {
@@ -96,7 +96,7 @@ class PlaceGeocoder
         $data = $this->cache->fetch($nom);
         if (false === $data) {
             try {
-                $query     = GeocodeQuery::create($nom);
+                $query = GeocodeQuery::create($nom);
                 $responses = $this->geocoder->geocodeQuery($query);
             } catch (QuotaExceeded $e) {
                 $place->getReject()->addReason(Reject::GEOCODE_LIMIT);
@@ -116,7 +116,7 @@ class PlaceGeocoder
                 ], $response->toArray());
 
                 if ($response->getCoordinates()) {
-                    $geometry           = $response->getCoordinates();
+                    $geometry = $response->getCoordinates();
                     $result['geometry'] = [
                         'lat' => $geometry->getLatitude(),
                         'lng' => $geometry->getLongitude(),
@@ -139,7 +139,7 @@ class PlaceGeocoder
             $address = GoogleAddress::createFromArray($result);
             if ($address->getCoordinates()) {
                 $candidateCoordinate = new Coordinate($address->getCoordinates()->getLatitude(), $address->getCoordinates()->getLongitude());
-                $placeCoordinate     = new Boundary($place->getLatitude(), $place->getLongitude());
+                $placeCoordinate = new Boundary($place->getLatitude(), $place->getLongitude());
                 if ($this->firewall->isLocationBounded($candidateCoordinate, $placeCoordinate)) {
                     $candidatePlace = $address;
 

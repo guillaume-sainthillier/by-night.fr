@@ -51,7 +51,7 @@ class ExplorationHandler
 
     protected function add($key)
     {
-        if($this->isStarted()) {
+        if ($this->isStarted()) {
             ++$this->stats[$key];
         }
 

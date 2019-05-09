@@ -13,9 +13,9 @@ use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
-use function GuzzleHttp\Psr7\copy_to_string;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 
 abstract class Updater
 {
@@ -48,16 +48,16 @@ abstract class Updater
 
     protected function downloadUrls(array $urls)
     {
-        $requests = function($urls) {
+        $requests = function ($urls) {
             foreach ($urls as $i => $url) {
                 yield $i => new Request('GET', $url);
             }
         };
 
         $responses = [];
-        $pool      = new Pool($this->client, $requests($urls), [
+        $pool = new Pool($this->client, $requests($urls), [
             'concurrency' => self::POOL_SIZE,
-            'fulfilled'   => function (ResponseInterface $response, $index) use (&$responses) {
+            'fulfilled' => function (ResponseInterface $response, $index) use (&$responses) {
                 $responses[$index] = [
                     'contentType' => current($response->getHeader('Content-Type')),
                     'content' => copy_to_string($response->getBody())

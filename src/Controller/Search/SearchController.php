@@ -7,7 +7,6 @@ use App\SearchRepository\AgendaRepository;
 use App\SearchRepository\UserRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +18,7 @@ class SearchController extends AbstractController
     {
         /** @var AgendaRepository $repoSearch */
         $repoSearch = $rm->getRepository('App:Agenda');
-        $search     = (new SearchAgenda())->setTerm($q);
+        $search = (new SearchAgenda())->setTerm($q);
 
         return $repoSearch->findWithSearch($search, true);
     }
@@ -35,17 +34,17 @@ class SearchController extends AbstractController
     /**
      * @Route("/", name="app_search_query")
      *
-     * @param Request            $request
-     * @param RepositoryManagerInterface  $rm
+     * @param Request $request
+     * @param RepositoryManagerInterface $rm
      * @param PaginatorInterface $paginator
      *
      * @return Response
      */
     public function searchAction(Request $request, RepositoryManagerInterface $rm, PaginatorInterface $paginator)
     {
-        $q        = \trim($request->get('q', null));
-        $type     = $request->get('type', null);
-        $page     = (int) ($request->get('page', 1));
+        $q = \trim($request->get('q', null));
+        $type = $request->get('type', null);
+        $page = (int)($request->get('page', 1));
         $maxItems = 20;
 
         if ($page <= 0) {
@@ -57,55 +56,55 @@ class SearchController extends AbstractController
         }
 
         $nbSoirees = 0;
-        $soirees   = [];
-        $nbUsers   = 0;
-        $users     = [];
+        $soirees = [];
+        $nbUsers = 0;
+        $users = [];
 
         if ($q) {
             if (!$type || 'evenements' === $type) { //Recherche d'événements
-                $query      = $this->searchEvents($rm, $q);
+                $query = $this->searchEvents($rm, $q);
                 $pagination = $paginator->paginate($query, $page, $maxItems);
-                $nbSoirees  = $pagination->getTotalItemCount();
-                $soirees    = $pagination;
+                $nbSoirees = $pagination->getTotalItemCount();
+                $soirees = $pagination;
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('Search/content_events.html.twig', [
-                        'type'     => $type,
-                        'term'     => $q,
+                        'type' => $type,
+                        'term' => $q,
                         'maxItems' => $maxItems,
-                        'page'     => $page,
-                        'events'   => $soirees,
+                        'page' => $page,
+                        'events' => $soirees,
                     ]);
                 }
             }
 
             if (!$type || 'membres' === $type) { //Recherche de membres
-                $query      = $this->searchUsers($rm, $q);
+                $query = $this->searchUsers($rm, $q);
                 $pagination = $paginator->paginate($query, $page, $maxItems);
-                $nbUsers    = $pagination->getTotalItemCount();
-                $users      = $pagination;
+                $nbUsers = $pagination->getTotalItemCount();
+                $users = $pagination;
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('Search/content_users.html.twig', [
-                        'type'     => $type,
-                        'term'     => $q,
+                        'type' => $type,
+                        'term' => $q,
                         'maxItems' => $maxItems,
-                        'page'     => $page,
-                        'users'    => $users,
+                        'page' => $page,
+                        'users' => $users,
                     ]);
                 }
             }
         }
 
         return $this->render('Search/index.html.twig', [
-            'term'     => $q,
-            'type'     => $type,
-            'page'     => $page,
+            'term' => $q,
+            'type' => $type,
+            'page' => $page,
             'maxItems' => $maxItems,
-            'events'   => $soirees,
+            'events' => $soirees,
             'nbEvents' => $nbSoirees,
-            'users'    => $users,
-            'nbUsers'  => $nbUsers,
+            'users' => $users,
+            'nbUsers' => $nbUsers,
         ]);
     }
 }
