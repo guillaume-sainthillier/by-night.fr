@@ -305,12 +305,16 @@ class DoctrineEventHandler
                     $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
                     $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
 
-                    //$oldUser = $event->getUser();
+                    $url = $event->getUrl();
                     $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
-                    //$this->firewall->filterEventIntegrity($event, $oldUser);
                     if (!$this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
                     } else {
+                        //Image URL has changed or never download
+                        if ($event->getUrl() && ! ($event->getSystemPath() || $event->getUrl() !== $url)) {
+                            $this->handler->handleDownload($event);
+                        }
+
                         $event = $this->em->merge($event);
                         $this->echantillonHandler->addNewEvent($event);
                         if ($this->firewall->isPersisted($event)) {

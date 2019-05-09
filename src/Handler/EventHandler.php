@@ -8,7 +8,10 @@ use App\Utils\Cleaner;
 use App\Utils\Comparator;
 use App\Utils\Merger;
 use App\Utils\Monitor;
+use GuzzleHttp\Client;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use function GuzzleHttp\Psr7\copy_to_string;
 
 /**
  * Description of EventHandler.
@@ -23,14 +26,17 @@ class EventHandler
 
     private $merger;
 
+    private $logger;
+
     private $tempPath;
 
-    public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, $tempPath)
+    public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, LoggerInterface $logger, $tempPath)
     {
-        $this->cleaner    = $cleaner;
+        $this->cleaner = $cleaner;
         $this->comparator = $comparator;
-        $this->merger     = $merger;
-        $this->tempPath   = $tempPath;
+        $this->merger = $merger;
+        $this->logger = $logger;
+        $this->tempPath = $tempPath;
     }
 
     public function hasToDownloadImage($newURL, Agenda $agenda)
@@ -41,26 +47,33 @@ class EventHandler
             );
     }
 
-    public function uploadFile(Agenda $agenda, $content)
+    public function uploadFile(Agenda $agenda, $content, $contentType)
     {
-        if (!$content) {
-            $agenda->setUrl(null);
+        switch ($contentType) {
+            case 'image/gif':
+                $ext = 'gif';
+                break;
+            case 'image/png':
+                $ext = 'png';
+                break;
+            case 'image/jpg':
+            case 'image/jpeg':
+                $ext = 'jpeg';
+                break;
+            default:
+                throw new \RuntimeException(sprintf("Unable to find extension for mime type %s", $contentType));
+        }
+
+        $filename = $agenda->getId() . '.' . $ext;
+        $tempPath = $this->tempPath . DIRECTORY_SEPARATOR . $filename;
+        $octets = \file_put_contents($tempPath, $content);
+
+        if ($octets > 0) {
+            $file = new UploadedFile($tempPath, $filename, $contentType, null, true);
+            $agenda->setSystemPath($filename);
+            $agenda->setSystemFile($file);
         } else {
-            //En cas d'url du type:  http://u.rl/image.png?params
-            $ext = \preg_replace("/(\?|_)(.*)$/", '', \pathinfo($agenda->getUrl(), PATHINFO_EXTENSION));
-
-            $filename = \sha1(\uniqid(\mt_rand(), true)) . '.' . $ext;
-
-            $tempPath = $this->tempPath . '/' . $filename;
-            $octets   = \file_put_contents($tempPath, $content);
-
-            if ($octets > 0) {
-                $file = new UploadedFile($tempPath, $filename, null, null, false, true);
-                $agenda->setSystemPath($filename);
-                $agenda->setSystemFile($file);
-            } else {
-                $agenda->setSystemFile(null)->setSystemPath(null);
-            }
+            $agenda->setSystemFile(null)->setSystemPath(null);
         }
     }
 
@@ -77,9 +90,27 @@ class EventHandler
         }
     }
 
+    public function handleDownload(Agenda $event)
+    {
+        try {
+            $client = new Client();
+            $url = $event->getUrl();
+            $response = $client->request('GET', $url);
+            $contentType = current($response->getHeader('Content-Type'));
+            $content = copy_to_string($response->getBody());
+            $this->uploadFile($event, $content, $contentType);
+
+        } catch (\Exception $e) {
+            $this->logger->error($e, ['event' => [
+                'id' => $event->getId(),
+                'url' => $event->getUrl()
+            ]]);
+        }
+    }
+
     /**
-     * @param array  $persistedEvents
-     * @param array  $persistedPlaces
+     * @param array $persistedEvents
+     * @param array $persistedPlaces
      * @param Agenda $event
      *
      * @return Agenda
