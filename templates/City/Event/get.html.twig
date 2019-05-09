@@ -67,6 +67,7 @@
             Cet événement n'est pas encore disponible publiquement. Merci de patienter encore un peu !
         </div>
     {% else %}
+        {% include "ad.html.twig" with({'marginTop': 0}) %}
         <div class="panel panel-primary details_evenement">
             <div class="panel-heading">
                 <h2 class="modal-title">
@@ -303,6 +304,7 @@
             </div>
         {% endif %}
     {% endif %}
+    {% include "ad2.html.twig" with({'marginTop': 0}) %}
 {%- endblock %}
 
 {% block widgets -%}
@@ -314,7 +316,7 @@
                 <!-- ./Tendances -->
             {% endif %}
 
-            {% include "City/Widget/ads.html.twig" %}
+            {% include "ad3.html.twig" %}
         </div>
 
         <div class="col-sm-6 col-md-12">

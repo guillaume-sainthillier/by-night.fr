@@ -3,6 +3,7 @@
         <hr/>
     {% endif %}
     {% include "City/Event/block_preview_event.html.twig" with({'events': soirees, 'page': page}) %}
+    {% include "ad2.html.twig" %}
     {% if soirees|length == maxPerEvent %}
         <div>
             <a id="paginate"

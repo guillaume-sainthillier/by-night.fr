@@ -7,7 +7,6 @@
 
 {%- block search -%}
     <br />
-    <br />
     <div class="row">
         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <form method="GET" class="no-margin-form" action="{{ path('app_search_query') }}">
@@ -37,7 +36,6 @@
             {% endif %}
             {{ result.label }}{{ s }} trouvé{{ s }}
         </h2>
-        <br />
         {% if events|length > 0 and (not type or type == 'evenements') %}
             {% if type != 'evenements' %}
                 {% set s = nbEvents > 1 ? 's': null %}
@@ -50,7 +48,6 @@
             {% if type != 'membres' %}
                 {% set s = nbUsers > 1 ? 's': null %}
                 <h3><span class="number">{{ nbUsers }}</span> Membre{{ s }}</h3>
-                <br>
             {% endif %}
             {% include "Search/content_users.html.twig" %}
         {% endif %}

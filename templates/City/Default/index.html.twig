@@ -109,7 +109,6 @@
     <section>
         <div class="container">
             {% include 'ad.html.twig' %}
-            <br />
             <div class="row">
                 {% set contents = [{
                     'title': 'Concert',
@@ -203,6 +202,7 @@
                 <i class="fa fa-chevron-right"></i>
                 Toutes les sorties <span class="hidden-xs hidden-sm">{{ location.atName }}</span>
             </a>
+            {% include 'ad2.html.twig' %}
         </div>
     </section>
 {% endblock %}

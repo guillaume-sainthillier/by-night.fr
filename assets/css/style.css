@@ -51,9 +51,6 @@ html body #container {
   padding: 20px;
   padding-top: 0;
 }
-html body #ad-footer {
-  margin-top: 40px;
-}
 html body a {
   font-weight: bold;
   color: #222;

@@ -55,6 +55,7 @@
 {%- endblock %}
 
 {% block body %}
+    {% include "ad.html.twig" with({'marginTop': 0}) %}
     {% include "City/Agenda/block_criteres.html.twig" %}
 
     {% if soirees|length == 0 %}
@@ -80,7 +81,7 @@
             {% include "City/Widget/twitter.html.twig" %}
             <!-- ./Twitter -->
 
-            {% include "City/Widget/ads.html.twig" %}
+            {% include "ad3.html.twig" %}
 
             {% if social_manager.facebookIdPage %}
                 <!-- Facebook -->
