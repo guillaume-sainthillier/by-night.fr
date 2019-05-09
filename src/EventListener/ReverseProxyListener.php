@@ -15,6 +15,14 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ReverseProxyListener implements EventSubscriberInterface
 {
+    /** @var bool */
+    private $debug;
+
+    public function __construct(bool $debug)
+    {
+        $this->debug = $debug;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -27,6 +35,10 @@ class ReverseProxyListener implements EventSubscriberInterface
 
     public function onKernelResponse(FilterResponseEvent $event)
     {
+        if ($this->debug) {
+            return;
+        }
+
         $request = $event->getRequest();
         if (!$request->isMethodCacheable() || !$request->attributes->has('_reverse_proxy')) {
             return;

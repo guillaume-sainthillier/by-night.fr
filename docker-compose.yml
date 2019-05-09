@@ -29,6 +29,8 @@ services:
             - 8001:80
         depends_on:
             - app
+        environment:
+            - "VARNISHD_PARAMS=-t 0"
         volumes:
             - ./docker/dev/varnish/default.vcl:/etc/varnish/default.vcl
             - ./docker/dev/varnish/fos:/etc/varnish/fos
