@@ -10,16 +10,6 @@
   margin: 0 auto;
   min-height: 100%;
   height: auto;
-
-  .obsolete {
-    display: none;
-  }
-}
-
-.no-mediaqueries {
-  #wrap .obsolete {
-    display: block;
-  }
 }
 
 #footer {
@@ -28,93 +18,40 @@
   background-color: rgb(34, 34, 34);
   color: @bgColor;
 
-  .sous-header {
+  .social {
+    text-align: left;
+    border: 1px solid transparent;
+    display: block;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 35px;
 
-    .footer_border {
-      min-height: @tailleFooter + 10px;
-      border-right: thin dotted rgba(175, 162, 162, 0.78);
+    &:hover {
+      border: 1px dashed rgba(175, 162, 162, 0.78);
+      background-color: rgba(202, 189, 189, 0.09);
+      .opacity(0.7);
     }
 
-    .social {
-      border: 1px solid transparent;
-      display: block;
-      width: 100%;
-      height: 80px;
-      line-height: 80px;
-      font-size: 50px;
-
-      &:hover {
-        border: 1px dashed rgba(175, 162, 162, 0.78);
-        background-color: rgba(202, 189, 189, 0.09);
-        .opacity(0.7);
-      }
-
-      .fa {
-        width: 1em;
-      }
-
-      span {
-        font-size: 30px;
-        color: #E9EFF5;
-      }
+    .fa {
+      width: 1em;
     }
 
-    .love {
-      font-size: 20px;
+    span {
+      font-size: 30px;
+      color: #E9EFF5;
     }
   }
 
-  //Tablettes (< 992 px)
-  @media (max-width: @screen-sm-max) {
-    .sous-header {
-      .footer_border {
-        &:last-child {
-          border-right: none;
-        }
-      }
-    }
-  }
-
-  //Téléphone (< 768px)
-  @media (min-width: @screen-xs-min) and (max-width: @screen-xs-max) {
-    .sous-header {
-      p.pull-left {
-        float: none !important;
-      }
-    }
+  .love {
+    font-size: 20px;
   }
 
   //Petit Téléphone (< 481px)
   @media (max-width: @screen-xs-min) {
-    .sous-header {
-      .footer_border {
-        border-bottom: thin dotted rgba(175, 162, 162, 0.78);
-        border-right: none;
-        min-height: @tailleFooter;
-      }
-
-      .counts {
-        & > div {
-          padding-left: 0;
-          padding-right: 0;
-
-          .social {
-            .fa {
-              font-size: 2.5em;
-            }
-          }
-        }
-      }
-
-      .sites {
-        margin-top: 15px;
-      }
-
-      hr {
-        margin-top: 0;
-      }
+    .social {
+      display: inline-block;
+      width: 49%;
     }
   }
-
-
 }
