@@ -67,14 +67,14 @@ class Monitor
         self::$enableMonitoring = $enable;
     }
 
-    private static function convertMemory($size)
+    public static function formatMemory($bytes)
     {
-        if (0 == $size) {
-            return '0 b';
-        }
-        $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
+        return round($bytes / 1000 / 1000, 2) . ' MB';
+    }
 
-        return @\round($size / 1024 ** ($i = \floor(\log($size, 1024))), 2) . ' ' . $unit[$i];
+    public static function formatDuration($microseconds)
+    {
+        return sprintf('%01.2f ms', $microseconds);
     }
 
     private static function getTime($stat)
@@ -98,15 +98,15 @@ class Monitor
         $sommeMemory = \array_sum($stat['memory']);
 
         return [
-            'avg' => \sprintf('%01.2f ms', ($somme / $nbItems)),
-            'min' => \sprintf('%01.2f ms', \min($stat['time'])),
-            'max' => \sprintf('%01.2f ms', \max($stat['time'])),
+            'total' => self::formatDuration($somme),
+            'avg' => $nbItems > 1 ? self::formatDuration($somme / $nbItems) : null,
+            'min' => $nbItems > 1 ? self::formatDuration(\min($stat['time'])) : null,
+            'max' => $nbItems > 1 ? self::formatDuration(\max($stat['time'])) : null,
             'nb' => $nbItems,
-            'memory' => self::convertMemory($sommeMemory),
-            'avg_memory' => self::convertMemory($sommeMemory / $nbItems),
-            'min_memory' => self::convertMemory(\min($stat['memory'])),
-            'max_memory' => self::convertMemory(\max($stat['memory'])),
-            'total' => \sprintf('%01.2f ms', $somme),
+            'memory' => self::formatMemory($sommeMemory),
+            'avg_memory' => $nbItems > 1 ? self::formatMemory($sommeMemory / $nbItems) : null,
+            'min_memory' => $nbItems > 1 ? self::formatMemory(\min($stat['memory'])) : null,
+            'max_memory' => $nbItems > 1 ? self::formatMemory(\max($stat['memory'])) : null,
         ];
     }
 
@@ -164,6 +164,7 @@ class Monitor
             $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['min'], $stat['max'], $stat['memory'], $stat['avg_memory'], $stat['min_memory'], $stat['max_memory']]);
         }
         $table->render();
+        self::$stats = [];
     }
 
     public static function bench($message, callable $function)

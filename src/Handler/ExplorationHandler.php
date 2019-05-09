@@ -111,4 +111,19 @@ class ExplorationHandler
         $this->historique = (new HistoriqueMaj())
             ->setDateDebut(new DateTime());
     }
+
+    public function reset()
+    {
+        //Call GC
+        $this->historique = null;
+        $this->stats = null;
+        unset($this->historique, $this->stats);
+
+        $this->stats = [
+            'nbBlacklists' => 0,
+            'nbInserts' => 0,
+            'nbUpdates' => 0,
+            'nbExplorations' => 0,
+        ];
+    }
 }

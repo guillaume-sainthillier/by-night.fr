@@ -135,6 +135,8 @@ class DoctrineEventHandler
             'EXPLORATIONS' => $this->explorationHandler->getNbExplorations(),
         ]);
 
+        $this->explorationHandler->reset();
+
         return $events;
     }
 
