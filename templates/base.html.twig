@@ -15,15 +15,21 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta http-equiv="Content-Language" content="fr">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Chrome mobile -->
-    <meta name="theme-color" content="#3f51b5">
-    <link rel="icon" sizes="192x192" href="{{ app_asset('img/by-night_192x192.png') }}">
-    <!-- ./Chrome mobile -->
-
     <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
     <meta name="title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}">
     <meta name="keywords" content="{% block meta_full_keywords %}{% spaceless %}{% block meta_keywords %}{% endblock %},aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endspaceless %}{% endblock %}">
     <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=PYezm92qNy">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=PYezm92qNy">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=PYezm92qNy">
+    <link rel="manifest" href="/site.webmanifest?v=PYezm92qNy">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=PYezm92qNy" color="#3f51b5">
+    <link rel="shortcut icon" href="/favicon.ico?v=PYezm92qNy">
+    <meta name="msapplication-TileColor" content="#3f51b5">
+    <meta name="theme-color" content="#3f51b5">
+    <!-- ./Icons -->
 
     <!-- OpenGraph -->
     <meta property="og:site_name" content="{% spaceless %}{{ block('nom_site') }}{% endspaceless %}">
@@ -34,11 +40,6 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta property="og:locale" content="fr" />
     <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(app_asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
     <!-- ./OpenGraph -->
-
-    <!-- IE10+ -->
-    <meta name="application-name" content="{{ block('nom_site') }}">
-    <meta name="msapplication-config" content="browserconfig.xml">
-    <!-- ./IE10+ -->
 
     <!-- Twitter -->
     {% if social_manager.twitterIdPage %}
@@ -71,8 +72,6 @@ _______     __  _   _ _____ _____ _    _ _______
     {% block metas %}{% endblock %}
 
     <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
-    <link rel="shortcut icon" type="image/png" href="{{ absolute_url(asset('favicon.png')) }}">
-    <link rel="apple-touch-icon" href="{{ absolute_url(asset('apple-touch-icon.png')) }}">
 
     <!-- CSS -->
     <link href='//fonts.googleapis.com/css?family=Roboto:100,300,400%7CRoboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
