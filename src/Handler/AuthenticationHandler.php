@@ -80,7 +80,6 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         if ($request->isXmlHttpRequest()) {
-            $message = $this->translator->trans($exception->getMessageKey(), $exception->getMessageData(), 'security');
             $result = [
                 'success' => false,
                 'message' => $this->translator->trans($exception->getMessageKey(), $exception->getMessageData(), 'security'),
