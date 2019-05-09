@@ -1,5 +1,7 @@
 {{ fos_httpcache_tag('block-user') }}
 {% for user in membres %}
+    {% set nbEvents = user.nb_events %}
+    {% set user = user[0] %}
     {{ fos_httpcache_tag(tags('user', user)) }}
     {% set imageURL = userProfilePicture.getProfilePicture(user, 'thumb_user_50') %}
     <div class="widget_item">
@@ -13,6 +15,9 @@
                         {{ user.username|capitalize }}
                     </a>
                 </h4>
+                {% if nbEvents > 0 %}
+                    <span class="text-primary number">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' :'' }}</span>
+                {% endif %}
             </div>
         </div>
     </div>
