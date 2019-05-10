@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="Exploration", indexes={
  *      @ORM\Index(name="exploration_external_id_idx", columns={"external_id"})
  * })
- * @ORM\Entity(repositoryClass="App\Repository\ExplorationRepository", readOnly=true)
+ * @ORM\Entity(repositoryClass="App\Repository\ExplorationRepository")
  */
 class Exploration
 {
