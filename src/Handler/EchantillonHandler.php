@@ -110,7 +110,8 @@ class EchantillonHandler
     {
         $externalIds = [];
         foreach ($events as $event) {
-            if ($event->getId() || $event->getUser()) {
+            /** @var Agenda $event */
+            if ($event->getId() || ($event->getUser() && !$event->getExternalId())) {
                 continue;
             }
 
@@ -175,7 +176,7 @@ class EchantillonHandler
 
     public function getEventEchantillons(Agenda $event)
     {
-        if ($event->getId() || $event->getUser()) {
+        if ($event->getId() || ($event->getUser() && !$event->getExternalId())) {
             return [];
         }
 
