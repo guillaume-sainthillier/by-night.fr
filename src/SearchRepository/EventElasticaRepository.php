@@ -2,7 +2,7 @@
 
 namespace App\SearchRepository;
 
-use App\Search\SearchAgenda;
+use App\Search\SearchEvent;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Match;
@@ -12,7 +12,7 @@ use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use FOS\ElasticaBundle\Repository;
 
-class AgendaRepository extends Repository
+class EventElasticaRepository extends Repository
 {
     const EXPO_TERMS = 'exposition, salon';
     const CONCERT_TERMS = 'concert, musique, artiste';
@@ -20,7 +20,7 @@ class AgendaRepository extends Repository
     const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
     const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
-    public function findWithSearch(SearchAgenda $search, bool $sortByScore = false)
+    public function findWithSearch(SearchEvent $search, bool $sortByScore = false)
     {
         $mainQuery = new BoolQuery();
 

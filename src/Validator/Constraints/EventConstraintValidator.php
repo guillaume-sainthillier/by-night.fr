@@ -8,7 +8,7 @@
 
 namespace App\Validator\Constraints;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -33,7 +33,7 @@ class EventConstraintValidator extends ConstraintValidator
     }
 
     /**
-     * @param Agenda $event
+     * @param Event $event
      * @param Constraint $constraint
      */
     public function validate($event, Constraint $constraint)
@@ -108,7 +108,7 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         if ($reject->isBadUser()) {
-            $link = $this->router->generate('app_agenda_details', [
+            $link = $this->router->generate('app_event_details', [
                 'slug' => $event->getSlug(),
                 'id' => $event->getId(),
                 'location' => $event->getLocationSlug(),

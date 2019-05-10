@@ -2,8 +2,8 @@
 
 namespace App\Parser\Toulouse;
 
-use App\Entity\Agenda;
-use App\Parser\AgendaParser;
+use App\Entity\Event;
+use App\Parser\EventParser;
 use DateTime;
 use ForceUTF8\Encoding;
 use Symfony\Component\Filesystem\Filesystem;
@@ -13,14 +13,14 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @author guillaume
  */
-class ToulouseParser extends AgendaParser
+class ToulouseParser extends EventParser
 {
     public function __construct()
     {
         $this->setURL('https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true');
     }
 
-    public function getRawAgendas()
+    public function getRawEvents()
     {
         $fichier = $this->downloadCSV();
         if (null !== $fichier) {
@@ -33,11 +33,11 @@ class ToulouseParser extends AgendaParser
     /**
      * @param string $fichier le chemin absolu vers le fichier
      *
-     * @return Agenda[] les agendas parsés
+     * @return Event[] les events parsés
      */
     protected function parseCSV($fichier)
     {
-        $tab_agendas = [];
+        $tab_events = [];
 
         $fic = \fopen($fichier, 'r');
         \fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
@@ -53,7 +53,7 @@ class ToulouseParser extends AgendaParser
                 $date_debut = new DateTime($tab[5]);
                 $date_fin = new DateTime($tab[6]);
 
-                $tab_agendas[] = [
+                $tab_events[] = [
                     'external_id' => "TOU-" . $tab[0],
                     'nom' => $nom,
                     'descriptif' => $tab[4],
@@ -80,7 +80,7 @@ class ToulouseParser extends AgendaParser
             }
         }
 
-        return $tab_agendas;
+        return $tab_events;
     }
 
     /**

@@ -8,9 +8,9 @@
 
 namespace App\Updater;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Handler\EventHandler;
-use App\Repository\AgendaRepository;
+use App\Repository\EventRepository;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
 use DateTime;
@@ -33,8 +33,8 @@ class EventUpdater extends Updater
 
     public function update(DateTime $from)
     {
-        /** @var AgendaRepository $repo */
-        $repo = $this->entityManager->getRepository(Agenda::class);
+        /** @var EventRepository $repo */
+        $repo = $this->entityManager->getRepository(Event::class);
         $count = $repo->getNextEventsCount($from);
 
         $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
@@ -55,7 +55,7 @@ class EventUpdater extends Updater
 
     private function extractFbIds(array $events)
     {
-        return array_filter(array_unique(array_map(function (Agenda $event) {
+        return array_filter(array_unique(array_map(function (Event $event) {
             return $event->getFacebookEventId();
         }, $events)));
     }
@@ -64,7 +64,7 @@ class EventUpdater extends Updater
     {
         $downloadUrls = [];
         foreach ($events as $event) {
-            /** @var Agenda $event */
+            /** @var Event $event */
             $imageURL = $event->getUrl();
             $imageURL = \preg_replace('#(jp|jpe|pn)$#', '$1g', $imageURL);
             if ($event->getFacebookEventId() && isset($fbStats[$event->getFacebookEventId()])) {
@@ -90,6 +90,6 @@ class EventUpdater extends Updater
     protected function doFlush()
     {
         $this->entityManager->flush();
-        $this->entityManager->clear(Agenda::class);
+        $this->entityManager->clear(Event::class);
     }
 }

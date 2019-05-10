@@ -1,6 +1,6 @@
 easy_admin:
     entities:
-        - App\Entity\Agenda
+        - App\Entity\Event
         - App\Entity\User
         - App\Entity\Site
         - App\Entity\Place

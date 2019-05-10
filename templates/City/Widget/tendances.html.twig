@@ -7,7 +7,7 @@
 {% block body %}
     <div>
         {{ render_esi(path('app_event_tendances', {
-            'id': soiree.id
+            'id': event.id
         })) }}
     </div>
 {% endblock %}

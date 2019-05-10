@@ -17,16 +17,16 @@ class ToulouseTourismeParser extends LinksParser
     {
         parent::__construct();
 
-        $this->setURL('http://www.toulouse-tourisme.com/offre/recherche/Sur-place/Agenda//~~~/page-1');
+        $this->setURL('http://www.toulouse-tourisme.com/offre/recherche/Sur-place/Event//~~~/page-1');
         $this->setBaseUrl('http://www.toulouse-tourisme.com/');
     }
 
     /**
-     * Retourne les infos d'un agenda depuis une url.
+     * Retourne les infos d'un event depuis une url.
      *
      * @return string[]
      */
-    protected function getInfosAgenda()
+    protected function getInfosEvent()
     {
         $tab_retour = [];
 

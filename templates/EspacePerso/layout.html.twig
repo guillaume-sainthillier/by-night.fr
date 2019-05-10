@@ -3,6 +3,6 @@
 
 {% block breadcrumb %}
     {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", path('app_agenda_list')) %}
+    {% set item = menu.addItem("Mes événements", path('app_event_list')) %}
     {% block breadcrumb_espace %}{% endblock %}
 {% endblock %}

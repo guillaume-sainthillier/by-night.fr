@@ -8,12 +8,12 @@
 
 namespace App\SEO;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use IntlDateFormatter;
 
 class EventSEO
 {
-    public function getEventDate(Agenda $event)
+    public function getEventDate(Event $event)
     {
         if (!$event->getDateFin() || $event->getDateDebut() === $event->getDateFin()) {
             return \sprintf('le %s',
@@ -27,33 +27,33 @@ class EventSEO
         );
     }
 
-    public function getEventDescription(Agenda $agenda)
+    public function getEventDescription(Event $event)
     {
-        $description = \sprintf('Découvrez %s.', $agenda->getNom());
+        $description = \sprintf('Découvrez %s.', $event->getNom());
 
-        if ($agenda->getPlaceName() && $agenda->getPlaceCity()) {
+        if ($event->getPlaceName() && $event->getPlaceCity()) {
             $description .= \sprintf(' %s à %s.',
-                $agenda->getPlaceName(),
-                $agenda->getPlaceCity()
+                $event->getPlaceName(),
+                $event->getPlaceCity()
             );
         }
 
-        $description .= \sprintf(' %s.', \ucfirst($this->getEventDateTime($agenda)));
+        $description .= \sprintf(' %s.', \ucfirst($this->getEventDateTime($event)));
 
-        $tags = $agenda->getDistinctTags();
+        $tags = $event->getDistinctTags();
 
         if (\count($tags)) {
             $description .= \sprintf(' %s.', \implode(', ', $tags));
         }
 
-        if ($agenda->getFbParticipations() + $agenda->getFbInterets() > 50) {
-            $description .= \sprintf(' %d personnes intéressées', $agenda->getFbParticipations() + $agenda->getFbInterets());
+        if ($event->getFbParticipations() + $event->getFbInterets() > 50) {
+            $description .= \sprintf(' %d personnes intéressées', $event->getFbParticipations() + $event->getFbInterets());
         }
 
         return $description;
     }
 
-    public function getEventDateTime(Agenda $event)
+    public function getEventDateTime(Event $event)
     {
         $datetime = $this->getEventDate($event);
 
@@ -66,7 +66,7 @@ class EventSEO
         return \trim($datetime);
     }
 
-    public function getEventShortTitle(Agenda $event)
+    public function getEventShortTitle(Event $event)
     {
         $shortTitle = $event->getNom();
         if ($event->getModificationDerniereMinute()) {
@@ -76,7 +76,7 @@ class EventSEO
         return $shortTitle;
     }
 
-    public function getEventFullTitle(Agenda $event)
+    public function getEventFullTitle(Event $event)
     {
         $title = $this->getEventShortTitle($event);
 

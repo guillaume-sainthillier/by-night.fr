@@ -6,7 +6,7 @@ use App\App\Location;
 use DateTime;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class SearchAgenda
+class SearchEvent
 {
     /**
      * @var DateTime|null
@@ -73,9 +73,9 @@ class SearchAgenda
 
     /**
      * @param DateTime|null $du
-     * @return SearchAgenda
+     * @return SearchEvent
      */
-    public function setDu(?DateTime $du): SearchAgenda
+    public function setDu(?DateTime $du): SearchEvent
     {
         $this->du = $du;
         return $this;
@@ -91,9 +91,9 @@ class SearchAgenda
 
     /**
      * @param DateTime|null $au
-     * @return SearchAgenda
+     * @return SearchEvent
      */
-    public function setAu(?DateTime $au): SearchAgenda
+    public function setAu(?DateTime $au): SearchEvent
     {
         $this->au = $au;
         return $this;
@@ -109,9 +109,9 @@ class SearchAgenda
 
     /**
      * @param string|null $tag
-     * @return SearchAgenda
+     * @return SearchEvent
      */
-    public function setTag(?string $tag): SearchAgenda
+    public function setTag(?string $tag): SearchEvent
     {
         $this->tag = $tag;
         return $this;
@@ -127,9 +127,9 @@ class SearchAgenda
 
     /**
      * @param array $type_manifestation
-     * @return SearchAgenda
+     * @return SearchEvent
      */
-    public function setTypeManifestation(array $type_manifestation): SearchAgenda
+    public function setTypeManifestation(array $type_manifestation): SearchEvent
     {
         $this->type_manifestation = $type_manifestation;
         return $this;
@@ -145,9 +145,9 @@ class SearchAgenda
 
     /**
      * @param array $lieux
-     * @return SearchAgenda
+     * @return SearchEvent
      */
-    public function setLieux(array $lieux): SearchAgenda
+    public function setLieux(array $lieux): SearchEvent
     {
         $this->lieux = $lieux;
         return $this;
@@ -163,9 +163,9 @@ class SearchAgenda
 
     /**
      * @param string|null $term
-     * @return SearchAgenda
+     * @return SearchEvent
      */
-    public function setTerm(?string $term): SearchAgenda
+    public function setTerm(?string $term): SearchEvent
     {
         $this->term = $term;
         return $this;
@@ -181,9 +181,9 @@ class SearchAgenda
 
     /**
      * @param int $page
-     * @return SearchAgenda
+     * @return SearchEvent
      */
-    public function setPage(int $page): SearchAgenda
+    public function setPage(int $page): SearchEvent
     {
         $this->page = $page;
         return $this;
@@ -199,9 +199,9 @@ class SearchAgenda
 
     /**
      * @param Location|null $location
-     * @return SearchAgenda
+     * @return SearchEvent
      */
-    public function setLocation(?Location $location): SearchAgenda
+    public function setLocation(?Location $location): SearchEvent
     {
         $this->location = $location;
         return $this;

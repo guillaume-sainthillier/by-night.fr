@@ -9,7 +9,7 @@ use Symfony\Component\DomCrawler\Crawler;
 /**
  * @author Guillaume S. <guillaume@sainthillier.fr>
  */
-abstract class LinksParser extends AgendaParser
+abstract class LinksParser extends EventParser
 {
     /*
      * @var Crawler $parser
@@ -40,30 +40,30 @@ abstract class LinksParser extends AgendaParser
         return $this;
     }
 
-    public function getRawAgendas()
+    public function getRawEvents()
     {
         $links = $this->getLinks(); //Récupère les différents liens à parser depuis une page d'accueil / flux RSS
 
-        $agendas = [];
+        $events = [];
 
         foreach ($links as $link) {
             $this->setURL($link);
             $this->parseContent(); //Positionne le parser sur chaque lien
 
             try {
-                $infosAgenda = $this->getInfosAgenda();
+                $infosEvent = $this->getInfosEvent();
 
-                if (!$this->isMultiArray($infosAgenda)) {
-                    $infosAgenda = [$infosAgenda];
+                if (!$this->isMultiArray($infosEvent)) {
+                    $infosEvent = [$infosEvent];
                 }
 
-                $agendas = \array_merge($agendas, $infosAgenda);
+                $events = \array_merge($events, $infosEvent);
             } catch (Exception $e) {
                 Monitor::writeException($e);
             }
         }
 
-        return $agendas;
+        return $events;
     }
 
     protected function getSilentNode(Crawler $node)
@@ -93,11 +93,11 @@ abstract class LinksParser extends AgendaParser
     }
 
     /**
-     * Retourne les infos d'un agenda depuis une url.
+     * Retourne les infos d'un event depuis une url.
      *
      * @return string[]
      */
-    abstract protected function getInfosAgenda();
+    abstract protected function getInfosEvent();
 
     /**
      * Retourne les liens depuis le feed.xml.

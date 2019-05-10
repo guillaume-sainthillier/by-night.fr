@@ -2,7 +2,7 @@
 
 namespace App\Form\Type;
 
-use App\Search\SearchAgenda;
+use App\Search\SearchEvent;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -89,13 +89,13 @@ class SearchType extends AbstractType
         $resolver->setDefaults([
             'lieux' => [],
             'types_manif' => [],
-            'data_class' => SearchAgenda::class,
+            'data_class' => SearchEvent::class,
             'csrf_protection' => false,
         ]);
     }
 
     public function getName()
     {
-        return 'app_search_agenda';
+        return 'app_search_event';
     }
 }

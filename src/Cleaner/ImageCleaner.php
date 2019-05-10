@@ -42,7 +42,7 @@ class ImageCleaner
     {
         $result = $this
             ->entityManager
-            ->createQuery('SELECT a.path, a.systemPath FROM App:Agenda a WHERE a.path IS NOT NULL OR a.systemPath IS NOT NULL')
+            ->createQuery('SELECT a.path, a.systemPath FROM App:Event a WHERE a.path IS NOT NULL OR a.systemPath IS NOT NULL')
             ->getScalarResult();
 
         $paths = \array_unique(\array_filter(\array_merge(\array_column($result, 'path'), \array_column($result, 'systemPath'))));

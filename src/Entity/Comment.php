@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Comment.
  *
- * @ORM\Table(name="Comment")
+ * @ORM\Table(name="comment")
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -65,12 +65,12 @@ class Comment
     protected $user;
 
     /**
-     * @var Agenda
+     * @var Event
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Agenda", inversedBy="commentaires")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="commentaires")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $agenda;
+    protected $event;
 
     /**
      * @var Comment
@@ -234,27 +234,27 @@ class Comment
     }
 
     /**
-     * Set agenda.
+     * Set event.
      *
-     * @param Agenda $agenda
+     * @param Event $event
      *
      * @return Comment
      */
-    public function setAgenda(Agenda $agenda)
+    public function setEvent(Event $event)
     {
-        $this->agenda = $agenda;
+        $this->event = $event;
 
         return $this;
     }
 
     /**
-     * Get agenda.
+     * Get event.
      *
-     * @return Agenda
+     * @return Event
      */
-    public function getAgenda()
+    public function getEvent()
     {
-        return $this->agenda;
+        return $this->event;
     }
 
     /**

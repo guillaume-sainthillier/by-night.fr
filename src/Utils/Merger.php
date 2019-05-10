@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Place;
 use stdClass;
 
@@ -39,7 +39,7 @@ class Merger
         $this->comparator = $comparator;
     }
 
-    public function mergeEvent(Agenda $a = null, Agenda $b = null)
+    public function mergeEvent(Event $a = null, Event $b = null)
     {
         return $this->merge($a, $b, [
             'nom',

@@ -64,8 +64,8 @@ fos_elastica:
                                 ville: { boost: 2, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
                     persistence:
                         driver: orm
-                        model:  App\Entity\Agenda
-                        repository: App\SearchRepository\AgendaRepository
+                        model:  App\Entity\Event
+                        repository: App\SearchRepository\EventElasticaRepository
                         provider:
                             query_builder_method: createIsActiveQueryBuilder
                             batch_size: 500
@@ -106,7 +106,7 @@ fos_elastica:
                     persistence:
                         driver: orm
                         model:  App\Entity\City
-                        repository: App\SearchRepository\CityRepository
+                        repository: App\SearchRepository\CityElasticaRepository
                         provider:
                             batch_size: 500
         user:
@@ -136,6 +136,6 @@ fos_elastica:
                     persistence:
                         driver: orm
                         model:  App\Entity\User
-                        repository: App\SearchRepository\UserRepository
+                        repository: App\SearchRepository\UserElasticaRepository
                         provider:
                             batch_size: 1000

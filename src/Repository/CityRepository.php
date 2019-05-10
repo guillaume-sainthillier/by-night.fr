@@ -28,7 +28,7 @@ class CityRepository extends EntityRepository
         return parent::createQueryBuilder('c')
             ->select('c.slug')
             ->join('App:Place', 'p', 'WITH', 'p.city = c')
-            ->join('App:Agenda', 'a', 'WITH', 'a.place = p')
+            ->join('App:Event', 'a', 'WITH', 'a.place = p')
             ->groupBy('c.slug')
             ->getQuery()
             ->iterate();

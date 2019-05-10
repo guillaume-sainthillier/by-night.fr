@@ -5,7 +5,7 @@ namespace App\Controller\City;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Social\Twitter;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,30 +60,30 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_agenda_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
+     * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_event_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function nextEventsAction(Location $location, $slug, $id = null, $page = 1)
     {
-        $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_agenda_prochaines_soirees', [
+        $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_prochaines_soirees', [
             'page' => $page,
         ]);
 
         if ($result instanceof Response) {
             return $result;
         }
-        $soiree = $result;
+        $event = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
+        $repo = $em->getRepository(Event::class);
 
-        $count = $repo->findAllNextCount($soiree);
+        $count = $repo->findAllNextCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('app_agenda_prochaines_soirees', [
-                'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
+            $hasNextLink = $this->generateUrl('app_event_prochaines_soirees', [
+                'slug' => $event->getSlug(),
+                'id' => $event->getId(),
                 'location' => $location->getSlug(),
                 'page' => $page + 1,
             ]);
@@ -93,8 +93,8 @@ class WidgetsController extends BaseController
 
         return $this->render('City/Hinclude/evenements_details.html.twig', [
             'page' => $page,
-            'place' => $soiree->getPlace(),
-            'soirees' => $repo->findAllNext($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            'place' => $event->getPlace(),
+            'events' => $repo->findAllNext($event, $page, self::WIDGET_ITEM_LIMIT),
             'current' => $current,
             'count' => $count,
             'hasNextLink' => $hasNextLink,
@@ -102,31 +102,31 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_agenda_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))3
+     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))3
      * @ReverseProxy(expires="tomorrow")
      */
     public function soireesSimilairesAction(Location $location, $slug, $id = null, $page = 1)
     {
-        $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_agenda_soirees_similaires', [
+        $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_soirees_similaires', [
             'page' => $page
         ]);
 
         if ($result instanceof Response) {
             return $result;
         }
-        $soiree = $result;
+        $event = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
+        $repo = $em->getRepository(Event::class);
 
-        $count = $repo->findAllSimilairesCount($soiree);
+        $count = $repo->findAllSimilairesCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('app_agenda_soirees_similaires', [
+            $hasNextLink = $this->generateUrl('app_event_soirees_similaires', [
                 'location' => $location->getSlug(),
-                'slug' => $soiree->getSlug(),
-                'id' => $soiree->getId(),
+                'slug' => $event->getSlug(),
+                'id' => $event->getId(),
                 'page' => $page + 1,
             ]);
         } else {
@@ -134,7 +134,7 @@ class WidgetsController extends BaseController
         }
 
         return $this->render('City/Hinclude/evenements.html.twig', [
-            'soirees' => $repo->findAllSimilaires($soiree, $page, self::WIDGET_ITEM_LIMIT),
+            'events' => $repo->findAllSimilaires($event, $page, self::WIDGET_ITEM_LIMIT),
             'current' => $current,
             'count' => $count,
             'hasNextLink' => $hasNextLink,
@@ -148,7 +148,7 @@ class WidgetsController extends BaseController
     public function topSoireesAction(Location $location, $page = 1)
     {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
+        $repo = $em->getRepository(Event::class);
 
         $current = $page * self::WIDGET_ITEM_LIMIT;
         $count = $repo->findTopSoireeCount($location);
@@ -164,7 +164,7 @@ class WidgetsController extends BaseController
 
         return $this->render('City/Hinclude/evenements.html.twig', [
             'location' => $location,
-            'soirees' => $repo->findTopSoiree($location, $page, self::WIDGET_ITEM_LIMIT),
+            'events' => $repo->findTopSoiree($location, $page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
             'count' => $count,

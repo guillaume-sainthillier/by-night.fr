@@ -32,6 +32,6 @@ class EventFetcher
     {
         $this->parserManager->add($parser);
 
-        return $this->parserManager->getAgendas();
+        return $this->parserManager->getEvents();
     }
 }

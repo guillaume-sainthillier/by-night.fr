@@ -28,7 +28,7 @@
             <h1 class="titrebloc text-center">{{ block('titre') }}</h1>
             <div class="row">
                 <div class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2 col-lg-6 col-lg-push-3 no-margin-form panel panel-primary search_container img-rounded">
-                    <form name="app_search_agenda" role="search"
+                    <form name="app_search_event" role="search"
                           action="{{ path('app_agenda_agenda', {'location': location.slug}) }}" method="POST">
                         <div class="row">
                             <div class="col-md-8">
@@ -160,7 +160,7 @@
                     'title': 'Organisateur',
                     'icon': 'flaticon-calendar60',
                     'color': 'purple',
-                    'link': path('app_agenda_new'),
+                    'link': path('app_event_new'),
                     'title_link': 'Créer un événement',
                     'text': "Vous êtes <strong>organisateur d'événements</strong> ou <strong>agence
                             de communication</strong> " ~ location.atName ~ " ? <strong>Publiez facilement</strong>

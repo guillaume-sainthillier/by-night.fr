@@ -8,7 +8,7 @@
 
 namespace App\Handler;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Place;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -27,9 +27,9 @@ class EchantillonHandler
     private $cityPlaces;
 
     /**
-     * @var Agenda[]
+     * @var Event[]
      */
-    private $agendas;
+    private $events;
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -39,7 +39,7 @@ class EchantillonHandler
 
     private function initEvents()
     {
-        $this->agendas = [];
+        $this->events = [];
     }
 
     private function initPlaces()
@@ -56,7 +56,7 @@ class EchantillonHandler
 
     public function clearEvents()
     {
-        unset($this->agendas);
+        unset($this->events);
         $this->initEvents();
     }
 
@@ -72,7 +72,7 @@ class EchantillonHandler
         $countryIds = [];
 
         foreach ($events as $event) {
-            /** @var Agenda $event */
+            /** @var Event $event */
             if ($event->getPlace() && $event->getPlace()->getCity()) {
                 $cityIds[$event->getPlace()->getCity()->getId()] = true;
             } elseif ($event->getPlace() && $event->getPlace()->getCountry()) {
@@ -110,7 +110,7 @@ class EchantillonHandler
     {
         $externalIds = [];
         foreach ($events as $event) {
-            /** @var Agenda $event */
+            /** @var Event $event */
             if ($event->getId() || ($event->getUser() && !$event->getExternalId())) {
                 continue;
             }
@@ -123,34 +123,34 @@ class EchantillonHandler
         }
 
         if (count($externalIds) > 0) {
-            $repoAgenda = $this->em->getRepository(Agenda::class);
-            $candidates = $repoAgenda->findBy(['externalId' => array_keys($externalIds)]);
+            $repoEvent = $this->em->getRepository(Event::class);
+            $candidates = $repoEvent->findBy(['externalId' => array_keys($externalIds)]);
             foreach ($candidates as $candidate) {
-                /** @var Agenda $candidate */
+                /** @var Event $candidate */
                 $this->addEvent($candidate);
             }
         }
     }
 
     /**
-     * @param Agenda $agenda
+     * @param Event $event
      *
      * @return Place[]
      */
-    public function getPlaceEchantillons(Agenda $agenda)
+    public function getPlaceEchantillons(Event $event)
     {
-        if ($agenda->getPlace()) {
-            $place = $this->searchPlaceByExternalId($agenda->getPlace()->getExternalId());
+        if ($event->getPlace()) {
+            $place = $this->searchPlaceByExternalId($event->getPlace()->getExternalId());
 
             if ($place) {
                 return [$place];
             }
         }
 
-        if ($agenda->getPlace() && $agenda->getPlace()->getCity()) {
-            return $this->cityPlaces[$agenda->getPlace()->getCity()->getId()] ?? [];
-        } elseif ($agenda->getPlace() && $agenda->getPlace()->getCountry()) {
-            return $this->countryPlaces[$agenda->getPlace()->getCountry()->getId()] ?? [];
+        if ($event->getPlace() && $event->getPlace()->getCity()) {
+            return $this->cityPlaces[$event->getPlace()->getCity()->getId()] ?? [];
+        } elseif ($event->getPlace() && $event->getPlace()->getCountry()) {
+            return $this->countryPlaces[$event->getPlace()->getCountry()->getId()] ?? [];
         }
 
         return [];
@@ -174,27 +174,27 @@ class EchantillonHandler
         return null;
     }
 
-    public function getEventEchantillons(Agenda $event)
+    public function getEventEchantillons(Event $event)
     {
         if ($event->getId() || ($event->getUser() && !$event->getExternalId())) {
             return [];
         }
 
         if ($event->getExternalId()) {
-            return isset($this->agendas[$event->getExternalId()]) ? [$this->agendas[$event->getExternalId()]] : [];
+            return isset($this->events[$event->getExternalId()]) ? [$this->events[$event->getExternalId()]] : [];
         }
 
         return [];
     }
 
-    private function addEvent(Agenda $event)
+    private function addEvent(Event $event)
     {
         if ($event->getExternalId()) {
-            $this->agendas[$event->getExternalId()] = $event;
+            $this->events[$event->getExternalId()] = $event;
         }
     }
 
-    public function addNewEvent(Agenda $event)
+    public function addNewEvent(Event $event)
     {
         $this->addEvent($event);
         if ($event->getPlace()) {

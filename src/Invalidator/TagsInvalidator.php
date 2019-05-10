@@ -8,7 +8,7 @@
 
 namespace App\Invalidator;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Calendrier;
 use App\Entity\City;
 use App\Entity\Place;
@@ -47,12 +47,12 @@ class TagsInvalidator
         $this->tags = [];
     }
 
-    public static function getEventTag(Agenda $event)
+    public static function getEventTag(Event $event)
     {
         return \sprintf('event-%d', $event->getId());
     }
 
-    public static function getTendanceTag(Agenda $event)
+    public static function getTendanceTag(Event $event)
     {
         return \sprintf('tendances-%d', $event->getId());
     }
@@ -84,10 +84,10 @@ class TagsInvalidator
 
     public function addCalendrier(Calendrier $calendrier)
     {
-        $this->tags[] = self::getTendanceTag($calendrier->getAgenda());
+        $this->tags[] = self::getTendanceTag($calendrier->getEvent());
     }
 
-    public function addEvent(Agenda $event)
+    public function addEvent(Event $event)
     {
         if ($event->getId()) {
             $this->tags[] = self::getEventTag($event);

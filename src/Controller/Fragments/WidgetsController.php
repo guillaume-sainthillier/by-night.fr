@@ -4,7 +4,7 @@ namespace App\Controller\Fragments;
 
 use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Calendrier;
 use App\Entity\User;
 use App\Parser\ProgrammeTVParser;
@@ -78,10 +78,10 @@ class WidgetsController extends BaseController
      * @Route("/_private/tendances/{id}", name="app_event_tendances", requirements={"id": "\d+"})
      * @ReverseProxy(expires="1 year")
      */
-    public function tendances(Agenda $agenda, DoctrineCache $memoryCache, FacebookAdmin $facebookAdmin)
+    public function tendances(Event $event, DoctrineCache $memoryCache, FacebookAdmin $facebookAdmin)
     {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
+        $repo = $em->getRepository(Event::class);
 
         $participer = false;
         $interet = false;
@@ -90,16 +90,16 @@ class WidgetsController extends BaseController
         $user = $this->getUser();
         if ($user) {
             $repoCalendrier = $em->getRepository(Calendrier::class);
-            $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'agenda' => $agenda]);
+            $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'event' => $event]);
             if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();
                 $interet = $calendrier->getInteret();
             }
 
-            if ($agenda->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
-                $key = 'users.' . $user->getId() . '.stats.' . $agenda->getId();
+            if ($event->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
+                $key = 'users.' . $user->getId() . '.stats.' . $event->getId();
                 if (!$memoryCache->contains($key)) {
-                    $stats = $facebookAdmin->getUserEventStats($agenda->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
+                    $stats = $facebookAdmin->getUserEventStats($event->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
                     $memoryCache->save($key, $stats);
                 }
                 $stats = $memoryCache->fetch($key);
@@ -107,7 +107,7 @@ class WidgetsController extends BaseController
                 if ($stats['participer'] || $stats['interet']) {
                     if (null === $calendrier) {
                         $calendrier = new Calendrier();
-                        $calendrier->setUser($user)->setAgenda($agenda);
+                        $calendrier->setUser($user)->setEvent($event);
                     }
 
                     $participer = $calendrier->getParticipe() || $stats['participer'];
@@ -124,10 +124,10 @@ class WidgetsController extends BaseController
         }
 
         return $this->render('City/Hinclude/tendances.html.twig', [
-            'soiree' => $agenda,
-            'tendances' => $repo->findAllTendances($agenda),
-            'count_participer' => $agenda->getParticipations() + $agenda->getFbParticipations(),
-            'count_interets' => $agenda->getInterets() + $agenda->getFbInterets(),
+            'event' => $event,
+            'tendances' => $repo->findAllTendances($event),
+            'count_participer' => $event->getParticipations() + $event->getFbParticipations(),
+            'count_interets' => $event->getInterets() + $event->getFbInterets(),
             'participer' => $participer,
             'interet' => $interet,
         ]);

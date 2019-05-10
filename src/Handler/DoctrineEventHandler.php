@@ -8,7 +8,7 @@
 
 namespace App\Handler;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Exploration;
@@ -17,7 +17,7 @@ use App\Entity\Site;
 use App\Entity\ZipCity;
 use App\Geocoder\PlaceGeocoder;
 use App\Reject\Reject;
-use App\Repository\AgendaRepository;
+use App\Repository\EventRepository;
 use App\Repository\CityRepository;
 use App\Repository\PlaceRepository;
 use App\Repository\ZipCityRepository;
@@ -36,9 +36,9 @@ class DoctrineEventHandler
     private $em;
 
     /**
-     * @var AgendaRepository
+     * @var EventRepository
      */
-    private $repoAgenda;
+    private $repoEvent;
 
     /**
      * @var PlaceRepository
@@ -83,7 +83,7 @@ class DoctrineEventHandler
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, PlaceGeocoder $geocoder)
     {
         $this->em = $em;
-        $this->repoAgenda = $em->getRepository(Agenda::class);
+        $this->repoEvent = $em->getRepository(Event::class);
         $this->repoPlace = $em->getRepository(Place::class);
         $this->repoCity = $em->getRepository(City::class);
         $this->repoZipCity = $em->getRepository(ZipCity::class);
@@ -95,19 +95,19 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda $event
+     * @param Event $event
      *
-     * @return Agenda
+     * @return Event
      */
-    public function handleOne(Agenda $event, bool $flush = true)
+    public function handleOne(Event $event, bool $flush = true)
     {
         return $this->handleMany([$event], $flush)[0];
     }
 
     /**
-     * @param Agenda[] $events
+     * @param Event[] $events
      *
-     * @return Agenda[]
+     * @return Event[]
      */
     public function handleManyCLI(array $events, bool $flush = true)
     {
@@ -133,9 +133,9 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[] $events
+     * @param Event[] $events
      *
-     * @return Agenda[]
+     * @return Event[]
      */
     public function handleMany(array $events, bool $flush = true)
     {
@@ -179,17 +179,17 @@ class DoctrineEventHandler
             return;
         }
 
-        $eventOwners = $this->repoAgenda->findBy([
+        $eventOwners = $this->repoEvent->findBy([
             'facebookOwnerId' => \array_keys($ids),
         ]);
 
-        $events = $this->repoAgenda->findBy([
+        $events = $this->repoEvent->findBy([
             'facebookEventId' => \array_keys($ids),
         ]);
 
         $events = \array_merge($events, $eventOwners);
         foreach ($events as $event) {
-            /** @var Agenda $event */
+            /** @var Event $event */
             if (isset($ids[$event->getFacebookEventId()])) {
                 $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
             }
@@ -218,9 +218,9 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[] $events
+     * @param Event[] $events
      *
-     * @return Agenda[]
+     * @return Event[]
      */
     private function getAllowedEvents(array $events)
     {
@@ -228,9 +228,9 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[] $events
+     * @param Event[] $events
      *
-     * @return Agenda[]
+     * @return Event[]
      */
     private function getNotAllowedEvents(array $events)
     {
@@ -240,7 +240,7 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[] $events
+     * @param Event[] $events
      *
      * @return array
      */
@@ -269,7 +269,7 @@ class DoctrineEventHandler
     /**
      * @param array $chunks
      *
-     * @return Agenda[]
+     * @return Event[]
      */
     private function unChunk(array $chunks)
     {
@@ -282,9 +282,9 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[] $events
+     * @param Event[] $events
      *
-     * @return Agenda[]
+     * @return Event[]
      */
     private function mergeWithDatabase(array $events, bool $flush)
     {
@@ -302,7 +302,7 @@ class DoctrineEventHandler
 
                 //Par événement
                 foreach ($currentEvents as $i => $event) {
-                    /** @var Agenda $event */
+                    /** @var Event $event */
                     $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
                     $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
 
@@ -352,7 +352,7 @@ class DoctrineEventHandler
 
     private function clearEvents()
     {
-        $this->em->clear(Agenda::class);
+        $this->em->clear(Event::class);
         $this->echantillonHandler->clearEvents();
     }
 
@@ -401,7 +401,7 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[] $events
+     * @param Event[] $events
      */
     private function doFilterAndClean(array $events)
     {
@@ -606,7 +606,7 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Agenda[] $events
+     * @param Event[] $events
      *
      * @return int[]
      */

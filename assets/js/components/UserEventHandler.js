@@ -9,8 +9,8 @@ var UserEventHandler = {
                 return confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?");
             });
 
-            var dateFrom = $("#agenda_dateDebut");
-            var dateTo = $("#agenda_dateFin");
+            var dateFrom = $("#event_dateDebut");
+            var dateTo = $("#event_dateFin");
 
             dateTo.datepicker('setStartDate', dateFrom.datepicker('getDate'));
             dateFrom.datepicker('setEndDate', dateTo.datepicker('getDate'));
@@ -45,7 +45,7 @@ var UserEventHandler = {
     },
     initWYSIWYG: function () {
         //SummerNote
-        $("#agenda_descriptif").summernote({
+        $("#event_descriptif").summernote({
             lang: 'fr-FR',
             toolbar: [
                 ['heading', ['style']],
@@ -84,7 +84,7 @@ var UserEventHandler = {
             }
         });
 
-        var $field = $('#agenda_adresse');
+        var $field = $('#event_adresse');
         // Proxy inputs typeahead events to addressPicker
         addressPicker.bindDefaultTypeaheadEvent($field);
         $(addressPicker).on('addresspicker:selected', function (event, result) {
@@ -98,7 +98,7 @@ var UserEventHandler = {
         });
 
         //Lieux
-        var $field = $('#agenda_placeName');
+        var $field = $('#event_placeName');
         // instantiate the placePicker suggestion engine (based on bloodhound)
         var placePicker = new AddressPicker({
             autocompleteService: {
@@ -112,7 +112,7 @@ var UserEventHandler = {
             UserEventHandler.assignGMapInfo(event, result);
 
             if (typeof result.placeResult.formatted_address !== "undefined" && result.placeResult.formatted_address) {
-                $('#agenda_adresse').typeahead('val', result.placeResult.formatted_address);
+                $('#event_adresse').typeahead('val', result.placeResult.formatted_address);
                 addressPicker.updateMap(event, result.placeResult);
             }
 
@@ -130,14 +130,14 @@ var UserEventHandler = {
 
     },
     assignGMapInfo: function (event, result) {
-        $('#agenda_latitude').val(result.lat());
-        $('#agenda_longitude').val(result.lng());
-        $('#agenda_placeCity').val(result.nameForType('locality'));
-        $('#agenda_placePostalCode').val(result.nameForType('postal_code'));
+        $('#event_latitude').val(result.lat());
+        $('#event_longitude').val(result.lng());
+        $('#event_placeCity').val(result.nameForType('locality'));
+        $('#event_placePostalCode').val(result.nameForType('postal_code'));
 
         var rue = ((result.nameForType('street_number') ? result.nameForType('street_number') : '') + ' ' + (result.nameForType('route') || '')).trim();
-        $('#agenda_placeStreet').val(rue);
-        $("#agenda_placeCountry").val(result.nameForType('country', true) || '');
+        $('#event_placeStreet').val(rue);
+        $("#event_placeCountry").val(result.nameForType('country', true) || '');
     }
 };
 

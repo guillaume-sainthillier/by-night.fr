@@ -4,7 +4,7 @@ namespace App\Controller\Api;
 
 use App\Annotation\ReverseProxy;
 use App\Entity\City;
-use App\SearchRepository\CityRepository;
+use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Knp\Component\Pager\PaginatorInterface;
@@ -37,7 +37,7 @@ class ApiController extends AbstractController
         if (!$term) {
             $results = [];
         } else {
-            /** @var CityRepository $repo */
+            /** @var CityElasticaRepository $repo */
             $repo = $repositoryManager->getRepository(City::class);
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);

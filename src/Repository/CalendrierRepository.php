@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -13,14 +13,14 @@ use Doctrine\ORM\EntityRepository;
  */
 class CalendrierRepository extends EntityRepository
 {
-    public function getLastDateParticipation(Agenda $soiree)
+    public function getLastDateParticipation(Event $event)
     {
         return $this->_em
             ->createQueryBuilder()
             ->select('MAX(c.lastDate)')
             ->from('App:Calendrier', 'c')
-            ->where('c.agenda = :agenda')
-            ->setParameters([':agenda' => $soiree])
+            ->where('c.event = :event')
+            ->setParameters([':event' => $event])
             ->getQuery()
             ->getSingleScalarResult();
     }

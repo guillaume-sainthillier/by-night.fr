@@ -4,10 +4,10 @@ namespace App\Controller\EspacePerso;
 
 use App\App\SocialManager;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Calendrier;
 use App\Factory\EventFactory;
-use App\Form\Type\AgendaType;
+use App\Form\Type\EventType;
 use App\Handler\DoctrineEventHandler;
 use App\Handler\ExplorationHandler;
 use App\Parser\Common\FaceBookParser;
@@ -24,63 +24,63 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class EventController extends BaseController
 {
     /**
-     * @Route("/annuler/{slug}", name="app_agenda_annuler", requirements={"slug": ".+"})
-     * @IsGranted("edit", subject="agenda")
+     * @Route("/annuler/{slug}", name="app_event_annuler", requirements={"slug": ".+"})
+     * @IsGranted("edit", subject="event")
      */
-    public function annulerAction(Request $request, Agenda $agenda)
+    public function annulerAction(Request $request, Event $event)
     {
         $annuler = $request->get('annuler', 'true');
         $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
 
         $em = $this->getDoctrine()->getManager();
-        $agenda->setModificationDerniereMinute($modificationDerniereMinute);
-        $em->merge($agenda);
+        $event->setModificationDerniereMinute($modificationDerniereMinute);
+        $em->merge($event);
         $em->flush();
 
         return new JsonResponse(['success' => true]);
     }
 
     /**
-     * @Route("/brouillon/{slug}", name="app_agenda_brouillon", requirements={"slug": ".+"})
-     * @IsGranted("edit", subject="agenda")
+     * @Route("/brouillon/{slug}", name="app_event_brouillon", requirements={"slug": ".+"})
+     * @IsGranted("edit", subject="event")
      */
-    public function brouillonAction(Request $request, Agenda $agenda)
+    public function brouillonAction(Request $request, Event $event)
     {
         $brouillon = $request->get('brouillon', 'true');
         $isBrouillon = 'true' === $brouillon;
 
         $em = $this->getDoctrine()->getManager();
-        $agenda->setIsBrouillon($isBrouillon);
-        $em->merge($agenda);
+        $event->setIsBrouillon($isBrouillon);
+        $em->merge($event);
         $em->flush();
 
         return new JsonResponse(['success' => true]);
     }
 
     /**
-     * @Route("/mes-soirees", name="app_agenda_list")
+     * @Route("/mes-soirees", name="app_event_list")
      */
     public function indexAction()
     {
         $user = $this->getUser();
-        $soirees = $this->getDoctrine()->getRepository(Agenda::class)->findAllByUser($user);
+        $events = $this->getDoctrine()->getRepository(Event::class)->findAllByUser($user);
 
         $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
 
         return $this->render('EspacePerso/liste.html.twig', [
-            'soirees' => $soirees,
+            'events' => $events,
             'canSynchro' => $canSynchro,
         ]);
     }
 
     /**
-     * @Route("/supprimer/{id}", name="app_agenda_delete", requirements={"id": "\d+"})
-     * @IsGranted("edit", subject="agenda")
+     * @Route("/supprimer/{id}", name="app_event_delete", requirements={"id": "\d+"})
+     * @IsGranted("edit", subject="event")
      */
-    public function deleteAction(Agenda $agenda)
+    public function deleteAction(Event $event)
     {
         $em = $this->getDoctrine()->getManager();
-        $em->remove($agenda);
+        $em->remove($event);
         $em->flush();
 
         $this->addFlash(
@@ -88,16 +88,16 @@ class EventController extends BaseController
             'Votre événement a bien été supprimé'
         );
 
-        return $this->redirect($this->generateUrl('app_agenda_list'));
+        return $this->redirect($this->generateUrl('app_event_list'));
     }
 
     /**
-     * @Route("/corriger/{slug}", name="app_agenda_edit", requirements={"slug": ".+"})
-     * @IsGranted("edit", subject="agenda")
+     * @Route("/corriger/{slug}", name="app_event_edit", requirements={"slug": ".+"})
+     * @IsGranted("edit", subject="event")
      */
-    public function editAction(Request $request, Agenda $agenda, EventConstraintValidator $validator)
+    public function editAction(Request $request, Event $event, EventConstraintValidator $validator)
     {
-        $form = $this->createEditForm($agenda);
+        $form = $this->createEditForm($event);
 
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
@@ -105,20 +105,20 @@ class EventController extends BaseController
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash('success', 'Votre événement a bien été modifié');
 
-            return $this->redirect($this->generateUrl('app_agenda_list'));
+            return $this->redirect($this->generateUrl('app_event_list'));
         }
 
-        $formDelete = $this->createDeleteForm($agenda);
+        $formDelete = $this->createDeleteForm($event);
 
         return $this->render('EspacePerso/edit.html.twig', [
             'form' => $form->createView(),
-            'agenda' => $agenda,
+            'event' => $event,
             'form_delete' => $formDelete->createView(),
         ]);
     }
 
     /**
-     * @Route("/import", name="app_agenda_import_events")
+     * @Route("/import", name="app_event_import_events")
      * @IsGranted("ROLE_FACEBOOK_LIST_EVENTS")
      */
     public function importAction(FacebookListEvents $importer, ExplorationHandler $explorationHandler, EventFactory $eventFactory, FaceBookParser $parser, DoctrineEventHandler $handler, ValidatorInterface $validator)
@@ -128,7 +128,7 @@ class EventController extends BaseController
 
         $events = [];
         foreach ($fb_events as $fb_event) {
-            $array_event = $parser->getInfoAgenda($fb_event);
+            $array_event = $parser->getInfoEvent($fb_event);
             $event = $eventFactory->fromArray($array_event);
             $events[] = $event->setUser($user);
         }
@@ -158,7 +158,7 @@ class EventController extends BaseController
             }
         }
 
-        return $this->redirectToRoute('app_agenda_list');
+        return $this->redirectToRoute('app_event_list');
     }
 
     private function addImportMessage(ExplorationHandler $explorationHandler)
@@ -205,21 +205,21 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/espace-perso/nouvelle-soiree", name="app_agenda_new")
+     * @Route("/espace-perso/nouvelle-soiree", name="app_event_new")
      */
     public function newAction(Request $request, EventConstraintValidator $validator)
     {
         $user = $this->getUser();
-        $agenda = (new Agenda())
+        $event = (new Event())
             ->setUser($user)
             ->setParticipations(1);
 
         $calendrier = (new Calendrier())
             ->setUser($user)
             ->setParticipe(true);
-        $agenda->addCalendrier($calendrier);
+        $event->addCalendrier($calendrier);
 
-        $form = $this->createCreateForm($agenda);
+        $form = $this->createCreateForm($event);
         $form->handleRequest($request);
         $validator->setUpdatabilityCkeck(false);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -229,7 +229,7 @@ class EventController extends BaseController
                 'Votre événement a bien été créé. Merci !'
             );
 
-            return $this->redirect($this->generateUrl('app_agenda_list'));
+            return $this->redirect($this->generateUrl('app_event_list'));
         }
 
         return $this->render('EspacePerso/new.html.twig', [
@@ -237,11 +237,11 @@ class EventController extends BaseController
         ]);
     }
 
-    protected function createDeleteForm(Agenda $agenda)
+    protected function createDeleteForm(Event $event)
     {
-        return $this->createFormBuilder($agenda, [
-            'action' => $this->generateUrl('app_agenda_delete', [
-                'id' => $agenda->getId(),
+        return $this->createFormBuilder($event, [
+            'action' => $this->generateUrl('app_event_delete', [
+                'id' => $event->getId(),
             ]),
             'method' => 'DELETE',
         ])
@@ -254,9 +254,9 @@ class EventController extends BaseController
             ->getForm();
     }
 
-    protected function createEditForm(Agenda $agenda)
+    protected function createEditForm(Event $event)
     {
-        return $this->createForm(AgendaType::class, $agenda)
+        return $this->createForm(EventType::class, $event)
             ->add('ajouter', SubmitType::class, [
                 'label' => 'Enregistrer',
                 'attr' => [
@@ -265,7 +265,7 @@ class EventController extends BaseController
             ]);
     }
 
-    protected function getAgendaOptions(SocialManager $socialManager)
+    protected function getEventOptions(SocialManager $socialManager)
     {
         $user = $this->getUser();
         $siteInfo = $socialManager->getSiteInfo();
@@ -276,9 +276,9 @@ class EventController extends BaseController
         ];
     }
 
-    protected function createCreateForm(Agenda $agenda)
+    protected function createCreateForm(Event $event)
     {
-        return $this->createForm(AgendaType::class, $agenda)
+        return $this->createForm(EventType::class, $event)
             ->add('ajouter', SubmitType::class, [
                 'label' => 'Enregistrer',
                 'attr' => [
@@ -291,27 +291,27 @@ class EventController extends BaseController
      * @Route("/participer/{id}", name="app_user_participer", defaults={"participer": true, "interet": false})
      * @Route("/interet/{id}", name="app_user_interesser", defaults={"participer": false, "interet": true})
      */
-    public function participerAction(Agenda $agenda, $participer, $interet)
+    public function participerAction(Event $event, $participer, $interet)
     {
         $user = $this->getUser();
 
         $em = $this->getDoctrine()->getManager();
-        $calendrier = $em->getRepository(Calendrier::class)->findOneBy(['user' => $user, 'agenda' => $agenda]);
+        $calendrier = $em->getRepository(Calendrier::class)->findOneBy(['user' => $user, 'event' => $event]);
 
         if (null === $calendrier) {
             $calendrier = new Calendrier();
-            $calendrier->setUser($user)->setAgenda($agenda);
+            $calendrier->setUser($user)->setEvent($event);
         }
         $calendrier->setParticipe($participer)->setInteret($interet);
 
         $em->persist($calendrier);
         $em->flush();
 
-        $repo = $em->getRepository(Agenda::class);
-        $participations = $repo->getCountTendancesParticipation($agenda);
-        $interets = $repo->getCountTendancesInterets($agenda);
+        $repo = $em->getRepository(Event::class);
+        $participations = $repo->getCountTendancesParticipation($event);
+        $interets = $repo->getCountTendancesInterets($event);
 
-        $agenda->setParticipations($participations)->setInterets($interets);
+        $event->setParticipations($participations)->setInterets($interets);
         $em->flush();
 
         return new JsonResponse([

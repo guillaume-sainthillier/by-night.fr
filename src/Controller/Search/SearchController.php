@@ -2,9 +2,9 @@
 
 namespace App\Controller\Search;
 
-use App\Search\SearchAgenda;
-use App\SearchRepository\AgendaRepository;
-use App\SearchRepository\UserRepository;
+use App\Search\SearchEvent;
+use App\SearchRepository\EventRepository;
+use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,16 +16,16 @@ class SearchController extends AbstractController
 {
     private function searchEvents(RepositoryManagerInterface $rm, $q)
     {
-        /** @var AgendaRepository $repoSearch */
-        $repoSearch = $rm->getRepository('App:Agenda');
-        $search = (new SearchAgenda())->setTerm($q);
+        /** @var EventRepository $repoSearch */
+        $repoSearch = $rm->getRepository('App:Event');
+        $search = (new SearchEvent())->setTerm($q);
 
         return $repoSearch->findWithSearch($search, true);
     }
 
     private function searchUsers(RepositoryManagerInterface $rm, $q)
     {
-        /** @var UserRepository $repo */
+        /** @var UserElasticaRepository $repo */
         $repo = $rm->getRepository('App:User');
 
         return $repo->findWithSearch($q);
@@ -56,7 +56,7 @@ class SearchController extends AbstractController
         }
 
         $nbSoirees = 0;
-        $soirees = [];
+        $events = [];
         $nbUsers = 0;
         $users = [];
 
@@ -65,7 +65,7 @@ class SearchController extends AbstractController
                 $query = $this->searchEvents($rm, $q);
                 $pagination = $paginator->paginate($query, $page, $maxItems);
                 $nbSoirees = $pagination->getTotalItemCount();
-                $soirees = $pagination;
+                $events = $pagination;
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('Search/content_events.html.twig', [
@@ -73,7 +73,7 @@ class SearchController extends AbstractController
                         'term' => $q,
                         'maxItems' => $maxItems,
                         'page' => $page,
-                        'events' => $soirees,
+                        'events' => $events,
                     ]);
                 }
             }
@@ -101,7 +101,7 @@ class SearchController extends AbstractController
             'type' => $type,
             'page' => $page,
             'maxItems' => $maxItems,
-            'events' => $soirees,
+            'events' => $events,
             'nbEvents' => $nbSoirees,
             'users' => $users,
             'nbUsers' => $nbUsers,

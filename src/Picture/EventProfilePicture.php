@@ -8,7 +8,7 @@
 
 namespace App\Picture;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Twig\AssetExtension;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
@@ -36,52 +36,52 @@ class EventProfilePicture
         $this->packages = $packages;
     }
 
-    public function getOriginalPictureUrl(Agenda $agenda)
+    public function getOriginalPictureUrl(Event $event)
     {
-        if ($agenda->getPath()) {
+        if ($event->getPath()) {
             return $this->packages->getUrl(
-                $this->helper->asset($agenda, 'file')
+                $this->helper->asset($event, 'file')
             );
         }
 
-        if ($agenda->getSystemPath()) {
+        if ($event->getSystemPath()) {
             return $this->packages->getUrl(
-                $this->helper->asset($agenda, 'systemFile')
+                $this->helper->asset($event, 'systemFile')
             );
         }
 
-        if ($agenda->getUrl()) {
-            return $agenda->getUrl();
+        if ($event->getUrl()) {
+            return $event->getUrl();
         }
 
         return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png');
     }
 
-    public function getOriginalPicture(Agenda $agenda)
+    public function getOriginalPicture(Event $event)
     {
-        if ($agenda->getPath()) {
+        if ($event->getPath()) {
             return $this->packages->getUrl(
-                $this->helper->asset($agenda, 'file')
+                $this->helper->asset($event, 'file')
             );
         }
 
-        if ($agenda->getSystemPath()) {
+        if ($event->getSystemPath()) {
             return $this->packages->getUrl(
-                $this->helper->asset($agenda, 'systemFile')
+                $this->helper->asset($event, 'systemFile')
             );
         }
 
-        if ($agenda->getUrl()) {
-            return $agenda->getUrl();
+        if ($event->getUrl()) {
+            return $event->getUrl();
         }
 
         return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png');
     }
 
-    public function getPictureUrl(Agenda $agenda, $thumb = 'thumbs_evenement')
+    public function getPictureUrl(Event $event, $thumb = 'thumbs_evenement')
     {
-        if ($agenda->getPath()) {
-            $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
+        if ($event->getPath()) {
+            $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
             $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
 
             return $this->packages->getUrl(
@@ -89,8 +89,8 @@ class EventProfilePicture
             );
         }
 
-        if ($agenda->getSystemPath()) {
-            $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
+        if ($event->getSystemPath()) {
+            $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
             $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
 
             return $this->packages->getUrl(
@@ -98,25 +98,25 @@ class EventProfilePicture
             );
         }
 
-        if ($agenda->getUrl()) {
-            return $agenda->getUrl();
+        if ($event->getUrl()) {
+            return $event->getUrl();
         }
 
         return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', $thumb);
     }
 
-    public function getPicture(Agenda $agenda, $thumb = 'thumbs_evenement')
+    public function getPicture(Event $event, $thumb = 'thumbs_evenement')
     {
-        if ($agenda->getPath()) {
-            return $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'file'), $thumb);
+        if ($event->getPath()) {
+            return $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
         }
 
-        if ($agenda->getSystemPath()) {
-            return $this->cacheManager->getBrowserPath($this->helper->asset($agenda, 'systemFile'), $thumb);
+        if ($event->getSystemPath()) {
+            return $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
         }
 
-        if ($agenda->getUrl()) {
-            return $agenda->getUrl();
+        if ($event->getUrl()) {
+            return $event->getUrl();
         }
 
         return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', $thumb);

@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Place;
 use DateTime;
 
@@ -20,22 +20,22 @@ class Cleaner
         $this->util = $util;
     }
 
-    public function cleanEvent(Agenda $agenda)
+    public function cleanEvent(Event $event)
     {
-        if (!$agenda->getDateFin() instanceof DateTime) {
-            $agenda->setDateFin($agenda->getDateDebut());
+        if (!$event->getDateFin() instanceof DateTime) {
+            $event->setDateFin($event->getDateDebut());
         }
 
-        $agenda->setNom($this->clean($agenda->getNom()) ?: null)
-            ->setDescriptif($this->clean($agenda->getDescriptif()) ?: null)
-            ->setReservationEmail(\substr($agenda->getReservationEmail(), 0, 255) ?: null)
-            ->setReservationTelephone(\substr($agenda->getReservationTelephone(), 0, 255) ?: null)
-            ->setReservationInternet(\substr($agenda->getReservationInternet(), 0, 512) ?: null)
-            ->setAdresse(\substr($agenda->getAdresse(), 0, 255) ?: null)
-            ->setCategorieManifestation(\substr($agenda->getCategorieManifestation(), 0, 128) ?: null)
-            ->setThemeManifestation(\substr($agenda->getThemeManifestation(), 0, 128) ?: null)
-            ->setTypeManifestation(\substr($agenda->getTypeManifestation(), 0, 128) ?: null)
-            ->setHoraires(\substr($agenda->getHoraires(), 0, 255) ?: null);
+        $event->setNom($this->clean($event->getNom()) ?: null)
+            ->setDescriptif($this->clean($event->getDescriptif()) ?: null)
+            ->setReservationEmail(\substr($event->getReservationEmail(), 0, 255) ?: null)
+            ->setReservationTelephone(\substr($event->getReservationTelephone(), 0, 255) ?: null)
+            ->setReservationInternet(\substr($event->getReservationInternet(), 0, 512) ?: null)
+            ->setAdresse(\substr($event->getAdresse(), 0, 255) ?: null)
+            ->setCategorieManifestation(\substr($event->getCategorieManifestation(), 0, 128) ?: null)
+            ->setThemeManifestation(\substr($event->getThemeManifestation(), 0, 128) ?: null)
+            ->setTypeManifestation(\substr($event->getTypeManifestation(), 0, 128) ?: null)
+            ->setHoraires(\substr($event->getHoraires(), 0, 255) ?: null);
     }
 
     public function cleanPlace(Place $place)

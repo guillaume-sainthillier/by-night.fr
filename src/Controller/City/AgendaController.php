@@ -5,12 +5,13 @@ namespace App\Controller\City;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Agenda;
 use App\Entity\City;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Form\Type\SearchType;
-use App\Repository\AgendaRepository;
-use App\Search\SearchAgenda;
+use App\Repository\EventRepository;
+use App\Search\SearchEvent;
+use App\SearchRepository\EventElasticaRepository;
 use Doctrine\Common\Cache\Cache as DoctrineCache;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -22,7 +23,7 @@ class AgendaController extends BaseController
 {
     const EVENT_PER_PAGE = 15;
 
-    protected function handleSearch(SearchAgenda $search, Location $location, $type, $tag, Place $place = null)
+    protected function handleSearch(SearchEvent $search, Location $location, $type, $tag, Place $place = null)
     {
         $term = null;
         if (null !== $place) {
@@ -37,24 +38,19 @@ class AgendaController extends BaseController
             $formAction = $this->generateUrl('app_agenda_sortir', ['type' => $type, 'location' => $location->getSlug()]);
             switch ($type) {
                 case 'exposition':
-                    $term = \App\SearchRepository\AgendaRepository::EXPO_TERMS;
-
+                    $term = EventElasticaRepository::EXPO_TERMS;
                     break;
                 case 'concert':
-                    $term = \App\SearchRepository\AgendaRepository::CONCERT_TERMS;
-
+                    $term = EventElasticaRepository::CONCERT_TERMS;
                     break;
                 case 'famille':
-                    $term = \App\SearchRepository\AgendaRepository::FAMILY_TERMS;
-
+                    $term = EventElasticaRepository::FAMILY_TERMS;
                     break;
                 case 'spectacle':
-                    $term = \App\SearchRepository\AgendaRepository::SHOW_TERMS;
-
+                    $term = EventElasticaRepository::SHOW_TERMS;
                     break;
                 case 'etudiant':
-                    $term = \App\SearchRepository\AgendaRepository::STUDENT_TERMS;
-
+                    $term = EventElasticaRepository::STUDENT_TERMS;
                     break;
             }
         } else {
@@ -109,10 +105,10 @@ class AgendaController extends BaseController
 
         //Récupération du repo des événements
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
+        $repo = $em->getRepository(Event::class);
 
         //Recherche des événements
-        $search = new SearchAgenda();
+        $search = new SearchEvent();
         $place = null;
 
         if (null !== $slug) {
@@ -147,12 +143,12 @@ class AgendaController extends BaseController
         }
 
         //Recherche ElasticSearch
-        $repository = $repositoryManager->getRepository(Agenda::class);
+        $repository = $repositoryManager->getRepository(Event::class);
         $results = $repository->findWithSearch($search);
 
         $pagination = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
         $nbSoireesTotales = $pagination->getTotalItemCount();
-        $soirees = $pagination;
+        $events = $pagination;
 
         return $this->render('City/Agenda/index.html.twig', [
             'location' => $location,
@@ -161,7 +157,7 @@ class AgendaController extends BaseController
             'place' => $place,
             'tag' => $tag,
             'type' => $type,
-            'soirees' => $soirees,
+            'events' => $events,
             'nbEvents' => $nbSoireesTotales,
             'maxPerEvent' => self::EVENT_PER_PAGE,
             'page' => $page,
@@ -173,16 +169,16 @@ class AgendaController extends BaseController
         ]);
     }
 
-    private function getTypesEvenements(DoctrineCache $cache, AgendaRepository $repo, Location $location)
+    private function getTypesEvenements(DoctrineCache $cache, EventRepository $repo, Location $location)
     {
         $key = 'categories_evenements.' . $location->getSlug();
 
         if (!$cache->contains($key)) {
-            $soirees_type_manifestation = $repo->getTypesEvenements($location);
+            $events_type_manifestation = $repo->getTypesEvenements($location);
             $type_manifestation = [];
 
-            foreach ($soirees_type_manifestation as $soiree_type_manifestation) {//
-                $types_manifestation = \explode(',', $soiree_type_manifestation);
+            foreach ($events_type_manifestation as $event_type_manifestation) {//
+                $types_manifestation = \explode(',', $event_type_manifestation);
                 foreach ($types_manifestation as $type) {
                     $type = \array_map('trim', \explode('//', $type))[0];
                     if (!\in_array($type, $type_manifestation) && '' != $type) {
@@ -197,12 +193,12 @@ class AgendaController extends BaseController
         return $cache->fetch($key);
     }
 
-    private function getPlaces(DoctrineCache $cache, AgendaRepository $repo, Location $location)
+    private function getPlaces(DoctrineCache $cache, EventRepository $repo, Location $location)
     {
         $key = 'places.' . $location->getSlug();
 
         if (!$cache->contains($key)) {
-            $places = $repo->getAgendaPlaces($location);
+            $places = $repo->getEventPlaces($location);
             $lieux = array();
             foreach ($places as $place) {
                 $lieux[$place->getNom()] = $place->getId();

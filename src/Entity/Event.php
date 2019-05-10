@@ -20,24 +20,24 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * Agenda.
+ * Event.
  *
  * @ORM\Table(name="Agenda", indexes={
- *   @ORM\Index(name="agenda_theme_manifestation_idx", columns={"theme_manifestation"}),
- *   @ORM\Index(name="agenda_type_manifestation_idx", columns={"type_manifestation"}),
- *   @ORM\Index(name="agenda_categorie_manifestation_idx", columns={"categorie_manifestation"}),
- *   @ORM\Index(name="agenda_search_idx", columns={"place_id", "date_fin", "date_debut"}),
- *   @ORM\Index(name="agenda_fb_participations", columns={"date_fin", "fb_participations", "fb_interets"}),
- *   @ORM\Index(name="agenda_external_id_idx", columns={"external_id"})
+ *   @ORM\Index(name="event_theme_manifestation_idx", columns={"theme_manifestation"}),
+ *   @ORM\Index(name="event_type_manifestation_idx", columns={"type_manifestation"}),
+ *   @ORM\Index(name="event_categorie_manifestation_idx", columns={"categorie_manifestation"}),
+ *   @ORM\Index(name="event_search_idx", columns={"place_id", "date_fin", "date_debut"}),
+ *   @ORM\Index(name="event_fb_participations", columns={"date_fin", "fb_participations", "fb_interets"}),
+ *   @ORM\Index(name="event_external_id_idx", columns={"external_id"})
  * })
  *
- * @ORM\Entity(repositoryClass="App\Repository\AgendaRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
  * @EventConstraint
  */
-class Agenda implements GeolocalizeInterface
+class Event implements GeolocalizeInterface
 {
     const INDEX_FROM = '-6 months';
     const INDEX_TO = '+2 years';
@@ -307,7 +307,7 @@ class Agenda implements GeolocalizeInterface
     protected $fbPostSystemId;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      */
     protected $calendriers;
 
@@ -318,7 +318,7 @@ class Agenda implements GeolocalizeInterface
     protected $site;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="agenda", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation" = "DESC"})
      */
     protected $commentaires;
@@ -460,9 +460,9 @@ class Agenda implements GeolocalizeInterface
 
     /**
      * @param Reject|null $reject
-     * @return Agenda
+     * @return Event
      */
-    public function setReject(?Reject $reject): Agenda
+    public function setReject(?Reject $reject): Event
     {
         $this->reject = $reject;
         return $this;
@@ -478,9 +478,9 @@ class Agenda implements GeolocalizeInterface
 
     /**
      * @param Reject|null $placeReject
-     * @return Agenda
+     * @return Event
      */
-    public function setPlaceReject(?Reject $placeReject): Agenda
+    public function setPlaceReject(?Reject $placeReject): Event
     {
         $this->placeReject = $placeReject;
         return $this;
@@ -506,7 +506,7 @@ class Agenda implements GeolocalizeInterface
      *
      * @param File|UploadedFile $image
      *
-     * @return Agenda
+     * @return Event
      */
     public function setFile(File $image = null)
     {
@@ -535,7 +535,7 @@ class Agenda implements GeolocalizeInterface
      *
      * @param File|UploadedFile $image
      *
-     * @return Agenda
+     * @return Event
      */
     public function setSystemFile(File $image = null)
     {
@@ -1183,7 +1183,7 @@ class Agenda implements GeolocalizeInterface
     {
         if (!$this->calendriers->contains($calendrier)) {
             $this->calendriers[] = $calendrier;
-            $calendrier->setAgenda($this);
+            $calendrier->setEvent($this);
         }
 
         return $this;
@@ -1194,8 +1194,8 @@ class Agenda implements GeolocalizeInterface
         if ($this->calendriers->contains($calendrier)) {
             $this->calendriers->removeElement($calendrier);
             // set the owning side to null (unless already changed)
-            if ($calendrier->getAgenda() === $this) {
-                $calendrier->setAgenda(null);
+            if ($calendrier->getEvent() === $this) {
+                $calendrier->setEvent(null);
             }
         }
 
@@ -1226,7 +1226,7 @@ class Agenda implements GeolocalizeInterface
     {
         if (!$this->commentaires->contains($commentaire)) {
             $this->commentaires[] = $commentaire;
-            $commentaire->setAgenda($this);
+            $commentaire->setEvent($this);
         }
 
         return $this;
@@ -1237,8 +1237,8 @@ class Agenda implements GeolocalizeInterface
         if ($this->commentaires->contains($commentaire)) {
             $this->commentaires->removeElement($commentaire);
             // set the owning side to null (unless already changed)
-            if ($commentaire->getAgenda() === $this) {
-                $commentaire->setAgenda(null);
+            if ($commentaire->getEvent() === $this) {
+                $commentaire->setEvent(null);
             }
         }
 

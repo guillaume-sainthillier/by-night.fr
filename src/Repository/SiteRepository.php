@@ -19,7 +19,7 @@ class SiteRepository extends EntityRepository
             ->createQueryBuilder('s')
             ->select('s.nom, s.subdomain, count(DISTINCT u.id) AS count_users, count(DISTINCT a.id) as count_events')
             ->leftJoin('App:User', 'u', Expr\Join::WITH, 'u.site = s')
-            ->leftJoin('App:Agenda', 'a', Expr\Join::WITH, 'a.site = s')
+            ->leftJoin('App:Event', 'a', Expr\Join::WITH, 'a.site = s')
             ->orderBy('s.nom')
             ->groupBy('s.id')
             ->getQuery()

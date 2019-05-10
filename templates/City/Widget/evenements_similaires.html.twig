@@ -6,9 +6,9 @@
 {% block body %}
     <div>
         {{ render_esi(controller('App\\Controller\\City\\WidgetsController::soireesSimilairesAction', {
-            'slug': soiree.slug,
-            'id': soiree.id,
-            'location': soiree.locationSlug
+            'slug': event.slug,
+            'id': event.id,
+            'location': event.locationSlug
         })) }}
     </div>
 {% endblock %}

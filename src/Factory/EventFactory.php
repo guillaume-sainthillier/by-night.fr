@@ -8,7 +8,7 @@
 
 namespace App\Factory;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -27,11 +27,11 @@ class EventFactory
     /**
      * @param array $datas
      *
-     * @return Agenda
+     * @return Event
      */
     public function fromArray(array $datas)
     {
-        $agenda = new Agenda();
+        $event = new Event();
 
         foreach ($datas as $field => $value) {
 
@@ -39,9 +39,9 @@ class EventFactory
             if (is_array($value) && isset($value['date'])) {
                 $value = new \DateTime($value['date'], new \DateTimeZone($value['timezone']));
             }
-            $this->propertyAccessor->setValue($agenda, $field, $value);
+            $this->propertyAccessor->setValue($event, $field, $value);
         }
 
-        return $agenda;
+        return $event;
     }
 }

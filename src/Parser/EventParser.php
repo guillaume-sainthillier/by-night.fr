@@ -12,7 +12,7 @@ use App\Entity\Site;
  * @author Guillaume SAINTHILLIER
  */
 
-abstract class AgendaParser implements ParserInterface
+abstract class EventParser implements ParserInterface
 {
     /**
      * Url du site à parser.
@@ -29,7 +29,7 @@ abstract class AgendaParser implements ParserInterface
      */
     protected $site;
 
-    abstract public function getRawAgendas();
+    abstract public function getRawEvents();
 
     public function addUrl($url)
     {
@@ -58,7 +58,7 @@ abstract class AgendaParser implements ParserInterface
     public function parse()
     {
         //Tableau des informations récoltées
-        return $this->getRawAgendas();
+        return $this->getRawEvents();
     }
 
     protected function parseDate($date)

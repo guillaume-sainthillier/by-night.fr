@@ -1,10 +1,10 @@
-{% if soirees|length > 0 %}
+{% if events|length > 0 %}
     {% if partial and page > 1 %}
         <hr/>
     {% endif %}
-    {% include "City/Event/block_preview_event.html.twig" with({'events': soirees, 'page': page}) %}
+    {% include "City/Event/block_preview_event.html.twig" with({'events': events, 'page': page}) %}
     {% include "ad2.html.twig" %}
-    {% if soirees|length == maxPerEvent %}
+    {% if events|length == maxPerEvent %}
         <div>
             <a id="paginate"
                class="btn btn-primary btn-lg btn-raised btn-block paginate"

@@ -3,7 +3,7 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -13,7 +13,7 @@ class EventVoter extends Voter
     const EDIT = 'edit';
     const DELETE = 'delete';
 
-    private function canEdit(Agenda $event, User $user) {
+    private function canEdit(Event $event, User $user) {
         if($event->getUser() === $user) {
             return true;
         }
@@ -21,7 +21,7 @@ class EventVoter extends Voter
         return $user->hasRole('ROLE_ADMIN');
     }
 
-    private function canDelete(Agenda $event, User $user) {
+    private function canDelete(Event $event, User $user) {
         return $this->canEdit($event, $user);
     }
 
@@ -45,6 +45,6 @@ class EventVoter extends Voter
 
     protected function supports($attribute, $subject)
     {
-        return $subject instanceof Agenda;
+        return $subject instanceof Event;
     }
 }

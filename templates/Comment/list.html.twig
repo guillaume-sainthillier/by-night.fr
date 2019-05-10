@@ -35,7 +35,7 @@
 
     {% if nb_comments > ((page)*offset) %}
         {% block load_more %}
-            <div class="load_more" data-url="{{ path('app_comment_list',{'id': soiree.id ,'page': (page+1) }) }}">
+            <div class="load_more" data-url="{{ path('app_comment_list',{'id': event.id ,'page': (page+1) }) }}">
                 <button type="button" class="btn btn-primary btn-raised btn-lg btn-block btn-raised">
                     Plus
                 </button>

@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -27,10 +27,10 @@ class TBNController extends AbstractController
         return $minuit - \time();
     }
 
-    protected function checkEventUrl($locationSlug, $eventSlug, $eventId, $routeName = 'app_agenda_details', array $extraParams = [])
+    protected function checkEventUrl($locationSlug, $eventSlug, $eventId, $routeName = 'app_event_details', array $extraParams = [])
     {
         $em = $this->getDoctrine()->getManager();
-        $repoEvent = $em->getRepository(Agenda::class);
+        $repoEvent = $em->getRepository(Event::class);
 
         if (!$eventId) {
             $event = $repoEvent->findOneBy(['slug' => $eventSlug]);

@@ -4,7 +4,7 @@ namespace App\Controller\Comment;
 
 use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
@@ -18,19 +18,19 @@ class CommentController extends BaseController
     /**
      * @Route("/form/{id}", name="app_comment_form", requirements={"id": "\d+"})
      */
-    public function form(Agenda $soiree)
+    public function form(Event $event)
     {
         $comment = new Comment();
 
         $form = null;
         if ($this->getUser()) {
-            $form = $this->getCreateForm($comment, $soiree)->createView();
+            $form = $this->getCreateForm($comment, $event)->createView();
         }
 
         return $this->render('Comment/list_and_form.html.twig', [
-            'nb_comments' => $this->getNbComments($soiree),
-            'comments' => $this->getCommentaires($soiree, 1, 10),
-            'soiree' => $soiree,
+            'nb_comments' => $this->getNbComments($event),
+            'comments' => $this->getCommentaires($event, 1, 10),
+            'event' => $event,
             'page' => 1,
             'offset' => 10,
             'form' => $form,
@@ -41,16 +41,16 @@ class CommentController extends BaseController
      * @Route("/{id}/{page}", name="app_comment_list", requirements={"id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function listAction(Agenda $soiree, $page = 1)
+    public function listAction(Event $event, $page = 1)
     {
         $offset = 10;
         $comment = new Comment();
-        $form = $this->getCreateForm($comment, $soiree);
+        $form = $this->getCreateForm($comment, $event);
 
         return $this->render('Comment/list.html.twig', [
-            'nb_comments' => $this->getNbComments($soiree),
-            'comments' => $this->getCommentaires($soiree, $page, $offset),
-            'soiree' => $soiree,
+            'nb_comments' => $this->getNbComments($event),
+            'comments' => $this->getCommentaires($event, $page, $offset),
+            'event' => $event,
             'page' => $page,
             'offset' => $offset,
             'form' => $form->createView(),
@@ -60,10 +60,10 @@ class CommentController extends BaseController
     /**
      * @Route("/{id}/nouveau", name="app_comment_new", requirements={"id": "\d+"})
      */
-    public function newAction(Request $request, Agenda $soiree)
+    public function newAction(Request $request, Event $event)
     {
         $comment = new Comment();
-        $form = $this->getCreateForm($comment, $soiree);
+        $form = $this->getCreateForm($comment, $event);
 
         $user = $this->getUser();
         if (!$user) {
@@ -74,7 +74,7 @@ class CommentController extends BaseController
         }
 
         $comment->setUser($user);
-        $comment->setAgenda($soiree);
+        $comment->setEvent($event);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -89,7 +89,7 @@ class CommentController extends BaseController
                     'nb_reponses' => 0,
                 ]),
                 'header' => $this->renderView('Comment/header.html.twig', [
-                    'nb_comments' => $this->getNbComments($soiree),
+                    'nb_comments' => $this->getNbComments($event),
                 ]),
             ]);
         }
@@ -110,9 +110,9 @@ class CommentController extends BaseController
         return $this->getDoctrine()->getRepository(Comment::class);
     }
 
-    protected function getCommentaires(Agenda $soiree, $page = 1, $limit = 10)
+    protected function getCommentaires(Event $event, $page = 1, $limit = 10)
     {
-        return $this->getCommentRepo()->findAllByAgenda($soiree, $page, $limit);
+        return $this->getCommentRepo()->findAllByEvent($event, $page, $limit);
     }
 
     protected function getReponses(Comment $comment, $page = 1, $limit = 10)
@@ -120,9 +120,9 @@ class CommentController extends BaseController
         return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
     }
 
-    protected function getNbComments(Agenda $soiree)
+    protected function getNbComments(Event $event)
     {
-        return $this->getCommentRepo()->findNBCommentaires($soiree);
+        return $this->getCommentRepo()->findNBCommentaires($event);
     }
 
     protected function getNbReponses(Comment $comment)
@@ -130,10 +130,10 @@ class CommentController extends BaseController
         return $this->getCommentRepo()->findNBReponses($comment);
     }
 
-    protected function getCreateForm(Comment $comment, Agenda $soiree)
+    protected function getCreateForm(Comment $comment, Event $event)
     {
         return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('app_comment_new', ['id' => $soiree->getId()]),
+            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
             'method' => 'POST',
         ])
             ->add('poster', SubmitType::class, [

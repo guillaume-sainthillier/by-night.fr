@@ -22,11 +22,11 @@ class BikiniParser extends LinksParser
     }
 
     /**
-     * Retourne les infos d'un agenda depuis une url.
+     * Retourne les infos d'un event depuis une url.
      *
      * @return string[]
      */
-    protected function getInfosAgenda()
+    protected function getInfosEvent()
     {
         $tab_retour = [];
 

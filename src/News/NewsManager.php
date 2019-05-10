@@ -2,7 +2,7 @@
 
 namespace App\News;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\News;
 use App\Social\FacebookAdmin;
 use App\Social\Twitter;
@@ -81,14 +81,14 @@ class NewsManager
 
     public function getNewsDatas(DateTime $from, DateTime $to)
     {
-        $datas = $this->em->getRepository(Agenda::class)->findByInterval($from, $to);
+        $datas = $this->em->getRepository(Event::class)->findByInterval($from, $to);
 
         $participants = [];
         foreach ($datas as $site => $events) {
             $participants[$site] = 0;
             foreach ($events as $event) {
                 /**
-                 * @var Agenda $event
+                 * @var Event $event
                  */
                 $participants[$site] += $event->getFbInterets() + $event->getFbParticipations();
             }

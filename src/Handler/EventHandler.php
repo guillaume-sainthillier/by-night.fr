@@ -2,7 +2,7 @@
 
 namespace App\Handler;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Utils\Cleaner;
 use App\Utils\Comparator;
@@ -39,15 +39,15 @@ class EventHandler
         $this->tempPath = $tempPath;
     }
 
-    public function hasToDownloadImage($newURL, Agenda $agenda)
+    public function hasToDownloadImage($newURL, Event $event)
     {
         return $newURL && (
-                !$agenda->getSystemPath() ||
-                $agenda->getUrl() != $newURL
+                !$event->getSystemPath() ||
+                $event->getUrl() != $newURL
             );
     }
 
-    public function uploadFile(Agenda $agenda, $content, $contentType)
+    public function uploadFile(Event $event, $content, $contentType)
     {
         switch ($contentType) {
             case 'image/gif':
@@ -64,16 +64,16 @@ class EventHandler
                 throw new \RuntimeException(sprintf("Unable to find extension for mime type %s", $contentType));
         }
 
-        $filename = ($agenda->getId() ?: uniqid()) . '.' . $ext;
+        $filename = ($event->getId() ?: uniqid()) . '.' . $ext;
         $tempPath = $this->tempPath . DIRECTORY_SEPARATOR . $filename;
         $octets = \file_put_contents($tempPath, $content);
 
         if ($octets > 0) {
             $file = new UploadedFile($tempPath, $filename, $contentType, null, true);
-            $agenda->setSystemPath($filename);
-            $agenda->setSystemFile($file);
+            $event->setSystemPath($filename);
+            $event->setSystemFile($file);
         } else {
-            $agenda->setSystemFile(null)->setSystemPath(null);
+            $event->setSystemFile(null)->setSystemPath(null);
         }
     }
 
@@ -82,7 +82,7 @@ class EventHandler
         $this->cleaner->cleanPlace($place);
     }
 
-    public function cleanEvent(Agenda $event)
+    public function cleanEvent(Event $event)
     {
         $this->cleaner->cleanEvent($event);
         if ($event->getPlace()) {
@@ -90,7 +90,7 @@ class EventHandler
         }
     }
 
-    public function handleDownload(Agenda $event)
+    public function handleDownload(Event $event)
     {
         try {
             $client = new Client();
@@ -111,11 +111,11 @@ class EventHandler
     /**
      * @param array $persistedEvents
      * @param array $persistedPlaces
-     * @param Agenda $event
+     * @param Event $event
      *
-     * @return Agenda
+     * @return Event
      */
-    public function handle(array $persistedEvents, array $persistedPlaces, Agenda $event)
+    public function handle(array $persistedEvents, array $persistedPlaces, Event $event)
     {
         $place = Monitor::bench('Handle Place', function () use ($persistedPlaces, $event) {
             return $this->handlePlace($persistedPlaces, $event->getPlace());
@@ -129,7 +129,7 @@ class EventHandler
         return $event;
     }
 
-    public function handleEvent(array $persistedEvents, Agenda $notPersistedEvent)
+    public function handleEvent(array $persistedEvents, Event $notPersistedEvent)
     {
         $bestEvent = count($persistedEvents) > 0 ? current($persistedEvents) : null;
 

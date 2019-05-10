@@ -28,9 +28,9 @@ class ParserManager
         return $this;
     }
 
-    public function getAgendas()
+    public function getEvents()
     {
-        $full_agendas = [];
+        $full_events = [];
 
         foreach ($this->parsers as $parser) {
             /** @var ParserInterface $parser */
@@ -38,28 +38,28 @@ class ParserManager
                 'Lancement de <info>%s</info>',
                 $parser->getNomData()
             ));
-            $agendas = $parser->parse();
+            $events = $parser->parse();
 
             if (\count($this->parsers) > 1) {
                 Monitor::writeln(\sprintf(
                     '<info>%d</info> événements à traiter pour <info>%s</info>',
-                    \count($agendas),
+                    \count($events),
                     $parser->getNomData()
                 ));
             }
 
-            foreach ($agendas as $i => $agenda) {
-                $agendas[$i]['from_data'] = $parser->getNomData();
+            foreach ($events as $i => $event) {
+                $events[$i]['from_data'] = $parser->getNomData();
             }
 
-            $full_agendas = \array_merge($full_agendas, $agendas);
+            $full_events = \array_merge($full_events, $events);
         }
 
         Monitor::writeln(\sprintf(
             '<info>%d</info> événements à traiter au total',
-            \count($full_agendas)
+            \count($full_events)
         ));
 
-        return $full_agendas;
+        return $full_events;
     }
 }

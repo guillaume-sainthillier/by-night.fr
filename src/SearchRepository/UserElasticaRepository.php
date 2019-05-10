@@ -6,7 +6,7 @@ use Elastica\Query\BoolQuery;
 use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\Repository;
 
-class UserRepository extends Repository
+class UserElasticaRepository extends Repository
 {
     public function findWithSearch($q)
     {

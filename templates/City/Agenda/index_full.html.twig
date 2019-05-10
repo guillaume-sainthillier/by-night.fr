@@ -58,7 +58,7 @@
     {% include "ad.html.twig" with({'marginTop': 0}) %}
     {% include "City/Agenda/block_criteres.html.twig" %}
 
-    {% if soirees|length == 0 %}
+    {% if events|length == 0 %}
         <div class="alert alert-info">
             <i class="fa fa-info-circle"></i>
             Aucun événement trouvé

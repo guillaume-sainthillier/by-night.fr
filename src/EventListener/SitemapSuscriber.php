@@ -8,7 +8,7 @@
 
 namespace App\EventListener;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\City;
 use App\Entity\Place;
 use App\Entity\User;
@@ -107,11 +107,11 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerEventRoutes($section)
     {
-        $events = $this->doctrine->getRepository(Agenda::class)->findSiteMap();
+        $events = $this->doctrine->getRepository(Event::class)->findSiteMap();
 
         foreach ($events as $event) {
             $event = current($event);
-            $this->addUrl($section, 'app_agenda_details', [
+            $this->addUrl($section, 'app_event_details', [
                 'id' => $event['id'],
                 'slug' => $event['slug'],
                 'location' => $event['city_slug'],

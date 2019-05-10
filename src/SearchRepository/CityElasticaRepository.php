@@ -6,7 +6,7 @@ use Elastica\Query\MultiMatch;
 use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
 
-class CityRepository extends Repository
+class CityElasticaRepository extends Repository
 {
     /**
      * @param string $q

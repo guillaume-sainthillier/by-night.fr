@@ -9,7 +9,7 @@ namespace App\Social;
  */
 
 use App\App\SocialManager;
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Info;
 use App\Entity\User;
 use App\Exception\SocialException;
@@ -167,17 +167,17 @@ abstract class Social
         $this->connectInfo($this->socialManager->getSiteInfo(), $response);
     }
 
-    protected function getLinkPicture(Agenda $agenda)
+    protected function getLinkPicture(Event $event)
     {
-        return $this->eventProfilePicture->getOriginalPictureUrl($agenda);
+        return $this->eventProfilePicture->getOriginalPictureUrl($event);
     }
 
-    protected function getLink(Agenda $agenda)
+    protected function getLink(Event $event)
     {
-        return $this->router->generate('app_agenda_details', [
-            'slug' => $agenda->getSlug(),
-            'id' => $agenda->getSlug(),
-            'location' => $agenda->getLocationSlug(),
+        return $this->router->generate('app_event_details', [
+            'slug' => $event->getSlug(),
+            'id' => $event->getSlug(),
+            'location' => $event->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 

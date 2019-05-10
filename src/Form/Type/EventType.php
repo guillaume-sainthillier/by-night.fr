@@ -2,7 +2,7 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Country;
 use App\Handler\DoctrineEventHandler;
 use Doctrine\ORM\EntityRepository;
@@ -21,7 +21,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
-class AgendaType extends AbstractType
+class EventType extends AbstractType
 {
     /**
      * @var DoctrineEventHandler
@@ -197,12 +197,12 @@ class AgendaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Agenda::class,
+            'data_class' => Event::class,
         ]);
     }
 
     public function getName()
     {
-        return 'app_agenda';
+        return 'app_event';
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Comment;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
@@ -15,14 +15,14 @@ use Doctrine\ORM\EntityRepository;
  */
 class CommentRepository extends EntityRepository
 {
-    public function findAllByAgenda(Agenda $agenda, $page = 1, $limit = 10)
+    public function findAllByEvent(Event $event, $page = 1, $limit = 10)
     {
         return $this->_em
             ->createQueryBuilder()
             ->select('a')
             ->from('App:Comment', 'a')
-            ->where('a.agenda = :agenda AND a.parent IS NULL AND a.isApprouve = :is_approuve')
-            ->setParameters([':agenda' => $agenda, 'is_approuve' => true])
+            ->where('a.event = :event AND a.parent IS NULL AND a.isApprouve = :is_approuve')
+            ->setParameters([':event' => $event, 'is_approuve' => true])
             ->orderBy('a.dateCreation', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
@@ -57,13 +57,13 @@ class CommentRepository extends EntityRepository
             ->execute();
     }
 
-    public function findNBCommentaires(Agenda $agenda)
+    public function findNBCommentaires(Event $event)
     {
         return $this->_em->createQueryBuilder()
             ->select('COUNT(a)')
             ->from('App:Comment', 'a')
-            ->where('a.agenda = :agenda AND a.parent IS NULL AND a.isApprouve = :is_approuve')
-            ->setParameters([':agenda' => $agenda, 'is_approuve' => true])
+            ->where('a.event = :event AND a.parent IS NULL AND a.isApprouve = :is_approuve')
+            ->setParameters([':event' => $event, 'is_approuve' => true])
             ->getQuery()
             ->getSingleScalarResult();
     }

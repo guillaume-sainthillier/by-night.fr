@@ -7,17 +7,17 @@
 
 {% block body -%}
     <div class="text-center">
-        <a class="btn btn-success btn-raised" href="{{ path('app_agenda_new') }}">
+        <a class="btn btn-success btn-raised" href="{{ path('app_event_new') }}">
             <i class="fa fa-plus"></i>
             Nouvel événement
         </a>
         {% if canSynchro %}
-            <a class="btn btn-info btn-raised" href="{{ path('app_agenda_import_events') }}">
+            <a class="btn btn-info btn-raised" href="{{ path('app_event_import_events') }}">
                 <i class="fa fa-refresh"></i>
                 Synchroniser mes événements Facebook
             </a>
         {% else %}
-            <a id="connect-fb" class="btn btn-info btn-raised" href="{{ hwi_oauth_login_url('facebook_list_events') }}" data-href="{{ path('app_agenda_import_events') }}">
+            <a id="connect-fb" class="btn btn-info btn-raised" href="{{ hwi_oauth_login_url('facebook_list_events') }}" data-href="{{ path('app_event_import_events') }}">
                 <i class="fa fa-facebook"></i>
                 Me connecter à Facebook pour synchroniser mes événements
             </a>
@@ -27,7 +27,7 @@
     <br />
 
     {% import "Form/macros.html.twig" as macros %}
-    {% if soirees|length > 0 %}
+    {% if events|length > 0 %}
         <table class="table table-striped bg-white component">
             <thead>
             <tr>
@@ -41,28 +41,28 @@
             </tr>
             </thead>
             <tbody>
-            {% for soiree in soirees %}
+            {% for event in events %}
                 <tr>
                     <td>
-                        <a class="btn btn-primary" href="{{ path('app_agenda_edit', {'slug': soiree.slug}) }}"
+                        <a class="btn btn-primary" href="{{ path('app_event_edit', {'slug': event.slug}) }}"
                            title="Corriger l'événement">
                             <i class="fa fa-pencil"></i>
                         </a>
                     </td>
                     <td>
-                        <a href="{{ path('app_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug}) }}"
-                           title="Accéder à l'événement">{{ soiree.nom }}</a></td>
-                    <td>{{ soiree.placeName }}</td>
-                    <td>{{ soiree.placeCity }}</td>
+                        <a href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}"
+                           title="Accéder à l'événement">{{ event.nom }}</a></td>
+                    <td>{{ event.placeName }}</td>
+                    <td>{{ event.placeCity }}</td>
                     <td>
-                        {{ macros.dates(soiree.dateDebut, soiree.dateFin) }}
+                        {{ macros.dates(event.dateDebut, event.dateFin) }}
                     </td>
                     <td>
                         <div class="togglebutton">
                             <label>
                                 <input type="checkbox"
                                        class="brouillon"
-                                       data-href="{{ path('app_agenda_brouillon', {'slug': soiree.slug}) }}" {{ not soiree.isBrouillon ? 'checked' : '' }} />
+                                       data-href="{{ path('app_event_brouillon', {'slug': event.slug}) }}" {{ not event.isBrouillon ? 'checked' : '' }} />
                             </label>
                         </div>
                     </td>
@@ -71,7 +71,7 @@
                             <label>
                                 <input type="checkbox"
                                        class="annuler"
-                                       data-href="{{ path('app_agenda_annuler', {'slug': soiree.slug}) }}" {{ soiree.modificationDerniereMinute ? 'checked' : '' }} />
+                                       data-href="{{ path('app_event_annuler', {'slug': event.slug}) }}" {{ event.modificationDerniereMinute ? 'checked' : '' }} />
                             </label>
                         </div>
                     </td>

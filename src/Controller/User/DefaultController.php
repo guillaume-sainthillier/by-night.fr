@@ -3,9 +3,9 @@
 namespace App\Controller\User;
 
 use App\Controller\TBNController as BaseController;
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\User;
-use App\Repository\AgendaRepository;
+use App\Repository\EventRepository;
 use DateTime;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -75,7 +75,7 @@ class DefaultController extends BaseController
         $user = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
+        $repo = $em->getRepository(Event::class);
 
         return $this->render('User/index.html.twig', [
             'user' => $user,
@@ -108,7 +108,7 @@ class DefaultController extends BaseController
         $user = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Agenda::class);
+        $repo = $em->getRepository(Event::class);
         $str_date = $repo->getLastDateStatsUser($user);
 
         $response = $this->cacheVerif($str_date);
@@ -156,7 +156,7 @@ class DefaultController extends BaseController
         return $response;
     }
 
-    protected function getDataOfWeek(AgendaRepository $repo, User $user)
+    protected function getDataOfWeek(EventRepository $repo, User $user)
     {
         $datas = $repo->getStatsUser($user, 'DAYOFWEEK');
 
@@ -187,7 +187,7 @@ class DefaultController extends BaseController
         return $this->fillDatas($final_datas, $datas);
     }
 
-    protected function getDataOfMonth(AgendaRepository $repo, User $user)
+    protected function getDataOfMonth(EventRepository $repo, User $user)
     {
         $datas = $repo->getStatsUser($user, 'MONTH');
 
@@ -214,7 +214,7 @@ class DefaultController extends BaseController
         return $this->fillDatas($final_datas, $datas);
     }
 
-    protected function getDataOfYear(AgendaRepository $repo, User $user)
+    protected function getDataOfYear(EventRepository $repo, User $user)
     {
         $datas = $repo->getStatsUser($user, 'YEAR');
 

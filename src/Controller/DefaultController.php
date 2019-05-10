@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Annotation\ReverseProxy;
 use App\App\CityManager;
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Form\Type\CityAutocompleteType;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -37,7 +37,7 @@ class DefaultController extends AbstractController
             ];
         }
 
-        $stats = $this->getDoctrine()->getManager()->getRepository(Agenda::class)->getCountryEvents();
+        $stats = $this->getDoctrine()->getManager()->getRepository(Event::class)->getCountryEvents();
         $form = $this->createForm(CityAutocompleteType::class, $datas);
 
         return $this->render('Default/index.html.twig', [

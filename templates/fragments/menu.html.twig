@@ -25,11 +25,11 @@
                     </li>
                 {% endif %}
                 <li>
-                    <a title="Créez votre événement en 1 clic !" href="{{ path('app_agenda_new') }}">Créer un événement</a>
+                    <a title="Créez votre événement en 1 clic !" href="{{ path('app_event_new') }}">Créer un événement</a>
                 </li>
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") -%}
                     <li>
-                        <a title="Voir mes soirées" href="{{ path('app_agenda_list') }}">Mes événements</a>
+                        <a title="Voir mes soirées" href="{{ path('app_event_list') }}">Mes événements</a>
                     </li>
                 {%- endif %}
             </ul>

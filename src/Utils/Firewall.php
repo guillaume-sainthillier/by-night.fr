@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Exploration;
 use App\Entity\User;
 use App\Geolocalize\BoundaryInterface;
@@ -64,7 +64,7 @@ class Firewall
         return $this->hasExplorationToBeUpdated($exploration);
     }
 
-    public function hasEventToBeUpdated(Exploration $exploration, Agenda $event)
+    public function hasEventToBeUpdated(Exploration $exploration, Event $event)
     {
         $explorationDate = $exploration->getLastUpdated();
         $eventDateModification = $event->getFbDateModification();
@@ -80,7 +80,7 @@ class Firewall
         return false;
     }
 
-    public function isValid(Agenda $event)
+    public function isValid(Event $event)
     {
         return $event->getReject()->isValid() && $event->getPlaceReject()->isValid();
     }
@@ -90,7 +90,7 @@ class Firewall
         return null !== $object && null !== $object->getId();
     }
 
-    public function filterEventIntegrity(Agenda $event, User $oldEventUser = null)
+    public function filterEventIntegrity(Event $event, User $oldEventUser = null)
     {
         if (!$oldEventUser) {
             return;
@@ -103,13 +103,13 @@ class Firewall
         }
     }
 
-    public function filterEvent(Agenda $event)
+    public function filterEvent(Event $event)
     {
         $this->filterEventInfos($event);
         $this->filterEventPlace($event);
     }
 
-    public function filterEventLocation(Agenda $event)
+    public function filterEventLocation(Event $event)
     {
         if (!$event->getPlace() || !$event->getPlace()->getReject()) {
             return;
@@ -122,7 +122,7 @@ class Firewall
         }
     }
 
-    public function filterEventExploration(Exploration $exploration, Agenda $event)
+    public function filterEventExploration(Exploration $exploration, Event $event)
     {
         $reject = $exploration->getReject();
 
@@ -153,7 +153,7 @@ class Firewall
         }
     }
 
-    private function filterEventPlace(Agenda $event)
+    private function filterEventPlace(Event $event)
     {
         //Le nom du lieu doit comporter au moins 2 caractères
         if (!$this->checkMinLengthValidity($event->getPlaceName(), 2)) {
@@ -184,9 +184,9 @@ class Firewall
     }
 
     /**
-     * @param Agenda $event
+     * @param Event $event
      */
-    private function filterEventInfos(Agenda $event)
+    private function filterEventInfos(Event $event)
     {
         //Le nom de l'événement doit comporter au moins 3 caractères
         if (!$this->checkMinLengthValidity($event->getNom(), 3)) {

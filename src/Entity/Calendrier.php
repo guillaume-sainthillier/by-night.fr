@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="App\Repository\CalendrierRepository")
  * @ORM\Table(name="Calendrier",
  *      uniqueConstraints={
- *          @ORM\UniqueConstraint(name="user_agenda_unique",columns={"user_id","agenda_id"})
+ *          @ORM\UniqueConstraint(name="user_event_unique",columns={"user_id","event_id"})
  *      })
  * @ORM\HasLifecycleCallbacks
  */
@@ -47,10 +47,10 @@ class Calendrier
     protected $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Agenda", inversedBy="calendriers")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $agenda;
+    protected $event;
 
     /**
      * @var DateTime
@@ -161,27 +161,27 @@ class Calendrier
     }
 
     /**
-     * Set agenda.
+     * Set event.
      *
-     * @param Agenda $agenda
+     * @param Event $event
      *
      * @return Calendrier
      */
-    public function setAgenda(Agenda $agenda)
+    public function setEvent(Event $event)
     {
-        $this->agenda = $agenda;
+        $this->event = $event;
 
         return $this;
     }
 
     /**
-     * Get agenda.
+     * Get event.
      *
-     * @return Agenda
+     * @return Event
      */
-    public function getAgenda()
+    public function getEvent()
     {
-        return $this->agenda;
+        return $this->event;
     }
 
     /**

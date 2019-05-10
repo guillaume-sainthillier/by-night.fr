@@ -1,21 +1,21 @@
 {% extends "layouts/with-widget.html.twig" %}
 
-{% set nomSoiree = event_seo.getEventShortTitle(soiree) %}
-{% set horaires = event_seo.getEventDateTime(soiree) %}
-{% set descriptionSoiree = soiree.descriptif|parse_tags|raw %}
-{% set original = eventProfilePicture.originalPictureURL(soiree) %}
-{% set thumb = eventProfilePicture.picture(soiree) %}
+{% set nomSoiree = event_seo.getEventShortTitle(event) %}
+{% set horaires = event_seo.getEventDateTime(event) %}
+{% set descriptionSoiree = event.descriptif|parse_tags|raw %}
+{% set original = eventProfilePicture.originalPictureURL(event) %}
+{% set thumb = eventProfilePicture.picture(event) %}
 
-{% set distinctTags = soiree.distinctTags %}
+{% set distinctTags = event.distinctTags %}
 
-{% set place = soiree.place %}
+{% set place = event.place %}
 
-{% block title event_seo.eventFullTitle(soiree) %}
+{% block title event_seo.eventFullTitle(event) %}
 {% block titre -%}
     {#
-    {% if is_granted('ROLE_ADMIN') or (soiree.user and soiree.user == app.user) %}
+    {% if is_granted('ROLE_ADMIN') or (event.user and event.user == app.user) %}
         <a class="btn btn-lg btn-primary btn-raised"
-           href="{{ path('app_agenda_edit', {'slug': soiree.slug}) }}"
+           href="{{ path('app_agenda_edit', {'slug': event.slug}) }}"
            title="Modifier l'événement">
             <i class="fa fa-pencil"></i>
         </a>
@@ -29,25 +29,25 @@
         {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.country.slug})) %}
     {% else %}
         {% set item = menu.addItem(location.city.country.name, path('app_agenda_index', {'location': location.city.country.slug})) %}
-        {% set item = menu.addItem('Sortir à ' ~ soiree.placeCity, path('app_agenda_agenda', {'location': location.city.slug})) %}
+        {% set item = menu.addItem('Sortir à ' ~ event.placeCity, path('app_agenda_agenda', {'location': location.city.slug})) %}
     {% endif %}
 
-    {% set item = menu.addItem(soiree.placeName, path('app_agenda_place', {'location': location.slug, 'slug': place.slug})) %}
-    {% set item = menu.addItem(nomSoiree, path('app_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug})) %}
+    {% set item = menu.addItem(event.placeName, path('app_agenda_place', {'location': location.slug, 'slug': place.slug})) %}
+    {% set item = menu.addItem(nomSoiree, path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
 {% endblock %}
     
 {% block meta_keywords %}{% if distinctTags|length %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
-{% block meta_description event_seo.eventDescription(soiree) %}
+{% block meta_description event_seo.eventDescription(event) %}
 
 {% block metas %}
     <link rel="image_src" href="{{ original }}" />
     <link rel="thumbnail" href="{{ thumb }}" />
-    {% if soiree.dateModification %}
-        <meta property="article:published_time" content="{{ soiree.dateModification.format('Y-m-d') }}" />
+    {% if event.dateModification %}
+        <meta property="article:published_time" content="{{ event.dateModification.format('Y-m-d') }}" />
     {% endif %}
     <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}" />
-    {% if soiree.user %}
-        <meta property="article:author" content="{{ url('app_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug}) }}" />
+    {% if event.user %}
+        <meta property="article:author" content="{{ url('app_user_details', {'id': event.user.id, 'slug': event.user.slug}) }}" />
     {% endif %}
 
     {% for tag in distinctTags %}
@@ -56,12 +56,12 @@
 {% endblock %}
 
 {% block og_titre nomSoiree %}
-{% block og_url url('app_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug}) %}
+{% block og_url url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) %}
 {% block og_image original %}
 
 {% block body -%}
-    {{ fos_httpcache_tag(tags('event', soiree) ) }}
-    {% if soiree.isBrouillon %}
+    {{ fos_httpcache_tag(tags('event', event) ) }}
+    {% if event.isBrouillon %}
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i>
             Cet événement n'est pas encore disponible publiquement. Merci de patienter encore un peu !
@@ -72,36 +72,36 @@
             <div class="panel-heading">
                 <h2 class="modal-title">
                     <i class="pull-right fa fa-calendar text-primary"></i>
-                    {% set dateDebut = soiree.dateDebut|date('d/m/Y') %}
-                    {% set dateFin = soiree.dateFin|date('d/m/Y') %}
+                    {% set dateDebut = event.dateDebut|date('d/m/Y') %}
+                    {% set dateFin = event.dateFin|date('d/m/Y') %}
 
-                    {% if soiree.dateFin == null or soiree.dateDebut == soiree.dateFin %}
+                    {% if event.dateFin == null or event.dateDebut == event.dateFin %}
                         Le
                         <time itemprop="startDate"
-                              datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
+                              datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
                     {% else %}
                         Du
                         <time itemprop="startDate"
-                              datetime="{{ soiree.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ soiree.dateDebut|localizeddate('full', 'none') }}</time>
+                              datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
                         au
                         <time itemprop="endDate"
-                              datetime="{{ soiree.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ soiree.dateFin|localizeddate('full', 'none') }}</time>
+                              datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ event.dateFin|localizeddate('full', 'none') }}</time>
                     {% endif %}
 
-                    {% if soiree.horaires %}
-                        - {{ soiree.horaires }}
+                    {% if event.horaires %}
+                        - {{ event.horaires }}
                     {% endif %}
                 </h2>
             </div>
             <div class="panel-body">
                 <meta itemprop="name" content="{{ nomSoiree }}">
-                <meta itemprop="url" content="{{ url('app_agenda_details', {'slug': soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug }) }}">
+                <meta itemprop="url" content="{{ url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug }) }}">
 
-                {% if soiree.modificationDerniereMinute %}
+                {% if event.modificationDerniereMinute %}
                     <div class="alert alert-warning">
                         <i class="fa fa-warning"></i>
                         Cet événement a été signalé comme étant
-                        <span itemprop="eventStatus"> {{ soiree.modificationDerniereMinute }}</span>
+                        <span itemprop="eventStatus"> {{ event.modificationDerniereMinute }}</span>
                     </div>
                 {% endif %}
 
@@ -118,40 +118,40 @@
                                 <div itemprop="location" itemscope itemtype="http://schema.org/Place">
                                     {% set mapParameter = "search?q=" %}
                                     {% set mapValue = "" %}
-                                    {% if soiree.placeName %}
-                                        {% set mapValue = soiree.placeName %}
+                                    {% if event.placeName %}
+                                        {% set mapValue = event.placeName %}
                                         <h2 class="modal-title" style="font-size: 115%">
                                             <a itemprop="url"
                                                href="{{ path('app_agenda_place', {'slug': place.slug, 'location': place.locationSlug}) }}"
-                                               title="Sortir à {{ soiree.placeName }}">
-                                                <strong itemprop="name">{{ soiree.placeName }}</strong>
+                                               title="Sortir à {{ event.placeName }}">
+                                                <strong itemprop="name">{{ event.placeName }}</strong>
                                             </a>
                                         </h2>
                                     {% endif %}
 
-                                    {% if soiree.placeCity %}
+                                    {% if event.placeCity %}
                                         <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                                            {% if soiree.place and soiree.place.city %}
-                                                <meta itemprop="addressCountry" content="{{ soiree.place.city.country.id }}" />
+                                            {% if event.place and event.place.city %}
+                                                <meta itemprop="addressCountry" content="{{ event.place.city.country.id }}" />
                                             {% endif %}
 
-                                            {% if soiree.placeStreet %}
-                                                <div itemprop="streetAddress">{{ soiree.placeStreet }}</div>
+                                            {% if event.placeStreet %}
+                                                <div itemprop="streetAddress">{{ event.placeStreet }}</div>
                                             {% endif %}
 
-                                            {% if soiree.placeCity or soiree.placePostalCode %}
+                                            {% if event.placeCity or event.placePostalCode %}
                                                 <div>
-                                                    {% if soiree.placePostalCode %}
-                                                        <span itemprop="postalCode">{{ soiree.placePostalCode }}</span>
+                                                    {% if event.placePostalCode %}
+                                                        <span itemprop="postalCode">{{ event.placePostalCode }}</span>
                                                     {% endif %}
 
-                                                    {% if soiree.placeCity %}
-                                                        {% set mapValue = mapValue ~ " " ~ soiree.placeCity %}
-                                                        {% if soiree.place and soiree.place.city %}
+                                                    {% if event.placeCity %}
+                                                        {% set mapValue = mapValue ~ " " ~ event.placeCity %}
+                                                        {% if event.place and event.place.city %}
                                                             <a itemprop="url"
-                                                               href="{{ path('app_agenda_agenda', {'location': soiree.place.locationSlug}) }}"
-                                                               title="Sortir à {{ soiree.placeCity }}">
-                                                                <span><strong itemprop="addressLocality">{{ soiree.placeCity }}</strong></span>
+                                                               href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}"
+                                                               title="Sortir à {{ event.placeCity }}">
+                                                                <span><strong itemprop="addressLocality">{{ event.placeCity }}</strong></span>
                                                             </a>
                                                         {% endif %}
                                                     {% endif %}
@@ -160,14 +160,14 @@
                                         </div>
                                     {% endif %}
 
-                                    {% if soiree.latitude and soiree.longitude %}
+                                    {% if event.latitude and event.longitude %}
                                         <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                                            <meta itemprop="latitude" content="{{ soiree.latitude }}" />
-                                            <meta itemprop="longitude" content="{{ soiree.longitude }}" />
+                                            <meta itemprop="latitude" content="{{ event.latitude }}" />
+                                            <meta itemprop="longitude" content="{{ event.longitude }}" />
                                         </span>
                                         {% if not place.city %}
                                             {% set mapParameter = "view?center=" %}
-                                            {% set mapValue = soiree.latitude ~ ',' ~ soiree.longitude %}
+                                            {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
                                         {% endif %}
                                     {% endif %}
                                 </div>
@@ -181,15 +181,15 @@
                                     <div id="googleMap"></div>
                                 {% endif %}
                             </li>
-                            {% if soiree.tarif %}
+                            {% if event.tarif %}
                                 <li>
                                     <div>
                                         <i class="fa fa-li fa-ticket"></i>
-                                        <span>{{ soiree.tarif }}</span>
+                                        <span>{{ event.tarif }}</span>
                                     </div>
                                 </li>
                             {% endif %}
-                            {% for telephone in soiree.reservationTelephone|split(',') %}
+                            {% for telephone in event.reservationTelephone|split(',') %}
                                 {% if telephone|length %}
                                     <li>
                                         <i class="fa fa-li fa-phone"></i>
@@ -197,7 +197,7 @@
                                     </li>
                                 {% endif %}
                             {% endfor %}
-                            {% for liens in soiree.reservationInternet|split(' ') %}
+                            {% for liens in event.reservationInternet|split(' ') %}
                                 {% for lien in liens|split(',') %}
                                     {% if lien|trim %}
                                         <li>
@@ -208,16 +208,16 @@
                                     {% endif %}
                                 {% endfor %}
                             {% endfor %}
-                            {% if soiree.reservationEmail %}
+                            {% if event.reservationEmail %}
                                 <li>
                                     <i class="fa fa-li fa-envelope-o"></i>
-                                    <a href="mailto:{{ soiree.reservationEmail }}">{{ soiree.reservationEmail }}</a>
+                                    <a href="mailto:{{ event.reservationEmail }}">{{ event.reservationEmail }}</a>
                                 </li>
                             {% endif %}
-                            {% if soiree.facebookEventId %}
+                            {% if event.facebookEventId %}
                                 <li>
                                     <i class="fa fa-li fa-facebook"></i>
-                                    {% set lien = "https://www.facebook.com/events/" ~ soiree.facebookEventId %}
+                                    {% set lien = "https://www.facebook.com/events/" ~ event.facebookEventId %}
                                     <a href="{{ lien }}" rel="nofollow">{{ lien }}</a>
                                 </li>
                             {% endif %}
@@ -226,35 +226,35 @@
                                 <li class="tags">
                                     <i class="fa fa-li fa-tags"></i>
                                     {% for tag in distinctTags %}
-                                        {% if soiree.place.city %}
+                                        {% if event.place.city %}
                                             <a class="label label-info"
-                                               title="{{ tag }} à {{ soiree.place.city.name }}"
-                                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': soiree.place.locationSlug}) }}">
+                                               title="{{ tag }} à {{ event.place.city.name }}"
+                                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
                                                 <strong>{{ tag }}</strong>
                                             </a>
                                         {% else %}
                                             <a class="label label-info"
-                                               title="{{ tag }} en {{ soiree.place.country.name }}"
-                                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': soiree.place.locationSlug}) }}">
+                                               title="{{ tag }} en {{ event.place.country.name }}"
+                                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
                                                 <strong>{{ tag }}</strong>
                                             </a>
                                         {% endif %}
                                     {% endfor %}
                                 </li>
                             {% endif %}
-                            {% if soiree.source %}
+                            {% if event.source %}
                                 <li>
                                     <i class="fa fa-li fa-info-circle"></i>
-                                    Source : <a href="{{ soiree.source }}" rel="nofollow">{{ soiree.fromData }}</a>
+                                    Source : <a href="{{ event.source }}" rel="nofollow">{{ event.fromData }}</a>
                                 </li>
                             {% endif %}
-                            {% if soiree.user %}
+                            {% if event.user %}
                                 <li>
                                     <i class="fa fa-li fa-user"></i>
                                     Par
-                                    <a href="{{ path('app_user_details', {'id': soiree.user.id, 'slug': soiree.user.slug} ) }}"
-                                       title="Accédez au profil de {{ soiree.user.username }}">
-                                        {{ soiree.user.username }}
+                                    <a href="{{ path('app_user_details', {'id': event.user.id, 'slug': event.user.slug} ) }}"
+                                       title="Accédez au profil de {{ event.user.username }}">
+                                        {{ event.user.username }}
                                     </a>
                                 </li>
                             {% endif %}
@@ -278,26 +278,26 @@
             <div class="panel-body">
                 <br />
                 {{ render_esi(controller('App\\Controller\\City\\EventController::shareAction', {
-                    'id': soiree.id,
+                    'id': event.id,
                 })) }}
 
                 {{ render_esi(path('app_comment_form', {
-                    'id': soiree.id,
+                    'id': event.id,
                 })) }}
             </div>
         </div>
 
-        {% if soiree.placeName %}
+        {% if event.placeName %}
             <div class="panel panel-primary widget">
                 <div class="panel-heading">
                     <h3 class="modal-title">
                         <i class="pull-right fa fa-home text-primary"></i>
-                        {{ soiree.placeName }} : Les prochaines sorties
+                        {{ event.placeName }} : Les prochaines sorties
                     </h3>
                 </div>
                 <div class="panel-body scrollable scrollable-large">
                     <div>
-                        {{ render_esi(path('app_agenda_prochaines_soirees', {'slug': soiree.slug, 'id': soiree.id, 'location': soiree.locationSlug} )) }}
+                        {{ render_esi(path('app_event_prochaines_soirees', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug} )) }}
                     </div>
                 </div>
                 <div class="panel-footer"></div>
@@ -310,7 +310,7 @@
 {% block widgets -%}
     <div class="row">
         <div class="col-sm-6 col-md-12">
-            {% if not soiree.isBrouillon %}
+            {% if not event.isBrouillon %}
                 <!-- Tendances -->
                 {% include "City/Widget/tendances.html.twig" %}
                 <!-- ./Tendances -->

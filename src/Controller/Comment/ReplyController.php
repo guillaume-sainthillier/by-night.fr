@@ -2,7 +2,7 @@
 
 namespace App\Controller\Comment;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
@@ -62,7 +62,7 @@ class ReplyController extends AbstractController
                 return new RedirectResponse($this->generateUrl('fos_user_security_login'));
             }
             $reponse->setUser($user);
-            $reponse->setAgenda($comment->getAgenda());
+            $reponse->setEvent($comment->getEvent());
 
             $form->handleRequest($request);
             if ($form->isValid()) {
@@ -105,9 +105,9 @@ class ReplyController extends AbstractController
         return $this->getDoctrine()->getRepository(Comment::class);
     }
 
-    protected function getCommentaires(Agenda $soiree, $page, $limit = 10)
+    protected function getCommentaires(Event $event, $page, $limit = 10)
     {
-        return $this->getCommentRepo()->findAllByAgenda($soiree, $page, $limit);
+        return $this->getCommentRepo()->findAllByEvent($event, $page, $limit);
     }
 
     protected function getReponses(Comment $comment, $page, $limit = 10)
@@ -115,9 +115,9 @@ class ReplyController extends AbstractController
         return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
     }
 
-    protected function getNbComments(Agenda $soiree)
+    protected function getNbComments(Event $event)
     {
-        return $this->getCommentRepo()->findNBCommentaires($soiree);
+        return $this->getCommentRepo()->findNBCommentaires($event);
     }
 
     protected function getNbReponses(Comment $comment)

@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
@@ -48,7 +48,7 @@ class AppEventsMigrateCommand extends AppCommand
 
         $events = $em->createQuery('SELECT
                 a.id
-                FROM App:Agenda a
+                FROM App:Event a
                 WHERE a.url IS NOT NULL')
             ->getArrayResult();
 
@@ -57,14 +57,14 @@ class AppEventsMigrateCommand extends AppCommand
 
         Monitor::createProgressBar(count($chunks));
         foreach ($chunks as $chunk) {
-            $events = $em->getRepository(Agenda::class)
+            $events = $em->getRepository(Event::class)
                 ->findBy(['id' => $chunk]);
 
             $urls = [];
 
             Monitor::advanceProgressBar();
             foreach ($events as $i => $event) {
-                /** @var Agenda $event */
+                /** @var Event $event */
 
                 $url = $event->getUrl();
                 $url = str_replace('http://', 'https://', $url);
@@ -88,7 +88,7 @@ class AppEventsMigrateCommand extends AppCommand
             }
 
             $em->flush();
-            $em->clear(Agenda::class);
+            $em->clear(Event::class);
         }
         Monitor::finishProgressBar();
     }

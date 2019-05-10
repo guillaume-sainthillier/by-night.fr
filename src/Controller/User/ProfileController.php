@@ -8,7 +8,7 @@
 
 namespace App\Controller\User;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Calendrier;
 use App\Entity\Comment;
 use FOS\UserBundle\Controller\ProfileController as BaseController;
@@ -81,7 +81,7 @@ class ProfileController extends BaseController
             $em = $this->getDoctrine()->getManager();
 
             $deleteEvents = $form->get('delete_events')->getData();
-            $events = $this->getDoctrine()->getRepository(Agenda::class)->findBy([
+            $events = $this->getDoctrine()->getRepository(Event::class)->findBy([
                 'user' => $user,
             ]);
 
@@ -96,11 +96,11 @@ class ProfileController extends BaseController
             $calendriers = $user->getCalendriers();
             foreach ($calendriers as $calendrier) {
                 /** @var Calendrier $calendrier */
-                $agenda = $calendrier->getAgenda();
+                $event = $calendrier->getEvent();
                 if ($calendrier->getParticipe()) {
-                    $agenda->setParticipations($agenda->getParticipations() - 1);
+                    $event->setParticipations($event->getParticipations() - 1);
                 } else {
-                    $agenda->setInterets($agenda->getInterets() - 1);
+                    $event->setInterets($event->getInterets() - 1);
                 }
                 $em->remove($calendrier);
             }

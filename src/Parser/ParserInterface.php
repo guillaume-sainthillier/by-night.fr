@@ -10,7 +10,7 @@ namespace App\Parser;
 interface ParserInterface
 {
     /**
-     * @return array un tableau d'Agenda
+     * @return array un tableau d'Event
      */
     public function parse();
 

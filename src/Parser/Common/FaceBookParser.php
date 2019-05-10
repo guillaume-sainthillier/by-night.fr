@@ -2,10 +2,10 @@
 
 namespace App\Parser\Common;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\City;
 use App\Entity\Place;
-use App\Parser\AgendaParser;
+use App\Parser\EventParser;
 use App\Repository\SiteRepository;
 use App\Social\FacebookAdmin;
 use App\Utils\Firewall;
@@ -19,7 +19,7 @@ use Facebook\GraphNodes\GraphNode;
  *
  * @author Guillaume SAINTHILLIER
  */
-class FaceBookParser extends AgendaParser
+class FaceBookParser extends EventParser
 {
     /**
      * @var FacebookAdmin
@@ -57,7 +57,7 @@ class FaceBookParser extends AgendaParser
 
     protected function getUsers()
     {
-        $users = $this->om->getRepository(Agenda::class)->findAllFBOwnerIds();
+        $users = $this->om->getRepository(Event::class)->findAllFBOwnerIds();
 
         return $users;
     }
@@ -143,14 +143,14 @@ class FaceBookParser extends AgendaParser
         }, $nodes));
     }
 
-    public function getRawAgendas()
+    public function getRawEvents()
     {
         $now = new DateTime();
 
 //        $events = $this->api->getEventsFromIds(["830234333792674", "1538235536480501"]);
 //        $events = $this->api->getEventsFromIds(['1752921201640362', '1538235536480501', '248556222222718']);
 
-//        return array_map([$this, 'getInfoAgenda'], $events);
+//        return array_map([$this, 'getInfoEvent'], $events);
 
         //Recherche d'événements de l'API en fonction des lieux
         $place_events = $this->getEventsFromPlaces($now);
@@ -171,7 +171,7 @@ class FaceBookParser extends AgendaParser
         //Appel au GC
         unset($place_events, $user_events, $cities_events);
 
-        return \array_map([$this, 'getInfoAgenda'], $events);
+        return \array_map([$this, 'getInfoEvent'], $events);
     }
 
     public function getIdsToMigrate()
@@ -194,9 +194,9 @@ class FaceBookParser extends AgendaParser
      *
      * @param $event
      *
-     * @return array l'agenda parsé
+     * @return array l'event parsé
      */
-    public function getInfoAgenda(GraphNode $event)
+    public function getInfoEvent(GraphNode $event)
     {
         $tab_retour = [];
 

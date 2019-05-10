@@ -5,7 +5,7 @@ namespace App\Controller\City;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Picture\EventProfilePicture;
@@ -19,10 +19,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EventController extends BaseController
 {
-    protected function getCreateCommentForm(Comment $comment, Agenda $soiree)
+    protected function getCreateCommentForm(Comment $comment, Event $event)
     {
         return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('app_comment_new', ['id' => $soiree->getId()]),
+            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
             'method' => 'POST',
         ])
             ->add('poster', SubmitType::class, [
@@ -35,8 +35,8 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}", name="app_agenda_details", requirements={"slug": "[^/]+", "id": "\d+"})
-     * @Route("/soiree/{slug}", name="app_agenda_details_old", requirements={"slug": "[^/]+"})
+     * @Route("/soiree/{slug}--{id}", name="app_event_details", requirements={"slug": "[^/]+", "id": "\d+"})
+     * @Route("/soiree/{slug}", name="app_event_details_old", requirements={"slug": "[^/]+"})
      * @ReverseProxy(expires="+1 month")
      */
     public function detailsAction(Location $location, $slug, $id = null)
@@ -45,38 +45,38 @@ class EventController extends BaseController
         if ($result instanceof Response) {
             return $result;
         }
-        $agenda = $result;
+        $event = $result;
 
         return $this->render('City/Event/get.html.twig', [
             'location' => $location,
-            'soiree' => $agenda,
+            'event' => $event,
         ]);
     }
 
     /**
      * @Cache(expires="+12 hours", smaxage="43200")
      *
-     * @param Agenda $agenda
+     * @param Event $event
      * @param EventProfilePicture $eventProfilePicture
      *
      * @return Response
      *
      * @throws Exception
      */
-    public function shareAction(Agenda $agenda, EventProfilePicture $eventProfilePicture)
+    public function shareAction(Event $event, EventProfilePicture $eventProfilePicture)
     {
-        $link = $this->generateUrl('app_agenda_details', [
-            'slug' => $agenda->getSlug(),
-            'id' => $agenda->getId(),
-            'location' => $agenda->getLocationSlug(),
+        $link = $this->generateUrl('app_event_details', [
+            'slug' => $event->getSlug(),
+            'id' => $event->getId(),
+            'location' => $event->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $eventProfile = $eventProfilePicture->getOriginalPictureUrl($agenda);
+        $eventProfile = $eventProfilePicture->getOriginalPictureUrl($event);
 
         $page = new Page([
             'url' => $link,
-            'title' => $agenda->getNom(),
-            'text' => $agenda->getDescriptif(),
+            'title' => $event->getNom(),
+            'text' => $event->getDescriptif(),
             'image' => $eventProfile,
         ]);
 
