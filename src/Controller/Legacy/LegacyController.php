@@ -20,7 +20,7 @@ class LegacyController extends BaseController
     }
 
     /**
-     * @Route("/mentions-legales", name="app_agenda_mention_legales", methods={"GET"})
+     * @Route("/mentions-legales", name="app_mentions_legales", methods={"GET"})
      */
     public function mentionLegales()
     {
@@ -28,7 +28,7 @@ class LegacyController extends BaseController
     }
 
     /**
-     * @Route("/a-propos", name="app_agenda_about", methods={"GET"})
+     * @Route("/a-propos", name="app_about", methods={"GET"})
      */
     public function about()
     {
@@ -36,7 +36,7 @@ class LegacyController extends BaseController
     }
 
     /**
-     * @Route("/en-savoir-plus", name="app_agenda_plus", methods={"GET"})
+     * @Route("/en-savoir-plus", name="app_plus", methods={"GET"})
      */
     public function plus()
     {

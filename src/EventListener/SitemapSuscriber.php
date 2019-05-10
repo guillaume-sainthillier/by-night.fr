@@ -139,10 +139,10 @@ class SitemapSuscriber implements EventSubscriberInterface
         $staticRoutes = [
             'app_search_query',
             'app_main_index',
-            'app_agenda_about',
-            'app_agenda_plus',
+            'app_about',
+            'app_plus',
             'app_main_cookie',
-            'app_agenda_mention_legales',
+            'app_mentions_legales',
             'app_agenda_programme_tv',
         ];
 
