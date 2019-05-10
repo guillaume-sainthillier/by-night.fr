@@ -20,11 +20,9 @@
 node_modules/
 
 #Pollution
-/.idea/
-.docker-sync/
-/npm-debug.log
-/composer.phar
 *.php~
+.php_cs
+
 ###> symfony/phpunit-bridge ###
 .phpunit
 /phpunit.xml
