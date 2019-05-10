@@ -202,6 +202,7 @@ class FaceBookParser extends AgendaParser
 
         $tab_retour['nom'] = $event->getField('name');
         $tab_retour['facebook_event_id'] = $event->getField('id');
+        $tab_retour['external_id'] = 'FB-' . $event->getField('id');
         $tab_retour['descriptif'] = \nl2br($event->getField('description'));
         $tab_retour['date_debut'] = $event->getField('start_time');
         $tab_retour['date_fin'] = $event->getField('end_time');
@@ -232,8 +233,9 @@ class FaceBookParser extends AgendaParser
         $place = $event->getField('place');
         if ($place) {
             $tab_retour['placeName'] = $place->getField('name');
-            $tab_retour['placeName'] = $place->getField('name');
-            $tab_retour['placeExternalId'] = 'FB-' . $place->getField('id');
+            if ($place->getField('id')) {
+                $tab_retour['placeExternalId'] = 'FB-' . $place->getField('id');
+            }
 
             //Location
             $location = $place->getField('location');
@@ -244,6 +246,19 @@ class FaceBookParser extends AgendaParser
                 $tab_retour['placePostalCode'] = $this->api->ensureGoodValue($location->getField('zip'));
                 $tab_retour['placeCity'] = $this->api->ensureGoodValue($location->getField('city'));
                 $tab_retour['placeCountryName'] = $this->api->ensureGoodValue($location->getField('country'));
+            } else {
+                $placeName = $place->getField('name');
+                $parts = array_map('trim', explode(',', $placeName));
+                if(count($parts) === 3) {
+                    $tab_retour['placeCountryName'] = $parts[2];
+                    $cityAndPostalCode = explode(' ', $parts[1]);
+                    if(count($cityAndPostalCode) > 1) {
+                        $tab_retour['placePostalCode'] = $cityAndPostalCode[0];
+                        unset($cityAndPostalCode[0]);
+                        $tab_retour['placeCity'] = implode(' ', $cityAndPostalCode);
+                    }
+                    $tab_retour['placeStreet'] = $parts[0];
+                }
             }
         }
 

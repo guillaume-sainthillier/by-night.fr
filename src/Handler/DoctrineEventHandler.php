@@ -95,14 +95,6 @@ class DoctrineEventHandler
     }
 
     /**
-     * @return ExplorationHandler
-     */
-    public function getExplorationHandler()
-    {
-        return $this->explorationHandler;
-    }
-
-    /**
      * @param Agenda $event
      *
      * @return Agenda
@@ -162,6 +154,7 @@ class DoctrineEventHandler
 
         $allowedEvents = $this->getAllowedEvents($events);
         $notAllowedEvents = $this->getNotAllowedEvents($events);
+        $events = null; // Call GC
         unset($events);
 
         if ($this->explorationHandler->isStarted()) {

@@ -33,6 +33,10 @@ class EventConstraint extends Constraint
 
     public $badPlacePostalCode = 'Le code postal du lieu est incorrect.';
 
+    public $noCountryProvided = 'Le pays de l\'événement est obligatoire.';
+
+    public $badCountryName = 'Le pays de l\'événement n\'est pas encore supporté par notre plateforme.';
+
     public $badUser = 'Un [link]événement[/link] similaire au vôtre a déjà été créé sur la plateforme.';
 
     public $eventDeleted = "L'événement facebook a été supprimé par son créateur. Il ne peut plus être mis à jour sur la plateforme.";

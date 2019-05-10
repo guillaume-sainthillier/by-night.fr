@@ -100,73 +100,88 @@ class Reject
         return self::VALID === $this->reason;
     }
 
+    private function hasReason(int $reason)
+    {
+        return $reason === ($reason & $this->reason);
+    }
+
     public function isEventDeleted()
     {
-        return self::EVENT_DELETED === (self::EVENT_DELETED & $this->reason);
+        return $this->hasReason(self::EVENT_DELETED);
     }
 
     public function isBadUser()
     {
-        return self::BAD_USER === (self::BAD_USER & $this->reason);
+        return $this->hasReason(self::BAD_USER);
     }
 
     public function hasNoPlaceLocationProvided()
     {
-        return self::NO_PLACE_LOCATION_PROVIDED === (self::NO_PLACE_LOCATION_PROVIDED & $this->reason);
+        return $this->hasReason(self::NO_PLACE_LOCATION_PROVIDED);
     }
 
     public function hasNoPlaceProvided()
     {
-        return self::NO_PLACE_PROVIDED === (self::NO_PLACE_PROVIDED & $this->reason);
+        return $this->hasReason(self::NO_PLACE_PROVIDED);
     }
 
     public function isBadPlaceCityPostalCode()
     {
-        return self::BAD_PLACE_CITY_POSTAL_CODE === (self::BAD_PLACE_CITY_POSTAL_CODE & $this->reason);
+        return $this->hasReason(self::BAD_PLACE_CITY_POSTAL_CODE);
     }
 
     public function isBadPlaceCityName()
     {
-        return self::BAD_PLACE_CITY_NAME === (self::BAD_PLACE_CITY_NAME & $this->reason);
+        return $this->hasReason(self::BAD_PLACE_CITY_NAME);
     }
 
     public function isBadPlaceLocation()
     {
-        return self::BAD_PLACE_LOCATION === (self::BAD_PLACE_LOCATION & $this->reason);
+        return $this->hasReason(self::BAD_PLACE_LOCATION);
     }
 
     public function isBadPlaceName()
     {
-        return self::BAD_PLACE_NAME === (self::BAD_PLACE_NAME & $this->reason);
+        return $this->hasReason(self::BAD_PLACE_NAME);
     }
 
     public function hasNoNeedToUpdate()
     {
-        return self::NO_NEED_TO_UPDATE === (self::NO_NEED_TO_UPDATE & $this->reason);
+        return $this->hasReason(self::NO_NEED_TO_UPDATE);
     }
 
     public function isBadEventDescription()
     {
-        return self::BAD_EVENT_DESCRIPTION === (self::BAD_EVENT_DESCRIPTION & $this->reason);
+        return $this->hasReason(self::BAD_EVENT_DESCRIPTION);
     }
 
     public function isBadEventName()
     {
-        return self::BAD_EVENT_NAME === (self::BAD_EVENT_NAME & $this->reason);
+        return $this->hasReason(self::BAD_EVENT_NAME);
     }
 
     public function isBadEventDate()
     {
-        return self::BAD_EVENT_DATE === (self::BAD_EVENT_DATE & $this->reason);
+        return $this->hasReason(self::BAD_EVENT_DATE);
     }
 
     public function isBadEventDateInterval()
     {
-        return self::BAD_EVENT_DATE_INTERVAL === (self::BAD_EVENT_DATE_INTERVAL & $this->reason);
+        return $this->hasReason(self::BAD_EVENT_DATE_INTERVAL);
     }
 
     public function isSpamEventDescription()
     {
-        return self::SPAM_EVENT_DESCRIPTION === (self::SPAM_EVENT_DESCRIPTION & $this->reason);
+        return $this->hasReason(self::SPAM_EVENT_DESCRIPTION);
+    }
+
+    public function hasNoCountryProvided()
+    {
+        return $this->hasReason(self::NO_COUNTRY_PROVIDED);
+    }
+
+    public function isBadCountryName()
+    {
+        return $this->hasReason(self::BAD_COUNTRY);
     }
 }

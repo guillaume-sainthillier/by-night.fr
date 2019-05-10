@@ -118,6 +118,7 @@ class Firewall
         $reject = $event->getPlace()->getReject();
         if (!$reject->isValid()) {
             $event->getPlaceReject()->addReason($reject->getReason());
+            $event->getReject()->addReason($reject->getReason());
         }
     }
 

@@ -40,9 +40,7 @@ class EventConstraintValidator extends ConstraintValidator
     {
         $reject = $event->getReject();
 
-        /*
-         * @var EventConstraint $constraint
-         */
+        /** @var EventConstraint $constraint */
         if (!$reject || $reject->isValid()) {
             return;
         }
@@ -101,6 +99,14 @@ class EventConstraintValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->badPlacePostalCode)->atPath('placePostalCode')->addViolation();
         }
 
+        if ($reject->hasNoCountryProvided()) {
+            $this->context->buildViolation($constraint->noCountryProvided)->atPath('placeCountry')->addViolation();
+        }
+
+        if ($reject->isBadCountryName()) {
+            $this->context->buildViolation($constraint->badCountryName)->atPath('placeCountry')->addViolation();
+        }
+
         if ($reject->isBadUser()) {
             $link = $this->router->generate('app_agenda_details', [
                 'slug' => $event->getSlug(),
@@ -118,7 +124,7 @@ class EventConstraintValidator extends ConstraintValidator
         }
 
         if (0 === \count($this->context->getViolations())) {
-            $this->context->buildViolation("Une erreur de validité empêche l'événement d'être créé.")->addViolation();
+            $this->context->buildViolation("Une erreur de validité empêche l'événement d'être créé. Code d'erreur : " . $reject->getReason())->addViolation();
         }
     }
 }

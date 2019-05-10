@@ -123,7 +123,7 @@ class EventController extends BaseController
      * @Route("/import", name="app_agenda_import_events")
      * @Security("has_role('ROLE_FACEBOOK_LIST_EVENTS')")
      */
-    public function importAction(FacebookListEvents $importer, EventFactory $eventFactory, FaceBookParser $parser, DoctrineEventHandler $handler, ValidatorInterface $validator)
+    public function importAction(FacebookListEvents $importer, ExplorationHandler $explorationHandler, EventFactory $eventFactory, FaceBookParser $parser, DoctrineEventHandler $handler, ValidatorInterface $validator)
     {
         $user = $this->getUser();
         $fb_events = $importer->getUserEvents($user);
@@ -135,8 +135,11 @@ class EventController extends BaseController
             $events[] = $event->setUser($user);
         }
 
+        $explorationHandler->start();
         $events = $handler->handleMany($events);
-        $this->addImportMessage($handler->getExplorationHandler());
+        $explorationHandler->stop();
+
+        $this->addImportMessage($explorationHandler);
         foreach ($events as $event) {
             $errors = $validator->validate($event);
             if ($errors->count() > 0) {
@@ -148,7 +151,7 @@ class EventController extends BaseController
                         $error->getMessage()
                     );
                 }
-                $this->addFlash('info', \sprintf(
+                $this->addFlash('warning', \sprintf(
                     "Informations sur l'événement <a href='https://facebook.com/events/%s/'>%s</a> : <ul>%s</ul>",
                     $event->getFacebookEventId(),
                     $event->getNom(),
