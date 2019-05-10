@@ -105,6 +105,7 @@ class EventController extends BaseController
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
             $this->addFlash('success', 'Votre événement a bien été modifié');
 
             return $this->redirect($this->generateUrl('app_agenda_list'));
@@ -225,6 +226,7 @@ class EventController extends BaseController
         $form->handleRequest($request);
         $validator->setUpdatabilityCkeck(false);
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
             $this->addFlash(
                 'success',
                 'Votre événement a bien été créé. Merci !'

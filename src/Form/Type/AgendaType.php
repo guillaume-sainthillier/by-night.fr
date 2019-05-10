@@ -191,7 +191,7 @@ class AgendaType extends AbstractType
             return;
         }
 
-        $this->doctrineEventHandler->handleOne($data);
+        $this->doctrineEventHandler->handleOne($data, false);
     }
 
     public function configureOptions(OptionsResolver $resolver)

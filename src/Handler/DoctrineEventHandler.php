@@ -99,9 +99,9 @@ class DoctrineEventHandler
      *
      * @return Agenda
      */
-    public function handleOne(Agenda $event)
+    public function handleOne(Agenda $event, bool $flush = true)
     {
-        return $this->handleMany([$event])[0];
+        return $this->handleMany([$event], $flush)[0];
     }
 
     /**
@@ -109,7 +109,7 @@ class DoctrineEventHandler
      *
      * @return Agenda[]
      */
-    public function handleManyCLI(array $events)
+    public function handleManyCLI(array $events, bool $flush = true)
     {
         $this->explorationHandler->start();
         $events = $this->handleMany($events);
@@ -137,7 +137,7 @@ class DoctrineEventHandler
      *
      * @return Agenda[]
      */
-    public function handleMany(array $events)
+    public function handleMany(array $events, bool $flush = true)
     {
         if (!\count($events)) {
             return [];
@@ -157,6 +157,12 @@ class DoctrineEventHandler
         $events = null; // Call GC
         unset($events);
 
+        foreach ($notAllowedEvents as $notAllowedEvent) {
+            if ($notAllowedEvent->getId()) {
+                $this->em->detach($notAllowedEvent);
+            }
+        }
+
         if ($this->explorationHandler->isStarted()) {
             $nbNotAllowedEvents = \count($notAllowedEvents);
             for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
@@ -164,7 +170,7 @@ class DoctrineEventHandler
             }
         }
 
-        return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
+        return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
     }
 
     public function handleIdsToMigrate(array $ids)
@@ -280,7 +286,7 @@ class DoctrineEventHandler
      *
      * @return Agenda[]
      */
-    private function mergeWithDatabase(array $events)
+    private function mergeWithDatabase(array $events, bool $flush)
     {
         Monitor::createProgressBar(\count($events));
 
@@ -322,10 +328,15 @@ class DoctrineEventHandler
                     $events[$i] = $event;
                 }
 
-                $this->commit();
-                $this->clearEvents();
+                if ($flush) {
+                    $this->commit();
+                    $this->clearEvents();
+                }
             }
-            $this->clearPlaces();
+
+            if ($flush) {
+                $this->clearPlaces();
+            }
         }
         Monitor::finishProgressBar();
 
