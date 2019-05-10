@@ -27,8 +27,8 @@ hwi_oauth:
             type:                facebook
             client_id:           '%env(FACEBOOK_API_ID)%'
             client_secret:       '%env(FACEBOOK_API_SECRET)%'
-            scope:               email, manage_pages, publish_pages
-            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
+            scope:               email, manage_pages
+            infos_url:           https://graph.facebook.com/v3.3/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
@@ -37,7 +37,7 @@ hwi_oauth:
             client_id:           '%env(FACEBOOK_API_ID)%'
             client_secret:       '%env(FACEBOOK_API_SECRET)%'
             scope:               email, user_events
-            infos_url:           https://graph.facebook.com/me?fields=name,email,picture.type(large)
+            infos_url:           https://graph.facebook.com/v3.3/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
@@ -46,7 +46,7 @@ hwi_oauth:
             client_id:           '%env(FACEBOOK_API_ID)%'
             client_secret:       '%env(FACEBOOK_API_SECRET)%'
             scope:               email
-            infos_url:           https://graph.facebook.com/v2.10/me?fields=name,email,picture.type(large)
+            infos_url:           https://graph.facebook.com/v3.3/me?fields=name,email,picture.type(large)
             paths:
                 email:          email
                 profilepicture: picture.data.url
