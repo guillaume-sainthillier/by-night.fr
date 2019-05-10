@@ -64,7 +64,7 @@ class EventHandler
                 throw new \RuntimeException(sprintf("Unable to find extension for mime type %s", $contentType));
         }
 
-        $filename = $agenda->getId() . '.' . $ext;
+        $filename = ($agenda->getId() ?: uniqid()) . '.' . $ext;
         $tempPath = $this->tempPath . DIRECTORY_SEPARATOR . $filename;
         $octets = \file_put_contents($tempPath, $content);
 
