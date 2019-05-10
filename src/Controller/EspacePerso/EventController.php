@@ -13,12 +13,11 @@ use App\Handler\ExplorationHandler;
 use App\Parser\Common\FaceBookParser;
 use App\Social\FacebookListEvents;
 use App\Validator\Constraints\EventConstraintValidator;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -26,11 +25,10 @@ class EventController extends BaseController
 {
     /**
      * @Route("/annuler/{slug}", name="app_agenda_annuler", requirements={"slug": ".+"})
+     * @IsGranted("edit", subject="agenda")
      */
     public function annulerAction(Request $request, Agenda $agenda)
     {
-        $this->checkIfOwner($agenda);
-
         $annuler = $request->get('annuler', 'true');
         $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
 
@@ -44,11 +42,10 @@ class EventController extends BaseController
 
     /**
      * @Route("/brouillon/{slug}", name="app_agenda_brouillon", requirements={"slug": ".+"})
+     * @IsGranted("edit", subject="agenda")
      */
     public function brouillonAction(Request $request, Agenda $agenda)
     {
-        $this->checkIfOwner($agenda);
-
         $brouillon = $request->get('brouillon', 'true');
         $isBrouillon = 'true' === $brouillon;
 
@@ -78,10 +75,10 @@ class EventController extends BaseController
 
     /**
      * @Route("/supprimer/{id}", name="app_agenda_delete", requirements={"id": "\d+"})
+     * @IsGranted("edit", subject="agenda")
      */
     public function deleteAction(Agenda $agenda)
     {
-        $this->checkIfOwner($agenda);
         $em = $this->getDoctrine()->getManager();
         $em->remove($agenda);
         $em->flush();
@@ -96,10 +93,10 @@ class EventController extends BaseController
 
     /**
      * @Route("/corriger/{slug}", name="app_agenda_edit", requirements={"slug": ".+"})
+     * @IsGranted("edit", subject="agenda")
      */
     public function editAction(Request $request, Agenda $agenda, EventConstraintValidator $validator)
     {
-        $this->checkIfOwner($agenda);
         $form = $this->createEditForm($agenda);
 
         $validator->setUpdatabilityCkeck(false);
@@ -122,7 +119,7 @@ class EventController extends BaseController
 
     /**
      * @Route("/import", name="app_agenda_import_events")
-     * @Security("has_role('ROLE_FACEBOOK_LIST_EVENTS')")
+     * @IsGranted("ROLE_FACEBOOK_LIST_EVENTS")
      */
     public function importAction(FacebookListEvents $importer, ExplorationHandler $explorationHandler, EventFactory $eventFactory, FaceBookParser $parser, DoctrineEventHandler $handler, ValidatorInterface $validator)
     {
@@ -164,7 +161,7 @@ class EventController extends BaseController
         return $this->redirectToRoute('app_agenda_list');
     }
 
-    protected function addImportMessage(ExplorationHandler $explorationHandler)
+    private function addImportMessage(ExplorationHandler $explorationHandler)
     {
         if ($explorationHandler->getNbInserts() > 0 || $explorationHandler->getNbUpdates() > 0) {
             $plurielInsert = $explorationHandler->getNbInserts() > 1 ? 's' : '';
@@ -288,16 +285,6 @@ class EventController extends BaseController
                     'class' => 'btn btn-primary btn-raised btn-lg btn-block',
                 ],
             ]);
-    }
-
-    protected function checkIfOwner(Agenda $agenda)
-    {
-        $user_agenda = $agenda->getUser();
-        $current_user = $this->getUser();
-
-        if (!$current_user->hasRole('ROLE_ADMIN') && $user_agenda !== $current_user) {
-            throw new AccessDeniedException("Vous n'êtes pas autorisé à modifier cet événement");
-        }
     }
 
     /**
