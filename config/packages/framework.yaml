@@ -18,9 +18,9 @@ framework:
         save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"
 
     assets:
-        base_url: '%env(APP_ASSET_URL)%'
         packages:
-            asset: ~
+            static:
+                base_url: '%env(APP_ASSET_URL)%'
 
     esi: true
     fragments: ~
