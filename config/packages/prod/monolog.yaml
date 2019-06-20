@@ -2,30 +2,25 @@ monolog:
     handlers:
         main:
             type: fingers_crossed
-            action_level: critical
-            handler: grouped
+            action_level: error
+            handler: nested
             excluded_404s:
                 # regex: exclude all 404 errors from the logs
                 - ^/
-        grouped:
-            type:    group
-            members: [streamed, deduplicated]
-        streamed:
+        nested:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: error
-        deduplicated:
-            type:    deduplication
-            handler: swift
+            level: debug
         console:
-            type:   console
+            type: console
             process_psr_3_messages: false
             channels: ["!event", "!doctrine"]
-        swift:
-            type:         swift_mailer
-            from_email:   'error@by-night.fr'
-            to_email:     'guillaume.sainthillier@gmail.com'
-            subject:      '[By Night] Erreur - %%message%%'
-            level:        debug
-            formatter:    monolog.formatter.html
-            content_type: text/html
+        deprecation:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.deprecations.log"
+        deprecation_filter:
+            type: filter
+            handler: deprecation
+            max_level: info
+            channels: ["php"]
+
