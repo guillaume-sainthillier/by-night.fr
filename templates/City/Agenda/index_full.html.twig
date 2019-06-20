@@ -1,19 +1,19 @@
 {% extends "layouts/with-widget.html.twig" %}
 
-{% block title %}
-    {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
-    {% elseif tag is not null %}{{- tag|capitalize -}}
-    {% elseif type == 'exposition' %}Expositions
-    {% elseif type == 'concert' %}Concerts
-    {% elseif type == 'famille' %}Sorties familles
-    {% elseif type == 'spectacle' %}Spectacles
-    {% elseif type == 'etudiant' %}Soirées étudiantes
-    {% else %}Agenda des événements{% endif %}
-    {% if placeName is null %} {{ location.atName }}{% endif %}
-    {% if page > 1 %} (Page {{ page }}){% endif %}
-{% endblock %}
+{%- block title -%}
+{% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
+{% elseif tag is not null %}{{- tag|capitalize -}}
+{% elseif type == 'exposition' %}Expositions
+{% elseif type == 'concert' %}Concerts
+{% elseif type == 'famille' %}Sorties familles
+{% elseif type == 'spectacle' %}Spectacles
+{% elseif type == 'etudiant' %}Soirées étudiantes
+{% else %}Agenda des événements{% endif %}
+{% if placeName is null %} {{ location.atName }}{% endif %}
+{% if page > 1 %} (Page {{ page }}){% endif %}
+{%- endblock -%}
 
-{% block titre -%}
+{%- block titre -%}
     {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}, {{ place.ville -}}
     {% elseif tag is not null %}{{- tag|capitalize -}}
     {% elseif type == 'exposition' %}Expositions
@@ -23,7 +23,7 @@
     {% elseif type == 'etudiant' %}Soirées étudiantes
     {% else %}Agenda des <strong>événements</strong>{% endif %}
     {% if placeName is null %} {{ location.atValue }} <strong>{{- location.name -}}</strong>{% endif %}
-{%- endblock %}
+{%- endblock -%}
 
 {% block breadcrumb %}
     {% if location.isCountry %}

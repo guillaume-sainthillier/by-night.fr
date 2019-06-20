@@ -15,10 +15,10 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta http-equiv="Content-Language" content="fr">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% spaceless %}{% block full_title %}{% block title %}{% endblock %} - {% block nom_site %}By Night{% endblock %}{% endblock %}{% endspaceless %}</title>
-    <meta name="title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}">
-    <meta name="keywords" content="{% block meta_full_keywords %}{% spaceless %}{% block meta_keywords %}{% endblock %},aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endspaceless %}{% endblock %}">
-    <meta name="description" content="{% spaceless %}{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}{% endspaceless %}">
+    <title>{% spaceless %}{% block full_title %}{% spaceless %}{%- block title -%}{%- endblock -%}{% endspaceless %} - {% block nom_site 'By Night' %}{% endblock %}{% endspaceless %}</title>
+    <meta name="title" content="{{ block('og_titre') }}">
+    <meta name="keywords" content="{% block meta_full_keywords %}{% block meta_keywords %}{% endblock %}aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endblock %}">
+    <meta name="description" content="{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}">
 
     <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=PYezm92qNy">
@@ -32,22 +32,22 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- ./Icons -->
 
     <!-- OpenGraph -->
-    <meta property="og:site_name" content="{% spaceless %}{{ block('nom_site') }}{% endspaceless %}">
-    <meta property="og:description" content="{% spaceless %}{% block og_description %}{{ block('description') }}{% endblock %}{% endspaceless %}">
-    <meta property="og:title" content="{% spaceless %}{% block og_titre %}{{ block('title') }}{% endblock %}{% endspaceless %}">
-    <meta property="og:type" content="{% spaceless %}{% block og_type %}website{% endblock %}{% endspaceless %}">
-    <meta property="og:url" content="{% spaceless %}{% block og_url %}{{ url('app_main_index') }}{% endblock %}{% endspaceless %}">
+    <meta property="og:site_name" content="{{ block('nom_site') }}">
+    <meta property="og:description" content="{% block og_description %}{{ block('description') }}{% endblock %}">
+    <meta property="og:title" content="{% block og_titre %}{{ block('title') }}{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ url('app_main_index') }}{% endblock %}">
     <meta property="og:locale" content="fr" />
-    <meta property="og:image" content="{% spaceless %}{% block og_image %}{{ absolute_url(app_asset('img/by-night.png')) }}{% endblock %}{% endspaceless %}">
+    <meta property="og:image" content="{% block og_image %}{{ absolute_url(app_asset('img/by-night.png')) }}{% endblock %}">
     <!-- ./OpenGraph -->
 
     <!-- Twitter -->
     {% if social_manager.twitterIdPage %}
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@{{ social_manager.twitterIdPage }}" />
-        <meta name="twitter:title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}" />
-        <meta name="twitter:description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}" />
-        <meta name="twitter:image:src" content="{% spaceless %}{{ block('og_image') }}{% endspaceless %}" />
+        <meta name="twitter:title" content="{{ block('og_titre') }}" />
+        <meta name="twitter:description" content="{{ block('og_description') }}" />
+        <meta name="twitter:image:src" content="{{ block('og_image') }}" />
     {% endif %}
     {% block twitter %}{% endblock %}
     <!-- ./Twitter -->
@@ -64,9 +64,9 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- ./Google -->
 
     <!-- DC -->
-    <meta name="dc.description" content="{% spaceless %}{{ block('og_description') }}{% endspaceless %}">
-    <meta name="dc.title" content="{% spaceless %}{{ block('og_titre') }}{% endspaceless %}">
-    <meta name="dc.keywords" content="{% spaceless %}{{ block('meta_full_keywords') }}{% endspaceless %}" />
+    <meta name="dc.description" content="{{ block('og_description') }}">
+    <meta name="dc.title" content="{{ block('og_titre') }}">
+    <meta name="dc.keywords" content="{{ block('meta_full_keywords') }}" />
     <!-- ./DC -->
 
     {% block metas %}{% endblock %}

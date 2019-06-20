@@ -8,45 +8,41 @@
 {%- endblock date_widget %}
 
 {% block recaptcha_widget %}
-    {% spaceless %}
-        <div {{ block('widget_attributes') }}></div>
-    {% endspaceless %}
+    <div {{ block('widget_attributes') }}></div>
 {% endblock %}
 
 {% block vich_image_widget %}
-    {% spaceless %}
-        {% if download_uri is defined and download_uri %}
-            <a href="{{ download_uri }}">
-                {% if image_filter is not null %}
-                    <img class="img-responsive display_inline_block margin_right_15" src="{{ download_uri|imagine_filter(image_filter) }}" alt="" />
-                {% endif %}
-            </a>
-        {% endif %}
+    {% if download_uri is defined and download_uri %}
+        <a href="{{ download_uri }}">
+            {% if image_filter is not null %}
+                <img class="img-responsive display_inline_block margin_right_15" src="{{ download_uri|imagine_filter(image_filter) }}" alt="" />
+            {% endif %}
+        </a>
+    {% endif %}
 
-        {{ form_widget(form.file) }}
+    {{ form_widget(form.file) }}
 
-        {% if show_download_link and download_uri is defined and download_uri %}
-            <a href="{{ download_uri }}">{{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
-        {% endif %}
+    {% if show_download_link and download_uri is defined and download_uri %}
+        <a href="{{ download_uri }}">{{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
+    {% endif %}
 
-        {% if form.delete is defined %}
-            <div class="delete-image pull-right">
-                {{ form_errors(form.delete) }}
-                {{ form_label(form.delete) }}
-                {{ form_widget(form.delete) }}
-            </div>
-        {% endif %}
-    {% endspaceless %}
+    {% if form.delete is defined %}
+        <div class="delete-image pull-right">
+            {{ form_errors(form.delete) }}
+            {{ form_label(form.delete) }}
+            {{ form_widget(form.delete) }}
+        </div>
+    {% endif %}
 {% endblock %}
 
 
 {# Images #}
-{% block file_widget %}{%- spaceless -%}
+{% block file_widget %}
     <div class="form-group no_margin">
         {{ block('form_widget') }}
         <input type="text" readonly class="form-control" placeholder="Nouvelle image..." />
     </div>
-{%- endspaceless -%}{% endblock %}
+{% endblock %}
 
 {% block form_row -%}
     {%- set widget_attr = {} -%}
