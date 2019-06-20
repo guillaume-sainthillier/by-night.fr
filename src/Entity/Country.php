@@ -65,6 +65,11 @@ class Country
      */
     private $postalCodeRegex;
 
+    public function __toString()
+    {
+        return $this->name;
+    }
+
     /**
      * Set id.
      *
