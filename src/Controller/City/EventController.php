@@ -77,8 +77,6 @@ class EventController extends BaseController
             'image' => $eventProfile,
         ]);
 
-        $page->shareCount(['twitter', 'facebook']);
-
         return $this->render('City/Hinclude/shares.html.twig', [
             'shares' => [
                 'facebook' => $page->facebook,
