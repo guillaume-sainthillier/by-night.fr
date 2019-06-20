@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 10/12/2017
- * Time: 15:15.
- */
+
 
 namespace App\Tests;
 
@@ -15,7 +10,7 @@ abstract class ContainerTestCase extends KernelTestCase
 {
     protected function setUp()
     {
-        (new Dotenv())->load(__DIR__.'/../.env.test');
+        (new Dotenv())->load(__DIR__ . '/../.env.test');
         static::bootKernel();
     }
 }

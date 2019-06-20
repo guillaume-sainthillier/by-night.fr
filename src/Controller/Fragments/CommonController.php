@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 14/12/2016
- * Time: 22:23.
- */
+
 
 namespace App\Controller\Fragments;
 
@@ -34,6 +29,7 @@ class CommonController extends TBNController
         }
 
         $city = $city ?: $cityManager->getCity();
+
         return $this->render('fragments/menu.html.twig', [
             'city' => $city,
         ]);

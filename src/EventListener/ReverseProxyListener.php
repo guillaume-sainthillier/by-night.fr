@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 03/05/2017
- * Time: 20:29.
- */
+
 
 namespace App\EventListener;
 
@@ -28,9 +23,9 @@ class ReverseProxyListener implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             KernelEvents::RESPONSE => 'onKernelResponse',
-        );
+        ];
     }
 
     public function onKernelResponse(FilterResponseEvent $event)
@@ -55,7 +50,7 @@ class ReverseProxyListener implements EventSubscriberInterface
             $ttl = $reverseProxyConfiguration->getTtl();
         } else {
             $date = \DateTime::createFromFormat('U', strtotime($reverseProxyConfiguration->getExpires()), new \DateTimeZone('UTC'));
-            $now = \DateTime::createFromFormat('U', strtotime("now"), new \DateTimeZone('UTC'));
+            $now = \DateTime::createFromFormat('U', strtotime('now'), new \DateTimeZone('UTC'));
 
             $ttl = max($date->format('U') - $now->format('U'), 0);
         }

@@ -23,7 +23,7 @@ class ZipCity
      * @ORM\Id
      * @ORM\GeneratedValue("AUTO")
      * @Serializer\Groups({"list_event", "list_city", "list_user"})
-     * @Serializer\Expose()
+     * @Serializer\Expose
      */
     protected $id;
 
@@ -331,39 +331,27 @@ class ZipCity
         return $this->parent;
     }
 
-    /**
-     * @return string|null
-     */
     public function getAdmin1Name(): ?string
     {
         return $this->admin1Name;
     }
 
-    /**
-     * @param string|null $admin1Name
-     * @return ZipCity
-     */
     public function setAdmin1Name(?string $admin1Name): ZipCity
     {
         $this->admin1Name = $admin1Name;
+
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getAdmin2Name(): ?string
     {
         return $this->admin2Name;
     }
 
-    /**
-     * @param string|null $admin2Name
-     * @return ZipCity
-     */
     public function setAdmin2Name(?string $admin2Name): ZipCity
     {
         $this->admin2Name = $admin2Name;
+
         return $this;
     }
 }

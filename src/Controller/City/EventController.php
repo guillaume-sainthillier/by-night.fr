@@ -5,8 +5,8 @@ namespace App\Controller\City;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Event;
 use App\Entity\Comment;
+use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Picture\EventProfilePicture;
 use Exception;
@@ -56,9 +56,6 @@ class EventController extends BaseController
     /**
      * @Cache(expires="+12 hours", smaxage="43200")
      *
-     * @param Event $event
-     * @param EventProfilePicture $eventProfilePicture
-     *
      * @return Response
      *
      * @throws Exception
@@ -85,7 +82,7 @@ class EventController extends BaseController
         return $this->render('City/Hinclude/shares.html.twig', [
             'shares' => [
                 'facebook' => $page->facebook,
-                'twitter' => $page->twitter
+                'twitter' => $page->twitter,
             ],
         ]);
     }

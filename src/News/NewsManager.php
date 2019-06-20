@@ -87,7 +87,7 @@ class NewsManager
         foreach ($datas as $site => $events) {
             $participants[$site] = 0;
             foreach ($events as $event) {
-                /**
+                /*
                  * @var Event $event
                  */
                 $participants[$site] += $event->getFbInterets() + $event->getFbParticipations();

@@ -87,7 +87,6 @@ class Merger
      *
      * @param stdClass $a
      * @param stdClass $b
-     * @param array $fields
      *
      * @return stdClass
      */

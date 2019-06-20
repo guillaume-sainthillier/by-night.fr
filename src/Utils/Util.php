@@ -75,7 +75,7 @@ class Util
 
     public function deleteMultipleSpaces($string)
     {
-        while (false !== \strpos($string, '  ')) {
+        while (false !== \mb_strpos($string, '  ')) {
             $string = \str_replace('  ', ' ', $string);
         }
 
@@ -84,12 +84,12 @@ class Util
 
     public function utf8TitleCase($string)
     {
-        return trim(\mb_convert_case($string, MB_CASE_TITLE, 'UTF-8'));
+        return trim(\mb_convert_case($string, \MB_CASE_TITLE, 'UTF-8'));
     }
 
     public function utf8LowerCase($string)
     {
-        return trim(\mb_convert_case($string, MB_CASE_LOWER, 'UTF-8'));
+        return trim(\mb_convert_case($string, \MB_CASE_LOWER, 'UTF-8'));
     }
 
     public function replaceAccents($string)

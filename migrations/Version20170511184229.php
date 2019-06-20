@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20170511184229 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -24,7 +22,6 @@ class Version20170511184229 extends AbstractMigration
         $this->addSql('ALTER TABLE admin_zone ADD CONSTRAINT FK_80F242E7727ACA70 FOREIGN KEY (parent_id) REFERENCES admin_zone (id)');
         $this->addSql('ALTER TABLE zip_city ADD CONSTRAINT FK_FBE2D3F4F92F3E70 FOREIGN KEY (country_id) REFERENCES country (id)');
     }
-
 
     public function down(Schema $schema): void
     {

@@ -23,7 +23,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\HasLifecycleCallbacks
  */
 class User extends BaseUser
 {
@@ -112,9 +112,9 @@ class User extends BaseUser
 
     /**
      * @Vich\UploadableField(mapping="user_image", fileNameProperty="path")
-     * @Assert\Valid()
-     * @Assert\File(maxSize = "6M")
-     * @Assert\Image()
+     * @Assert\Valid
+     * @Assert\File(maxSize="6M")
+     * @Assert\Image
      *
      * @var File
      */
@@ -122,9 +122,9 @@ class User extends BaseUser
 
     /**
      * @Vich\UploadableField(mapping="user_image", fileNameProperty="systemPath")
-     * @Assert\Valid()
-     * @Assert\File(maxSize = "6M")
-     * @Assert\Image()
+     * @Assert\Valid
+     * @Assert\File(maxSize="6M")
+     * @Assert\Image
      *
      * @var File
      */
@@ -392,7 +392,6 @@ class User extends BaseUser
     /**
      * Add calendriers.
      *
-     * @param Calendrier $calendriers
      *
      * @return User
      */
@@ -405,8 +404,6 @@ class User extends BaseUser
 
     /**
      * Remove calendriers.
-     *
-     * @param Calendrier $calendriers
      */
     public function removeCalendrier(Calendrier $calendriers)
     {

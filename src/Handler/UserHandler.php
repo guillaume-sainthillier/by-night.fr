@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 23/12/2016
- * Time: 19:29.
- */
+
 
 namespace App\Handler;
 
@@ -43,7 +38,7 @@ class UserHandler
             return true;
         }
 
-        $imagePath = $this->webDir . DIRECTORY_SEPARATOR . ltrim($image, DIRECTORY_SEPARATOR);
+        $imagePath = $this->webDir . \DIRECTORY_SEPARATOR . ltrim($image, \DIRECTORY_SEPARATOR);
         if (!file_exists($imagePath)) {
             return true;
         }
@@ -72,11 +67,11 @@ class UserHandler
                     $ext = 'jpeg';
                     break;
                 default:
-                    throw new \RuntimeException(sprintf("Unable to find extension for mime type %s", $contentType));
+                    throw new \RuntimeException(sprintf('Unable to find extension for mime type %s', $contentType));
             }
 
             $filename = $user->getId() . '.' . $ext;
-            $tempPath = $this->tempPath . DIRECTORY_SEPARATOR . $filename;
+            $tempPath = $this->tempPath . \DIRECTORY_SEPARATOR . $filename;
             $octets = \file_put_contents($tempPath, $content);
 
             if ($octets > 0) {

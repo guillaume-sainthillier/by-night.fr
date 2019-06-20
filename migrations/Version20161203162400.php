@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20161203162400 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -19,7 +17,6 @@ class Version20161203162400 extends AbstractMigration
 
         $this->addSql('ALTER TABLE Exploration DROP INDEX exploration_facebook_id_site_idx, ADD UNIQUE INDEX UNIQ_2A9385649BE8FD98 (facebook_id)');
     }
-
 
     public function down(Schema $schema): void
     {

@@ -18,7 +18,7 @@ class EventExplorationListener
         }
         $entityManager = $args->getEntityManager();
         $exploration = $entityManager->getRepository(Exploration::class)->findOneBy([
-            'externalId' => $entity->getExternalId()
+            'externalId' => $entity->getExternalId(),
         ]);
 
         if (!$exploration) {

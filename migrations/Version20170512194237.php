@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20170512194237 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -22,7 +20,6 @@ class Version20170512194237 extends AbstractMigration
         $this->addSql('DROP INDEX zip_city_postal_code_name_idx ON zip_city');
         $this->addSql('CREATE INDEX zip_city_postal_code_name_idx ON zip_city (name, postal_code)');
     }
-
 
     public function down(Schema $schema): void
     {

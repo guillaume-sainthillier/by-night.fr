@@ -20,7 +20,7 @@ final class Version20190410132816 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Agenda DROP FOREIGN KEY FK_2B41CD41309D0B4F');
         $this->addSql('ALTER TABLE Agenda DROP FOREIGN KEY FK_2B41CD418BAC62AF');
@@ -37,7 +37,7 @@ final class Version20190410132816 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Agenda ADD city_id INT DEFAULT NULL, ADD zip_city_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE Agenda ADD CONSTRAINT FK_2B41CD41309D0B4F FOREIGN KEY (zip_city_id) REFERENCES zip_city (id)');

@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20170513134743 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -19,7 +17,6 @@ class Version20170513134743 extends AbstractMigration
 
         $this->addSql('DROP TABLE Exploration');
     }
-
 
     public function down(Schema $schema): void
     {

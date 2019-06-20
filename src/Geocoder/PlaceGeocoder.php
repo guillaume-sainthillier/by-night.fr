@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 20/05/2017
- * Time: 17:16.
- */
+
 
 namespace App\Geocoder;
 

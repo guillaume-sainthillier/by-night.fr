@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 04/12/2017
- * Time: 22:39.
- */
+
 
 namespace App\Social;
 
@@ -33,15 +28,13 @@ class SocialProvider
             self::FACEBOOK_LIST_EVENTS => $facebookListEvents,
             self::FACEBOOK_ADMIN => $facebookAdmin,
             self::TWITTER => $twitter,
-            self::GOOGLE => $google
+            self::GOOGLE => $google,
         ];
     }
 
     /**
      * @param $name
      * @param string $default_facebook_name
-     *
-     * @return Social
      */
     public function getSocial($name, $default_facebook_name = self::FACEBOOK): Social
     {

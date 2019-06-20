@@ -20,7 +20,7 @@ final class Version20190403134728 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DELETE FROM Exploration');
         $this->addSql('ALTER TABLE Exploration ADD external_id VARCHAR(127) NOT NULL, CHANGE id id INT AUTO_INCREMENT NOT NULL');
@@ -30,7 +30,7 @@ final class Version20190403134728 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX exploration_external_id_idx ON Exploration');
         $this->addSql('ALTER TABLE Exploration DROP external_id, CHANGE id id BIGINT UNSIGNED NOT NULL');

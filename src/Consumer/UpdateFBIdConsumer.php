@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 06/09/2017
- * Time: 19:32.
- */
+
 
 namespace App\Consumer;
 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 20/05/2017
- * Time: 14:04.
- */
+
 
 namespace App\Importer;
 
@@ -42,11 +37,6 @@ class CountryImporter
     }
 
     /**
-     * @param string $id
-     * @param null|string $name
-     * @param null|string $capital
-     * @param null|string $locale
-     *
      * @throws DBALException
      */
     public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null)
@@ -86,8 +76,6 @@ class CountryImporter
     }
 
     /**
-     * @param Country $country
-     *
      * @throws DBALException
      */
     private function cleanDatas(Country $country)
@@ -134,7 +122,7 @@ class CountryImporter
             )
             SET t1.parent_id = t2.id
             WHERE t1.type = \'PPL\' AND t1.parent_id IS NULL AND t1.country_id = :country', [
-            'country' => $country->getId()
+            'country' => $country->getId(),
         ]);
 
         //Delete doublon
@@ -144,9 +132,8 @@ class CountryImporter
                     SELECT a2.id FROM zip_city a2 GROUP BY a2.country_id, a2.postal_code, a2.name  HAVING(COUNT(a2.id)) > 1 AND a2.id <> MIN(a2.id)
                 ) as myId
             ) AND country_id = :country', [
-            'country' => $country->getId()
+            'country' => $country->getId(),
         ]);
-
 
         //Delete doublon
         $this->em->getConnection()->executeUpdate('
@@ -165,7 +152,7 @@ class CountryImporter
             ) AS t4
             ON a2.name = t4.name AND a2.admin1_code = t4.admin1_code AND a2.admin2_code = t4.admin2_code AND a2.country_id = t4.country_id AND a2.type = t4.type AND a2.id != t4.maxid
             WHERE a2.type = \'PPL\' AND a2.country_id = :country', [
-            'country' => $country->getId()
+            'country' => $country->getId(),
         ]);
 
         $this->em->getConnection()->executeUpdate('
@@ -179,7 +166,7 @@ class CountryImporter
             )
             SET zc.parent_id = c.id
             WHERE zc.country_id = :country', [
-            'country' => $country->getId()
+            'country' => $country->getId(),
         ]);
 
         $this->fixDatas($country);
@@ -195,13 +182,11 @@ class CountryImporter
             SET zc.parent_id = c.id
             WHERE zc.parent_id IS NULL
             AND zc.country_id = :country', [
-            'country' => $country->getId()
+            'country' => $country->getId(),
         ]);
     }
 
     /**
-     * @param Country $country
-     *
      * @throws DBALException
      */
     private function fixDatas(Country $country)
@@ -321,9 +306,6 @@ class CountryImporter
     }
 
     /**
-     * @param array $associations
-     * @param Country $country
-     *
      * @throws DBALException
      */
     private function manualAssociation(array $associations, Country $country)
@@ -392,8 +374,8 @@ class CountryImporter
                 ->setAdmin1Name(trim($data[3]) ?: null)
                 ->setAdmin2Code($adminCode2)
                 ->setAdmin2Name(trim($data[5]) ?: null)
-                ->setLatitude((float)$data[9])
-                ->setLongitude((float)$data[10])
+                ->setLatitude((float) $data[9])
+                ->setLongitude((float) $data[10])
                 ->setCountry($country);
 
             $this->em->persist($city);
@@ -439,11 +421,11 @@ class CountryImporter
             $adminCode2 = $this->formatAdminZoneCode($data[11]);
 
             $entity
-                ->setId((int)$data[0])
+                ->setId((int) $data[0])
                 ->setName($data[1])
-                ->setPopulation((int)$data[14])
-                ->setLatitude((float)$data[4])
-                ->setLongitude((float)$data[5])
+                ->setPopulation((int) $data[14])
+                ->setLatitude((float) $data[4])
+                ->setLongitude((float) $data[5])
                 ->setAdmin1Code($adminCode1)
                 ->setAdmin2Code($adminCode2)
                 ->setCountry($country);
@@ -467,14 +449,14 @@ class CountryImporter
     private function downloadAndExtractGeoname($zipUrl, $filename, $countryId)
     {
         // Create var/datas/<CountryCode>
-        $filedir = $this->dataDir . DIRECTORY_SEPARATOR . $countryId;
-        $filepath = $filedir . DIRECTORY_SEPARATOR . $filename;
+        $filedir = $this->dataDir . \DIRECTORY_SEPARATOR . $countryId;
+        $filepath = $filedir . \DIRECTORY_SEPARATOR . $filename;
         $fs = new Filesystem();
         $fs->mkdir($filedir);
 
         // Create /tmp/<CountryCode>
-        $tempdir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $countryId;
-        $tempfile = $tempdir . DIRECTORY_SEPARATOR . $countryId . '.zip';
+        $tempdir = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $countryId;
+        $tempfile = $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.zip';
         $fs = new Filesystem();
         $fs->mkdir($tempdir);
 
@@ -483,8 +465,8 @@ class CountryImporter
         $fs->dumpFile($tempfile, $content);
 
         $zip = new \ZipArchive();
-        if ($zip->open($tempfile) === false) {
-            throw new IOException("Unable to unzip " . $tempfile);
+        if (false === $zip->open($tempfile)) {
+            throw new IOException('Unable to unzip ' . $tempfile);
         }
 
         $zip->extractTo($tempdir);
@@ -492,7 +474,7 @@ class CountryImporter
 
         //move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
         $fs->rename(
-            $tempdir . DIRECTORY_SEPARATOR . $countryId . '.txt',
+            $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.txt',
             $filepath,
             true
         );

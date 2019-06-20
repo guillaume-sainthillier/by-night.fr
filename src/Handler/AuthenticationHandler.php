@@ -32,9 +32,6 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
     }
 
     /**
-     * @param Request $request
-     * @param TokenInterface $token
-     *
      * @return JsonResponse|RedirectResponse
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
@@ -43,38 +40,34 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
             $result = ['success' => true];
 
             return new JsonResponse($result);
+        }
+        $key = '_security.main.target_path'; //where "main" is your firewall name
+
+        if (($targetPath = $request->getSession()->get($key))) {
+            $url = $targetPath;
         } else {
-            $key = '_security.main.target_path'; //where "main" is your firewall name
+            //check if the referer session key has been set
+            if ($request->getSession()->has($key)) {
+                //set the url based on the link they were trying to access before being authenticated
+                $url = $request->getSession()->get($key);
 
-            if (($targetPath = $request->getSession()->get($key))) {
-                $url = $targetPath;
+                //remove the session key
+                $request->getSession()->remove($key);
             } else {
-                //check if the referer session key has been set
-                if ($request->getSession()->has($key)) {
-                    //set the url based on the link they were trying to access before being authenticated
-                    $url = $request->getSession()->get($key);
+                $user = $token->getUser();
 
-                    //remove the session key
-                    $request->getSession()->remove($key);
+                if ($user->getCity()) {
+                    $url = $this->router->generate('app_agenda_index', ['location' => $user->getCity()->getSlug()]);
                 } else {
-                    $user = $token->getUser();
-
-                    if ($user->getCity()) {
-                        $url = $this->router->generate('app_agenda_index', ['location' => $user->getCity()->getSlug()]);
-                    } else {
-                        $url = $this->router->generate('app_main_index');
-                    }
+                    $url = $this->router->generate('app_main_index');
                 }
             }
-
-            return new RedirectResponse($url);
         }
+
+        return new RedirectResponse($url);
     }
 
     /**
-     * @param Request $request
-     * @param AuthenticationException $exception
-     *
      * @return JsonResponse|RedirectResponse
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)

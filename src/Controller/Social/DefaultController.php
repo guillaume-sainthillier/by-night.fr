@@ -21,8 +21,6 @@ class DefaultController extends AbstractController
      * @Route("/deconnexion", name="app_disconnect_service")
      * @ParamConverter("social", options={"default_facebook_name": "facebook"})
      *
-     * @param Social $social
-     *
      * @return JsonResponse
      */
     public function disconnectAction(Social $social)
@@ -52,8 +50,6 @@ class DefaultController extends AbstractController
 
     /**
      * Authenticate a user with Symfony Security.
-     *
-     * @param UserInterface $user
      */
     protected function authenticateBasicUser(UserInterface $user)
     {

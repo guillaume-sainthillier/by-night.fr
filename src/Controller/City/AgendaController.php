@@ -5,7 +5,6 @@ namespace App\Controller\City;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
-use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Form\Type\SearchType;
@@ -70,14 +69,10 @@ class AgendaController extends BaseController
      * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags", requirements={"page": "\d+"})
      * @ReverseProxy(expires="+30 minutes")
      *
-     * @param Request $request
-     * @param City $city
-     * @param int $page
+     * @param int  $page
      * @param null $type
      * @param null $tag
-     * @param null $ville
      * @param null $slug
-     * @param RepositoryManagerInterface $repositoryManager
      *
      * @return Response
      */
@@ -177,7 +172,7 @@ class AgendaController extends BaseController
             $events_type_manifestation = $repo->getTypesEvenements($location);
             $type_manifestation = [];
 
-            foreach ($events_type_manifestation as $event_type_manifestation) {//
+            foreach ($events_type_manifestation as $event_type_manifestation) {
                 $types_manifestation = \explode(',', $event_type_manifestation);
                 foreach ($types_manifestation as $type) {
                     $type = \array_map('trim', \explode('//', $type))[0];
@@ -199,7 +194,7 @@ class AgendaController extends BaseController
 
         if (!$cache->contains($key)) {
             $places = $repo->getEventPlaces($location);
-            $lieux = array();
+            $lieux = [];
             foreach ($places as $place) {
                 $lieux[$place->getNom()] = $place->getId();
             }

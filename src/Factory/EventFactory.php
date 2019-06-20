@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 13/09/2017
- * Time: 18:57.
- */
+
 
 namespace App\Factory;
 
@@ -25,8 +20,6 @@ class EventFactory
     }
 
     /**
-     * @param array $datas
-     *
      * @return Event
      */
     public function fromArray(array $datas)
@@ -34,9 +27,8 @@ class EventFactory
         $event = new Event();
 
         foreach ($datas as $field => $value) {
-
             //Cas spécial : traitement d'un datetime
-            if (is_array($value) && isset($value['date'])) {
+            if (\is_array($value) && isset($value['date'])) {
                 $value = new \DateTime($value['date'], new \DateTimeZone($value['timezone']));
             }
             $this->propertyAccessor->setValue($event, $field, $value);

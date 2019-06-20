@@ -69,14 +69,13 @@ class ImageCleaner
             }
 
             if ($dry_run) {
-                Monitor::writeln(sprintf("Suppression de %s", $file->getPathname()));
+                Monitor::writeln(sprintf('Suppression de %s', $file->getPathname()));
             }
 
             //Orphan file
-            $path = ltrim(str_replace($this->webDir, '', $file->getPathname()), DIRECTORY_SEPARATOR);
+            $path = ltrim(str_replace($this->webDir, '', $file->getPathname()), \DIRECTORY_SEPARATOR);
             foreach ($filters as $filter) {
                 if ($this->cacheManager->isStored($path, $filter)) {
-
                     if ($dry_run) {
                         Monitor::writeln(sprintf("\tSuppression du filtre %s : %s", $filter, $path));
                     } else {

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 01/12/2016
- * Time: 20:32.
- */
+
 
 namespace App\Handler;
 

@@ -10,10 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Entity(repositoryClass="App\Repository\CalendrierRepository")
  * @ORM\Table(name="Calendrier",
- *      uniqueConstraints={
- *          @ORM\UniqueConstraint(name="user_event_unique",columns={"user_id","event_id"})
- *      })
- * @ORM\HasLifecycleCallbacks
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="user_event_unique", columns={"user_id", "event_id"})
+ *     })
+ *     @ORM\HasLifecycleCallbacks
  */
 class Calendrier
 {
@@ -70,8 +70,8 @@ class Calendrier
     }
 
     /**
-     * @ORM\PrePersist()
-     * @ORM\PreUpdate()
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function preUpload()
     {
@@ -139,7 +139,6 @@ class Calendrier
     /**
      * Set user.
      *
-     * @param User $user
      *
      * @return Calendrier
      */
@@ -163,7 +162,6 @@ class Calendrier
     /**
      * Set event.
      *
-     * @param Event $event
      *
      * @return Calendrier
      */

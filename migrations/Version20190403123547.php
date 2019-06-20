@@ -20,7 +20,7 @@ final class Version20190403123547 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Agenda ADD external_id VARCHAR(127) DEFAULT NULL');
         $this->addSql('CREATE INDEX agenda_external_id_idx ON Agenda (external_id)');
@@ -33,7 +33,7 @@ final class Version20190403123547 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX agenda_external_id_idx ON Agenda');
         $this->addSql('ALTER TABLE Agenda DROP external_id');

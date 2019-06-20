@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 03/06/2017
- * Time: 15:20.
- */
+
 
 namespace App\App;
 
@@ -43,8 +38,6 @@ class CityManager
     }
 
     /**
-     * @param City $city
-     *
      * @return $this
      */
     public function setCurrentCity(City $city)

@@ -42,9 +42,6 @@ class SocialManager
         $this->siteInfo = false;
     }
 
-    /**
-     * @return SiteInfo
-     */
     public function getSiteInfo(): SiteInfo
     {
         if (false === $this->siteInfo) {
@@ -56,17 +53,11 @@ class SocialManager
         return $this->siteInfo;
     }
 
-    /**
-     * @return string
-     */
     public function getFacebookIdPage(): string
     {
         return $this->facebookIdPage;
     }
 
-    /**
-     * @return string
-     */
     public function getTwitterIdPage(): string
     {
         return $this->twitterIdPage;

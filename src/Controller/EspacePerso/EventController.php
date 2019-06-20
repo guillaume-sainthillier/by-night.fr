@@ -4,8 +4,8 @@ namespace App\Controller\EspacePerso;
 
 use App\App\SocialManager;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Event;
 use App\Entity\Calendrier;
+use App\Entity\Event;
 use App\Factory\EventFactory;
 use App\Form\Type\EventType;
 use App\Handler\DoctrineEventHandler;
@@ -233,7 +233,7 @@ class EventController extends BaseController
         }
 
         return $this->render('EspacePerso/new.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 

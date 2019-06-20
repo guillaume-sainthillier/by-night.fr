@@ -23,7 +23,7 @@ class ImageTypeExtension extends AbstractTypeExtension
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setRequired(array('image_filter'));
+        $resolver->setRequired(['image_filter']);
     }
 
     /**

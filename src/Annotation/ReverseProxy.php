@@ -19,33 +19,21 @@ class ReverseProxy extends ConfigurationAnnotation
      */
     private $expires;
 
-    /**
-     * @return int|null
-     */
     public function getTtl(): ?int
     {
         return $this->ttl;
     }
 
-    /**
-     * @param int|null $ttl
-     */
     public function setTtl(?int $ttl): void
     {
         $this->ttl = $ttl;
     }
 
-    /**
-     * @return string|null
-     */
     public function getExpires(): ?string
     {
         return $this->expires;
     }
 
-    /**
-     * @param string|null $expires
-     */
     public function setExpires(?string $expires): void
     {
         $this->expires = $expires;

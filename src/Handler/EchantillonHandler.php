@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 01/12/2016
- * Time: 20:22.
- */
+
 
 namespace App\Handler;
 
@@ -97,7 +92,7 @@ class EchantillonHandler
         if (\count($countryIds) > 0) {
             $places = $repoPlace->findBy([
                 'country' => array_keys($countryIds),
-                'city' => null
+                'city' => null,
             ]);
 
             foreach ($places as $place) {
@@ -116,13 +111,13 @@ class EchantillonHandler
             }
 
             if (!$event->getExternalId()) {
-                throw new \RuntimeException("Unable to find echantillon without an external ID");
+                throw new \RuntimeException('Unable to find echantillon without an external ID');
             }
 
             $externalIds[$event->getExternalId()] = true;
         }
 
-        if (count($externalIds) > 0) {
+        if (\count($externalIds) > 0) {
             $repoEvent = $this->em->getRepository(Event::class);
             $candidates = $repoEvent->findBy(['externalId' => array_keys($externalIds)]);
             foreach ($candidates as $candidate) {
@@ -133,8 +128,6 @@ class EchantillonHandler
     }
 
     /**
-     * @param Event $event
-     *
      * @return Place[]
      */
     public function getPlaceEchantillons(Event $event)

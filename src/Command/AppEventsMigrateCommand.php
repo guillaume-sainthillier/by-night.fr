@@ -55,7 +55,7 @@ class AppEventsMigrateCommand extends AppCommand
         $events = array_map('current', $events);
         $chunks = array_chunk($events, self::EVENTS_PER_TRANSACTION);
 
-        Monitor::createProgressBar(count($chunks));
+        Monitor::createProgressBar(\count($chunks));
         foreach ($chunks as $chunk) {
             $events = $em->getRepository(Event::class)
                 ->findBy(['id' => $chunk]);
@@ -65,7 +65,6 @@ class AppEventsMigrateCommand extends AppCommand
             Monitor::advanceProgressBar();
             foreach ($events as $i => $event) {
                 /** @var Event $event */
-
                 $url = $event->getUrl();
                 $url = str_replace('http://', 'https://', $url);
                 $url = str_replace('https://images1.soonnight.com', 'https://www.soonnight.com', $url);
@@ -115,6 +114,7 @@ class AppEventsMigrateCommand extends AppCommand
 
         $promise = $pool->promise();
         $promise->wait();
+
         return $responses;
     }
 }

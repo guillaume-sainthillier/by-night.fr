@@ -71,7 +71,7 @@ class HistoriqueMaj
     }
 
     /**
-     * @ORM\PrePersist()
+     * @ORM\PrePersist
      */
     public function majDateFin()
     {

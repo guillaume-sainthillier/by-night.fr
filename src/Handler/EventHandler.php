@@ -9,9 +9,9 @@ use App\Utils\Comparator;
 use App\Utils\Merger;
 use App\Utils\Monitor;
 use GuzzleHttp\Client;
+use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use function GuzzleHttp\Psr7\copy_to_string;
 
 /**
  * Description of EventHandler.
@@ -61,11 +61,11 @@ class EventHandler
                 $ext = 'jpeg';
                 break;
             default:
-                throw new \RuntimeException(sprintf("Unable to find extension for mime type %s", $contentType));
+                throw new \RuntimeException(sprintf('Unable to find extension for mime type %s', $contentType));
         }
 
         $filename = ($event->getId() ?: uniqid()) . '.' . $ext;
-        $tempPath = $this->tempPath . DIRECTORY_SEPARATOR . $filename;
+        $tempPath = $this->tempPath . \DIRECTORY_SEPARATOR . $filename;
         $octets = \file_put_contents($tempPath, $content);
 
         if ($octets > 0) {
@@ -99,20 +99,15 @@ class EventHandler
             $contentType = current($response->getHeader('Content-Type'));
             $content = copy_to_string($response->getBody());
             $this->uploadFile($event, $content, $contentType);
-
         } catch (\Exception $e) {
             $this->logger->error($e, ['event' => [
                 'id' => $event->getId(),
-                'url' => $event->getUrl()
+                'url' => $event->getUrl(),
             ]]);
         }
     }
 
     /**
-     * @param array $persistedEvents
-     * @param array $persistedPlaces
-     * @param Event $event
-     *
      * @return Event
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Event $event)
@@ -131,7 +126,7 @@ class EventHandler
 
     public function handleEvent(array $persistedEvents, Event $notPersistedEvent)
     {
-        $bestEvent = count($persistedEvents) > 0 ? current($persistedEvents) : null;
+        $bestEvent = \count($persistedEvents) > 0 ? current($persistedEvents) : null;
 
         //On fusionne l'event existant avec celui découvert (même si NULL)
         return Monitor::bench('mergeEvent', function () use ($bestEvent, $notPersistedEvent) {

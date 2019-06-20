@@ -10,7 +10,7 @@ class UpdateFacebookIdProducer extends Producer
     {
         $this->publish(json_encode([
             'old' => $oldValue,
-            'new' => $newValue
+            'new' => $newValue,
         ]));
     }
 }

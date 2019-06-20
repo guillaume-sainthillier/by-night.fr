@@ -185,21 +185,15 @@ class Country
         return $this->slug;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPostalCodeRegex(): ?string
     {
         return $this->postalCodeRegex;
     }
 
-    /**
-     * @param string|null $postalCodeRegex
-     * @return Country
-     */
     public function setPostalCodeRegex(?string $postalCodeRegex): Country
     {
         $this->postalCodeRegex = $postalCodeRegex;
+
         return $this;
     }
 }

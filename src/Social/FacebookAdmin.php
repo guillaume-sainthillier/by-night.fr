@@ -225,10 +225,10 @@ class FacebookAdmin extends FacebookListEvents
 
         try {
             $url = '/' . $id_event . '/%s/' . $id_user;
-            $requests = array(
+            $requests = [
                 $this->client->request('GET', \sprintf($url, 'attending'), [], $userAccessToken),
                 $this->client->request('GET', \sprintf($url, 'maybe'), [], $userAccessToken),
-            );
+            ];
 
             $responses = $this->client->sendBatchRequest($requests, $userAccessToken);
             foreach ($responses as $i => $response) {

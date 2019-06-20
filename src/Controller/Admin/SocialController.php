@@ -22,7 +22,6 @@ class SocialController extends AbstractController
      * @Route("/connexion", name="app_administration_connect_site")
      *
      * @param $service
-     * @param SessionInterface $session
      *
      * @return RedirectResponse
      */

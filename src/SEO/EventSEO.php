@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 20/04/2017
- * Time: 21:47.
- */
+
 
 namespace App\SEO;
 

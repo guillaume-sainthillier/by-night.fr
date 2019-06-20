@@ -62,7 +62,6 @@ class Comparator
         if (($a->getCity() && $b->getCity() && $a->getCity()->getId() === $b->getCity()->getId()) ||
             ($a->getZipCity() && $b->getZipCity() && $a->getZipCity()->getId() === $b->getZipCity()->getId()) ||
             (!$a->getCity() && !$b->getCity() && !$a->getZipCity() && !$b->getZipCity() && $a->getCountry() && $b->getCountry() && $a->getCountry()->getId() === $b->getCountry()->getId())) {
-
             $matchingScoreNom = $this->getMatchingScoreTextWithoutCity(
                 $a->getNom(), $a->getCity(), $a->getZipCity(),
                 $b->getNom(), $b->getCity(), $b->getZipCity()
@@ -79,7 +78,6 @@ class Comparator
                 return 90;
             }
         }
-
 
         return 0;
     }
@@ -108,7 +106,7 @@ class Comparator
 
     private function getDiffPourcentage($a, $b)
     {
-        return (1 - \levenshtein($a, $b) / \max(\strlen($a), \strlen($b))) * 100;
+        return (1 - \levenshtein($a, $b) / \max(\mb_strlen($a), \mb_strlen($b))) * 100;
     }
 
     private function getMatchingScoreRue($a, $b)

@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation\Groups;
 /**
  * City.
  *
- * @ORM\Table()
+ * @ORM\Table
  * @ORM\Entity(repositoryClass="App\Repository\CityRepository", readOnly=true)
  * @ExclusionPolicy("NONE")
  */

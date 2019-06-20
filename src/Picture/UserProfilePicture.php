@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 11/10/2016
- * Time: 18:48.
- */
+
 
 namespace App\Picture;
 

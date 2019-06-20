@@ -1,8 +1,6 @@
 <?php
 
-/*
- * Effectue la gestion des différents parser
- */
+
 
 namespace App\Parser\Manager;
 

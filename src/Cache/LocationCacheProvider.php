@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 17/05/2017
- * Time: 21:01.
- */
+
 
 namespace App\Cache;
 
@@ -62,7 +57,7 @@ class LocationCacheProvider extends CacheProvider
         $location
             ->setId(\md5($id))
             ->setName($id)
-            ->setValues((array)$data);
+            ->setValues((array) $data);
 
         $this->em->persist($location);
 
@@ -98,6 +93,5 @@ class LocationCacheProvider extends CacheProvider
      */
     protected function doGetStats()
     {
-        return;
     }
 }

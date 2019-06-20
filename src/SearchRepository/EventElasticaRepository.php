@@ -25,7 +25,7 @@ class EventElasticaRepository extends Repository
         $mainQuery = new BoolQuery();
 
         $mainQuery->addMust(new Term([
-            'is_brouillon' => false
+            'is_brouillon' => false,
         ]));
 
         if ($search->getLieux()) {
@@ -34,7 +34,7 @@ class EventElasticaRepository extends Repository
             );
         } elseif ($search->getLocation() && $search->getLocation()->isCountry()) {
             $mainQuery->addMust(
-                new Term(['place.country.id' => strtolower($search->getLocation()->getCountry()->getId())])
+                new Term(['place.country.id' => mb_strtolower($search->getLocation()->getCountry()->getId())])
             );
         } elseif ($search->getLocation() && $search->getLocation()->isCity()) {
             $mainQuery->addMust(

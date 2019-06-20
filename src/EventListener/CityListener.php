@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 03/05/2017
- * Time: 20:29.
- */
+
 
 namespace App\EventListener;
 
@@ -20,9 +15,9 @@ class CityListener implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             KernelEvents::RESPONSE => 'onKernelResponse',
-        );
+        ];
     }
 
     public function onKernelResponse(FilterResponseEvent $event)

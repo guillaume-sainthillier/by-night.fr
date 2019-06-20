@@ -55,7 +55,7 @@ class WidgetsController extends BaseController
         return $this->render('City/Hinclude/tweets.html.twig', [
             'tweets' => $results['statuses'],
             'hasNextLink' => $nextLink,
-            'location' => $location
+            'location' => $location,
         ]);
     }
 
@@ -108,7 +108,7 @@ class WidgetsController extends BaseController
     public function soireesSimilairesAction(Location $location, $slug, $id = null, $page = 1)
     {
         $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_soirees_similaires', [
-            'page' => $page
+            'page' => $page,
         ]);
 
         if ($result instanceof Response) {

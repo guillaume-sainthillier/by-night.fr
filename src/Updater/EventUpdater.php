@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 17/12/2016
- * Time: 14:28.
- */
+
 
 namespace App\Updater;
 

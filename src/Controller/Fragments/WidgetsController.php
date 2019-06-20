@@ -4,8 +4,8 @@ namespace App\Controller\Fragments;
 
 use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Event;
 use App\Entity\Calendrier;
+use App\Entity\Event;
 use App\Entity\User;
 use App\Parser\ProgrammeTVParser;
 use App\Social\FacebookAdmin;
@@ -19,8 +19,6 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/programme-tv", name="app_agenda_programme_tv")
-     *
-     * @param ProgrammeTVParser $parser
      *
      * @return Response
      */

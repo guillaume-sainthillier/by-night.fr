@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Entity\Event;
 use App\Entity\Comment;
+use App\Entity\Event;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 

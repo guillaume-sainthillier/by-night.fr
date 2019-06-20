@@ -15,11 +15,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Place.
  *
  * @ORM\Table(name="Place", indexes={
- *   @ORM\Index(name="place_nom_idx", columns={"nom"}),
- *   @ORM\Index(name="place_slug_idx", columns={"slug"}),
- *   @ORM\Index(name="place_external_id_idx", columns={"external_id"})
+ *     @ORM\Index(name="place_nom_idx", columns={"nom"}),
+ *     @ORM\Index(name="place_slug_idx", columns={"slug"}),
+ *     @ORM\Index(name="place_external_id_idx", columns={"external_id"})
  * })
- * @ORM\Entity()
+ * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")
  * @ORM\Entity(repositoryClass="App\Repository\PlaceRepository")
@@ -469,7 +469,6 @@ class Place implements GeolocalizeInterface
     /**
      * Set site.
      *
-     * @param Site $site
      *
      * @return Place
      */

@@ -3,8 +3,8 @@
 namespace App\Repository;
 
 use App\App\Location;
-use App\Entity\Event;
 use App\Entity\City;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use DateInterval;
@@ -238,7 +238,7 @@ class EventRepository extends EntityRepository
 
         $ordered = [];
         foreach ($datas as $data) {
-            $ordered[$data['group']] = (int)$data['events'];
+            $ordered[$data['group']] = (int) $data['events'];
         }
 
         return $ordered;
@@ -354,7 +354,7 @@ class EventRepository extends EntityRepository
             ->andWhere('a.id != :id')
             ->setParameters([
                 ':from' => $event->getDateDebut()->format('Y-m-d'),
-                ':id' => $event->getId()
+                ':id' => $event->getId(),
             ]);
 
         if ($event->getPlace()->getCity()) {
@@ -393,6 +393,7 @@ class EventRepository extends EntityRepository
     public function findAllNext(Event $event, $page = 1, $limit = 7)
     {
         $from = new DateTime();
+
         return $this
             ->createQueryBuilder('a')
             ->where('a.dateFin >= :date_fin AND a.id != :id AND a.place = :place')
@@ -408,6 +409,7 @@ class EventRepository extends EntityRepository
     public function findAllNextCount(Event $event)
     {
         $from = new DateTime();
+
         return $this->_em
             ->createQueryBuilder()
             ->select('count(a.id)')
@@ -417,7 +419,6 @@ class EventRepository extends EntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
-
 
     private function getTopSoireeBuilder(Location $location)
     {

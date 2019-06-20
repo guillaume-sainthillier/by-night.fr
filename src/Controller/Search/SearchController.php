@@ -34,17 +34,13 @@ class SearchController extends AbstractController
     /**
      * @Route("/", name="app_search_query")
      *
-     * @param Request $request
-     * @param RepositoryManagerInterface $rm
-     * @param PaginatorInterface $paginator
-     *
      * @return Response
      */
     public function searchAction(Request $request, RepositoryManagerInterface $rm, PaginatorInterface $paginator)
     {
         $q = \trim($request->get('q', null));
         $type = $request->get('type', null);
-        $page = (int)($request->get('page', 1));
+        $page = (int) ($request->get('page', 1));
         $maxItems = 20;
 
         if ($page <= 0) {

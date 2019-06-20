@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20161126205249 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -26,7 +24,6 @@ class Version20161126205249 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX UNIQ_2DA17977C05FB297 ON User (confirmation_token)');
         $this->addSql('DELETE FROM Exploration');
     }
-
 
     public function down(Schema $schema): void
     {

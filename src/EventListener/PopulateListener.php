@@ -13,9 +13,6 @@ class PopulateListener implements EventSubscriberInterface
      */
     private $indexManager;
 
-    /**
-     * @param IndexManager $indexManager
-     */
     public function __construct(IndexManager $indexManager)
     {
         $this->indexManager = $indexManager;

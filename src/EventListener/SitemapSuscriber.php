@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 03/05/2017
- * Time: 20:29.
- */
+
 
 namespace App\EventListener;
 
-use App\Entity\Event;
 use App\Entity\City;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use DateTime;
@@ -54,9 +49,9 @@ class SitemapSuscriber implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             SitemapPopulateEvent::ON_SITEMAP_POPULATE => 'registerRoutes',
-        );
+        ];
     }
 
     public function registerRoutes(SitemapPopulateEvent $event)
@@ -69,7 +64,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             'agenda' => [$this, 'registerAgendaRoutes'],
             'places' => [$this, 'registerPlacesRoutes'],
             'users' => [$this, 'registerUserRoutes'],
-            'events' => [$this, 'registerEventRoutes']
+            'events' => [$this, 'registerEventRoutes'],
         ];
 
         foreach ($sections as $name => $generateFunction) {

@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20161205113345 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -21,7 +19,6 @@ class Version20161205113345 extends AbstractMigration
         $this->addSql('ALTER TABLE Exploration DROP facebook_id, CHANGE id id VARCHAR(31) NOT NULL');
         $this->addSql('ALTER TABLE User DROP locked, DROP expires_at, DROP credentials_expire_at, CHANGE salt salt VARCHAR(255) DEFAULT NULL');
     }
-
 
     public function down(Schema $schema): void
     {

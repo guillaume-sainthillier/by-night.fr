@@ -4,8 +4,8 @@ namespace App\Controller\Comment;
 
 use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Event;
 use App\Entity\Comment;
+use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

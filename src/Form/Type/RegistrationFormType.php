@@ -9,9 +9,6 @@ class RegistrationFormType extends BaseType
 {
     /**
      * Builds the embedded form representing the user.
-     *
-     * @param FormBuilderInterface $builder
-     * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {

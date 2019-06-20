@@ -26,16 +26,16 @@ class TweetExtension extends Extension
         $mentionified = '/(^|[\n\s])@([^\s"\t\n\r<:]*)/is';
 
         $prettyTweet = \preg_replace(
-            array(
+            [
                 $linkified,
                 $hashified,
                 $mentionified,
-            ),
-            array(
+            ],
+            [
                 '<a href="$1" class="link-tweet" target="_blank">$1</a>',
                 '$1<a class="link-hashtag" href="https://twitter.com/search?q=%23$2&src=hash" target="_blank">#$2</a>',
                 '$1<a class="link-mention" href="http://twitter.com/$2" target="_blank">@$2</a>',
-            ),
+            ],
             $tweet
         );
 

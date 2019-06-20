@@ -38,10 +38,6 @@ class EventArchivator
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
-     *
-     * @return mixed
-     *
      * @throws NonUniqueResultException
      */
     protected function countObjects(QueryBuilder $queryBuilder)

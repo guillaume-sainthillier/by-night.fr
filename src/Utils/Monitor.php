@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 02/03/2016
- * Time: 20:51.
- */
+
 
 namespace App\Utils;
 
@@ -153,13 +148,13 @@ class Monitor
         }
         $table = new Table(self::$output);
         $table
-            ->setHeaders(array(
-                array(new TableCell('Statistiques détaillées', array('colspan' => 10))),
-                array('Nom', 'Nombre', 'Tps Total', 'Tps Moyen', 'Tps Min', 'Tps Max', 'Memory Total', 'Memory Moyen', 'Memory Min', 'Memory Max'),
-            ));
+            ->setHeaders([
+                [new TableCell('Statistiques détaillées', ['colspan' => 10])],
+                ['Nom', 'Nombre', 'Tps Total', 'Tps Moyen', 'Tps Min', 'Tps Max', 'Memory Total', 'Memory Moyen', 'Memory Min', 'Memory Max'],
+            ]);
 
         $stats = self::getStats();
-        \ksort($stats, SORT_STRING);
+        \ksort($stats, \SORT_STRING);
         foreach ($stats as $key => $stat) {
             $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['min'], $stat['max'], $stat['memory'], $stat['avg_memory'], $stat['min_memory'], $stat['max_memory']]);
         }

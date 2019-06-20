@@ -20,7 +20,7 @@ final class Version20190408143247 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Agenda ADD city_id INT DEFAULT NULL, ADD zip_city_id INT DEFAULT NULL, ADD country_id VARCHAR(2) DEFAULT NULL, ADD place_name VARCHAR(255) NOT NULL, ADD place_street VARCHAR(127) DEFAULT NULL, ADD place_city VARCHAR(127) DEFAULT NULL, ADD place_postal_code VARCHAR(7) DEFAULT NULL, ADD place_external_id VARCHAR(127) DEFAULT NULL, ADD place_facebook_id VARCHAR(255) DEFAULT NULL');
         $this->addSql('ALTER TABLE Agenda ADD CONSTRAINT FK_2B41CD418BAC62AF FOREIGN KEY (city_id) REFERENCES admin_zone (id)');
@@ -34,7 +34,7 @@ final class Version20190408143247 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Agenda DROP FOREIGN KEY FK_2B41CD418BAC62AF');
         $this->addSql('ALTER TABLE Agenda DROP FOREIGN KEY FK_2B41CD41309D0B4F');

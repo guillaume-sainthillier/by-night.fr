@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Exploration.
  *
  * @ORM\Table(name="Exploration", indexes={
- *      @ORM\Index(name="exploration_external_id_idx", columns={"external_id"})
+ *     @ORM\Index(name="exploration_external_id_idx", columns={"external_id"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\ExplorationRepository")
  */

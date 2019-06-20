@@ -53,6 +53,7 @@ class CityRepository extends EntityRepository
             ->getScalarResult();
 
         \shuffle($results);
+
         return \array_slice($results, 0, $limit);
     }
 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 26/10/2016
- * Time: 22:19.
- */
+
 
 namespace App\Form\Type;
 
@@ -27,18 +22,18 @@ class ReCaptchaType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'mapped' => false,
             'compound' => false,
-            'attr' => array(
+            'attr' => [
                 'data-sitekey' => $this->siteKey,
                 'class' => 'g-recaptcha',
-            ),
-            'constraints' => array(
+            ],
+            'constraints' => [
                 new ReCaptchaResponse(),
                 new NotBlank(),
-            ),
-        ));
+            ],
+        ]);
     }
 
     public function getBlockPrefix()

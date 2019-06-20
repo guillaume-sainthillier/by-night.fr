@@ -48,13 +48,13 @@ class AppImagesUpdateCommand extends AppCommand
         $updater = $input->getArgument('updater');
         $from = new \DateTime($input->getOption('from'));
 
-        if (in_array($updater, ['all', 'user'])) {
-            Monitor::writeln("Mise à jour des images <info>utilisateur</info>");
+        if (\in_array($updater, ['all', 'user'])) {
+            Monitor::writeln('Mise à jour des images <info>utilisateur</info>');
             $this->userUpdater->update($from);
         }
 
-        if (in_array($updater, ['all', 'event'])) {
-            Monitor::writeln("Mise à jour des images <info>event</info>");
+        if (\in_array($updater, ['all', 'event'])) {
+            Monitor::writeln('Mise à jour des images <info>event</info>');
             $this->eventUpdater->update($from);
         }
     }

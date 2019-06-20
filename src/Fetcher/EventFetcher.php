@@ -24,8 +24,6 @@ class EventFetcher
     }
 
     /**
-     * @param ParserInterface $parser
-     *
      * @return array
      */
     public function fetchEvents(ParserInterface $parser)

@@ -2,8 +2,8 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Event;
 use App\Entity\Country;
+use App\Entity\Event;
 use App\Handler\DoctrineEventHandler;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -166,19 +166,19 @@ class EventType extends AbstractType
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float)$latitude ?: null;
+                return (float) $latitude ?: null;
             },
             function ($latitude) {
-                return (float)$latitude ?: null;
+                return (float) $latitude ?: null;
             }
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float)$latitude ?: null;
+                return (float) $latitude ?: null;
             },
             function ($latitude) {
-                return (float)$latitude ?: null;
+                return (float) $latitude ?: null;
             }
         ));
     }

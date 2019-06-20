@@ -24,7 +24,7 @@ class UtilTest extends ContainerTestCase
      */
     public function testReplaceNonNumericChars($actual, $expected)
     {
-        $this->assertEquals($expected, $this->utils->replaceNonNumericChars($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->utils->replaceNonNumericChars($actual), 'Original : ' . $actual);
     }
 
     //Latitude or Postal Code
@@ -45,7 +45,7 @@ class UtilTest extends ContainerTestCase
      */
     public function testReplaceNonAlphanumericChars($actual, $expected)
     {
-        $this->assertEquals($expected, $this->utils->replaceNonAlphanumericChars($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->utils->replaceNonAlphanumericChars($actual), 'Original : ' . $actual);
     }
 
     public function nonAlphanumericCharsProvider()
@@ -62,7 +62,7 @@ class UtilTest extends ContainerTestCase
      */
     public function testDeleteSpaceBetween($actual, $expected, $delimiters)
     {
-        $this->assertEquals($expected, $this->utils->deleteSpaceBetween($actual, $delimiters), "Original : " . $actual);
+        $this->assertEquals($expected, $this->utils->deleteSpaceBetween($actual, $delimiters), 'Original : ' . $actual);
     }
 
     public function deleteSpaceBetweenProvider()
@@ -82,7 +82,7 @@ class UtilTest extends ContainerTestCase
      */
     public function testDeleteStopWords($actual, $expected)
     {
-        $this->assertEquals($expected, $this->utils->deleteStopWords($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->utils->deleteStopWords($actual), 'Original : ' . $actual);
     }
 
     public function deleteStopWordsProvider()
@@ -101,7 +101,7 @@ class UtilTest extends ContainerTestCase
      */
     public function testDeleteMultipleSpaces($actual, $expected)
     {
-        $this->assertEquals($expected, $this->utils->deleteMultipleSpaces($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->utils->deleteMultipleSpaces($actual), 'Original : ' . $actual);
     }
 
     public function deleteMultipleSpacesProvider()
@@ -119,7 +119,7 @@ class UtilTest extends ContainerTestCase
      */
     public function testUtf8TitleCase($actual, $expected)
     {
-        $this->assertEquals($expected, $this->utils->utf8TitleCase($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->utils->utf8TitleCase($actual), 'Original : ' . $actual);
     }
 
     public function utf8TitleCaseProvider()
@@ -136,7 +136,7 @@ class UtilTest extends ContainerTestCase
      */
     public function testUtf8LowerCase($actual, $expected)
     {
-        $this->assertEquals($expected, $this->utils->utf8LowerCase($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->utils->utf8LowerCase($actual), 'Original : ' . $actual);
     }
 
     public function utf8LowerCaseProvider()
@@ -153,7 +153,7 @@ class UtilTest extends ContainerTestCase
      */
     public function testReplaceAccents($actual, $expected)
     {
-        $this->assertEquals($expected, $this->utils->replaceAccents($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->utils->replaceAccents($actual), 'Original : ' . $actual);
     }
 
     public function replaceAccentsProvider()

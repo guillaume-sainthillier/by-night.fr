@@ -79,9 +79,9 @@ class ToulouseTourismeParser extends LinksParser
 
         foreach ($infos_resa as $info_resa) {
             $info_resa = \trim($info_resa);
-            if (false !== \strpos($info_resa, '@')) {
+            if (false !== \mb_strpos($info_resa, '@')) {
                 $resa_email[] = \preg_replace('#https?:://#i', '', $info_resa);
-            } elseif (\filter_var('http://' . $info_resa, FILTER_VALIDATE_URL)) {
+            } elseif (\filter_var('http://' . $info_resa, \FILTER_VALIDATE_URL)) {
                 $resa_internet[] = $info_resa;
             } else {
                 $resa_telephone[] = $info_resa;

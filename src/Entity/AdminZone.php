@@ -17,9 +17,9 @@ use JMS\Serializer\Annotation\Groups;
  * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
- * @ORM\DiscriminatorMap({"PPL" = "City","ADM1" = "AdminZone1", "ADM2" = "AdminZone2"})
+ * @ORM\DiscriminatorMap({"PPL": "City", "ADM1": "AdminZone1", "ADM2": "AdminZone2"})
  * @ORM\Entity(repositoryClass="App\Repository\AdminZoneRepository", readOnly=true)
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("NONE")
  */
 abstract class AdminZone

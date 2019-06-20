@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20170511203747 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -20,7 +18,6 @@ class Version20170511203747 extends AbstractMigration
         $this->addSql('ALTER TABLE zip_city ADD slug VARCHAR(201) NOT NULL');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_FBE2D3F4989D9B62 ON zip_city (slug)');
     }
-
 
     public function down(Schema $schema): void
     {

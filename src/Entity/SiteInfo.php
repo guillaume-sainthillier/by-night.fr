@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * UserInfo.
  *
- * @ORM\Table()
- * @ORM\Entity()
+ * @ORM\Table
+ * @ORM\Entity
  */
 class SiteInfo extends Info
 {

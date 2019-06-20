@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 25/05/2017
- * Time: 14:13.
- */
+
 
 namespace App\Geolocalize;
 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 06/09/2017
- * Time: 19:32.
- */
+
 
 namespace App\Consumer;
 
@@ -55,6 +50,7 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
             $this->doctrineEventHandler->handleOne($event);
         } catch (\Exception $e) {
             $this->logger->critical($e);
+
             return ConsumerInterface::MSG_REJECT_REQUEUE;
         }
 
@@ -84,6 +80,7 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
             Monitor::displayStats();
         } catch (\Exception $e) {
             $this->logger->critical($e);
+
             return ConsumerInterface::MSG_REJECT_REQUEUE;
         }
 
@@ -92,7 +89,7 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 
     private function ping(Connection $connection)
     {
-        if ($connection->ping() === false) {
+        if (false === $connection->ping()) {
             $connection->close();
             $connection->connect();
         }

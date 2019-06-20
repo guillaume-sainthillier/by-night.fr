@@ -1,24 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 04/03/2016
- * Time: 19:16.
- */
+
 
 namespace App\Handler;
 
-use App\Entity\Event;
 use App\Entity\City;
 use App\Entity\Country;
+use App\Entity\Event;
 use App\Entity\Exploration;
 use App\Entity\Place;
 use App\Entity\Site;
 use App\Entity\ZipCity;
 use App\Geocoder\PlaceGeocoder;
 use App\Reject\Reject;
-use App\Repository\EventRepository;
 use App\Repository\CityRepository;
+use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
 use App\Repository\ZipCityRepository;
 use App\Utils\Firewall;
@@ -95,8 +90,6 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Event $event
-     *
      * @return Event
      */
     public function handleOne(Event $event, bool $flush = true)
@@ -267,8 +260,6 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param array $chunks
-     *
      * @return Event[]
      */
     private function unChunk(array $chunks)
@@ -387,7 +378,7 @@ class DoctrineEventHandler
         for ($i = 0; $i < $nbBatches; ++$i) {
             $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
             foreach ($currentExplorations as $exploration) {
-                /**
+                /*
                  * @var Exploration $exploration
                  */
                 $exploration->setReason($exploration->getReject()->getReason());
@@ -509,7 +500,6 @@ class DoctrineEventHandler
         if ($zipCity) {
             $city = $zipCity->getParent();
         }
-
 
         //City
         if (!$city && $place->getVille()) {

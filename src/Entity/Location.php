@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * City.
  *
- * @ORM\Table()
+ * @ORM\Table
  * @ORM\Entity(readOnly=true)
  */
 class Location
@@ -54,17 +54,12 @@ class Location
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     *
      * @return Location
      */
     public function setName(string $name): self

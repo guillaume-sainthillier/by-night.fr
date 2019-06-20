@@ -54,7 +54,7 @@ class ToulouseParser extends EventParser
                 $date_fin = new DateTime($tab[6]);
 
                 $tab_events[] = [
-                    'external_id' => "TOU-" . $tab[0],
+                    'external_id' => 'TOU-' . $tab[0],
                     'nom' => $nom,
                     'descriptif' => $tab[4],
                     'date_debut' => $date_debut,
@@ -63,8 +63,8 @@ class ToulouseParser extends EventParser
                     'modification_derniere_minute' => $tab[9],
                     'placeName' => $tab[10],
                     'placeStreet' => $tab[12],
-                    'latitude' => (float)$tab[20] ?: null,
-                    'longitude' => (float)$tab[21] ?: null,
+                    'latitude' => (float) $tab[20] ?: null,
+                    'longitude' => (float) $tab[21] ?: null,
                     'placePostalCode' => $tab[14],
                     'placeCity' => $tab[15],
                     'placeCountryName' => 'France',

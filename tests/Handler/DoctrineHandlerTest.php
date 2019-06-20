@@ -23,7 +23,7 @@ class DoctrineHandlerTest extends ContainerTestCase
 
     private function makeAsserts(Place $place, ?string $countryCode, ?string $cityName, ?string $postalCode, int $rejectReason)
     {
-        $message = "Original : " . ($place->getNom() ?: ($place->getVille() ?: $place->getCodePostal()));
+        $message = 'Original : ' . ($place->getNom() ?: ($place->getVille() ?: $place->getCodePostal()));
         if (null !== $countryCode) {
             $this->assertNotNull($place->getCountry(), $message . '. Expected country : ' . $countryCode);
             $this->assertEquals($countryCode, $place->getCountry()->getId(), $message);
@@ -69,7 +69,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 null,
                 null,
                 null,
-                Reject::NO_COUNTRY_PROVIDED | Reject::VALID
+                Reject::NO_COUNTRY_PROVIDED | Reject::VALID,
             ],
             // Mauvais CP + mauvaise ville + mauvais pays
             [
@@ -77,7 +77,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 null,
                 null,
                 null,
-                Reject::BAD_COUNTRY | Reject::VALID
+                Reject::BAD_COUNTRY | Reject::VALID,
             ],
             // Mauvais CP + mauvaise ville + mauvais pays
             [
@@ -85,7 +85,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 null,
                 null,
                 null,
-                Reject::BAD_COUNTRY | Reject::VALID
+                Reject::BAD_COUNTRY | Reject::VALID,
             ],
             // Mauvais CP + mauvaise ville + bon pays
             [
@@ -93,7 +93,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 'FR',
                 null,
                 null,
-                Reject::VALID
+                Reject::VALID,
             ],
             // Mauvais CP + bonne ville + bon pays
             [
@@ -101,7 +101,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 'FR',
                 'Saint-Germain-en-Laye',
                 null,
-                Reject::VALID
+                Reject::VALID,
             ],
             // Mauvais CP + ville doublon + bon pays
             [
@@ -109,7 +109,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 'FR',
                 'Toulouse',
                 '31000',
-                Reject::VALID
+                Reject::VALID,
             ],
             // CP doublon + pas de ville + bon pays
             [
@@ -117,7 +117,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 'FR',
                 null,
                 null,
-                Reject::VALID
+                Reject::VALID,
             ],
             // Pas de CP + ville doublon + bon pays
             [
@@ -125,7 +125,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 'FR',
                 null,
                 null,
-                Reject::VALID
+                Reject::VALID,
             ],
             // Pas de CP + bonne ville + bon pays
             [
@@ -133,7 +133,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 'FR',
                 'Toulouse',
                 null,
-                Reject::VALID
+                Reject::VALID,
             ],
             // Monaco
             [
@@ -141,7 +141,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 'MC',
                 'Monaco',
                 '98000',
-                Reject::VALID
+                Reject::VALID,
             ],
             // Bonnes coordonnées + mauvais pays
             [
@@ -149,7 +149,7 @@ class DoctrineHandlerTest extends ContainerTestCase
                 null,
                 null,
                 null,
-                Reject::NO_COUNTRY_PROVIDED | Reject::VALID
+                Reject::NO_COUNTRY_PROVIDED | Reject::VALID,
             ],
         ];
     }

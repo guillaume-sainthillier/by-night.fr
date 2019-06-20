@@ -1,10 +1,6 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 namespace App\Twig;
 
@@ -29,7 +25,7 @@ class ParseExtension extends Extension
 
     public function ensureProtocol($link)
     {
-        if (!preg_match("#^(http|https|ftp)#", $link)) {
+        if (!preg_match('#^(http|https|ftp)#', $link)) {
             return 'http://' . $link;
         }
 
@@ -52,7 +48,7 @@ class ParseExtension extends Extension
     {
         $replaced_text = \str_replace('&#13;', '<br>', $texte);
         $stripped_text = \strip_tags($replaced_text);
-        $shorted_text = \substr($stripped_text, 0, 250);
+        $shorted_text = \mb_substr($stripped_text, 0, 250);
 
         //striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
         $linked_text = \preg_replace("

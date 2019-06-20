@@ -13,7 +13,6 @@ class Google extends Social
 {
     public function constructClient()
     {
-
     }
 
     public function getNumberOfCount()

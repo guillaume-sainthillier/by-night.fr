@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20161217141702 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -20,7 +18,6 @@ class Version20161217141702 extends AbstractMigration
         $this->addSql('ALTER TABLE Site DROP adjectif_singulier, DROP adjectif_pluriel, DROP description, DROP facebook_id_page, DROP google_id_page, DROP twitter_id_page');
         $this->addSql('UPDATE Agenda SET url = REPLACE(url, "http://parisinfo.com/", "http://www.parisinfo.com/")');
     }
-
 
     public function down(Schema $schema): void
     {

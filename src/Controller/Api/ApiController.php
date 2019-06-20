@@ -25,10 +25,6 @@ class ApiController extends AbstractController
      * @ReverseProxy(expires="1 year")
      * @Tag("autocomplete-city")
      *
-     * @param Request $request
-     * @param PaginatorInterface $paginator
-     * @param RepositoryManagerInterface $repositoryManager
-     *
      * @return JsonResponse
      */
     public function cityAutocompleteAction(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)

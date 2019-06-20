@@ -116,7 +116,7 @@ abstract class Social
     {
         $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->removeRole('ROLE_' . \strtolower($social_name)); //Suppression du role ROLE_TWITTER
+        $user->removeRole('ROLE_' . \mb_strtolower($social_name)); //Suppression du role ROLE_TWITTER
         $this->disconnectInfo($user->getInfo());
     }
 
@@ -158,7 +158,7 @@ abstract class Social
     {
         $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
 
-        $user->addRole('ROLE_' . \strtolower($social_name)); //Ajout du role ROLE_TWITTER
+        $user->addRole('ROLE_' . \mb_strtolower($social_name)); //Ajout du role ROLE_TWITTER
         $this->connectInfo($user->getInfo(), $response);
     }
 

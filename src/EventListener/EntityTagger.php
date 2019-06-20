@@ -2,9 +2,9 @@
 
 namespace App\EventListener;
 
-use App\Entity\Event;
 use App\Entity\Calendrier;
 use App\Entity\City;
+use App\Entity\Event;
 use App\Entity\User;
 use App\Invalidator\TagsInvalidator;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -40,7 +40,6 @@ class EntityTagger
     public function preUpdate(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
-
 
         //Flag old place too in cause it has changed
         if ($entity instanceof Event && $entity->getPlace()) {

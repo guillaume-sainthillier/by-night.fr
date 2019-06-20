@@ -6,8 +6,6 @@ use App\Annotation\ReverseProxy;
 use App\App\CityManager;
 use App\Entity\Event;
 use App\Form\Type\CityAutocompleteType;
-use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,9 +19,6 @@ class DefaultController extends AbstractController
     /**
      * @Route("/", name="app_main_index")
      * @ReverseProxy(expires="tomorrow")
-     *
-     * @param PaginatorInterface $paginator
-     * @param RepositoryManagerInterface $repositoryManager
      *
      * @return Response
      */
@@ -42,14 +37,12 @@ class DefaultController extends AbstractController
 
         return $this->render('Default/index.html.twig', [
             'autocomplete_form' => $form->createView(),
-            'stats' => $stats
+            'stats' => $stats,
         ]);
     }
 
     /**
      * @Route("/change-city", name="app_change_city", methods={"POST"})
-     *
-     * @param Request $request
      *
      * @return RedirectResponse
      */

@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20160704163341 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -21,7 +19,6 @@ class Version20160704163341 extends AbstractMigration
         $this->addSql('DROP INDEX UNIQ_2DA179773DA5256D ON User');
         $this->addSql('ALTER TABLE User ADD path VARCHAR(255) NOT NULL, ADD updated_at DATETIME NOT NULL, DROP image_id');
     }
-
 
     public function down(Schema $schema): void
     {

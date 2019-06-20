@@ -2,8 +2,8 @@
 
 namespace App\Parser\Common;
 
-use App\Entity\Event;
 use App\Entity\City;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Parser\EventParser;
 use App\Repository\SiteRepository;
@@ -249,10 +249,10 @@ class FaceBookParser extends EventParser
             } else {
                 $placeName = $place->getField('name');
                 $parts = array_map('trim', explode(',', $placeName));
-                if(count($parts) === 3) {
+                if (3 === \count($parts)) {
                     $tab_retour['placeCountryName'] = $parts[2];
                     $cityAndPostalCode = explode(' ', $parts[1]);
-                    if(count($cityAndPostalCode) > 1) {
+                    if (\count($cityAndPostalCode) > 1) {
                         $tab_retour['placePostalCode'] = $cityAndPostalCode[0];
                         unset($cityAndPostalCode[0]);
                         $tab_retour['placeCity'] = implode(' ', $cityAndPostalCode);
@@ -307,7 +307,7 @@ class FaceBookParser extends EventParser
         $types = [];
         $categories = [];
         foreach ($list as $subStr => $group) {
-            if (false !== \strstr($category, $subStr)) {
+            if (false !== \mb_strstr($category, $subStr)) {
                 $types[] = $group['type'];
                 $categories[] = $group['categorie'];
             }

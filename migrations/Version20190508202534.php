@@ -20,7 +20,7 @@ final class Version20190508202534 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('UPDATE Agenda SET is_archive = 0 WHERE is_archive IS NULL');
         $this->addSql('UPDATE Agenda SET isBrouillon = 0 WHERE isBrouillon IS NULL');
@@ -30,7 +30,7 @@ final class Version20190508202534 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE Agenda CHANGE isBrouillon isBrouillon TINYINT(1) DEFAULT NULL, CHANGE is_archive is_archive TINYINT(1) DEFAULT NULL');
     }

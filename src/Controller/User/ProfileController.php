@@ -1,16 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 31/05/2016
- * Time: 19:26.
- */
+
 
 namespace App\Controller\User;
 
-use App\Entity\Event;
 use App\Entity\Calendrier;
 use App\Entity\Comment;
+use App\Entity\Event;
 use FOS\UserBundle\Controller\ProfileController as BaseController;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
@@ -61,9 +56,6 @@ class ProfileController extends BaseController
 
     /**
      * @Route("/delete", name="app_user_delete")
-     *
-     * @param Request $request
-     * @param UserManagerInterface $userManager
      *
      * @return RedirectResponse
      */
@@ -116,11 +108,10 @@ class ProfileController extends BaseController
             $this->addFlash('info', 'Votre compte a bien été supprimé. A bientôt sur By Night !');
 
             return $this->redirectToRoute('app_main_index');
-        } else {
-            $errors = $form->getErrors(true);
-            foreach ($errors as $error) {
-                $this->addFlash('error', $error);
-            }
+        }
+        $errors = $form->getErrors(true);
+        foreach ($errors as $error) {
+            $this->addFlash('error', $error);
         }
 
         return $this->redirectToRoute('fos_user_profile_edit');
@@ -129,9 +120,7 @@ class ProfileController extends BaseController
     /**
      * @Route("/edit", name="fos_user_profile_edit")
      *
-     * @param Request $request
-     *
-     * @return null|RedirectResponse|Response
+     * @return RedirectResponse|Response|null
      */
     public function editAction(Request $request)
     {
@@ -172,11 +161,11 @@ class ProfileController extends BaseController
         $formChangePassword->setData($user);
         $formDelete = $this->createDeleteForm();
 
-        return $this->render('@FOSUser/Profile/edit.html.twig', array(
+        return $this->render('@FOSUser/Profile/edit.html.twig', [
             'form' => $form->createView(),
             'formChangePassword' => $formChangePassword->createView(),
             'formDelete' => $formDelete->createView(),
-        ));
+        ]);
     }
 
     private function createDeleteForm()

@@ -69,7 +69,6 @@ class ComparatorTest extends ContainerTestCase
             [(new Place())->setCountry($france)->setNom('Secret place'), (new Place())->setCountry($france), 0],
             [(new Place())->setCountry($france)->setNom('Bikini')->setRue('3 Rue Théodore Monod'), (new Place())->setCountry($france)->setNom('Le bikini')->setRue('rue theodore monod'), 100],
             [(new Place())->setCountry($france)->setNom('Bikini'), (new Place())->setCountry($france)->setNom('Le bikini'), 90],
-
         ];
     }
 
@@ -81,10 +80,10 @@ class ComparatorTest extends ContainerTestCase
         $original = $place;
         $place = $this->comparator->getBestPlace($places, $place);
         if (null === $expectedId) {
-            $this->assertNull($place, "Original : " . $original->getNom());
+            $this->assertNull($place, 'Original : ' . $original->getNom());
         } else {
-            $this->assertNotNull($place, "Original : " . $original->getNom());
-            $this->assertEquals($expectedId, $place->getId(), "Original : " . $original->getNom());
+            $this->assertNotNull($place, 'Original : ' . $original->getNom());
+            $this->assertEquals($expectedId, $place->getId(), 'Original : ' . $original->getNom());
         }
     }
 
@@ -123,14 +122,14 @@ class ComparatorTest extends ContainerTestCase
      */
     public function testSanitizeRue($actual, $expected)
     {
-        $this->assertEquals($expected, $this->comparator->sanitizeRue($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->comparator->sanitizeRue($actual), 'Original : ' . $actual);
     }
 
     public function sanitizeRueProvider()
     {
         return [
             ['1908 Route de Lamasquère', '1908 route de lamasquere'],
-            ['1908 Route  de Lamasquère', '1908 route de lamasquere']
+            ['1908 Route  de Lamasquère', '1908 route de lamasquere'],
         ];
     }
 
@@ -139,7 +138,7 @@ class ComparatorTest extends ContainerTestCase
      */
     public function testSanitizeVille($actual, $expected)
     {
-        $this->assertEquals($expected, $this->comparator->sanitizeVille($actual), "Original : " . $actual);
+        $this->assertEquals($expected, $this->comparator->sanitizeVille($actual), 'Original : ' . $actual);
     }
 
     public function sanitizeVilleProvider()

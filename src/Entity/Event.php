@@ -23,16 +23,16 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * Event.
  *
  * @ORM\Table(name="Agenda", indexes={
- *   @ORM\Index(name="event_theme_manifestation_idx", columns={"theme_manifestation"}),
- *   @ORM\Index(name="event_type_manifestation_idx", columns={"type_manifestation"}),
- *   @ORM\Index(name="event_categorie_manifestation_idx", columns={"categorie_manifestation"}),
- *   @ORM\Index(name="event_search_idx", columns={"place_id", "date_fin", "date_debut"}),
- *   @ORM\Index(name="event_fb_participations", columns={"date_fin", "fb_participations", "fb_interets"}),
- *   @ORM\Index(name="event_external_id_idx", columns={"external_id"})
+ *     @ORM\Index(name="event_theme_manifestation_idx", columns={"theme_manifestation"}),
+ *     @ORM\Index(name="event_type_manifestation_idx", columns={"type_manifestation"}),
+ *     @ORM\Index(name="event_categorie_manifestation_idx", columns={"categorie_manifestation"}),
+ *     @ORM\Index(name="event_search_idx", columns={"place_id", "date_fin", "date_debut"}),
+ *     @ORM\Index(name="event_fb_participations", columns={"date_fin", "fb_participations", "fb_interets"}),
+ *     @ORM\Index(name="event_external_id_idx", columns={"external_id"})
  * })
  *
  * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
  * @EventConstraint
@@ -194,7 +194,7 @@ class Event implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="reservation_email", type="string", length=255, nullable=true)
-     * @Assert\Email()
+     * @Assert\Email
      */
     protected $reservationEmail;
 
@@ -202,7 +202,7 @@ class Event implements GeolocalizeInterface
      * @var string
      *
      * @ORM\Column(name="reservation_internet", type="string", length=512, nullable=true)
-     * @Assert\Url()
+     * @Assert\Url
      */
     protected $reservationInternet;
 
@@ -222,17 +222,17 @@ class Event implements GeolocalizeInterface
 
     /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="path")
-     * @Assert\Valid()
-     * @Assert\File(maxSize = "6M")
-     * @Assert\Image()
+     * @Assert\Valid
+     * @Assert\File(maxSize="6M")
+     * @Assert\Image
      */
     protected $file;
 
     /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="systemPath")
-     * @Assert\Valid()
-     * @Assert\File(maxSize = "6M")
-     * @Assert\Image()
+     * @Assert\Valid
+     * @Assert\File(maxSize="6M")
+     * @Assert\Image
      */
     protected $systemFile;
 
@@ -319,7 +319,7 @@ class Event implements GeolocalizeInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
-     * @ORM\OrderBy({"dateCreation" = "DESC"})
+     * @ORM\OrderBy({"dateCreation": "DESC"})
      */
     protected $commentaires;
 
@@ -342,7 +342,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="fb_interets",type="integer", nullable=true)
+     * @ORM\Column(name="fb_interets", type="integer", nullable=true)
      */
     protected $fbInterets;
 
@@ -372,7 +372,7 @@ class Event implements GeolocalizeInterface
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"list_event"})
      * @Expose
-     * @Assert\Valid()
+     * @Assert\Valid
      */
     protected $place;
 
@@ -446,43 +446,32 @@ class Event implements GeolocalizeInterface
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Country")
      * @ORM\JoinColumn(nullable=true)
+     *
      * @var Country|null
      */
     protected $placeCountry;
 
-    /**
-     * @return Reject|null
-     */
     public function getReject(): ?Reject
     {
         return $this->reject;
     }
 
-    /**
-     * @param Reject|null $reject
-     * @return Event
-     */
     public function setReject(?Reject $reject): Event
     {
         $this->reject = $reject;
+
         return $this;
     }
 
-    /**
-     * @return Reject|null
-     */
     public function getPlaceReject(): ?Reject
     {
         return $this->placeReject;
     }
 
-    /**
-     * @param Reject|null $placeReject
-     * @return Event
-     */
     public function setPlaceReject(?Reject $placeReject): Event
     {
         $this->placeReject = $placeReject;
+
         return $this;
     }
 
@@ -607,6 +596,7 @@ class Event implements GeolocalizeInterface
     public function getDistinctTags()
     {
         $tags = $this->categorieManifestation . ',' . $this->typeManifestation . ',' . $this->themeManifestation;
+
         return \array_unique(\array_map('trim', \array_map('ucfirst', \array_filter(\preg_split('#[,/]#', $tags)))));
     }
 
@@ -618,6 +608,7 @@ class Event implements GeolocalizeInterface
     public function setPlaceCountryName(?string $placeCountryName): self
     {
         $this->placeCountryName = $placeCountryName;
+
         return $this;
     }
 
@@ -1268,5 +1259,4 @@ class Event implements GeolocalizeInterface
 
         return $this;
     }
-
 }

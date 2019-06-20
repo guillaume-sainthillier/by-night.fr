@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Security\Voter;
 
 use App\Entity\Event;
@@ -13,15 +12,17 @@ class EventVoter extends Voter
     const EDIT = 'edit';
     const DELETE = 'delete';
 
-    private function canEdit(Event $event, User $user) {
-        if($event->getUser() === $user) {
+    private function canEdit(Event $event, User $user)
+    {
+        if ($event->getUser() === $user) {
             return true;
         }
 
         return $user->hasRole('ROLE_ADMIN');
     }
 
-    private function canDelete(Event $event, User $user) {
+    private function canDelete(Event $event, User $user)
+    {
         return $this->canEdit($event, $user);
     }
 

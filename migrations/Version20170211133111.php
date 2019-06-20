@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -14,7 +13,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 class Version20170211133111 extends AbstractMigration implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
 
     public function up(Schema $schema): void
     {
@@ -39,7 +37,6 @@ class Version20170211133111 extends AbstractMigration implements ContainerAwareI
         $this->connection->executeQuery('ALTER TABLE User MODIFY slug VARCHAR(128) NOT NULL');
         $this->connection->executeQuery('CREATE UNIQUE INDEX UNIQ_2DA17977989D9B62 ON User (slug)');
     }
-
 
     public function down(Schema $schema): void
     {

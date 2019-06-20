@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20160531172845 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -23,7 +21,6 @@ class Version20160531172845 extends AbstractMigration
         $this->addSql('UPDATE User SET from_login = 1 WHERE CHAR_LENGTH(password) > 25');
         $this->addSql('UPDATE User SET from_login = 0 WHERE CHAR_LENGTH(password) <= 25');
     }
-
 
     public function down(Schema $schema): void
     {

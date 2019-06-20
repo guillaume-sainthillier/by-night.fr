@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="Comment")
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
- * @ORM\HasLifecycleCallbacks()
+ * @ORM\HasLifecycleCallbacks
  */
 class Comment
 {
@@ -82,7 +82,7 @@ class Comment
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
-     * @ORM\OrderBy({"dateCreation" = "DESC"})
+     * @ORM\OrderBy({"dateCreation": "DESC"})
      */
     protected $reponses;
 
@@ -212,7 +212,6 @@ class Comment
     /**
      * Set user.
      *
-     * @param User $user
      *
      * @return Comment
      */
@@ -236,7 +235,6 @@ class Comment
     /**
      * Set event.
      *
-     * @param Event $event
      *
      * @return Comment
      */
@@ -260,7 +258,6 @@ class Comment
     /**
      * Set parent.
      *
-     * @param self $parent
      *
      * @return Comment
      */
@@ -284,7 +281,6 @@ class Comment
     /**
      * Add reponses.
      *
-     * @param self $reponses
      *
      * @return Comment
      */
@@ -297,8 +293,6 @@ class Comment
 
     /**
      * Remove reponses.
-     *
-     * @param self $reponses
      */
     public function removeReponse(self $reponses)
     {

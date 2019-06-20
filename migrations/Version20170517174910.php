@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20170517174910 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -21,7 +19,6 @@ class Version20170517174910 extends AbstractMigration
         $this->addSql('ALTER TABLE Place ADD CONSTRAINT FK_B5DC7CC9F92F3E70 FOREIGN KEY (country_id) REFERENCES country (id)');
         $this->addSql('CREATE INDEX IDX_B5DC7CC9F92F3E70 ON Place (country_id)');
     }
-
 
     public function down(Schema $schema): void
     {

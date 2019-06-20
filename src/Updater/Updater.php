@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 20/12/2016
- * Time: 18:55.
- */
+
 
 namespace App\Updater;
 
@@ -13,9 +8,9 @@ use Doctrine\Common\Persistence\ObjectManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
+use function GuzzleHttp\Psr7\copy_to_string;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
-use function GuzzleHttp\Psr7\copy_to_string;
 
 abstract class Updater
 {
@@ -44,7 +39,7 @@ abstract class Updater
         $this->client = new Client();
     }
 
-    public abstract function update(\DateTime $from);
+    abstract public function update(\DateTime $from);
 
     protected function downloadUrls(array $urls)
     {
@@ -60,7 +55,7 @@ abstract class Updater
             'fulfilled' => function (ResponseInterface $response, $index) use (&$responses) {
                 $responses[$index] = [
                     'contentType' => current($response->getHeader('Content-Type')),
-                    'content' => copy_to_string($response->getBody())
+                    'content' => copy_to_string($response->getBody()),
                 ];
             },
             'rejected' => function (RequestException $reason, $index) use (&$responses) {

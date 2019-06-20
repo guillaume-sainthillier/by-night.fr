@@ -1,13 +1,6 @@
 <?php
 
-/*
- * This file is part of the HWIOAuthBundle package.
- *
- * (c) Hardware.Info <opensource@hardware.info>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+
 
 namespace App\Controller\Social;
 
@@ -42,7 +35,7 @@ class ConnectController extends BaseController
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
      * @param Request $request the active request
-     * @param string $service name of the resource owner to connect to
+     * @param string  $service name of the resource owner to connect to
      *
      * @return Response
      *
@@ -117,10 +110,10 @@ class ConnectController extends BaseController
                 $em->persist($this->container->get(SocialManager::class)->getSiteInfo());
                 $em->flush();
 
-                return $this->render('@HWIOAuth/Connect/connect_success.html.twig', array(
+                return $this->render('@HWIOAuth/Connect/connect_success.html.twig', [
                     'userInformation' => $userInformation,
                     'service' => $service,
-                ));
+                ]);
             }
 
             // On connecte normalement l'utilisateur
@@ -134,18 +127,18 @@ class ConnectController extends BaseController
             return $response;
         }
 
-        return $this->render('@HWIOAuth/Connect/connect_confirm.html.twig', array(
+        return $this->render('@HWIOAuth/Connect/connect_confirm.html.twig', [
             'key' => $key,
             'service' => $service,
             'form' => $form->createView(),
             'userInformation' => $resourceOwner->getUserInformation($accessToken),
-        ));
+        ]);
     }
 
     /**
-     * @param Request $request The active request
-     * @param array $accessToken The access token
-     * @param string $service Name of the resource owner to connect to
+     * @param Request $request     The active request
+     * @param array   $accessToken The access token
+     * @param string  $service     Name of the resource owner to connect to
      *
      * @return Response
      *
@@ -171,7 +164,7 @@ class ConnectController extends BaseController
         if ($currentToken instanceof OAuthToken) {
             // Update user token with new details
             $newToken =
-                is_array($accessToken) &&
+                \is_array($accessToken) &&
                 (isset($accessToken['access_token']) || isset($accessToken['oauth_token'])) ?
                     $accessToken : $currentToken->getRawToken();
 
@@ -182,10 +175,10 @@ class ConnectController extends BaseController
             if ($targetPath = $this->getTargetPath($request->getSession())) {
                 $response = $this->redirect($targetPath);
             } else {
-                $response = $this->render('@HWIOAuth/Connect/connect_success.html.twig', array(
+                $response = $this->render('@HWIOAuth/Connect/connect_success.html.twig', [
                     'userInformation' => $userInformation,
                     'service' => $service,
-                ));
+                ]);
             }
         }
 
@@ -196,8 +189,6 @@ class ConnectController extends BaseController
     }
 
     /**
-     * @param SessionInterface $session
-     *
      * @return string|null
      */
     private function getTargetPath(SessionInterface $session)

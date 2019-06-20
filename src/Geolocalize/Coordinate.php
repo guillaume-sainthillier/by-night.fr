@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 25/05/2017
- * Time: 14:44.
- */
+
 
 namespace App\Geolocalize;
 
@@ -31,8 +26,8 @@ class Coordinate implements GeolocalizeInterface
         Assert::notNull($latitude);
         Assert::notNull($longitude);
 
-        $latitude = (float)$latitude;
-        $longitude = (float)$longitude;
+        $latitude = (float) $latitude;
+        $longitude = (float) $longitude;
 
         Assert::latitude($latitude);
         Assert::longitude($longitude);
@@ -43,8 +38,6 @@ class Coordinate implements GeolocalizeInterface
 
     /**
      * Returns the latitude.
-     *
-     * @return float
      */
     public function getLatitude(): float
     {
@@ -53,8 +46,6 @@ class Coordinate implements GeolocalizeInterface
 
     /**
      * Returns the longitude.
-     *
-     * @return float
      */
     public function getLongitude(): float
     {

@@ -2,8 +2,8 @@
 
 namespace App\Controller\Comment;
 
-use App\Entity\Event;
 use App\Entity\Comment;
+use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +19,6 @@ class ReplyController extends AbstractController
     /**
      * @Route("/{id}/reponses/{page}", name="app_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})
      *
-     * @param Comment $comment
      * @param $page
      *
      * @return Response
@@ -39,9 +38,6 @@ class ReplyController extends AbstractController
 
     /**
      * @Route("/{id}/repondre", name="app_comment_reponse_new", requirements={"id": "\d+"})
-     *
-     * @param Request $request
-     * @param Comment $comment
      *
      * @return JsonResponse|RedirectResponse|Response
      */
@@ -80,15 +76,15 @@ class ReplyController extends AbstractController
                     ]),
                     'nb_reponses' => $this->getNbReponses($comment),
                 ]);
-            } else {
-                return new JsonResponse([
+            }
+
+            return new JsonResponse([
                     'success' => false,
                     'post' => $this->renderView('Comment/Reply/post.html.twig', [
                         'comment' => $comment,
                         'form' => $form->createView(),
                     ]),
                 ]);
-            }
         }
 
         return $this->render('Comment/Reply/post.html.twig', [

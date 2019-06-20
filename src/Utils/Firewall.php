@@ -42,7 +42,7 @@ class Firewall
     public function loadExplorations(array $ids)
     {
         $explorations = $this->em->getRepository(Exploration::class)->findBy([
-            'externalId' => $ids
+            'externalId' => $ids,
         ]);
 
         foreach ($explorations as $exploration) {
@@ -137,7 +137,7 @@ class Firewall
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-            //L'événement a changé -> valide
+        //L'événement a changé -> valide
         } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
@@ -183,9 +183,6 @@ class Firewall
         }
     }
 
-    /**
-     * @param Event $event
-     */
     private function filterEventInfos(Event $event)
     {
         //Le nom de l'événement doit comporter au moins 3 caractères
@@ -288,7 +285,7 @@ class Firewall
         ];
 
         foreach ($black_list as $black_word) {
-            if (\strstr($content, $black_word)) {
+            if (\mb_strstr($content, $black_word)) {
                 return true;
             }
         }
@@ -303,7 +300,7 @@ class Firewall
 
     private function checkLengthValidity($str, $length)
     {
-        return \strlen($this->comparator->sanitize($str)) === $length;
+        return \mb_strlen($this->comparator->sanitize($str)) === $length;
     }
 
     public function checkMinLengthValidity($str, $min)

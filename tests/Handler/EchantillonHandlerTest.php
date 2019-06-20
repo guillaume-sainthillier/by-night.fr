@@ -84,7 +84,7 @@ class EchantillonHandlerTest extends ContainerTestCase
 
         //There must not have any event candidates for this event
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($parsedEvent1);
-        $countPersistedPlaces = count($persistedPlaces);
+        $countPersistedPlaces = \count($persistedPlaces);
         $this->makeAddNewEventAsserts($parsedEvent1, 0, $countPersistedPlaces);
 
         //After adding event, there is one candidate
@@ -96,13 +96,14 @@ class EchantillonHandlerTest extends ContainerTestCase
         $this->makeAddNewEventAsserts($parsedEvent1, 1, $countPersistedPlaces + 1);
     }
 
-    private function makeAddNewEventAsserts(Agenda $event, int $expectedCountEvents, int $expectedCountPlaces) {
+    private function makeAddNewEventAsserts(Agenda $event, int $expectedCountEvents, int $expectedCountPlaces)
+    {
         $persistedEvents = $this->echantillonHandler->getEventEchantillons($event);
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
         $this->assertCount($expectedCountEvents, $persistedEvents);
         $this->assertCount($expectedCountPlaces, $persistedPlaces);
 
-        if($expectedCountEvents === 1) {
+        if (1 === $expectedCountEvents) {
             $this->assertEquals($event, $persistedEvents[0]);
         }
     }

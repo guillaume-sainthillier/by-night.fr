@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 26/10/2016
- * Time: 22:24.
- */
 
 namespace App\Validator\Constraints;
 
@@ -34,7 +28,6 @@ class EventConstraintValidator extends ConstraintValidator
 
     /**
      * @param Event $event
-     * @param Constraint $constraint
      */
     public function validate($event, Constraint $constraint)
     {

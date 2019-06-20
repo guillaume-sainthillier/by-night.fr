@@ -16,7 +16,7 @@ class ZipCityRepository extends EntityRepository
     /**
      * @param string|null $postalCode
      * @param string|null $city
-     * @param string $country
+     * @param string      $country
      *
      * @return ZipCity[]
      */
@@ -62,9 +62,9 @@ class ZipCityRepository extends EntityRepository
     }
 
     /**
-     * @param string $postalCode
+     * @param string      $postalCode
      * @param string|null $city
-     * @param string $country
+     * @param string      $country
      *
      * @return ZipCity|null
      */
@@ -80,7 +80,7 @@ class ZipCityRepository extends EntityRepository
 
     /**
      * @param string|null $city
-     * @param string $country
+     * @param string      $country
      *
      * @return ZipCity[]
      */

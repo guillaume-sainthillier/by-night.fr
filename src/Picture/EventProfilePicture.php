@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 11/10/2016
- * Time: 18:48.
- */
+
 
 namespace App\Picture;
 
@@ -82,7 +77,7 @@ class EventProfilePicture
     {
         if ($event->getPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
-            $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
+            $webPath = \mb_substr($webPath, \mb_strpos($webPath, '/media'), \mb_strlen($webPath));
 
             return $this->packages->getUrl(
                 $webPath
@@ -91,7 +86,7 @@ class EventProfilePicture
 
         if ($event->getSystemPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
-            $webPath = \substr($webPath, \strpos($webPath, '/media'), \strlen($webPath));
+            $webPath = \mb_substr($webPath, \mb_strpos($webPath, '/media'), \mb_strlen($webPath));
 
             return $this->packages->getUrl(
                 $webPath

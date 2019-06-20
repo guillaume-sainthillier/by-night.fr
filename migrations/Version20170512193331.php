@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20170512193331 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -24,7 +22,6 @@ class Version20170512193331 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_B5DC7CC98BAC62AF ON Place (city_id)');
         $this->addSql('CREATE INDEX IDX_B5DC7CC9309D0B4F ON Place (zip_city_id)');
     }
-
 
     public function down(Schema $schema): void
     {

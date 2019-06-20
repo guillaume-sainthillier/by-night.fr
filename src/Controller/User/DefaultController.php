@@ -64,7 +64,7 @@ class DefaultController extends BaseController
      * @param null $slug
      * @param null $username
      *
-     * @return null|object|RedirectResponse|Response
+     * @return object|RedirectResponse|Response|null
      */
     public function indexAction($id = null, $slug = null, $username = null)
     {
@@ -91,13 +91,12 @@ class DefaultController extends BaseController
      * @Route("/{slug}--{id}/stats/{type}", name="app_user_stats", requirements={"slug": "[^/]+", "id": "\d+", "type": "semaine|mois|annee"})
      * @Route("/{username}/stats/{type}", name="app_user_stats_old", requirements={"username": "[^/]+", "type": "semaine|mois|annee"})
      *
-     * @param Request $request
      * @param $type
      * @param null $id
      * @param null $slug
      * @param null $username
      *
-     * @return null|object|JsonResponse|RedirectResponse
+     * @return object|JsonResponse|RedirectResponse|null
      */
     public function statsAction(Request $request, $type, $id = null, $slug = null, $username = null)
     {
@@ -224,16 +223,16 @@ class DefaultController extends BaseController
             'full_categories' => [],
         ];
 
-        if (count($datas)) {
+        if (\count($datas)) {
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {
-            $minYear = (int)date('Y');
-            $maxYear = (int)date('Y');
+            $minYear = (int) date('Y');
+            $maxYear = (int) date('Y');
         }
 
-        $minYear--;
-        $maxYear++;
+        --$minYear;
+        ++$maxYear;
 
         foreach (range($minYear, $maxYear) as $year) {
             $final_datas['categories'][$year] = $year;

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 03/05/2017
- * Time: 19:13.
- */
+
 
 namespace App\Request\ParamConverter;
 
@@ -47,7 +42,7 @@ class LocationConverter implements ParamConverterInterface
             return;
         }
 
-        if (is_object($locationSlug)) {
+        if (\is_object($locationSlug)) {
             return;
         }
 

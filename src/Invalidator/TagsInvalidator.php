@@ -1,16 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 29/12/2016
- * Time: 17:53.
- */
+
 
 namespace App\Invalidator;
 
-use App\Entity\Event;
 use App\Entity\Calendrier;
 use App\Entity\City;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use Exception;

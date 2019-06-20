@@ -40,7 +40,7 @@ class ImageListener implements EventSubscriberInterface
             return;
         }
 
-        $path = $mapping->getUriPrefix() . DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . DIRECTORY_SEPARATOR . $mapping->getFileName($object);
+        $path = $mapping->getUriPrefix() . \DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
 
         foreach ($filters as $filter) {
             if ($this->cacheManager->isStored($path, $filter)) {

@@ -2,7 +2,6 @@
 
 namespace DoctrineMigrations;
 
-
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -11,7 +10,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 class Version20170513134829 extends AbstractMigration
 {
-
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -19,7 +17,6 @@ class Version20170513134829 extends AbstractMigration
 
         $this->addSql('CREATE TABLE Exploration (id INT NOT NULL, last_updated DATETIME DEFAULT NULL, reason INT NOT NULL, firewall_version VARCHAR(7) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
     }
-
 
     public function down(Schema $schema): void
     {
