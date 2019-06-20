@@ -194,6 +194,9 @@
     "hoa/zformat": {
         "version": "1.17.01.10"
     },
+    "http-interop/http-factory-guzzle": {
+        "version": "1.0.0"
+    },
     "hwi/oauth-bundle": {
         "version": "0.5.3"
     },
@@ -202,6 +205,9 @@
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "jean85/pretty-package-versions": {
+        "version": "1.2"
     },
     "jms/metadata": {
         "version": "1.6.0"
@@ -260,6 +266,9 @@
     "php-http/client-common": {
         "version": "1.7.0"
     },
+    "php-http/curl-client": {
+        "version": "v1.7.1"
+    },
     "php-http/discovery": {
         "version": "1.3.0"
     },
@@ -272,14 +281,17 @@
     "php-http/httplug-bundle": {
         "version": "1.6",
         "recipe": {
-            "repo": "github.com/symfony/recipes",
+            "repo": "github.com/symfony/recipes-contrib",
             "branch": "master",
             "version": "1.6",
             "ref": "4655962c64e2de96c418caf576c57215711c7877"
-        }
+        },
+        "files": [
+            "config/packages/httplug.yaml"
+        ]
     },
     "php-http/logger-plugin": {
-        "version": "v1.0.0"
+        "version": "1.1.0"
     },
     "php-http/message": {
         "version": "1.6.0"
@@ -291,7 +303,7 @@
         "version": "v1.0.0"
     },
     "php-http/stopwatch-plugin": {
-        "version": "1.1.0"
+        "version": "1.2.0"
     },
     "presta/sitemap-bundle": {
         "version": "1.5.x-dev"
@@ -301,6 +313,9 @@
     },
     "psr/container": {
         "version": "1.0.0"
+    },
+    "psr/http-factory": {
+        "version": "1.0.1"
     },
     "psr/http-message": {
         "version": "1.0.1"
@@ -316,6 +331,9 @@
     },
     "ralouphie/getallheaders": {
         "version": "2.0.5"
+    },
+    "ramsey/uuid": {
+        "version": "3.8.0"
     },
     "react/promise": {
         "version": "v2.5.1"
@@ -334,6 +352,24 @@
             "version": "5.2",
             "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
         }
+    },
+    "sentry/sdk": {
+        "version": "2.0.3"
+    },
+    "sentry/sentry": {
+        "version": "2.1.1"
+    },
+    "sentry/sentry-symfony": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "9746f0823302d7980e5273ef7a69ef3f5ac80914"
+        },
+        "files": [
+            "config/packages/sentry.yaml"
+        ]
     },
     "social-links/social-links": {
         "version": "v1.13.0"
@@ -667,6 +703,9 @@
     },
     "zendframework/zend-code": {
         "version": "3.3.0"
+    },
+    "zendframework/zend-diactoros": {
+        "version": "2.1.2"
     },
     "zendframework/zend-eventmanager": {
         "version": "3.2.0"
