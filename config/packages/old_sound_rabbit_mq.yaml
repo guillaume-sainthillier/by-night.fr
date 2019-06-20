@@ -8,9 +8,9 @@ old_sound_rabbit_mq:
             password: '%env(RABBITMQ_PASSWORD)%'
             vhost:    '/'
             lazy:     true
-            connection_timeout: 10
-            read_write_timeout: 10
-            heartbeat: 5
+            connection_timeout: 300
+            read_write_timeout: 300
+            heartbeat: 150
 
     producers:
         add_event:
@@ -33,19 +33,19 @@ old_sound_rabbit_mq:
     batch_consumers:
         add_event:
             connection:       default
-            exchange_options: { name: 'add-event', type: fanout }
+            exchange_options: { name: 'add-event', type: direct }
             queue_options:    { name: 'add-event'}
             callback:         App\Consumer\AddEventConsumer
             qos_options:      { prefetch_size: 0, prefetch_count: 50, global: false }
-            timeout_wait:     5
+            timeout_wait:     300
             auto_setup_fabric: false
             idle_timeout_exit_code: -2
         update_fb_id:
             connection:       default
-            exchange_options: { name: 'update-fb-id', type: fanout}
+            exchange_options: { name: 'update-fb-id', type: direct}
             queue_options:    { name: 'update-fb-id'}
             callback:         App\Consumer\UpdateFBIdConsumer
             qos_options:      { prefetch_size: 0, prefetch_count: 100, global: false }
-            timeout_wait:     180
+            timeout_wait:     300
             auto_setup_fabric: false
             idle_timeout_exit_code: -2

@@ -132,6 +132,9 @@ class Monitor
 
     public static function displayTable(array $datas)
     {
+        if (!self::$enableMonitoring) {
+            return;
+        }
         $datas = isset($datas[0]) ? $datas[0] : [$datas];
         $headers = \array_keys($datas[0]);
 
