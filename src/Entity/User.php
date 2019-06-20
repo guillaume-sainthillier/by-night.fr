@@ -79,12 +79,6 @@ class User extends BaseUser
     protected $calendriers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Site")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    protected $site;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\City")
      * @ORM\JoinColumn(nullable=true)
      */
@@ -591,17 +585,5 @@ class User extends BaseUser
     public function getCity()
     {
         return $this->city;
-    }
-
-    public function getSite(): ?Site
-    {
-        return $this->site;
-    }
-
-    public function setSite(?Site $site): self
-    {
-        $this->site = $site;
-
-        return $this;
     }
 }

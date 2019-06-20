@@ -84,16 +84,6 @@ class NewsManager
         $datas = $this->em->getRepository(Event::class)->findByInterval($from, $to);
 
         $participants = [];
-        foreach ($datas as $site => $events) {
-            $participants[$site] = 0;
-            foreach ($events as $event) {
-                /*
-                 * @var Event $event
-                 */
-                $participants[$site] += $event->getFbInterets() + $event->getFbParticipations();
-            }
-        }
-
         \arsort($participants);
         $totalPartcipants = \array_sum($participants);
 

@@ -115,12 +115,6 @@ class Place implements GeolocalizeInterface
     protected $codePostal;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Site", cascade={"persist", "merge"})
-     * @ORM\JoinColumn(nullable=true)
-     */
-    protected $site;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="facebook_id", type="string", length=256, nullable=true)
@@ -464,29 +458,6 @@ class Place implements GeolocalizeInterface
     public function getFacebookId()
     {
         return $this->facebookId;
-    }
-
-    /**
-     * Set site.
-     *
-     *
-     * @return Place
-     */
-    public function setSite(Site $site)
-    {
-        $this->site = $site;
-
-        return $this;
-    }
-
-    /**
-     * Get site.
-     *
-     * @return Site
-     */
-    public function getSite()
-    {
-        return $this->site;
     }
 
     public function __toString()

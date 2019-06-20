@@ -312,12 +312,6 @@ class Event implements GeolocalizeInterface
     protected $calendriers;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Site", cascade={"persist", "merge"})
-     * @ORM\JoinColumn(nullable=true)
-     */
-    protected $site;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"dateCreation": "DESC"})
      */
@@ -1189,18 +1183,6 @@ class Event implements GeolocalizeInterface
                 $calendrier->setEvent(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getSite(): ?Site
-    {
-        return $this->site;
-    }
-
-    public function setSite(?Site $site): self
-    {
-        $this->site = $site;
 
         return $this;
     }

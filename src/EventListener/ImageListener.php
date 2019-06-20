@@ -34,8 +34,6 @@ class ImageListener implements EventSubscriberInterface
             $filters = ['thumb_user_large', 'thumb_user_evenement', 'thumb_user', 'thumb_user_menu', 'thumb_user_50', 'thumb_user_115'];
         } elseif ($object instanceof Event) {
             $filters = ['thumbs_evenement', 'thumb_evenement'];
-        } elseif ($object instanceof Site) {
-            $filters = ['thumb_site', 'thumb_site_large'];
         } else {
             return;
         }

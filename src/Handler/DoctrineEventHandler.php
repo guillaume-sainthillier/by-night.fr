@@ -8,7 +8,6 @@ use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Exploration;
 use App\Entity\Place;
-use App\Entity\Site;
 use App\Entity\ZipCity;
 use App\Geocoder\PlaceGeocoder;
 use App\Reject\Reject;
@@ -105,7 +104,7 @@ class DoctrineEventHandler
     public function handleManyCLI(array $events, bool $flush = true)
     {
         $this->explorationHandler->start();
-        $events = $this->handleMany($events);
+        $events = $this->handleMany($events, $flush);
 
         $historique = $this->explorationHandler->stop();
         $this->em->persist($historique);
@@ -337,7 +336,6 @@ class DoctrineEventHandler
     private function clearPlaces()
     {
         $this->em->clear(Place::class);
-        $this->em->clear(Site::class);
         $this->echantillonHandler->clearPlaces();
     }
 

@@ -6,7 +6,6 @@ use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Parser\EventParser;
-use App\Repository\SiteRepository;
 use App\Social\FacebookAdmin;
 use App\Utils\Firewall;
 use App\Utils\Monitor;
@@ -30,11 +29,6 @@ class FaceBookParser extends EventParser
      * @var ObjectManager
      */
     protected $om;
-
-    /**
-     * @var SiteRepository
-     */
-    protected $repoSite;
 
     /**
      * @var Firewall

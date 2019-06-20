@@ -2,8 +2,6 @@
 
 namespace App\Parser;
 
-use App\Entity\Site;
-
 /*
  * Classe abstraite représentant le parse des données d'un site Internet
  * Plusieurs moyens sont disponibles: Récupérer directement les données suivant
@@ -23,11 +21,6 @@ abstract class EventParser implements ParserInterface
      * Urls du site à parser.
      */
     protected $urls;
-
-    /**
-     * @var Site
-     */
-    protected $site;
 
     abstract public function getRawEvents();
 
