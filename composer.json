@@ -20,7 +20,7 @@
         "ext-json": "*",
         "ext-zip": "*",
         "beberlei/doctrineextensions": "^1.2",
-        "easycorp/easyadmin-bundle": "^1.17",
+        "easycorp/easyadmin-bundle": "^2.1",
         "facebook/graph-sdk": "^5.7",
         "friendsofsymfony/elastica-bundle": "^5.0",
         "friendsofsymfony/http-cache-bundle": "^2.6",
