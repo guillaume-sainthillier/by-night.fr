@@ -79,6 +79,7 @@ services:
                 toulouse.opendata: '@App\Parser\Toulouse\ToulouseParser'
                 toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'
                 facebook: '@App\Parser\Common\FaceBookParser'
+                openagenda: '@App\Parser\Common\OpenAgendaParser'
 
     App\Importer\CountryImporter:
         arguments:
