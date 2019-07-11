@@ -15,8 +15,6 @@ services:
         volumes:
             - .:/app:cached
             - ./var:/app/var:delegated
-            - vendor:/app/vendor
-            - lib:/app/node_modules
 
     assets:
         image: nginx:1.15
