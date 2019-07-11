@@ -7,16 +7,20 @@ WORKDIR /app
 ADD package.json yarn.lock Gruntfile.js ./
 ADD assets ./assets
 
-RUN mkdir -p public config/packages/prod && \
+RUN mkdir -p public/prod config/packages/prod && \
     npm install -g yarn grunt-cli && \
     NODE_ENV=development yarn install && \
     grunt
 
+RUN ls -alh /app/public/prod
+
 FROM php:7.2-fpm
 
+ARG APP_VERSION=dev
 ENV TERM="xterm" \
     DEBIAN_FRONTEND="noninteractive" \
-    COMPOSER_ALLOW_SUPERUSER=1
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    APP_VERSION="${APP_VERSION}"
 
 EXPOSE 80
 WORKDIR /app

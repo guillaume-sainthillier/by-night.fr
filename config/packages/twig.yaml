@@ -12,5 +12,5 @@ twig:
         eventProfilePicture: '@App\Picture\EventProfilePicture'
         facebook_app_id: "%facebook_id_app%"
         googleMapKey: "%google_map_key%"
-        app_version: "%application_version%"
+        app_version: '%env(APP_VERSION)%'
         event_seo: '@App\SEO\EventSEO'
