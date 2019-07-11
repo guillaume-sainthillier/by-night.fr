@@ -101,9 +101,6 @@
     "facebook/graph-sdk": {
         "version": "5.6.1"
     },
-    "facebook/webdriver": {
-        "version": "1.6.0"
-    },
     "fig/link-util": {
         "version": "1.0.0"
     },
@@ -193,9 +190,6 @@
     },
     "hoa/zformat": {
         "version": "1.17.01.10"
-    },
-    "http-interop/http-factory-guzzle": {
-        "version": "1.0.0"
     },
     "hwi/oauth-bundle": {
         "version": "0.5.3"
@@ -470,12 +464,6 @@
             "ref": "8c507e663cf8a8c023d4287974d909bf68f06814"
         }
     },
-    "symfony/http-client": {
-        "version": "v4.3.1"
-    },
-    "symfony/http-client-contracts": {
-        "version": "v1.1.5"
-    },
     "symfony/http-foundation": {
         "version": "v3.4.1"
     },
@@ -517,9 +505,6 @@
     },
     "symfony/orm-pack": {
         "version": "v1.0.5"
-    },
-    "symfony/panther": {
-        "version": "v0.2.0"
     },
     "symfony/phpunit-bridge": {
         "version": "3.3",
