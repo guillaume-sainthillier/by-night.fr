@@ -1,3 +1,17 @@
+# Dockerfile
+FROM node:8-alpine as builder
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+ADD package.json yarn.lock Gruntfile.js ./
+ADD assets ./assets
+
+RUN mkdir -p public config/packages/prod && \
+    npm install -g yarn grunt-cli && \
+    NODE_ENV=development yarn install && \
+    grunt
+
 FROM php:7.2-fpm
 
 ENV TERM="xterm" \
@@ -10,7 +24,6 @@ WORKDIR /app
 # Install dependencies
 RUN apt-get update -q && \
     apt-get install -qy \
-    curl \
     git \
     gnupg \
     libfreetype6-dev \
@@ -19,23 +32,12 @@ RUN apt-get update -q && \
     libpng-dev \
     libxml2-dev \
     nginx \
-    python \
     supervisor \
-    unzip \
-    wget && \
+    unzip && \
     cp /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo "Europe/Paris" > /etc/timezone && \
-
     #Composer
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require hirak/prestissimo --no-plugins --no-scripts && \
-
-    #NPM
-    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
-    apt-get install -y nodejs && \
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    npm install -g grunt-cli yarn && \
-
     # Reduce layer size
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -54,17 +56,17 @@ COPY docker/prod/pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/prod/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY . /app
+COPY --from=builder /app/public/prod /app/public/prod
+COPY --from=builder /app/config/packages/prod/mapping_assets.yaml /app/config/packages/prod/mapping_assets.yaml
 COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 RUN mkdir -p /run/php var public/media public/uploads && \
-    yarn install && \
-    grunt && \
     APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
-    composer dump-env prod && \
-    bin/console cache:clear --no-warmup && \
-    bin/console cache:warmup && \
+    APP_ENV=prod bin/console cache:clear --no-warmup && \
+    APP_ENV=prod bin/console cache:warmup && \
+    echo "<?php return [];" > .env.local.php && \
     chown -R www-data:www-data var public/media public/uploads && \
     # Reduce container size
     rm -rf .git docker /root/.composer /root/.npm /tmp/*
