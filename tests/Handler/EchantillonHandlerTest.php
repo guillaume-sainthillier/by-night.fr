@@ -2,7 +2,7 @@
 
 namespace App\Tests\Handler;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Place;
@@ -30,7 +30,7 @@ class EchantillonHandlerTest extends ContainerTestCase
     /**
      * @dataProvider userEventEchantillonsProvider
      */
-    public function testUserEventEchantillons(Agenda $event)
+    public function testUserEventEchantillons(Event $event)
     {
         $this->echantillonHandler->prefetchPlaceEchantillons([$event]);
         $this->echantillonHandler->prefetchEventEchantillons([$event]);
@@ -45,16 +45,16 @@ class EchantillonHandlerTest extends ContainerTestCase
     public function userEventEchantillonsProvider()
     {
         return [
-            [(new Agenda())->setUser(new User())],
-            [(new Agenda())->setId(2917)->setUser(new User())],
-            [(new Agenda())->setId(2917)->setExternalId('FB-1537604069794319')->setUser(new User())],
+            [(new Event())->setUser(new User())],
+            [(new Event())->setId(2917)->setUser(new User())],
+            [(new Event())->setId(2917)->setExternalId('FB-1537604069794319')->setUser(new User())],
         ];
     }
 
     /**
      * @dataProvider eventEchantillonProvider
      */
-    public function testEventEchantillons(Agenda $event)
+    public function testEventEchantillons(Event $event)
     {
         $this->echantillonHandler->prefetchPlaceEchantillons([$event]);
 
@@ -65,9 +65,9 @@ class EchantillonHandlerTest extends ContainerTestCase
     public function eventEchantillonProvider()
     {
         return [
-            [(new Agenda())],
-            [(new Agenda())->setPlace(new Place())],
-            [(new Agenda())->setPlace((new Place())->setId(1))],
+            [(new Event())],
+            [(new Event())->setPlace(new Place())],
+            [(new Event())->setPlace((new Place())->setId(1))],
         ];
     }
 
@@ -76,7 +76,7 @@ class EchantillonHandlerTest extends ContainerTestCase
         $france = (new Country())->setId('FR');
         $saintLys = (new City())->setId(2978661)->setCountry($france);
 
-        $parsedEvent1 = (new Agenda())->setExternalId('XXX')->setPlace((new Place())->setCity($saintLys));
+        $parsedEvent1 = (new Event())->setExternalId('XXX')->setPlace((new Place())->setCity($saintLys));
         $events = [$parsedEvent1];
 
         $this->echantillonHandler->prefetchPlaceEchantillons($events);
@@ -96,7 +96,7 @@ class EchantillonHandlerTest extends ContainerTestCase
         $this->makeAddNewEventAsserts($parsedEvent1, 1, $countPersistedPlaces + 1);
     }
 
-    private function makeAddNewEventAsserts(Agenda $event, int $expectedCountEvents, int $expectedCountPlaces)
+    private function makeAddNewEventAsserts(Event $event, int $expectedCountEvents, int $expectedCountPlaces)
     {
         $persistedEvents = $this->echantillonHandler->getEventEchantillons($event);
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
@@ -113,9 +113,9 @@ class EchantillonHandlerTest extends ContainerTestCase
         $france = (new Country())->setId('FR');
         $saintLys = (new City())->setId(2978661)->setCountry($france);
 
-        $eventWithCity = (new Agenda())->setPlace((new Place())->setCity($saintLys));
-        $eventWithExternalId = (new Agenda())->setPlace((new Place())->setCity($saintLys)->setExternalId('FB-108032189219838'));
-        $eventWithCountry = (new Agenda())->setPlace((new Place())->setCountry($france));
+        $eventWithCity = (new Event())->setPlace((new Place())->setCity($saintLys));
+        $eventWithExternalId = (new Event())->setPlace((new Place())->setCity($saintLys)->setExternalId('FB-108032189219838'));
+        $eventWithCountry = (new Event())->setPlace((new Place())->setCountry($france));
 
         $events = [$eventWithCity, $eventWithExternalId, $eventWithCountry];
         $this->echantillonHandler->prefetchPlaceEchantillons($events);

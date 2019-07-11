@@ -2,7 +2,7 @@
 
 namespace App\Tests\Utils;
 
-use App\Entity\Agenda;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Tests\ContainerTestCase;
 use App\Utils\Merger;
@@ -40,8 +40,8 @@ class MergerTest extends ContainerTestCase
 
     public function testEventMerge()
     {
-        $persistedEvent = (new Agenda())->setId(1)->setNom('My Event')->setDescriptif('Event description');
-        $parsedEvent = (new Agenda())->setId(2)->setNom('My Event V2')->setDescriptif('Event description V2');
+        $persistedEvent = (new Event())->setId(1)->setNom('My Event')->setDescriptif('Event description');
+        $parsedEvent = (new Event())->setId(2)->setNom('My Event V2')->setDescriptif('Event description V2');
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
         $this->assertEquals($persistedEvent->getId(), 1); //ID is intact
@@ -51,8 +51,8 @@ class MergerTest extends ContainerTestCase
         $databaseDate = new \DateTime('now');
         $parsedDate = new \DateTime('now');
 
-        $persistedEvent = (new Agenda())->setDateDebut($databaseDate);
-        $parsedEvent = (new Agenda())->setDateDebut($parsedDate);
+        $persistedEvent = (new Event())->setDateDebut($databaseDate);
+        $parsedEvent = (new Event())->setDateDebut($parsedDate);
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
         $this->assertEquals($persistedEvent->getDateDebut(), $databaseDate); //DateTime have not changed (prevents ORM panic)
@@ -60,8 +60,8 @@ class MergerTest extends ContainerTestCase
         $databaseDate = new \DateTime('now');
         $parsedDate = new \DateTime('tomorrow');
 
-        $persistedEvent = (new Agenda())->setDateDebut($databaseDate);
-        $parsedEvent = (new Agenda())->setDateDebut($parsedDate);
+        $persistedEvent = (new Event())->setDateDebut($databaseDate);
+        $parsedEvent = (new Event())->setDateDebut($parsedDate);
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
         $this->assertEquals($persistedEvent->getDateDebut(), $parsedDate); //DateTime have changed because it's not same day
