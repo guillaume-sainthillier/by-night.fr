@@ -22,7 +22,7 @@ class DefaultController extends AbstractController
      *
      * @return Response
      */
-    public function indexAction(CityManager $cityManager)
+    public function indexAction(Request $request, CityManager $cityManager)
     {
         $datas = [];
         if ($city = $cityManager->getCity()) {
@@ -35,21 +35,6 @@ class DefaultController extends AbstractController
         $stats = $this->getDoctrine()->getManager()->getRepository(Event::class)->getCountryEvents();
         $form = $this->createForm(CityAutocompleteType::class, $datas);
 
-        return $this->render('Default/index.html.twig', [
-            'autocomplete_form' => $form->createView(),
-            'stats' => $stats,
-        ]);
-    }
-
-    /**
-     * @Route("/change-city", name="app_change_city", methods={"POST"})
-     *
-     * @return RedirectResponse
-     */
-    public function changeCityAction(Request $request)
-    {
-        $form = $this->createForm(CityAutocompleteType::class);
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $datas = $form->getData();
@@ -57,8 +42,9 @@ class DefaultController extends AbstractController
             return $this->redirectToRoute('app_agenda_index', ['location' => $datas['city']]);
         }
 
-        $this->addFlash('error', 'Veuillez seléctionner une ville');
-
-        return $this->redirectToRoute('app_main_index');
+        return $this->render('Default/index.html.twig', [
+            'autocomplete_form' => $form->createView(),
+            'stats' => $stats,
+        ]);
     }
 }

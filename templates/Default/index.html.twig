@@ -13,7 +13,7 @@
             <h1 class="titrebloc text-center">{{ block('titre') }}</h1>
             <div class="row">
                 <div class="col-xs-10 col-xs-push-1 col-sm-8 col-sm-push-2 col-lg-6 col-lg-push-3 no-margin-form panel panel-primary search_container img-rounded">
-                    {{ form_start(autocomplete_form, { 'action': path('app_change_city'), 'attr': {'class': 'form-city-picker'} }) }}
+                    {{ form_start(autocomplete_form, { 'attr': {'class': 'form-city-picker'} }) }}
                     <div class="form-group">
                         <div class="input-group">
                             {{ form_errors(autocomplete_form.city) }}
