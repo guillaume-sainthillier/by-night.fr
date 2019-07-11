@@ -267,6 +267,9 @@ module.exports = function (grunt) {
                         '<%= pkg.baseVendor %>/dropdown.js/jquery.dropdown.js',
                         '<%= pkg.baseJs %>/pages/event_index.js'
                     ],
+                    '<%= pkg.baseDist %>/js/index.min.js': [
+                        '<%= pkg.baseJs %>/pages/index.js'
+                    ],
                     '<%= pkg.baseDist %>/espace-perso/login/js/login.min.js': [
                         '<%= pkg.baseJs %>/components/SocialLogin.js'
                     ],
