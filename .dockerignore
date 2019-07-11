@@ -11,6 +11,7 @@ var
 vendor
 docker/*/assets
 docker/*/varnish
+public/bundles
 public/media
 public/prod
 public/uploads
