@@ -39,7 +39,7 @@ class DefaultController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $datas = $form->getData();
 
-            return $this->redirectToRoute('app_agenda_index', ['location' => $datas['city']]);
+            return $this->redirectToRoute('app_agenda_agenda', ['location' => $datas['city']]);
         }
 
         return $this->render('Default/index.html.twig', [
