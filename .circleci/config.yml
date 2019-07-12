@@ -78,6 +78,10 @@ jobs:
 
 workflows:
     version: 2
+    test_deploy:
+        jobs:
+            - build
+            
     prod_deploy:
         jobs:
             - build:
