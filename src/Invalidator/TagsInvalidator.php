@@ -61,6 +61,11 @@ class TagsInvalidator
         return \sprintf('user-%d', $user->getId());
     }
 
+    public static function getCityTag(City $city)
+    {
+        return \sprintf('city-%d', $city->getId());
+    }
+
     public static function getMenuTag()
     {
         return 'menu';
@@ -69,6 +74,7 @@ class TagsInvalidator
     public function addCity(City $city)
     {
         $this->tags[] = 'autocomplete-city';
+        $this->tags[] = self::getCityTag($city);
     }
 
     public function addUser(User $user)

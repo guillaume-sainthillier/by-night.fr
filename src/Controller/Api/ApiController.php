@@ -4,8 +4,10 @@ namespace App\Controller\Api;
 
 use App\Annotation\ReverseProxy;
 use App\Entity\City;
+use App\Invalidator\TagsInvalidator;
 use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
+use FOS\HttpCache\ResponseTagger;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,7 +29,7 @@ class ApiController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function cityAutocompleteAction(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
+    public function cityAutocompleteAction(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
     {
         $term = \trim($request->get('q'));
         if (!$term) {
@@ -42,6 +44,7 @@ class ApiController extends AbstractController
         $jsonResults = [];
         foreach ($results as $result) {
             /** @var City $result */
+            $responseTagger->addTags([TagsInvalidator::getCityTag($result)]);
             $jsonResults[] = [
                 'slug' => $result->getSlug(),
                 'name' => $result->getFullName(),
