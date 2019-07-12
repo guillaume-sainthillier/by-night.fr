@@ -111,8 +111,6 @@ class SitemapSuscriber implements EventSubscriberInterface
                 'location' => $event['city_slug'],
             ]);
         }
-
-        //TODO: add tags to sitemap
     }
 
     private function registerUserRoutes($section)
