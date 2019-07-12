@@ -1,7 +1,13 @@
-php_version: 7.1
+php_version: 7.2
+
+pre_composer_script: |
+    pecl info redis || pecl install redis
+
+php_ini: |
+    extension=redis.so
 
 rules:
-    composer.unfixed_dependency_version:
+    php.duplicated_code:
         enabled: false
     doctrine.use_flush_in_loop:
         enabled: false
@@ -11,5 +17,3 @@ rules:
         enabled: true
         max_count: 10
         threshold: 5
-    symfony.request.session_cookie_default_name:
-        enabled: true
