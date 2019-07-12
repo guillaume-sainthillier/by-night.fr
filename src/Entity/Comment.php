@@ -138,30 +138,6 @@ class Comment
     }
 
     /**
-     * Set isApprouve.
-     *
-     * @param bool $isApprouve
-     *
-     * @return Comment
-     */
-    public function setApprouve($isApprouve)
-    {
-        $this->isApprouve = $isApprouve;
-
-        return $this;
-    }
-
-    /**
-     * Get isApprouve.
-     *
-     * @return bool
-     */
-    public function isApprouve()
-    {
-        return $this->isApprouve;
-    }
-
-    /**
      * Set dateCreation.
      *
      * @param DateTime $dateCreation
