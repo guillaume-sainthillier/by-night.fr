@@ -1,6 +1,17 @@
 {
+    "name":  "bynight",
+    "description": "By Night",
+    "homepage": "https://by-night.fr",
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Guillaume Sainthillier",
+            "email": "hell@silarhi.fr",
+            "homepage": "https://sainthillier.fr",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "App\\": "src/"
