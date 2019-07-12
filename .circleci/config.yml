@@ -19,14 +19,6 @@ references:
             name: "Setup environment variables"
             command: |
                 echo 'export APP_DOCKER_IMAGE_NAME=guystlr/by-night' >> $BASH_ENV
-                if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                    IMAGE_TAG=dev
-                else
-                    IMAGE_TAG=${CIRCLE_TAG}
-                fi
-                echo 'export APP_DOCKER_IMAGE_TAG=${IMAGE_TAG}' >> $BASH_ENV
-                echo "APP_DOCKER_IMAGE_NAME: ${APP_DOCKER_IMAGE_NAME}"
-                echo "APP_DOCKER_IMAGE_TAG: ${APP_DOCKER_IMAGE_TAG}"
 
     authenticate_on_registry: &authenticate_on_registry
         run:
@@ -50,11 +42,15 @@ jobs:
             - run:
                   name: "Build and push Docker image"
                   command: |
-                      echo "APP_DOCKER_IMAGE_NAME: ${APP_DOCKER_IMAGE_NAME}"
-                      echo "APP_DOCKER_IMAGE_TAG: ${APP_DOCKER_IMAGE_TAG}"
+                      if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                          APP_DOCKER_IMAGE_TAG=dev
+                      else
+                          APP_DOCKER_IMAGE_TAG=${CIRCLE_TAG}
+                      fi
+
                       docker build -t ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} --build-arg APP_VERSION=${APP_DOCKER_IMAGE_TAG} .
                       if [ "${CIRCLE_TAG}" != "" ]; then
-                          docker tag ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} ${IMAGE_NAME}:latest
+                          docker tag ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} ${APP_DOCKER_IMAGE_NAME}:latest
                       fi
                       docker push ${APP_DOCKER_IMAGE_NAME}
             - save_cache:
