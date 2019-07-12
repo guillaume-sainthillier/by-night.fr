@@ -45,7 +45,7 @@ jobs:
                       if [ "${CIRCLE_BRANCH}" == "master" ]; then
                           APP_DOCKER_IMAGE_TAG=dev
                       else
-                          APP_DOCKER_IMAGE_TAG=${CIRCLE_TAG}
+                          APP_DOCKER_IMAGE_TAG=${CIRCLE_TAG#v}
                       fi
 
                       docker build -t ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} --build-arg APP_VERSION=${APP_DOCKER_IMAGE_TAG} .
