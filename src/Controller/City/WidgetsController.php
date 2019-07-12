@@ -48,10 +48,6 @@ class WidgetsController extends BaseController
             $results['statuses'] = [];
         }
 
-        if (!\count($results['statuses']) && null === $requestStack->getParentRequest()) {
-            return $this->redirectToRoute('app_agenda_agenda', ['location' => $location->getSlug()], Response::HTTP_MOVED_PERMANENTLY);
-        }
-
         return $this->render('City/Hinclude/tweets.html.twig', [
             'tweets' => $results['statuses'],
             'hasNextLink' => $nextLink,
