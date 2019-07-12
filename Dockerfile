@@ -1,3 +1,19 @@
+# Dockerfile
+FROM node:8-alpine as builder
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+ADD package.json yarn.lock Gruntfile.js ./
+ADD assets ./assets
+
+RUN mkdir -p public/prod config/packages/prod && \
+    npm install -g yarn grunt-cli && \
+    NODE_ENV=development yarn install && \
+    grunt
+
+RUN ls -alh /app/public/prod
+
 FROM php:7.2-fpm
 
 ARG APP_VERSION=dev
@@ -26,12 +42,6 @@ RUN apt-get update -q && \
     #Composer
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require hirak/prestissimo --no-plugins --no-scripts && \
-    #NPM
-    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
-    apt-get install -y nodejs && \
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    npm install -g grunt-cli yarn && \
     # Reduce layer size
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -50,14 +60,14 @@ COPY docker/prod/pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/prod/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY . /app
+COPY --from=builder /app/public/prod /app/public/prod
+COPY --from=builder /app/config/packages/prod/mapping_assets.yaml /app/config/packages/prod/mapping_assets.yaml
 COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 RUN mkdir -p /run/php var public/media public/uploads && \
     APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
-    yarn install && \
-    grunt && \
     APP_ENV=prod bin/console cache:clear --no-warmup && \
     APP_ENV=prod bin/console cache:warmup && \
     echo "<?php return [];" > .env.local.php && \
