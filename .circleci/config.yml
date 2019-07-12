@@ -22,6 +22,9 @@ references:
                 IMAGE_TAG=${CIRCLE_TAG}
             fi
             echo 'export APP_DOCKER_IMAGE_TAG=${IMAGE_TAG}' >> $BASH_ENV
+            source $BASH_ENV
+            echo "APP_DOCKER_IMAGE_NAME: ${APP_DOCKER_IMAGE_NAME}"
+            echo "APP_DOCKER_IMAGE_TAG: ${APP_DOCKER_IMAGE_TAG}"
 
     authenticate_on_registry: &authenticate_on_registry
         run: |
@@ -43,6 +46,8 @@ jobs:
             - run:
                   name: "Build and push Docker image"
                   command: |
+                      echo "APP_DOCKER_IMAGE_NAME: ${APP_DOCKER_IMAGE_NAME}"
+                      echo "APP_DOCKER_IMAGE_TAG: ${APP_DOCKER_IMAGE_TAG}"
                       docker build -t ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} --build-arg APP_VERSION=${APP_DOCKER_IMAGE_TAG} .
                       if [ "${CIRCLE_TAG}" != "" ]; then
                           docker tag ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} ${IMAGE_NAME}:latest
