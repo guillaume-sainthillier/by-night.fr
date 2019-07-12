@@ -10,8 +10,8 @@ references:
 
     configure_base: &configure_base
         machine:
-            enabled: true
-            image: circleci/buildpack-deps:stretch
+            image: ubuntu-1604:201903-01
+            docker_layer_caching: true
 
     generate_docker_hashes: &generate_docker_hashes
         run: |
@@ -81,7 +81,7 @@ workflows:
     test_deploy:
         jobs:
             - build
-            
+
     prod_deploy:
         jobs:
             - build:
