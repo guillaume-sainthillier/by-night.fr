@@ -1,50 +1,94 @@
-# .circleci/config.yml
 version: 2
+
+references:
+    working_directory: &working_directory
+        working_directory: ~/app
+
+    attach_workspace: &attach_workspace
+        attach_workspace:
+            at: ~/app
+
+    configure_base: &configure_base
+        machine:
+            enabled: true
+            image: circleci/buildpack-deps:stretch
+
+    generate_docker_hashes: &generate_docker_hashes
+        run: |
+            echo 'export APP_DOCKER_IMAGE_NAME=guystlr/by-night' >> $BASH_ENV
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                IMAGE_TAG=dev
+            else
+                IMAGE_TAG=$CIRCLE_TAG
+            fi
+            echo "export APP_DOCKER_IMAGE_TAG=$IMAGE_TAG" >> $BASH_ENV
+
+    authenticate_on_registry: &authenticate_on_registry
+        run: |
+            set -x
+            echo ${DOCKER_PWD} | docker login -u ${DOCKER_LOGIN} --password-stdin
+
 jobs:
     build:
-        docker:
-            - image: circleci/buildpack-deps:stretch
-              environment:
-                  IMAGE_NAME: guystlr/by-night
+        <<: *working_directory
+        <<: *configure_base
         steps:
             - checkout
-            - setup_remote_docker:
-                  docker_layer_caching: true
+            - restore_cache:
+                key: composer-{{ checksum "composer.lock" }}
+            - restore_cache:
+                key: npm-{{ checksum "yarn.lock" }}
+            - *generate_docker_hashes
+            - *authenticate_on_registry
 
             - run:
                   name: "Build and push Docker image"
                   command: |
-                      IMAGE_TAG="2.2.${CIRCLE_BUILD_NUM}"
-                      APP_VERSION="${IMAGE_TAG}@${CIRCLE_SHA1:0:7}"
-                      docker build -t ${IMAGE_NAME}:${IMAGE_TAG} --build-arg APP_VERSION=${APP_VERSION} .
-
-                      if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                      docker build -t ${IMAGE_NAME}:${IMAGE_TAG} --build-arg APP_VERSION=${APP_DOCKER_IMAGE_TAG} .
+                      if [ "${CIRCLE_TAG}" != "" ]; then
                           docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
                       fi
-                      echo ${DOCKER_PWD} | docker login -u ${DOCKER_LOGIN} --password-stdin
                       docker push ${IMAGE_NAME}
+            - save_cache:
+                paths:
+                    - ./vendor
+                key: composer-{{ checksum "composer.lock" }}
+            - save_cache:
+                paths:
+                    - ./node_modules
+                key: npm-{{ checksum "yarn.lock" }}
+
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - ./
     deploy:
+        <<: *working_directory
         machine:
             enabled: true
         steps:
             - add_ssh_keys:
                   fingerprints:
                       - "51:2c:bf:10:3d:c0:16:08:6f:23:ae:79:8e:cb:82:9b"
+            - *generate_docker_hashes
             - run:
                   name: "Deploy image to production"
                   command: |
                       ssh guillaume@${PRODUCTION_SERVER_IP} "cd ${PRODUCTION_SERVER_PATH} && sudo /bin/bash ./deploy.sh ${IMAGE_NAME}:latest"
-                  environment:
-                      IMAGE_NAME: guystlr/by-night
 
 workflows:
     version: 2
-    build-and-deploy:
+    prod_deploy:
         jobs:
-            - build
+            - build:
+                  filters:
+                      branches:
+                          ignore: /.*/
+                      tags:
+                          only: /^v[0-9]+(\.[0-9]+)*$/
             - deploy:
                   requires:
                       - build
                   filters:
-                      branches:
-                          only: master
+                      tags:
+                          only: /^v[0-9]+(\.[0-9]+)*$/
