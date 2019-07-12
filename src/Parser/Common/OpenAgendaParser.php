@@ -3,7 +3,6 @@
 namespace App\Parser\Common;
 
 use App\Parser\EventParser;
-use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use function GuzzleHttp\Promise\all;
@@ -45,13 +44,13 @@ class OpenAgendaParser extends EventParser
 
     private function getInfoEvent(array $event)
     {
-        $dateDebut = DateTime::createFromFormat('Y-m-d H:i', $event['firstDate'] . ' ' . $event['firstTimeStart']);
-        $dateFin = DateTime::createFromFormat('Y-m-d H:i', $event['lastDate'] . ' ' . $event['lastTimeEnd']);
+        $dateDebut = \DateTime::createFromFormat('Y-m-d H:i', $event['firstDate'] . ' ' . $event['firstTimeStart']);
+        $dateFin = \DateTime::createFromFormat('Y-m-d H:i', $event['lastDate'] . ' ' . $event['lastTimeEnd']);
 
         $horaires = null;
-        if ($dateDebut instanceof DateTime && $dateFin instanceof DateTime && $dateDebut->format('YmdHi') !== $dateFin->format('YmdHi')) {
+        if ($dateDebut instanceof \DateTime && $dateFin instanceof \DateTime && $dateDebut->format('YmdHi') !== $dateFin->format('YmdHi')) {
             $horaires = \sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
-        } elseif ($dateDebut instanceof DateTime) {
+        } elseif ($dateDebut instanceof \DateTime) {
             $horaires = \sprintf('A %s', $dateDebut->format("H\hi"));
         }
 

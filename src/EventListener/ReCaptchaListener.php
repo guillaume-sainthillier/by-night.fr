@@ -3,12 +3,13 @@
 namespace App\EventListener;
 
 use FOS\UserBundle\Controller\RegistrationController;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
 
-class ReCaptchaListener
+class ReCaptchaListener implements EventSubscriberInterface
 {
     private $formName;
-
     private $field;
 
     public function __construct($formName, $field)
@@ -17,7 +18,17 @@ class ReCaptchaListener
         $this->field = $field;
     }
 
-    public function onKernelController(FilterControllerEvent $event)
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            KernelEvents::CONTROLLER => 'onKernelController',
+        ];
+    }
+
+    public function onKernelController(ControllerEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;

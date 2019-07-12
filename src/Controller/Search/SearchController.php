@@ -3,7 +3,7 @@
 namespace App\Controller\Search;
 
 use App\Search\SearchEvent;
-use App\SearchRepository\EventRepository;
+use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -16,7 +16,7 @@ class SearchController extends AbstractController
 {
     private function searchEvents(RepositoryManagerInterface $rm, $q)
     {
-        /** @var EventRepository $repoSearch */
+        /** @var EventElasticaRepository $repoSearch */
         $repoSearch = $rm->getRepository('App:Event');
         $search = (new SearchEvent())->setTerm($q);
 

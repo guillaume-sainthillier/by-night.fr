@@ -4,7 +4,7 @@ namespace App\EventListener;
 
 use App\Annotation\ReverseProxy;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class ReverseProxyListener implements EventSubscriberInterface
@@ -27,7 +27,7 @@ class ReverseProxyListener implements EventSubscriberInterface
         ];
     }
 
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         if ($this->debug) {
             return;

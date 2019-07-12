@@ -29,5 +29,7 @@ class TagsExtension extends Extension
             case 'menu':
                 return TagsInvalidator::getMenuTag();
         }
+
+        throw new \RuntimeException(sprintf('No tags for %s', $type));
     }
 }
