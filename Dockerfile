@@ -58,7 +58,7 @@ COPY docker/prod/pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/prod/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY . /app
-COPY --from=builder /app/public/prod /app/public/prod
+COPY --from=builder /app/public/prod /assets
 COPY --from=builder /app/config/packages/prod/mapping_assets.yaml /app/config/packages/prod/mapping_assets.yaml
 COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
 
