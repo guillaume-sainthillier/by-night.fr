@@ -13,7 +13,6 @@ parameters:
 
 services:
     App\Producer\EventProducer: "@old_sound_rabbit_mq.add_event_producer"
-    App\Producer\UpdateFacebookIdProducer: "@old_sound_rabbit_mq.update_fb_id_producer"
 
     _defaults:
         autowire: true
@@ -60,11 +59,6 @@ services:
     App\Social\FacebookListEvents:
         arguments:
             $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
-
-    App\Geocoder\PlaceGeocoder:
-        arguments:
-            $cache: '@doctrine_cache.providers.location_cache'
-            $geocoder: '@app_geocoder'
 
     App\Archive\EventArchivator:
         arguments:
