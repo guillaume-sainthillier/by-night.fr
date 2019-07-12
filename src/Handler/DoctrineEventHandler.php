@@ -28,16 +28,6 @@ class DoctrineEventHandler
     private $em;
 
     /**
-     * @var EventRepository
-     */
-    private $repoEvent;
-
-    /**
-     * @var PlaceRepository
-     */
-    private $repoPlace;
-
-    /**
      * @var CityRepository
      */
     private $repoCity;
@@ -70,8 +60,6 @@ class DoctrineEventHandler
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler)
     {
         $this->em = $em;
-        $this->repoEvent = $em->getRepository(Event::class);
-        $this->repoPlace = $em->getRepository(Place::class);
         $this->repoCity = $em->getRepository(City::class);
         $this->repoZipCity = $em->getRepository(ZipCity::class);
         $this->handler = $handler;

@@ -82,7 +82,7 @@ class FacebookAdmin extends FacebookListEvents
         }
     }
 
-     function guessAppAccessToken()
+    protected function guessAppAccessToken()
     {
         $this->pageAccessToken = $this->client->getApp()->getAccessToken();
     }
