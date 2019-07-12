@@ -76,7 +76,7 @@ class WidgetsController extends BaseController
      * @Route("/_private/tendances/{id}", name="app_event_tendances", requirements={"id": "\d+"})
      * @ReverseProxy(expires="1 year")
      */
-    public function tendances(Event $event, DoctrineCache $memoryCache, FacebookAdmin $facebookAdmin)
+    public function tendances(Event $event)
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Event::class);
@@ -92,32 +92,6 @@ class WidgetsController extends BaseController
             if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();
                 $interet = $calendrier->getInteret();
-            }
-
-            if ($event->getFacebookEventId() && $user->getInfo() && $user->getInfo()->getFacebookId()) {
-                $key = 'users.' . $user->getId() . '.stats.' . $event->getId();
-                if (!$memoryCache->contains($key)) {
-                    $stats = $facebookAdmin->getUserEventStats($event->getFacebookEventId(), $user->getInfo()->getFacebookId(), $user->getInfo()->getFacebookAccessToken());
-                    $memoryCache->save($key, $stats);
-                }
-                $stats = $memoryCache->fetch($key);
-
-                if ($stats['participer'] || $stats['interet']) {
-                    if (null === $calendrier) {
-                        $calendrier = new Calendrier();
-                        $calendrier->setUser($user)->setEvent($event);
-                    }
-
-                    $participer = $calendrier->getParticipe() || $stats['participer'];
-                    $interet = $calendrier->getInteret() || $stats['interet'];
-
-                    $calendrier
-                        ->setParticipe($participer)
-                        ->setInteret($interet);
-
-                    $em->persist($calendrier);
-                    $em->flush();
-                }
             }
         }
 

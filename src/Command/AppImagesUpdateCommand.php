@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Updater\EventUpdater;
 use App\Updater\UserUpdater;
 use App\Utils\Monitor;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,13 +14,9 @@ class AppImagesUpdateCommand extends AppCommand
     /** @var UserUpdater */
     private $userUpdater;
 
-    /** @var EventUpdater */
-    private $eventUpdater;
-
-    public function __construct(UserUpdater $userUpdater, EventUpdater $eventUpdater)
+    public function __construct(UserUpdater $userUpdater)
     {
         $this->userUpdater = $userUpdater;
-        $this->eventUpdater = $eventUpdater;
 
         parent::__construct();
     }
@@ -51,11 +46,6 @@ class AppImagesUpdateCommand extends AppCommand
         if (\in_array($updater, ['all', 'user'])) {
             Monitor::writeln('Mise à jour des images <info>utilisateur</info>');
             $this->userUpdater->update($from);
-        }
-
-        if (\in_array($updater, ['all', 'event'])) {
-            Monitor::writeln('Mise à jour des images <info>event</info>');
-            $this->eventUpdater->update($from);
         }
     }
 }

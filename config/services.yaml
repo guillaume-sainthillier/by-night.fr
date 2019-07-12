@@ -73,11 +73,9 @@ services:
     App\Command\AppEventsImportCommand:
         arguments:
             $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
-            $updateFacebookIdProducer: '@old_sound_rabbit_mq.update_fb_id_producer'
             $parsers:
                 toulouse.opendata: '@App\Parser\Toulouse\ToulouseParser'
                 toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'
-                facebook: '@App\Parser\Common\FaceBookParser'
                 openagenda: '@App\Parser\Common\OpenAgendaParser'
 
     App\Importer\CountryImporter:

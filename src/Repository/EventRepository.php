@@ -168,21 +168,6 @@ class EventRepository extends EntityRepository
             ->getScalarResult();
     }
 
-    public function findAllOfWeek()
-    {
-        $now = new DateTime();
-
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('a')
-            ->from('App:Event', 'a')
-            ->where('a.dateFin BETWEEN :date_debut AND :date_fin')
-            ->andWhere('a.facebookEventId IS NOT NULL')
-            ->setParameters([':date_debut' => $now->format('Y-m-d'), ':date_fin' => $now->add(new DateInterval('P7D'))->format('Y-m-d')])
-            ->getQuery()
-            ->getResult();
-    }
-
     public function getLastDateStatsUser(User $user)
     {
         return $this->_em
@@ -207,18 +192,6 @@ class EventRepository extends EntityRepository
             ->setMaxResults($offset)
             ->getQuery()
             ->getResult();
-    }
-
-    public function getNextEventsCount(DateTime $since)
-    {
-        return $this
-            ->createQueryBuilder('a')
-            ->select('COUNT(a.id)')
-            ->where('a.dateFin >= :since')
-            ->andWhere('a.facebookEventId IS NOT NULL')
-            ->setParameters([':since' => $since->format('Y-m-d')])
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 
     public function getStatsUser(User $user, $groupByFunction)

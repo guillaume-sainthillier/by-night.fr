@@ -3,10 +3,8 @@
 namespace App\Command;
 
 use App\Fetcher\EventFetcher;
-use App\Parser\Common\FaceBookParser;
 use App\Parser\ParserInterface;
 use App\Producer\EventProducer;
-use App\Producer\UpdateFacebookIdProducer;
 use LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,19 +22,13 @@ class AppEventsImportCommand extends AppCommand
      */
     private $eventProducer;
 
-    /**
-     * @var UpdateFacebookIdProducer
-     */
-    private $updateFacebookIdProducer;
-
     /** @var ParserInterface[] */
     private $parsers;
 
-    public function __construct(EventFetcher $eventFetcher, EventProducer $eventProducer, UpdateFacebookIdProducer $updateFacebookIdProducer, array $parsers)
+    public function __construct(EventFetcher $eventFetcher, EventProducer $eventProducer, array $parsers)
     {
         $this->eventFetcher = $eventFetcher;
         $this->eventProducer = $eventProducer;
-        $this->updateFacebookIdProducer = $updateFacebookIdProducer;
         $this->parsers = $parsers;
 
         parent::__construct();
@@ -79,12 +71,6 @@ class AppEventsImportCommand extends AppCommand
         $events = $this->eventFetcher->fetchEvents($service);
         foreach ($events as $event) {
             $this->eventProducer->scheduleEvent($event);
-        }
-
-        if ($service instanceof FaceBookParser) {
-            foreach ($service->getIdsToMigrate() as $oldValue => $newValue) {
-                $this->updateFacebookIdProducer->scheduleUpdate($oldValue, $newValue);
-            }
         }
     }
 }

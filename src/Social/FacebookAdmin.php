@@ -82,7 +82,7 @@ class FacebookAdmin extends FacebookListEvents
         }
     }
 
-    protected function guessAppAccessToken()
+     function guessAppAccessToken()
     {
         $this->pageAccessToken = $this->client->getApp()->getAccessToken();
     }
@@ -218,32 +218,6 @@ class FacebookAdmin extends FacebookListEvents
         return $this->getOjectsFromIds($ids_event, $requestFunction, $dataHandlerFunction, $idsPerRequest);
     }
 
-    public function getUserEventStats($id_event, $id_user, $userAccessToken)
-    {
-        $this->init();
-        $stats = ['participer' => false, 'interet' => false];
-
-        try {
-            $url = '/' . $id_event . '/%s/' . $id_user;
-            $requests = [
-                $this->client->request('GET', \sprintf($url, 'attending'), [], $userAccessToken),
-                $this->client->request('GET', \sprintf($url, 'maybe'), [], $userAccessToken),
-            ];
-
-            $responses = $this->client->sendBatchRequest($requests, $userAccessToken);
-            foreach ($responses as $i => $response) {
-                if (!$response->isError()) {
-                    $isXXX = $response->getGraphEdge()->count() > 0;
-                    $stats[0 === $i ? 'participer' : 'interet'] = $isXXX;
-                }
-            }
-        } catch (FacebookSDKException $ex) {
-            $this->logger->critical($ex);
-        }
-
-        return $stats;
-    }
-
     public function getEventFromId($id_event, $fields = null)
     {
         $this->init();
@@ -257,65 +231,6 @@ class FacebookAdmin extends FacebookListEvents
         }
 
         return $this->cache[$key];
-    }
-
-    public function getEventsFromIds(array $ids_event, $idsPerRequest = 20, $limit = 1000)
-    {
-        $this->init();
-        $requestPerBatch = 50;
-        $idsPerBatch = $requestPerBatch * $idsPerRequest;
-        $nbBatchs = \ceil(\count($ids_event) / $idsPerBatch);
-        $finalEvents = [];
-
-        for ($i = 0; $i < $nbBatchs; ++$i) {
-            $requests = [];
-            $batch_ids = \array_slice($ids_event, $i * $idsPerBatch, $idsPerBatch);
-            $nbIterations = \ceil(\count($batch_ids) / $idsPerRequest);
-
-            try {
-                for ($j = 0; $j < $nbIterations; ++$j) {
-                    $current_ids = \array_slice($batch_ids, $j * $idsPerRequest, $idsPerRequest);
-                    $requests[] = $this->client->request('GET', '/', [
-                        'ids' => \implode(',', $current_ids),
-                        'fields' => self::FIELDS,
-                        'limit' => $limit,
-                    ], $this->getAccessToken());
-                }
-
-                //Exécution du batch
-                Monitor::bench('fb::getEventsFromIds', function () use (&$requests, &$finalEvents, $i, $nbBatchs) {
-                    $responses = $this->client->sendBatchRequest($requests, $this->getAccessToken());
-
-                    //Traitement des réponses
-                    $fetchedEvents = 0;
-                    foreach ($responses as $response) {
-                        if ($response->isError()) {
-                            $e = $response->getThrownException();
-                            Monitor::writeln('<error>Erreur dans le batch de la recherche par IDS événements : ' . ($e ? $e->getMessage() : 'Erreur Inconnue') . '</error>');
-                        } else {
-                            $datas = $this->findAssociativeEvents($response);
-                            $fetchedEvents += \count($datas);
-                            $finalEvents = \array_merge($finalEvents, $datas);
-                        }
-                    }
-                    Monitor::writeln(\sprintf('%d / %d : Récupération détaillée de <info>%d</info> événement(s)', $i + 1, $nbBatchs, $fetchedEvents));
-                });
-            } catch (FacebookSDKException $ex) {
-                Monitor::writeln('<error>Erreur dans la récupération détaillée des événements : ' . $ex->getMessage() . '</error>');
-
-                foreach ($batch_ids as $current_id) {
-                    try {
-                        $finalEvents = \array_merge($finalEvents, [$this->getEventFromId($current_id)]);
-                    } catch (FacebookSDKException $ex) {
-                        Monitor::writeln(\sprintf(
-                            '<error>Erreur dans la récupération l\'événement #%s : %s</error>', $current_id, $ex->getMessage()
-                        ));
-                    }
-                }
-            }
-        }
-
-        return $finalEvents;
     }
 
     public function getPageFromId($id_page, $params = [])

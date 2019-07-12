@@ -18,11 +18,6 @@ old_sound_rabbit_mq:
             exchange_options: { name: 'add-event', type: direct }
             class:            App\Producer\EventProducer
 
-        update_fb_id:
-            connection:       default
-            exchange_options: { name: 'update-fb-id', type: direct }
-            class:            App\Producer\UpdateFacebookIdProducer
-
     consumers:
         add_event:
             connection:       default
@@ -37,15 +32,6 @@ old_sound_rabbit_mq:
             queue_options:    { name: 'add-event'}
             callback:         App\Consumer\AddEventConsumer
             qos_options:      { prefetch_size: 0, prefetch_count: 50, global: false }
-            timeout_wait:     300
-            auto_setup_fabric: false
-            idle_timeout_exit_code: -2
-        update_fb_id:
-            connection:       default
-            exchange_options: { name: 'update-fb-id', type: direct}
-            queue_options:    { name: 'update-fb-id'}
-            callback:         App\Consumer\UpdateFBIdConsumer
-            qos_options:      { prefetch_size: 0, prefetch_count: 100, global: false }
             timeout_wait:     300
             auto_setup_fabric: false
             idle_timeout_exit_code: -2

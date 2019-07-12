@@ -6,20 +6,13 @@ use App\App\SocialManager;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Calendrier;
 use App\Entity\Event;
-use App\Factory\EventFactory;
 use App\Form\Type\EventType;
-use App\Handler\DoctrineEventHandler;
-use App\Handler\ExplorationHandler;
-use App\Parser\Common\FaceBookParser;
-use App\Social\FacebookListEvents;
 use App\Validator\Constraints\EventConstraintValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class EventController extends BaseController
 {
@@ -65,11 +58,8 @@ class EventController extends BaseController
         $user = $this->getUser();
         $events = $this->getDoctrine()->getRepository(Event::class)->findAllByUser($user);
 
-        $canSynchro = $user->hasRole('ROLE_FACEBOOK_LIST_EVENTS');
-
         return $this->render('EspacePerso/liste.html.twig', [
             'events' => $events,
-            'canSynchro' => $canSynchro,
         ]);
     }
 
@@ -115,93 +105,6 @@ class EventController extends BaseController
             'event' => $event,
             'form_delete' => $formDelete->createView(),
         ]);
-    }
-
-    /**
-     * @Route("/import", name="app_event_import_events")
-     * @IsGranted("ROLE_FACEBOOK_LIST_EVENTS")
-     */
-    public function importAction(FacebookListEvents $importer, ExplorationHandler $explorationHandler, EventFactory $eventFactory, FaceBookParser $parser, DoctrineEventHandler $handler, ValidatorInterface $validator)
-    {
-        $user = $this->getUser();
-        $fb_events = $importer->getUserEvents($user);
-
-        $events = [];
-        foreach ($fb_events as $fb_event) {
-            $array_event = $parser->getInfoEvent($fb_event);
-            $event = $eventFactory->fromArray($array_event);
-            $events[] = $event->setUser($user);
-        }
-
-        $explorationHandler->start();
-        $events = $handler->handleMany($events);
-        $explorationHandler->stop();
-
-        $this->addImportMessage($explorationHandler);
-        foreach ($events as $event) {
-            $errors = $validator->validate($event);
-            if ($errors->count() > 0) {
-                $errorsString = [];
-                foreach ($errors as $error) {
-                    /** @var ConstraintViolation $error */
-                    $errorsString[] = \sprintf(
-                        '<li>%s</li>',
-                        $error->getMessage()
-                    );
-                }
-                $this->addFlash('warning', \sprintf(
-                    "Informations sur l'événement <a href='https://facebook.com/events/%s/'>%s</a> : <ul>%s</ul>",
-                    $event->getFacebookEventId(),
-                    $event->getNom(),
-                    \implode('', $errorsString)
-                ));
-            }
-        }
-
-        return $this->redirectToRoute('app_event_list');
-    }
-
-    private function addImportMessage(ExplorationHandler $explorationHandler)
-    {
-        if ($explorationHandler->getNbInserts() > 0 || $explorationHandler->getNbUpdates() > 0) {
-            $plurielInsert = $explorationHandler->getNbInserts() > 1 ? 's' : '';
-            $plurielUpdate = $explorationHandler->getNbUpdates() > 1 ? 's' : '';
-            $indicatifInsert = 1 == $explorationHandler->getNbInserts() ? 'a' : 'ont';
-            $indicatifUpdate = 1 == $explorationHandler->getNbUpdates() ? 'a' : 'ont';
-            $message = null;
-            if ($explorationHandler->getNbInserts() > 0 && $explorationHandler->getNbUpdates() > 0) {
-                $message = \sprintf(
-                    '<strong>%d</strong> événement%s %s été ajouté%s et <strong>%s</strong> %s été mis à jour sur la plateforme !',
-                    $explorationHandler->getNbInserts(),
-                    $plurielInsert,
-                    $indicatifInsert,
-                    $plurielInsert,
-                    $explorationHandler->getNbUpdates(),
-                    $indicatifUpdate
-                );
-            } elseif ($explorationHandler->getNbInserts() > 0) {
-                $message = \sprintf(
-                    '<strong>%d</strong> événement%s %s été ajouté%s sur By Night !',
-                    $explorationHandler->getNbInserts(),
-                    $plurielInsert,
-                    $indicatifInsert,
-                    $plurielInsert
-                );
-            } elseif ($explorationHandler->getNbUpdates() > 0) {
-                $message = \sprintf(
-                    '<strong>%d</strong> événement%s %s été mis à jour sur By Night !',
-                    $explorationHandler->getNbUpdates(),
-                    $plurielUpdate,
-                    $indicatifUpdate
-                );
-            }
-
-            $this->addFlash('success', $message);
-        } elseif (0 === $explorationHandler->getNbBlackLists()) {
-            $message = "Aucun événement n'a été retrouvé sur votre compte.";
-
-            $this->addFlash('info', $message);
-        }
     }
 
     /**

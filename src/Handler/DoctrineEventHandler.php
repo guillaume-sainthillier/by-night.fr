@@ -157,50 +157,6 @@ class DoctrineEventHandler
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
     }
 
-    public function handleIdsToMigrate(array $ids)
-    {
-        if (!\count($ids)) {
-            return;
-        }
-
-        $eventOwners = $this->repoEvent->findBy([
-            'facebookOwnerId' => \array_keys($ids),
-        ]);
-
-        $events = $this->repoEvent->findBy([
-            'facebookEventId' => \array_keys($ids),
-        ]);
-
-        $events = \array_merge($events, $eventOwners);
-        foreach ($events as $event) {
-            /** @var Event $event */
-            if (isset($ids[$event->getFacebookEventId()])) {
-                $event->setFacebookEventId($ids[$event->getFacebookEventId()]);
-            }
-
-            if (isset($ids[$event->getFacebookOwnerId()])) {
-                $event->setFacebookOwnerId($ids[$event->getFacebookOwnerId()]);
-            }
-            $this->em->persist($event);
-        }
-
-        $places = $this->repoPlace->findBy([
-            'facebookId' => \array_keys($ids),
-        ]);
-
-        foreach ($places as $place) {
-            /** @var Place $place */
-            if (isset($ids[$place->getFacebookId()])) {
-                $place
-                    ->setFacebookId($ids[$place->getFacebookId()])
-                    ->setExternalId('FB-' . $ids[$place->getFacebookId()]);
-            }
-            $this->em->persist($place);
-        }
-
-        $this->em->flush();
-    }
-
     /**
      * @param Event[] $events
      *
