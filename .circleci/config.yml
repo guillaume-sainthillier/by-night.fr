@@ -26,7 +26,6 @@ references:
 
     authenticate_on_registry: &authenticate_on_registry
         run: |
-            set -x
             echo ${DOCKER_PWD} | docker login -u ${DOCKER_LOGIN} --password-stdin
 
 jobs:
