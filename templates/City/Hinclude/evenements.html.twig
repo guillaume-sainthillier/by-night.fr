@@ -39,6 +39,8 @@
             </div>
         </div>
     </div>
+{% else %}
+    <p>Aucun événement disponible. Pourquoi ne pas en <a href="{{ path('app_event_new') }}">créer un ?</a></p>
 {% endfor %}
 {% if hasNextLink %}
     <a class="more-content btn btn-primary btn-raised btn-block" href="{{ hasNextLink }}">Plus ({{ current }}
