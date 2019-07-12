@@ -72,6 +72,6 @@ RUN mkdir -p /run/php var public/media public/uploads && \
     echo "<?php return [];" > .env.local.php && \
     chown -R www-data:www-data var public/media public/uploads && \
     # Reduce container size
-    rm -rf .git docker /root/.composer /root/.npm /tmp/*
+    rm -rf .git docker assets /root/.composer /root/.npm /tmp/*
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
