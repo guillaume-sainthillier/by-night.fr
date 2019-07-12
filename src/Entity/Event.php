@@ -916,12 +916,12 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function getIsBrouillon(): ?bool
+    public function isBrouillon(): ?bool
     {
         return $this->isBrouillon;
     }
 
-    public function setIsBrouillon(?bool $isBrouillon): self
+    public function setBrouillon(?bool $isBrouillon): self
     {
         $this->isBrouillon = $isBrouillon;
 
@@ -1060,12 +1060,12 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function getIsArchive(): ?bool
+    public function isArchive(): ?bool
     {
         return $this->isArchive;
     }
 
-    public function setIsArchive(?bool $isArchive): self
+    public function setArchive(?bool $isArchive): self
     {
         $this->isArchive = $isArchive;
 

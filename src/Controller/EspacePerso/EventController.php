@@ -50,7 +50,7 @@ class EventController extends BaseController
         $isBrouillon = 'true' === $brouillon;
 
         $em = $this->getDoctrine()->getManager();
-        $event->setIsBrouillon($isBrouillon);
+        $event->setBrouillon($isBrouillon);
         $em->merge($event);
         $em->flush();
 

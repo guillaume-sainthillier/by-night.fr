@@ -568,7 +568,7 @@ class Place implements GeolocalizeInterface
      *
      * @return Place
      */
-    public function setIsJunk($isJunk)
+    public function setJunk($isJunk)
     {
         $this->isJunk = $isJunk;
 
@@ -580,7 +580,7 @@ class Place implements GeolocalizeInterface
      *
      * @return bool
      */
-    public function getIsJunk()
+    public function isJunk()
     {
         return $this->isJunk;
     }

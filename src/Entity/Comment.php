@@ -321,7 +321,7 @@ class Comment
      *
      * @return Comment
      */
-    public function setIsApprouve($isApprouve)
+    public function setApprouve($isApprouve)
     {
         $this->isApprouve = $isApprouve;
 
@@ -333,7 +333,7 @@ class Comment
      *
      * @return bool
      */
-    public function getIsApprouve()
+    public function isApprouve()
     {
         return $this->isApprouve;
     }
