@@ -67,8 +67,6 @@ class CountryImporter
 
     private function deleteEmptyDatas(Country $country)
     {
-        return;
-
         $this->em->createQuery(' DELETE FROM App:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
             'country' => $country->getId(),
         ]);
