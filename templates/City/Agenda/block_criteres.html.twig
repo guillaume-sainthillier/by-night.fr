@@ -54,7 +54,7 @@
                 {{ form_widget(form.chercher) }}
             </div>
         </div>
-        {% if isPost and (search.au or search.lieux or search.term) %}
+        {% if isPost and (search.au or search.lieux or search.term or search.range != 25) %}
             {% set options = {hiddenClass: '', iconClass: 'fa-chevron-up'} %}
         {% else %}
             {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}
@@ -84,20 +84,30 @@
                         {{ form_label(form.au) }}
                         <div class="col-sm-5">
                             {{ form_widget(form.au) }}
+                            {{ form_errors(form.au) }}
                         </div>
                     </div>
                 </div>
             </div>
             <div class="form-horizontal">
                 <div class="form-group">
+                    {{ form_label(form.range) }}
+                    <div class="col-sm-7">
+                        {{ form_widget(form.range) }}
+                        {{ form_errors(form.range) }}
+                    </div>
+                </div>
+                <div class="form-group">
                     {{ form_label(form.lieux) }}
                     <div class="col-sm-7">
                         {{ form_widget(form.lieux) }}
+                        {{ form_errors(form.lieux) }}
                     </div>
                 </div>
                 <div class="form-group">
                     {{ form_label(form.term) }}
                     <div class="col-sm-7">
+                        {{ form_widget(form.term) }}
                         {{ form_widget(form.term) }}
                     </div>
                 </div>

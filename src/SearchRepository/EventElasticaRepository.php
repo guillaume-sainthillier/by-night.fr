@@ -5,6 +5,7 @@ namespace App\SearchRepository;
 use App\Search\SearchEvent;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
+use Elastica\Query\GeoDistance;
 use Elastica\Query\Match;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
@@ -28,6 +29,7 @@ class EventElasticaRepository extends Repository
             'is_brouillon' => false,
         ]));
 
+        $location = null;
         if ($search->getLieux()) {
             $mainQuery->addMust(
                 new Terms('place.id', $search->getLieux())
@@ -37,9 +39,14 @@ class EventElasticaRepository extends Repository
                 new Term(['place.country.id' => mb_strtolower($search->getLocation()->getCountry()->getId())])
             );
         } elseif ($search->getLocation() && $search->getLocation()->isCity()) {
-            $mainQuery->addMust(
+            $location = $search->getLocation()->getCity()->getLocation();
+            $filterBool = new BoolQuery();
+            $filterBool->addShould([
+                new GeoDistance('place.city.location', $search->getLocation()->getCity()->getLocation(), $search->getRange() . 'km'),
                 new Term(['place.city.id' => $search->getLocation()->getCity()->getId()])
-            );
+            ]);
+
+            $mainQuery->addMust($filterBool);
         }
 
         if ($search->getDu()) {
@@ -106,13 +113,7 @@ class EventElasticaRepository extends Repository
                     'type_manifestation', 'theme_manifestation', 'categorie_manifestation',
                     'place.nom', 'place.rue', 'place.ville', 'place.code_postal',
                     'place_name', 'place_street', 'place_city', 'place_postal_code',
-                ])
-                //->setAnalyzer('event_analyzer')
-                //->setOperator(false === \strstr($search->getTerm(), ',') ? MultiMatch::OPERATOR_OR : MultiMatch::OPERATOR_AND)
-                //->setOperator(MultiMatch::OPERATOR_AND)
-                //->setFuzziness(0.8)
-                //->setMinimumShouldMatch('80%');
-            ;
+                ]);
             $mainQuery->addMust($query);
         }
 
@@ -133,9 +134,15 @@ class EventElasticaRepository extends Repository
         $finalQuery = Query::create($mainQuery);
 
         if (false === $sortByScore) {
-            $finalQuery
-                ->addSort(['date_fin' => 'asc'])
-                ->addSort(['fb_participations' => ['order' => 'desc', 'unmapped_type' => 'long']]);
+            $finalQuery->addSort(['date_fin' => 'asc']);
+
+            if($location) {
+                $finalQuery->addSort(['_geo_distance' => [
+                    "place.city.location" => $location,
+                    "order" => "asc",
+                    "unit" => "km"
+                ]]);
+            }
         }
 
         return $this->createPaginatorAdapter($finalQuery);

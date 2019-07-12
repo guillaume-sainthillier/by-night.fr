@@ -62,6 +62,10 @@ fos_elastica:
                                 nom: { boost: 3, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
                                 rue: { analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
                                 ville: { boost: 2, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
+                                city:
+                                    type: "object"
+                                    properties:
+                                        location: {type: "geo_point"}
                     persistence:
                         driver: orm
                         model:  App\Entity\Event

@@ -21,6 +21,12 @@ class SearchEvent
     protected $au;
 
     /**
+     * @var int
+     * @Assert\GreaterThanOrEqual(0)
+     */
+    protected $range;
+
+    /**
      * @var string|null
      */
     protected $tag;
@@ -53,6 +59,7 @@ class SearchEvent
     public function __construct()
     {
         $this->page = 1;
+        $this->range = 25;
         $this->du = new DateTime();
         $this->lieux = [];
         $this->type_manifestation = [];
@@ -156,6 +163,17 @@ class SearchEvent
     {
         $this->location = $location;
 
+        return $this;
+    }
+
+    public function getRange(): int
+    {
+        return $this->range;
+    }
+
+    public function setRange(int $range): SearchEvent
+    {
+        $this->range = $range;
         return $this;
     }
 }
