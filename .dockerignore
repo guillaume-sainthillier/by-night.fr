@@ -3,7 +3,7 @@
 .git
 .gitignore
 .idea
-.sensiolabs.yml
+.symfony.insight.yaml
 docker-compose.*
 node_modules
 phpunit.xml.dist
