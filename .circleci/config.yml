@@ -14,7 +14,7 @@ jobs:
             - run:
                   name: "Build and push Docker image"
                   command: |
-                      IMAGE_TAG="1.0.${CIRCLE_BUILD_NUM}"
+                      IMAGE_TAG="2.2.${CIRCLE_BUILD_NUM}"
                       APP_VERSION="${IMAGE_TAG}@${CIRCLE_SHA1:0:7}"
                       docker build -t ${IMAGE_NAME}:${IMAGE_TAG} --build-arg APP_VERSION=${APP_VERSION} .
 
