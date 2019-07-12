@@ -17,11 +17,12 @@ references:
         run: |
             echo 'export APP_DOCKER_IMAGE_NAME=guystlr/by-night' >> $BASH_ENV
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                IMAGE_TAG=dev
+                IMAGE_TAG="dev"
             else
-                IMAGE_TAG=$CIRCLE_TAG
+                IMAGE_TAG="$CIRCLE_TAG"
             fi
-            echo "export APP_DOCKER_IMAGE_TAG=$IMAGE_TAG" >> $BASH_ENV
+            echo 'export APP_DOCKER_IMAGE_TAG="$IMAGE_TAG"' >> $BASH_ENV
+            source $BASH_ENV
 
     authenticate_on_registry: &authenticate_on_registry
         run: |
@@ -67,10 +68,10 @@ jobs:
         machine:
             enabled: true
         steps:
+            - *generate_docker_hashes
             - add_ssh_keys:
                   fingerprints:
                       - "51:2c:bf:10:3d:c0:16:08:6f:23:ae:79:8e:cb:82:9b"
-            - *generate_docker_hashes
             - run:
                   name: "Deploy image to production"
                   command: |
