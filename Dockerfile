@@ -12,8 +12,6 @@ RUN mkdir -p public/prod config/packages/prod && \
     NODE_ENV=development yarn install && \
     grunt
 
-RUN ls -alh /app/public/prod
-
 FROM php:7.2-fpm
 
 ARG APP_VERSION=dev
