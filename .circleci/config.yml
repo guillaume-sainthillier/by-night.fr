@@ -17,12 +17,11 @@ references:
         run: |
             echo 'export APP_DOCKER_IMAGE_NAME=guystlr/by-night' >> $BASH_ENV
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                IMAGE_TAG="dev"
+                IMAGE_TAG=dev
             else
-                IMAGE_TAG="$CIRCLE_TAG"
+                IMAGE_TAG=${CIRCLE_TAG}
             fi
-            echo 'export APP_DOCKER_IMAGE_TAG="$IMAGE_TAG"' >> $BASH_ENV
-            source $BASH_ENV
+            echo 'export APP_DOCKER_IMAGE_TAG=${IMAGE_TAG}' >> $BASH_ENV
 
     authenticate_on_registry: &authenticate_on_registry
         run: |
@@ -44,11 +43,11 @@ jobs:
             - run:
                   name: "Build and push Docker image"
                   command: |
-                      docker build -t ${IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} --build-arg APP_VERSION=${APP_DOCKER_IMAGE_TAG} .
+                      docker build -t ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} --build-arg APP_VERSION=${APP_DOCKER_IMAGE_TAG} .
                       if [ "${CIRCLE_TAG}" != "" ]; then
-                          docker tag ${IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} ${IMAGE_NAME}:latest
+                          docker tag ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} ${IMAGE_NAME}:latest
                       fi
-                      docker push ${IMAGE_NAME}
+                      docker push ${APP_DOCKER_IMAGE_NAME}
             - save_cache:
                 paths:
                     - ./vendor
@@ -74,7 +73,7 @@ jobs:
             - run:
                   name: "Deploy image to production"
                   command: |
-                      ssh guillaume@${PRODUCTION_SERVER_IP} "cd ${PRODUCTION_SERVER_PATH} && sudo /bin/bash ./deploy.sh ${IMAGE_NAME}:latest"
+                      ssh guillaume@${PRODUCTION_SERVER_IP} "cd ${PRODUCTION_SERVER_PATH} && sudo /bin/bash ./deploy.sh ${APP_DOCKER_IMAGE_NAME}:latest"
 
 workflows:
     version: 2
