@@ -39,10 +39,6 @@ app.search:
 app.private:
     resource: "../src/Controller/Fragments"
 
-PrestaSitemapBundle:
-    resource: "@PrestaSitemapBundle/Resources/config/routing.yml"
-    prefix:   /
-
 #Login
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
