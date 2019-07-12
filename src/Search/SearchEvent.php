@@ -10,6 +10,7 @@ class SearchEvent
 {
     /**
      * @var DateTime|null
+     * @Assert\NotBlank
      * @Assert\Date
      */
     protected $du;
@@ -22,6 +23,7 @@ class SearchEvent
 
     /**
      * @var int
+     * @Assert\NotBlank
      * @Assert\GreaterThanOrEqual(0)
      */
     protected $range;
@@ -48,6 +50,8 @@ class SearchEvent
 
     /**
      * @var int
+     * @Assert\NotBlank
+     * @Assert\GreaterThanOrEqual(0)
      */
     protected $page;
 
@@ -166,12 +170,12 @@ class SearchEvent
         return $this;
     }
 
-    public function getRange(): int
+    public function getRange(): ?int
     {
         return $this->range;
     }
 
-    public function setRange(int $range): SearchEvent
+    public function setRange(?int $range): SearchEvent
     {
         $this->range = $range;
         return $this;

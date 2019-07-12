@@ -54,7 +54,7 @@
                 {{ form_widget(form.chercher) }}
             </div>
         </div>
-        {% if isPost and (search.au or search.lieux or search.term or search.range != 25) %}
+        {% if not isValid or (isPost and (search.au or search.lieux or search.term or search.range != 25 or isValid)) %}
             {% set options = {hiddenClass: '', iconClass: 'fa-chevron-up'} %}
         {% else %}
             {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}

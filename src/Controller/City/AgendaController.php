@@ -69,7 +69,7 @@ class AgendaController extends BaseController
      * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags", requirements={"page": "\d+"})
      * @ReverseProxy(expires="+30 minutes")
      *
-     * @param int  $page
+     * @param int $page
      * @param null $type
      * @param null $tag
      * @param null $slug
@@ -131,19 +131,26 @@ class AgendaController extends BaseController
 
         //Bind du formulaire avec la requête courante
         $form->handleRequest($request);
-        if ($isUserPostSearch) {
-            $page = 1;
-        } elseif ($isPost) {
-            $page = $search->getPage();
+        if (! $form->isSubmitted() || $form->isValid()) {
+            $isValid = true;
+            if ($isUserPostSearch) {
+                $page = 1;
+            } elseif ($isPost) {
+                $page = $search->getPage();
+            }
+
+            //Recherche ElasticSearch
+            $repository = $repositoryManager->getRepository(Event::class);
+            $results = $repository->findWithSearch($search);
+
+            $pagination = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
+            $nbSoireesTotales = $pagination->getTotalItemCount();
+            $events = $pagination;
+        } else {
+            $isValid = false;
+            $nbSoireesTotales = 0;
+            $events = [];
         }
-
-        //Recherche ElasticSearch
-        $repository = $repositoryManager->getRepository(Event::class);
-        $results = $repository->findWithSearch($search);
-
-        $pagination = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
-        $nbSoireesTotales = $pagination->getTotalItemCount();
-        $events = $pagination;
 
         return $this->render('City/Agenda/index.html.twig', [
             'location' => $location,
@@ -158,6 +165,7 @@ class AgendaController extends BaseController
             'page' => $page,
             'search' => $search,
             'isPost' => $isPost,
+            'isValid' => $isValid,
             'isAjax' => $isAjax,
             'paginateURL' => $paginateURL,
             'form' => $form->createView(),

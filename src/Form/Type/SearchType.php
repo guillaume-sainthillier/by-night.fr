@@ -17,27 +17,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SearchType extends AbstractType
 {
-    public function onPreSubmit(FormEvent $event)
-    {
-        $data = $event->getData();
-
-        if (isset($data['du']) && !$data['du']) {
-            $data['du'] = \date('d/m/Y');
-        }
-
-        if (empty($data['page'])) {
-            $data['page'] = 1;
-        }
-
-        $event->setData($data);
-    }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('page', HiddenType::class)
             ->add('du', DateType::class, [
-                'required' => true,
                 'label' => 'Du',
                 'label_attr' => ['class' => 'col-sm-6 control-label'],
                 'widget' => 'single_text',
@@ -53,7 +38,6 @@ class SearchType extends AbstractType
                 'attr' => ['data-date-format' => 'dd/mm/yyyy'],
             ])
             ->add('range', NumberType::class, [
-                'required' => true,
                 'label' => 'Rayon (KM)',
                 'label_attr' => ['class' => 'col-sm-3 control-label'],
                 'attr' => ['placeholder' => 'Quand quel rayon cherchez-vous ?'],
@@ -84,11 +68,7 @@ class SearchType extends AbstractType
                 'attr' => [
                     'class' => 'btn btn-raised btn-lg btn-primary btn-block',
                 ],
-            ])
-            ->addEventListener(
-                FormEvents::PRE_SUBMIT,
-                [$this, 'onPreSubmit']
-            );
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
