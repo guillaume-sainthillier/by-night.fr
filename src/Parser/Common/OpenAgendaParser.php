@@ -137,8 +137,6 @@ class OpenAgendaParser extends EventParser
         //https://openagenda.zendesk.com/hc/fr/articles/203034982-L-export-JSON-d-un-agenda
         $uri = sprintf('https://openagenda.com/agendas/%s/events.json?oaq[lang]=fr&limit=%d&offset=%d', $agendaId, self::EVENT_BATCH_SIZE, $page * self::EVENT_BATCH_SIZE);
 
-        // dump($uri);
-
         return $this->client
             ->getAsync($uri)
             ->then(function (ResponseInterface $result) {
