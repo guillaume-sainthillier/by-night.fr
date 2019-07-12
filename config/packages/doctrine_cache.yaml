@@ -1,7 +1,4 @@
 doctrine_cache:
-    custom_providers:
-        location:
-            prototype: 'App\Cache\LocationCacheProvider'
     providers:
         redis:
             type: redis
@@ -12,12 +9,6 @@ doctrine_cache:
             aliases:
                 - redis_cache
                 - memory_cache
-        location:
-            name: location_cache
-            location: ~
-            namespace: location_ns
-            aliases:
-                - location_cache
         array:
             type: array
             namespace: array_ns
