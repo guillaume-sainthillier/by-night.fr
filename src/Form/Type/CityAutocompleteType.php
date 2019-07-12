@@ -30,9 +30,9 @@ class CityAutocompleteType extends AbstractType
                 'required' => true,
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Veuillez choisir une ville pour continuer'
-                    ])
-                ]
+                        'message' => 'Veuillez choisir une ville pour continuer',
+                    ]),
+                ],
             ]);
     }
 

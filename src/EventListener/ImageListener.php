@@ -3,7 +3,6 @@
 namespace App\EventListener;
 
 use App\Entity\Event;
-use App\Entity\Site;
 use App\Entity\User;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Parser\Manager;
 
 use App\Parser\ParserInterface;

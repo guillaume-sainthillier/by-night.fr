@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Geocoder;
 
 use App\Entity\Place;

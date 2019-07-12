@@ -6,11 +6,10 @@ use App\Parser\EventParser;
 use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
-use GuzzleHttp\Promise\FulfilledPromise;
-use GuzzleHttp\Psr7\Request;
-use Psr\Http\Message\ResponseInterface;
 use function GuzzleHttp\Promise\all;
+use GuzzleHttp\Promise\FulfilledPromise;
 use function GuzzleHttp\Psr7\copy_to_string;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @author Guillaume SAINTHILLIER
@@ -85,8 +84,8 @@ class OpenAgendaParser extends EventParser
             $promises[] = $this->makeRequest($id);
         }
         $events = all($promises)->wait();
-        $events = array_merge(... $events);
-        foreach($events as $i => $event) {
+        $events = array_merge(...$events);
+        foreach ($events as $i => $event) {
             $events[$i] = $this->getInfoEvent($event);
         }
 
@@ -103,8 +102,8 @@ class OpenAgendaParser extends EventParser
 
                 if ($nbPages > 1) {
                     $requests = function ($nbPages) use ($agendaId) {
-                        for ($page = 1; $page <= $nbPages - 1; $page++) {
-                            yield function() use($agendaId, $page) {
+                        for ($page = 1; $page <= $nbPages - 1; ++$page) {
+                            yield function () use ($agendaId, $page) {
                                 return $this->sendRequest($agendaId, $page);
                             };
                         }
@@ -112,9 +111,9 @@ class OpenAgendaParser extends EventParser
 
                     $pool = new Pool($this->client, $requests($nbPages), [
                         'concurrency' => 5,
-                        'fulfilled' => function (array $results) use (& $events) {
+                        'fulfilled' => function (array $results) use (&$events) {
                             $events += $this->formatArray($results['events']);
-                        }
+                        },
                     ]);
                     $pool->promise()->wait();
                 }

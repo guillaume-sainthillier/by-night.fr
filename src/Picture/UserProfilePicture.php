@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Picture;
 
 use App\Entity\User;

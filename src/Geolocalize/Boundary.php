@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Geolocalize;
 
 class Boundary extends Coordinate implements BoundaryInterface

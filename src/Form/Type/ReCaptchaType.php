@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Form\Type;
 
 use App\Validator\Constraints\ReCaptchaResponse;

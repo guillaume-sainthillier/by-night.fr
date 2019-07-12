@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Request\ParamConverter;
 
 use App\App\CityManager;

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\SEO;
 
 use App\Entity\Event;

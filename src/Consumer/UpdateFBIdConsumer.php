@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Consumer;
 
 use App\Handler\DoctrineEventHandler;

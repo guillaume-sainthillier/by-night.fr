@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Social;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

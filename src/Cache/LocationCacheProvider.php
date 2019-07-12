@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Cache;
 
 use App\Entity\Location;

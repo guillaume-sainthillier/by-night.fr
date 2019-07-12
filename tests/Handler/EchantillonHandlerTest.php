@@ -2,9 +2,9 @@
 
 namespace App\Tests\Handler;
 
-use App\Entity\Event;
 use App\Entity\City;
 use App\Entity\Country;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
 use App\Handler\EchantillonHandler;

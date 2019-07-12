@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Controller\Social;
 
 use App\App\SocialManager;

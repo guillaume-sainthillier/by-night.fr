@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Geolocalize;
 
 use Geocoder\Assert;

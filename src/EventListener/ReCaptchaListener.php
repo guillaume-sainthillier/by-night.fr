@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\EventListener;
 
 use FOS\UserBundle\Controller\RegistrationController;

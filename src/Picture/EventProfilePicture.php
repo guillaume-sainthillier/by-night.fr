@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Picture;
 
 use App\Entity\Event;
@@ -51,7 +50,7 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png','static');
+        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', 'static');
     }
 
     public function getOriginalPicture(Event $event)
@@ -74,7 +73,7 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png','static');
+        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', 'static');
     }
 
     public function getPictureUrl(Event $event, $thumb = 'thumbs_evenement')
@@ -83,14 +82,14 @@ class EventProfilePicture
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
             $webPath = \mb_substr($webPath, \mb_strpos($webPath, '/media'), \mb_strlen($webPath));
 
-            return $this->packages->getUrl($webPath,'static');
+            return $this->packages->getUrl($webPath, 'static');
         }
 
         if ($event->getSystemPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
             $webPath = \mb_substr($webPath, \mb_strpos($webPath, '/media'), \mb_strlen($webPath));
 
-            return $this->packages->getUrl($webPath,'static');
+            return $this->packages->getUrl($webPath, 'static');
         }
 
         if ($event->getUrl()) {

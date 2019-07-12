@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Twig;
 
 use DateTime;

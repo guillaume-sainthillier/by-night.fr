@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Updater;
 
 use App\Social\FacebookAdmin;

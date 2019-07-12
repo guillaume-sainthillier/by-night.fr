@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Utils;
 
 use Exception;

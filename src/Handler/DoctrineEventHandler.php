@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Handler;
 
 use App\Entity\City;

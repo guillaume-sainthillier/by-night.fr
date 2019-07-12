@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace App\Form\Type;
 
 use FOS\UserBundle\Form\Type\ProfileFormType as BaseType;
