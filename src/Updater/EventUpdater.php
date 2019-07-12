@@ -40,8 +40,6 @@ class EventUpdater extends Updater
             $fbIds = $this->extractFbIds($events);
             $fbStats = $this->facebookAdmin->getEventStatsFromIds($fbIds);
 
-            dump($fbIds, $fbStats);
-            die;
             $this->doUpdate($events, $fbStats);
             $this->doFlush();
             Monitor::advanceProgressBar();
