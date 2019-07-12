@@ -9,7 +9,6 @@ use App\Entity\Event;
 use App\Entity\Exploration;
 use App\Entity\Place;
 use App\Entity\ZipCity;
-use App\Geocoder\PlaceGeocoder;
 use App\Reject\Reject;
 use App\Repository\CityRepository;
 use App\Repository\EventRepository;
@@ -69,12 +68,7 @@ class DoctrineEventHandler
      */
     private $explorationHandler;
 
-    /**
-     * @var PlaceGeocoder
-     */
-    private $geocoder;
-
-    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, PlaceGeocoder $geocoder)
+    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler)
     {
         $this->em = $em;
         $this->repoEvent = $em->getRepository(Event::class);
@@ -84,7 +78,6 @@ class DoctrineEventHandler
         $this->handler = $handler;
         $this->firewall = $firewall;
         $this->echantillonHandler = $echantillonHandler;
-        $this->geocoder = $geocoder;
         $this->explorationHandler = new ExplorationHandler();
     }
 
@@ -502,70 +495,6 @@ class DoctrineEventHandler
         //City
         if (!$city && $place->getVille()) {
             $cities = $this->repoCity->findByName($place->getVille(), $place->getCountry()->getId());
-            if (1 === \count($cities)) {
-                $city = $cities[0];
-            }
-        }
-
-        $place->setCity($city)->setZipCity($zipCity);
-        if ($city) {
-            $place->setCountry($city->getCountry());
-        } elseif ($zipCity) {
-            $place->setCountry($zipCity->getCountry());
-        }
-
-        if ($place->getCity()) {
-            $place->getReject()->setReason(Reject::VALID);
-        }
-    }
-
-    private function guessEventCityUpgrade(Place $place)
-    {
-        if ($place->getCountryName() && (!$place->getCountry() || $place->getCountry()->getName() !== $place->getCountryName())) {
-            $country = $this->em->getRepository(Country::class)->findByName($place->getCountryName());
-            $place->setCountry($country);
-        }
-
-        //Location fournie -> Vérification dans la base des villes existantes
-        $zipCity = null;
-        $city = null;
-
-        //Zip by city and postal code
-        if ($place->getVille() && $place->getCodePostal()) {
-            $zipCity = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille());
-        }
-
-        //Zip by city
-        if (!$zipCity && $place->getVille()) {
-            $zipCities = $this->repoZipCity->findByCity($place->getVille());
-            if (1 === \count($zipCities)) {
-                $zipCity = $zipCities[0];
-            }
-        }
-
-        //Zip by postal
-        if (!$zipCity && $place->getCodePostal()) {
-            $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal());
-            if (1 === \count($zipCities)) {
-                $zipCity = $zipCities[0];
-            }
-        }
-
-        if ($zipCity) {
-            $city = $zipCity->getParent();
-        }
-
-        //City by city
-        if (!$city && $place->getVille()) {
-            $cities = $this->repoCity->findByName($place->getVille());
-            if (1 === \count($cities)) {
-                $city = $cities[0];
-            }
-        }
-
-        //City by place name
-        if (!$city && $place->getNom()) {
-            $cities = $this->repoCity->findByName($place->getNom());
             if (1 === \count($cities)) {
                 $city = $cities[0];
             }
