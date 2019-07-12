@@ -1,7 +1,9 @@
 php_version: 7.2
 
 pre_composer_script: |
-    pecl info redis || pecl install redis
+    #!/bin/bash
+
+    pecl install redis
 
 php_ini: |
     extension=redis.so
