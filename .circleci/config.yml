@@ -10,25 +10,29 @@ references:
 
     configure_base: &configure_base
         machine:
+            enabled: true
             image: ubuntu-1604:201903-01
             docker_layer_caching: true
 
     generate_docker_hashes: &generate_docker_hashes
-        run: |
-            echo 'export APP_DOCKER_IMAGE_NAME=guystlr/by-night' >> $BASH_ENV
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                IMAGE_TAG=dev
-            else
-                IMAGE_TAG=${CIRCLE_TAG}
-            fi
-            echo 'export APP_DOCKER_IMAGE_TAG=${IMAGE_TAG}' >> $BASH_ENV
-            source $BASH_ENV
-            echo "APP_DOCKER_IMAGE_NAME: ${APP_DOCKER_IMAGE_NAME}"
-            echo "APP_DOCKER_IMAGE_TAG: ${APP_DOCKER_IMAGE_TAG}"
+        run:
+            name: "Setup environment variables"
+            command: |
+                echo 'export APP_DOCKER_IMAGE_NAME=guystlr/by-night' >> $BASH_ENV
+                if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                    IMAGE_TAG=dev
+                else
+                    IMAGE_TAG=${CIRCLE_TAG}
+                fi
+                echo 'export APP_DOCKER_IMAGE_TAG=${IMAGE_TAG}' >> $BASH_ENV
+                echo "APP_DOCKER_IMAGE_NAME: ${APP_DOCKER_IMAGE_NAME}"
+                echo "APP_DOCKER_IMAGE_TAG: ${APP_DOCKER_IMAGE_TAG}"
 
     authenticate_on_registry: &authenticate_on_registry
-        run: |
-            echo ${DOCKER_PWD} | docker login -u ${DOCKER_LOGIN} --password-stdin
+        run:
+            name: "Login to docker hub"
+            command: |
+                echo ${DOCKER_PWD} | docker login -u ${DOCKER_LOGIN} --password-stdin
 
 jobs:
     build:
@@ -71,6 +75,7 @@ jobs:
         machine:
             enabled: true
         steps:
+            - *attach_workspace
             - *generate_docker_hashes
             - add_ssh_keys:
                   fingerprints:
