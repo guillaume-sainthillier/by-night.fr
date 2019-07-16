@@ -108,7 +108,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/espace-perso/nouvelle-soiree", name="app_event_new")
+     * @Route("/nouvelle-soiree", name="app_event_new")
      */
     public function newAction(Request $request, EventConstraintValidator $validator)
     {
