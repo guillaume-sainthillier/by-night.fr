@@ -6,6 +6,7 @@ Disallow:/media/*
 Disallow:/media/*
 Disallow:/*/tweeter-feed/*
 Disallow:/login-social/*
+Disallow:/espace-perso/*
 
 # Sitemap files
 Sitemap: https://by-night.fr/sitemap/sitemap.xml
