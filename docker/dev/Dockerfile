@@ -54,7 +54,6 @@ COPY pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
