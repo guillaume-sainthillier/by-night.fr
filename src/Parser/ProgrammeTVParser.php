@@ -37,7 +37,7 @@ class ProgrammeTVParser
                     'css_chaine' => $css_chaine ? 'icon-' . $css_chaine : null,
                     'heure' => $heure->count() ? $heure->text() : null,
                     'nom' => $nom->count() ? $nom->text() : null,
-                    'lien' => $nom->count() ? 'http://www.programme-tv.net/' . $nom->attr('href') : null,
+                    'lien' => $nom->count() ? $nom->attr('href') : null,
                     'type' => $type->count() ? $type->text() : null,
                     'episode' => $episode->count() ? $episode->text() : null,
                     'asset' => null,

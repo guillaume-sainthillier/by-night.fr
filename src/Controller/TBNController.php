@@ -20,13 +20,6 @@ class TBNController extends AbstractController
         $this->requestStack = $requestStack;
     }
 
-    protected function getSecondsUntilTomorrow()
-    {
-        $minuit = \strtotime('tomorrow 00:00:00');
-
-        return $minuit - \time();
-    }
-
     protected function checkEventUrl($locationSlug, $eventSlug, $eventId, $routeName = 'app_event_details', array $extraParams = [])
     {
         $em = $this->getDoctrine()->getManager();
@@ -57,26 +50,5 @@ class TBNController extends AbstractController
         }
 
         return $event;
-    }
-
-    protected function getSecondsUntil($hours)
-    {
-        $time = \time();
-        $now = new DateTime();
-        $minutes = $now->format('i');
-        $secondes = $now->format('s');
-
-        $string = 1 == $hours ? '+1 hour' : \sprintf('+%d hours', $hours);
-        $now->modify($string);
-
-        if ($minutes > 0) {
-            $now->modify('-' . $minutes . ' minutes');
-        }
-
-        if ($secondes > 0) {
-            $now->modify('-' . $secondes . ' seconds');
-        }
-
-        return [$now, $now->getTimestamp() - $time];
     }
 }

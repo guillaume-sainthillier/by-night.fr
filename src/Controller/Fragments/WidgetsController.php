@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Parser\ProgrammeTVParser;
 use App\Social\FacebookAdmin;
 use Doctrine\Common\Cache\Cache as DoctrineCache;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -19,6 +20,8 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/programme-tv", name="app_agenda_programme_tv")
+     * @ReverseProxy(expires="tomorrow")
+     * @Cache(public=true)
      *
      * @return Response
      */
@@ -26,14 +29,9 @@ class WidgetsController extends BaseController
     {
         $programmes = $parser->getProgrammesTV();
 
-        $response = $this->render('City/Hinclude/programme_tv.html.twig', [
+        return $this->render('City/Hinclude/programme_tv.html.twig', [
             'programmes' => $programmes,
         ]);
-
-        return $response
-            ->setExpires(new \DateTime('tomorrow'))
-            ->setSharedMaxAge($this->getSecondsUntilTomorrow())
-            ->setPublic();
     }
 
     /**
