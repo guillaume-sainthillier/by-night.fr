@@ -18,6 +18,25 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class SearchType extends AbstractType
 {
 
+    public function onPreSubmit(FormEvent $event)
+    {
+        $data = $event->getData();
+
+        if (isset($data['du']) && !$data['du']) {
+            $data['du'] = \date('d/m/Y');
+        }
+
+        if (empty($data['page'])) {
+            $data['page'] = 1;
+        }
+
+        if (empty($data['range'])) {
+            $data['range'] = 25;
+        }
+
+        $event->setData($data);
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -68,7 +87,11 @@ class SearchType extends AbstractType
                 'attr' => [
                     'class' => 'btn btn-raised btn-lg btn-primary btn-block',
                 ],
-            ]);
+            ])->addEventListener(
+                FormEvents::PRE_SUBMIT,
+                [$this, 'onPreSubmit']
+            );
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -81,8 +104,8 @@ class SearchType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
-        return 'app_search_event';
+        return 'search';
     }
 }
