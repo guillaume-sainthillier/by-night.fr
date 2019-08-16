@@ -15,44 +15,26 @@ class ProgrammeTVParser
 
     public function getProgrammesTV()
     {
-        $this->parser->addContent(\file_get_contents('http://www.programme-tv.net/programme/toutes-les-chaines/'), 'HTML');
+        $this->parser->addContent(\file_get_contents('https://www.programme-tv.net/programme/toutes-les-chaines/'), 'HTML');
 
-        return $this->parser->filter('.p-v-md')->each(function (Crawler $channel) {
-            $programmes = $channel->filter('.programme');
-            if ($programmes->count() > 0) {
-                $programme = $programmes->eq(0);
-                $episode = $programme->filter('.prog_episode');
-                $logo = $channel->filter('.channel_logo img');
-                $chaine = $channel->filter('a.channel_label');
-                $heure = $programme->filter('.prog_heure');
-                $nom = $programme->filter('.prog_name');
-                $type = $programme->filter('.prog_type');
+        return $this->parser->filter('.bouquet-channelGroup')->slice(0, 2)->filter('.doubleBroadcastCard')->each(function (Crawler $channel) {
+            $logo = $channel->filter('.doubleBroadcastCard-channelItem img');
+            $chaine = $channel->filter('.doubleBroadcastCard-channelName');
+            $heure = $channel->filter('.doubleBroadcastCard-hour');
+            $nom = $channel->filter('.doubleBroadcastCard-title');
+            $type = $channel->filter('.doubleBroadcastCard-type');
 
-                $labelChaine = $chaine->count() ? \str_replace('Programme de ', '', $chaine->attr('title')) : null;
-                $css_chaine = $this->getCSSChaine($labelChaine);
-
-                return [
-                    'logo' => $logo->count() ? \trim($logo->attr('data-src')) : null,
-                    'chaine' => $labelChaine,
-                    'css_chaine' => $css_chaine ? 'icon-' . $css_chaine : null,
-                    'heure' => $heure->count() ? $heure->text() : null,
-                    'nom' => $nom->count() ? $nom->text() : null,
-                    'lien' => $nom->count() ? $nom->attr('href') : null,
-                    'type' => $type->count() ? $type->text() : null,
-                    'episode' => $episode->count() ? $episode->text() : null,
-                    'asset' => null,
-                ];
-            }
+            $labelChaine = trim($chaine->count() ? $chaine->text() : null);
+            $css_chaine = $this->getCSSChaine($labelChaine);
 
             return [
-                'logo' => null,
-                'chaine' => null,
-                'heure' => null,
-                'nom' => null,
-                'lien' => null,
-                'type' => null,
-                'episode' => null,
-                'asset' => null,
+                'logo' => $logo->count() ? \trim(str_replace('30x30', '80x80', $logo->attr('data-src'))) : null,
+                'chaine' => $labelChaine,
+                'css_chaine' => $css_chaine ? 'icon-' . $css_chaine : null,
+                'heure' => $heure->count() ? trim($heure->text()) : null,
+                'nom' => $nom->count() ? trim($nom->text()) : null,
+                'lien' => $nom->count() ? $nom->attr('href') : null,
+                'type' => $type->count() ? trim($type->text()) : null,
             ];
         });
     }
@@ -63,20 +45,20 @@ class ProgrammeTVParser
             case 'TF1':
                 return 'tf1';
             case 'France 2':
-                return 'france2';
+                return 'france-2';
             case 'France 3':
-                return 'france3';
+                return 'france-3';
             case 'Canal+':
             case 'Canal partagé TNT Ile-de-France':
-                return 'canal_plus';
+                return 'canalplus';
             case 'Arte':
                 return 'arte';
             case 'M6':
                 return 'm6';
             case 'France 5':
-                return 'france5';
+                return 'france-5';
             case 'C8':
-                return 'canal8';
+                return 'c8';
             case 'W9':
                 return 'w9';
             case 'TMC':
@@ -85,17 +67,18 @@ class ProgrammeTVParser
             case 'NT 1':
                 return 'nt1';
             case 'NRJ 12':
-                return 'nrj';
+                return 'nrj-12';
             case 'La Chaîne parlementaire':
             case 'LCP - Public Sénat':
-                return 'lcp';
+                return 'la-chaine-parlementaire';
             case 'CStar':
             case 'CSTAR':
                 return 'cstar';
             case 'France 4':
-                return 'france4';
+                return 'france-4';
+            case 'BFMTV':
             case 'BFM TV':
-                return 'bfm_tv';
+                return 'bfmtv';
             case 'iTélé':
             case 'i>Télé':
                 return 'itele';
@@ -104,7 +87,7 @@ class ProgrammeTVParser
             case 'Gulli':
                 return 'gulli';
             case 'France Ô':
-                return 'franceo';
+                return 'france-o';
             case 'HD1':
                 return 'hd1';
             case "L'Equipe":
@@ -113,15 +96,15 @@ class ProgrammeTVParser
                 return 'franceinfo';
             case 'LCI':
             case 'LCI - La Chaîne Info':
-                return 'lci';
+                return 'lci-la-chaine-info';
             case '6ter':
                 return '6ter';
             case 'Numéro 23':
                 return 'numero23';
             case 'RMC Découverte':
-                return 'rmc';
+                return 'rmc-decouverte';
             case 'Chérie 25':
-                return 'cherie25';
+                return 'cherie-25';
             case 'IDF1':
                 return 'idf';
             case 'Canal partagé':
@@ -148,6 +131,14 @@ class ProgrammeTVParser
                 return 'serie_club';
             case 'Nat Geo Wild':
                 return 'nat_geo';
+            case 'TFX':
+                return 'tfx';
+            case 'CNEWS':
+                return 'cnews';
+            case 'TF1 Séries Films':
+                return 'tf1-series-films';
+            case 'RMC Story':
+                return 'rmc-story';
         }
 
         return null;
