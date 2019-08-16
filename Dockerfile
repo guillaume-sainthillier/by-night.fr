@@ -12,7 +12,7 @@ RUN mkdir -p public/prod config/packages/prod && \
     NODE_ENV=development yarn install && \
     grunt
 
-FROM php:7.2-fpm
+FROM php:7.3-fpm-stretch
 
 ARG APP_VERSION=dev
 ENV TERM="xterm" \
@@ -33,6 +33,7 @@ RUN apt-get update -q && \
     libjpeg62-turbo-dev \
     libpng-dev \
     libxml2-dev \
+    libzip-dev \
     nginx \
     supervisor \
     unzip && \

@@ -1,4 +1,4 @@
-FROM php:7.2-fpm
+FROM php:7.3-fpm-stretch
 
 ENV TERM="xterm" \
     DEBIAN_FRONTEND="noninteractive" \
@@ -10,7 +10,6 @@ WORKDIR /app
 # Install dependencies
 RUN apt-get update -q && \
     apt-get install -qy \
-    curl \
     git \
     gnupg \
     libfreetype6-dev \
@@ -18,24 +17,20 @@ RUN apt-get update -q && \
     libjpeg62-turbo-dev \
     libpng-dev \
     libxml2-dev \
+    libzip-dev \
     nginx \
-    python \
     supervisor \
-    unzip \
-    wget && \
+    unzip && \
     cp /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo "Europe/Paris" > /etc/timezone && \
-
     #Composer
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require hirak/prestissimo --no-plugins --no-scripts && \
-
     #NPM
     curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     apt-get install -y nodejs && \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
     npm install -g grunt-cli yarn && \
-
     # Reduce layer size
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
