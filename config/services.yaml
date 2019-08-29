@@ -66,7 +66,6 @@ services:
 
     App\Command\AppEventsImportCommand:
         arguments:
-            $eventProducer: '@old_sound_rabbit_mq.add_event_producer'
             $parsers:
                 toulouse.opendata: '@App\Parser\Toulouse\ToulouseParser'
                 toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'

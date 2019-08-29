@@ -10,12 +10,14 @@ namespace App\Parser;
 interface ParserInterface
 {
     /**
-     * @return array un tableau d'Event
+     * @return int le nombre d'items parsés
      */
-    public function parse();
+    public function parse(): int;
+
+    public function publish(array $item): void;
 
     /**
      * @return string le nom de la classe
      */
-    public function getNomData();
+    public function getNomData(): string;
 }

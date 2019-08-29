@@ -2,7 +2,9 @@
 
 namespace App\Parser\Common;
 
+use App\Parser\AbstractParser;
 use App\Parser\EventParser;
+use App\Producer\EventProducer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use function GuzzleHttp\Promise\all;
@@ -13,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * @author Guillaume SAINTHILLIER
  */
-class OpenAgendaParser extends EventParser
+class OpenAgendaParser extends AbstractParser
 {
     private const AGENDA_IDS = [
         93184572, // https://openagenda.com/fetedelascience2019_hautsdefrance?lang=fr
@@ -35,10 +37,13 @@ class OpenAgendaParser extends EventParser
 
     private const EVENT_BATCH_SIZE = 300;
 
+    /** @var Client */
     private $client;
 
-    public function __construct()
+    public function __construct(EventProducer $eventProducer)
     {
+        parent::__construct($eventProducer);
+
         $this->client = new Client();
     }
 
@@ -76,19 +81,15 @@ class OpenAgendaParser extends EventParser
         ];
     }
 
-    public function getRawEvents()
+    public function parse(): int
     {
         $promises = [];
         foreach (self::AGENDA_IDS as $id) {
             $promises[] = $this->makeRequest($id);
         }
-        $events = all($promises)->wait();
-        $events = array_merge(...$events);
-        foreach ($events as $i => $event) {
-            $events[$i] = $this->getInfoEvent($event);
-        }
+        $agendas = all($promises)->wait();
 
-        return $events;
+        return array_sum($agendas);
     }
 
     private function makeRequest(int $agendaId, int $page = 0)
@@ -98,7 +99,6 @@ class OpenAgendaParser extends EventParser
                 $events = $this->formatArray($result['events']);
 
                 $nbPages = ceil($result['total'] / self::EVENT_BATCH_SIZE);
-
                 if ($nbPages > 1) {
                     $requests = function ($nbPages) use ($agendaId) {
                         for ($page = 1; $page <= $nbPages - 1; ++$page) {
@@ -118,6 +118,16 @@ class OpenAgendaParser extends EventParser
                 }
 
                 return new FulfilledPromise($events);
+            })
+            ->then(function(array $events) {
+                $nbParsedEvents = 0;
+                foreach($events as $event) {
+                    $event = $this->getInfoEvent($event);
+                    $this->publish($event);
+                    $nbParsedEvents++;
+                }
+
+                return $nbParsedEvents;
             });
     }
 
@@ -143,7 +153,7 @@ class OpenAgendaParser extends EventParser
             });
     }
 
-    public function getNomData()
+    public function getNomData(): string
     {
         return 'Open Agenda';
     }

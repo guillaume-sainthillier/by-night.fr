@@ -2,9 +2,8 @@
 
 namespace App\Command;
 
-use App\Fetcher\EventFetcher;
 use App\Parser\ParserInterface;
-use App\Producer\EventProducer;
+use App\Utils\Monitor;
 use LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,26 +11,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AppEventsImportCommand extends AppCommand
 {
-    /**
-     * @var EventFetcher
-     */
-    private $eventFetcher;
-
-    /**
-     * @var EventProducer
-     */
-    private $eventProducer;
-
     /** @var ParserInterface[] */
     private $parsers;
 
-    public function __construct(EventFetcher $eventFetcher, EventProducer $eventProducer, array $parsers)
+    public function __construct(array $parsers)
     {
-        $this->eventFetcher = $eventFetcher;
-        $this->eventProducer = $eventProducer;
-        $this->parsers = $parsers;
-
         parent::__construct();
+
+        $this->parsers = $parsers;
     }
 
     /**
@@ -60,17 +47,24 @@ class AppEventsImportCommand extends AppCommand
             ));
         }
 
-        $service = $this->parsers[$parser];
-        if (!$service instanceof ParserInterface) {
+        $parser = $this->parsers[$parser];
+        if (!$parser instanceof ParserInterface) {
             throw new LogicException(\sprintf(
                 'Le service "%s" doit être une instance de ParserInterface',
-                $service
+                $parser
             ));
         }
 
-        $events = $this->eventFetcher->fetchEvents($service);
-        foreach ($events as $event) {
-            $this->eventProducer->scheduleEvent($event);
-        }
+        Monitor::writeln(\sprintf(
+            'Lancement de <info>%s</info>',
+            $parser->getNomData()
+        ));
+
+        $nbEvents = $parser->parse();
+
+        Monitor::writeln(\sprintf(
+            '<info>%d</info> événements parsés',
+            $nbEvents
+        ));
     }
 }

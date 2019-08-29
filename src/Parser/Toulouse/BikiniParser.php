@@ -2,32 +2,62 @@
 
 namespace App\Parser\Toulouse;
 
-use App\Parser\LinksParser;
+use App\Parser\AbstractParser;
+use App\Producer\EventProducer;
+use App\Utils\Monitor;
 use DateTime;
+use Exception;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @author Guillaume SAINTHILLIER
  */
-class BikiniParser extends LinksParser
+class BikiniParser extends AbstractParser
 {
+    private const RSS_URL = 'https://www.lebikini.com/programmation/rss';
+
+    /** @var array */
     private $cache;
 
-    public function __construct()
-    {
-        parent::__construct();
+    /** @var Crawler */
+    private $parser;
 
+    public function __construct(EventProducer $eventProducer)
+    {
+        parent::__construct($eventProducer);
         $this->cache = [];
-        $this->setURL('https://www.lebikini.com/programmation/rss');
+        $this->parser = new Crawler;
     }
 
-    /**
-     * Retourne les infos d'un event depuis une url.
-     *
-     * @return string[]
-     */
-    protected function getInfosEvent()
+    public function parse(): int
     {
+        //Récupère les différents liens à parser depuis le flux RSS
+        $links = $this->parseRSS();
+
+        $parsedEvents = 0;
+        foreach ($links as $link) {
+            try {
+                $event = $this->getInfosEvent($link);
+                $this->publish($event);
+                $parsedEvents++;
+            } catch (Exception $e) {
+                Monitor::writeException($e);
+            }
+        }
+
+        return $parsedEvents;
+    }
+
+    public function getNomData(): string
+    {
+        return 'Bikini';
+    }
+
+    private function getInfosEvent(string $url): array
+    {
+        //Positionne le parser sur l'url
+        $this->parseContent($url);
+
         $tab_retour = [];
 
         $full_date = $this->parser->filter('#date')->text();
@@ -43,7 +73,7 @@ class BikiniParser extends LinksParser
         $tab_retour['descriptif'] = $this->parser->filter('#texte')->html();
         $tab_retour['url'] = $this->parser->filter('#blocImage a[rel=shadowbox]')->attr('href');
         $tab_retour['external_id'] = 'BKN-' . str_replace('img', '', $this->parser->filter('#blocImage a[rel=shadowbox] img')->attr('id'));
-        $tab_retour['source'] = $this->url;
+        $tab_retour['source'] = $url;
         $tab_retour['type_manifestation'] = 'Concert, Musique';
 
         /*
@@ -58,7 +88,7 @@ class BikiniParser extends LinksParser
         }
 
         $tab_retour['placeStreet'] = \preg_replace("#^(\d+), #", '$1 ', $full_adresse[0]);
-        $tab_retour['placePostalCode'] = isset($this->cache[$this->url]) ? $this->cache[$this->url] : null;
+        $tab_retour['placePostalCode'] = $this->cache[$url] ?? null;
         $tab_retour['placeCity'] = $ville;
         $tab_retour['placeCountryName'] = 'France';
 
@@ -86,16 +116,22 @@ class BikiniParser extends LinksParser
         return $tab_retour;
     }
 
-    /**
-     * Retourne les liens depuis le feed.xml.
-     *
-     * @return string[] le tableau des liens disponibles
-     */
-    public function getLinks()
+    private function parseDate($date)
     {
-        $this->parseContent('XML');
+        $tabMois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+
+        return \preg_replace_callback("/(.+)(\d{2}) (" . \implode('|', $tabMois) . ") (\d{4})(.*)/iu",
+            function ($items) use ($tabMois) {
+                return $items[4] . '-' . (\array_search($items[3], $tabMois) + 1) . '-' . $items[2];
+            }, $date);
+    }
+
+    private function parseRSS()
+    {
+        $this->parseContent(self::RSS_URL, 'XML');
 
         return \array_filter($this->parser->filter('item')->each(function (Crawler $item) {
+            //Store postal code in cache as it's only displayed here
             if (\preg_match('/<link>(.+)<description>(.+)(\d{5}).*<\/description>/im', \preg_replace('/\n/', '', $item->html()), $matches)) {
                 $this->cache[$matches[1]] = $matches[3];
 
@@ -106,8 +142,14 @@ class BikiniParser extends LinksParser
         }));
     }
 
-    public function getNomData()
+    private function parseContent(string $url, string $type = 'HTML')
     {
-        return 'Bikini';
+        $this->parser->clear();
+
+        try {
+            $this->parser->addContent(\file_get_contents($url), $type);
+        } catch (Exception $e) {
+            Monitor::writeException($e);
+        }
     }
 }
