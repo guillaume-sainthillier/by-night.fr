@@ -14,7 +14,7 @@ interface ParserInterface
      */
     public function parse();
 
-    /*
+    /**
      * @return string le nom de la classe
      */
     public function getNomData();
