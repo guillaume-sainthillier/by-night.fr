@@ -72,9 +72,7 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
 
         try {
             Monitor::bench('ADD EVENT BATCH', function () use ($events, $output) {
-                Monitor::enableMonitoring(false);
                 $this->doctrineEventHandler->handleManyCLI($events);
-                Monitor::enableMonitoring($output->isVerbose());
             });
             Monitor::displayStats();
         } catch (\Exception $e) {
