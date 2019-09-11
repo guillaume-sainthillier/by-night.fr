@@ -57,6 +57,7 @@ COPY docker/prod/nginx.conf /etc/nginx/
 COPY docker/prod/php.ini /usr/local/etc/php/php.ini
 COPY docker/prod/pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/prod/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/prod/supervisord-worker.conf /etc/supervisor/conf.d/supervisord-worker.conf
 
 COPY . /app
 COPY --from=builder /app/public/prod /assets
