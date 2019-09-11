@@ -123,6 +123,7 @@ class TagsInvalidator
         try {
             $this->tagHandler->invalidateTags($tags);
         } catch (Exception $e) {
+            \Sentry\captureException($e);
             $this->logger->critical($e);
         }
 

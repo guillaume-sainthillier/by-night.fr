@@ -45,6 +45,7 @@ class Twitter extends Social
                 return $page['followers_count'];
             }
         } catch (Exception $e) {
+            \Sentry\captureException($e);
             $this->logger->error($e);
         }
 
@@ -70,6 +71,7 @@ class Twitter extends Social
 
             return $this->client->get('search/tweets', $params);
         } catch (Exception $e) {
+            \Sentry\captureException($e);
             $this->logger->error($e);
         }
 
