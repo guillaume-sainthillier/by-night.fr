@@ -1,4 +1,7 @@
 {
+    "aws/aws-sdk-php": {
+        "version": "3.112.0"
+    },
     "beberlei/doctrineextensions": {
         "version": "v1.2.0"
     },
@@ -215,6 +218,15 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v2.7.1"
     },
+    "league/flysystem": {
+        "version": "1.0.55"
+    },
+    "league/flysystem-aws-s3-v3": {
+        "version": "1.0.23"
+    },
+    "league/flysystem-cached-adapter": {
+        "version": "1.0.9"
+    },
     "liip/imagine-bundle": {
         "version": "1.8",
         "recipe": {
@@ -227,6 +239,9 @@
     "monolog/monolog": {
         "version": "1.23.0"
     },
+    "mtdowling/jmespath.php": {
+        "version": "2.4.0"
+    },
     "neitanod/forceutf8": {
         "version": "v2.0.1"
     },
@@ -238,6 +253,18 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.1.1"
+    },
+    "oneup/flysystem-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "0eb87bba411c227da027fe5f7c1dc7954b02f242"
+        },
+        "files": [
+            "config/packages/oneup_flysystem.yaml"
+        ]
     },
     "pagerfanta/pagerfanta": {
         "version": "v1.0.5"

@@ -35,14 +35,14 @@ class EventProfilePicture
         if ($event->getPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($event, 'file'),
-                'static'
+                'file'
             );
         }
 
         if ($event->getSystemPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($event, 'systemFile'),
-                'static'
+                'file'
             );
         }
 
@@ -50,7 +50,7 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', 'static');
+        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', 'asset');
     }
 
     public function getOriginalPicture(Event $event)
@@ -58,14 +58,14 @@ class EventProfilePicture
         if ($event->getPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($event, 'file'),
-                'static'
+                'file'
             );
         }
 
         if ($event->getSystemPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($event, 'systemFile'),
-                'static'
+                'file'
             );
         }
 
@@ -73,7 +73,7 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', 'static');
+        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', 'asset');
     }
 
     public function getPictureUrl(Event $event, $thumb = 'thumbs_evenement')
@@ -82,14 +82,14 @@ class EventProfilePicture
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
             $webPath = \mb_substr($webPath, \mb_strpos($webPath, '/media'), \mb_strlen($webPath));
 
-            return $this->packages->getUrl($webPath, 'static');
+            return $this->packages->getUrl($webPath, 'file');
         }
 
         if ($event->getSystemPath()) {
             $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
             $webPath = \mb_substr($webPath, \mb_strpos($webPath, '/media'), \mb_strlen($webPath));
 
-            return $this->packages->getUrl($webPath, 'static');
+            return $this->packages->getUrl($webPath, 'file');
         }
 
         if ($event->getUrl()) {

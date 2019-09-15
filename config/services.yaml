@@ -121,3 +121,10 @@ services:
         arguments:
             $properties: {facebook: facebook_id, google: google_id, twitter: twitter_id}
 
+    Aws\S3\S3Client:
+        arguments:
+            -   version: "2006-03-01"
+                region: "%env(AWS_S3_REGION)%"
+                credentials:
+                    key: "%env(AWS_S3_KEY)%"
+                    secret: "%env(AWS_S3_SECRET)%"

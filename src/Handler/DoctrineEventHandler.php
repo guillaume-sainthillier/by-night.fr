@@ -237,8 +237,8 @@ class DoctrineEventHandler
                     if (!$this->firewall->isValid($event)) {
                         $this->explorationHandler->addBlackList();
                     } else {
-                        //Image URL has changed or never download
-                        if ($event->getUrl() && !($event->getSystemPath() || $event->getUrl() !== $url)) {
+                        //Image URL has changed or never downloaded
+                        if ($event->getUrl() && (!$event->getSystemPath() || $event->getUrl() !== $url)) {
                             $this->handler->handleDownload($event);
                         }
 

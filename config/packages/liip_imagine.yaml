@@ -1,13 +1,25 @@
 liip_imagine:
     resolvers:
         default:
-            web_path: ~
+            flysystem:
+                filesystem_service: App\FileSystem\Thumb
+                root_url:           "%env(AWS_S3_URL)%"
+                cache_prefix:       media/cache
+                visibility:         public
     loaders:
-        default:
+        local:
             filesystem:
                 data_root:
                     - "%kernel.project_dir%/public"
-                    - "%kernel.project_dir%/"
+
+        s3:
+            flysystem:
+                filesystem_service: App\FileSystem\Thumb
+        default:
+            chain:
+                loaders:
+                    - local
+                    - s3
 
     filter_sets:
         cache: ~

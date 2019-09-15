@@ -1,24 +1,28 @@
 vich_uploader:
     db_driver: orm
+    storage: flysystem
 
     mappings:
         user_image:
             uri_prefix:         /uploads/users
-            upload_destination: "%kernel.root_dir%/../public/uploads/users"
+            upload_destination: s3_uploads_users_fs
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
             directory_namer:
-                service: vich_uploader.directory_namer_subdir
-                options: {chars_per_dir: 3, dirs: 3} # will create directory "a/b" for "abcdef.jpg"
+                service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
+                options:
+                    date_time_property: createdAt
+
         event_image:
             uri_prefix:         /uploads/documents
-            upload_destination: "%kernel.root_dir%/../public/uploads/documents"
+            upload_destination: s3_uploads_events_fs
             namer:              vich_uploader.namer_uniqid
             inject_on_load:     false
             delete_on_update:   true
             delete_on_remove:   true
             directory_namer:
-                service: vich_uploader.directory_namer_subdir
-                options: {chars_per_dir: 3, dirs: 3} # will create directory "a/b" for "abcdef.jpg"
+                service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
+                options:
+                    date_time_property: createdAt

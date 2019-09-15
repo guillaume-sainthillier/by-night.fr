@@ -39,7 +39,7 @@ class AssetExtension extends Extension
         ];
     }
 
-    public function appAsset($path, $packageName = 'static')
+    public function appAsset($path, $packageName = 'asset')
     {
         $path = self::ASSET_PREFIX . '/' . $path;
         if (true === $this->debug) {

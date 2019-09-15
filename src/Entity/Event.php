@@ -42,6 +42,8 @@ class Event implements GeolocalizeInterface
     const INDEX_FROM = '-6 months';
     const INDEX_TO = '+2 years';
 
+    use EntityTimestampableTrait;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -81,13 +83,6 @@ class Event implements GeolocalizeInterface
      * @Expose
      */
     protected $descriptif;
-
-    /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="date_modification", type="datetime", nullable=true)
-     */
-    protected $dateModification;
 
     /**
      * @var DateTime
@@ -498,7 +493,7 @@ class Event implements GeolocalizeInterface
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->dateModification = new DateTime();
+            $this->updatedAt = new \DateTimeImmutable();
         }
 
         return $this;
@@ -527,7 +522,7 @@ class Event implements GeolocalizeInterface
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->dateModification = new DateTime();
+            $this->updatedAt = new \DateTimeImmutable();
         }
 
         return $this;
@@ -547,15 +542,6 @@ class Event implements GeolocalizeInterface
         if (null === $this->dateFin) {
             $this->dateFin = $this->dateDebut;
         }
-    }
-
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function preDateModification()
-    {
-        $this->dateModification = new DateTime();
     }
 
     public function __construct()
@@ -660,18 +646,6 @@ class Event implements GeolocalizeInterface
     public function setDescriptif(?string $descriptif): self
     {
         $this->descriptif = $descriptif;
-
-        return $this;
-    }
-
-    public function getDateModification(): ?\DateTimeInterface
-    {
-        return $this->dateModification;
-    }
-
-    public function setDateModification(?\DateTimeInterface $dateModification): self
-    {
-        $this->dateModification = $dateModification;
 
         return $this;
     }

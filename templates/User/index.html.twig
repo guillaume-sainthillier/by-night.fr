@@ -44,11 +44,9 @@
                         </div>
                     </div>
                     <hr />
-                    {% if user.dateCreation %}
-                        Membre depuis le
-                        <strong class="number number-big">{{ user.dateCreation.format('d/m/Y') }}</strong>
-                        <br />
-                    {% endif %}
+                    Membre depuis le
+                    <strong class="number number-big">{{ user.createdAt.format('d/m/Y') }}</strong>
+                    <br />
 
                     {% if user.description %}
                         <hr />

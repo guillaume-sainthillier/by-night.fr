@@ -10,6 +10,9 @@ framework:
     cache:
         app: cache.adapter.redis
         default_redis_provider: "redis://%env(REDIS_HOST)%"
+        pools:
+            cache.flysystem.psr6:
+                adapter: cache.app
 
     session:
         handler_id: 'session.handler.native_file'
@@ -19,8 +22,10 @@ framework:
 
     assets:
         packages:
-            static:
+            asset:
                 base_url: '%env(APP_ASSET_URL)%'
+            file:
+                base_url: "%env(AWS_S3_URL)%"
 
     esi: true
     fragments: ~

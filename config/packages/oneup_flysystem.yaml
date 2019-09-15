@@ -1,0 +1,45 @@
+# Read the documentation: https://github.com/1up-lab/OneupFlysystemBundle/tree/master/Resources/doc/index.md
+oneup_flysystem:
+    cache:
+        redis_cache:
+            psr6:
+                service: cache.flysystem.psr6
+                key: 'app.s3'
+                expires: ~
+    adapters:
+        s3_uploads_users_adapter:
+            awss3v3:
+                client: Aws\S3\S3Client
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: '/uploads/users'
+
+        s3_uploads_events_adapter:
+            awss3v3:
+                client: Aws\S3\S3Client
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: '/uploads/documents'
+
+        s3_thumbs_adapter:
+            awss3v3:
+                client: Aws\S3\S3Client
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: ~
+
+    filesystems:
+        s3_uploads_users_filesystem:
+            adapter: s3_uploads_users_adapter
+            cache: redis_cache
+            mount: s3_uploads_users_fs
+            alias: App\FileSystem\User
+
+        s3_uploads_events_filesystem:
+            adapter: s3_uploads_events_adapter
+            cache: redis_cache
+            mount: s3_uploads_events_fs
+            alias: App\FileSystem\Event
+
+        s3_thumbs_filesystem:
+            adapter: s3_thumbs_adapter
+            cache: redis_cache
+            mount: s3_thumbs_fs
+            alias: App\FileSystem\Thumb

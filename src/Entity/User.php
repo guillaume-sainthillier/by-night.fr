@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,6 +26,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class User extends BaseUser
 {
+    use EntityTimestampableTrait;
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -95,11 +95,6 @@ class User extends BaseUser
     protected $show_socials;
 
     /**
-     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
-     */
-    protected $date_creation;
-
-    /**
      * @ORM\Column(name="website", type="string", length=255, nullable=true)
      */
     protected $website;
@@ -138,24 +133,12 @@ class User extends BaseUser
      */
     private $systemPath;
 
-    /**
-     * @ORM\Column(type="datetime")
-     *
-     * @var DateTime
-     */
-    private $updatedAt;
-
-    /**
-     * Constructor.
-     */
     public function __construct()
     {
         parent::__construct();
 
-        $this->updatedAt = new DateTime();
         $this->setFromLogin(false);
         $this->setShowSocials(true);
-        $this->date_creation = new DateTime();
         $this->calendriers = new ArrayCollection();
         $this->info = new UserInfo();
     }
@@ -178,7 +161,7 @@ class User extends BaseUser
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new DateTime('now');
+            $this->updatedAt = new \DateTimeImmutable();
         }
 
         return $this;
@@ -210,7 +193,7 @@ class User extends BaseUser
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new DateTime('now');
+            $this->updatedAt = new \DateTimeImmutable();
         }
 
         return $this;
@@ -333,30 +316,6 @@ class User extends BaseUser
     public function getFromLogin()
     {
         return $this->from_login;
-    }
-
-    /**
-     * Set date_creation.
-     *
-     * @param DateTime $dateCreation
-     *
-     * @return User
-     */
-    public function setDateCreation($dateCreation)
-    {
-        $this->date_creation = $dateCreation;
-
-        return $this;
-    }
-
-    /**
-     * Get date_creation.
-     *
-     * @return DateTime
-     */
-    public function getDateCreation()
-    {
-        return $this->date_creation;
     }
 
     /**
@@ -489,30 +448,6 @@ class User extends BaseUser
     public function getPath()
     {
         return $this->path;
-    }
-
-    /**
-     * Set updatedAt.
-     *
-     * @param DateTime $updatedAt
-     *
-     * @return User
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get updatedAt.
-     *
-     * @return DateTime
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
     }
 
     /**

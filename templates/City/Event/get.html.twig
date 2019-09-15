@@ -42,9 +42,7 @@
 {% block metas %}
     <link rel="image_src" href="{{ original }}" />
     <link rel="thumbnail" href="{{ thumb }}" />
-    {% if event.dateModification %}
-        <meta property="article:published_time" content="{{ event.dateModification.format('Y-m-d') }}" />
-    {% endif %}
+    <meta property="article:published_time" content="{{ event.createdAt.format('Y-m-d') }}" />
     <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}" />
     {% if event.user %}
         <meta property="article:author" content="{{ url('app_user_details', {'id': event.user.id, 'slug': event.user.slug}) }}" />

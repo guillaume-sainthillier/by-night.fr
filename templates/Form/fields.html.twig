@@ -13,9 +13,9 @@
 
 {% block vich_image_widget %}
     {% if download_uri is defined and download_uri %}
-        <a href="{{ download_uri }}">
-            {% if image_filter is not null %}
-                <img class="img-responsive display_inline_block margin_right_15" src="{{ download_uri|imagine_filter(image_filter) }}" alt="" />
+        <a href="{{ asset(download_uri, 'file') }}">
+            {% if image_filter_uri is not null %}
+                <img class="img-responsive display_inline_block margin_right_15" src="{{ image_filter_uri }}" alt="" />
             {% endif %}
         </a>
     {% endif %}
@@ -23,7 +23,7 @@
     {{ form_widget(form.file) }}
 
     {% if show_download_link and download_uri is defined and download_uri %}
-        <a href="{{ download_uri }}">{{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
+        <a href="{{ asset(download_uri, 'file') }}">{{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
     {% endif %}
 
     {% if form.delete is defined %}
