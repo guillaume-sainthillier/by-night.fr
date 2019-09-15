@@ -128,3 +128,8 @@ services:
                 credentials:
                     key: "%env(AWS_S3_KEY)%"
                     secret: "%env(AWS_S3_SECRET)%"
+
+    Sentry\Monolog\Handler:
+        calls:
+            -   method: setLevel
+                arguments: ['error']

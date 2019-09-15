@@ -130,7 +130,6 @@ class FacebookAdmin extends FacebookListEvents
 
             return $page->getField('fan_count');
         } catch (FacebookSDKException $ex) {
-            \Sentry\captureException($ex);
             $this->logger->error($ex);
         }
 
@@ -272,7 +271,6 @@ class FacebookAdmin extends FacebookListEvents
             $participations = $this->findPaginated($graph->getField('attending'), $limit);
             $interets = $this->findPaginated($graph->getField('maybe'), $limit);
         } catch (FacebookSDKException $ex) {
-            \Sentry\captureException($ex);
             $this->logger->error($ex);
         }
 

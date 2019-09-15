@@ -3,3 +3,5 @@ sentry:
     options:
         environment: '%kernel.environment%'
         release: '%env(APP_VERSION)%' #your app version
+        excluded_exceptions:
+            - Symfony\Component\HttpKernel\Exception\NotFoundHttpException

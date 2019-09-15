@@ -111,7 +111,7 @@ class Monitor
         }
     }
 
-    public static function writeException(Exception $e)
+    public static function writeException(\Throwable $e)
     {
         self::writeln(\sprintf(
             '<error>%s at %s(%d)</error> <info>%s</info>',
@@ -164,7 +164,7 @@ class Monitor
         self::$stats = [];
     }
 
-    public static function bench($message, callable $function)
+    public static function start($message): ?Stopwatch
     {
         $stopwatch = null;
         if (self::$enableMonitoring) {
@@ -179,14 +179,23 @@ class Monitor
             $stopwatch->start($message);
         }
 
-        $retour = \call_user_func($function);
+        return $stopwatch;
+    }
 
+    public static function stop($message, ?Stopwatch $stopwatch) {
         if (self::$enableMonitoring) {
             $event = $stopwatch->stop($message);
 
             self::$stats[$message]['time'][] = $event->getDuration();
             self::$stats[$message]['memory'][] = $event->getMemory();
         }
+    }
+
+    public static function bench($message, callable $function)
+    {
+        $stopwatch = self::start($message);
+        $retour = \call_user_func($function);
+        self::stop($message, $stopwatch);
 
         return $retour;
     }

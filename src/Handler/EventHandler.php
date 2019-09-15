@@ -100,7 +100,6 @@ class EventHandler
             $content = copy_to_string($response->getBody());
             $this->uploadFile($event, $content, $contentType);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
             $this->logger->error($e, ['event' => [
                 'id' => $event->getId(),
                 'url' => $event->getUrl(),

@@ -48,7 +48,6 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
         try {
             $this->doctrineEventHandler->handleOne($event);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
             $this->logger->critical($e);
 
             return ConsumerInterface::MSG_REJECT_REQUEUE;
@@ -77,7 +76,6 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
             });
             Monitor::displayStats();
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
             $this->logger->critical($e);
 
             return ConsumerInterface::MSG_REJECT_REQUEUE;
