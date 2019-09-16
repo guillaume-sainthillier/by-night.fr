@@ -39,14 +39,6 @@ class EventHandler
         $this->tempPath = $tempPath;
     }
 
-    public function hasToDownloadImage($newURL, Event $event)
-    {
-        return $newURL && (
-                !$event->getSystemPath() ||
-                $event->getUrl() != $newURL
-            );
-    }
-
     public function uploadFile(Event $event, $content, $contentType)
     {
         switch ($contentType) {
@@ -75,11 +67,6 @@ class EventHandler
         } else {
             $event->setSystemFile(null)->setSystemPath(null);
         }
-    }
-
-    public function cleanPlace(Place $place)
-    {
-        $this->cleaner->cleanPlace($place);
     }
 
     public function cleanEvent(Event $event)
