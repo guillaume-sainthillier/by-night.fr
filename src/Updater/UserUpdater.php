@@ -23,7 +23,7 @@ class UserUpdater extends Updater
         $this->userHandler = $userHandler;
     }
 
-    public function update(\DateTime $from)
+    public function update(\DateTimeInterface $from)
     {
         $repo = $this->entityManager->getRepository(User::class);
         $count = $repo->getUserFbIdsCount($from);
@@ -31,7 +31,7 @@ class UserUpdater extends Updater
         $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
-        foreach (range(1, $nbBatchs) as $i) {
+        for($i = 1; $i <= $nbBatchs; $i++) {
             $users = $repo->getUsersWithInfo($from, $i, self::PAGINATION_SIZE);
             $fbIds = $this->extractFbIds($users);
             $fbStats = $this->facebookAdmin->getUserImagesFromIds($fbIds);
