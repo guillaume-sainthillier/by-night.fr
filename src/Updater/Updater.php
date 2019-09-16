@@ -38,7 +38,7 @@ abstract class Updater
         $this->client = new Client();
     }
 
-    abstract public function update(\DateTime $from);
+    abstract public function update(\DateTimeInterface $from);
 
     protected function downloadUrls(array $urls)
     {

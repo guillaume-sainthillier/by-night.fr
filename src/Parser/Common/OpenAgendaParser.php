@@ -98,7 +98,7 @@ class OpenAgendaParser extends AbstractParser
         $dateFin = \DateTime::createFromFormat('Y-m-d H:i', $event['lastDate'] . ' ' . $event['lastTimeEnd']);
 
         $horaires = null;
-        if ($dateDebut instanceof \DateTime && $dateFin instanceof \DateTime && $dateDebut->format('YmdHi') !== $dateFin->format('YmdHi')) {
+        if ($dateDebut instanceof \DateTimeInterface && $dateFin instanceof \DateTimeInterface && $dateDebut->getTimestamp() !== $dateFin->getTimestamp()) {
             $horaires = \sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
         } elseif ($dateDebut instanceof \DateTime) {
             $horaires = \sprintf('A %s', $dateDebut->format("H\hi"));
