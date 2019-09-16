@@ -153,7 +153,7 @@ class ProfileController extends BaseController
 
             $this->eventDispatcher->dispatch(FOSUserEvents::PROFILE_EDIT_COMPLETED, new FilterUserResponseEvent($user, $request, $response));
 
-            //return $response;
+            return $response;
         }
 
         $formChangePassword = $this->changePasswordFormFactory->createForm();
