@@ -17,19 +17,4 @@ abstract class AppCommand extends Command
     {
         $this->addOption('monitor', 'm', InputOption::VALUE_NONE, 'Active le monitor des fonctions');
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function run(InputInterface $input, OutputInterface $output)
-    {
-        Monitor::$output = $output;
-        Monitor::enableMonitoring($input->hasOption('monitor') && $input->getOption('monitor'));
-        $retour = Monitor::bench($this->getName(), function () use ($input, $output) {
-            return parent::run($input, $output);
-        });
-        Monitor::displayStats();
-
-        return $retour;
-    }
 }

@@ -3,20 +3,21 @@
 namespace App\Parser\Common;
 
 use App\Parser\AbstractParser;
-use App\Parser\EventParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
-use function GuzzleHttp\Promise\all;
 use GuzzleHttp\Promise\FulfilledPromise;
-use function GuzzleHttp\Psr7\copy_to_string;
+use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 
 /**
  * @author Guillaume SAINTHILLIER
  */
 class OpenAgendaParser extends AbstractParser
 {
+    // Next step : 'https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/records'
     private const AGENDA_IDS = [
         93184572, // https://openagenda.com/fetedelascience2019_hautsdefrance?lang=fr
         49405812, // https://openagenda.com/saison-culturelle-en-france?lang=fr
@@ -40,14 +41,58 @@ class OpenAgendaParser extends AbstractParser
     /** @var Client */
     private $client;
 
-    public function __construct(EventProducer $eventProducer)
+    /** @var array */
+    private $cache;
+
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
     {
-        parent::__construct($eventProducer);
+        parent::__construct($logger, $eventProducer);
 
         $this->client = new Client();
+        $this->cache = [];
     }
 
-    private function getInfoEvent(array $event)
+    public function parse(bool $incremental): void
+    {
+        foreach (self::AGENDA_IDS as $id) {
+            $this->makeRequest($id)->wait();
+        }
+    }
+
+    private function makeRequest(int $agendaId, int $page = 0): PromiseInterface
+    {
+        //Send first request to get events size
+        return $this->sendRequest($agendaId, $page)
+            ->then(function (array $result) use ($agendaId) {
+                $this->publishEvents($result['events']);
+
+                $nbPages = ceil($result['total'] / self::EVENT_BATCH_SIZE);
+                if ($nbPages > 1) {
+                    //Send next requests
+                    $requests = function ($nbPages) use ($agendaId) {
+                        for ($page = 1; $page <= $nbPages - 1; ++$page) {
+                            yield function () use ($agendaId, $page) {
+                                return $this
+                                    ->sendRequest($agendaId, $page)
+                                    ->then(function (array $results) {
+                                        $this->publishEvents($results['events']);
+                                    });
+                            };
+                        }
+                    };
+
+                    $pool = new Pool($this->client, $requests($nbPages), [
+                        'concurrency' => 5,
+                    ]);
+
+                    return $pool->promise();
+                }
+
+                return new FulfilledPromise(null);
+            });
+    }
+
+    private function getInfoEvent(array $event): array
     {
         $dateDebut = \DateTime::createFromFormat('Y-m-d H:i', $event['firstDate'] . ' ' . $event['firstTimeStart']);
         $dateFin = \DateTime::createFromFormat('Y-m-d H:i', $event['lastDate'] . ' ' . $event['lastTimeEnd']);
@@ -81,67 +126,24 @@ class OpenAgendaParser extends AbstractParser
         ];
     }
 
-    public function parse(): int
+    private function publishEvents(array $events): int
     {
-        $promises = [];
-        foreach (self::AGENDA_IDS as $id) {
-            $promises[] = $this->makeRequest($id);
-        }
-        $agendas = all($promises)->wait();
-
-        return array_sum($agendas);
-    }
-
-    private function makeRequest(int $agendaId, int $page = 0)
-    {
-        return $this->sendRequest($agendaId, $page)
-            ->then(function (array $result) use ($agendaId) {
-                $events = $this->formatArray($result['events']);
-
-                $nbPages = ceil($result['total'] / self::EVENT_BATCH_SIZE);
-                if ($nbPages > 1) {
-                    $requests = function ($nbPages) use ($agendaId) {
-                        for ($page = 1; $page <= $nbPages - 1; ++$page) {
-                            yield function () use ($agendaId, $page) {
-                                return $this->sendRequest($agendaId, $page);
-                            };
-                        }
-                    };
-
-                    $pool = new Pool($this->client, $requests($nbPages), [
-                        'concurrency' => 5,
-                        'fulfilled' => function (array $results) use (&$events) {
-                            $events += $this->formatArray($results['events']);
-                        },
-                    ]);
-                    $pool->promise()->wait();
-                }
-
-                return new FulfilledPromise($events);
-            })
-            ->then(function(array $events) {
-                $nbParsedEvents = 0;
-                foreach($events as $event) {
-                    $event = $this->getInfoEvent($event);
-                    $this->publish($event);
-                    $nbParsedEvents++;
-                }
-
-                return $nbParsedEvents;
-            });
-    }
-
-    private function formatArray(array $events)
-    {
-        $formated = [];
+        $nbParsed = 0;
         foreach ($events as $event) {
-            $formated[$event['uid']] = $event;
+            if (!empty($this->cache['visited'][$event['uid']])) {
+                continue;
+            }
+
+            $this->cache['visited'][$event['uid']] = true;
+            $event = $this->getInfoEvent($event);
+            $this->publish($event);
+            $nbParsed++;
         }
 
-        return $formated;
+        return $nbParsed;
     }
 
-    private function sendRequest(int $agendaId, int $page)
+    private function sendRequest(int $agendaId, int $page): PromiseInterface
     {
         //https://openagenda.zendesk.com/hc/fr/articles/203034982-L-export-JSON-d-un-agenda
         $uri = sprintf('https://openagenda.com/agendas/%s/events.json?oaq[lang]=fr&limit=%d&offset=%d', $agendaId, self::EVENT_BATCH_SIZE, $page * self::EVENT_BATCH_SIZE);
@@ -153,7 +155,7 @@ class OpenAgendaParser extends AbstractParser
             });
     }
 
-    public function getNomData(): string
+    public static function getParserName(): string
     {
         return 'Open Agenda';
     }

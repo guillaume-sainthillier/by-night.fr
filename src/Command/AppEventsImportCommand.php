@@ -7,6 +7,7 @@ use App\Utils\Monitor;
 use LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class AppEventsImportCommand extends AppCommand
@@ -31,7 +32,8 @@ class AppEventsImportCommand extends AppCommand
         $this
             ->setName('app:events:import')
             ->setDescription('Ajouter / mettre à jour des nouveaux événements sur By Night')
-            ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer');
+            ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer')
+            ->addOption('full', 'f', InputOption::VALUE_OPTIONAL, 'Effectue un full import du catalogue');
     }
 
     /**
@@ -39,30 +41,25 @@ class AppEventsImportCommand extends AppCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $parser = $input->getArgument('parser');
-        if (empty($this->parsers[$parser])) {
+        $parserName = $input->getArgument('parser');
+        if (empty($this->parsers[$parserName])) {
             throw new LogicException(\sprintf(
                 'Le parser "%s" est introuvable',
-                $parser
+                $parserName
             ));
         }
 
-        $parser = $this->parsers[$parser];
-        if (!$parser instanceof ParserInterface) {
-            throw new LogicException(\sprintf(
-                'Le service "%s" doit être une instance de ParserInterface',
-                $parser
-            ));
-        }
+        $parser = $this->parsers[$parserName];
 
         Monitor::writeln(\sprintf(
             'Lancement de <info>%s</info>',
-            $parser->getNomData()
+            $parser::getParserName()
         ));
 
-        $nbEvents = $parser->parse();
+        $parser->parse(! $input->hasOption('full'));
+        $nbEvents = $parser->getParsedEvents();
 
-        Monitor::writeln(\sprintf(
+            Monitor::writeln(\sprintf(
             '<info>%d</info> événements parsés',
             $nbEvents
         ));

@@ -9,15 +9,11 @@ namespace App\Parser;
  */
 interface ParserInterface
 {
-    /**
-     * @return int le nombre d'items parsés
-     */
-    public function parse(): int;
+    public function parse(bool $incremental): void;
+
+    public function getParsedEvents(): int;
 
     public function publish(array $item): void;
 
-    /**
-     * @return string le nom de la classe
-     */
-    public function getNomData(): string;
+    public static function getParserName(): string;
 }

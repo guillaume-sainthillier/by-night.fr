@@ -11,20 +11,41 @@ namespace App\Parser;
  */
 
 use App\Producer\EventProducer;
+use App\Utils\Monitor;
+use Psr\Log\LoggerInterface;
 
 abstract class AbstractParser implements ParserInterface
 {
     /** @var EventProducer */
     private $eventProducer;
 
-    public function __construct(EventProducer $eventProducer)
+    /** @var LoggerInterface */
+    private $logger;
+
+    /** @var int */
+    private $parsedEvents;
+
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
     {
+        $this->logger = $logger;
         $this->eventProducer = $eventProducer;
+        $this->parsedEvents = 0;
     }
 
     public function publish(array $item): void
     {
-        $item['from_data'] = $this->getNomData();
+        $item['from_data'] = static::getParserName();
         $this->eventProducer->scheduleEvent($item);
+        $this->parsedEvents++;
+    }
+
+    public function getParsedEvents(): int
+    {
+        return $this->parsedEvents;
+    }
+
+    protected function logException(\Throwable $e) {
+        Monitor::writeException($e);
+        $this->logger->error($e);
     }
 }

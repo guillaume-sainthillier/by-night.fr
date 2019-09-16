@@ -17,20 +17,13 @@ class ToulouseParser extends AbstractParser
 {
     private const DOWNLOAD_URL = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true';
 
-    public function getNomData(): string
-    {
-        return 'Toulouse';
-    }
-
-    public function parse(): int
+    public function parse(bool $incremental): void
     {
         $fichier = $this->downloadCSV();
 
-        if(null === $fichier) {
-            return 0;
+        if(null !== $fichier) {
+            $this->parseCSV($fichier);
         }
-
-        return $this->parseCSV($fichier);
     }
 
     /**
@@ -38,12 +31,11 @@ class ToulouseParser extends AbstractParser
      *
      * @return int le nombre d'events parsés
      */
-    protected function parseCSV($fichier): int
+    protected function parseCSV($fichier): void
     {
         $fic = \fopen($fichier, 'r');
         \fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
 
-        $nbEvents = 0;
         while ($cursor = \fgetcsv($fic, 0, ';', '"', '"')) {
             $tab = \array_map(function ($e) {
                 return Encoding::toUTF8($e);
@@ -84,11 +76,8 @@ class ToulouseParser extends AbstractParser
             ];
 
             $this->publish($event);
-            $nbEvents++;
         }
         fclose($fic);
-
-        return $nbEvents;
     }
 
     /**
@@ -104,5 +93,10 @@ class ToulouseParser extends AbstractParser
         $fs->dumpFile($path_file, $data);
 
         return $path_file;
+    }
+
+    public static function getParserName(): string
+    {
+        return 'Toulouse';
     }
 }

@@ -60,10 +60,6 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
     {
         $this->ping($this->entityManager->getConnection());
 
-        $output = new ConsoleOutput(OutputInterface::VERBOSITY_VERBOSE);
-        Monitor::$output = $output;
-        Monitor::enableMonitoring($output->isVerbose());
-
         $events = [];
         /** @var AMQPMessage $message */
         foreach ($messages as $message) {

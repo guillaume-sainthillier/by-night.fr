@@ -7,6 +7,7 @@ use App\Producer\EventProducer;
 use App\Utils\Monitor;
 use DateTime;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -22,35 +23,26 @@ class BikiniParser extends AbstractParser
     /** @var Crawler */
     private $parser;
 
-    public function __construct(EventProducer $eventProducer)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
     {
-        parent::__construct($eventProducer);
+        parent::__construct($logger, $eventProducer);
         $this->cache = [];
         $this->parser = new Crawler;
     }
 
-    public function parse(): int
+    public function parse(bool $incremental): void
     {
         //Récupère les différents liens à parser depuis le flux RSS
         $links = $this->parseRSS();
 
-        $parsedEvents = 0;
         foreach ($links as $link) {
             try {
                 $event = $this->getInfosEvent($link);
                 $this->publish($event);
-                $parsedEvents++;
             } catch (Exception $e) {
-                Monitor::writeException($e);
+                $this->logException($e);
             }
         }
-
-        return $parsedEvents;
-    }
-
-    public function getNomData(): string
-    {
-        return 'Bikini';
     }
 
     private function getInfosEvent(string $url): array
@@ -149,7 +141,12 @@ class BikiniParser extends AbstractParser
         try {
             $this->parser->addContent(\file_get_contents($url), $type);
         } catch (Exception $e) {
-            Monitor::writeException($e);
+            $this->logException($e);
         }
+    }
+
+    public static function getParserName(): string
+    {
+        return 'Bikini';
     }
 }
