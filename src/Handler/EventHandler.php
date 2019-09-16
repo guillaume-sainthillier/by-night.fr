@@ -4,6 +4,7 @@ namespace App\Handler;
 
 use App\Entity\Event;
 use App\Entity\Place;
+use App\File\DeletableFile;
 use App\Utils\Cleaner;
 use App\Utils\Comparator;
 use App\Utils\Merger;
@@ -61,11 +62,11 @@ class EventHandler
         $octets = \file_put_contents($tempPath, $content);
 
         if ($octets > 0) {
-            $file = new UploadedFile($tempPath, $filename, $contentType, null, true);
-            $event->setSystemPath($filename);
+            $file = new DeletableFile($tempPath, $filename, $contentType, null, true);
             $event->setSystemFile($file);
         } else {
-            $event->setSystemFile(null)->setSystemPath(null);
+            unlink($tempPath);
+            $event->setSystemFile(null);
         }
     }
 
