@@ -31,9 +31,14 @@ class Comparator
             return null;
         }
 
+        foreach ($places as $place) {
+            if ($this->isExactSamePlace($place, $testedPlace)) {
+                return $place;
+            }
+        }
+
         $bestScore = 0;
         $bestItem = null;
-
         foreach ($places as $place) {
             $score = $this->getMatchingScorePlace($place, $testedPlace);
 
@@ -48,15 +53,24 @@ class Comparator
         return $bestItem;
     }
 
-    public function getMatchingScorePlace(Place $a = null, Place $b = null)
+    public function isExactSamePlace(Place $a = null, Place $b = null)
     {
         if (null === $a || null === $b) {
-            return 0;
+            return false;
         }
 
         if (($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
             ($a->getId() && $a->getId() === $b->getId())) {
-            return 100;
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getMatchingScorePlace(Place $a = null, Place $b = null)
+    {
+        if (null === $a || null === $b) {
+            return 0;
         }
 
         if (($a->getCity() && $b->getCity() && $a->getCity()->getId() === $b->getCity()->getId()) ||
@@ -68,8 +82,9 @@ class Comparator
             );
 
             //Même rue & ~ même nom
-            if ($this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 90 &&
-                $matchingScoreNom >= 80) {
+            if ($matchingScoreNom >= 80 &&
+                $this->getMatchingScoreRue($a->getRue(), $b->getRue()) >= 90
+            ) {
                 return 100;
             }
 
