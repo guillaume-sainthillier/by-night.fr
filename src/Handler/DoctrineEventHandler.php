@@ -10,8 +10,6 @@ use App\Entity\Place;
 use App\Entity\ZipCity;
 use App\Reject\Reject;
 use App\Repository\CityRepository;
-use App\Repository\EventRepository;
-use App\Repository\PlaceRepository;
 use App\Repository\ZipCityRepository;
 use App\Utils\Firewall;
 use App\Utils\Monitor;
@@ -242,7 +240,7 @@ class DoctrineEventHandler
                             $this->handler->handleDownload($event);
                         }
 
-                        $event = $this->em->merge($event);
+                        $this->em->persist($event);
                         $this->echantillonHandler->addNewEvent($event);
                         if ($this->firewall->isPersisted($event)) {
                             $this->explorationHandler->addUpdate();
