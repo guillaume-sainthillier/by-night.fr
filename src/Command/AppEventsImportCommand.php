@@ -32,7 +32,7 @@ class AppEventsImportCommand extends Command
             ->setName('app:events:import')
             ->setDescription('Ajouter / mettre à jour des nouveaux événements')
             ->addArgument('parser', InputArgument::REQUIRED, 'Nom du parser à lancer')
-            ->addOption('full', 'f', InputOption::VALUE_OPTIONAL, 'Effectue un full import du catalogue disponible');
+            ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible');
     }
 
     /**
@@ -55,10 +55,10 @@ class AppEventsImportCommand extends Command
             $parser::getParserName()
         ));
 
-        $parser->parse(! $input->hasOption('full'));
+        $parser->parse(!$input->getOption('full'));
         $nbEvents = $parser->getParsedEvents();
 
-            Monitor::writeln(\sprintf(
+        Monitor::writeln(\sprintf(
             '<info>%d</info> événements parsés',
             $nbEvents
         ));
