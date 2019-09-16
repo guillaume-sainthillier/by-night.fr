@@ -2,7 +2,6 @@
 
 namespace App\Controller\Social;
 
-use App\App\SocialManager;
 use Exception;
 use FOS\UserBundle\Model\UserManagerInterface;
 use HWI\Bundle\OAuthBundle\Controller\ConnectController as BaseController;
@@ -88,6 +87,18 @@ class ConnectController extends BaseController
 
         // Show confirmation page?
         if (!$this->container->getParameter('hwi_oauth.connect.confirmation')) {
+            if ($session->has('connect_site')) { // On veut connecter le site et non l'utilisateur
+                $session->remove('connect_site');
+                $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
+
+                $em = $this->getDoctrine()->getManager();
+                $em->flush();
+
+                return $this->render('@HWIOAuth/Connect/connect_success.html.twig', [
+                    'userInformation' => $userInformation,
+                    'service' => $service,
+                ]);
+            }
             return $this->getConfirmationResponse($request, $accessToken, $service);
         }
 
@@ -100,20 +111,6 @@ class ConnectController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($session->has('connect_site')) { // On veut connecter le site et non l'utilisateur
-                $session->remove('connect_site');
-                $this->container->get('hwi_oauth.account.connector')->connectSite($userInformation);
-
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($this->container->get(SocialManager::class)->getSiteInfo());
-                $em->flush();
-
-                return $this->render('@HWIOAuth/Connect/connect_success.html.twig', [
-                    'userInformation' => $userInformation,
-                    'service' => $service,
-                ]);
-            }
-
             // On connecte normalement l'utilisateur
             return $this->getConfirmationResponse($request, $accessToken, $service);
         }
