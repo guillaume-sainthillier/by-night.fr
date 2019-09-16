@@ -23,7 +23,7 @@ class ConsoleListener implements EventSubscriberInterface
     public function onConsoleCommand(ConsoleCommandEvent $event): void
     {
         Monitor::$output = $event->getOutput();
-        Monitor::enableMonitoring($event->getOutput()->isVerbose());
+        Monitor::enableMonitoring((bool) ($_ENV['APP_MONITOR'] ?? false));
         $this->stopwatches[$event->getCommand()->getName()] = Monitor::start($event->getCommand()->getName());
     }
 

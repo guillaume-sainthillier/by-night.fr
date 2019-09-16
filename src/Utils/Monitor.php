@@ -77,14 +77,9 @@ class Monitor
 
         if (0 === $nbItems) {
             return [
-                'avg' => 0,
-                'min' => 0,
-                'max' => 0,
                 'nb' => 0,
-                'memory' => 0,
+                'avg' => 0,
                 'avg_memory' => 0,
-                'min_memory' => 0,
-                'max_memory' => 0,
                 'total' => 0,
             ];
         }
@@ -92,15 +87,12 @@ class Monitor
         $sommeMemory = \array_sum($stat['memory']);
 
         return [
+            'nb' => $nbItems,
             'total' => self::formatDuration($somme),
             'avg' => $nbItems > 1 ? self::formatDuration($somme / $nbItems) : null,
             'min' => $nbItems > 1 ? self::formatDuration(\min($stat['time'])) : null,
             'max' => $nbItems > 1 ? self::formatDuration(\max($stat['time'])) : null,
-            'nb' => $nbItems,
-            'memory' => self::formatMemory($sommeMemory),
             'avg_memory' => $nbItems > 1 ? self::formatMemory($sommeMemory / $nbItems) : null,
-            'min_memory' => $nbItems > 1 ? self::formatMemory(\min($stat['memory'])) : null,
-            'max_memory' => $nbItems > 1 ? self::formatMemory(\max($stat['memory'])) : null,
         ];
     }
 
@@ -151,14 +143,14 @@ class Monitor
         $table = new Table(self::$output);
         $table
             ->setHeaders([
-                [new TableCell('Statistiques détaillées', ['colspan' => 10])],
-                ['Nom', 'Nombre', 'Tps Total', 'Tps Moyen', 'Tps Min', 'Tps Max', 'Memory Total', 'Memory Moyen', 'Memory Min', 'Memory Max'],
+                [new TableCell('Statistiques détaillées', ['colspan' => 5])],
+                ['Nom', 'Nombre', 'Tps Total', 'Tps Moyen', 'Memory Moyen'],
             ]);
 
         $stats = self::getStats();
         \ksort($stats, \SORT_STRING);
         foreach ($stats as $key => $stat) {
-            $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['min'], $stat['max'], $stat['memory'], $stat['avg_memory'], $stat['min_memory'], $stat['max_memory']]);
+            $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['avg_memory']]);
         }
         $table->render();
         self::$stats = [];
