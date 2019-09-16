@@ -3,7 +3,6 @@
 parameters:
     locale: 'fr'
     facebook_id_page: '205292952998805'
-    facebook_id_app: '%env(FACEBOOK_API_ID)%'
     google_map_key: '%env(GOOGLE_MAP_KEY_WEB)%'
     twitter_id_page: 'By__Night'
     class.guzzle.response: Guzzle\Http\Message\Response
@@ -26,6 +25,9 @@ services:
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
             $debug: "%kernel.debug%"
+            $cfUserEmail: "%env(CF_USER_EMAIL)%"
+            $cfUserKey: "%env(CF_USER_KEY)%"
+            $cfZone: "%env(CF_ZONE)%"
 
     App\:
         resource: '../src/*'
