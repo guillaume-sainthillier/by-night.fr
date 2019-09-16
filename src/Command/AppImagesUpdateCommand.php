@@ -4,21 +4,22 @@ namespace App\Command;
 
 use App\Updater\UserUpdater;
 use App\Utils\Monitor;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppImagesUpdateCommand extends AppCommand
+class AppImagesUpdateCommand extends Command
 {
     /** @var UserUpdater */
     private $userUpdater;
 
     public function __construct(UserUpdater $userUpdater)
     {
-        $this->userUpdater = $userUpdater;
-
         parent::__construct();
+
+        $this->userUpdater = $userUpdater;
     }
 
     /**
@@ -26,8 +27,6 @@ class AppImagesUpdateCommand extends AppCommand
      */
     protected function configure()
     {
-        parent::configure();
-
         $this
             ->setName('app:images:update')
             ->setDescription('Mettre à jour les images (events, users) en provenance des réseaux sociaux')

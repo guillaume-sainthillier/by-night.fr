@@ -4,12 +4,13 @@ namespace App\Command;
 
 use App\Importer\CountryImporter;
 use Exception;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
-class AppCountryImportCommand extends AppCommand
+class AppCountryImportCommand extends Command
 {
     /**
      * @var CountryImporter
@@ -21,9 +22,9 @@ class AppCountryImportCommand extends AppCommand
      */
     public function __construct(CountryImporter $countryImporter)
     {
-        $this->countryImporter = $countryImporter;
-
         parent::__construct();
+
+        $this->countryImporter = $countryImporter;
     }
 
     /**
@@ -31,8 +32,6 @@ class AppCountryImportCommand extends AppCommand
      */
     protected function configure()
     {
-        parent::configure();
-
         $this
             ->setName('app:country:import')
             ->setDescription('Ajoute un nouveau pays')

@@ -10,19 +10,20 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppEventsMigrateCommand extends AppCommand
+class AppEventsMigrateCommand extends Command
 {
     private const EVENTS_PER_TRANSACTION = 500;
 
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, ?string $name = null)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        parent::__construct($name);
+        parent::__construct();
 
         $this->entityManager = $entityManager;
     }

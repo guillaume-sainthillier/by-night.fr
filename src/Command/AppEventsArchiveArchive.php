@@ -3,10 +3,11 @@
 namespace App\Command;
 
 use App\Archive\EventArchivator;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppEventsArchiveArchive extends AppCommand
+class AppEventsArchiveArchive extends Command
 {
     private $eventArchivator;
 
@@ -15,9 +16,9 @@ class AppEventsArchiveArchive extends AppCommand
      */
     public function __construct(EventArchivator $eventArchivator)
     {
-        $this->eventArchivator = $eventArchivator;
-
         parent::__construct();
+
+        $this->eventArchivator = $eventArchivator;
     }
 
     /**
@@ -25,8 +26,6 @@ class AppEventsArchiveArchive extends AppCommand
      */
     protected function configure()
     {
-        parent::configure();
-
         $this
             ->setName('app:events:archive')
             ->setDescription('Archive les vieux événements dans ElasticSearch');

@@ -3,11 +3,12 @@
 namespace App\Command;
 
 use App\Cleaner\ImageCleaner;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppImagesCleanCommand extends AppCommand
+class AppImagesCleanCommand extends Command
 {
     private $imageCleaner;
 
@@ -16,9 +17,9 @@ class AppImagesCleanCommand extends AppCommand
      */
     public function __construct(ImageCleaner $imageCleaner)
     {
-        $this->imageCleaner = $imageCleaner;
-
         parent::__construct();
+
+        $this->imageCleaner = $imageCleaner;
     }
 
     /**
@@ -26,8 +27,6 @@ class AppImagesCleanCommand extends AppCommand
      */
     protected function configure()
     {
-        parent::configure();
-
         $this
             ->setName('app:images:clean')
             ->setDescription('Supprime les images inutilisées sur le serveur')

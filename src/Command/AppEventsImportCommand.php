@@ -5,12 +5,13 @@ namespace App\Command;
 use App\Parser\ParserInterface;
 use App\Utils\Monitor;
 use LogicException;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppEventsImportCommand extends AppCommand
+class AppEventsImportCommand extends Command
 {
     /** @var ParserInterface[] */
     private $parsers;
@@ -27,13 +28,11 @@ class AppEventsImportCommand extends AppCommand
      */
     protected function configure()
     {
-        parent::configure();
-
         $this
             ->setName('app:events:import')
-            ->setDescription('Ajouter / mettre à jour des nouveaux événements sur By Night')
-            ->addArgument('parser', InputArgument::REQUIRED, 'Nom du service à executer')
-            ->addOption('full', 'f', InputOption::VALUE_OPTIONAL, 'Effectue un full import du catalogue');
+            ->setDescription('Ajouter / mettre à jour des nouveaux événements')
+            ->addArgument('parser', InputArgument::REQUIRED, 'Nom du parser à lancer')
+            ->addOption('full', 'f', InputOption::VALUE_OPTIONAL, 'Effectue un full import du catalogue disponible');
     }
 
     /**
