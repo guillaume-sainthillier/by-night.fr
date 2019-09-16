@@ -28,6 +28,8 @@ services:
             $cfUserEmail: "%env(CF_USER_EMAIL)%"
             $cfUserKey: "%env(CF_USER_KEY)%"
             $cfZone: "%env(CF_ZONE)%"
+            $sowprogUsername: "%env(SOWPROG_USER)%"
+            $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
 
     App\:
         resource: '../src/*'
@@ -72,6 +74,7 @@ services:
                 toulouse.opendata: '@App\Parser\Toulouse\ToulouseParser'
                 toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'
                 openagenda: '@App\Parser\Common\OpenAgendaParser'
+                sowprog: '@App\Parser\Common\SowProgParser'
 
     App\Importer\CountryImporter:
         arguments:
