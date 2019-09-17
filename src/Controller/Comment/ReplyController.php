@@ -46,7 +46,7 @@ class ReplyController extends AbstractController
         $reponse = new Comment();
         $form = $this->getCreateForm($reponse, $comment);
 
-        if ('POST' == $request->getMethod()) {
+        if ('POST' === $request->getMethod()) {
             $user = $this->getUser();
 
             if (!$user) {
