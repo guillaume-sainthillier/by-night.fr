@@ -2,9 +2,12 @@
 
 namespace App\EventListener;
 
+use App\Consumer\RemoveImageThumbnailsConsumer;
 use App\Entity\Event;
 use App\Entity\User;
 use App\File\DeletableFile;
+use App\Producer\PurgeCdnCacheUrlProducer;
+use App\Producer\RemoveImageThumbnailsProducer;
 use GuzzleHttp\Client;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Psr\Log\LoggerInterface;
@@ -16,14 +19,8 @@ use function GuzzleHttp\Promise\all;
 
 class ImageListener implements EventSubscriberInterface
 {
-    /** @var CacheManager */
-    private $cacheManager;
-
     /** @var LoggerInterface */
     private $logger;
-
-    /** @var Packages */
-    private $packages;
 
     /** @var array */
     private $paths;
@@ -31,31 +28,19 @@ class ImageListener implements EventSubscriberInterface
     /** @var DeletableFile[] */
     private $files;
 
-    /** @var Client */
-    private $client;
+    /** @var PurgeCdnCacheUrlProducer */
+    private $purgeCdnCacheUrlProducer;
 
-    /** @var string */
-    private $cfZone;
+    /** @var RemoveImageThumbnailsProducer */
+    private $removeImageThumbnailsProducer;
 
-    public function __construct(LoggerInterface $logger, Packages $packages, CacheManager $cacheManager, string $cfUserEmail, string $cfUserKey, string $cfZone)
+    public function __construct(LoggerInterface $logger, PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer, RemoveImageThumbnailsProducer $removeImageThumbnailsProducer)
     {
         $this->logger = $logger;
-        $this->cacheManager = $cacheManager;
-        $this->packages = $packages;
-        $this->cfZone = $cfZone;
-
-        $this->paths = [
-            'originals' => [],
-            'filters' => []
-        ];
+        $this->paths = [];
         $this->files = [];
-        $this->client = new Client([
-            'base_uri' => 'https://api.cloudflare.com',
-            'headers' => [
-                'X-Auth-Email' => $cfUserEmail,
-                'X-Auth-Key' => $cfUserKey,
-            ]
-        ]);
+        $this->purgeCdnCacheUrlProducer = $purgeCdnCacheUrlProducer;
+        $this->removeImageThumbnailsProducer = $removeImageThumbnailsProducer;
     }
 
     public static function getSubscribedEvents()
@@ -105,57 +90,22 @@ class ImageListener implements EventSubscriberInterface
         }
 
         $path = $mapping->getUriPrefix() . \DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
-        $this->paths['images'][] = $path;
-
-        foreach ($filters as $filter) {
-            if ($this->cacheManager->isStored($path, $filter)) {
-                $this->paths['images'][] = $this->cacheManager->resolve($path, $filter);
-                $this->paths['filters'][$filter][] = $path;
-            }
-        }
+        $this->paths[] = ['path' => $path, 'filters' => $filters];
     }
 
     public function onImageDeleted()
     {
-        $this->purgeThumbFiles();
-        $this->purgeCloudflareCache();
+        //Schedule thumbnails delete
+        foreach($this->paths as $path) {
+            $this->removeImageThumbnailsProducer->scheduleRemove($path);
+        }
+
+        //Schedule CDN purging of old image path
+        foreach($this->paths as $path) {
+            $this->purgeCdnCacheUrlProducer->schedulePurge($path['path']);
+        }
 
         unset($this->paths);
-        $this->paths = [
-            'originals' => [],
-            'filters' => []
-        ];
-    }
-
-    private function purgeThumbFiles()
-    {
-        foreach ($this->paths['filters'] as $filter => $paths) {
-            try {
-                $this->cacheManager->remove($paths, $filter);
-            } catch (\Throwable $e) {
-                $this->logger->error($e);
-            }
-        }
-    }
-
-    private function purgeCloudflareCache()
-    {
-        $promises = [];
-        foreach (array_chunk($this->paths['images'], 30) as $paths) {
-            $FQDNPaths = [];
-            foreach ($paths as $path) {
-                $FQDNPaths[] = $this->packages->getUrl($path, 'file');
-            }
-            $promises[] = $this->client->postAsync(
-                sprintf('/client/v4/zones/%s/purge_cache', $this->cfZone),
-                ['json' => ["files" => $FQDNPaths]]
-            );
-        }
-
-        try {
-            all($promises)->wait();
-        } catch (\Throwable $e) {
-            $this->logger->error($e);
-        }
+        $this->paths = [];
     }
 }

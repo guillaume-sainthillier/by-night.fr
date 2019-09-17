@@ -12,6 +12,8 @@ parameters:
 
 services:
     App\Producer\EventProducer: "@old_sound_rabbit_mq.add_event_producer"
+    App\Producer\PurgeCdnCacheUrlProducer: "@old_sound_rabbit_mq.purge_cdn_cache_urls_producer"
+    App\Producer\RemoveImageThumbnailsProducer: "@old_sound_rabbit_mq.remove_image_thumbnails_producer"
 
     _defaults:
         autowire: true

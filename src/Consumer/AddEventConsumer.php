@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
+class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, BatchConsumerInterface
 {
     /**
      * @var EventFactory
@@ -29,13 +29,11 @@ class AddEventConsumer implements ConsumerInterface, BatchConsumerInterface
     /** @var EntityManagerInterface */
     private $entityManager;
 
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, EventFactory $eventFactory, DoctrineEventHandler $doctrineEventHandler)
+    public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager, EventFactory $eventFactory, DoctrineEventHandler $doctrineEventHandler)
     {
+        parent::__construct($logger);
+
         $this->entityManager = $entityManager;
-        $this->logger = $logger;
         $this->eventFactory = $eventFactory;
         $this->doctrineEventHandler = $doctrineEventHandler;
     }
