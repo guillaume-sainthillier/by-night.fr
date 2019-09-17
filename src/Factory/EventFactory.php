@@ -18,10 +18,7 @@ class EventFactory
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
-    /**
-     * @return Event
-     */
-    public function fromArray(array $datas)
+    public function fromArray(array $datas): Event
     {
         $event = new Event();
 

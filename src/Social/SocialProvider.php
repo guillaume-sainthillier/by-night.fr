@@ -7,20 +7,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class SocialProvider
 {
     const FACEBOOK = 'facebook';
-
     const FACEBOOK_LIST_EVENTS = 'facebook_list_events';
-
     const FACEBOOK_ADMIN = 'facebook_admin';
-
     const TWITTER = 'twitter';
     const GOOGLE = 'google';
+    const EVENTBRITE = 'eventbrite';
 
     /**
      * @var array
      */
     private $socials;
 
-    public function __construct(Facebook $facebook, FacebookListEvents $facebookListEvents, FacebookAdmin $facebookAdmin, Twitter $twitter, Google $google)
+    public function __construct(Facebook $facebook, FacebookListEvents $facebookListEvents, FacebookAdmin $facebookAdmin, Twitter $twitter, Google $google, EventBrite $eventBrite)
     {
         $this->socials = [
             self::FACEBOOK => $facebook,
@@ -28,6 +26,7 @@ class SocialProvider
             self::FACEBOOK_ADMIN => $facebookAdmin,
             self::TWITTER => $twitter,
             self::GOOGLE => $google,
+            self::EVENTBRITE => $eventBrite,
         ];
     }
 

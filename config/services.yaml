@@ -52,6 +52,10 @@ services:
         arguments:
             $config: { id: "%env(TWITTER_API_ID)%", secret: "%env(TWITTER_API_SECRET)%"}
 
+    App\Social\EventBrite:
+        arguments:
+            $config: { id: "unused", secret: "unused" }
+
     App\Social\Google:
         arguments:
             $config: { id: "unused", secret: "unused"}
@@ -75,6 +79,7 @@ services:
                 toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'
                 openagenda: '@App\Parser\Common\OpenAgendaParser'
                 sowprog: '@App\Parser\Common\SowProgParser'
+                eventbrite: '@App\Parser\Common\EventBriteParser'
 
     App\Importer\CountryImporter:
         arguments:

@@ -19,7 +19,7 @@ abstract class Info
 {
     /**
      * @var int
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -28,151 +28,196 @@ abstract class Info
     /**
      * @var bool
      *
-     * @ORM\Column(name="has_see_tuto", type="boolean")
+     * @ORM\Column(type="boolean")
      */
     protected $hasSeeTuto;
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="has_see_asking_social", type="boolean")
+     * @ORM\Column(type="boolean")
      */
     protected $hasSeeAskingSocial;
 
     /**
-     * @ORM\Column(name="facebook_id", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_id;
 
     /**
-     * @ORM\Column(name="facebook_access_token", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_access_token;
 
     /**
-     * @ORM\Column(name="facebook_token_secret", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_token_secret;
 
     /**
-     * @ORM\Column(name="facebook_refresh_token", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_refresh_token;
 
     /**
-     * @ORM\Column(name="facebook_email", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_email;
 
     /**
-     * @ORM\Column(name="facebook_expires_in", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_expires_in;
 
     /**
-     * @ORM\Column(name="facebook_nickname", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_nickname;
 
     /**
-     * @ORM\Column(name="facebook_realname", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_realname;
 
     /**
-     * @ORM\Column(name="facebook_profile_picture", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $facebook_profile_picture;
 
     /**
-     * @ORM\Column(name="google_id", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_id;
 
     /**
-     * @ORM\Column(name="google_access_token", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_access_token;
 
     /**
-     * @ORM\Column(name="google_token_secret", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_token_secret;
 
     /**
-     * @ORM\Column(name="google_refresh_token", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_refresh_token;
 
     /**
-     * @ORM\Column(name="google_email", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_email;
 
     /**
-     * @ORM\Column(name="google_expires_in", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_expires_in;
 
     /**
-     * @ORM\Column(name="google_nickname", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_nickname;
 
     /**
-     * @ORM\Column(name="google_realname", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_realname;
 
     /**
-     * @ORM\Column(name="google_profile_picture", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $google_profile_picture;
 
     /**
-     * @ORM\Column(name="twitter_id", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_id;
 
     /**
-     * @ORM\Column(name="twitter_access_token", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_access_token;
 
     /**
-     * @ORM\Column(name="twitter_token_secret", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_token_secret;
 
     /**
-     * @ORM\Column(name="twitter_refresh_token", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_refresh_token;
 
     /**
-     * @ORM\Column(name="twitter_email", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_email;
 
     /**
-     * @ORM\Column(name="twitter_expires_in", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_expires_in;
 
     /**
-     * @ORM\Column(name="twitter_nickname", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_nickname;
 
     /**
-     * @ORM\Column(name="twitter_realname", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_realname;
 
     /**
-     * @ORM\Column(name="twitter_profile_picture", type="string", length=255, nullable=true)
+     * @ORM\Column(length=255, nullable=true)
      */
     protected $twitter_profile_picture;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_id;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_access_token;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_token_secret;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_refresh_token;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_email;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_expires_in;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_nickname;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_realname;
+
+    /**
+     * @ORM\Column(length=255, nullable=true)
+     */
+    protected $eventbrite_profile_picture;
 
     public function __construct()
     {
@@ -180,714 +225,469 @@ abstract class Info
         $this->hasSeeAskingSocial = false;
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function __toString()
+    {
+        return '#' . $this->id ?: '?';
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set hasSeeTuto.
-     *
-     * @param bool $hasSeeTuto
-     *
-     * @return Info
-     */
-    public function setHasSeeTuto($hasSeeTuto)
+    public function getHasSeeTuto(): ?bool
+    {
+        return $this->hasSeeTuto;
+    }
+
+    public function setHasSeeTuto(bool $hasSeeTuto): self
     {
         $this->hasSeeTuto = $hasSeeTuto;
 
         return $this;
     }
 
-    /**
-     * Get hasSeeTuto.
-     *
-     * @return bool
-     */
-    public function getHasSeeTuto()
+    public function getHasSeeAskingSocial(): ?bool
     {
-        return $this->hasSeeTuto;
+        return $this->hasSeeAskingSocial;
     }
 
-    /**
-     * Set hasSeeAskingSocial.
-     *
-     * @param bool $hasSeeAskingSocial
-     *
-     * @return Info
-     */
-    public function setHasSeeAskingSocial($hasSeeAskingSocial)
+    public function setHasSeeAskingSocial(bool $hasSeeAskingSocial): self
     {
         $this->hasSeeAskingSocial = $hasSeeAskingSocial;
 
         return $this;
     }
 
-    /**
-     * Get hasSeeAskingSocial.
-     *
-     * @return bool
-     */
-    public function getHasSeeAskingSocial()
-    {
-        return $this->hasSeeAskingSocial;
-    }
-
-    /**
-     * Set facebook_id.
-     *
-     * @param string $facebookId
-     *
-     * @return Info
-     */
-    public function setFacebookId($facebookId)
-    {
-        $this->facebook_id = $facebookId;
-
-        return $this;
-    }
-
-    /**
-     * Get facebook_id.
-     *
-     * @return string
-     */
-    public function getFacebookId()
+    public function getFacebookId(): ?string
     {
         return $this->facebook_id;
     }
 
-    /**
-     * Set facebook_access_token.
-     *
-     * @param string $facebookAccessToken
-     *
-     * @return Info
-     */
-    public function setFacebookAccessToken($facebookAccessToken)
+    public function setFacebookId(?string $facebook_id): self
     {
-        $this->facebook_access_token = $facebookAccessToken;
+        $this->facebook_id = $facebook_id;
 
         return $this;
     }
 
-    /**
-     * Get facebook_access_token.
-     *
-     * @return string
-     */
-    public function getFacebookAccessToken()
+    public function getFacebookAccessToken(): ?string
     {
         return $this->facebook_access_token;
     }
 
-    /**
-     * Set facebook_token_secret.
-     *
-     * @param string $facebookTokenSecret
-     *
-     * @return Info
-     */
-    public function setFacebookTokenSecret($facebookTokenSecret)
+    public function setFacebookAccessToken(?string $facebook_access_token): self
     {
-        $this->facebook_token_secret = $facebookTokenSecret;
+        $this->facebook_access_token = $facebook_access_token;
 
         return $this;
     }
 
-    /**
-     * Get facebook_token_secret.
-     *
-     * @return string
-     */
-    public function getFacebookTokenSecret()
+    public function getFacebookTokenSecret(): ?string
     {
         return $this->facebook_token_secret;
     }
 
-    /**
-     * Set facebook_email.
-     *
-     * @param string $facebookEmail
-     *
-     * @return Info
-     */
-    public function setFacebookEmail($facebookEmail)
+    public function setFacebookTokenSecret(?string $facebook_token_secret): self
     {
-        $this->facebook_email = $facebookEmail;
+        $this->facebook_token_secret = $facebook_token_secret;
 
         return $this;
     }
 
-    /**
-     * Get facebook_email.
-     *
-     * @return string
-     */
-    public function getFacebookEmail()
-    {
-        return $this->facebook_email;
-    }
-
-    /**
-     * Set facebook_nickname.
-     *
-     * @param string $facebookNickname
-     *
-     * @return Info
-     */
-    public function setFacebookNickname($facebookNickname)
-    {
-        $this->facebook_nickname = $facebookNickname;
-
-        return $this;
-    }
-
-    /**
-     * Get facebook_nickname.
-     *
-     * @return string
-     */
-    public function getFacebookNickname()
-    {
-        return $this->facebook_nickname;
-    }
-
-    /**
-     * Set facebook_realname.
-     *
-     * @param string $facebookRealname
-     *
-     * @return Info
-     */
-    public function setFacebookRealname($facebookRealname)
-    {
-        $this->facebook_realname = $facebookRealname;
-
-        return $this;
-    }
-
-    /**
-     * Get facebook_realname.
-     *
-     * @return string
-     */
-    public function getFacebookRealname()
-    {
-        return $this->facebook_realname;
-    }
-
-    /**
-     * Set facebook_profile_picture.
-     *
-     * @param string $facebookProfilePicture
-     *
-     * @return Info
-     */
-    public function setFacebookProfilePicture($facebookProfilePicture)
-    {
-        $this->facebook_profile_picture = $facebookProfilePicture;
-
-        return $this;
-    }
-
-    /**
-     * Get facebook_profile_picture.
-     *
-     * @return string
-     */
-    public function getFacebookProfilePicture()
-    {
-        return $this->facebook_profile_picture;
-    }
-
-    /**
-     * Set google_id.
-     *
-     * @param string $googleId
-     *
-     * @return Info
-     */
-    public function setGoogleId($googleId)
-    {
-        $this->google_id = $googleId;
-
-        return $this;
-    }
-
-    /**
-     * Get google_id.
-     *
-     * @return string
-     */
-    public function getGoogleId()
-    {
-        return $this->google_id;
-    }
-
-    /**
-     * Set google_access_token.
-     *
-     * @param string $googleAccessToken
-     *
-     * @return Info
-     */
-    public function setGoogleAccessToken($googleAccessToken)
-    {
-        $this->google_access_token = $googleAccessToken;
-
-        return $this;
-    }
-
-    /**
-     * Get google_access_token.
-     *
-     * @return string
-     */
-    public function getGoogleAccessToken()
-    {
-        return $this->google_access_token;
-    }
-
-    /**
-     * Set google_token_secret.
-     *
-     * @param string $googleTokenSecret
-     *
-     * @return Info
-     */
-    public function setGoogleTokenSecret($googleTokenSecret)
-    {
-        $this->google_token_secret = $googleTokenSecret;
-
-        return $this;
-    }
-
-    /**
-     * Get google_token_secret.
-     *
-     * @return string
-     */
-    public function getGoogleTokenSecret()
-    {
-        return $this->google_token_secret;
-    }
-
-    /**
-     * Set google_email.
-     *
-     * @param string $googleEmail
-     *
-     * @return Info
-     */
-    public function setGoogleEmail($googleEmail)
-    {
-        $this->google_email = $googleEmail;
-
-        return $this;
-    }
-
-    /**
-     * Get google_email.
-     *
-     * @return string
-     */
-    public function getGoogleEmail()
-    {
-        return $this->google_email;
-    }
-
-    /**
-     * Set google_nickname.
-     *
-     * @param string $googleNickname
-     *
-     * @return Info
-     */
-    public function setGoogleNickname($googleNickname)
-    {
-        $this->google_nickname = $googleNickname;
-
-        return $this;
-    }
-
-    /**
-     * Get google_nickname.
-     *
-     * @return string
-     */
-    public function getGoogleNickname()
-    {
-        return $this->google_nickname;
-    }
-
-    /**
-     * Set google_realname.
-     *
-     * @param string $googleRealname
-     *
-     * @return Info
-     */
-    public function setGoogleRealname($googleRealname)
-    {
-        $this->google_realname = $googleRealname;
-
-        return $this;
-    }
-
-    /**
-     * Get google_realname.
-     *
-     * @return string
-     */
-    public function getGoogleRealname()
-    {
-        return $this->google_realname;
-    }
-
-    /**
-     * Set google_profile_picture.
-     *
-     * @param string $googleProfilePicture
-     *
-     * @return Info
-     */
-    public function setGoogleProfilePicture($googleProfilePicture)
-    {
-        $this->google_profile_picture = $googleProfilePicture;
-
-        return $this;
-    }
-
-    /**
-     * Get google_profile_picture.
-     *
-     * @return string
-     */
-    public function getGoogleProfilePicture()
-    {
-        return $this->google_profile_picture;
-    }
-
-    /**
-     * Set twitter_id.
-     *
-     * @param string $twitterId
-     *
-     * @return Info
-     */
-    public function setTwitterId($twitterId)
-    {
-        $this->twitter_id = $twitterId;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter_id.
-     *
-     * @return string
-     */
-    public function getTwitterId()
-    {
-        return $this->twitter_id;
-    }
-
-    /**
-     * Set twitter_access_token.
-     *
-     * @param string $twitterAccessToken
-     *
-     * @return Info
-     */
-    public function setTwitterAccessToken($twitterAccessToken)
-    {
-        $this->twitter_access_token = $twitterAccessToken;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter_access_token.
-     *
-     * @return string
-     */
-    public function getTwitterAccessToken()
-    {
-        return $this->twitter_access_token;
-    }
-
-    /**
-     * Set twitter_token_secret.
-     *
-     * @param string $twitterTokenSecret
-     *
-     * @return Info
-     */
-    public function setTwitterTokenSecret($twitterTokenSecret)
-    {
-        $this->twitter_token_secret = $twitterTokenSecret;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter_token_secret.
-     *
-     * @return string
-     */
-    public function getTwitterTokenSecret()
-    {
-        return $this->twitter_token_secret;
-    }
-
-    /**
-     * Set twitter_email.
-     *
-     * @param string $twitterEmail
-     *
-     * @return Info
-     */
-    public function setTwitterEmail($twitterEmail)
-    {
-        $this->twitter_email = $twitterEmail;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter_email.
-     *
-     * @return string
-     */
-    public function getTwitterEmail()
-    {
-        return $this->twitter_email;
-    }
-
-    /**
-     * Set twitter_nickname.
-     *
-     * @param string $twitterNickname
-     *
-     * @return Info
-     */
-    public function setTwitterNickname($twitterNickname)
-    {
-        $this->twitter_nickname = $twitterNickname;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter_nickname.
-     *
-     * @return string
-     */
-    public function getTwitterNickname()
-    {
-        return $this->twitter_nickname;
-    }
-
-    /**
-     * Set twitter_realname.
-     *
-     * @param string $twitterRealname
-     *
-     * @return Info
-     */
-    public function setTwitterRealname($twitterRealname)
-    {
-        $this->twitter_realname = $twitterRealname;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter_realname.
-     *
-     * @return string
-     */
-    public function getTwitterRealname()
-    {
-        return $this->twitter_realname;
-    }
-
-    /**
-     * Set twitter_profile_picture.
-     *
-     * @param string $twitterProfilePicture
-     *
-     * @return Info
-     */
-    public function setTwitterProfilePicture($twitterProfilePicture)
-    {
-        $this->twitter_profile_picture = $twitterProfilePicture;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter_profile_picture.
-     *
-     * @return string
-     */
-    public function getTwitterProfilePicture()
-    {
-        return $this->twitter_profile_picture;
-    }
-
-    /**
-     * Set facebook_expires_in.
-     *
-     * @param string $facebookExpiresIn
-     *
-     * @return Info
-     */
-    public function setFacebookExpiresIn($facebookExpiresIn)
-    {
-        $this->facebook_expires_in = $facebookExpiresIn;
-
-        return $this;
-    }
-
-    /**
-     * Get facebook_expires_in.
-     *
-     * @return string
-     */
-    public function getFacebookExpiresIn()
-    {
-        return $this->facebook_expires_in;
-    }
-
-    /**
-     * Set google_expires_in.
-     *
-     * @param string $googleExpiresIn
-     *
-     * @return Info
-     */
-    public function setGoogleExpiresIn($googleExpiresIn)
-    {
-        $this->google_expires_in = $googleExpiresIn;
-
-        return $this;
-    }
-
-    /**
-     * Get google_expires_in.
-     *
-     * @return string
-     */
-    public function getGoogleExpiresIn()
-    {
-        return $this->google_expires_in;
-    }
-
-    /**
-     * Set twitter_expires_in.
-     *
-     * @param string $twitterExpiresIn
-     *
-     * @return Info
-     */
-    public function setTwitterExpiresIn($twitterExpiresIn)
-    {
-        $this->twitter_expires_in = $twitterExpiresIn;
-
-        return $this;
-    }
-
-    /**
-     * Get twitter_expires_in.
-     *
-     * @return string
-     */
-    public function getTwitterExpiresIn()
-    {
-        return $this->twitter_expires_in;
-    }
-
-    /**
-     * Set facebook_refresh_token.
-     *
-     * @param string $facebookRefreshToken
-     *
-     * @return Info
-     */
-    public function setFacebookRefreshToken($facebookRefreshToken)
-    {
-        $this->facebook_refresh_token = $facebookRefreshToken;
-
-        return $this;
-    }
-
-    /**
-     * Get facebook_refresh_token.
-     *
-     * @return string
-     */
-    public function getFacebookRefreshToken()
+    public function getFacebookRefreshToken(): ?string
     {
         return $this->facebook_refresh_token;
     }
 
-    /**
-     * Set google_refresh_token.
-     *
-     * @param string $googleRefreshToken
-     *
-     * @return Info
-     */
-    public function setGoogleRefreshToken($googleRefreshToken)
+    public function setFacebookRefreshToken(?string $facebook_refresh_token): self
     {
-        $this->google_refresh_token = $googleRefreshToken;
+        $this->facebook_refresh_token = $facebook_refresh_token;
 
         return $this;
     }
 
-    /**
-     * Get google_refresh_token.
-     *
-     * @return string
-     */
-    public function getGoogleRefreshToken()
+    public function getFacebookEmail(): ?string
+    {
+        return $this->facebook_email;
+    }
+
+    public function setFacebookEmail(?string $facebook_email): self
+    {
+        $this->facebook_email = $facebook_email;
+
+        return $this;
+    }
+
+    public function getFacebookExpiresIn(): ?string
+    {
+        return $this->facebook_expires_in;
+    }
+
+    public function setFacebookExpiresIn(?string $facebook_expires_in): self
+    {
+        $this->facebook_expires_in = $facebook_expires_in;
+
+        return $this;
+    }
+
+    public function getFacebookNickname(): ?string
+    {
+        return $this->facebook_nickname;
+    }
+
+    public function setFacebookNickname(?string $facebook_nickname): self
+    {
+        $this->facebook_nickname = $facebook_nickname;
+
+        return $this;
+    }
+
+    public function getFacebookRealname(): ?string
+    {
+        return $this->facebook_realname;
+    }
+
+    public function setFacebookRealname(?string $facebook_realname): self
+    {
+        $this->facebook_realname = $facebook_realname;
+
+        return $this;
+    }
+
+    public function getFacebookProfilePicture(): ?string
+    {
+        return $this->facebook_profile_picture;
+    }
+
+    public function setFacebookProfilePicture(?string $facebook_profile_picture): self
+    {
+        $this->facebook_profile_picture = $facebook_profile_picture;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->google_id;
+    }
+
+    public function setGoogleId(?string $google_id): self
+    {
+        $this->google_id = $google_id;
+
+        return $this;
+    }
+
+    public function getGoogleAccessToken(): ?string
+    {
+        return $this->google_access_token;
+    }
+
+    public function setGoogleAccessToken(?string $google_access_token): self
+    {
+        $this->google_access_token = $google_access_token;
+
+        return $this;
+    }
+
+    public function getGoogleTokenSecret(): ?string
+    {
+        return $this->google_token_secret;
+    }
+
+    public function setGoogleTokenSecret(?string $google_token_secret): self
+    {
+        $this->google_token_secret = $google_token_secret;
+
+        return $this;
+    }
+
+    public function getGoogleRefreshToken(): ?string
     {
         return $this->google_refresh_token;
     }
 
-    /**
-     * Set twitter_refresh_token.
-     *
-     * @param string $twitterRefreshToken
-     *
-     * @return Info
-     */
-    public function setTwitterRefreshToken($twitterRefreshToken)
+    public function setGoogleRefreshToken(?string $google_refresh_token): self
     {
-        $this->twitter_refresh_token = $twitterRefreshToken;
+        $this->google_refresh_token = $google_refresh_token;
 
         return $this;
     }
 
-    /**
-     * Get twitter_refresh_token.
-     *
-     * @return string
-     */
-    public function getTwitterRefreshToken()
+    public function getGoogleEmail(): ?string
+    {
+        return $this->google_email;
+    }
+
+    public function setGoogleEmail(?string $google_email): self
+    {
+        $this->google_email = $google_email;
+
+        return $this;
+    }
+
+    public function getGoogleExpiresIn(): ?string
+    {
+        return $this->google_expires_in;
+    }
+
+    public function setGoogleExpiresIn(?string $google_expires_in): self
+    {
+        $this->google_expires_in = $google_expires_in;
+
+        return $this;
+    }
+
+    public function getGoogleNickname(): ?string
+    {
+        return $this->google_nickname;
+    }
+
+    public function setGoogleNickname(?string $google_nickname): self
+    {
+        $this->google_nickname = $google_nickname;
+
+        return $this;
+    }
+
+    public function getGoogleRealname(): ?string
+    {
+        return $this->google_realname;
+    }
+
+    public function setGoogleRealname(?string $google_realname): self
+    {
+        $this->google_realname = $google_realname;
+
+        return $this;
+    }
+
+    public function getGoogleProfilePicture(): ?string
+    {
+        return $this->google_profile_picture;
+    }
+
+    public function setGoogleProfilePicture(?string $google_profile_picture): self
+    {
+        $this->google_profile_picture = $google_profile_picture;
+
+        return $this;
+    }
+
+    public function getTwitterId(): ?string
+    {
+        return $this->twitter_id;
+    }
+
+    public function setTwitterId(?string $twitter_id): self
+    {
+        $this->twitter_id = $twitter_id;
+
+        return $this;
+    }
+
+    public function getTwitterAccessToken(): ?string
+    {
+        return $this->twitter_access_token;
+    }
+
+    public function setTwitterAccessToken(?string $twitter_access_token): self
+    {
+        $this->twitter_access_token = $twitter_access_token;
+
+        return $this;
+    }
+
+    public function getTwitterTokenSecret(): ?string
+    {
+        return $this->twitter_token_secret;
+    }
+
+    public function setTwitterTokenSecret(?string $twitter_token_secret): self
+    {
+        $this->twitter_token_secret = $twitter_token_secret;
+
+        return $this;
+    }
+
+    public function getTwitterRefreshToken(): ?string
     {
         return $this->twitter_refresh_token;
     }
 
-    public function __toString()
+    public function setTwitterRefreshToken(?string $twitter_refresh_token): self
     {
-        return '#' . $this->id ?: '?';
+        $this->twitter_refresh_token = $twitter_refresh_token;
+
+        return $this;
+    }
+
+    public function getTwitterEmail(): ?string
+    {
+        return $this->twitter_email;
+    }
+
+    public function setTwitterEmail(?string $twitter_email): self
+    {
+        $this->twitter_email = $twitter_email;
+
+        return $this;
+    }
+
+    public function getTwitterExpiresIn(): ?string
+    {
+        return $this->twitter_expires_in;
+    }
+
+    public function setTwitterExpiresIn(?string $twitter_expires_in): self
+    {
+        $this->twitter_expires_in = $twitter_expires_in;
+
+        return $this;
+    }
+
+    public function getTwitterNickname(): ?string
+    {
+        return $this->twitter_nickname;
+    }
+
+    public function setTwitterNickname(?string $twitter_nickname): self
+    {
+        $this->twitter_nickname = $twitter_nickname;
+
+        return $this;
+    }
+
+    public function getTwitterRealname(): ?string
+    {
+        return $this->twitter_realname;
+    }
+
+    public function setTwitterRealname(?string $twitter_realname): self
+    {
+        $this->twitter_realname = $twitter_realname;
+
+        return $this;
+    }
+
+    public function getTwitterProfilePicture(): ?string
+    {
+        return $this->twitter_profile_picture;
+    }
+
+    public function setTwitterProfilePicture(?string $twitter_profile_picture): self
+    {
+        $this->twitter_profile_picture = $twitter_profile_picture;
+
+        return $this;
+    }
+
+    public function getEventbriteId(): ?string
+    {
+        return $this->eventbrite_id;
+    }
+
+    public function setEventbriteId(?string $eventbrite_id): self
+    {
+        $this->eventbrite_id = $eventbrite_id;
+
+        return $this;
+    }
+
+    public function getEventbriteAccessToken(): ?string
+    {
+        return $this->eventbrite_access_token;
+    }
+
+    public function setEventbriteAccessToken(?string $eventbrite_access_token): self
+    {
+        $this->eventbrite_access_token = $eventbrite_access_token;
+
+        return $this;
+    }
+
+    public function getEventbriteTokenSecret(): ?string
+    {
+        return $this->eventbrite_token_secret;
+    }
+
+    public function setEventbriteTokenSecret(?string $eventbrite_token_secret): self
+    {
+        $this->eventbrite_token_secret = $eventbrite_token_secret;
+
+        return $this;
+    }
+
+    public function getEventbriteRefreshToken(): ?string
+    {
+        return $this->eventbrite_refresh_token;
+    }
+
+    public function setEventbriteRefreshToken(?string $eventbrite_refresh_token): self
+    {
+        $this->eventbrite_refresh_token = $eventbrite_refresh_token;
+
+        return $this;
+    }
+
+    public function getEventbriteEmail(): ?string
+    {
+        return $this->eventbrite_email;
+    }
+
+    public function setEventbriteEmail(?string $eventbrite_email): self
+    {
+        $this->eventbrite_email = $eventbrite_email;
+
+        return $this;
+    }
+
+    public function getEventbriteExpiresIn(): ?string
+    {
+        return $this->eventbrite_expires_in;
+    }
+
+    public function setEventbriteExpiresIn(?string $eventbrite_expires_in): self
+    {
+        $this->eventbrite_expires_in = $eventbrite_expires_in;
+
+        return $this;
+    }
+
+    public function getEventbriteNickname(): ?string
+    {
+        return $this->eventbrite_nickname;
+    }
+
+    public function setEventbriteNickname(?string $eventbrite_nickname): self
+    {
+        $this->eventbrite_nickname = $eventbrite_nickname;
+
+        return $this;
+    }
+
+    public function getEventbriteRealname(): ?string
+    {
+        return $this->eventbrite_realname;
+    }
+
+    public function setEventbriteRealname(?string $eventbrite_realname): self
+    {
+        $this->eventbrite_realname = $eventbrite_realname;
+
+        return $this;
+    }
+
+    public function getEventbriteProfilePicture(): ?string
+    {
+        return $this->eventbrite_profile_picture;
+    }
+
+    public function setEventbriteProfilePicture(?string $eventbrite_profile_picture): self
+    {
+        $this->eventbrite_profile_picture = $eventbrite_profile_picture;
+
+        return $this;
     }
 }

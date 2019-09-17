@@ -102,6 +102,10 @@ facebook_login:
 google_login:
     path: /login/check-google
 
+#Login Eventbrite
+eventbrite_login:
+    path: /login/check-eventbrite
+
 #La ville est définie à partir d'ici
 app.city:
     resource: "../src/Controller/City"

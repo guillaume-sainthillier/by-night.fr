@@ -1051,7 +1051,7 @@ class Event implements GeolocalizeInterface
         return $this->placeName;
     }
 
-    public function setPlaceName(string $placeName): self
+    public function setPlaceName(?string $placeName): self
     {
         $this->placeName = $placeName;
 

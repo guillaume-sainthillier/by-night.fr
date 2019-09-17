@@ -37,6 +37,7 @@ security:
                     facebook: "/login-social/check-facebook"
                     google: "/login-social/check-google"
                     twitter: "/login-social/check-twitter"
+                    eventbrite: "/login-social/check-eventbrite"
                 login_path: fos_user_security_login
                 failure_path: fos_user_security_login
 
@@ -52,10 +53,12 @@ security:
                 delete_cookies: ['PHPSESSID']
 
     access_control:
+        - { path: ^/login-social/service/eventbrite, roles: ROLE_ADMIN }
+        - { path: ^/_administration, roles: ROLE_ADMIN }
+        - { path: ^/social, roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/espace-perso, roles: IS_AUTHENTICATED_REMEMBERED }
         - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login-social, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/inscription, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/espace-perso, roles: IS_AUTHENTICATED_REMEMBERED }
-        - { path: ^/social, roles: IS_AUTHENTICATED_REMEMBERED }
-        - { path: ^/_administration, roles: ROLE_ADMIN }
         - { path: ^/_private, roles: IS_AUTHENTICATED_ANONYMOUSLY, ips: [127.0.0.1, ::1, 192.168.0.1/24] }
