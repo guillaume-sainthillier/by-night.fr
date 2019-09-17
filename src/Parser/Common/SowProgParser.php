@@ -38,18 +38,13 @@ class SowProgParser extends AbstractParser
         foreach ($events['eventDescription'] as $event) {
             foreach ($event['eventSchedule']['eventScheduleDate'] as $schedule) {
                 $the_event = $this->getInfoEvent($event, $schedule);
-                //$this->publish($the_event);
+                $this->publish($the_event);
             }
         }
     }
 
     private function getInfoEvent(array $event, array $currentSchedule): array
     {
-        if($event['id'] == '499301') {
-            dump($event);
-            die;
-        }
-
         $tab_infos = [
             'nom' => $event['event']['title'],
             'descriptif' => $event['event']['description'],
