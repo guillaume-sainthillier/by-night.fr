@@ -6,6 +6,7 @@ use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 
 /**
  * @author Guillaume SAINTHILLIER
@@ -32,7 +33,7 @@ class SowProgParser extends AbstractParser
     {
         $modifiedSince = true === $incremental ? 1000 * ((time() - 86400)) : 0;
         $response = $this->client->get('/rest/v1_2/scheduledEvents/search?modifiedSince=' . $modifiedSince);
-        $events = json_decode((string)$response->getBody(), true);
+        $events = json_decode(copy_to_string($response->getBody()), true);
 
         foreach ($events['eventDescription'] as $event) {
             foreach ($event['eventSchedule']['eventScheduleDate'] as $schedule) {
