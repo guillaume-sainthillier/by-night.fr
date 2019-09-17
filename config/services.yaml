@@ -30,6 +30,7 @@ services:
             $cfZone: "%env(CF_ZONE)%"
             $sowprogUsername: "%env(SOWPROG_USER)%"
             $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
+            $monitor: "%env(APP_MONITOR)%"
 
     App\:
         resource: '../src/*'

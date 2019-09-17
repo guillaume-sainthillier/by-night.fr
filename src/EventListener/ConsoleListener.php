@@ -7,10 +7,20 @@ use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class ConsoleListener implements EventSubscriberInterface
 {
+    /** @var int */
+    private $monitor;
+
+    /** @var Stopwatch[] */
     private $stopwatches = [];
+
+    public function __construct(int $monitor)
+    {
+        $this->monitor = $monitor;
+    }
 
     public static function getSubscribedEvents()
     {
@@ -23,7 +33,7 @@ class ConsoleListener implements EventSubscriberInterface
     public function onConsoleCommand(ConsoleCommandEvent $event): void
     {
         Monitor::$output = $event->getOutput();
-        Monitor::enableMonitoring((bool) ($_ENV['APP_MONITOR'] ?? false));
+        Monitor::enableMonitoring((bool) $this->monitor);
         $this->stopwatches[$event->getCommand()->getName()] = Monitor::start($event->getCommand()->getName());
     }
 
