@@ -38,13 +38,18 @@ class SowProgParser extends AbstractParser
         foreach ($events['eventDescription'] as $event) {
             foreach ($event['eventSchedule']['eventScheduleDate'] as $schedule) {
                 $the_event = $this->getInfoEvent($event, $schedule);
-                $this->publish($the_event);
+                //$this->publish($the_event);
             }
         }
     }
 
     private function getInfoEvent(array $event, array $currentSchedule): array
     {
+        if($event['id'] == '499301') {
+            dump($event);
+            die;
+        }
+
         $tab_infos = [
             'nom' => $event['event']['title'],
             'descriptif' => $event['event']['description'],
@@ -57,13 +62,8 @@ class SowProgParser extends AbstractParser
         $tab_infos['type_manifestation'] = $event['event']['eventType']['label'];
         $tab_infos['categorie_manifestation'] = $event['event']['eventStyle']['label'];
 
-        if ($event['eventSchedule']['repeating'] === false) {
-            $tab_infos['date_debut'] = new \DateTime($event['eventSchedule']['startDate']);
-            $tab_infos['date_fin'] = new \DateTime($event['eventSchedule']['endDate']);
-        } else {
-            $tab_infos['date_debut'] = new \DateTime($currentSchedule['date']);
-            $tab_infos['date_fin'] = new \DateTime($currentSchedule['endDate']);
-        }
+        $tab_infos['date_debut'] = new \DateTime($currentSchedule['date']);
+        $tab_infos['date_fin'] = new \DateTime($currentSchedule['endDate']);
 
         if ($currentSchedule['startHour'] && $currentSchedule['startHour'] !== $currentSchedule['endHour']) {
             $tab_infos['horaires'] = sprintf(
