@@ -48,7 +48,7 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
         } catch (\Exception $e) {
             $this->logger->critical($e);
 
-            return ConsumerInterface::MSG_REJECT_REQUEUE;
+            return ConsumerInterface::MSG_REJECT;
         }
 
         return ConsumerInterface::MSG_ACK;

@@ -47,7 +47,6 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
         }
 
         try {
-            dump($urls);
             $this->client->post(
                 sprintf('/client/v4/zones/%s/purge_cache', $this->cfZone),
                 ['json' => ["files" => $urls]]
