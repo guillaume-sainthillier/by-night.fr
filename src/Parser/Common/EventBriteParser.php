@@ -56,7 +56,7 @@ class EventBriteParser extends AbstractParser
             foreach ($events as $event) {
                 $event['venue'] = $venues[$event['venue_id']] ?? null;
                 $event = $this->getInfoEvent($event);
-                if (null == $event) {
+                if (null === $event) {
                     continue;
                 }
                 $this->publish($event);
