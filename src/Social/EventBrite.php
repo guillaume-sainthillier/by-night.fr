@@ -105,7 +105,7 @@ class EventBrite extends Social
             }, function (RequestException $exception) use ($uri) {
                 if ($exception->getResponse() && $exception->getResponse()->getStatusCode() === 429) {
                     Monitor::writeln("<error>EVENTBRITE API LIMIT</error>");
-                    sleep(3600);
+                    sleep(3660);
                     $this->ping($this->entityManager->getConnection());
                     return $this->jsonRequest($uri);
                 }
