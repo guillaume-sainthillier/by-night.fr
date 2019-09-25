@@ -3,7 +3,6 @@
 
 User-agent: *
 Disallow:/media/*
-Disallow:/media/*
 Disallow:/*/tweeter-feed/*
 Disallow:/login-social/*
 Disallow:/espace-perso/*
