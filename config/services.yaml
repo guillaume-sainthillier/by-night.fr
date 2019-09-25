@@ -5,6 +5,7 @@ parameters:
     facebook_id_page: '205292952998805'
     google_map_key: '%env(GOOGLE_MAP_KEY_WEB)%'
     twitter_id_page: 'By__Night'
+    disable_polled_feeds: '%kernel.debug%'
     class.guzzle.response: Guzzle\Http\Message\Response
     class.guzzle.client: Guzzle\Http\Client
     class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
@@ -26,6 +27,7 @@ services:
             $tempPath: "%kernel.project_dir%/public/uploads/temp"
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
+            $enableFeeds: "%env(APP_ENABLE_TWITTER_FEED)%"
             $debug: "%kernel.debug%"
             $cfUserEmail: "%env(CF_USER_EMAIL)%"
             $cfUserKey: "%env(CF_USER_KEY)%"
@@ -33,6 +35,8 @@ services:
             $sowprogUsername: "%env(SOWPROG_USER)%"
             $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
             $monitor: "%env(APP_MONITOR)%"
+            $disableTwitterFeed: "%disable_polled_feeds%"
+            $disableProgrammeTVFeed: "%disable_polled_feeds%"
 
     App\:
         resource: '../src/*'

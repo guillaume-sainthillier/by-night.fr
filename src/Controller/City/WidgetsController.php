@@ -28,9 +28,13 @@ class WidgetsController extends BaseController
      * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"})
      * @ReverseProxy(expires="1 hour")
      */
-    public function twitterAction(Location $location, Twitter $twitter, $max_id = null)
+    public function twitterAction(bool $disableTwitterFeed, Location $location, Twitter $twitter, $max_id = null)
     {
-        $results = $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT);
+        if(! $disableTwitterFeed) {
+            $results = $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT);
+        } else {
+            $results = [];
+        }
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {

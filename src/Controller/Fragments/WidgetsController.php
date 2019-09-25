@@ -25,9 +25,13 @@ class WidgetsController extends BaseController
      *
      * @return Response
      */
-    public function programmeTVAction(ProgrammeTVParser $parser)
+    public function programmeTVAction(bool $disableProgrammeTVFeed, ProgrammeTVParser $parser)
     {
-        $programmes = $parser->getProgrammesTV();
+        if(! $disableProgrammeTVFeed) {
+            $programmes = $parser->getProgrammesTV();
+        } else {
+            $programmes = [];
+        }
 
         return $this->render('City/Hinclude/programme_tv.html.twig', [
             'programmes' => $programmes,
