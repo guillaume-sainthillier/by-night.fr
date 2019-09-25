@@ -21,6 +21,8 @@ services:
 
     worker:
         <<: *defaults
+        depends_on:
+            - app
         command: worker
 
     assets:
