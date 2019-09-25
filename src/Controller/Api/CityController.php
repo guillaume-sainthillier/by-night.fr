@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/api")
  */
-class ApiController extends AbstractController
+class CityController extends AbstractController
 {
     const MAX_RESULTS = 7;
 
