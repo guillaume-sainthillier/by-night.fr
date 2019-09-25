@@ -79,17 +79,11 @@ class EventProfilePicture
     public function getPictureUrl(Event $event, $thumb = 'thumbs_evenement')
     {
         if ($event->getPath()) {
-            $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
-            $webPath = \mb_substr($webPath, \mb_strpos($webPath, '/media'), \mb_strlen($webPath));
-
-            return $this->packages->getUrl($webPath, 'file');
+            return $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
         }
 
         if ($event->getSystemPath()) {
-            $webPath = $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
-            $webPath = \mb_substr($webPath, \mb_strpos($webPath, '/media'), \mb_strlen($webPath));
-
-            return $this->packages->getUrl($webPath, 'file');
+            return $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
         }
 
         if ($event->getUrl()) {
