@@ -95,7 +95,10 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($places as $place) {
             $place = current($place);
-            $this->addUrl($section, 'app_agenda_place', ['slug' => $place['slug'], 'location' => $place['city_slug']]);
+            $this->addUrl($section, 'app_agenda_place', [
+                'slug' => $place['slug'],
+                'location' => $place['city_slug']
+            ]);
         }
     }
 
@@ -108,7 +111,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $this->addUrl($section, 'app_event_details', [
                 'id' => $event['id'],
                 'slug' => $event['slug'],
-                'location' => $event['city_slug'],
+                'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
             ]);
         }
     }
@@ -122,7 +125,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $this->addUrl($section, 'app_user_details', [
                 'id' => $user->getId(),
                 'slug' => $user->getSlug(),
-            ], $user->getUpdatedAt());
+            ], DateTime::createFromImmutable($user->getUpdatedAt()));
         }
     }
 

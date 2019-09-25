@@ -57,7 +57,9 @@ class EventRepository extends EntityRepository
     public function findSiteMap()
     {
         return $this->createQueryBuilder('a')
-            ->select('a.slug, a.id, c.slug AS city_slug')
+            ->addSelect('c3')
+            ->join('p.country', 'c3')
+            ->select('a.slug, a.id, c.slug AS city_slug, c3.slug AS country_slug')
             ->getQuery()
             ->iterate();
     }
