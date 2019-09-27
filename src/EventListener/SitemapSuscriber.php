@@ -8,6 +8,7 @@ use App\Entity\Place;
 use App\Entity\User;
 use DateTime;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;
@@ -16,6 +17,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapSuscriber implements EventSubscriberInterface
 {
+    private const ITEMS_PER_PAGE = 5000;
+
     /**
      * @var UrlGeneratorInterface
      */
@@ -36,9 +39,13 @@ class SitemapSuscriber implements EventSubscriberInterface
      */
     private $now;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, ManagerRegistry $doctrine)
+    /** @var PaginatorInterface */
+    private $paginator;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator, PaginatorInterface $paginator, ManagerRegistry $doctrine)
     {
         $this->urlGenerator = $urlGenerator;
+        $this->paginator = $paginator;
         $this->doctrine = $doctrine;
         $this->now = new DateTime();
     }
@@ -104,15 +111,21 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerEventRoutes($section)
     {
-        $events = $this->doctrine->getRepository(Event::class)->findSiteMap();
+        $nbEvents = $this->doctrine->getRepository(Event::class)->findSiteMapCount();
+        $nbPages = ceil($nbEvents / self::ITEMS_PER_PAGE);
 
-        foreach ($events as $event) {
-            $event = current($event);
-            $this->addUrl($section, 'app_event_details', [
-                'id' => $event['id'],
-                'slug' => $event['slug'],
-                'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
-            ]);
+        for ($i = 0; $i < $nbPages; $i++) {
+            $events = $this->doctrine->getRepository(Event::class)->findSiteMap($i, self::ITEMS_PER_PAGE);
+
+            foreach ($events as $event) {
+                $event = current($event);
+                $this->addUrl($section, 'app_event_details', [
+                    'id' => $event['id'],
+                    'slug' => $event['slug'],
+                    'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
+                ], DateTime::createFromImmutable($event['updatedAt'])
+                , $event['dateFin'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : null);
+            }
         }
     }
 
@@ -146,14 +159,14 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null)
+    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null, string $changefreq = null)
     {
         $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
 
         $url = new UrlConcrete(
             $url,
             $lastMod ?: $this->now,
-            UrlConcrete::CHANGEFREQ_HOURLY,
+            $changefreq ?: UrlConcrete::CHANGEFREQ_HOURLY,
             1
         );
 

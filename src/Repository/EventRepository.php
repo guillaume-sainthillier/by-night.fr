@@ -7,7 +7,6 @@ use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
-use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
@@ -54,14 +53,26 @@ class EventRepository extends EntityRepository
             ]);
     }
 
-    public function findSiteMap()
+    public function findSiteMap(int $page, int $resultsPerPage)
     {
         return $this->createQueryBuilder('a')
             ->addSelect('c3')
             ->join('p.country', 'c3')
-            ->select('a.slug, a.id, c.slug AS city_slug, c3.slug AS country_slug')
+            ->select('a.slug, a.id, a.updatedAt, a.dateFin, c.slug AS city_slug, c3.slug AS country_slug')
+            ->setFirstResult($page * $resultsPerPage)
+            ->setMaxResults($resultsPerPage)
             ->getQuery()
             ->iterate();
+    }
+
+    public function findSiteMapCount(): int
+    {
+        return (int)$this->createQueryBuilder('a')
+            ->addSelect('c3')
+            ->join('p.country', 'c3')
+            ->select('COUNT(a) as nb')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function updateNonIndexables()
@@ -213,7 +224,7 @@ class EventRepository extends EntityRepository
 
         $ordered = [];
         foreach ($datas as $data) {
-            $ordered[$data['group']] = (int) $data['events'];
+            $ordered[$data['group']] = (int)$data['events'];
         }
 
         return $ordered;
