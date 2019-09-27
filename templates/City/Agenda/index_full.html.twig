@@ -27,22 +27,22 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.country.slug})) %}
+        {% set item = menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.country.slug})) %}
     {% else %}
-        {% set item = menu.addItem(location.city.country.name, path('app_agenda_index', {'location': location.city.country.slug})) %}
-        {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.city.slug})) %}
+        {% set item = menu.addItem(location.city.country.name, url('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% set item = menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.city.slug})) %}
     {% endif %}
-    {% set item = menu.addItem('Agenda', path('app_agenda_agenda', {'location': location.slug})) %}
+    {% set item = menu.addItem('Agenda', url('app_agenda_agenda', {'location': location.slug})) %}
 
     {% if placeName is not null %}
-        {% set item = menu.addItem(placeName|capitalize, path('app_agenda_place', {'slug' : placeSlug, 'location': location.slug})) %}
+        {% set item = menu.addItem(placeName|capitalize, url('app_agenda_place', {'slug' : placeSlug, 'location': location.slug})) %}
     {% elseif tag is not null %}
-        {% set item = menu.addItem(tag|capitalize, path('app_agenda_tags', {'tag' : tag, 'location': location.slug})) %}
+        {% set item = menu.addItem(tag|capitalize, url('app_agenda_tags', {'tag' : tag, 'location': location.slug})) %}
     {% elseif type is not null %}
-        {% set item = menu.addItem(type|capitalize, path('app_agenda_sortir', {'type' : type, 'location': location.slug})) %}
+        {% set item = menu.addItem(type|capitalize, url('app_agenda_sortir', {'type' : type, 'location': location.slug})) %}
     {% endif %}
     {% if page > 1 %}
-        {% set item = menu.addItem("Page " ~ page, path('app_agenda_agenda', {'page': page, 'location': location.slug})) %}
+        {% set item = menu.addItem("Page " ~ page, url('app_agenda_agenda', {'page': page, 'location': location.slug})) %}
     {% endif %}
 {% endblock %}
 

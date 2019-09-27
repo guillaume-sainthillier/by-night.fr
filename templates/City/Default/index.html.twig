@@ -9,10 +9,10 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.country.slug})) %}
+        {% set item = menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.country.slug})) %}
     {% else %}
-        {% set item = menu.addItem(location.city.country.name, path('app_agenda_index', {'location': location.city.country.slug})) %}
-        {% set item = menu.addItem('Sortir ' ~ location.atName, path('app_agenda_index', {'location': location.slug})) %}
+        {% set item = menu.addItem(location.city.country.name, url('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% set item = menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.slug})) %}
     {% endif %}
 {% endblock %}
 

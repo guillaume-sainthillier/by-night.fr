@@ -3,7 +3,7 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block breadcrumb_reset %}
-    {% set item = menu.addItem("Étape 2", path('fos_user_resetting_request')) %}
+    {% set item = menu.addItem("Étape 2", url('fos_user_resetting_request')) %}
 {% endblock %}
 
 {% block fos_user_content %}

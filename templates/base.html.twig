@@ -129,7 +129,7 @@ _______     __  _   _ _____ _____ _    _ _______
         {% block full_breadcrumb %}
         <div id="bread" class="bg-white">
             <div class="container">
-                {% set item = menu.addItem('By Night', path('app_main_index')) %}
+                {% set item = menu.addItem('By Night', url('app_main_index')) %}
 
                 {% block breadcrumb %}{% endblock %}
                 {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}

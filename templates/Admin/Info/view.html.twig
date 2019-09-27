@@ -4,7 +4,7 @@
 {% block title_admin 'Paramétrage des Réseaux Sociaux' %}
 
 {% block breadcrumb_admin -%}
-    {% set item = menu.addItem('Réseaux Sociaux', path('app_administration_info_edit', {'id': info.id})) %}
+    {% set item = menu.addItem('Réseaux Sociaux', url('app_administration_info_edit', {'id': info.id})) %}
 {%- endblock %}
 
 {% block body -%}

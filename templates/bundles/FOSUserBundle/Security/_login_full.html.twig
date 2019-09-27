@@ -6,7 +6,7 @@
 {%- endblock %}
 
 {% block breadcrumb -%}
-    {% set item = menu.addItem("Connexion", path('fos_user_security_login')) %}
+    {% set item = menu.addItem("Connexion", url('fos_user_security_login')) %}
 {%- endblock %}
 
 {% block meta_description 'Connectez-vous sur By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}

@@ -5,7 +5,7 @@
 {% block title app.user.username %}
 
 {% block breadcrumb -%}
-    {% set item = menu.addItem("Mon compte", path('fos_user_profile_edit')) %}
+    {% set item = menu.addItem("Mon compte", url('fos_user_profile_edit')) %}
 {%- endblock %}
 
 {% block body -%}

@@ -6,7 +6,7 @@
 {% block titre_espace 'Inscription réussie' %}
     
 {% block breadcrumb %}
-    {% set item = menu.addItem("Inscription", path('fos_user_registration_register')) %}
+    {% set item = menu.addItem("Inscription", url('fos_user_registration_register')) %}
 {% endblock %}
 
 {% block fos_user_content %}

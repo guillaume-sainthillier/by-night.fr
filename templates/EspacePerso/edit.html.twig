@@ -5,9 +5,9 @@
 {% block titre event.nom %}
 
 {% block breadcrumb_content -%}
-    {% set item = menu.addItem("Mon compte", path('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", path('app_event_list')) %}
-    {% set item = menu.addItem(event.nom, path('app_event_edit', {'slug' : event.slug})) %}
+    {% set item = menu.addItem("Mon compte", url('fos_user_profile_show')) %}
+    {% set item = menu.addItem("Mes événements", url('app_event_list')) %}
+    {% set item = menu.addItem(event.nom, url('app_event_edit', {'slug' : event.slug})) %}
 {%- endblock %}
 
 {% block body_form %}

@@ -2,7 +2,7 @@
 {% extends "layouts/default.html.twig" %}
 
 {% block breadcrumb -%}
-    {% set item = menu.addItem("Administration", path('easyadmin')) %}
+    {% set item = menu.addItem("Administration", url('easyadmin')) %}
     {% block breadcrumb_admin %}{% endblock %}
 {%- endblock %}
 

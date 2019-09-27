@@ -13,8 +13,8 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {% set item = menu.addItem("Membres", path('app_search_query', {'type' : 'membres'})) %}
-    {% set item = menu.addItem(username, path('app_user_details', {'id' : user.id, 'slug': user.slug })) %}
+    {% set item = menu.addItem("Membres", url('app_search_query', {'type' : 'membres'})) %}
+    {% set item = menu.addItem(username, url('app_user_details', {'id' : user.id, 'slug': user.slug })) %}
 {% endblock %}
 
 {% set totalCount = count_participations + count_interets %}
