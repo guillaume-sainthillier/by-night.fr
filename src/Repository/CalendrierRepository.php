@@ -13,15 +13,4 @@ use Doctrine\ORM\EntityRepository;
  */
 class CalendrierRepository extends EntityRepository
 {
-    public function getLastDateParticipation(Event $event)
-    {
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('MAX(c.lastDate)')
-            ->from('App:Calendrier', 'c')
-            ->where('c.event = :event')
-            ->setParameters([':event' => $event])
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
 }

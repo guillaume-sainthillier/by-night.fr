@@ -150,19 +150,6 @@ class EventRepository extends EntityRepository
             ->getResult();
     }
 
-    public function findAllFBOwnerIds()
-    {
-        $places = $this->_em
-            ->createQueryBuilder()
-            ->select('a.facebookOwnerId')
-            ->from('App:Event', 'a')
-            ->where('a.facebookOwnerId IS NOT NULL')
-            ->getQuery()
-            ->getScalarResult();
-
-        return \array_unique(\array_filter(\array_column($places, 'facebookOwnerId')));
-    }
-
     public function getCountryEvents()
     {
         $from = new DateTime();
@@ -192,19 +179,6 @@ class EventRepository extends EntityRepository
             ->setParameters([':user' => $user->getId()])
             ->getQuery()
             ->getSingleScalarResult();
-    }
-
-    public function getNextEvents(DateTime $since, $page, $offset)
-    {
-        return $this
-            ->createQueryBuilder('a')
-            ->where('a.dateFin >= :since')
-            ->andWhere('a.facebookEventId IS NOT NULL')
-            ->setParameters([':since' => $since->format('Y-m-d')])
-            ->setFirstResult(($page - 1) * $offset)
-            ->setMaxResults($offset)
-            ->getQuery()
-            ->getResult();
     }
 
     public function getStatsUser(User $user, $groupByFunction)
@@ -512,18 +486,6 @@ class EventRepository extends EntityRepository
         }
 
         return $event;
-    }
-
-    public function getEventsWithFBOwner(City $city)
-    {
-        return $this
-            ->createQueryBuilder('a')
-            ->where('a.place.city = :city')
-            ->andWhere("a.facebookOwnerId != ''")
-            ->groupBy('a.facebookOwnerId')
-            ->setParameters([':city' => $city->getId()])
-            ->getQuery()
-            ->execute();
     }
 
     /**

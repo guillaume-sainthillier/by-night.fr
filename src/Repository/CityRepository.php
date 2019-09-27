@@ -57,20 +57,6 @@ class CityRepository extends EntityRepository
         return \array_slice($results, 0, $limit);
     }
 
-    public function findLocations()
-    {
-        $results = parent::createQueryBuilder('c')
-            ->select('c.latitude, c.longitude')
-            ->where('c.latitude IS NOT NULL')
-            ->andWhere('c.longitude IS NOT NULL')
-            ->orderBy('c.population', 'DESC')
-            ->getQuery()
-            ->setMaxResults(50)
-            ->getScalarResult();
-
-        return $results;
-    }
-
     public function findByName($city, $country = null)
     {
         $cities = [];
@@ -125,17 +111,5 @@ class CityRepository extends EntityRepository
             ->useResultCache(true)
             ->useQueryCache(true)
             ->getOneOrNullResult();
-    }
-
-    public function findAllCities()
-    {
-        $cities = parent::createQueryBuilder('c')
-            ->select('c.name')
-            ->where('c.population > 10000')
-            ->groupBy('c.name')
-            ->getQuery()
-            ->getScalarResult();
-
-        return \array_unique(\array_filter(\array_column($cities, 'name')));
     }
 }
