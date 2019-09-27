@@ -39,13 +39,9 @@ class SitemapSuscriber implements EventSubscriberInterface
      */
     private $now;
 
-    /** @var PaginatorInterface */
-    private $paginator;
-
-    public function __construct(UrlGeneratorInterface $urlGenerator, PaginatorInterface $paginator, ManagerRegistry $doctrine)
+    public function __construct(UrlGeneratorInterface $urlGenerator, ManagerRegistry $doctrine)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->paginator = $paginator;
         $this->doctrine = $doctrine;
         $this->now = new DateTime();
     }
