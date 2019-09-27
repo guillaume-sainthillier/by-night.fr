@@ -224,6 +224,19 @@
     "league/flysystem-aws-s3-v3": {
         "version": "1.0.23"
     },
+    "league/flysystem-bundle": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "8ad3ded1f39fedce098e43259741f42092a1010e"
+        },
+        "files": [
+            "config/packages/flysystem.yaml",
+            "var/storage/.gitignore"
+        ]
+    },
     "league/flysystem-cached-adapter": {
         "version": "1.0.9"
     },
@@ -253,18 +266,6 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.1.1"
-    },
-    "oneup/flysystem-bundle": {
-        "version": "3.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "3.0",
-            "ref": "0eb87bba411c227da027fe5f7c1dc7954b02f242"
-        },
-        "files": [
-            "config/packages/oneup_flysystem.yaml"
-        ]
     },
     "pagerfanta/pagerfanta": {
         "version": "v1.0.5"

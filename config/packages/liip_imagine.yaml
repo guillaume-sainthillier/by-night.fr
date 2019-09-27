@@ -2,7 +2,7 @@ liip_imagine:
     resolvers:
         default:
             flysystem:
-                filesystem_service: App\FileSystem\Thumb
+                filesystem_service: thumbs.storage
                 root_url:           "%env(AWS_S3_URL)%"
                 cache_prefix:       media/cache
                 visibility:         public
@@ -14,7 +14,7 @@ liip_imagine:
 
         s3:
             flysystem:
-                filesystem_service: App\FileSystem\Thumb
+                filesystem_service: thumbs.storage
         default:
             chain:
                 loaders:

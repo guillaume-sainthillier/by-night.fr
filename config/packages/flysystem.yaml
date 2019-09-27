@@ -1,0 +1,41 @@
+# Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+flysystem:
+    storages:
+        users.storage.source:
+            adapter: 'aws'
+            options:
+                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: '/uploads/users'
+
+        users.storage:
+            adapter: 'cache'
+            options:
+                store: 'cache.flysystem.psr6'
+                source: 'users.storage.source'
+
+        events.storage.source:
+            adapter: 'aws'
+            options:
+                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: '/uploads/documents'
+
+        events.storage:
+            adapter: 'cache'
+            options:
+                store: 'cache.flysystem.psr6'
+                source: 'events.storage.source'
+
+        thumbs.storage.source:
+            adapter: 'aws'
+            options:
+                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: ''
+
+        thumbs.storage:
+            adapter: 'cache'
+            options:
+                store: 'cache.flysystem.psr6'
+                source: 'thumbs.storage.source'
