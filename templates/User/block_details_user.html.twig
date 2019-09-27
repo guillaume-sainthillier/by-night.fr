@@ -12,7 +12,7 @@
                     {{ user.username[:22] }}
                 </a>
             </h3>
-            <p>Membre depuis le <span class="date text-primary">{{ user.dateCreation|date('d/m/Y') }}</span></p>
+            <p>Membre depuis le <span class="date text-primary">{{ user.createdAt|date('d/m/Y') }}</span></p>
             {% include "Social/user.html.twig" %}
         </div>
     </div>
