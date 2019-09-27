@@ -19,9 +19,6 @@ use function GuzzleHttp\Promise\all;
 
 class ImageListener implements EventSubscriberInterface
 {
-    /** @var LoggerInterface */
-    private $logger;
-
     /** @var array */
     private $paths;
 
@@ -34,9 +31,8 @@ class ImageListener implements EventSubscriberInterface
     /** @var RemoveImageThumbnailsProducer */
     private $removeImageThumbnailsProducer;
 
-    public function __construct(LoggerInterface $logger, PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer, RemoveImageThumbnailsProducer $removeImageThumbnailsProducer)
+    public function __construct(PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer, RemoveImageThumbnailsProducer $removeImageThumbnailsProducer)
     {
-        $this->logger = $logger;
         $this->paths = [];
         $this->files = [];
         $this->purgeCdnCacheUrlProducer = $purgeCdnCacheUrlProducer;
