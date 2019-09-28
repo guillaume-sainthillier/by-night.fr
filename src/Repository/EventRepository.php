@@ -160,7 +160,7 @@ class EventRepository extends EntityRepository
             ->from('App:Event', 'a')
             ->join('a.place', 'p')
             ->join('p.country', 'c')
-            ->where('a.dateDebut >= :from')
+            ->where('a.dateFin >= :from')
             ->setParameter('from', $from->format('Y-m-d'))
             ->orderBy('events', 'DESC')
             ->groupBy('c.id')
@@ -457,7 +457,7 @@ class EventRepository extends EntityRepository
         $qb = $this
             ->createQueryBuilder('a')
             ->select('COUNT(a) as nombre')
-            ->where('a.dateDebut >= :from')
+            ->where('a.dateFin >= :from')
             ->setParameter('from', $from->format('Y-m-d'));
 
         $this->buildLocationParameters($qb, $location);
