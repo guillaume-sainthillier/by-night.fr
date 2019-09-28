@@ -3,7 +3,7 @@
 namespace App\Updater;
 
 use App\Social\FacebookAdmin;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
@@ -21,7 +21,7 @@ abstract class Updater
     protected $client;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     protected $entityManager;
 
@@ -30,7 +30,7 @@ abstract class Updater
      */
     protected $facebookAdmin;
 
-    public function __construct(ObjectManager $entityManager, FacebookAdmin $facebookAdmin)
+    public function __construct(EntityManagerInterface $entityManager, FacebookAdmin $facebookAdmin)
     {
         $this->entityManager = $entityManager;
         $this->facebookAdmin = $facebookAdmin;

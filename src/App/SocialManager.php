@@ -3,8 +3,7 @@
 namespace App\App;
 
 use App\Entity\SiteInfo;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Created by PhpStorm.
@@ -30,11 +29,11 @@ class SocialManager
     private $siteInfo;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $entityManager;
 
-    public function __construct(ObjectManager $entityManager, $facebookIdPage, $twitterIdPage)
+    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage)
     {
         $this->entityManager = $entityManager;
         $this->facebookIdPage = $facebookIdPage;

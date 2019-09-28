@@ -7,7 +7,7 @@ use App\Entity\SiteInfo;
 use App\Picture\EventProfilePicture;
 use App\Utils\Monitor;
 use DateTime;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\FacebookClient;
@@ -37,7 +37,7 @@ class FacebookAdmin extends FacebookListEvents
     protected $cache;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     protected $om;
 
@@ -56,7 +56,7 @@ class FacebookAdmin extends FacebookListEvents
      */
     protected $pageAccessToken;
 
-    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager, ObjectManager $om)
+    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager, EntityManagerInterface $om)
     {
         parent::__construct($config, $tokenStorage, $router, $session, $requestStack, $logger, $eventProfilePicture, $socialManager);
 

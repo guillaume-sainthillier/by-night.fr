@@ -6,7 +6,7 @@ use App\App\CityManager;
 use App\App\Location;
 use App\Entity\City;
 use App\Entity\Country;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class LocationConverter implements ParamConverterInterface
 {
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -25,7 +25,7 @@ class LocationConverter implements ParamConverterInterface
      */
     private $cityManager;
 
-    public function __construct(ObjectManager $em, CityManager $cityManager)
+    public function __construct(EntityManagerInterface $em, CityManager $cityManager)
     {
         $this->em = $em;
         $this->cityManager = $cityManager;

@@ -7,7 +7,7 @@ use App\Entity\News;
 use App\Social\FacebookAdmin;
 use App\Social\Twitter;
 use DateTime;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Twig\Environment;
@@ -15,7 +15,7 @@ use Twig\Environment;
 class NewsManager
 {
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -39,7 +39,7 @@ class NewsManager
      */
     private $twitter;
 
-    public function __construct(ObjectManager $em, Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
+    public function __construct(EntityManagerInterface $em, Environment $twig, FacebookAdmin $facebook, Twitter $twitter, LoggerInterface $logger)
     {
         $this->em = $em;
         $this->twig = $twig;

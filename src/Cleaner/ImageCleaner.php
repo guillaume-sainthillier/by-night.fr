@@ -3,7 +3,7 @@
 namespace App\Cleaner;
 
 use App\Utils\Monitor;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -17,7 +17,7 @@ use Symfony\Component\Finder\Finder;
 class ImageCleaner
 {
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     private $entityManager;
 
@@ -31,7 +31,7 @@ class ImageCleaner
      */
     private $webDir;
 
-    public function __construct(ObjectManager $entityManager, CacheManager $cacheManager, $webDir)
+    public function __construct(EntityManagerInterface $entityManager, CacheManager $cacheManager, $webDir)
     {
         $this->entityManager = $entityManager;
         $this->webDir = $webDir;

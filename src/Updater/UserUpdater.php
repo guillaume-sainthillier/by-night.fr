@@ -6,7 +6,7 @@ use App\Entity\User;
 use App\Handler\UserHandler;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class UserUpdater extends Updater
 {
@@ -17,7 +17,7 @@ class UserUpdater extends Updater
      */
     protected $userHandler;
 
-    public function __construct(ObjectManager $entityManager, FacebookAdmin $facebookAdmin, UserHandler $userHandler)
+    public function __construct(EntityManagerInterface $entityManager, FacebookAdmin $facebookAdmin, UserHandler $userHandler)
     {
         parent::__construct($entityManager, $facebookAdmin);
         $this->userHandler = $userHandler;

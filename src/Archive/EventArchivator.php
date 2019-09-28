@@ -5,7 +5,7 @@ namespace App\Archive;
 use App\Entity\Event;
 use App\Repository\EventRepository;
 use App\Utils\Monitor;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
@@ -27,11 +27,11 @@ class EventArchivator
     private $objectPersister;
 
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     private $entityManager;
 
-    public function __construct(ObjectManager $entityManager, ObjectPersisterInterface $objectPersister)
+    public function __construct(EntityManagerInterface $entityManager, ObjectPersisterInterface $objectPersister)
     {
         $this->entityManager = $entityManager;
         $this->objectPersister = $objectPersister;
@@ -82,6 +82,8 @@ class EventArchivator
 
             $this->objectPersister->deleteMany($events);
             Monitor::advanceProgressBar();
+            unset($events);
+            $this->entityManager->clear();
         }
         $repo->updateNonIndexables();
         Monitor::finishProgressBar();
