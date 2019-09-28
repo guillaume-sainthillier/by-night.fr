@@ -27,6 +27,11 @@ class City extends AdminZone
      */
     protected $country;
 
+    public function __toString()
+    {
+        return $this->getFullName();
+    }
+
     public function getFullName()
     {
         $parts = [];

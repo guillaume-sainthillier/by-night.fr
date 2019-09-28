@@ -1,12 +1,182 @@
 easy_admin:
+    site_name: 'By Night Administration'
+    design:
+        menu:
+            - { label: 'Back to Home', url: '../', target: '_blank', icon: 'home'  }
+            - { label: 'Management' }
+            - { label: 'Events', entity: Event, params: { action: 'list' }, icon: 'calendar' }
+            - { label: 'Places', entity: Place, params: { action: 'list' }, icon: 'map-marker-alt' }
+            - { label: 'Comments', entity: Comment, params: { action: 'list' }, icon: 'comment' }
+            - { label: 'Calendriers', entity: Calendrier, params: { action: 'list' }, icon: 'calendar-alt' }
+            - { label: 'Users' }
+            - { label: 'Users', entity: User, params: { action: 'list' }, icon: 'users' }
+            - { label: 'User socials', entity: UserInfo, params: { action: 'list' }, icon: 'bullhorn' }
+            - { label: 'Administration' }
+            - { label: 'Site socials', entity: SiteInfo, params: { action: 'list' }, icon: 'bullhorn' }
+            - { label: 'Explorations', entity: Exploration, params: { action: 'list' }, icon: 'eye' }
+            - { label: 'Historique Maj', entity: HistoriqueMaj, params: { action: 'list' }, icon: 'history' }
+
     entities:
-        - App\Entity\Event
-        - App\Entity\User
-        - App\Entity\Site
-        - App\Entity\Place
-        - App\Entity\Calendrier
-        - App\Entity\Comment
-        - App\Entity\Exploration
-        - App\Entity\HistoriqueMaj
-        - App\Entity\SiteInfo
-        - App\Entity\UserInfo
+        Event:
+            class: App\Entity\Event
+            list:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'nom' }
+                    - { property: 'dateDebut' }
+                    - { property: 'dateFin' }
+                    - { property: 'place' }
+            form:
+                fields:
+                    - { type: 'group', columns: 8, label: 'Informations' }
+                    - { property: 'id' }
+                    - { property: 'createdAt' }
+                    - { property: 'updatedAt' }
+                    - { property: 'externalId' }
+                    - { property: 'slug' }
+                    - { property: 'nom' }
+                    - { property: 'dateDebut' }
+                    - { property: 'dateFin' }
+                    - { property: 'horaires' }
+                    - { property: 'descriptif' }
+                    - { property: 'fbDateModification' }
+                    - { property: 'modificationDerniereMinute' }
+                    - { property: 'typeManifestation' }
+                    - { property: 'categorieManifestation' }
+                    - { property: 'themeManifestation' }
+                    - { property: 'reservationTelephone' }
+                    - { property: 'reservationEmail' }
+                    - { property: 'reservationInternet' }
+                    - { property: 'tarif' }
+                    - { property: 'fromData' }
+                    - { property: 'isBrouillon' }
+                    - { property: 'source' }
+                    - { property: 'isArchive' }
+                    - { type: 'group', columns: 4, label: 'Lieu' }
+                    - { property: 'place', type: 'easyadmin_autocomplete' }
+                    - { property: 'placeName' }
+                    - { property: 'placeStreet' }
+                    - { property: 'placeCity' }
+                    - { property: 'placePostalCode' }
+                    - { property: 'placeExternalId' }
+                    - { property: 'placeFacebookId' }
+                    - { property: 'placeCountry' }
+                    - { property: 'latitude' }
+                    - { property: 'longitude' }
+                    - { property: 'adresse' }
+                    - { type: 'group', columns: 12, label: 'Images' }
+                    - { property: 'url' }
+                    - { property: 'path'}
+                    - { property: 'systemPath'}
+        User:
+            class: App\Entity\User
+            list:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'username' }
+                    - { property: 'email' }
+                    - { property: 'lastLogin' }
+            form:
+                fields:
+                    - { type: 'group', columns: 8, label: 'Informations' }
+                    - { property: 'id' }
+                    - { property: 'slug' }
+                    - { property: 'username' }
+                    - { property: 'roles' }
+                    - { property: 'email' }
+                    - { property: 'firstname' }
+                    - { property: 'lastname' }
+                    - { property: 'description' }
+                    - { property: 'info' }
+                    - { property: 'from_login' }
+                    - { property: 'show_socials' }
+                    - { property: 'website' }
+                    - { property: 'lastLogin' }
+                    - { type: 'group', columns: 4, label: 'Médias' }
+                    - { property: 'path' }
+                    - { property: 'systemPath' }
+        Place:
+            class: App\Entity\Place
+            list:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'nom' }
+                    - { property: 'city' }
+                    - { property: 'country' }
+            form:
+                fields:
+                    - { type: 'group', columns: 8, label: 'Informations' }
+                    - { property: 'id' }
+                    - { property: 'externalId' }
+                    - { property: 'slug' }
+                    - { property: 'nom' }
+                    - { property: 'facebookId' }
+                    - { property: 'isJunk' }
+                    - { type: 'group', columns: 4, label: 'Lieu' }
+                    - { property: 'rue' }
+                    - { property: 'codePostal' }
+                    - { property: 'ville' }
+                    - { property: 'latitude' }
+                    - { property: 'longitude' }
+                    - { property: 'city', type: 'easyadmin_autocomplete' }
+                    - { property: 'country' }
+        Calendrier:
+            class: App\Entity\Calendrier
+            list:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'lastDate' }
+                    - { property: 'event' }
+                    - { property: 'user' }
+                    - { property: 'participe' }
+                    - { property: 'interet' }
+            form:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'lastDate' }
+                    - { property: 'event', type: 'easyadmin_autocomplete' }
+                    - { property: 'user', type: 'easyadmin_autocomplete' }
+                    - { property: 'participe' }
+                    - { property: 'interet' }
+        Comment:
+            class: App\Entity\Comment
+            list:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'dateCreation' }
+                    - { property: 'event' }
+                    - { property: 'user' }
+                    - { property: 'isApprouve' }
+            form:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'event', type: 'easyadmin_autocomplete' }
+                    - { property: 'user', type: 'easyadmin_autocomplete' }
+                    - { property: 'dateCreation' }
+                    - { property: 'dateModification' }
+                    - { property: 'isApprouve' }
+                    - { property: 'commentaire' }
+        Exploration:
+            class: App\Entity\Exploration
+        HistoriqueMaj:
+            class: App\Entity\HistoriqueMaj
+        SiteInfo:
+            class: App\Entity\SiteInfo
+            list:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'facebookId' }
+                    - { property: 'googleId' }
+                    - { property: 'twitterId' }
+                    - { property: 'eventBriteId' }
+        UserInfo:
+            class: App\Entity\UserInfo
+            list:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'facebookId' }
+                    - { property: 'googleId' }
+                    - { property: 'twitterId' }
+
+        City:
+            class: App\Entity\City

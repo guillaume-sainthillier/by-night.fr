@@ -594,7 +594,10 @@ class Event implements GeolocalizeInterface
 
     public function __toString()
     {
-        return '#' . $this->id ?: '?';
+        return sprintf('%s (#%s)',
+            $this->nom,
+            $this->id
+        );
     }
 
     public function getId(): ?int

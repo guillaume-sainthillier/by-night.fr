@@ -423,7 +423,7 @@ class User extends BaseUser
 
     public function __toString()
     {
-        return \sprintf('#%s (%s)', $this->id ?: '?', $this->getUsername());
+        return \sprintf('%s (#%s)', $this->username, $this->id);
     }
 
     /**
