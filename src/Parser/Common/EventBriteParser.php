@@ -4,9 +4,11 @@
 namespace App\Parser\Common;
 
 
+use App\Entity\Country;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use App\Social\EventBrite;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
 class EventBriteParser extends AbstractParser
@@ -16,11 +18,15 @@ class EventBriteParser extends AbstractParser
     /** @var EventBrite */
     private $client;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, EventBrite $client)
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, EventBrite $client, EntityManagerInterface $entityManager)
     {
         parent::__construct($logger, $eventProducer);
 
         $this->client = $client;
+        $this->entityManager = $entityManager;
     }
 
     public function parse(bool $incremental): void
@@ -31,35 +37,36 @@ class EventBriteParser extends AbstractParser
             $searchParams['start_date.range_start'] = (new \DateTime())->setTime(0, 0, 1)->format(self::DATE_FORMAT);
         }
 
-        $hasNextEvents = true;
-        $page = 1;
-        while ($hasNextEvents) {
-            $searchParams += [
-                'page' => $page++
-            ];
+        $countries = $this->entityManager->getRepository(Country::class)->findAll();
 
-            $events = $this
-                ->client
-                ->getEventResults($searchParams)
-                ->then(function (array $result) use (&$hasNextEvents) {
-                    $hasNextEvents = $result['pagination']['has_more_items'];
-                    return $result['events'];
-                })
-                ->wait();
+        foreach ($countries as $country) {
+            $hasNextEvents = true;
+            $page = 1;
+            while ($hasNextEvents) {
+                $searchParams += [
+                    'page' => $page++,
+                    'expand' => 'venue',
+                    'location.address' => $country->getName(),
+                ];
 
-            $venues = [];
-            foreach ($events as $event) {
-                $venues[] = $event['venue_id'];
-            }
-            $venues = $this->client->getEventVenues(array_unique(array_filter($venues)));
+                $events = $this
+                    ->client
+                    ->getEventResults($searchParams)
+                    ->then(function (array $result) use (&$hasNextEvents) {
+                        $hasNextEvents = $result['pagination']['has_more_items'];
+                        return $result['events'];
+                    })
+                    ->wait();
 
-            foreach ($events as $event) {
-                $event['venue'] = $venues[$event['venue_id']] ?? null;
-                $event = $this->getInfoEvent($event);
-                if (null === $event) {
-                    continue;
+                foreach ($events as $event) {
+                    $event = $this->getInfoEvent($event);
+                    if (null === $event) {
+                        continue;
+                    }
+                    $this->publish($event);
                 }
-                $this->publish($event);
+
+                $hasNextEvents = false;
             }
         }
     }
@@ -93,6 +100,7 @@ class EventBriteParser extends AbstractParser
             'horaires' => $horaires,
             'nom' => $event['name']['text'],
             'descriptif' => $event['description']['html'],
+            'reservation_internet' => $event['url'],
             'source' => $event['url'],
             'external_id' => 'EB-' . $event['id'],
             'url' => $event['logo']['original']['url'],

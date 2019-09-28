@@ -50,29 +50,6 @@ class EventBrite extends Social
         ]);
     }
 
-    public function getEventVenues(array $ids): array
-    {
-        $requests = function ($ids) {
-            foreach ($ids as $id) {
-                yield function () use ($id) {
-                    return $this->jsonRequest('/v3/venues/' . $id);
-                };
-            }
-        };
-
-        $results = Pool::batch($this->client, $requests($ids), [
-            'concurrency' => 5,
-        ]);
-        $results = array_filter($results, 'is_array');
-
-        $venues = [];
-        foreach ($results as $result) {
-            $venues[$result['id']] = $result;
-        }
-
-        return $venues;
-    }
-
     public function getEventCategory(string $categoryId, string $locale)
     {
         $key = sprintf('eb.category.%s.%s', $categoryId, $locale);
