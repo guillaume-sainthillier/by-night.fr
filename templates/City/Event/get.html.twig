@@ -26,14 +26,14 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% set item = menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.country.slug})) %}
+        {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.country.slug})) %}
     {% else %}
-        {% set item = menu.addItem(location.city.country.name, url('app_agenda_index', {'location': location.city.country.slug})) %}
-        {% set item = menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_agenda', {'location': location.city.slug})) %}
+        {% do menu.addItem(location.city.country.name, url('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% do menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_agenda', {'location': location.city.slug})) %}
     {% endif %}
 
-    {% set item = menu.addItem(event.placeName, url('app_agenda_place', {'location': location.slug, 'slug': place.slug})) %}
-    {% set item = menu.addItem(nomSoiree, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
+    {% do menu.addItem(event.placeName, url('app_agenda_place', {'location': location.slug, 'slug': place.slug})) %}
+    {% do menu.addItem(nomSoiree, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
 {% endblock %}
     
 {% block meta_keywords %}{% if distinctTags|length %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
@@ -66,32 +66,30 @@
         </div>
     {% else %}
         {% include "ad.html.twig" with({'marginTop': 0}) %}
-        <div class="panel panel-primary details_evenement">
-            <div class="panel-heading">
-                <h2 class="modal-title">
-                    <i class="pull-right fa fa-calendar text-primary"></i>
-                    {% set dateDebut = event.dateDebut|date('d/m/Y') %}
-                    {% set dateFin = event.dateFin|date('d/m/Y') %}
+        <div class="card card-primary details_evenement">
+            <h2 class="card-header">
+                <i class="float-right fa fa-calendar text-primary"></i>
+                {% set dateDebut = event.dateDebut|date('d/m/Y') %}
+                {% set dateFin = event.dateFin|date('d/m/Y') %}
 
-                    {% if event.dateFin == null or event.dateDebut == event.dateFin %}
-                        Le
-                        <time itemprop="startDate"
-                              datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
-                    {% else %}
-                        Du
-                        <time itemprop="startDate"
-                              datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
-                        au
-                        <time itemprop="endDate"
-                              datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ event.dateFin|localizeddate('full', 'none') }}</time>
-                    {% endif %}
+                {% if event.dateFin == null or event.dateDebut == event.dateFin %}
+                    Le
+                    <time itemprop="startDate"
+                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
+                {% else %}
+                    Du
+                    <time itemprop="startDate"
+                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
+                    au
+                    <time itemprop="endDate"
+                          datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ event.dateFin|localizeddate('full', 'none') }}</time>
+                {% endif %}
 
-                    {% if event.horaires %}
-                        - {{ event.horaires }}
-                    {% endif %}
-                </h2>
-            </div>
-            <div class="panel-body">
+                {% if event.horaires %}
+                    - {{ event.horaires }}
+                {% endif %}
+            </h2>
+            <div class="card-body">
                 <meta itemprop="name" content="{{ nomSoiree }}">
                 <meta itemprop="url" content="{{ url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug }) }}">
 
@@ -106,7 +104,7 @@
                 <div class="row margin_bottom_30">
                     <div class="col-sm-4">
                         <a href="{{ original }}" title="{{ nomSoiree }}">
-                            <img class="img img-responsive" src="{{ thumb }}" itemprop="image" alt="{{ nomSoiree }}" />
+                            <img class="img img-fluid" src="{{ thumb }}" itemprop="image" alt="{{ nomSoiree }}" />
                         </a>
                     </div>
                     <div class="col-sm-8 block_infos">
@@ -118,7 +116,7 @@
                                     {% set mapValue = "" %}
                                     {% if event.placeName %}
                                         {% set mapValue = event.placeName %}
-                                        <h2 class="modal-title" style="font-size: 115%">
+                                        <h2>
                                             <a itemprop="url"
                                                href="{{ path('app_agenda_place', {'slug': place.slug, 'location': place.locationSlug}) }}"
                                                title="Sortir à {{ event.placeName }}">
@@ -171,7 +169,7 @@
                                 </div>
                                 {% if mapValue %}
                                     <button
-                                            class="btn btn-primary btn-raised btn-sm"
+                                            class="btn btn-primary btn-sm"
                                             id="loadMap"
                                             data-map="https://www.google.com/maps/embed/v1/{{ mapParameter }}{{ mapValue|raw|url_encode }}&key={{ googleMapKey }}&zoom=16"
                                     >Afficher sur une carte
@@ -225,13 +223,13 @@
                                     <i class="fa fa-li fa-tags"></i>
                                     {% for tag in distinctTags %}
                                         {% if event.place.city %}
-                                            <a class="label label-info"
+                                            <a class="badge badge-info"
                                                title="{{ tag }} à {{ event.place.city.name }}"
                                                href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
                                                 <strong>{{ tag }}</strong>
                                             </a>
                                         {% else %}
-                                            <a class="label label-info"
+                                            <a class="badge badge-info"
                                                title="{{ tag }} en {{ event.place.country.name }}"
                                                href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
                                                 <strong>{{ tag }}</strong>
@@ -266,14 +264,12 @@
             </div>
         </div>
 
-        <div class="panel panel-primary shares">
-            <div class="panel-heading">
-                <h3 class="modal-title">
-                    <i class="pull-right fa fa-share-alt text-primary"></i>
-                    Partagez cet événement
-                </h3>
-            </div>
-            <div class="panel-body">
+        <div class="card card-primary shares">
+            <h3 class="card-header">
+                <i class="float-right fa fa-share-alt text-primary"></i>
+                Partagez cet événement
+            </h3>
+            <div class="card-body">
                 <br />
                 {{ render_esi(controller('App\\Controller\\City\\EventController::shareAction', {
                     'id': event.id,
@@ -286,19 +282,17 @@
         </div>
 
         {% if event.placeName %}
-            <div class="panel panel-primary widget">
-                <div class="panel-heading">
-                    <h3 class="modal-title">
-                        <i class="pull-right fa fa-home text-primary"></i>
-                        {{ event.placeName }} : Les prochaines sorties
-                    </h3>
-                </div>
-                <div class="panel-body scrollable scrollable-large">
+            <div class="card card-primary widget">
+                <h3 class="card-header">
+                    <i class="float-right fa fa-home text-primary"></i>
+                    {{ event.placeName }} : Les prochaines sorties
+                </h3>
+                <div class="card-body scrollable scrollable-large">
                     <div>
                         {{ render_esi(path('app_event_prochaines_soirees', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug} )) }}
                     </div>
                 </div>
-                <div class="panel-footer"></div>
+                <div class="card-footer"></div>
             </div>
         {% endif %}
     {% endif %}
@@ -332,11 +326,9 @@
 {%- endblock %}
 
 {% block css %}
-    <link rel="stylesheet" href="{{ app_asset('widgets/css/widgets.min.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ app_asset('evenements/css/details.min.css') }}" type="text/css">
+    {{ encore_entry_link_tags('event_details') }}
 {% endblock %}
         
 {% block js %}
-    <script src="{{ app_asset('widgets/js/widgets.min.js') }}" type="text/javascript"></script>
-    <script src="{{ app_asset('evenements/js/details.min.js') }}" type="text/javascript"></script>
+    {{ encore_entry_script_tags('event_details') }}
 {% endblock %}

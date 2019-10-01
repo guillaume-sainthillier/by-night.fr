@@ -1,0 +1,74 @@
+@import "../variables";
+
+
+@mixin card-icon($iconSize) {
+  font-size: $iconSize / 2;
+  height: $iconSize;
+  width: $iconSize;
+  line-height: $iconSize;
+  text-align: center;
+
+  background-color: white;
+  border: 1px solid $primary;
+  border-radius: 50px;
+
+  position: absolute;
+  bottom: -$iconSize / 2 - 5px;
+  right: 0;
+  z-index: 2;
+}
+
+.card-twitter {
+  min-height: 400px;
+
+  iframe {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+  }
+}
+
+.tendances {
+  strong {
+	display: block;
+  }
+}
+
+.buttons {
+  margin-bottom: 1rem;
+}
+
+#widgets .trait {
+
+  padding-bottom: 5px;
+  padding-top: 5px;
+
+  a {
+	display: block;
+  }
+
+  small {
+	font-style: italic;
+  }
+
+  .user_profil_picture {
+	padding-right: 0;
+  }
+}
+
+.card {
+  .card-header {
+	.modal-title {
+	  position: relative;
+	}
+
+	h3 .fa {
+	  @include card-icon(40px);
+	}
+
+	h2 .fa {
+	  @include card-icon(50px);
+	}
+  }
+}
+

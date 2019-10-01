@@ -6,28 +6,11 @@
 {%- endblock %}
 {% block icone 'fa-twitter' %}
 {% block widget_class '' %}
-{% block widget_body_class 'panel-twitter scrollable no-padding padding-left-10 scrollable' %}
+{% block widget_body_class 'card-twitter scrollable p-0 pl-2 scrollable' %}
 
 {% block body %}
     <div>
-        <script>window.twttr = (function (d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0],
-                    t = window.twttr || {};
-                if (d.getElementById(id)) return t;
-                js = d.createElement(s);
-                js.id = id;
-                js.async = true;
-                js.src = "https://platform.twitter.com/widgets.js";
-                fjs.parentNode.insertBefore(js, fjs);
-
-                t._e = [];
-                t.ready = function (f) {
-                    t._e.push(f);
-                };
-
-                return t;
-            }(document, "script", "twitter-wjs"));
-        </script>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
         <div>
             {{ render_esi(path('app_agenda_tweeter_feed', {'location': location.slug})) }}
         </div>

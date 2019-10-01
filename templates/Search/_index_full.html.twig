@@ -23,18 +23,18 @@
 {% if term %}{% set title = term %}{% endif %}
 
 {% block breadcrumb %}
-    {% set item = menu.addItem('Recherche', url('app_search_query')) %}
+    {% do menu.addItem('Recherche', url('app_search_query')) %}
 
     {% if type %}
-        {% set item = menu.addItem(nom, url('app_search_query', {'type': type})) %}
+        {% do menu.addItem(nom, url('app_search_query', {'type': type})) %}
     {% endif %}
 
     {% if term %}
-        {% set item = menu.addItem(term, url('app_search_query', {'q': term, 'type': type})) %}
+        {% do menu.addItem(term, url('app_search_query', {'q': term, 'type': type})) %}
     {% endif %}
 
     {% if page > 1 %}
-        {% set item = menu.addItem('Page ' ~ page, url('app_search_query', {'page': page, 'q': term, 'type': type})) %}
+        {% do menu.addItem('Page ' ~ page, url('app_search_query', {'page': page, 'q': term, 'type': type})) %}
     {% endif %}
 {% endblock %}
 

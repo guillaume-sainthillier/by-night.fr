@@ -1,4 +1,4 @@
-{% extends "@FOSUser/layout.html.twig" %}
+{% extends "bundles/FOSUserBundle/layout.html.twig" %}
 
 {% trans_default_domain 'FOSUserBundle' %}
 
@@ -6,7 +6,7 @@
 {% block titre_espace 'Inscription réussie' %}
     
 {% block breadcrumb %}
-    {% set item = menu.addItem("Inscription", url('fos_user_registration_register')) %}
+    {% do menu.addItem("Inscription", url('fos_user_registration_register')) %}
 {% endblock %}
 
 {% block fos_user_content %}

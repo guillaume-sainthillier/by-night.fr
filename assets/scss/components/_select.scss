@@ -1,0 +1,16 @@
+.bootstrap-select {
+  margin: 0;
+
+  &.open > .dropdown-toggle.btn, .open > .dropdown-toggle.btn-default {
+	color: black;
+  }
+
+  .btn {
+	padding-left: 0;
+	line-height: 1rem;
+
+	&.btn-block {
+	  white-space: normal;
+	}
+  }
+}

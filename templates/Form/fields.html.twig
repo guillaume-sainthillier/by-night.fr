@@ -1,4 +1,5 @@
-{% use "bootstrap_3_layout.html.twig" %}
+{% use 'form_div_layout.html.twig' with checkbox_widget as base_checkbox_widget %}
+{% use "bootstrap_4_layout.html.twig" %}
 
 {% block date_widget -%}
     {% if type is not defined or type not in ['file', 'hidden'] %}
@@ -13,34 +14,41 @@
 
 {% block vich_image_widget %}
     {% if download_uri is defined and download_uri %}
-        <a href="{{ asset(download_uri, 'file') }}">
+        <a class="d-inline-block" href="{{ asset(download_uri, 'file') }}">
             {% if image_filter_uri is not null %}
-                <img class="img-responsive display_inline_block margin_right_15" src="{{ image_filter_uri }}" alt="" />
+                <img class="img-fluid" src="{{ image_filter_uri }}" alt="" />
             {% endif %}
         </a>
     {% endif %}
 
     {{ form_widget(form.file) }}
 
-    {% if show_download_link and download_uri is defined and download_uri %}
-        <a href="{{ asset(download_uri, 'file') }}">{{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
-    {% endif %}
-
     {% if form.delete is defined %}
-        <div class="delete-image pull-right">
-            {{ form_errors(form.delete) }}
-            {{ form_label(form.delete) }}
-            {{ form_widget(form.delete) }}
+        <div class="delete-image">
+            {{ form_row(form.delete) }}
         </div>
     {% endif %}
 {% endblock %}
 
 
+{% block checkbox_row %}
+    {{ form_errors(form) }}
+    <div class="checkbox">
+        <label>
+            {{ block('base_checkbox_widget') }}
+            {{ translation_domain is same as(false) ? label : label|trans(label_translation_parameters, translation_domain) }}
+        </label>
+    </div>
+{% endblock %}
+
 {# Images #}
 {% block file_widget %}
-    <div class="form-group no_margin">
+    <div class="custom-file">
         {{ block('form_widget') }}
-        <input type="text" readonly class="form-control" placeholder="Nouvelle image..." />
+        <label class="custom-file-label" for="{{ form.vars.id }}">
+            <i class="fa fa-download"></i>
+            Nouvelle image...
+        </label>
     </div>
 {% endblock %}
 

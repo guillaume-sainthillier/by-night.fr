@@ -50,7 +50,7 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', 'asset');
+        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', 'asset');
     }
 
     public function getOriginalPicture(Event $event)
@@ -73,7 +73,7 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', 'asset');
+        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', 'asset');
     }
 
     public function getPictureUrl(Event $event, $thumb = 'thumbs_evenement')
@@ -90,7 +90,7 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', $thumb);
+        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', $thumb);
     }
 
     public function getPicture(Event $event, $thumb = 'thumbs_evenement')
@@ -107,6 +107,6 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_event.png', $thumb);
+        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', $thumb);
     }
 }

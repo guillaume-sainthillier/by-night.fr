@@ -1,0 +1,55 @@
+.navbar {
+  z-index: 1000; //Conflit with z-index 500 on summernote
+  white-space: nowrap;
+
+  .navbar-nav {
+	align-items: center;
+  }
+
+  .search-form {
+	width: 100%;
+	max-width: 720px;
+	position: relative;
+	background: rgba(241, 243, 244, 0.24);
+	border: 1px solid transparent;
+	transition: background 100ms ease-in, width 100ms ease-out;
+
+	&, input, input::placeholder {
+	  color: $navbar-dark-color;
+	}
+
+	.bmd-form-group {
+	  width: 100%;
+	}
+
+	input {
+	  height: 46px;
+	  width: 100%;
+	  padding-left: 3rem;
+	  color: $navbar-dark-color;
+	  background-color: transparent;
+	  border-color: transparent;
+	  border-style: solid;
+	  border-width: 0 1px;
+	  outline: none;
+	}
+
+	.btn {
+	  font-size: 1.25rem;
+	  position: absolute;
+	  left: 0.5rem;
+	  top: 50%;
+	  margin-top: -1rem;
+	  z-index: 1;
+	}
+
+	&.focus {
+	  background: white;
+	  border: 1px solid transparent;
+
+	  &, input, input::placeholder {
+		color: #5f6368;
+	  }
+	}
+  }
+}

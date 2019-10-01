@@ -1,0 +1,29 @@
+.mon_evenement {
+  #map {
+	min-height: 300px;
+  }
+
+  h2 {
+	margin-bottom: 40px;
+
+	.badge {
+	  margin-right: 10px;
+	}
+
+	.underline {
+	  border-bottom: 1px dotted $primary;
+	}
+  }
+}
+
+.note-editor {
+  @import "../../../node_modules/bootstrap/scss/buttons";
+
+  .btn {
+	margin: 0;
+  }
+
+  .btn-default {
+	border-color: #CCC;
+  }
+}

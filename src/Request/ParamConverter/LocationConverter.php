@@ -46,10 +46,13 @@ class LocationConverter implements ParamConverterInterface
         }
 
         $location = new Location();
-        $entity = $this
-            ->em
-            ->getRepository(City::class)
-            ->findBySlug($locationSlug);
+        $entity = null;
+        if(strpos('c--', $locationSlug) !== 0) {
+            $entity = $this
+                ->em
+                ->getRepository(City::class)
+                ->findBySlug($locationSlug);
+        }
 
         if ($entity) {
             $location->setCity($entity);

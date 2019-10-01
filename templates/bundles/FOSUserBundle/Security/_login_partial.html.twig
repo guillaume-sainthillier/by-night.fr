@@ -1,16 +1,16 @@
-{% extends "base.json.twig" %}
+{% extends "layouts/modal-form.html.twig" %}
 
 {% block titre -%}
     Connectez-vous sur By Night
 {%- endblock %}
 
 {% block body -%}
-    {% include "@FOSUser/Security/login_content.html.twig" with({'partial': true}) %}
+    {% include "bundles/FOSUserBundle/Security/login_content.html.twig" with({'partial': true}) %}
 {%- endblock %}
 
 {% block footer -%}
-    <button class="btn btn-primary {{ partial ? 'btn-flat' : 'btn-raised' }}" type="submit" id="_submit" name="_submit"
-            data-loading-text="Veuillez patienter...">Connexion
+    <button class="btn btn-primary {{ partial ? '' : 'btn-raised' }}" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
+        Connexion
     </button>
 {%- endblock %}
 

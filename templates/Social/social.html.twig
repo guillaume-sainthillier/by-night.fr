@@ -1,18 +1,17 @@
 {% set isGranted = attribute(info, service ~ 'AccessToken') != null %}
 
-<div class="togglebutton form-group bloc_config">
-    <label class="full_width">
-        {{ service|capitalize }}
+<div class="switch bloc_config">
+    <label>
         <input type="checkbox"
-               class="onoffswitch-checkbox"
-                {{ isGranted ? "checked": "" }}
-               data-href-disconnect="{% block url_disconnect path('app_disconnect_service_confirm', { 'service': service}) %}"
-               data-href-connect="{% block url_connect hwi_oauth_login_url(service) %}">
-    </label>
-    <span class="when_on {{ isGranted ? "show" : "hidden" }} help-block text-primary">
-        Connecté sous
-        <span class="username">
-            {{ service == 'twitter' ? '@': '' }}{{ attribute(info, service ~ "NickName") }}
+            {{ isGranted ? "checked": "" }}
+           data-href-disconnect="{% block url_disconnect path('app_disconnect_service_confirm', { 'service': service}) %}"
+           data-href-connect="{% block url_connect hwi_oauth_login_url(service) %}" >
+        {{ service|capitalize }}
+        <span class="when_on {{ isGranted ? "show" : "hidden" }} text-primary">
+            Connecté sous
+            <span class="username">
+                {{ service == 'twitter' ? '@': '' }}{{ attribute(info, service ~ "NickName") }}
+            </span>
         </span>
-    </span>
+    </label>
 </div>

@@ -13,14 +13,14 @@
     {% if download_uri is defined and download_uri %}
         <a href="{{ download_uri }}">
             {% if image_filter is not null %}
-                <img class="img-responsive display_inline_block margin_right_15" src="{{ download_uri|imagine_filter(image_filter) }}" alt="" />
+                <img class="img-fluid display_inline_block margin_right_15" src="{{ download_uri|imagine_filter(image_filter) }}" alt="" />
             {% endif %}
         </a>
     {% endif %}
 
     {{ form_widget(form.file) }}
     {% if form.delete is defined %}
-        <div class="checkbox no-padding no-margin pull-right">
+        <div class="checkbox p-0 m-0 float-right">
             {{ form_errors(form.delete) }}
             {{ form_label(form.delete) }}
             <label style="padding-left: 5px;">{{ form_widget(form.delete) }}</label>
@@ -29,14 +29,14 @@
     {% endif %}
 
     {% if show_download_link and download_uri is defined and download_uri%}
-        <a class="pull-left" href="{{ download_uri }}">{{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
+        <a class="float-left" href="{{ download_uri }}">{{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
     {% endif %}
 {% endblock %}
 
 
 {# Images #}
 {% block file_widget %}
-    <div class="form-group no_margin">
+    <div class="form-group m-0">
         {{ block('form_widget') }}
         <input type="text" readonly class="form-control" placeholder="Nouvelle image..." />
     </div>

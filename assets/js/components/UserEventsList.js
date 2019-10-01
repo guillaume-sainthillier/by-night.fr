@@ -1,5 +1,5 @@
-var UserEventsList = {
-    init: function () {
+export default class UserEventsList {
+    init() {
         $(function () {
             $('.brouillon').click(function () {
                 var that = $(this);
@@ -22,17 +22,6 @@ var UserEventsList = {
                     that.attr('disabled', false);
                 });
             });
-
-            $("#connect-fb").click(function () {
-                App.popup($(this).attr('href'), $(this));
-                return false;
-            });
-
-            $("body").on("hasConnected", function () {
-                window.location = $("#connect-fb").data("href");
-            });
         });
     }
 };
-
-UserEventsList.init();

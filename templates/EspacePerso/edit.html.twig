@@ -1,20 +1,23 @@
 {% extends "EspacePerso/new.html.twig" %}
 
 {% block title event.nom %}
-
 {% block titre event.nom %}
 
 {% block breadcrumb_content -%}
-    {% set item = menu.addItem("Mon compte", url('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", url('app_event_list')) %}
-    {% set item = menu.addItem(event.nom, url('app_event_edit', {'slug' : event.slug})) %}
+    {% do menu.addItem("Mon compte", url('fos_user_profile_show')) %}
+    {% do menu.addItem("Mes événements", url('app_event_list')) %}
+    {% do menu.addItem(event.nom, url('app_event_edit', {'slug' : event.slug})) %}
 {%- endblock %}
 
 {% block body_form %}
     {{ parent() }}
-    <div class="row">
-        <div class="col-md-4 form-delete">
-            {{ form(form_delete) }}
-        </div>
+    <div class="mt-4 form-delete">
+        {{ form_start(form) }}
+            <button type="submit" class="btn btn-danger btn-raised">
+                <i class="fa fa-trash"></i>
+                Supprimer
+            </button>
+        {{ form_rest(form) }}
+        {{ form_end(form) }}
     </div>
 {% endblock %}

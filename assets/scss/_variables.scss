@@ -1,0 +1,37 @@
+@import "../../node_modules/bootstrap-material-design/scss/variables/_colors";
+
+$color-primary: #36A9E1;
+$color-success: #bdea74;
+$color-info: #67c2ef;
+$color-warning: #fabb3d;
+$color-danger: #ff5454;
+
+$bgColor: #F0F0F0;
+
+$primary: $indigo-500;
+//$secondary: $color-warning;
+$warning: $color-warning;
+
+$linkColor: #0091FF;
+
+$theme-colors: (
+		primary: $primary,
+		success: $green,
+		info: $color-warning,
+		warning: $deep-orange,
+		danger: $red,
+		light: $grey-100,
+		dark: $grey-800
+);
+
+//Navbar
+$navbar-dark-color: rgba($white, .84);
+$navbar-dark-hover-color: $white;
+$navbar-dark-active-color: $white;
+
+//Breadcrumb
+$breadcrumb-bg: white;
+$breadcrumb-margin-bottom: 0;
+
+@import "../../node_modules/bootstrap-material-design/scss/_variables";
+@import "../../node_modules/bootstrap/scss/mixins";

@@ -1,46 +1,52 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta charset="{{ _charset }}" />
-        <title>{{ title }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta charset="{{ _charset }}" />
+    <title>{{ title }}</title>
 
-        <!-- Icons -->
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png?v=PYezm92qNy') }}">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png?v=PYezm92qNy') }}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png?v=PYezm92qNy') }}">
-        <link rel="manifest" href="{{ asset('site.webmanifest?v=PYezm92qNy') }}">
-        <link rel="mask-icon" href="{{ asset('safari-pinned-tab.svg?v=PYezm92qNy') }}" color="#3f51b5">
-        <link rel="shortcut icon" href="{{ asset('favicon.ico?v=PYezm92qNy') }}">
-        <meta name="msapplication-TileColor" content="#3f51b5">
-        <meta name="theme-color" content="#3f51b5">
-        <!-- ./Icons -->
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=yyQOxPP629">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=yyQOxPP629">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=yyQOxPP629">
+    <link rel="manifest" href="/site.webmanifest?v=yyQOxPP629">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=yyQOxPP629" color="#3f51b5">
+    <link rel="shortcut icon" href="/favicon.ico?v=yyQOxPP629">
+    <meta name="msapplication-TileColor" content="#3f51b5">
+    <meta name="theme-color" content="#3f51b5">
+    <!-- ./Icons -->
 
-        <!-- CSS -->
-        <link rel="stylesheet" href="{{ app_asset('css/erreurs.min.css') }}" type="text/css" media="screen" >
-        <!-- ./CSS-->
-    </head>
-    <body>
-        <div class="container-fluid">
-            <div class="row box-error">
-                <div class="col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3">
-                    <h1>{{ code }}</h1>
-                    <h2>{{ message }}</h2>
-                    <p>{{ description }}</p>
+    <!-- CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500%7CRoboto+Condensed:300' rel='stylesheet' type='text/css'>
+    {{ encore_entry_link_tags('app') }}
+    <!-- ./CSS-->
+</head>
+<body class="error-page">
+<div class="container-fluid">
+    <div class="row box-error">
+        <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
+            <h1>{{ code }}</h1>
+            <h2>{{ message }}</h2>
+            <p>{{ description }}</p>
 
-                    <form method="get" action="{{ path('app_search_query') }}">
-                        <div class="input-prepend input-group">
-                            <span class="input-group-addon clear"><i class="fa fa-search"></i></span>
-                            <input name="q" class="form-control" size="16" type="text" placeholder="Que cherchez vous ?" />
-                            <span class="input-group-btn">
-                                <input class="btn btn-info" type="submit" value="Rechercher" />
-                            </span>
-                        </div>
-                    </form>
-                </div><!--/col-->
-            </div><!--/row-->
-        </div>
-    </body>
+            <form method="get" action="{{ path('app_search_query') }}">
+                <div class="input-group">
+                    <div class="input-group-prepend mr-2">
+                        <span class="input-group-text">
+                            <i class="fa fa-search"></i>
+                        </span>
+                    </div>
+                    <input name="q" class="form-control" size="16" type="text" placeholder="Que cherchez-vous ?" />
+                    <span class="input-group-append">
+                        <input class="btn btn-secondary" type="submit" value="Rechercher" />
+                    </span>
+                </div>
+            </form>
+        </div><!--/col-->
+    </div><!--/row-->
+    {{ encore_entry_script_tags('app') }}
+</div>
+</body>
 </html>

@@ -1,4 +1,8 @@
+import Widgets from '../components/Widgets';
+
 $(function () {
+    new Widgets().init();
+
     var gMap = $("#googleMap").attr("data-toggled", "0");
     $("#loadMap").unbind("click").click(function (e) {
         if (!gMap.find("iframe").length) {

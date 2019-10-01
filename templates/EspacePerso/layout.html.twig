@@ -2,7 +2,7 @@
 {% extends "layouts/default.html.twig" %}
 
 {% block breadcrumb %}
-    {% set item = menu.addItem("Mon compte", url('fos_user_profile_show')) %}
-    {% set item = menu.addItem("Mes événements", url('app_event_list')) %}
+    {% do menu.addItem("Mon compte", url('fos_user_profile_show')) %}
+    {% do menu.addItem("Mes événements", url('app_event_list')) %}
     {% block breadcrumb_espace %}{% endblock %}
 {% endblock %}

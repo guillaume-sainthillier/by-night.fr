@@ -1,11 +1,11 @@
 <div class="commentaires">
     {% for comment in comments %}
         <div class="row comment">
-            <div class="col-xs-3 col-sm-2">
+            <div class="col-3 col-sm-2">
                 {% set imageURL = userProfilePicture.profilePicture(comment.user) %}
-                <img class="img-rounded img-responsive" src="{{ imageURL }}" alt="{{ comment.user.username }}" />
+                <img class="rounded img-fluid" src="{{ imageURL }}" alt="{{ comment.user.username }}" />
             </div>
-            <div class="col-xs-9 col-sm-10">
+            <div class="col-9 col-sm-10">
                 <div class="infos">
                     <a href="{{ path('app_user_details', {'id': comment.user.id, 'slug': comment.user.slug}) }}">{{ comment.user.username }}</a>
                     <span title="{{ comment.dateCreation|localizeddate('medium','medium')|capitalize }}">
@@ -18,8 +18,8 @@
                 {% block comment_reponses %}
                     <div class="reponses">
                         <div class="infos">
-                            <span class="label label-primary nb_reponses">{{ comment.reponses.count }}</span>
-                            <button type="button" class="btn btn-default btn-xs btn-list btn-raised" data-url="{{ path('app_comment_reponse_list', {'id' : comment.id }) }}">
+                            <span class="badge badge-primary nb_reponses">{{ comment.reponses.count }}</span>
+                            <button type="button" class="btn btn-secondary btn-xs btn-list btn-raised" data-url="{{ path('app_comment_reponse_list', {'id' : comment.id }) }}">
                                 <i class="fa fa-angle-up icon_list"></i>
                             </button>
                             |

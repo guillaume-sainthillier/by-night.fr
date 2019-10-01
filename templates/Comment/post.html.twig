@@ -3,11 +3,11 @@
         {{ form_start(form) }}
         {{ form_errors(form.commentaire) }}
         <div class="row">
-            <div class="col-xs-3 col-sm-2">
+            <div class="col col-auto">
                 {% set imageURL = userProfilePicture.getProfilePicture(app.user) %}
-                <img class="img-rounded img-responsive pull-right" src="{{ imageURL }}" alt=""/>
+                <img class="rounded img-fluid float-right" src="{{ imageURL }}" alt=""/>
             </div>
-            <div class="col-xs-9 col-sm-10">
+            <div class="col">
                 {{ form_label(form.commentaire) }}
                 {% block form_commentaire %}
                     {{ form_widget(form.commentaire) }}

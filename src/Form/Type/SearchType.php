@@ -64,7 +64,6 @@ class SearchType extends AbstractType
             ->add('type_manifestation', ChoiceType::class, [
                 'choices' => $options['types_manif'],
                 'label' => 'Quoi ?',
-                'label_attr' => ['class' => 'col-sm-3 control-label'],
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
@@ -82,12 +81,7 @@ class SearchType extends AbstractType
                 'label' => 'Mot-clés',
                 'label_attr' => ['class' => 'col-sm-3 control-label'],
                 'attr' => ['class' => 'form-control', 'placeholder' => 'Quel événement cherchez-vous ?'], ])
-            ->add('chercher', SubmitType::class, [
-                'label' => 'Go !',
-                'attr' => [
-                    'class' => 'btn btn-raised btn-lg btn-primary btn-block',
-                ],
-            ])->addEventListener(
+            ->addEventListener(
                 FormEvents::PRE_SUBMIT,
                 [$this, 'onPreSubmit']
             );

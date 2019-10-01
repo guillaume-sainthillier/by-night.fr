@@ -1,3 +1,6 @@
+import 'dropdown.js/jquery.dropdown.css';
+import 'dropdown.js';
+
 $(document).ready(function () {
     $('.form-city-picker').each(function () {
         var form = $(this);
@@ -8,6 +11,7 @@ $(document).ready(function () {
         function updateBtn() {
             btn.attr('disabled', cityValue.val().length === 0);
         }
+
         updateBtn();
 
         $(this).submit(function () {
@@ -35,5 +39,11 @@ $(document).ready(function () {
             updateBtn();
             $(form).submit();
         }).on('keyup input', updateBtn);
+    });
+
+    $("select.shorcuts_date").unbind("change").change(function () {
+        var selected = $(this).find("option:selected");
+        $("#city_autocomplete_du").val(selected.data("date-debut") || "");
+        $("#city_autocomplete_au").val(selected.data("date-fin") || "");
     });
 });

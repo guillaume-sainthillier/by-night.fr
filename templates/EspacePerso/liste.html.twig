@@ -3,71 +3,71 @@
 {% block titre 'Mes événements' %}
 {% block title 'Mes événements' %}
 
-{% block container_class '' %}
+{% import "Form/macros.html.twig" as macros %}
 
 {% block body -%}
-    <div class="text-center">
+    <div class="text-center mt-2 mb-4">
         <a class="btn btn-success btn-raised" href="{{ path('app_event_new') }}">
             <i class="fa fa-plus"></i>
             Nouvel événement
         </a>
     </div>
-    <br />
-    <br />
 
-    {% import "Form/macros.html.twig" as macros %}
+
     {% if events|length > 0 %}
-        <table class="table table-striped bg-white component">
-            <thead>
-            <tr>
-                <th>Actions</th>
-                <th>Nom</th>
-                <th>Lieu</th>
-                <th>Ville</th>
-                <th>Date</th>
-                <th>Visible</th>
-                <th>Annulé</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for event in events %}
+        <div class="card">
+            <table class="table table-striped mb-0">
+                <thead>
                 <tr>
-                    <td>
-                        <a class="btn btn-primary" href="{{ path('app_event_edit', {'slug': event.slug}) }}"
-                           title="Corriger l'événement">
-                            <i class="fa fa-pencil"></i>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}"
-                           title="Accéder à l'événement">{{ event.nom }}</a></td>
-                    <td>{{ event.placeName }}</td>
-                    <td>{{ event.placeCity }}</td>
-                    <td>
-                        {{ macros.dates(event.dateDebut, event.dateFin) }}
-                    </td>
-                    <td>
-                        <div class="togglebutton">
-                            <label>
-                                <input type="checkbox"
-                                       class="brouillon"
-                                       data-href="{{ path('app_event_brouillon', {'slug': event.slug}) }}" {{ not event.isBrouillon ? 'checked' : '' }} />
-                            </label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="togglebutton">
-                            <label>
-                                <input type="checkbox"
-                                       class="annuler"
-                                       data-href="{{ path('app_event_annuler', {'slug': event.slug}) }}" {{ event.modificationDerniereMinute ? 'checked' : '' }} />
-                            </label>
-                        </div>
-                    </td>
+                    <th>Actions</th>
+                    <th>Nom</th>
+                    <th>Lieu</th>
+                    <th>Ville</th>
+                    <th>Date</th>
+                    <th>Visible</th>
+                    <th>Annulé</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td>
+                            <a class="btn btn-primary" href="{{ path('app_event_edit', {'slug': event.slug}) }}"
+                               title="Corriger l'événement">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}"
+                               title="Accéder à l'événement">{{ event.nom }}</a></td>
+                        <td>{{ event.placeName }}</td>
+                        <td>{{ event.placeCity }}</td>
+                        <td>
+                            {{ macros.dates(event.dateDebut, event.dateFin) }}
+                        </td>
+                        <td>
+                            <div class="switch">
+                                <label>
+                                    <input type="checkbox"
+                                           class="brouillon"
+                                           data-href="{{ path('app_event_brouillon', {'slug': event.slug}) }}" {{ not event.isBrouillon ? 'checked' : '' }} />
+                                </label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="switch">
+                                <label>
+                                    <input type="checkbox"
+                                           class="annuler"
+                                           data-href="{{ path('app_event_annuler', {'slug': event.slug}) }}" {{ event.modificationDerniereMinute ? 'checked' : '' }} />
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
         <div class="alert alert-info">
             <i class="fa fa-info-circle"></i> Aucun événement créé, publiez dès maintenant le vôtre !
@@ -75,6 +75,10 @@
     {% endif %}
 {%- endblock %}
 
+{% block css -%}
+    {{ encore_entry_link_tags('espace_perso_list') }}
+{%- endblock %}
+
 {% block js -%}
-    <script src="{{ app_asset('espace-perso/evenements/js/liste.min.js') }}" type="text/javascript"></script>
+    {{ encore_entry_script_tags('espace_perso_list') }}
 {%- endblock %}

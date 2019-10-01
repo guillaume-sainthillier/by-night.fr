@@ -1,0 +1,18 @@
+.pagination {
+  > li {
+	> a,
+	> span {
+	  color: $primary;
+	}
+  }
+
+  > .active > a,
+  > .active > span {
+	&,
+	&:hover,
+	&:focus {
+	  background-color: $info;
+	  border-color: $info;
+	}
+  }
+}

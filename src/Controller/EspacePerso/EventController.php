@@ -2,14 +2,12 @@
 
 namespace App\Controller\EspacePerso;
 
-use App\App\SocialManager;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Calendrier;
 use App\Entity\Event;
 use App\Form\Type\EventType;
 use App\Validator\Constraints\EventConstraintValidator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,7 +25,6 @@ class EventController extends BaseController
 
         $em = $this->getDoctrine()->getManager();
         $event->setModificationDerniereMinute($modificationDerniereMinute);
-        $em->merge($event);
         $em->flush();
 
         return new JsonResponse(['success' => true]);
@@ -44,7 +41,6 @@ class EventController extends BaseController
 
         $em = $this->getDoctrine()->getManager();
         $event->setBrouillon($isBrouillon);
-        $em->merge($event);
         $em->flush();
 
         return new JsonResponse(['success' => true]);
@@ -87,9 +83,9 @@ class EventController extends BaseController
      */
     public function editAction(Request $request, Event $event, EventConstraintValidator $validator)
     {
-        $form = $this->createEditForm($event);
-
         $validator->setUpdatabilityCkeck(false);
+
+        $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
@@ -122,7 +118,7 @@ class EventController extends BaseController
             ->setParticipe(true);
         $event->addCalendrier($calendrier);
 
-        $form = $this->createCreateForm($event);
+        $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
         $validator->setUpdatabilityCkeck(false);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -148,46 +144,7 @@ class EventController extends BaseController
             ]),
             'method' => 'DELETE',
         ])
-            ->add('supprimer', SubmitType::class, [
-                'label' => 'Supprimer',
-                'attr' => [
-                    'class' => 'btn btn-danger btn-raised btn-lg btn-block',
-                ],
-            ])
             ->getForm();
-    }
-
-    protected function createEditForm(Event $event)
-    {
-        return $this->createForm(EventType::class, $event)
-            ->add('ajouter', SubmitType::class, [
-                'label' => 'Enregistrer',
-                'attr' => [
-                    'class' => 'btn btn-primary btn-raised btn-lg btn-block',
-                ],
-            ]);
-    }
-
-    protected function getEventOptions(SocialManager $socialManager)
-    {
-        $user = $this->getUser();
-        $siteInfo = $socialManager->getSiteInfo();
-
-        return [
-            'site_info' => $siteInfo,
-            'user' => $user,
-        ];
-    }
-
-    protected function createCreateForm(Event $event)
-    {
-        return $this->createForm(EventType::class, $event)
-            ->add('ajouter', SubmitType::class, [
-                'label' => 'Enregistrer',
-                'attr' => [
-                    'class' => 'btn btn-primary btn-raised btn-lg btn-block',
-                ],
-            ]);
     }
 
     /**

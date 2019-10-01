@@ -1,6 +1,5 @@
 {% extends "layouts/default.html.twig" %}
 
-{% block container_class '' %}
 {% set username = user.username|capitalize %}
 
 {% block title username %}
@@ -13,8 +12,8 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {% set item = menu.addItem("Membres", url('app_search_query', {'type' : 'membres'})) %}
-    {% set item = menu.addItem(username, url('app_user_details', {'id' : user.id, 'slug': user.slug })) %}
+    {% do menu.addItem("Membres", url('app_search_query', {'type' : 'membres'})) %}
+    {% do menu.addItem(username, url('app_user_details', {'id' : user.id, 'slug': user.slug })) %}
 {% endblock %}
 
 {% set totalCount = count_participations + count_interets %}
@@ -26,19 +25,17 @@
     {% set imageURL = userProfilePicture.profilePicture(user) %}
     <div class="row">
         <div class="col-md-3">
-            <div class="panel panel-default fiche_profil text-center">
-                <div class="panel-heading bg-white">
-                    <h2 class="modal-title">Profil</h2>
-                </div>
-                <div class="panel-body">
-                    <img class="img img-responsive margin-auto" src="{{ imageURL }}" alt="{{ username }}" />
+            <div class="card fiche_profil">
+                <h2 class="card-header">Profil</h2>
+                <div class="card-body text-center">
+                    <img class="img img-fluid mx-auto" src="{{ imageURL }}" alt="{{ username }}" />
                     <br />
                     <div class="row">
-                        <div class="col-xs-6 preserve">
+                        <div class="col-6 preserve">
                             <strong class="number number-xbig">{{ count_participations }}</strong>
                             <span class="text-primary">participation{{ count_participations > 1 ? "s" : "" }}</span>
                         </div>
-                        <div class="col-xs-6 preserve">
+                        <div class="col-6 preserve">
                             <strong class="number number-xbig">{{ count_interets }}</strong>
                             <span class="text-primary">intérêt{{ count_interets > 1 ? "s" : "" }}</span>
                         </div>
@@ -60,17 +57,16 @@
             </div>
         </div>
         <div class="col-md-9">
-            <div class="panel panel-default">
-                <div class="panel-heading bg-white">
-                    <ul class="nav nav-tabs">
-                        <li><a href="#passes">Passés</a></li>
-                        <li class="active"><a href="#a-venir">A venir</a></li>
-                    </ul>
-                    <h2 class="modal-title">Événements</h2>
-                </div>
-                <div class="panel-body">
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="a-venir">
+            <div class="card">
+                <ul class="nav nav-tabs nav-fill bg-white">
+                    <li class="nav-item"><a class="nav-link" href="#passes">Passés</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#a-venir">A venir</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="a-venir">
+                        <h3 class="card-header">Événéments à venir</h3>
+                        <div class="card-body">
                             {% if not next_events|length %}
                                 <div class="alert alert-info">
                                     <i class="fa fa-info-circle"></i>
@@ -80,7 +76,10 @@
                                 {% include "City/Event/block_preview_event.html.twig" with({'events' : next_events}) %}
                             {% endif %}
                         </div>
-                        <div class="tab-pane" id="passes">
+                    </div>
+                    <div class="tab-pane" id="passes">
+                        <h3 class="card-header">Événéments passés</h3>
+                        <div class="card-body">
                             {% if not previous_events|length %}
                                 <div class="alert alert-info">
                                     <i class="fa fa-info-circle"></i>
@@ -95,48 +94,53 @@
             </div>
             <div class="row">
                 <div class="col-sm-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading bg-white">
-                            <h3 class="modal-title">Lieux fréquentés</h3>
-                        </div>
-                        <div class="panel-body">
+                    <div class="card h-100">
+                        <h3 class="card-header">Lieux fréquentés</h3>
+                        <div class="card-body">
                             <div id="hero-donut" class="chart"></div>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading bg-white">
-                            <ul class="nav nav-tabs" id="chartsActivite">
-                                <li id="chartSemaine"><a href="#semaine">Semaine</a></li>
-                                <li id="chartMois"><a href="#mois">Mois</a></li>
-                                <li id="chartAnnee" class="active"><a href="#annee">Année</a></li>
-                            </ul>
-                            <h3 class="modal-title">Activité</h3>
-                        </div>
-                        <div class="panel-body">
+                    <div class="card h-100">
+                        <ul class="nav nav-tabs nav-fill" id="chartsActivite">
+                            <li class="nav-item" id="chartSemaine"><a class="nav-link" href="#semaine">Semaine</a></li>
+                            <li class="nav-item" id="chartMois"><a class="nav-link"href="#mois">Mois</a></li>
+                            <li class="nav-item" id="chartAnnee" ><a class="nav-link active" href="#annee">Année</a></li>
+                        </ul>
+                        <h3 class="card-header">Activité</h3>
+                        <div class="card-body">
                             <div class="tab-content">
-                                <div class="tab-pane" id="semaine">
-                                    <div id="chart-semaine" class="chart"
+                                <div class="tab-pane fade" id="semaine">
+                                    <div id="chart-semaine"
+                                         class="chart"
                                          data-url="{{ path("app_user_stats", {'type': 'semaine', 'id' : user.id, 'slug': user.slug }) }}">
                                         <div class="text-center">
-                                            <i class="fa fa-spin fa-spinner fa-5x color-second"></i>
+                                            <div class="spinner-grow spinner-grow-lg text-info" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="mois">
-                                    <div id="chart-mois" class="chart"
+                                <div class="tab-pane fade" id="mois">
+                                    <div id="chart-mois"
+                                         class="chart"
                                          data-url="{{ path("app_user_stats", {'type': 'mois', 'id' : user.id, 'slug': user.slug }) }}">
                                         <div class="text-center">
-                                            <i class="fa fa-spin fa-spinner fa-5x color-success"></i>
+                                            <div class="spinner-grow spinner-grow-lg text-success" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane active" id="annee">
-                                    <div id="chart-annee" class="chart"
+                                <div class="tab-pane fade show active" id="annee">
+                                    <div id="chart-annee"
+                                         class="chart"
                                          data-url="{{ path("app_user_stats", {'type': 'annee', 'id' : user.id, 'slug': user.slug }) }}">
                                         <div class="text-center">
-                                            <i class="fa fa-spin fa-spinner fa-5x color-info"></i>
+                                            <div class="spinner-grow spinner-grow-lg text-info" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -150,9 +154,9 @@
 {%- endblock %}
 
 {% block css -%}
-    <link rel="stylesheet" href="{{ app_asset('membres/css/detail.min.css') }}" type="text/css">
+    {{ encore_entry_link_tags('user') }}
 {%- endblock %}
 
 {% block js -%}
-    <script src="{{ app_asset('membres/js/detail.min.js') }}" type="text/javascript"></script>
+    {{ encore_entry_script_tags('user') }}
 {%- endblock %}

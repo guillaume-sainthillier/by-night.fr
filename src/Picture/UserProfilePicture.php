@@ -50,6 +50,6 @@ class UserProfilePicture
 
     public function getDefaultProfilePicture($thumb = 'thumb_user')
     {
-        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/img/empty_user.png', $thumb);
+        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/images/empty_user.png', $thumb);
     }
 }

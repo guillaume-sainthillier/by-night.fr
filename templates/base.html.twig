@@ -11,6 +11,7 @@ _______     __  _   _ _____ _____ _    _ _______
 <html prefix="og: http://ogp.me/ns#" lang="fr" xmlns:fb="http://ogp.me/ns/fb#">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta http-equiv="Content-Language" content="fr">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,7 +39,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="{% block og_url %}{{ url('app_main_index') }}{% endblock %}">
     <meta property="og:locale" content="fr" />
-    <meta property="og:image" content="{% block og_image %}{{ absolute_url(app_asset('img/by-night.png')) }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ absolute_url(app_asset('build/images/by-night.png')) }}{% endblock %}">
     <!-- ./OpenGraph -->
 
     <!-- Twitter -->
@@ -74,17 +75,10 @@ _______     __  _   _ _____ _____ _    _ _______
     <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
 
     <!-- CSS -->
-    <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400%7CRoboto+Condensed:100,300,400' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="{{ app_asset('main/css/style.min.css') }}" type="text/css">
-    {% block css_layout %}{% endblock %}
+    <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500%7CRoboto+Condensed:300' rel='stylesheet' type='text/css'>
+    {{ encore_entry_link_tags('app') }}
     {% block css %}{% endblock %}
-    <link rel="stylesheet" href="{{ app_asset('css/print.min.css') }}" type="text/css" media="print">
     <!-- ./CSS -->
-
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
     {% if no_ads is not defined %}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
@@ -132,12 +126,12 @@ _______     __  _   _ _____ _____ _    _ _______
         <!-- ./Menu -->
 
         {% block full_breadcrumb %}
-        <div id="bread" class="bg-white">
+        <div id="bread">
             <div class="container">
-                {% set item = menu.addItem('By Night', url('app_main_index')) %}
+                {% do menu.addItem('By Night', url('app_main_index')) %}
 
                 {% block breadcrumb %}{% endblock %}
-                {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane'}) }}
+                {{ wo_render_breadcrumbs({separator: null, listId: 'fil-ariane', itemClass: 'breadcrumb-item'}) }}
             </div>
         </div>
         {% endblock %}
@@ -150,7 +144,7 @@ _______     __  _   _ _____ _____ _    _ _______
 
 <!-- Modals -->
 <div class="modal fade" id="dialog_details" tabindex="-1" role="dialog" aria-labelledby="dialog_titre" aria-hidden="true">
-    {% include "modals.html.twig" %}
+    {% include "layouts/modal.html.twig" %}
 </div>
 <!-- ./Modals -->
 
@@ -163,14 +157,15 @@ _______     __  _   _ _____ _____ _    _ _______
 {% endif %}
 <!-- ./Footer -->
 
-<a href="#" id="toTop" class="btn btn-primary btn-fab btn-raised">
-    <span id="toTopHover">
-        <i class="fa fa-chevron-up"></i>
-    </span>
-</a>
+<button type="button" id="toTop" class="btn btn-primary bmd-btn-fab">
+    <i class="fa fa-chevron-up"></i>
+</button>
 
 <!-- JS -->
-<script type="text/javascript" src="{{ app_asset('main/js/scripts.min.js') }}"></script>
+{{ encore_entry_script_tags('app') }}
+<script>
+    App.init();
+</script>
 <script type="text/javascript">
     $(document).ready(function () {
         $.cookieBar({
@@ -184,7 +179,6 @@ _______     __  _   _ _____ _____ _    _ _______
         });
     });
 </script>
-{%- block js_layout -%}{%- endblock -%}
 {%- block js -%}{%- endblock -%}
 <!-- ./JS -->
 </body>

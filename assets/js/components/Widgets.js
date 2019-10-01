@@ -1,22 +1,29 @@
-var Widgets = {
-    scrollMap: [],
+import 'iscroll/build/iscroll';
 
-    init: function (selecteur) {
+export default class Widgets {
+    constructor() {
+        this.scrollMap = [];
+    }
+
+    init(selecteur) {
+        const self = this;
         $(function () {
-            Widgets.initMoreWidgets($('.widget', selecteur || document));
-            Widgets.initScrollable(selecteur);
+            self.initMoreWidgets($('.widget', selecteur || document));
+            self.initScrollable(selecteur);
         });
-    },
+    }
+
     //Deps: ['scrollable']
-    initScrollable: function (selecteur) {
+    initScrollable(selecteur) {
+        const self = this;
         $(".scrollable", selecteur || document).each(function () {
             if (!$(this).attr('id')) {
                 $(this).attr('id', 'scroll-' + Math.floor(Math.random() * 100000));
             }
 
             var id = $(this).attr('id');
-            if (!Widgets.scrollMap[id]) {
-                Widgets.scrollMap[id] = new IScroll("#" + id, {
+            if (!self.scrollMap[id]) {
+                self.scrollMap[id] = new IScroll("#" + id, {
                     scrollbars: true,
                     mouseWheel: true,
                     interactiveScrollbars: true,
@@ -24,26 +31,28 @@ var Widgets = {
                     fadeScrollbars: true
                 });
 
-                Widgets.scrollMap[id].on('scrollStart', function () {
+                self.scrollMap[id].on('scrollStart', function () {
                     App.initLazyLoading($("#" + id));
                 });
 
-                Widgets.scrollMap[id].on('scrollEnd', function () {
+                self.scrollMap[id].on('scrollEnd', function () {
                     App.initLazyLoading($("#" + id));
                 });
             }
         });
 
-    },
+    }
+
     //Deps: ['scrollable']
-    initMoreWidgets: function (elems) {
+    initMoreWidgets(elems) {
+        const self = this;
         elems.each(function () {
             var container = $(this);
-            var containerActions = container.find('.panel-footer');
+            var containerActions = container.find('.card-footer');
             var moreContentLink = container.find('.more-content');
             var containerBody = moreContentLink.parent();
 
-            if(! containerActions.length) {
+            if (!containerActions.length) {
                 return;
             }
 
@@ -64,12 +73,12 @@ var Widgets = {
                         btn.remove();
                         containerBody.append(content);
 
-                        var scroll = Widgets.scrollMap[container.find('.scrollable').attr('id')];
+                        var scroll = self.scrollMap[container.find('.scrollable').attr('id')];
                         if (scroll) {
                             scroll.refresh();
                             scroll.scrollTo(0, scroll.maxScrollY, 0, IScroll.utils.ease.elastic);
                         }
-                        Widgets.initMoreWidgets(container);
+                        self.initMoreWidgets(container);
                         App.initComponents(container);
                     });
 
@@ -79,6 +88,4 @@ var Widgets = {
             }
         });
     }
-};
-
-Widgets.init();
+}

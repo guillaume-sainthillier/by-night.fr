@@ -1,0 +1,95 @@
+@import "variables";
+@import "../../node_modules/bootstrap-material-design/scss/bootstrap-material-design";
+@import "components/alert";
+@import "components/breadcrumb";
+@import "components/card";
+@import "components/charts";
+@import "components/comment";
+@import "components/criteres";
+@import "components/datepicker";
+@import "components/event";
+@import "components/footer";
+@import "components/form";
+@import "components/menu_droit";
+@import "components/modal";
+@import "components/nav";
+@import "components/navbar";
+@import "components/pagination";
+@import "components/print";
+@import "components/select";
+@import "components/social_icons";
+@import "components/social_login";
+@import "components/table";
+@import "components/typeahead";
+@import "components/utilities";
+@import "components/widgets";
+
+@import "pages/en_savoir_plus";
+@import "pages/erreurs";
+@import "pages/event_details";
+@import "pages/event_index";
+@import "pages/user_details";
+@import "pages/user_event_crud";
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: $bgColor;
+  padding-top: 66px;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: "Roboto Condensed";
+  font-weight: 300;
+}
+
+#container {
+  margin-bottom: 50px;
+  padding: 0 20px 20px 20px;
+}
+
+//Liens
+a {
+  color: #222;
+
+  &:hover, &:focus {
+	text-decoration: none;
+  }
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 0;
+  font-size: 60px;
+  padding-bottom: 0;
+  letter-spacing: -3px;
+
+  strong {
+	font-weight: 300;
+  }
+}
+
+/* To fill the container and nothing else */
+.fb_iframe_widget, .fb_iframe_widget span, .fb_iframe_widget span iframe[style] {
+  width: 100% !important;
+}
+
+#toTop {
+  display: none;
+  text-decoration: none;
+  position: fixed;
+  bottom: 2%;
+  right: 2%;
+  z-index: 100;
+}
+
+.bloc_config {
+  margin-top: 40px;
+}
+
+.hidden {
+  display: none;
+}

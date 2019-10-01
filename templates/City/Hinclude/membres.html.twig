@@ -6,11 +6,11 @@
     {% set imageURL = userProfilePicture.getProfilePicture(user, 'thumb_user_50') %}
     <div class="widget_item">
         <div class="row">
-            <div class="col-xs-3 col-md-2 preserve min_membre">
-                <img class="margin-auto img img-responsive img-circle" alt="{{ user.username }}" src="{{ imageURL }}"/>
+            <div class="col-3 col-md-2 preserve min_membre">
+                <img class="mx-auto img img-fluid rounded-circle" alt="{{ user.username }}" src="{{ imageURL }}"/>
             </div>
-            <div class="col-xs-9 col-md-10 preserve text-left">
-                <h4 class="modal-title">
+            <div class="col-9 col-md-10 preserve text-left">
+                <h4>
                     <a href="{{ path('app_user_details', {'id': user.id, 'slug': user.slug} ) }}" title="Accédez au profil de {{ user.username }}">
                         {{ user.username|capitalize }}
                     </a>
@@ -23,6 +23,6 @@
     </div>
 {% endfor %}
 {% if hasNextLink is defined and hasNextLink %}
-    <a class="more-content btn btn-primary btn-raised btn-block" href="{{ hasNextLink }}">Plus ({{ current }}
+    <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}
         / {{ count }})</a>
 {% endif %}

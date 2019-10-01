@@ -2,13 +2,13 @@
 <div class="text-center">
     <div class="btn-group btn-group-justified" data-toggle="buttons">
         <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
-           class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ participer ? "btn-primary" : "btn-default" }}"
+           class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ participer ? "btn-primary" : "btn-secondary" }}"
            data-href="{{ path('app_user_participer', {'id' : event.id}) }}">
             <i class="fa fa-check check{{ participer ? '' : ' hidden' }}"></i>
             <input type="radio" name="interet"/> J'y serai
         </a>
         <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
-           class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ interet ? "btn-primary" : "btn-default" }}"
+           class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ interet ? "btn-primary" : "btn-secondary" }}"
            data-href="{{ path('app_user_interesser', {'id' : event.id}) }}">
             <i class="fa fa-check check{{ interet ? '' : ' hidden' }}"></i>
             <input type="radio" name="interet"/> Ça m'interesse

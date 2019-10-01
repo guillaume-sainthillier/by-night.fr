@@ -3,16 +3,12 @@
 {% block layout %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                <h1 class="titrebloc">{% block titre 'Hello' %}</h1>
-                <div class="divider">
-                    <span class="text-primary divider-icon"></span>
-                </div>
+            <div class="col-md-10 offset-md-1">
+                <h1>{% block titre 'Hello' %}</h1>
             </div>
         </div>
     </div>
-    <div class="container {% block container_class 'panel panel-primary' %}" id="container">
-        {% block layout_content '' %}
+    <div class="{% block container_class 'container' %}" id="container">
         {% include "layouts/_flash_messages.html.twig" %}
         {% if no_ads is not defined %}{% include 'ad.html.twig' %}{% endif %}
         {% block body %}{% endblock %}

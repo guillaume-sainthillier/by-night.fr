@@ -1,4 +1,7 @@
 module.exports = function (grunt) {
+    const sass = require('node-sass');
+    const tildeImporter = require('node-sass-tilde-importer');
+    grunt.loadNpmTasks('grunt-contrib-uglify-es');
     require('load-grunt-tasks')(grunt);
 
     // Configuration du projet
@@ -104,6 +107,25 @@ module.exports = function (grunt) {
             }
         },
 
+        sass: {
+            options: {
+                implementation: sass,
+                sourceMap: true,
+                importer: tildeImporter
+            },
+            dist: {
+                files: {
+                    './assets/css/style.css': './assets/scss/style.scss',
+                    './assets/css/pages/agenda.css': './assets/scss/pages/agenda.scss',
+                    './assets/css/pages/en_savoir_plus.css': './assets/scss/pages/en_savoir_plus.scss',
+                    './assets/css/pages/event_details.css': './assets/scss/pages/event_details.scss',
+                    './assets/css/pages/event_index.css': './assets/scss/pages/event_index.scss',
+                    './assets/css/pages/user_details.css': './assets/scss/pages/user_details.scss',
+                    './assets/css/pages/user_event_crud.css': './assets/scss/pages/user_event_crud.scss',
+                }
+            }
+        },
+
         //Concaténation des fichiers CSS
         concat: {
             print: {
@@ -115,7 +137,6 @@ module.exports = function (grunt) {
             },
             errors: {
                 src: [
-                    '<%= pkg.baseVendor %>/bootstrap/dist/css/bootstrap.min.css',
                     '<%= pkg.baseVendor %>/font-awesome/css/font-awesome.min.css',
                     '<%= pkg.baseCss %>/erreurs.css'
                 ],
@@ -125,18 +146,9 @@ module.exports = function (grunt) {
             mainCss: {
                 src: [
                     '<%= pkg.baseVendor %>/jquery-cookiebar/jquery.cookiebar.css',
-                    '<%= pkg.baseVendor %>/bootstrap/dist/css/bootstrap.min.css',
-                    '<%= pkg.baseVendor %>/bootstrap-material-design/dist/css/ripples.min.css',
                     '<%= pkg.baseVendor %>/font-awesome/css/font-awesome.min.css',
                     '<%= pkg.baseVendor %>/fancybox/dist/css/jquery.fancybox.css',
-                    '<%= pkg.baseCss %>/components/typeahead.css',
-                    '<%= pkg.baseCss %>/material/theme.blue.css',
-                    '<%= pkg.baseCss %>/components/social_icons.css',
-                    '<%= pkg.baseCss %>/commons.css',
-                    '<%= pkg.baseCss %>/footer.css',
-                    '<%= pkg.baseCss %>/event.css',
-                    '<%= pkg.baseCss %>/style.css',
-                    '<%= pkg.baseCss %>/respond.css'
+                    '<%= pkg.baseCss %>/style.css'
                 ],
                 dest: '<%= pkg.baseDist %>/main/css/style.css',
                 nonull: true
@@ -144,10 +156,6 @@ module.exports = function (grunt) {
             indexCss: {
                 src: [
                     '<%= pkg.baseVendor %>/dropdown.js/jquery.dropdown.css',
-                    '<%= pkg.baseCss %>/flaticon.css',
-                    '<%= pkg.baseCss %>/components/comment.css',
-                    '<%= pkg.baseCss %>/components/menu_droit.css',
-                    '<%= pkg.baseCss %>/components/criteres.css',
                     '<%= pkg.baseCss %>/pages/event_index.css'
                 ],
                 dest: '<%= pkg.baseDist %>/evenements/css/index.css',
@@ -158,22 +166,20 @@ module.exports = function (grunt) {
                     '<%= pkg.baseVendor %>/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css',
                     '<%= pkg.baseVendor %>/bootstrap-select/dist/css/bootstrap-select.min.css',
                     '<%= pkg.baseVendor %>/dropdown.js/jquery.dropdown.css',
-                    '<%= pkg.baseCss %>/components/menu_droit.css',
-                    '<%= pkg.baseCss %>/components/criteres.css'
+                    '<%= pkg.baseCss %>/pages/agenda.css',
                 ],
                 dest: '<%= pkg.baseDist %>/evenements/css/agenda.css',
                 nonull: true
             },
             adminInfoCss: {
                 src: [
-                    '<%= pkg.baseCss %>/components/social_login.css'
+                    '<%= pkg.baseCss %>/pages/admin_infos.css'
                 ],
                 dest: '<%= pkg.baseDist %>/admin/info/css/style.css',
                 nonull: true
             },
             widgetCss: {
                 src: [
-                    '<%= pkg.baseCss %>/components/widgets.css',
                     '<%= pkg.baseDist %>/css/sprites.css'
                 ],
                 dest: '<%= pkg.baseDist %>/widgets/css/widgets.css',
@@ -181,8 +187,6 @@ module.exports = function (grunt) {
             },
             detailEventCss: {
                 src: [
-                    '<%= pkg.baseCss %>/components/comment.css',
-                    '<%= pkg.baseCss %>/components/menu_droit.css',
                     '<%= pkg.baseCss %>/pages/event_details.css'
                 ],
                 dest: '<%= pkg.baseDist %>/evenements/css/details.css',
@@ -199,7 +203,6 @@ module.exports = function (grunt) {
                 src: [
                     '<%= pkg.baseVendor %>/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css',
                     '<%= pkg.baseVendor %>/summernote/dist/summernote.css',
-                    '<%= pkg.baseCss %>/pages/user_event_crud.css',
                     '<%= pkg.baseCss %>/components/social_login.css'
                 ],
                 dest: '<%= pkg.baseDist %>/espace-perso/evenements/css/manager.css',
@@ -208,7 +211,6 @@ module.exports = function (grunt) {
             espacePersoDetailCss: {
                 src: [
                     '<%= pkg.baseVendor %>/morris.js/morris.css',
-                    '<%= pkg.baseCss %>/components/charts.css',
                     '<%= pkg.baseCss %>/pages/user_details.css'
                 ],
                 dest: '<%= pkg.baseDist %>/membres/css/detail.css',
@@ -233,7 +235,7 @@ module.exports = function (grunt) {
         //gr des fichiers js / css
         watch: {
             css: {
-                files: ['<%= pkg.baseCss %>/**'],
+                files: ['./assets/scss/**'],
                 tasks: ['css']
             },
             javascript: {
@@ -249,9 +251,7 @@ module.exports = function (grunt) {
                     '<%= pkg.baseDist %>/main/js/scripts.min.js': [
                         '<%= pkg.baseVendor %>/jquery/dist/jquery.min.js',
                         '<%= pkg.baseVendor %>/popper.js/dist/umd/popper.min.js',
-                        '<%= pkg.baseVendor %>/bootstrap/dist/js/bootstrap.min.js',
-                        '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/ripples.min.js',
-                        '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/material.min.js',
+                        '<%= pkg.baseVendor %>/bootstrap-material-design/dist/js/bootstrap-material-design.min.js',
                         '<%= pkg.baseVendor %>/jquery-cookiebar/jquery.cookiebar.js',
                         '<%= pkg.baseVendor %>/jquery.scrollTo/jquery.scrollTo.min.js',
                         '<%= pkg.baseVendor %>/jquery-unveil/jquery.unveil.js',
@@ -458,7 +458,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('default', ['sprite', 'css', 'js', 'copy', 'symlink', 'cache']);
-    grunt.registerTask('css', ['concat', 'cssmin']);
+    grunt.registerTask('css', ['sass', 'concat', 'cssmin']);
     grunt.registerTask('js', ['uglify']);
     grunt.registerTask('cache', ['clean', 'cacheBust', 'merge-json', 'convert_mapping']);
 };

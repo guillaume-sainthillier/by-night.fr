@@ -1,0 +1,175 @@
+.badge {
+  margin-right: 3px;
+
+  strong {
+	font-weight: normal;
+  }
+}
+
+.margin-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.share {
+  display: block;
+  color: white;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+
+  i, span {
+	line-height: 1em;
+  }
+
+  i {
+	min-width: 1.3em;
+	border-right: 1px solid white;
+	margin-right: 10px;
+	text-align: center;
+  }
+
+  &:hover {
+	opacity: .8;
+	color: white;
+  }
+
+  &.facebook {
+	background-color: #3b5998;
+  }
+
+  &.twitter {
+	background-color: #48c4d2;
+  }
+
+  &.google-plus {
+	background-color: #d94a39;
+  }
+}
+
+.icon {
+  display: inline-block;
+  margin-top: 10px;
+  border-radius: 50%;
+  padding: 30px;
+
+  & > span {
+	position: relative;
+	left: -10px;
+  }
+}
+
+.color-primary {
+  color: $color-primary;
+}
+
+.color-success {
+  color: $color-success;
+}
+
+.color-info {
+  color: $color-info;
+}
+
+.color-warning {
+  color: $color-warning;
+}
+
+.color-danger {
+  color: $color-danger;
+}
+
+.icon-red {
+  color: $red-a200;
+  border: 1px solid $red-a100;
+}
+
+.icon-orange {
+  color: $orange-a200;
+  border: 1px solid $orange-a100;
+}
+
+.icon-yellow {
+  color: $lime-a200;
+  border: 1px solid $lime-a100;
+}
+
+.icon-green {
+  color: $light-green-a200;
+  border: 1px solid $light-green-a100;
+}
+
+.icon-blue {
+  color: $blue-a200;
+  border: 1px solid $blue-a100;
+}
+
+.icon-darkblue {
+  color: $deep-purple-a200;
+  border: 1px solid $deep-purple-a100;
+}
+
+.icon-purple {
+  color: $purple-a400;
+  border: 1px solid $purple-a200;
+}
+
+.big-icon {
+  & > span {
+	&, &:before {
+	  font-size: 2em;
+	}
+  }
+}
+
+.count {
+  font-size: 1.8em;
+  font-weight: 300 !important;
+}
+
+.thin {
+  font-weight: 400 !important;
+}
+
+.overlay {
+  margin: 5px;
+  min-height: 115px;
+
+  img {
+	margin-right: 10px;
+  }
+}
+
+.number {
+  font-weight: 300;
+  font-size: 1.2em;
+
+  &.number-sm {
+	font-size: 0.8em;
+  }
+
+  &.number-big {
+	font-size: 1.5em;
+  }
+
+  &.number-xbig {
+	font-size: 1.8em;
+  }
+
+  &.number-xxbig {
+	font-size: 2.5em;
+  }
+}
+
+.date {
+  font-size: 1.2em;
+  font-weight: 300;
+}
+
+.trait {
+  margin-top: 5px;
+}
+
+.margin_bottom_30 {
+  margin-bottom: 30px;
+}

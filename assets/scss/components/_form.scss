@@ -1,0 +1,32 @@
+form {
+  margin-bottom: 0;
+}
+
+.no-margin-form {
+  .form-group {
+	margin-top: 0;
+  }
+}
+
+.form-group label.control-label {
+  margin-top: 0;
+}
+
+.form-group .help-block {
+  display: block;
+}
+
+.delete-image .checkbox {
+  padding-top: 0;
+}
+
+.required:after {
+  content: '*';
+}
+
+.input-group > .twitter-typeahead {
+  position: relative;
+  flex: 1 1 auto;
+  width: 1%;
+  margin-bottom: 0;
+}

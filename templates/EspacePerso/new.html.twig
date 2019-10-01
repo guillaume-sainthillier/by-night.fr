@@ -3,10 +3,8 @@
 {% block titre 'Créer un nouvel événement' %}
 {% block title 'Nouvel événement' %}
 
-{% block container_class '' %}
-
 {% block breadcrumb_espace -%}
-    {% set item = menu.addItem("Nouveau", url('app_event_new')) %}
+    {% do menu.addItem("Nouveau", url('app_event_new')) %}
 {%- endblock %}
 
 {% block body -%}
@@ -24,19 +22,18 @@
                     {% include "EspacePerso/_event_part_3.html.twig" %}
                 </div>
             </div>
-            <hr/>
-            <div class="row">
-                <div class="col-md-4 text-left">
-                    {% block button_submit %}
-                        {{ form_row(form.ajouter) }}
-                    {% endblock %}
-                    <a class="btn btn-default btn-raised bg-white" href="{{ path('app_event_list') }}"
-                       title="Retourner à mes soirées">
-                        <i class="fa fa-chevron-left"></i>
-                        Retour
-                    </a>
-                </div>
+            <hr />
+            <div class="mt-2">
+                <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes soirées">
+                    <i class="fa fa-chevron-left"></i>
+                    Retour
+                </a>
+                <button type="submit" class="ml-2 btn btn-primary btn-raised">
+                    <i class="fa fa-save"></i>
+                    Sauvegarder
+                </button>
             </div>
+
             {{ form_rest(form) }}
             {{ form_end(form) }}
         {% endblock %}
@@ -44,7 +41,7 @@
 {%- endblock %}
 
 {% block css -%}
-    <link rel="stylesheet" href="{{ app_asset('espace-perso/evenements/css/manager.min.css') }}" type="text/css">
+    {{ encore_entry_link_tags('espace_perso_event') }}
 {%- endblock %}
 
 {% block head_js -%}
@@ -52,5 +49,5 @@
 {%- endblock %}
 
 {% block js -%}
-    <script src="{{ app_asset('espace-perso/evenements/js/manager.min.js') }}" type="text/javascript"></script>
+    {{ encore_entry_script_tags('espace_perso_event') }}
 {%- endblock %}

@@ -7,36 +7,36 @@
     {{ fos_httpcache_tag(tags('place', event.place)) }}
     <div {% if microdata %}itemscope itemtype="http://schema.org/Event"{% endif %}>
         <div class="row event">
-            <div class="col-xs-3 image_soiree">
+            <div class="col-3 image_soiree">
                 {% set original = eventProfilePicture.originalPicture(event) %}
                 {% set thumb = eventProfilePicture.picture(event) %}
                 {% if microdata %}
                     <meta itemprop="image" content="{{ original }}"/>{% endif %}
                 <div class="image-container">
                     {% if event.fbParticipations %}
-                        <span class="label label-warning">
+                        <span class="badge badge-warning">
                             <i class="fa fa-facebook"></i>
                             <span class="number">{{ event.fbParticipations }}</span>
                         </span>
                     {% endif %}
                     <a class="image-gallery" href="{{ original }}" title="{{ event.nom }}">
-                        <img class="img img-responsive loading"
+                        <img class="img img-fluid loading"
                              width="200"
                              height="200"
-                             src="{{ app_asset('img/loading_event.gif') }}"
+                             src="{{ app_asset('build/images/loading_event.gif') }}"
                              data-src="{{ thumb }}"
                              alt="{{ event.nom }}" />
                     </a>
                 </div>
             </div>
-            <div class="col-xs-9 description_evenement">
+            <div class="col-9 description_evenement">
                 {% if event.modificationDerniereMinute %}
                     <div class="alert alert-warning">
                         <i class="fa fa-warning"></i>
                         <span {% if microdata %}itemprop="eventStatus"{% endif %}> {{ event.modificationDerniereMinute }}</span>
                     </div>
                 {% endif %}
-                <h3 class="modal-title nom_soiree">
+                <h3 class="nom_soiree">
                     <a title="Tous les détails de {{ event.nom }} "
                        href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}"
                        {% if microdata %}itemprop="url"{% endif %}>
@@ -47,7 +47,7 @@
                     {% set dateDebut = event.dateDebut|date('d/m/Y') %}
                     {% set dateFin = event.dateFin|date('d/m/Y') %}
 
-                    <i class="fa fa-calendar pull-left"></i>
+                    <i class="fa fa-calendar float-left"></i>
                     <span>
                         {% if event.dateFin == null or ( event.dateFin != null and event.dateDebut == event.dateFin) %}
                             {% if microdata %}
@@ -74,7 +74,7 @@
                     </span>
                 </div>
                 <div class="trait hidden-xs hidden-sm">
-                    <i class="fa fa-quote-left pull-left"></i>
+                    <i class="fa fa-quote-left float-left"></i>
                     <div {% if microdata %}itemprop="description"{% endif %} class="description">
                         {{ event.descriptif|striptags|replace({'&#13;' : ' '})|truncate(300, true, '...')|raw }}
                     </div>
@@ -82,7 +82,7 @@
                 {% set place = event.place %}
                 {% if event.placeName %}
                     <div class="trait" {% if microdata %}itemprop="location" itemscope itemtype="http://schema.org/Place"{% endif %}>
-                        <i class="fa fa-map-marker pull-left"></i>
+                        <i class="fa fa-map-marker float-left"></i>
                         <a {% if microdata %}itemprop="name"{% endif %}
                            href="{{ path('app_agenda_place', {'slug': place.slug, 'location': place.locationSlug}) }}"
                            title="Sortir à {{ event.placeName }}">
@@ -117,16 +117,16 @@
                 {% set distinctTags = event.distinctTags %}
                 {% if distinctTags|length %}
                     <div class="trait">
-                        <i class="fa fa-tag pull-left"></i>
+                        <i class="fa fa-tag float-left"></i>
                         {% for tag in distinctTags %}
                             {% if event.place.city %}
-                                <a class="label label-info"
+                                <a class="badge badge-info"
                                    title="{{ tag }} à {{ event.place.city.name }}"
                                    href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
                                     <strong>{{ tag }}</strong>
                                 </a>
                             {% else %}
-                                <a class="label label-info"
+                                <a class="badge badge-info"
                                    title="{{ tag }} en {{ event.place.country.name }}"
                                    href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
                                     <strong>{{ tag }}</strong>
@@ -137,13 +137,13 @@
                 {% endif %}
                 {% if event.tarif %}
                     <div class="trait">
-                        <i class="fa fa-ticket pull-left"></i>
+                        <i class="fa fa-ticket float-left"></i>
                         <span>{{ event.tarif }}</span>
                     </div>
                 {% endif %}
                 {% if event.user %}
                     <div class="trait">
-                        <i class="fa fa-user pull-left"></i>
+                        <i class="fa fa-user float-left"></i>
                         Par
                         <a class="display_inline"
                            href="{{ path('app_user_details', {'id': event.user.id, 'slug': event.user.slug} ) }}"

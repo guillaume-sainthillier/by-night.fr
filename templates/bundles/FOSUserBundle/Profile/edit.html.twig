@@ -1,21 +1,20 @@
-{% extends "@FOSUser/layout.html.twig" %}
+{% extends "bundles/FOSUserBundle/layout.html.twig" %}
 
-{% block container_class '' %}
 {% block titre app.user.username %}
 {% block title app.user.username %}
 
 {% block breadcrumb -%}
-    {% set item = menu.addItem("Mon compte", url('fos_user_profile_edit')) %}
+    {% do menu.addItem("Mon compte", url('fos_user_profile_edit')) %}
 {%- endblock %}
 
 {% block body -%}
-    {% include "@FOSUser/Profile/edit_content.html.twig" %}
+    {% include "bundles/FOSUserBundle/Profile/edit_content.html.twig" %}
 {%- endblock %}
 
 {% block css -%}
-    <link rel="stylesheet" href="{{ app_asset('espace-perso/login/css/login.min.css') }}" type="text/css">
+    {{ encore_entry_link_tags('profile') }}
 {%- endblock %}
 
 {% block js -%}
-    <script src="{{ app_asset('espace-perso/profile/js/edit.min.js') }}" type="text/javascript"></script>
+    {{ encore_entry_script_tags('profile') }}
 {%- endblock %}

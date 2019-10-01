@@ -1,0 +1,53 @@
+$colorEven: theme-color("primary");
+$colorOdd: theme-color("info");
+
+.en-savoir-plus {
+  .bloc {
+	margin-bottom: 4rem;
+  }
+
+  .badge {
+	margin-bottom: 30px;
+	box-shadow: 2px 2px 2px 1px #656565;
+	font-size: 24px;
+	display: inline-block;
+
+	&.odd {
+	  background-color: $colorOdd;
+	}
+
+	&.even {
+	  background-color: $colorEven;
+	}
+  }
+
+  .icon {
+	border-width: 1px;
+	border-style: dotted;
+	padding: 30px;
+	border-radius: 100%;
+
+	&:hover {
+	  opacity: 0.7;
+	  border-style: solid;
+
+	  &.odd {
+		background-color: rgba(red($colorOdd), green($colorOdd), blue($colorOdd), 0.15);
+	  }
+
+	  &.even {
+		background-color: rgba(red($colorEven), green($colorEven), blue($colorEven), 0.15);
+	  }
+	}
+
+	&.odd {
+	  color: $colorOdd;
+	  border-color: $colorOdd;
+	}
+
+	&.even {
+	  color: $colorEven;
+	  border-color: $colorEven;
+	}
+  }
+}

@@ -1,9 +1,14 @@
-var UserEventHandler = {
-    init: function () {
+import 'summernote/dist/summernote-bs4.css';
+
+import 'summernote/dist/summernote-bs4';
+import 'summernote/dist/lang/summernote-fr-FR';
+
+export default class UserEventHandler {
+    init() {
+        const self = this;
         $(function () {
-            UserEventHandler.initSocials();
-            UserEventHandler.initWYSIWYG();
-            UserEventHandler.initGMap();
+            self.initWYSIWYG();
+            self.initGMap();
 
             $(".form-delete form").submit(function () {
                 return confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?");
@@ -14,36 +19,18 @@ var UserEventHandler = {
 
             dateTo.datepicker('setStartDate', dateFrom.datepicker('getDate'));
             dateFrom.datepicker('setEndDate', dateTo.datepicker('getDate'));
-            
-            dateFrom.on('changeDate', function(e) {
+
+            dateFrom.on('changeDate', function (e) {
                 dateTo.datepicker('setStartDate', e.date);
             });
 
-            dateTo.on('changeDate', function(e) {
+            dateTo.on('changeDate', function (e) {
                 dateFrom.datepicker('setEndDate', e.date);
             });
         });
-    },
-    initSocials: function () {
-        //Checkboxs
-        $("body").off("hasConnected").on("hasConnected", function (event, ui) {
-            var ck = ui.target;
-            var user = ui.user;
-            var bloc_config = $(ck).closest(".bloc_config");
+    }
 
-            $(ck).data("connected", "1").prop('checked', true);
-            bloc_config.find(".when_on").html('Connecté sous ' + user.username);
-        }).off("wantDisconnect").on("wantDisconnect", function (event, ck) {
-            $(ck).prop('checked', false);
-        }).off("wantConnect").on("wantConnect", function (event, ck) {
-            if (!$(ck).data("connected")) {
-                SocialLogin.launchSocialConnect(ck);
-            } else {
-                $(ck).prop('checked', true);
-            }
-        });
-    },
-    initWYSIWYG: function () {
+    initWYSIWYG() {
         //SummerNote
         $("#event_descriptif").summernote({
             lang: 'fr-FR',
@@ -60,8 +47,10 @@ var UserEventHandler = {
                 htmlMode: true
             }
         });
-    },
-    initGMap: function () {
+    }
+
+    initGMap() {
+        const self = this;
         //Google Maps
         // instantiate the addressPicker suggestion engine (based on bloodhound)
         var addressPicker = new AddressPicker({
@@ -88,7 +77,7 @@ var UserEventHandler = {
         // Proxy inputs typeahead events to addressPicker
         addressPicker.bindDefaultTypeaheadEvent($field);
         $(addressPicker).on('addresspicker:selected', function (event, result) {
-            UserEventHandler.assignGMapInfo(event, result);
+            self.assignGMapInfo(event, result);
         });
 
         // instantiate the typeahead UI
@@ -109,7 +98,7 @@ var UserEventHandler = {
         // Proxy inputs typeahead events to addressPicker
         placePicker.bindDefaultTypeaheadEvent($field);
         $(placePicker).on('addresspicker:selected', function (event, result) {
-            UserEventHandler.assignGMapInfo(event, result);
+            self.assignGMapInfo(event, result);
 
             if (typeof result.placeResult.formatted_address !== "undefined" && result.placeResult.formatted_address) {
                 $('#event_adresse').typeahead('val', result.placeResult.formatted_address);
@@ -128,8 +117,9 @@ var UserEventHandler = {
             $(this).typeahead('val', data.terms[0].value).blur();
         });
 
-    },
-    assignGMapInfo: function (event, result) {
+    }
+
+    assignGMapInfo(event, result) {
         $('#event_latitude').val(result.lat());
         $('#event_longitude').val(result.lng());
         $('#event_placeCity').val(result.nameForType('locality'));
@@ -140,5 +130,3 @@ var UserEventHandler = {
         $("#event_placeCountry").val(result.nameForType('country', true) || '');
     }
 };
-
-UserEventHandler.init();

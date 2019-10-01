@@ -1,0 +1,8 @@
+.datepicker table tr td {
+  &.active,
+  &.active:hover,
+  &.active.disabled,
+  &.active.disabled:hover {
+	background-color: $primary !important;
+  }
+}

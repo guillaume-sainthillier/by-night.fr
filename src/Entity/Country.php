@@ -27,7 +27,7 @@ class Country
     private $id;
 
     /**
-     * @Gedmo\Slug(fields={"name"})
+     * @Gedmo\Slug(fields={"name"}, prefix="c--")
      * @ORM\Column(length=63, unique=true)
      * @Exclude
      */

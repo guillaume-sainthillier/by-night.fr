@@ -4,10 +4,10 @@
 {% block title_admin 'Paramétrage des Réseaux Sociaux' %}
 
 {% block breadcrumb_admin -%}
-    {% set item = menu.addItem('Réseaux Sociaux', url('app_administration_info_edit', {'id': info.id})) %}
+    {% do menu.addItem('Réseaux Sociaux', url('app_administration_info_edit', {'id': info.id})) %}
 {%- endblock %}
 
-{% block body -%}
+{% block body_admin -%}
     {% for service in ['facebook', 'eventbrite', 'twitter'] %}
         <div class="bloc_config">
             {% include "Social/social_info.html.twig" with { 'info': info, 'service': service } %}
@@ -16,9 +16,9 @@
 {%- endblock %}
 
 {% block css -%}
-    <link rel="stylesheet" href="{{ app_asset('admin/info/css/style.min.css') }}" type="text/css">
+    {{ encore_entry_link_tags('admin_infos') }}
 {%- endblock %}
 
 {% block js -%}
-    <script src="{{ app_asset('admin/info/js/login.min.js') }}" type="text/javascript"></script>
+    {{ encore_entry_script_tags('admin_infos') }}
 {%- endblock %}

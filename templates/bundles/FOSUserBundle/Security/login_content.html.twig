@@ -3,55 +3,52 @@
 {% if error %}
     <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 {% endif %}
-<br />
-<br />
-<div class="row text-center">
-    <div class="col-xs-4 preserve">
+<div class="row text-center mt-4">
+    <div class="col-4 preserve">
         <a class="social-facebook social big-social app_tooltip" title="Connectez vous avec Facebook"
            href="{{ hwi_oauth_login_url('facebook') }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-facebook"></i>
         </a>
     </div>
-    <div class="col-xs-4 preserve">
+    <div class="col-4 preserve">
         <a class="social-twitter social big-social app_tooltip" title="Connectez vous avec Twitter"
            href="{{ hwi_oauth_login_url('twitter') }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-twitter"></i>
         </a>
     </div>
-    <div class="col-xs-4 preserve">
+    <div class="col-4 preserve">
         <a class="social-google social big-social app_tooltip" title="Connectez vous avec Google"
            href="{{ hwi_oauth_login_url('google') }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-google"></i>
         </a>
     </div>
 </div>
-<br />
-<br />
 <form action="{{ path('fos_user_security_check') }}" method="post">
     {% if csrf_token %}
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
     {% endif %}
 
-    <div class="form-group form-group-lg label-static">
-        <label for="username" class="control-label">{{ 'security.login.username'|trans }}</label>
+    <div class="form-group">
+        <label for="username" class="bmd-badge-floating">{{ 'security.login.username'|trans }}</label>
         <input class="form-control" type="text" id="username" name="_username" value="{{ last_username }}"
                required="required" />
     </div>
 
-    <div class="form-group form-group-lg label-static">
-        <label for="password" class="control-label">{{ 'security.login.password'|trans }}</label>
+    <div class="form-group">
+        <label for="password" class="bmd-badge-floating">{{ 'security.login.password'|trans }}</label>
         <input class="form-control" type="password" id="password" name="_password" required="required" />
     </div>
-    <div class="checkbox checkbox-primary">
+
+    <div class="checkbox">
         <label>
             <input type="checkbox" id="remember_me" name="_remember_me" value="on" checked />
             {{ 'security.login.remember_me'|trans }}
         </label>
-        <a class="pull-right" href="{{ path('fos_user_resetting_request') }}"
+        <a class="float-right" href="{{ path('fos_user_resetting_request') }}"
            title="Récupérez votre mot de passe oublié">Mot de passe perdu?</a>
     </div>
     {% if not partial %}
-        <button class="btn btn-primary {{ partial ? 'btn-flat' : 'btn-raised' }}" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
+        <button class="btn btn-primary {{ partial ? '' : 'btn-raised' }}" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
             Connexion
         </button>
     {% endif %}

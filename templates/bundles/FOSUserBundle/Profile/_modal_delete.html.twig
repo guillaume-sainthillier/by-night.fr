@@ -1,4 +1,4 @@
-{% extends "modal.html.twig" %}
+{% extends "layouts/modal.html.twig" %}
 
 {% block titre 'Confirmation de suppression' %}
 
@@ -9,10 +9,7 @@
         <strong> Cette action est irréversible !</strong>
     </div>
 
-    {{ form_errors(formDelete.delete_events) }}
-    <div class="checkbox checkbox-primary">
-        <label>Supprimer mes événements {{ form_widget(formDelete.delete_events) }}</label>
-    </div>
+    {{ form_row(formDelete.delete_events, {'label': 'Supprimer mes événements'}) }}
     {{ form_rest(formDelete) }}
 {%- endblock %}
 

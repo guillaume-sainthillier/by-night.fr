@@ -1,9 +1,9 @@
-{% extends "@FOSUser/Resetting/layout.html.twig" %}
+{% extends "bundles/FOSUserBundle/Resetting/layout.html.twig" %}
 
 {% block breadcrumb_reset %}
-    {% set item = menu.addItem("Étape 3", url('fos_user_resetting_request')) %}
+    {% do menu.addItem("Étape 3", url('fos_user_resetting_request')) %}
 {% endblock %}
 
 {% block fos_user_content %}
-    {% include "@FOSUser/Resetting/reset_content.html.twig" %}
+    {% include "bundles/FOSUserBundle/Resetting/reset_content.html.twig" %}
 {% endblock fos_user_content %}

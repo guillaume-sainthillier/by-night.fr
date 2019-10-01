@@ -1,0 +1,21 @@
+#bread {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  background-color: white;
+
+  #fil-ariane {
+	background-color: white;
+
+	a {
+	  color: $primary;
+
+	  &:hover, &:focus {
+		color: #222;
+	  }
+	}
+  }
+
+  .breadcrumb > li + li:before {
+	content: '>';
+	color: #222;
+  }
+}

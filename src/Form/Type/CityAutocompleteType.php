@@ -16,12 +16,13 @@ class CityAutocompleteType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'required' => true,
-                'label' => false,
+                'label' => 'À',
                 'attr' => [
-                    'placeholder' => 'Entrez un nom de ville...',
                     'class' => 'city-picker',
                 ],
             ])
+            ->add('du', HiddenType::class)
+            ->add('au', HiddenType::class)
             ->add('city', HiddenType::class, [
                 'label' => false,
                 'attr' => [
