@@ -1,14 +1,17 @@
-.badge {
-  margin-right: 3px;
-
-  strong {
-	font-weight: normal;
-  }
+.one-line {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.margin-auto {
-  margin-left: auto;
-  margin-right: auto;
+.image-gallery {
+  display: inline-block;
+  height: 100%;
+
+  &:hover {
+	cursor: -webkit-zoom-in;
+	cursor: -moz-zoom-in;
+  }
 }
 
 .share {
@@ -40,10 +43,6 @@
 
   &.twitter {
 	background-color: #48c4d2;
-  }
-
-  &.google-plus {
-	background-color: #d94a39;
   }
 }
 
@@ -120,56 +119,4 @@
 	  font-size: 2em;
 	}
   }
-}
-
-.count {
-  font-size: 1.8em;
-  font-weight: 300 !important;
-}
-
-.thin {
-  font-weight: 400 !important;
-}
-
-.overlay {
-  margin: 5px;
-  min-height: 115px;
-
-  img {
-	margin-right: 10px;
-  }
-}
-
-.number {
-  font-weight: 300;
-  font-size: 1.2em;
-
-  &.number-sm {
-	font-size: 0.8em;
-  }
-
-  &.number-big {
-	font-size: 1.5em;
-  }
-
-  &.number-xbig {
-	font-size: 1.8em;
-  }
-
-  &.number-xxbig {
-	font-size: 2.5em;
-  }
-}
-
-.date {
-  font-size: 1.2em;
-  font-weight: 300;
-}
-
-.trait {
-  margin-top: 5px;
-}
-
-.margin_bottom_30 {
-  margin-bottom: 30px;
 }

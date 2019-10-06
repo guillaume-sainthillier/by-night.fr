@@ -1,9 +1,9 @@
 {% set no_ads = true %}
-{% extends "layouts/default.html.twig" %}
+{% extends "layouts/simple.html.twig" %}
 
 {% block body %}
 <div class="row">
-    <div class="col-sm-8 col-lg-6 offset-lg-3 offset-sm-2">
+    <div class="col-md-10 col-lg-8 col-xl-6 offset-xl-3 offset-lg-2 offset-md-1">
         {% block fos_user_content %}{% endblock %}
     </div>
 </div>

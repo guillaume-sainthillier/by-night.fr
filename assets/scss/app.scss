@@ -1,7 +1,9 @@
 @import "variables";
 @import "../../node_modules/bootstrap-material-design/scss/bootstrap-material-design";
 @import "components/alert";
+@import "components/badge";
 @import "components/breadcrumb";
+@import "components/buttons";
 @import "components/card";
 @import "components/charts";
 @import "components/comment";
@@ -15,12 +17,15 @@
 @import "components/nav";
 @import "components/navbar";
 @import "components/pagination";
+@import "components/placeholder";
 @import "components/print";
+@import "components/scroll";
 @import "components/select";
 @import "components/social_icons";
 @import "components/social_login";
 @import "components/table";
 @import "components/typeahead";
+@import "components/typography";
 @import "components/utilities";
 @import "components/widgets";
 
@@ -37,18 +42,13 @@ html, body {
 
 body {
   background-color: $bgColor;
-  padding-top: 66px;
+  padding-top: 62px;
 }
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: "Roboto Condensed";
   font-weight: 300;
-}
-
-#container {
-  margin-bottom: 50px;
-  padding: 0 20px 20px 20px;
 }
 
 //Liens
@@ -61,11 +61,9 @@ a {
 }
 
 h1 {
+  margin-top: 0.5rem;
   text-align: center;
-  margin-bottom: 0;
-  font-size: 60px;
-  padding-bottom: 0;
-  letter-spacing: -3px;
+  letter-spacing: -2px;
 
   strong {
 	font-weight: 300;
@@ -84,6 +82,12 @@ h1 {
   bottom: 2%;
   right: 2%;
   z-index: 100;
+
+  @include media-breakpoint-down(md) {
+    width: $bmd-btn-fab-size-sm;
+    height: $bmd-btn-fab-size-sm;
+    min-width: $bmd-btn-fab-size-sm;
+  }
 }
 
 .bloc_config {
@@ -91,5 +95,11 @@ h1 {
 }
 
 .hidden {
-  display: none;
+  display: none!important;
+}
+
+@include media-breakpoint-down(md) {
+  .container-md {
+    @include make-container-max-widths();
+  }
 }

@@ -119,13 +119,11 @@ class AgendaController extends BaseController
         $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
 
         //Récupération des lieux, types événements et villes
-        $lieux = $this->getPlaces($memoryCache, $repo, $location);
         $types_manif = $this->getTypesEvenements($memoryCache, $repo, $location);
 
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
             'action' => $formAction,
-            'lieux' => $lieux,
             'types_manif' => $types_manif,
         ]);
 

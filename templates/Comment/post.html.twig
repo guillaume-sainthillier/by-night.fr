@@ -1,38 +1,25 @@
-<div class="block_poster_commentaire">
+{% import 'Form/macros.html.twig' as macros %}
+<div class="block_poster_commentaire mb-3">
     {% if is_granted("ROLE_USER") %}
         {{ form_start(form) }}
         {{ form_errors(form.commentaire) }}
-        <div class="row">
-            <div class="col col-auto">
-                {% set imageURL = userProfilePicture.getProfilePicture(app.user) %}
-                <img class="rounded img-fluid float-right" src="{{ imageURL }}" alt=""/>
-            </div>
-            <div class="col">
-                {{ form_label(form.commentaire) }}
-                {% block form_commentaire %}
-                    {{ form_widget(form.commentaire) }}
-                {% endblock %}
-            </div>
+
+        <div>
+            {{ macros.userLazyThumb(app.user, 50, 50) }}
+            <strong class="ml-2">{{ app.user.username }}</strong>
         </div>
-        <div class="text-right block_post">
-            {{ form_row(form.poster) }}
-        </div>
+        {% block form_commentaire %}
+            {{ form_row(form.commentaire) }}
+        {% endblock %}
+        <button type="submit" class="btn btn-primary btn-submit btn-raised">Poster</button>
 
         {{ form_rest(form) }}
     {% else %}
-        <div class="alert alert-warning alert-link alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true" title="Fermer">&times;</button>
-            <i class="fa fa-info-circle"></i>
-
-            <a class="connexion" title="Se connecter pour laisser un commentaire"
+        <div class="text-center mt-4">
+            <a class="btn btn-outline-secondary connexion" title="Se connecter pour laisser un commentaire"
                href="{{ path('fos_user_security_login') }}">
-                Connectez-vous
-            </a> ou
-            <a class="register" title="S'inscrire pour laisser un commentaire"
-               href="{{ path('fos_user_registration_register') }}">
-                inscrivez-vous
+                Laisser un commentaire
             </a>
-            pour laisser un message
         </div>
     {% endif %}
 </div>

@@ -1,6 +1,22 @@
+services:
+    s3_reader:
+        class: 'Twistor\Flysystem\Http\HttpAdapter'
+        arguments:
+            $base: "%env(AWS_S3_URL)%"
+
 # Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
 flysystem:
     storages:
+        s3.storage.reader:
+            adapter: 's3_reader'
+
+        users.storage.reader:
+            adapter: 'aws'
+            options:
+                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: '/uploads/users'
+
         users.storage.source:
             adapter: 'aws'
             options:
@@ -39,3 +55,26 @@ flysystem:
             options:
                 store: 'cache.flysystem.psr6'
                 source: 'thumbs.storage.source'
+
+        thumbs3.storage.source:
+            adapter: 'local'
+            options:
+                directory: '%kernel.project_dir%/var/storage/thumbs'
+
+        thumbs2.storage.source:
+            adapter: 'aws'
+            options:
+                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: '/thumb'
+
+        thumbs2.storage:
+            adapter: 'cache'
+            options:
+                store: 'cache.flysystem.psr6'
+                source: 'thumbs2.storage.source'
+
+        assets.storage.reader:
+            adapter: 'local'
+            options:
+                directory: '%kernel.project_dir%/public'

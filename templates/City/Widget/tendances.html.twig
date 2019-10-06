@@ -5,11 +5,9 @@
 {% block icone 'fa-line-chart' %}
 
 {% block body %}
-    <div>
-        {{ render_esi(path('app_event_tendances', {
-            'id': event.id
-        })) }}
-    </div>
+    {{ render_esi(path('app_event_tendances', {
+        'id': event.id
+    })) }}
 {% endblock %}
 
 {% block footer '' %}

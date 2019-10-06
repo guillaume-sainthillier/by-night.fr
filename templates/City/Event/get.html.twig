@@ -1,26 +1,17 @@
-{% extends "layouts/with-widget.html.twig" %}
+{% extends "layouts/stretch.html.twig" %}
 
+{% import "Form/macros.html.twig" as macros %}
 {% set nomSoiree = event_seo.getEventShortTitle(event) %}
 {% set horaires = event_seo.getEventDateTime(event) %}
 {% set descriptionSoiree = event.descriptif|parse_tags|raw %}
-{% set original = eventProfilePicture.originalPictureURL(event) %}
-{% set thumb = eventProfilePicture.picture(event) %}
-
+{% set original = eventProfilePicture.originalPicture(event) %}
 {% set distinctTags = event.distinctTags %}
 
 {% set place = event.place %}
 
+{% block page_id 'page-event' %}
 {% block title event_seo.eventFullTitle(event) %}
 {% block titre -%}
-    {#
-    {% if is_granted('ROLE_ADMIN') or (event.user and event.user == app.user) %}
-        <a class="btn btn-lg btn-primary btn-raised"
-           href="{{ path('app_agenda_edit', {'slug': event.slug}) }}"
-           title="Modifier l'événement">
-            <i class="fa fa-pencil"></i>
-        </a>
-    {% endif %}
-    #}
     {{ block('title') }}
 {%- endblock %}
 
@@ -41,7 +32,6 @@
 
 {% block metas %}
     <link rel="image_src" href="{{ original }}" />
-    <link rel="thumbnail" href="{{ thumb }}" />
     <meta property="article:published_time" content="{{ event.createdAt.format('Y-m-d') }}" />
     <meta property="article:publisher" content="https://www.facebook.com/pages/By-Night/{{ social_manager.facebookIdPage }}" />
     {% if event.user %}
@@ -59,241 +49,223 @@
 
 {% block body -%}
     {{ fos_httpcache_tag(tags('event', event) ) }}
+    <div class="card" id="event">
+        <div class="row no-gutters">
+            <div class="col-lg-8">
+                <a class="image-gallery" href="{{ original }}" title="{{ nomSoiree }}">
+                    {{ macros.eventThumb(event, 800, 400, {'class': 'img', 'itemprop': 'image'}) }}
+                </a>
+            </div>
+            <div class="col-lg-4 event-details">
+                <div class="card-body">
+                    <div class="detail-item">
+                        <i class="fa fa-calendar"></i>
+                        <h2>
+                            {% set dateDebut = event.dateDebut|date('d/m/Y') %}
+                            {% set dateFin = event.dateFin|date('d/m/Y') %}
+
+                            {% if event.dateFin == null or event.dateDebut == event.dateFin %}
+                                Le
+                                <time itemprop="startDate"
+                                      datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
+                            {% else %}
+                                Du
+                                <time itemprop="startDate"
+                                      datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
+                                au
+                                <time itemprop="endDate"
+                                      datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ event.dateFin|localizeddate('full', 'none') }}</time>
+                            {% endif %}
+                        </h2>
+                    </div>
+                    {% if event.horaires %}
+                        <div class="detail-item">
+                            <i class="fa fa-clock-o"></i>
+                            <p>{{ event.horaires }}</p>
+                        </div>
+                    {% endif %}
+
+                    <div itemprop="location" itemscope itemtype="http://schema.org/Place" class="detail-item">
+                        <meta name="url" content="{{ path('app_agenda_place', {'slug': place.slug, 'location': place.locationSlug}) }}">
+
+                        {% set mapParameter = "place?q=" %}
+                        {% set mapValue = "" %}
+                        {% if event.placeName %}
+                            {% set mapValue = event.placeName %}
+                            <i class="fa fa-map-marker"></i>
+                            <h2 class="mb-0">
+                                <strong itemprop="name">{{ event.placeName }}</strong>
+                            </h2>
+                        {% endif %}
+
+                        {% if event.placeCity %}
+                            <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+                                {% if event.place and event.place.city %}
+                                    <meta itemprop="addressCountry" content="{{ event.place.city.country.id }}" />
+                                {% endif %}
+
+                                {% if event.placeStreet %}
+                                    <div itemprop="streetAddress">{{ event.placeStreet }}</div>
+                                {% endif %}
+
+                                {% if event.placeCity or event.placePostalCode %}
+                                    <div>
+                                        {% if event.placePostalCode %}
+                                            <span itemprop="postalCode">{{ event.placePostalCode }}</span>
+                                        {% endif %}
+
+                                        {% if event.placeCity %}
+                                            {% set mapValue = mapValue ~ " " ~ event.placeCity %}
+                                            {% if event.place and event.place.city %}
+                                                <meta name="url" content="{{ path('app_agenda_agenda', {'location': place.locationSlug}) }}">
+                                                <strong itemprop="addressLocality">{{ event.placeCity }}</strong>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if event.latitude and event.longitude %}
+                            <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+                            <meta itemprop="latitude" content="{{ event.latitude }}" />
+                            <meta itemprop="longitude" content="{{ event.longitude }}" />
+                        </span>
+                            {% if not place.city %}
+                                {% set mapParameter = "place?q=" %}
+                                {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                    {% if event.tarif %}
+                        <div class="detail-item">
+                            <i class="fa fa-ticket"></i>
+                            <p>{{ event.tarif }}</p>
+                        </div>
+                    {% endif %}
+                    {% if event.user %}
+                        <div class="detail-item">
+                            <i class="fa fa-user"></i>
+                            <p>
+                                Par
+                                <a href="{{ path('app_user_details', {'id': event.user.id, 'slug': event.user.slug} ) }}"
+                                   title="Les événements de {{ event.user.username }}">
+                                    {{ event.user.username }}
+                                </a>
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-header card-header-border-top">
+            {{ render_esi(path('app_event_tendances', {
+                'id': event.id
+            })) }}
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div itemprop="description" class="col-sm-8">
+                    {{ descriptionSoiree|raw }}
+                </div>
+                <div class="col-sm-4 my-3 my-md-0 event-details">
+                    {% for telephone in event.reservationTelephone|split(',') %}
+                        {% if telephone|length %}
+                            <div class="detail-item">
+                                <i class="fa fa-phone"></i>
+                                <p class="one-line">
+                                    <a href="tel:{{ telephone|trim }}">{{ telephone|trim }}</a>
+                                </p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% for liens in event.reservationInternet|split(' ') %}
+                        {% for lien in liens|split(',') %}
+                            {% if lien|trim %}
+                                <div class="detail-item">
+                                    <i class="fa fa-globe"></i>
+                                    <p class="one-line">
+                                        <a title="Aller sur le site internet de la réservation"
+                                           rel="nofollow"
+                                           href="{{ lien|ensure_protocol }}">{{ lien }}</a>
+                                    </p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    {% if event.reservationEmail %}
+                        <div class="detail-item">
+                            <i class="fa fa-envelope-o"></i>
+                            <p class="one-line">
+                                <a href="mailto:{{ event.reservationEmail }}">{{ event.reservationEmail }}</a>
+                            </p>
+                        </div>
+                    {% endif %}
+                    {% if event.facebookEventId %}
+                        <div class="detail-item">
+                            <i class="fa fa-facebook"></i>
+                            <p class="one-line">
+                                {% set lien = "https://www.facebook.com/events/" ~ event.facebookEventId %}
+                                <a href="{{ lien }}" rel="nofollow">{{ lien }}</a>
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    {% if distinctTags|length %}
+                        <div class="detail-item">
+                            <i class="fa fa-tags"></i>
+                            <p class="tags">
+                                {% for tag in distinctTags %}
+                                    <a class="badge badge-info"
+                                       title="{{ tag }} {{ event.place.location.atName }}"
+                                       href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
+                                        <strong>{{ tag }}  {{ event.place.location.atName }}</strong>
+                                    </a>
+                                {% endfor %}
+                            </p>
+                        </div>
+                    {% endif %}
+                    {% if event.source %}
+                        <div class="detail-item">
+                            <i class="fa fa-info"></i>
+                            <p>
+                                Source : <a href="{{ event.source }}" rel="nofollow">{{ event.fromData }}</a>
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% if mapValue %}
+            <div class="card-body text-center">
+                <button
+                        class="btn btn-outline-primary"
+                        id="loadMap"
+                        data-map="https://www.google.com/maps/embed/v1/{{ mapParameter }}{{ mapValue|raw|url_encode }}&key={{ googleMapKey }}&zoom=16">
+                    Afficher sur une carte
+                </button>
+            </div>
+            <div id="googleMap"></div>
+        {% endif %}
+
+        <div class="card-body">
+            {{ render_esi(path('app_comment_form', {
+                'id': event.id,
+            })) }}
+        </div>
+
+    </div>
+
     {% if event.isBrouillon %}
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i>
             Cet événement n'est pas encore disponible publiquement. Merci de patienter encore un peu !
         </div>
     {% else %}
-        {% include "ad.html.twig" with({'marginTop': 0}) %}
-        <div class="card card-primary details_evenement">
-            <h2 class="card-header">
-                <i class="float-right fa fa-calendar text-primary"></i>
-                {% set dateDebut = event.dateDebut|date('d/m/Y') %}
-                {% set dateFin = event.dateFin|date('d/m/Y') %}
-
-                {% if event.dateFin == null or event.dateDebut == event.dateFin %}
-                    Le
-                    <time itemprop="startDate"
-                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
-                {% else %}
-                    Du
-                    <time itemprop="startDate"
-                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
-                    au
-                    <time itemprop="endDate"
-                          datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ event.dateFin|localizeddate('full', 'none') }}</time>
-                {% endif %}
-
-                {% if event.horaires %}
-                    - {{ event.horaires }}
-                {% endif %}
-            </h2>
-            <div class="card-body">
-                <meta itemprop="name" content="{{ nomSoiree }}">
-                <meta itemprop="url" content="{{ url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug }) }}">
-
-                {% if event.modificationDerniereMinute %}
-                    <div class="alert alert-warning">
-                        <i class="fa fa-warning"></i>
-                        Cet événement a été signalé comme étant
-                        <span itemprop="eventStatus"> {{ event.modificationDerniereMinute }}</span>
-                    </div>
-                {% endif %}
-
-                <div class="row margin_bottom_30">
-                    <div class="col-sm-4">
-                        <a href="{{ original }}" title="{{ nomSoiree }}">
-                            <img class="img img-fluid" src="{{ thumb }}" itemprop="image" alt="{{ nomSoiree }}" />
-                        </a>
-                    </div>
-                    <div class="col-sm-8 block_infos">
-                        <ul class="fa-ul">
-                            <li>
-                                <i class="fa fa-li fa-map-marker"></i>
-                                <div itemprop="location" itemscope itemtype="http://schema.org/Place">
-                                    {% set mapParameter = "search?q=" %}
-                                    {% set mapValue = "" %}
-                                    {% if event.placeName %}
-                                        {% set mapValue = event.placeName %}
-                                        <h2>
-                                            <a itemprop="url"
-                                               href="{{ path('app_agenda_place', {'slug': place.slug, 'location': place.locationSlug}) }}"
-                                               title="Sortir à {{ event.placeName }}">
-                                                <strong itemprop="name">{{ event.placeName }}</strong>
-                                            </a>
-                                        </h2>
-                                    {% endif %}
-
-                                    {% if event.placeCity %}
-                                        <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
-                                            {% if event.place and event.place.city %}
-                                                <meta itemprop="addressCountry" content="{{ event.place.city.country.id }}" />
-                                            {% endif %}
-
-                                            {% if event.placeStreet %}
-                                                <div itemprop="streetAddress">{{ event.placeStreet }}</div>
-                                            {% endif %}
-
-                                            {% if event.placeCity or event.placePostalCode %}
-                                                <div>
-                                                    {% if event.placePostalCode %}
-                                                        <span itemprop="postalCode">{{ event.placePostalCode }}</span>
-                                                    {% endif %}
-
-                                                    {% if event.placeCity %}
-                                                        {% set mapValue = mapValue ~ " " ~ event.placeCity %}
-                                                        {% if event.place and event.place.city %}
-                                                            <a itemprop="url"
-                                                               href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}"
-                                                               title="Sortir à {{ event.placeCity }}">
-                                                                <span><strong itemprop="addressLocality">{{ event.placeCity }}</strong></span>
-                                                            </a>
-                                                        {% endif %}
-                                                    {% endif %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-
-                                    {% if event.latitude and event.longitude %}
-                                        <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                                            <meta itemprop="latitude" content="{{ event.latitude }}" />
-                                            <meta itemprop="longitude" content="{{ event.longitude }}" />
-                                        </span>
-                                        {% if not place.city %}
-                                            {% set mapParameter = "view?center=" %}
-                                            {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                                {% if mapValue %}
-                                    <button
-                                            class="btn btn-primary btn-sm"
-                                            id="loadMap"
-                                            data-map="https://www.google.com/maps/embed/v1/{{ mapParameter }}{{ mapValue|raw|url_encode }}&key={{ googleMapKey }}&zoom=16"
-                                    >Afficher sur une carte
-                                    </button>
-                                    <div id="googleMap"></div>
-                                {% endif %}
-                            </li>
-                            {% if event.tarif %}
-                                <li>
-                                    <div>
-                                        <i class="fa fa-li fa-ticket"></i>
-                                        <span>{{ event.tarif }}</span>
-                                    </div>
-                                </li>
-                            {% endif %}
-                            {% for telephone in event.reservationTelephone|split(',') %}
-                                {% if telephone|length %}
-                                    <li>
-                                        <i class="fa fa-li fa-phone"></i>
-                                        {{ telephone|trim }}
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                            {% for liens in event.reservationInternet|split(' ') %}
-                                {% for lien in liens|split(',') %}
-                                    {% if lien|trim %}
-                                        <li>
-                                            <i class="fa fa-li fa-globe"></i>
-                                            <a title="Aller sur le site internet de la réservation" rel="nofollow"
-                                               href="{{ lien|ensure_protocol }}">{{ lien[:50] ~ (lien|length > 50 ? "..." : "") }}</a>
-                                        </li>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endfor %}
-                            {% if event.reservationEmail %}
-                                <li>
-                                    <i class="fa fa-li fa-envelope-o"></i>
-                                    <a href="mailto:{{ event.reservationEmail }}">{{ event.reservationEmail }}</a>
-                                </li>
-                            {% endif %}
-                            {% if event.facebookEventId %}
-                                <li>
-                                    <i class="fa fa-li fa-facebook"></i>
-                                    {% set lien = "https://www.facebook.com/events/" ~ event.facebookEventId %}
-                                    <a href="{{ lien }}" rel="nofollow">{{ lien }}</a>
-                                </li>
-                            {% endif %}
-
-                            {% if distinctTags|length %}
-                                <li class="tags">
-                                    <i class="fa fa-li fa-tags"></i>
-                                    {% for tag in distinctTags %}
-                                        {% if event.place.city %}
-                                            <a class="badge badge-info"
-                                               title="{{ tag }} à {{ event.place.city.name }}"
-                                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
-                                                <strong>{{ tag }}</strong>
-                                            </a>
-                                        {% else %}
-                                            <a class="badge badge-info"
-                                               title="{{ tag }} en {{ event.place.country.name }}"
-                                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
-                                                <strong>{{ tag }}</strong>
-                                            </a>
-                                        {% endif %}
-                                    {% endfor %}
-                                </li>
-                            {% endif %}
-                            {% if event.source %}
-                                <li>
-                                    <i class="fa fa-li fa-info-circle"></i>
-                                    Source : <a href="{{ event.source }}" rel="nofollow">{{ event.fromData }}</a>
-                                </li>
-                            {% endif %}
-                            {% if event.user %}
-                                <li>
-                                    <i class="fa fa-li fa-user"></i>
-                                    Par
-                                    <a href="{{ path('app_user_details', {'id': event.user.id, 'slug': event.user.slug} ) }}"
-                                       title="Accédez au profil de {{ event.user.username }}">
-                                        {{ event.user.username }}
-                                    </a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-
-                <div itemprop="description">
-                    {{ descriptionSoiree|raw }}
-                </div>
-            </div>
-        </div>
-
-        <div class="card card-primary shares">
-            <h3 class="card-header">
-                <i class="float-right fa fa-share-alt text-primary"></i>
-                Partagez cet événement
-            </h3>
-            <div class="card-body">
-                <br />
-                {{ render_esi(controller('App\\Controller\\City\\EventController::shareAction', {
-                    'id': event.id,
-                })) }}
-
-                {{ render_esi(path('app_comment_form', {
-                    'id': event.id,
-                })) }}
-            </div>
-        </div>
 
         {% if event.placeName %}
-            <div class="card card-primary widget">
-                <h3 class="card-header">
-                    <i class="float-right fa fa-home text-primary"></i>
-                    {{ event.placeName }} : Les prochaines sorties
-                </h3>
-                <div class="card-body scrollable scrollable-large">
-                    <div>
-                        {{ render_esi(path('app_event_prochaines_soirees', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug} )) }}
-                    </div>
-                </div>
-                <div class="card-footer"></div>
-            </div>
+            {% include "City/Widget/next_evenements.html.twig" %}
         {% endif %}
     {% endif %}
     {% include "ad2.html.twig" with({'marginTop': 0}) %}

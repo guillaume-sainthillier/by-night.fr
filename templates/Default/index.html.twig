@@ -7,61 +7,59 @@
 {% block meta_description 'Le compagnon pour vos sorties. Choisissez votre ville et découvrez les événements du moment !' %}
 
 {% block body %}
-    <section class="full_wrapper" style="background-image: url({{ app_asset('build/images/landing.jpg') }})">
+    <section class="full_wrapper" style="background-image: url({{ asset('build/images/landing.jpg') }})">
         <div class="fade-black-transp"></div>
         <div class="wrapper">
-            <h1 class="text-center">Bienvenue ! On fait quoi ?</h1>
-            <div class="row">
-                <div class="col-10 offset-1 col-sm-8 offset-sm-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
-                    <div class="card no-margin-form search_container w-100">
-                        {{ form_start(autocomplete_form, { 'attr': {'class': 'form-city-picker m-0'} }) }}
-                        <div class="form-group">
-                            <label class="bmd-label-floating">Je veux sortir</label>
-                            <select name="shortcut" class="form-control shorcuts_date" placeholder="Raccourcis">
-                                <option value="">N'importe quand</option>
-                                <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">
-                                    Aujourd'hui
-                                </option>
-                                <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow">
-                                    Demain
-                                </option>
-                                <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
-                                        data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">
-                                    Ce Week End
-                                </option>
-                                <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
-                                        data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">
-                                    Cette semaine
-                                </option>
-                                <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
-                                        data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">
-                                    Ce mois
-                                </option>
-                            </select>
-                        </div>
-                        {{ form_row(autocomplete_form.name, {'label_attr': {'class': 'bmd-label-floating'}}) }}
-                        <div class="text-center">
-                            <button class="btn btn-primary btn-raised choose-city-action" type="submit" disabled>
-                                C'est parti
-                            </button>
-                        </div>
-                        {{ form_rest(autocomplete_form) }}
-                        {{ form_end(autocomplete_form) }}
+            <h1>Bienvenue ! On fait quoi ?</h1>
+            <div class="card no-margin-form search_container">
+                <div class="card-body">
+                    {{ form_start(autocomplete_form, { 'attr': {'class': 'form-city-picker m-0'} }) }}
+                    <div class="form-group">
+                        <label class="bmd-label-floating">Je veux sortir</label>
+                        <select name="shortcut" class="form-control shorcuts_date">
+                            <option value="">N'importe quand</option>
+                            <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">
+                                Aujourd'hui
+                            </option>
+                            <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow">
+                                Demain
+                            </option>
+                            <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
+                                    data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">
+                                Ce Week End
+                            </option>
+                            <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
+                                    data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">
+                                Cette semaine
+                            </option>
+                            <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
+                                    data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">
+                                Ce mois
+                            </option>
+                        </select>
                     </div>
+                    {{ form_row(autocomplete_form.name, {'label_attr': {'class': 'bmd-label-floating'}}) }}
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-raised choose-city-action" type="submit" disabled>
+                            C'est parti
+                        </button>
+                    </div>
+                    {{ form_rest(autocomplete_form) }}
+                    {{ form_end(autocomplete_form) }}
                 </div>
             </div>
         </div>
         <div class="footer_wrapper">
-            <h2 class="text-primary number number-xbig">Trouvez votre idée de sortie parmis plus de 600K événements depuis 2013</h2>
+            <h2 class="text-primary h4">Trouvez votre idée de sortie parmis plus de 600K événements depuis 2013</h2>
         </div>
     </section>
-    <section>
+    <section class="py-4">
         <div class="container">
             <h2>Ça bouge par ici</h2>
             <div class="row">
                 {% for stat in stats %}
-                    <div class="col-sm-6 col-md-4">
-                        <div class="card card-primary text-center">
+                    <div class="col-sm-6 col-lg-4">
+                        <div class="card text-center">
                             <div class="card-body">
                                 <h2 class="card-title">{{ stat.name }}</h2>
                                 <h6 class="card-subtitle mb-2 text-muted">{{ stat.events }}</span> événement{{ stat.events > 1 ? 's': '' }} à venir</h6>

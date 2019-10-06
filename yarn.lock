@@ -1248,7 +1248,7 @@ bootstrap-material-design@^4.1.2:
   resolved "https://registry.yarnpkg.com/bootstrap-material-design/-/bootstrap-material-design-4.1.2.tgz#d6f282f1248c6ce2959c69ca86afe113ee128e88"
   integrity sha512-hKeUkOM6g2DqpktvEMHrIDpQ5qupV4DSeKlJSJ60tLFQ+8tPlszVCa3JVLTV+ZFbJRMb0UA6UWTsnjW57kYNeg==
 
-bootstrap-select@^1.12.4:
+bootstrap-select@^1.13.0:
   version "1.13.11"
   resolved "https://registry.yarnpkg.com/bootstrap-select/-/bootstrap-select-1.13.11.tgz#d364ccc67cd6c1f9158689087f1d2d029df82c29"
   integrity sha512-WPpx2DYL9jVilNoqy4Pjcfa/Q0LOq8V0+xws/pmnRDn/deS7OYjo1njvD1Cv0s9/1ZUXt77UypxuloimEnkYsA==
@@ -5432,6 +5432,13 @@ querystringify@^2.1.1:
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.1.1.tgz#60e5a5fd64a7f8bfa4d2ab2ed6fdf4c85bad154e"
   integrity sha512-w7fLxIRCRT7U8Qu53jQnJyPkYZIaR4n5151KMfcJlO/A9397Wxb1amJvROTK6TOnp7PfoAmg/qXiNHI+08jRfA==
 
+raf@^3.1.0:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/raf/-/raf-3.4.1.tgz#0742e99a4a6552f445d73e3ee0328af0ff1ede39"
+  integrity sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==
+  dependencies:
+    performance-now "^2.1.0"
+
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
@@ -5850,6 +5857,13 @@ schema-utils@^1.0.0:
     ajv-errors "^1.0.0"
     ajv-keywords "^3.1.0"
 
+scroll-manager@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/scroll-manager/-/scroll-manager-1.6.2.tgz#e5413b80f09ca0721308e5e524f3860c72997262"
+  integrity sha512-sH2WympyEDoeOskEA3I4Q8oF9BNF6SggOzsE8z/YIJRYVO1LUB73ce+pnpBMoHinhs5d+0CG1vEruMlgei0lPQ==
+  dependencies:
+    raf "^3.1.0"
+
 scss-tokenizer@^0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/scss-tokenizer/-/scss-tokenizer-0.2.3.tgz#8eb06db9a9723333824d3f5530641149847ce5d1"
@@ -5862,6 +5876,16 @@ select-hose@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha1-Yl2GWPhlr0Psliv8N2o3NZpJlMo=
+
+select2-bootstrap4-theme@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/select2-bootstrap4-theme/-/select2-bootstrap4-theme-1.0.0.tgz#d637ff18e7fdade8d723ad4c567ef2ba48b73094"
+  integrity sha512-H5v9fd5JWqYKZZ0T8jB5cIrAhWdAIbr3K0pkfuUebcEZqFXlPtZSKoANzJc/qbDzj0/Sle1h/4APpVPveiR/VA==
+
+select2@^4.0.10:
+  version "4.0.10"
+  resolved "https://registry.yarnpkg.com/select2/-/select2-4.0.10.tgz#c8d4e3e2504f49956b3dfd9018ab1d7bc601a41b"
+  integrity sha512-g9fWMdEif4eQ901eiJV3os0MG5y20/3E2WNy0PfYf0T6Q/zZB/NOroJwAxcfE6uv5x0/BGeCDGNtoj9PqCdQEg==
 
 selfsigned@^1.10.6:
   version "1.10.6"
@@ -6773,6 +6797,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+vanilla-lazyload@^12.0.2:
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/vanilla-lazyload/-/vanilla-lazyload-12.0.2.tgz#bb6b50db610465f0ab7c6d520b76555ae9d57d67"
+  integrity sha512-b/zcAYG61IxnccCg9OZ8OuWps9+PWE5K8qxC2zuMfA70WAGV/EX5C9EHO3xVjSUTutrLoqEBrEczfxw2WvADLQ==
 
 vary@~1.1.2:
   version "1.1.2"

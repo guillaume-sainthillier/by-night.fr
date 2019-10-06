@@ -2,3 +2,33 @@
   padding-left: 0;
   padding-right: 0;
 }
+
+.nav-tabs {
+  flex-wrap: nowrap;
+}
+
+.nav-tabs.bg-primary {
+  .nav-link {
+	opacity: 0.76;
+	font-weight: normal;
+
+	&.active {
+	  font-weight: normal;
+	  opacity: 1;
+	}
+  }
+
+  @include media-breakpoint-down(md) {
+	.nav-link {
+	  padding: 0.5rem 0.75rem;
+
+	  .fa {
+		display: block;
+	  }
+
+	  span {
+		font-size: 0.75rem;
+	  }
+	}
+  }
+}

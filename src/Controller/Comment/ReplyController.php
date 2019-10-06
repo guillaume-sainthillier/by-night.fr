@@ -7,7 +7,6 @@ use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -79,12 +78,12 @@ class ReplyController extends AbstractController
             }
 
             return new JsonResponse([
-                    'success' => false,
-                    'post' => $this->renderView('Comment/Reply/post.html.twig', [
-                        'comment' => $comment,
-                        'form' => $form->createView(),
-                    ]),
-                ]);
+                'success' => false,
+                'post' => $this->renderView('Comment/Reply/post.html.twig', [
+                    'comment' => $comment,
+                    'form' => $form->createView(),
+                ]),
+            ]);
         }
 
         return $this->render('Comment/Reply/post.html.twig', [
@@ -134,13 +133,6 @@ class ReplyController extends AbstractController
         return $this->createForm(CommentType::class, $reponse, [
             'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
             'method' => 'POST',
-        ])
-            ->add('poster', SubmitType::class, [
-                'label' => 'Répondre',
-                'attr' => [
-                    'class' => 'btn btn-primary btn-submit btn-raised',
-                    'data-loading-text' => 'En cours...',
-                ],
-            ]);
+        ]);
     }
 }

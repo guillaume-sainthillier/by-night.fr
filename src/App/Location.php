@@ -37,17 +37,37 @@ class Location
             return sprintf('à %s', $this->city->getName());
         }
 
-        return sprintf('en %s', $this->country->getName());
+        if($this->country) {
+            return sprintf('en %s', $this->country->getName());
+        }
+
+        return '';
     }
 
     public function getName()
     {
-        return $this->city ? $this->city->getName() : $this->country->getName();
+        if($this->city) {
+            return $this->city->getName();
+        }
+
+        if($this->country) {
+            return $this->country->getName();
+        }
+
+        return '';
     }
 
     public function getSlug()
     {
-        return $this->city ? $this->city->getSlug() : $this->country->getSlug();
+        if($this->city) {
+            return $this->city->getSlug();
+        }
+
+        if($this->country) {
+            return $this->country->getSlug();
+        }
+
+        return 'unknown';
     }
 
     public function isCity()

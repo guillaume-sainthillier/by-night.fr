@@ -15,7 +15,7 @@
         {% for i, event in events %}
             <div itemscope itemtype="http://schema.org/Event">
                 {% set original = eventProfilePicture.originalPicture(event) %}
-                {% set thumb = eventProfilePicture.pictureUrl(event) %}
+                {% set thumb = eventProfilePicture.picture(event) %}
                 {% set dateDebut = event.dateDebut|date('d/m/Y') %}
                 {% set dateFin = event.dateFin|date('d/m/Y') %}
                 <h3>#{{ i + 1 }} : <a title="{{ event.nom }} à {{ event.placeName }}"

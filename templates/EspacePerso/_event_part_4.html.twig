@@ -2,13 +2,12 @@
 
 {% block titre 'Communiquez' %}
 {% block icone 'fa-bullhorn' %}
+{% block widget_class 'active' %}
 
 {% block body %}
-    <div class="form-horizontal">
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
-    </div>
+    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
+    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
+    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
 {% endblock %}
 
 {% block footer '' %}

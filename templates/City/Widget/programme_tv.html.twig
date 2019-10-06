@@ -1,11 +1,10 @@
-{% extends "City/Widget/template.html.twig" %}
+{% extends "City/Widget/template-scrollable.html.twig" %}
 
 {% block widget_body_class %}scrollable{% endblock %}
+{% block widget_attr %}id="programme-tv"{% endblock %}
 {% block titre %}Pas envie de sortir ?{% endblock %}
 {% block icone %}fa-coffee{% endblock %}
 {% block body %}
-    <div>
-        {{ render_esi(controller('App\\Controller\\Fragments\\WidgetsController::programmeTVAction')) }}
-    </div>
+    {{ render_esi(controller('App\\Controller\\Fragments\\WidgetsController::programmeTVAction')) }}
 {% endblock %}
 {% block footer %}{% endblock %}

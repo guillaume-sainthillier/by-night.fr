@@ -4,7 +4,7 @@
 {% block success_confirmation_message 'Vous avez bien répondu au commentaire de ' ~ username %}
 
 {% block form_commentaire %}
-    {{ form_widget(form.commentaire, {'attr' : {'placeholder': 'Répondez à ' ~ username}}) }}
+    {{ form_row(form.commentaire, {'attr' : {'placeholder': 'Répondez à ' ~ username}}) }}
 {% endblock %}
 
 {% block comment_reponses '' %}

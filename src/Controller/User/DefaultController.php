@@ -82,8 +82,7 @@ class DefaultController extends BaseController
             'next_events' => $repo->findAllNextEvents($user),
             'previous_events' => $repo->findAllNextEvents($user, false),
             'etablissements' => $repo->findAllPlaces($user),
-            'count_participations' => $repo->getCountParticipations($user),
-            'count_interets' => $repo->getCountInterets($user),
+            'count_favoris' => $repo->getCountParticipations($user) + $repo->getCountInterets($user),
         ]);
     }
 

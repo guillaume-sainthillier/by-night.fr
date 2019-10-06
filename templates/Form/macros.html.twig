@@ -3,9 +3,63 @@
     {% set dateFin = au|date('d/m/Y') %}
 
     {% if au == null or (au != null and dateDebut == dateFin) %}
-        Le <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|localizeddate('full', 'none') }}</time>
+        Le
+        <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|localizeddate('full', 'none') }}</time>
     {% else %}
-        Du <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|localizeddate('full', 'none') }}</time>
-        au <time itemprop="endDate" datetime="{{ au|date('Y-m-d\TH:i:sO') }}">{{ au|localizeddate('full', 'none') }}</time>
+        Du
+        <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|localizeddate('full', 'none') }}</time>
+        au
+        <time itemprop="endDate" datetime="{{ au|date('Y-m-d\TH:i:sO') }}">{{ au|localizeddate('full', 'none') }}</time>
     {% endif %}
+{% endmacro %}
+
+{% macro thumb(path, width, height, attrs) %}
+    <img class="img-fluid {{ attrs.class|default('') }}"
+         width="{{ width }}"
+         height="{{ height }}"
+         src="{{ thumbAsset(path, {'h': height, 'w': width}) }}"
+         srcset="{{ thumbAsset(path, {'h': height, 'w': width, 'dpr': 2}) }} 2x"
+    />
+{% endmacro %}
+
+{% macro userThumb(user, width, height, attrs) %}
+    <img class="img-fluid rounded-circle {{ attrs.class|default('') }}"
+         width="{{ width }}"
+         height="{{ height }}"
+         src="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop'}) }}"
+         srcset="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'dpr': 2, 'fit': 'crop'}) }} 2x"
+         alt="{{ user.username }}"
+    />
+{% endmacro %}
+
+{% macro userLazyThumb(user, width, height, attrs) %}
+    <img class="loading img-fluid rounded-circle {{ attrs.class|default('') }}"
+         width="{{ width }}"
+         height="{{ height }}"
+         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+         data-src="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop'}) }}"
+         data-srcset="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop', 'dpr': 2}) }} 2x"
+         alt="{{ user.username }}"
+    />
+{% endmacro %}
+
+{% macro eventThumb(event, width, height, attrs) %}
+    <img class="img-fluid {{ attrs.class|default('') }}"
+         width="{{ width }}"
+         height="{{ height }}"
+         src="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1}) }}"
+         srcset="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1, 'dpr': 2}) }} 2x"
+         alt="{{ event_seo.getEventShortTitle(event) }}"
+    />
+{% endmacro %}
+
+{% macro eventLazyThumb(event, width, height, attrs) %}
+    <img class="img-fluid loading {{ attrs.class|default('') }}"
+         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAQAAABeK7cBAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII="
+         width="{{ width }}"
+         height="{{ height }}"
+         data-src="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1}) }}"
+         data-srcset="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1, 'dpr': 2}) }} 2x"
+         alt="{{ event_seo.getEventShortTitle(event) }}"
+    />
 {% endmacro %}

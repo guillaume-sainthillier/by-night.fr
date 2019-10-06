@@ -1,6 +1,8 @@
+import '../app';
+
 import 'dropdown.js/jquery.dropdown.css';
 import 'bootstrap-datepicker/dist/css/bootstrap-datepicker3.css';
-import 'bootstrap-select/dist/css/bootstrap-select.min.css';
+import 'bootstrap-select/dist/css/bootstrap-select.css';
 
 import 'bootstrap-datepicker/dist/js/bootstrap-datepicker.js';
 import 'bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js';
@@ -11,6 +13,7 @@ import 'dropdown.js';
 import Widgets from '../components/Widgets';
 
 $(function () {
+    init_custom_tab();
     init_criteres();
     init_shorcut_date();
     load_infinite_scroll();
@@ -29,7 +32,7 @@ $(function () {
         var marginScroll = 250;
         var countStep = 2;
 
-        $(window).scroll(function () {
+        $(window).scrolled(200, function () {
             if (countLoads < countStep || isLoading) {
                 return;
             }
@@ -42,11 +45,52 @@ $(function () {
         });
     }
 
+    function init_custom_tab() {
+        var tabs = $('#custom-tab');
+        tabs.find('a.nav-link').click(function () {
+            var oldActive = $(this).closest('.nav').find('a.nav-link.active');
+            if (oldActive[0] !== this) {
+                desactivate(oldActive);
+                activate(this);
+            }
+
+            return false;
+        });
+
+        function activate(tab) {
+            var target = $(tab).attr('href');
+            $(target).addClass('active');
+            $(tab).addClass('active');
+            $("html, body").animate({'scrollTop': 0}, 'fast');
+        }
+
+        function desactivate(tab) {
+            var target = $(tab).attr('href');
+            $(target).removeClass('active');
+            $(tab).removeClass('active');
+        }
+
+        var lastScrollTop = 0;
+        var toTop = $('#toTop');
+        var bottomNavigation = $('#bottom-navigation');
+        $(window).scroll(function () {
+            var st = $(this).scrollTop();
+            if (st > lastScrollTop) {
+                toTop.removeClass('hidden');
+                bottomNavigation.removeClass('visible');
+            } else {
+                toTop.addClass('hidden');
+                bottomNavigation.addClass('visible');
+            }
+            lastScrollTop = st;
+        });
+    }
+
     function init_pagination() {
         $('#paginate').click(function (e) {
             isLoading = true;
             countLoads++;
-            $(this).attr('disabled', true).html($('<i>').addClass('fa fa-spin fa-spinner'));
+            $(this).attr('disabled', true).prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
 
             var self = $(this);
             var container = self.parent();

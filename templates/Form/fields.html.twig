@@ -14,9 +14,15 @@
 
 {% block vich_image_widget %}
     {% if download_uri is defined and download_uri %}
-        <a class="d-inline-block" href="{{ asset(download_uri, 'file') }}">
-            {% if image_filter_uri is not null %}
-                <img class="img-fluid" src="{{ image_filter_uri }}" alt="" />
+        <a class="image-gallery" href="{{ download_uri }}">
+            {% if image_thumb_uri is not null %}
+                <img class="img-fluid loading"
+                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+                     {% if image_thumb_params.w is defined %}width="{{ image_thumb_params.w }}"{% endif %}
+                     {% if image_thumb_params.h is defined %}height="{{ image_thumb_params.h }}"{% endif %}
+                     data-src="{{ image_thumb_uri }}"
+                     data-srcset="{{ image_thumb_uri_retina }} 2x"
+                     alt="" />
             {% endif %}
         </a>
     {% endif %}
@@ -46,7 +52,7 @@
     <div class="custom-file">
         {{ block('form_widget') }}
         <label class="custom-file-label" for="{{ form.vars.id }}">
-            <i class="fa fa-download"></i>
+            <i class="fa fa-upload"></i>
             Nouvelle image...
         </label>
     </div>

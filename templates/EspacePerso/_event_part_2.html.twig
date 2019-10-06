@@ -2,17 +2,23 @@
 
 {% block titre 'Informations' %}
 {% block icone 'fa-calendar' %}
+{% block widget_class 'active' %}
 
 {% block body %}
-    <div class="form-horizontal">
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.dateDebut}) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.dateFin}) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.horaires}) %}
-
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.categorieManifestation}) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.themeManifestation}) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.tarif}) %}
+    <div class="form-row">
+        <div class="col-md-6">
+            {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.dateDebut}) %}
+        </div>
+        <div class="col-md-6">
+            {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.dateFin}) %}
+        </div>
     </div>
+
+    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.horaires}) %}
+
+    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.categorieManifestation}) %}
+    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.themeManifestation}) %}
+    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.tarif}) %}
 {% endblock %}
 
 {% block footer '' %}

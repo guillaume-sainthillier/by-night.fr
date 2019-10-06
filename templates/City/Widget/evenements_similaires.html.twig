@@ -4,11 +4,9 @@
 {% block widget_body_class %}scrollable{% endblock %}
 {% block icone %}fa-star{% endblock %}
 {% block body %}
-    <div>
-        {{ render_esi(controller('App\\Controller\\City\\WidgetsController::soireesSimilairesAction', {
-            'slug': event.slug,
-            'id': event.id,
-            'location': event.locationSlug
-        })) }}
-    </div>
+    {{ render_esi(controller('App\\Controller\\City\\WidgetsController::soireesSimilairesAction', {
+        'slug': event.slug,
+        'id': event.id,
+        'location': event.locationSlug
+    })) }}
 {% endblock %}

@@ -6,3 +6,8 @@
 	background-color: $primary !important;
   }
 }
+
+.datepicker.dropdown-menu {
+  opacity: 1;
+  transform: scale(1);
+}

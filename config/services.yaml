@@ -23,6 +23,7 @@ services:
             $changePasswordFormFactory: "@fos_user.change_password.form.factory"
             $profileFormFactory: "@fos_user.profile.form.factory"
             $memoryCache: "@memory_cache"
+            $secret: "%kernel.secret%"
             $webDir: "%kernel.project_dir%/public"
             $tempPath: "%kernel.project_dir%/public/uploads/temp"
             $facebookIdPage: "%facebook_id_page%"
@@ -37,10 +38,11 @@ services:
             $monitor: "%env(APP_MONITOR)%"
             $disableTwitterFeed: "%disable_polled_feeds%"
             $disableProgrammeTVFeed: "%disable_polled_feeds%"
+            $assetThumb: "@app.asset_thumb"
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{Annotation,Entity,Exception,Kernel.php,Migrations,Geolocalize,Producer,Reject,Repository,Search}'
+        exclude: '../src/{Annotation,Entity,Exception,Kernel.php,Migrations,Geolocalize,Glide,Producer,Reject,Repository,Search}'
 
     App\Controller\:
         resource: '../src/Controller'
@@ -146,3 +148,19 @@ services:
         calls:
             -   method: setLevel
                 arguments: ['error']
+
+    League\Glide\Server:
+        # call the static method
+        factory: ['App\Glide\ServerFactory', create]
+        arguments:
+            - source: '@s3.storage.reader'
+              cache: '@thumbs3.storage.source'
+              driver: 'imagick'
+    app.asset_thumb:
+        class: League\Glide\Server
+        # call the static method
+        factory: ['App\Glide\ServerFactory', create]
+        arguments:
+            -   source: '@assets.storage.reader'
+                cache: '@thumbs3.storage.source'
+                driver: 'imagick'

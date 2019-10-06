@@ -18,63 +18,61 @@
 
 {% block body %}
     {% if location.slug in ['basse-terre', 'bordeaux', 'brest', 'caen', 'cayenne', 'dijon', 'fort-de-france', 'grenoble', 'lille', 'lyon', 'mamoudzou', 'marseille', 'montpellier', 'nantes', 'narbonne', 'nice', 'paris', 'perpignan', 'poitiers', 'reims', 'rennes', 'rouen', 'saint-denis', 'strasbourg', 'toulouse'] %}
-        {% set locationUrl = app_asset('build/images/sites/' ~ location.slug ~ '.jpg') %}
+        {% set locationUrl = asset('build/images/sites/' ~ location.slug ~ '.jpg') %}
     {% else %}
-        {% set locationUrl = app_asset('build/images/landing.jpg') %}
+        {% set locationUrl = asset('build/images/landing.jpg') %}
     {% endif %}
     <section class="full_wrapper" style="background-image: url({{ locationUrl }})">
         <div class="fade-black-transp"></div>
         <div class="wrapper">
-            <h1 class="text-center">Votre sortie {{ location.atName }}</h1>
-            <div class="row">
-                <div class="col-10 offset-1 col-sm-8 offset-sm-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
-                    <div class="no-margin-form card search_container w-100">
-                        <form name="app_search_event" class="m-0" role="search" action="{{ path('app_agenda_agenda', {'location': location.slug}) }}" method="POST">
-                            <input type="hidden" id="search_du" name="search[du]" value="" />
-                            <input type="hidden" id="search_au" name="search[au]" value="" />
-                            <div class="form-group">
-                                <label class="bmd-label-floating">Je veux sortir {{ location.atName }}</label>
-                                <select name="shortcut" class="form-control shorcuts_date">
-                                    <option value="">N'importe quand</option>
-                                    <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">
-                                        Aujourd'hui
-                                    </option>
-                                    <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow">
-                                        Demain
-                                    </option>
-                                    <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
-                                            data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">
-                                        Ce Week End
-                                    </option>
-                                    <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
-                                            data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">
-                                        Cette semaine
-                                    </option>
-                                    <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
-                                            data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">
-                                        Ce mois
-                                    </option>
-                                </select>
-                            </div>
+            <h1>Votre sortie {{ location.atName }}</h1>
+            <div class="no-margin-form card search_container">
+                <div class="card-body">
+                    <form name="app_search_event" class="m-0" role="search" action="{{ path('app_agenda_agenda', {'location': location.slug}) }}" method="POST">
+                        <input type="hidden" id="search_du" name="search[du]" value="" />
+                        <input type="hidden" id="search_au" name="search[au]" value="" />
+                        <div class="form-group">
+                            <label class="bmd-label-floating">Je veux sortir {{ location.atName }}</label>
+                            <select name="shortcut" class="form-control shorcuts_date">
+                                <option value="">N'importe quand</option>
+                                <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">
+                                    Aujourd'hui
+                                </option>
+                                <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow">
+                                    Demain
+                                </option>
+                                <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
+                                        data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">
+                                    Ce Week End
+                                </option>
+                                <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
+                                        data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">
+                                    Cette semaine
+                                </option>
+                                <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
+                                        data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">
+                                    Ce mois
+                                </option>
+                            </select>
+                        </div>
 
-                            <div class="form-group">
-                                <label class="bmd-label-floating">Et je cherche...</label>
-                                <input type="text" name="search[term]" value="" class="form-control">
-                                <span class="bmd-help">Concert, bar, spectacle, enfant, soirée, ...</span>
-                            </div>
+                        <div class="form-group">
+                            <label class="bmd-label-floating">Et je cherche...</label>
+                            <input type="text" name="search[term]" value="" class="form-control">
+                            <span class="bmd-help">Concert, bar, spectacle, enfant, soirée, ...</span>
+                        </div>
 
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-raised btn-primary mb-0 search">
-                                    C'est parti
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-raised btn-primary search">
+                                C'est parti
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
         <div class="footer_wrapper">
-            <h2 class="text-primary number number-xbig">{{ nbEvents }} événements et bons plans culturels {{ location.atName }}</h2>
+            <h2 class="text-primary h4">{{ nbEvents }} événements et bons plans culturels {{ location.atName }}</h2>
         </div>
     </section>
     <section class="bg-white py-4">
@@ -173,15 +171,17 @@
                 }] %}
 
                 {% for i, content in contents %}
-                    <div class="col-sm-6 col-md-4">
-                        <div class="card">
+                    <div class="col-sm-6 col-lg-4 mb-4">
+                        <div class="card h-100">
                             <h3 class="card-header">
                                 <i class="{{ content.icon }} text-primary"></i>
                                 {{ content.title }}
                             </h3>
                             <div class="card-body">
-                                <p>{{ content.text|raw }}</p>
-                                <a class="btn btn-primary mb-0"
+                                <p class="card-text">{{ content.text|raw }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <a class="btn btn-primary"
                                    href="{{ content.link }}"
                                    title="{{ content.title_link }}">
                                     <strong>{{ content.title_link }}</strong>

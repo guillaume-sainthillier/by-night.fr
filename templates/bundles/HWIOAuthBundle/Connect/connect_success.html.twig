@@ -14,9 +14,10 @@
         {{ 'header.success' | trans({'%name%': userInformation.realName}, 'HWIOAuthBundle') }}
     </div>
     <br/>
-    <div class="text-center">
-        <i class="fa fa-spin fa-spinner"></i> Veuillez patienter, vous allez être redirigé vers la page d'accueil ...
+    <div class="spinner-grow text-primary" role="status">
+        <span class="sr-only">Loading...</span>
     </div>
+    <span>Veuillez patienter, vous allez être redirigé vers la page d'accueil ...</span>
 {%- endblock %}
 
 {% block head_js %}

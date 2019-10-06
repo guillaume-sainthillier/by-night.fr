@@ -5,19 +5,19 @@ $.fn.extend($.fn.modal.Constructor.prototype, {
         this.hideButtons();
     },
     hideButtons: function (selecteur) {
-        var element = $(this.$element);
+        var element = $(this._element);
         element.find(".modal-footer :not(" + (selecteur || ".btn_retour") + ")").addClass("hidden");
     },
     setTitle: function (titre) {
-        var element = $(this.$element);
+        var element = $(this._element);
         element.find(".modal-title").html(titre);
     },
     setBody: function (body) {
-        var element = $(this.$element);
+        var element = $(this._element);
         element.find(".modal-body").html(body);
     },
     getBody: function () {
-        var element = $(this.$element);
+        var element = $(this._element);
         return element.find(".modal-body");
     },
     setErreur: function (msg) {
@@ -26,7 +26,7 @@ $.fn.extend($.fn.modal.Constructor.prototype, {
         this.hideButtons();
     },
     setLittleErreur: function (msg) {
-        var element = $(this.$element);
+        var element = $(this._element);
 
         element.find(".alert_little").remove();
 

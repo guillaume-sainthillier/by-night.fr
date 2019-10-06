@@ -17,7 +17,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SearchType extends AbstractType
 {
-
     public function onPreSubmit(FormEvent $event)
     {
         $data = $event->getData();
@@ -43,7 +42,6 @@ class SearchType extends AbstractType
             ->add('page', HiddenType::class)
             ->add('du', DateType::class, [
                 'label' => 'Du',
-                'label_attr' => ['class' => 'col-sm-6 control-label'],
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
                 'attr' => ['data-date-format' => 'dd/mm/yyyy'],
@@ -51,14 +49,12 @@ class SearchType extends AbstractType
             ->add('au', DateType::class, [
                 'required' => false,
                 'label' => 'Au',
-                'label_attr' => ['class' => 'col-sm-3 control-label'],
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
                 'attr' => ['data-date-format' => 'dd/mm/yyyy'],
             ])
             ->add('range', NumberType::class, [
                 'label' => 'Rayon (KM)',
-                'label_attr' => ['class' => 'col-sm-3 control-label'],
                 'attr' => ['placeholder' => 'Quand quel rayon cherchez-vous ?'],
             ])
             ->add('type_manifestation', ChoiceType::class, [
@@ -67,20 +63,11 @@ class SearchType extends AbstractType
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
-                'attr' => ['title' => 'Tous', 'class' => 'form-control', 'data-style' => 'btn-primary btn-flat', 'data-live-search' => true], ])
-            ->add('lieux', ChoiceType::class, [
-                'choices' => $options['lieux'],
-                'label' => 'Lieux',
-                'label_attr' => ['class' => 'col-sm-3 control-label'],
-                'multiple' => true,
-                'expanded' => false,
-                'required' => false,
-                'attr' => ['title' => 'Tous', 'class' => 'form-control', 'data-style' => 'btn-primary btn-flat', 'data-live-search' => true], ])
+                'attr' => ['title' => 'Tous', 'data-live-search' => true], ])
             ->add('term', TextType::class, [
                 'required' => false,
                 'label' => 'Mot-clés',
-                'label_attr' => ['class' => 'col-sm-3 control-label'],
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Quel événement cherchez-vous ?'], ])
+                'attr' => ['placeholder' => 'Quel événement cherchez-vous ?'], ])
             ->addEventListener(
                 FormEvents::PRE_SUBMIT,
                 [$this, 'onPreSubmit']
@@ -91,7 +78,6 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'lieux' => [],
             'types_manif' => [],
             'data_class' => SearchEvent::class,
             'csrf_protection' => false,

@@ -1,5 +1,11 @@
-import 'dropdown.js/jquery.dropdown.css';
-import 'dropdown.js';
+import '../app';
+
+import 'bootstrap-select/dist/css/bootstrap-select.css';
+
+import 'typeahead.js/dist/bloodhound';
+import 'typeahead.js/dist/typeahead.bundle';
+import 'bootstrap-select/dist/js/bootstrap-select.min.js';
+import 'bootstrap-select/js/i18n/defaults-fr_FR.js';
 
 $(document).ready(function () {
     $('.form-city-picker').each(function () {

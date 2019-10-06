@@ -23,34 +23,15 @@ class EventProfilePicture
      */
     private $packages;
 
-    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages)
+    /** @var AssetExtension */
+    private $assetExtension;
+
+    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages, AssetExtension $assetExtension)
     {
+        $this->assetExtension = $assetExtension;
         $this->cacheManager = $cacheManager;
         $this->helper = $helper;
         $this->packages = $packages;
-    }
-
-    public function getOriginalPictureUrl(Event $event)
-    {
-        if ($event->getPath()) {
-            return $this->packages->getUrl(
-                $this->helper->asset($event, 'file'),
-                'file'
-            );
-        }
-
-        if ($event->getSystemPath()) {
-            return $this->packages->getUrl(
-                $this->helper->asset($event, 'systemFile'),
-                'file'
-            );
-        }
-
-        if ($event->getUrl()) {
-            return $event->getUrl();
-        }
-
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', 'asset');
     }
 
     public function getOriginalPicture(Event $event)
@@ -58,55 +39,39 @@ class EventProfilePicture
         if ($event->getPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($event, 'file'),
-                'file'
+                'cdn'
             );
         }
 
         if ($event->getSystemPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($event, 'systemFile'),
-                'file'
+                'cdn'
             );
         }
 
-        if ($event->getUrl()) {
-            return $event->getUrl();
-        }
-
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', 'asset');
+        return $this->packages->getUrl(
+            AssetExtension::ASSET_PREFIX . '/images/empty_event.png',
+        );
     }
 
-    public function getPictureUrl(Event $event, $thumb = 'thumbs_evenement')
+    public function getPicture(Event $event, array $params = [])
     {
         if ($event->getPath()) {
-            return $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
+            return $this->assetExtension->thumb($this->helper->asset($event, 'file'), $params);
         }
 
         if ($event->getSystemPath()) {
-            return $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
+            return $this->assetExtension->thumb($this->helper->asset($event, 'systemFile'), $params);
         }
 
         if ($event->getUrl()) {
             return $event->getUrl();
         }
 
-        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', $thumb);
-    }
-
-    public function getPicture(Event $event, $thumb = 'thumbs_evenement')
-    {
-        if ($event->getPath()) {
-            return $this->cacheManager->getBrowserPath($this->helper->asset($event, 'file'), $thumb);
-        }
-
-        if ($event->getSystemPath()) {
-            return $this->cacheManager->getBrowserPath($this->helper->asset($event, 'systemFile'), $thumb);
-        }
-
-        if ($event->getUrl()) {
-            return $event->getUrl();
-        }
-
-        return $this->cacheManager->getBrowserPath(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', $thumb);
+        return $this->assetExtension->thumbAsset(
+            $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', 'local'),
+            $params
+        );
     }
 }

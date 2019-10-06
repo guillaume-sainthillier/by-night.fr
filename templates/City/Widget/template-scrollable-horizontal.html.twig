@@ -1,0 +1,14 @@
+<div class="widget active">
+    <h3>
+        <i class="fa fa-home text-primary"></i>
+        <span>{% block titre '' %}</span>
+    </h3>
+    <div class="scroll-wrapper">
+        <div class="scroll-area scroll-area-horizontal {% block scroll_area_class '' %}">
+            {% block body %}{% endblock %}
+        </div>
+        {% block footer %}
+            <div class="more-container"></div>
+        {% endblock %}
+    </div>
+</div>

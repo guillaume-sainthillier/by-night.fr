@@ -1,33 +1,25 @@
 {{ fos_httpcache_tag(tags('tendances', event)) }}
-<div class="text-center">
-    <div class="btn-group btn-group-justified" data-toggle="buttons">
-        <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
-           class="btn btn-raised participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ participer ? "btn-primary" : "btn-secondary" }}"
-           data-href="{{ path('app_user_participer', {'id' : event.id}) }}">
-            <i class="fa fa-check check{{ participer ? '' : ' hidden' }}"></i>
-            <input type="radio" name="interet"/> J'y serai
-        </a>
-        <a href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
-           class="btn btn-raised interesser{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }} {{ interet ? "btn-primary" : "btn-secondary" }}"
-           data-href="{{ path('app_user_interesser', {'id' : event.id}) }}">
-            <i class="fa fa-check check{{ interet ? '' : ' hidden' }}"></i>
-            <input type="radio" name="interet"/> Ça m'interesse
-        </a>
-    </div>
 
-    <!-- Stats -->
-    <div>
-        <strong class="number number-xbig">{{ count_participer }}</strong>
-        <span class="text-primary">participant{{ count_participer > 1 ? "s" : "" }}</span>
-        <strong class="number number-xbig"> / {{ count_interets }}</strong>
-        <span class="text-primary">interessé{{ count_interets > 1 ? "s" : "" }}</span>
+<div class="btn-group">
+    <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" data-toggle="dropdown">
+        <i class="fa fa-share-alt"></i>
+    </button>
+    <div class="dropdown-menu dropdown-menu-left">
+        {% for name, social in shares %}
+            <a href="{{ social.shareUrl }}" class="dropdown-item popup {{ name }}">
+                <span>
+                    <i class="fa fa-{{ name }}"></i>
+                    Partager avec {{ name|upper }}
+                </span>
+            </a>
+        {% endfor %}
     </div>
-    <!-- ./Stats -->
 </div>
 
-<br/>
-<!-- Membres -->
-<div class="tendance">
-    {% include "City/Hinclude/membres.html.twig" with({'membres': tendances }) %}
-</div>
-<!-- ./Membres -->
+<button type="button" href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
+   class="btn bmd-btn-fab bmd-btn-fab-sm participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }}"
+   data-href="{{ path('app_user_participer', {'id' : event.id}) }}">
+    <i class="fa {{ participer ? 'fa-heart' : 'fa-heart-o' }}"></i>
+</button>
+
+<small class="ml-3 text-muted {{ count == 0 ? 'd-none' : '' }}">{{ count }} intérêt{{ count > 1 ? "s" : "" }}</small>

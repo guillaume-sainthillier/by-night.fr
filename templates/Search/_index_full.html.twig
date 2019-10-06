@@ -51,10 +51,10 @@
     {% include "Search/_index_content.html.twig" %}
 {% endblock %}
 
-{% block js -%}
-    <script src="{{ app_asset('search/js/search.min.js') }}" type="text/javascript"></script>
+{% block css -%}
+    {{ encore_entry_link_tags('search') }}
 {%- endblock %}
 
-{% block css -%}
-    <link rel="stylesheet" href="{{ app_asset('search/css/search.min.css') }}" type="text/css">
+{% block js -%}
+    {{ encore_entry_script_tags('search') }}
 {%- endblock %}

@@ -127,6 +127,6 @@ export default class UserEventHandler {
 
         var rue = ((result.nameForType('street_number') ? result.nameForType('street_number') : '') + ' ' + (result.nameForType('route') || '')).trim();
         $('#event_placeStreet').val(rue);
-        $("#event_placeCountry").val(result.nameForType('country', true) || '');
+        $("#event_placeCountry").val(result.nameForType('country', true) || '').trigger('change');
     }
 };

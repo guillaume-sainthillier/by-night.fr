@@ -191,6 +191,9 @@
     "imagine/imagine": {
         "version": "v0.7.1"
     },
+    "intervention/image": {
+        "version": "2.5.0"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
@@ -239,6 +242,12 @@
     },
     "league/flysystem-cached-adapter": {
         "version": "1.0.9"
+    },
+    "league/glide": {
+        "version": "1.5.0"
+    },
+    "league/glide-symfony": {
+        "version": "1.0.3"
     },
     "liip/imagine-bundle": {
         "version": "1.8",
@@ -695,6 +704,9 @@
     },
     "twig/twig": {
         "version": "v2.4.4"
+    },
+    "twistor/flysystem-http": {
+        "version": "0.2.0"
     },
     "vich/uploader-bundle": {
         "version": "1.5",

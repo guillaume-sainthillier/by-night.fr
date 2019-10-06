@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\App\Location;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use Doctrine\ORM\Mapping as ORM;
@@ -158,8 +159,23 @@ class Place implements GeolocalizeInterface
      */
     protected $reject;
 
+    /** @var Location */
+    protected $location;
+
+    public function getLocation(): Location {
+        if(null !== $this->location) {
+            return $this->location;
+        }
+
+        $location = new Location();
+        $location->setCity($this->city);
+        $location->setCountry($this->country);
+        return $this->location = $location;
+    }
+
     public function getLocationSlug()
     {
+        return $this->getLocation()->getSlug();
         if ($this->getCity()) {
             return $this->getCity()->getSlug();
         }

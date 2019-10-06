@@ -21,11 +21,11 @@ framework:
         save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"
 
     assets:
+        base_urls: '%env(APP_ASSET_URL)%'
         packages:
-            asset:
-                base_url: '%env(APP_ASSET_URL)%'
-            file:
-                base_url: "%env(AWS_S3_URL)%"
+            local:
+            cdn:
+                base_urls: "%env(AWS_S3_URL)%"
 
     esi: true
     fragments: ~

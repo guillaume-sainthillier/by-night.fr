@@ -13,7 +13,7 @@
         "bootstrap": "^4.3.1",
         "bootstrap-datepicker": "^1.7.1",
         "bootstrap-material-design": "^4.1.2",
-        "bootstrap-select": "^1.12.4",
+        "bootstrap-select": "^1.13.0",
         "dropdown.js": "https://github.com/FezVrasta/dropdown.js/archive/master.tar.gz",
         "fancybox": "^3.0.0",
         "font-awesome": "^4.7.0",
@@ -26,9 +26,13 @@
         "morris.js": "^0.5.0",
         "popper.js": "^1.12.9",
         "raphael": "^2.2.7",
+        "scroll-manager": "^1.6.2",
+        "select2": "^4.0.10",
+        "select2-bootstrap4-theme": "^1.0.0",
         "summernote": "^0.8.8",
         "typeahead-addresspicker": "^1.0.1",
-        "typeahead.js": "^0.10.5"
+        "typeahead.js": "^0.10.5",
+        "vanilla-lazyload": "^12.0.2"
     },
     "devDependencies": {
         "@symfony/webpack-encore": "^0.28.0",

@@ -16,12 +16,6 @@ export default class UserDetails {
         const self = this;
         $(".chart").css({'height': '350px', 'width': '100%'});
 
-        $('.nav-tabs a:last').tab('show');
-        $('.nav-tabs a').click(function (e) {
-            e.preventDefault();
-            $(this).tab('show');
-        });
-
         self.initLieux();
         self.initActivite();
     }
@@ -29,14 +23,14 @@ export default class UserDetails {
     initActivite() {
         const self = this;
         self.chartActivite("annee", ["#67C2EF"]);
-        $('#chartMois').click(function () {
+        $('#chartMois').on('shown.bs.tab', function () {
             if (!$(this).hasClass("loaded")) {
                 $(this).addClass("loaded");
                 self.chartActivite("mois", ["#BDEA74"]);
             }
         });
 
-        $('#chartSemaine').click(function () {
+        $('#chartSemaine').on('shown.bs.tab', function () {
             if (!$(this).hasClass("loaded")) {
                 $(this).addClass("loaded");
                 self.chartActivite("semaine", ["#fabb3d"]);
@@ -45,7 +39,6 @@ export default class UserDetails {
     }
 
     initLieux() {
-        const self = this;
         var morris_data = [];
 
         $.each(window.datas, function (i, etablissement) {

@@ -8,11 +8,14 @@ use App\Entity\Calendrier;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Parser\ProgrammeTVParser;
+use App\Picture\EventProfilePicture;
 use App\Social\FacebookAdmin;
 use Doctrine\Common\Cache\Cache as DoctrineCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class WidgetsController extends BaseController
 {
@@ -78,7 +81,7 @@ class WidgetsController extends BaseController
      * @Route("/_private/tendances/{id}", name="app_event_tendances", requirements={"id": "\d+"})
      * @ReverseProxy(expires="1 year")
      */
-    public function tendances(Event $event)
+    public function tendances(Event $event, EventProfilePicture $eventProfilePicture)
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Event::class);
@@ -97,13 +100,31 @@ class WidgetsController extends BaseController
             }
         }
 
+        $link = $this->generateUrl('app_event_details', [
+            'slug' => $event->getSlug(),
+            'id' => $event->getId(),
+            'location' => $event->getLocationSlug(),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $eventProfile = $eventProfilePicture->getOriginalPicture($event);
+
+        $page = new Page([
+            'url' => $link,
+            'title' => $event->getNom(),
+            'text' => $event->getDescriptif(),
+            'image' => $eventProfile,
+        ]);
+
         return $this->render('City/Hinclude/tendances.html.twig', [
             'event' => $event,
             'tendances' => $repo->findAllTendances($event),
-            'count_participer' => $event->getParticipations() + $event->getFbParticipations(),
-            'count_interets' => $event->getInterets() + $event->getFbInterets(),
+            'count' => $event->getParticipations() + $event->getFbParticipations() + $event->getInterets() + $event->getFbInterets(),
             'participer' => $participer,
             'interet' => $interet,
+            'shares' => [
+                'facebook' => $page->facebook,
+                'twitter' => $page->twitter,
+            ],
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Validator\Constraints;
 
 use App\Entity\Event;
+use App\Reject\Reject;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -32,6 +33,10 @@ class EventConstraintValidator extends ConstraintValidator
     public function validate($event, Constraint $constraint)
     {
         $reject = $event->getReject();
+
+        if ($reject && !$this->checkIfUpdate) {
+            $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
+        }
 
         /** @var EventConstraint $constraint */
         if (!$reject || $reject->isValid()) {
@@ -64,7 +69,7 @@ class EventConstraintValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->badEventDescrition)->atPath('descriptif')->addViolation();
         }
 
-        if ($this->checkIfUpdate && $reject->hasNoNeedToUpdate()) {
+        if ($reject->hasNoNeedToUpdate()) {
             $this->context->buildViolation($constraint->noNeedToUpdate)->addViolation();
         }
 

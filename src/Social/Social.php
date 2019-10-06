@@ -169,7 +169,7 @@ abstract class Social
 
     protected function getLinkPicture(Event $event)
     {
-        return $this->eventProfilePicture->getOriginalPictureUrl($event);
+        return $this->eventProfilePicture->getOriginalPicture($event);
     }
 
     protected function getLink(Event $event)

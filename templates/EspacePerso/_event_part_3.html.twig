@@ -2,20 +2,19 @@
 
 {% block titre 'Lieux' %}
 {% block icone 'fa-map-marker' %}
+{% block widget_class 'active' %}
 
 {% block body %}
     {{ form_row(form.placeName) }}
     {{ form_row(form.adresse) }}
 
-    <div class="ml-2 ml-sm-5">
+    <div class="ml-2 ml-sm-5 mb-5">
         {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeStreet) }) %}
         {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placePostalCode) }) %}
         {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeCity) }) %}
         {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeCountry) }) %}
     </div>
 
-    <br />
-    <br />
     <div id="map"></div>
 {% endblock %}
 

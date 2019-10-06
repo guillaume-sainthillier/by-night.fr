@@ -2,8 +2,8 @@
     <div id="footer">
         <div class="container">
             <div class="row">
-                <div class="col-6 col-md-3">
-                    <h3 class="text-info">By Night</h3>
+                <div class="col-sm-6 col-lg-3">
+                    <h3 class="h4 text-info">By Night</h3>
                     <ul class="fa-ul">
                         <li>
                             <i class="fa fa-li fa-angle-right"></i>
@@ -37,8 +37,8 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-6 col-md-3 sites">
-                    <h3 class="text-info">Recherche par ville</h3>
+                <div class="col-sm-6 col-lg-3 sites">
+                    <h3 class="h4 text-info">Recherche par ville</h3>
                     <ul class="fa-ul">
                         {% for city in cities %}
                             <li>
@@ -50,8 +50,8 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <div class="col-6 col-md-3">
-                    <h3 class="text-info">Partenaires</h3>
+                <div class="col-sm-6 col-lg-3">
+                    <h3 class="h4 text-info">Partenaires</h3>
                     <ul class="fa-ul">
                         <li>
                             <i class="fa fa-li fa-angle-right"></i>
@@ -85,8 +85,8 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-6 col-md-3">
-                    <h3 class="text-info">Réseaux sociaux</h3>
+                <div class="col-sm-6 col-lg-3">
+                    <h3 class="h4 text-info">Réseaux sociaux</h3>
                     {% if social_manager.facebookIdPage %}
                         <a class="social" title="By Night sur Facebook" href="https://www.facebook.com/{{ social_manager.facebookIdPage }}">
                             <i class="fa fa-facebook"></i>
@@ -104,11 +104,11 @@
             </div>
             <hr />
             <div class="clearfix">
-                <p class="float-left">
+                <p class="float-lg-left text-center text-lg-left">
                     <a href="{{ path('app_main_index') }}"><strong>By Night</strong> v{{ app_version }}</a>
                     | © {{ "now"|date('Y') }} - Tous droits réservés
                 </p>
-                <p class="float-right">
+                <p class="float-lg-right text-center text-lg-left">
                     Fait avec <span title="passion" class="number text-danger">♥</span> par un
                     <a href="https://sainthillier.fr">développeur Web Freelance à Toulouse</a>
                 </p>

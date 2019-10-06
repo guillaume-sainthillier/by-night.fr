@@ -52,7 +52,7 @@ class EventType extends AbstractType
             ->add('file', VichImageType::class, [
                 'label' => 'Affiche / Flyer',
                 'required' => false,
-                'image_filter' => 'thumb_evenement',
+                'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
             ])
             ->add('dateDebut', DateType::class, [
                 'label' => 'A partir du ',
@@ -129,6 +129,7 @@ class EventType extends AbstractType
                 'required' => false,
             ])
             ->add('placePostalCode', TextType::class, [
+                'label' => 'Code Postal',
                 'required' => false,
             ])
             ->add('placeCountry', EntityType::class, [

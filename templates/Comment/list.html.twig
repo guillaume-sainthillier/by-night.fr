@@ -1,34 +1,20 @@
+{% import 'Form/macros.html.twig' as macros %}
 <div class="commentaires">
     {% for comment in comments %}
         <div class="row comment">
-            <div class="col-3 col-sm-2">
-                {% set imageURL = userProfilePicture.profilePicture(comment.user) %}
-                <img class="rounded img-fluid" src="{{ imageURL }}" alt="{{ comment.user.username }}" />
+            <div class="col col-auto">
+                {{ macros.userThumb(comment.user, 115, 115) }}
             </div>
-            <div class="col-9 col-sm-10">
+            <div class="col">
                 <div class="infos">
                     <a href="{{ path('app_user_details', {'id': comment.user.id, 'slug': comment.user.slug}) }}">{{ comment.user.username }}</a>
-                    <span title="{{ comment.dateCreation|localizeddate('medium','medium')|capitalize }}">
-                            <i class="fa fa-clock-o"></i> {{ comment.dateCreation|diff_date }}
-                        </span>
+                    <small class="text-muted" title="{{ comment.dateCreation|localizeddate('medium','medium')|capitalize }}">
+                        {{ comment.dateCreation|diff_date }}
+                    </small>
                 </div>
                 <p>
                     {{ comment.commentaire|striptags('<i><b>')|nl2br|parse_tags|raw }}
                 </p>
-                {% block comment_reponses %}
-                    <div class="reponses">
-                        <div class="infos">
-                            <span class="badge badge-primary nb_reponses">{{ comment.reponses.count }}</span>
-                            <button type="button" class="btn btn-secondary btn-xs btn-list btn-raised" data-url="{{ path('app_comment_reponse_list', {'id' : comment.id }) }}">
-                                <i class="fa fa-angle-up icon_list"></i>
-                            </button>
-                            |
-                            <a href="#" class="repondre" data-url="{{ path('app_comment_reponse_new', {'id' : comment.id }) }}">Répondre</a>
-                        </div>
-                        <div class="block_poster_reponse"></div>
-                        <div class="block_reponses"></div>
-                    </div>
-                {% endblock %}
             </div>
         </div>
     {% endfor %}

@@ -8,7 +8,6 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -135,13 +134,6 @@ class CommentController extends BaseController
         return $this->createForm(CommentType::class, $comment, [
             'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
             'method' => 'POST',
-        ])
-            ->add('poster', SubmitType::class, [
-                'label' => 'Poster',
-                'attr' => [
-                    'class' => 'btn btn-primary btn-submit btn-raised',
-                    'data-loading-text' => 'En cours...',
-                ],
-            ]);
+        ]);
     }
 }

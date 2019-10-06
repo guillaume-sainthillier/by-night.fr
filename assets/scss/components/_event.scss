@@ -1,99 +1,40 @@
 @import "../variables";
 
 .event {
-  padding-top: 10px;
-  padding-bottom: 10px;
-
-  .description_evenement .fa {
-	text-align: right;
-	margin-right: 10px;
-	min-width: 25px;
-	position: relative;
-	top: 4px;
-  }
-
-  &.odd {
-	background-color: darken(#ffffff, 5%);
-  }
-
   .image-container {
 	position: relative;
 
 	.badge {
+	  padding: 0.5em 1em;
 	  position: absolute;
-	  line-height: 2.4em;
-	  padding: 0 10px;
 	  top: 10px;
-
-	  .fa {
-		margin-right: 5px;
-	  }
 	}
   }
 
-  .img {
-	max-height: 200px;
+  .detail-item {
+	margin-bottom: 0.125rem;
+  }
 
-	&.loading {
-	  opacity: 0.7;
+  .card-body {
+	padding: 0.5rem 0.75rem;
+  }
+
+  @include media-breakpoint-down(md) {
+	.card-body {
+	  padding: 0.75rem;
 	}
   }
 
-  .image-gallery:hover {
-	cursor: -webkit-zoom-in;
-	cursor: -moz-zoom-in;
-  }
-
-  .infos_evenement {
-	.border_bottom:last-child {
-	  border-bottom: none;
-	}
-  }
-
-  .infos_evenement, .description_evenement {
-	min-height: 150px;
-  }
-
-  .image_soiree {
-	padding-right: 0;
+  .image-gallery {
+	border-bottom: 1px solid $card-border-color;
 	text-align: center;
-
-	img {
-	  display: inline-block;
-	}
-  }
-}
-
-// > 998
-@include media-breakpoint-up(lg) {
-  .image_soiree {
-	padding-right: 0;
   }
 }
 
 @include media-breakpoint-up(sm) {
   .event {
-	padding-top: 0;
-	padding-bottom: 0;
-
-	.description_evenement, .infos_evenement {
-	  min-height: 50px;
-	}
-
-	.nom_soiree {
-	  font-size: 18px;
-	}
-
-	.description_evenement {
-	  margin-top: 10px;
-	}
-
-	.img {
-	  max-height: 100px;
-	}
-
-	.image_soiree {
-	  padding-right: 1rem;
+	.image-gallery {
+	  border-bottom: none;
 	}
   }
 }

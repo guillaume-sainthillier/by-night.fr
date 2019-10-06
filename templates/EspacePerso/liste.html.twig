@@ -13,60 +13,67 @@
         </a>
     </div>
 
-
     {% if events|length > 0 %}
         <div class="card">
-            <table class="table table-striped mb-0">
-                <thead>
-                <tr>
-                    <th>Actions</th>
-                    <th>Nom</th>
-                    <th>Lieu</th>
-                    <th>Ville</th>
-                    <th>Date</th>
-                    <th>Visible</th>
-                    <th>Annulé</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for event in events %}
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
                     <tr>
-                        <td>
-                            <a class="btn btn-primary" href="{{ path('app_event_edit', {'slug': event.slug}) }}"
-                               title="Corriger l'événement">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                        </td>
-                        <td>
-                            <a href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}"
-                               title="Accéder à l'événement">{{ event.nom }}</a></td>
-                        <td>{{ event.placeName }}</td>
-                        <td>{{ event.placeCity }}</td>
-                        <td>
-                            {{ macros.dates(event.dateDebut, event.dateFin) }}
-                        </td>
-                        <td>
-                            <div class="switch">
-                                <label>
-                                    <input type="checkbox"
-                                           class="brouillon"
-                                           data-href="{{ path('app_event_brouillon', {'slug': event.slug}) }}" {{ not event.isBrouillon ? 'checked' : '' }} />
-                                </label>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="switch">
-                                <label>
-                                    <input type="checkbox"
-                                           class="annuler"
-                                           data-href="{{ path('app_event_annuler', {'slug': event.slug}) }}" {{ event.modificationDerniereMinute ? 'checked' : '' }} />
-                                </label>
-                            </div>
-                        </td>
+                        <th>Nom</th>
+                        <th>Lieu</th>
+                        <th>Ville</th>
+                        <th>Date</th>
+                        <th>Visible</th>
+                        <th>Annulé</th>
+                        <th>Actions</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('app_event_edit', {'slug': event.slug}) }}"
+                                   title="Accéder à l'événement">{{ event.nom }}</a></td>
+                            <td>{{ event.placeName }}</td>
+                            <td>{{ event.placeCity }}</td>
+                            <td>
+                                {{ macros.dates(event.dateDebut, event.dateFin) }}
+                            </td>
+                            <td>
+                                <div class="switch">
+                                    <label class="mb-0">
+                                        <input type="checkbox"
+                                               class="brouillon"
+                                               data-href="{{ path('app_event_brouillon', {'slug': event.slug}) }}"
+                                                {{ not event.isBrouillon ? 'checked' : '' }} />
+                                        &nbsp;
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="switch">
+                                    <label class="mb-0">
+                                        <input type="checkbox"
+                                               class="annuler"
+                                               data-href="{{ path('app_event_annuler', {'slug': event.slug}) }}"
+                                                {{ event.modificationDerniereMinute ? 'checked' : '' }} />
+                                        &nbsp;
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <a class="btn btn-secondary" href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}" data-toggle="tooltip" title="Voir l'événement">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <a class="btn btn-primary" href="{{ path('app_event_edit', {'slug': event.slug}) }}" data-toggle="tooltip" title="Corriger l'événement">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     {% else %}
         <div class="alert alert-info">

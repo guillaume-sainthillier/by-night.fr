@@ -1,16 +1,31 @@
-.bootstrap-select {
-  margin: 0;
-
-  &.open > .dropdown-toggle.btn, .open > .dropdown-toggle.btn-default {
-	color: black;
+.dropdown.bootstrap-select {
+  .dropdown-item {
+	max-width: 100%;
   }
 
-  .btn {
-	padding-left: 0;
-	line-height: 1rem;
-
-	&.btn-block {
-	  white-space: normal;
+  > .dropdown-toggle {
+	&.bs-placeholder {
+	  &.btn-primary {
+		&,
+		&:hover,
+		&:focus,
+		&:active {
+		  color: $primary;
+		}
+	  }
 	}
+  }
+
+  .dropdown-menu {
+	.dropdown-item {
+	  &.active,
+	  &:active {
+		color: $primary;
+	  }
+	}
+  }
+
+  &.show > .btn-primary.dropdown-toggle {
+	color: $primary;
   }
 }

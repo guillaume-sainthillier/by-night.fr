@@ -1,29 +1,20 @@
 version: '3.4'
 
-x-defaults: &defaults
-    build: ./docker/dev
-    environment:
-        - BLACKFIRE_CLIENT_ID
-        - BLACKFIRE_CLIENT_TOKEN
-    depends_on:
-        - elasticsearch
-        - rabbitmq
-        - redis
-    volumes:
-        - .:/app:cached
-        - ./var:/app/var:delegated
-
 services:
     app:
-        <<: *defaults
+        build: ./docker/dev
+        environment:
+            - BLACKFIRE_CLIENT_ID
+            - BLACKFIRE_CLIENT_TOKEN
+        depends_on:
+            - elasticsearch
+            - rabbitmq
+            - redis
+        volumes:
+            - .:/app:cached
+            - ./var:/app/var:delegated
         ports:
             - 8000:80
-
-    worker:
-        <<: *defaults
-        depends_on:
-            - app
-        command: worker
 
     assets:
         image: nginx:1.17

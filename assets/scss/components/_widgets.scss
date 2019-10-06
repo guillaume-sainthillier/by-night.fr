@@ -1,16 +1,5 @@
 @import "../variables";
 
-.scrollable {
-  max-height: 500px;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-
-  &.scrollable-large {
-	max-height: 600px;
-  }
-}
-
 .widget {
   margin-bottom: 40px;
 
@@ -24,14 +13,8 @@
 	}
   }
 
-  .scrollable {
-	max-height: 500px;
-	//overflow-y: hidden;
-	//position: relative;
-
-	&.scrollable-large {
-	  max-height: 600px;
-	}
+  .col-user-profile-sm {
+	max-width: 50px;
   }
 
   .membres {
@@ -203,3 +186,82 @@
   }
 }
 
+#bottom-navigation {
+  display: none;
+}
+
+@include media-breakpoint-down(md) {
+  .widget {
+	display: none;
+
+	&.active {
+	  display: block;
+	}
+  }
+
+  #bottom-navigation {
+	display: block;
+	position: fixed;
+	width: 100%;
+	left: 0;
+	bottom: 0;
+	z-index: 2;
+	transition: transform 0.5s ease;
+	transform: translateY(54px);
+
+	&.visible {
+	  transform: translateY(0);
+	}
+
+	.nav-tabs {
+	  flex-wrap: nowrap;
+	}
+
+	.nav-item {
+	  min-width: 5rem;
+	  max-width: 10rem;
+	}
+
+	.nav-link {
+	  border: none;
+	}
+  }
+}
+
+.list-group-item {
+  flex-flow: row nowrap;
+  overflow: hidden;
+  border-bottom: 1px solid $card-border-color;
+
+  & :first-child {
+	margin-right: 0;
+  }
+
+  &:last-child {
+	border-bottom: none;
+  }
+
+  .list-group-item-heading {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+  }
+
+  .list-group-item-image {
+	width: 40px;
+	height: 40px;
+	margin-right: 1rem;
+	overflow: hidden;
+	flex-shrink: 0;
+	display: flex;
+	flex-flow: column wrap;
+	justify-content: center;
+	align-items: center;
+  }
+
+  .list-group-item-text {
+	strong {
+	  font-weight: normal;
+	}
+  }
+}

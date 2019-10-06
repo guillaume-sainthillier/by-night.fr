@@ -15,6 +15,7 @@ RUN apt-get update -q && \
     libfreetype6-dev \
     libicu-dev \
     libjpeg62-turbo-dev \
+    libmagickwand-dev \
     libpng-dev \
     libxml2-dev \
     libzip-dev \
@@ -35,12 +36,9 @@ RUN apt-get update -q && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # PHP Extensions
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
-    docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pdo pdo_mysql soap sockets zip && \
-    pecl install apcu && \
-    docker-php-ext-enable apcu && \
-    pecl install redis && \
-    docker-php-ext-enable redis
+RUN docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pdo pdo_mysql soap sockets zip && \
+    pecl install apcu redis imagick-3.4.4 && \
+    docker-php-ext-enable apcu redis imagick
 
 # Config
 COPY nginx.conf /etc/nginx/

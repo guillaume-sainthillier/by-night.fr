@@ -1,11 +1,9 @@
-import 'jquery-cookiebar/jquery.cookiebar.css';
 import 'font-awesome/css/font-awesome.css';
-import 'fancybox/dist/css/jquery.fancybox.css';
 import '../scss/app.scss';
-
 import './vendors';
 import './overrides';
 import './collections';
+import LazyLoad from "vanilla-lazyload";
 
 class App {
     init(selecteur) {
@@ -14,17 +12,31 @@ class App {
             self.initComponents(selecteur);
             self.initPopups();
             self.initScrollTo();
-            self.initHideMenuOnScroll();
+            self.initMenuOnScrollListener();
             self.initHeaderSearch();
+            self.initBreadcrumb();
+        });
+    }
+
+    initBreadcrumb() {
+        var bread = $('#bread .breadcrumb');
+        var btnCollapse = $('#bread .btn');
+
+        btnCollapse.click(function () {
+            bread.toggleClass('collapsed');
+            $(this).find('.fa').toggleClass('fa-chevron-down').toggleClass('fa-chevron-right');
         });
     }
 
     initHeaderSearch() {
         var searchForm = $('.navbar .search-form');
+        var searchBackdrop = $('#search-menu-backdrop');
         searchForm.find("input").focus(function () {
             searchForm.addClass('focus');
+            searchBackdrop.addClass('open');
         }).blur(function () {
             searchForm.removeClass('focus');
+            searchBackdrop.removeClass('open');
         });
     }
 
@@ -42,19 +54,68 @@ class App {
     }
 
     initLazyLoading(selecteur) {
-        /**
-         * Initialise le lazy loading des images
-         * @param {type} selecteur
-         * @returns {undefined}
-         */
-        $(".img, .loading", selecteur || document).unveil(200, function () {
-            $(this).removeClass("loading").removeAttr("width").removeAttr("height");
-        });
+        var images = $("img.loading", selecteur || document);
+        var scrollAreas = $(".scroll-area", selecteur || document);
+        if (images.length === 0 && scrollAreas.length === 0) {
+            return;
+        }
+
+        var callback_enter = function (element) {
+            var width = $(element).width();
+            var ratio = $(element).attr('width') / $(element).attr('height');
+
+            var placeholder = $('<div>')
+                .addClass('placeholder')
+                .width(width)
+                .height(width / ratio);
+
+            placeholder.append($('<div>').addClass('loading-background'));
+            $(element).addClass('d-none');
+            $(element).after($(placeholder));
+        };
+
+        var callback_loaded = function (element) {
+            $(element).siblings('.placeholder').remove();
+            $(element).removeClass('d-none');
+        };
+
+        var callback_error = function (element) {
+            $(element).siblings('.placeholder').find('.loading-background').remove();
+        };
+
+        if (images.length > 0) {
+            new LazyLoad({
+                elements_selector: "img.loading",
+                threshold: 200,
+                container: (selecteur && selecteur[0]) || document,
+                /*callback_enter: callback_enter,
+                callback_loaded: callback_loaded,
+                callback_error: callback_error,*/
+            });
+        }
+
+        if (scrollAreas.length > 0) {
+            new LazyLoad({
+                elements_selector: ".scroll-area",
+                container: (selecteur && selecteur[0]) || document,
+
+                callback_enter: function (el) {
+                    new LazyLoad({
+                        elements_selector: "img.loading",
+                        threshold: 200,
+                        container: el,
+                        /*callback_enter: callback_enter,
+                        callback_loaded: callback_loaded,
+                        callback_error: callback_error,*/
+                    });
+                }
+            });
+        }
     }
 
     initComponents(selecteur) {
         const self = this;
-        $(selecteur || 'body').bootstrapMaterialDesign();
+        $(selecteur || 'body').data('bmd.bootstrapMaterialDesign', null).bootstrapMaterialDesign();
         self.initLazyLoading(selecteur);
         self.initAutofocus(selecteur);
         self.initConnexion(selecteur);
@@ -89,7 +150,7 @@ class App {
     initMore(container) {
         const self = this;
         $(".more", container || document).click(function (e) {
-            $(this).attr("disabled", true).prepend("<i class='fa fa-spin fa-spinner'></i> ");
+            $(this).attr("disabled", true).prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
             var container = $(this).parent();
             container.load($(this).attr("href"), function () {
                 self.initMore(container);
@@ -102,11 +163,16 @@ class App {
     }
 
     loadingButtons(selecteur) {
-        $('.btn-submit', selecteur || document).button('loading');
+        $('.btn-submit', selecteur || document)
+            .attr('disabled', true)
+            .prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
     }
 
     resetButtons(selecteur) {
-        $('.btn-submit', selecteur || document).button('reset');
+        $('.btn-submit', selecteur || document)
+            .attr('disabled', false)
+            .find('.spinner-border')
+            .remove();
     }
 
     /**
@@ -115,15 +181,17 @@ class App {
      * @returns {void}
      */
     initDatepicker(selecteur) {
-        var targets = $('.widget_datepicker', selecteur || document);
+        var targets = $('input.widget_datepicker', selecteur || document);
 
-        if (targets.length) {
-            targets.datepicker({
-                language: "fr",
-                autoclose: true,
-                todayHighlight: true
-            });
+        if (!targets.length) {
+            return;
         }
+
+        targets.datepicker({
+            language: "fr",
+            autoclose: true,
+            todayHighlight: true
+        });
     }
 
     /**
@@ -132,15 +200,11 @@ class App {
      * @returns {void}
      */
     initSelectpicker(selecteur) {
-        var targets = $('select[multiple]', selecteur || document);
-        if (targets.length) {
-            targets.selectpicker();
-        }
-
-        var targets = $('select:not([multiple])', selecteur || document);
-        if (targets.length) {
-            targets.dropdown();
-        }
+        $('select', selecteur || document).each(function () {
+            $(this).selectpicker({
+                'style': $(this).data('style') || 'btn-primary'
+            });
+        });
     }
 
     //Deps: []
@@ -149,17 +213,25 @@ class App {
     }
 
     //Deps: []
-    initHideMenuOnScroll() {
-        var toggle = $(".navbar-toggle");
+    initMenuOnScrollListener() {
+        var navbar = $('.navbar');
+        var toggler = navbar.find(".navbar-toggler");
+        var href = $(toggler).data("target");
+        var elem = $(href);
+
         $(window).scrolled(200, function () {
-            toggle.each(function () {
-                var href = $(this).data("target");
-                var elem = $(href);
-                if (elem.length && elem.hasClass("in")) {
-                    elem.removeClass("in");
-                }
-            });
+            if (!toggler.hasClass("collapsed")) {
+                $(elem).collapse('hide');
+            }
         });
+
+        $(window).scroll(function () {
+            if ($(window).scrollTop() > 0) {
+                $(navbar).addClass('navbar-shadow');
+            } else {
+                $(navbar).removeClass('navbar-shadow');
+            }
+        })
     }
 
     //Deps: ['bootstrap']
@@ -198,16 +270,15 @@ class App {
 
     //Deps: ['bootstrap']
     initTooltips(selecteur) {
-        $(".app_tooltip", selecteur || document).tooltip();
+        $('[data-toggle="tooltip"]', selecteur || document).tooltip();
     }
 
     //Deps: ['scrollTo']
     initScrollTo() {
         var settings = {
-            text: 'En haut',
             min: 200,
-            inDelay: 600,
-            outDelay: 400,
+            inDelay: 300,
+            outDelay: 200,
             containerID: 'toTop',
             scrollSpeed: 400,
             easingType: 'linear'
@@ -216,9 +287,13 @@ class App {
         var toTopHidden = true;
         var toTop = $('#' + settings.containerID);
 
+        if (!toTop.length) {
+            return;
+        }
+
         toTop.click(function (e) {
             e.preventDefault();
-            $.scrollTo(0, settings.scrollSpeed, {easing: settings.easingType});
+            $("html, body").animate({'scrollTop': 0}, settings.scrollSpeed, settings.easingType);
         });
 
         $(window).scrolled(200, function () {
@@ -261,6 +336,7 @@ class App {
     //Deps: ['modals', 'bootstrap']
     handleRegister($dialog) {
         const self = this;
+        console.log($dialog);
         self.initComponents($dialog);
         $dialog.find("form").unbind("submit").submit(function () {
             var href = $(this).attr("action");

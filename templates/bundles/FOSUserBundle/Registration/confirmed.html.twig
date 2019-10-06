@@ -15,9 +15,11 @@
         <p><a href="{{ targetUrl }}">{{ 'registration.back'|trans }}</a></p>
     {% endif %}
     <br/>
-    <p>
-        <i class="fa fa-spin fa-spinner"></i> Vous allez être redirigé vers la page d'accueil ...
-    </p>
+
+    <div class="spinner-grow text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <span>Vous allez être redirigé vers la page d'accueil ...</span>
 {% endblock fos_user_content %}
 
 {% block head_js %}

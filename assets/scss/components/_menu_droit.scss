@@ -19,8 +19,6 @@
 }
 
 .card-twitter {
-  min-height: 400px;
-
   iframe {
 	display: block;
 	margin-left: auto;
@@ -55,20 +53,3 @@
 	padding-right: 0;
   }
 }
-
-.card {
-  .card-header {
-	.modal-title {
-	  position: relative;
-	}
-
-	h3 .fa {
-	  @include card-icon(40px);
-	}
-
-	h2 .fa {
-	  @include card-icon(50px);
-	}
-  }
-}
-

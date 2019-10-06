@@ -55,57 +55,77 @@
 {%- endblock %}
 
 {% block body %}
-    {% include "ad.html.twig" with({'marginTop': 0}) %}
-    {% include "City/Agenda/block_criteres.html.twig" %}
+    <div id="bottom-navigation" class="visible">
+        <ul id="custom-tab" class="nav nav-tabs nav-fill justify-content-center bg-primary" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" href="#agenda">
+                    <i class="fa fa-calendar"></i>
+                    <span>Agenda</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#une">
+                    <i class="fa fa-star"></i>
+                    <span>A la une</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#membres">
+                    <i class="fa fa-users"></i>
+                    <span>Membres</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#actus">
+                    <i class="fa fa-twitter"></i>
+                    <span>Actus</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 
-    {% if events|length == 0 %}
-        <div class="alert alert-info">
-            <i class="fa fa-info-circle"></i>
-            Aucun événement trouvé
-        </div>
-    {% else %}
-        <h3 class="info"><span class="badge badge-info">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' : '' }}</span>
-        </h3>
-        <div class="card card-primary">
-            <div class="card-body">
-                {% include "City/Agenda/index_content.html.twig" with({'partial': false}) %}
+    <div id="agenda" class="widget active" role="tabpanel" aria-labelledby="agenda-tab">
+        {% include "ad.html.twig" with({'marginTop': 0}) %}
+        {% include "City/Agenda/block_criteres.html.twig" %}
+
+        {% if events|length == 0 %}
+            <div class="alert alert-info">
+                <i class="fa fa-info-circle"></i>
+                Aucun événement trouvé
             </div>
-        </div>
-    {% endif %}
+        {% else %}
+            <h3 class="info">
+                <span class="badge badge-info">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' : '' }}</span>
+            </h3>
+            {% include "City/Agenda/index_content.html.twig" with({'partial': false}) %}
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block widgets -%}
-    <div class="row">
-        <div class="col-sm-6 col-md-12">
-            <!-- Twitter -->
-            {% include "City/Widget/twitter.html.twig" %}
-            <!-- ./Twitter -->
+    <!-- Twitter -->
+    {% include "City/Widget/twitter.html.twig" %}
+    <!-- ./Twitter -->
 
-            {% include "ad3.html.twig" %}
+    {% include "ad3.html.twig" %}
 
-            {% if social_manager.facebookIdPage %}
-                <!-- Facebook -->
-                {% include "City/Widget/facebook.html.twig" %}
-                <!-- ./Facebook -->
-            {% endif %}
-        </div>
+    {% if social_manager.facebookIdPage %}
+        <!-- Facebook -->
+        {% include "City/Widget/facebook.html.twig" %}
+        <!-- ./Facebook -->
+    {% endif %}
+    <!-- Top Evénements -->
+    {% include "City/Widget/top_evenements.html.twig" %}
+    <!-- ./Top Evénements -->
 
-        <div class="col-sm-6 col-md-12">
-            <!-- Top Evénements -->
-            {% include "City/Widget/top_evenements.html.twig" %}
-            <!-- ./Top Evénements -->
+    <!-- Top Membres -->
+    {% include "City/Widget/top_membres.html.twig" %}
+    <!-- ./Top Membres -->
 
-            <!-- Top Membres -->
-            {% include "City/Widget/top_membres.html.twig" %}
-            <!-- ./Top Membres -->
-
-            <!-- Programme TV -->
-            {% include "City/Widget/programme_tv.html.twig" %}
-            <!-- ./Programme TV -->
-        </div>
-    </div>
+    <!-- Programme TV -->
+    {% include "City/Widget/programme_tv.html.twig" %}
+    <!-- ./Programme TV -->
 {%- endblock %}
-
 
 {% block css %}
     {{ encore_entry_link_tags('agenda') }}

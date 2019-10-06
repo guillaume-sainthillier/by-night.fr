@@ -68,7 +68,7 @@ class EventController extends BaseController
             'location' => $event->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $eventProfile = $eventProfilePicture->getOriginalPictureUrl($event);
+        $eventProfile = $eventProfilePicture->getOriginalPicture($event);
 
         $page = new Page([
             'url' => $link,

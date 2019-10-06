@@ -1,13 +1,13 @@
 {{ form_start(form) }}
 {{ form_errors(form) }}
-<div class="block_criteres card card-primary">
+<div class="block_criteres card">
     <h2 class="card-header">
-        <i class="fa fa-search text-primary "></i>
-        Trouvez une idée sortie
+        <i class="fa fa-calendar text-primary"></i>
+        Agenda
     </h2>
     <div class="card-body">
         <div class="form-row main_criteres">
-            <div class="col">
+            <div class="col-md-6">
                 <div class="form-group">
                     <label for="shorcuts_date">Quand ?</label>
                     <select name="shortcut" id="shorcuts_date" class="form-control shorcuts_date">
@@ -37,11 +37,8 @@
                     </select>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-md-6">
                 {{ form_row(form.type_manifestation) }}
-            </div>
-            <div class="col-md-3 col-12">
-                <button type="submit" class="btn btn-primary btn-raised">Go</button>
             </div>
         </div>
         {% if not isValid or (isPost and (search.au or search.lieux or search.term or search.range != 25 or isValid)) %}
@@ -49,57 +46,28 @@
         {% else %}
             {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}
         {% endif %}
-        <div class="row">
-            <div class="col-8">
-                <button type="button" class="btn_criteres btn btn-outline-primary">
-                    <i class="fa {{ options.iconClass }}"></i>
-                    Recherche avancée
-                </button>
-            </div>
-
+        <div class="d-flex flex-wrap w-100">
+            <button type="submit" class="btn btn-primary btn-raised">Go</button>
+            <button type="button" class="ml-auto btn_criteres btn btn-sm btn-secondary">
+                <i class="fa {{ options.iconClass }}"></i>
+                Recherche avancée
+            </button>
         </div>
         <div class="{{ options.hiddenClass }} criteres">
             <div class="row">
                 <div class="col-6">
-                    <div class="form-group">
-                        {{ form_label(form.du) }}
-                        <div class="col-sm-5">
-                            {{ form_widget(form.du) }}
-                            {{ form_errors(form.du) }}
-                        </div>
-                    </div>
+                    {{ form_row(form.du) }}
                 </div>
                 <div class="col-6">
-                    <div class="form-group">
-                        {{ form_label(form.au) }}
-                        <div class="col-sm-5">
-                            {{ form_widget(form.au) }}
-                            {{ form_errors(form.au) }}
-                        </div>
-                    </div>
+                    {{ form_row(form.au) }}
                 </div>
             </div>
-            <div class="form-horizontal">
-                <div class="form-group">
-                    {{ form_label(form.range) }}
-                    <div class="col-sm-7">
-                        {{ form_widget(form.range) }}
-                        {{ form_errors(form.range) }}
-                    </div>
+            <div class="row">
+                <div class="col-md-9">
+                    {{ form_row(form.term) }}
                 </div>
-                <div class="form-group">
-                    {{ form_label(form.lieux) }}
-                    <div class="col-sm-7">
-                        {{ form_widget(form.lieux) }}
-                        {{ form_errors(form.lieux) }}
-                    </div>
-                </div>
-                <div class="form-group">
-                    {{ form_label(form.term) }}
-                    <div class="col-sm-7">
-                        {{ form_widget(form.term) }}
-                        {{ form_widget(form.term) }}
-                    </div>
+                <div class="col-md-3">
+                    {{ form_row(form.range) }}
                 </div>
             </div>
         </div>

@@ -1,12 +1,19 @@
 .card {
   margin-bottom: 1rem;
+  font-size: 1rem;
+
+  .card {
+	box-shadow: none;
+    border: 1px solid $card-border-color;
+  }
 }
 
-.card-header {
-  border-bottom: 1px solid #ddd;
+.card-header-border-top {
+  border-top: 1px solid $card-border-color;
+}
 
-  .fa {
-	margin-top: .2em;
-	margin-right: .2em;
+@include media-breakpoint-down(sm) {
+  .card-body {
+	padding: 1rem;
   }
 }

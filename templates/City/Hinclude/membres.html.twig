@@ -1,26 +1,23 @@
+{% import 'Form/macros.html.twig' as macros %}
 {{ fos_httpcache_tag('block-user') }}
 {% for user in membres %}
     {% set nbEvents = user.nb_events %}
     {% set user = user[0] %}
     {{ fos_httpcache_tag(tags('user', user)) }}
-    {% set imageURL = userProfilePicture.getProfilePicture(user, 'thumb_user_50') %}
-    <div class="widget_item">
-        <div class="row">
-            <div class="col-3 col-md-2 preserve min_membre">
-                <img class="mx-auto img img-fluid rounded-circle" alt="{{ user.username }}" src="{{ imageURL }}"/>
-            </div>
-            <div class="col-9 col-md-10 preserve text-left">
-                <h4>
-                    <a href="{{ path('app_user_details', {'id': user.id, 'slug': user.slug} ) }}" title="Accédez au profil de {{ user.username }}">
-                        {{ user.username|capitalize }}
-                    </a>
-                </h4>
-                {% if nbEvents > 0 %}
-                    <span class="text-primary number">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' :'' }}</span>
-                {% endif %}
-            </div>
+    <a class="scroll-item list-group-item ripple" href="{{ path('app_user_details', {'id': user.id, 'slug': user.slug} ) }}" title="Accédez au profil de {{ user.username }}">
+        <span class="list-group-item-image">
+            {{ macros.userLazyThumb(user, 50, 50) }}
+        </span>
+
+        <div class="bmd-list-group-col">
+            <p class="mb-1 list-group-item-heading">
+                {{ user.username|capitalize }}
+            </p>
+            {% if nbEvents > 0 %}
+                <p class="mb-0 list-group-item-text">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' :'' }}</p>
+            {% endif %}
         </div>
-    </div>
+    </a>
 {% endfor %}
 {% if hasNextLink is defined and hasNextLink %}
     <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}

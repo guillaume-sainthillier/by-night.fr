@@ -2,48 +2,25 @@
 {% for event in events %}
     {{ fos_httpcache_tag(tags('event', event)) }}
     {{ fos_httpcache_tag(tags('place', event.place)) }}
-    <div class="widget_item">
-        <div class="row no-gutters">
-            <div class="col col-auto text-center text-info" title="{{ event.dateFin|localizeddate('full','none') }}">
-                {% if event.dateFin != event.dateDebut %}
-                    <span class="d-block month">{{ event.dateDebut|date('d') }} {{ (event.dateDebut|localizeddate('long','none')|split(' ')[1])[:3]|capitalize }}</span>
-                {% endif %}
-                <span class="d-block month">{{ event.dateFin|date('d') }} {{ (event.dateFin|localizeddate('long','none')|split(' ')[1])[:3]|capitalize }}</span>
-            </div>
-            <div class="col pl-2">
-                <h4 class="h6 mb-0">
-                    <a title="{{ event.nom }} à {{ event.placeName }}" href="{{ path('app_event_details', {'slug' : event.slug, 'id': event.id, 'location': event.locationSlug}) }}">
-                        {{ event.nom }}
-                    </a>
-                </h4>
-                <small class="d-block text-muted text-uppercase" >
-                    <strong title="{{ event.placeCity }}">
-                        {{ event.placeName }}
-                    </strong>
-                </small>
-                {% set distinctTags = event.distinctTags %}
-                {% if distinctTags|length %}
-                    {% for tag in distinctTags %}
-                        {% if event.place.city %}
-                            <a class="badge badge-info"
-                               title="{{ tag }} à {{ event.place.city.name }}"
-                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
-                                <strong>{{ tag }}</strong>
-                            </a>
-                        {% else %}
-                            <a class="badge badge-info"
-                               title="{{ tag }} en {{ event.place.country.name }}"
-                               href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
-                                <strong>{{ tag }}</strong>
-                            </a>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </div>
+    <a class="scroll-item list-group-item ripple" title="{{ event.nom }} à {{ event.placeName }}" href="{{ path('app_event_details', {'slug' : event.slug, 'id': event.id, 'location': event.locationSlug}) }}">
+        <div class="list-group-item-image text-info" title="{{ event.dateFin|localizeddate('full','none') }}">
+            {% if event.dateFin != event.dateDebut %}
+                <small class="mb-1">{{ event.dateDebut|date('d') }} {{ (event.dateDebut|localizeddate('long','none')|split(' ')[1])[:3]|capitalize }}</small>
+            {% endif %}
+            <small>{{ event.dateFin|date('d') }} {{ (event.dateFin|localizeddate('long','none')|split(' ')[1])[:3]|capitalize }}</small>
         </div>
-    </div>
+        <div class="bmd-list-group-col">
+            <p class="mb-1 list-group-item-heading">{{ event.nom }}</p>
+            <p class="mb-0 list-group-item-text" title="{{ event.placeName }} à {{ event.placeCity }}">
+                <strong>
+                    {{ event.placeName }}
+                </strong>
+            </p>
+        </div>
+    </a>
 {% else %}
-    <p>Aucun événement disponible. Pourquoi ne pas en <a href="{{ path('app_event_new') }}">créer un ?</a></p>
+    <p>Aucun événement disponible. Vous avez une idée à proposer ? </p>
+    <a href="{{ path('app_event_new') }}" class="btn btn-outline-primary">Créer un événement</a>
 {% endfor %}
 {% if hasNextLink %}
     <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}

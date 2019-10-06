@@ -16,6 +16,7 @@ export default class Widgets {
     //Deps: ['scrollable']
     initScrollable(selecteur) {
         const self = this;
+        return;
         $(".scrollable", selecteur || document).each(function () {
             if (!$(this).attr('id')) {
                 $(this).attr('id', 'scroll-' + Math.floor(Math.random() * 100000));
@@ -40,7 +41,6 @@ export default class Widgets {
                 });
             }
         });
-
     }
 
     //Deps: ['scrollable']
@@ -48,9 +48,10 @@ export default class Widgets {
         const self = this;
         elems.each(function () {
             var container = $(this);
-            var containerActions = container.find('.card-footer');
-            var moreContentLink = container.find('.more-content');
-            var containerBody = moreContentLink.parent();
+            var containerActions = container.find('.more-container');
+            var moreContentLink = container.find('a.more-content');
+            var scrollArea = container.find('.scroll-area');
+            var containerBody = container.find('.scroll-area-content').length ? container.find('.scroll-area-content') : scrollArea;
 
             if (!containerActions.length) {
                 return;
@@ -65,21 +66,16 @@ export default class Widgets {
 
                 newMoreContentLink.unbind('click').click(function (e) {
                     var btn = $(this);
-                    if (btn.attr('disabled')) {
-                        return false;
-                    }
-                    btn.attr("disabled", true).prepend("<i class='fa fa-spin fa-spinner'></i> ");
+                    btn.addClass("disabled").prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
+                    var scrollAreaLastItem = containerBody.find('.scroll-item').last();
                     $.get(btn.attr('href')).done(function (content) {
                         btn.remove();
                         containerBody.append(content);
-
-                        var scroll = self.scrollMap[container.find('.scrollable').attr('id')];
-                        if (scroll) {
-                            scroll.refresh();
-                            scroll.scrollTo(0, scroll.maxScrollY, 0, IScroll.utils.ease.elastic);
-                        }
                         self.initMoreWidgets(container);
                         App.initComponents(container);
+                        if (scrollAreaLastItem.next().length > 0) {
+                            self.scrollTo(scrollAreaLastItem.next(), scrollArea, function () {});
+                        }
                     });
 
                     e.preventDefault();
@@ -87,5 +83,16 @@ export default class Widgets {
                 });
             }
         });
+    }
+
+    scrollTo(elem, container, callback) {
+        if (container.hasClass('scroll-area-horizontal')) {
+            var options = {'scrollLeft': $(container).scrollLeft() + elem.offset().left};
+        } else {
+            var options = {'scrollTop': $(container).scrollTop() + elem.position().top};
+        }
+
+        console.log(options, elem, container);
+        $(container).animate(options, 800, callback);
     }
 }

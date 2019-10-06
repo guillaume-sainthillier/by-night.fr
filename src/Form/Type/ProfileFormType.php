@@ -51,7 +51,7 @@ class ProfileFormType extends BaseType
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'label' => 'Photo de profil',
-                'image_filter' => 'thumb_user_large',
+                'thumb_params' => ['w' => 200, 'h' => 200, 'fit' => 'fill'],
             ]);
     }
 

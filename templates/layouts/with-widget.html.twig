@@ -7,20 +7,14 @@
 {% endblock %}
 
 {% block layout %}
-    <div class="container-fluid">
+    <div class="container-fluid container-md" id="container-fluid">
         <h1>{% block titre 'Hello' %}</h1>
-    </div>
-    <div class="container-fluid" id="container-fluid">
-        <div class="row no-gutters">
-            <div id="content" class="col-md-8">
-                <div class="col-lg-11 offset-lg-1">
-                    {% block body %}{% endblock %}
-                </div>
+        <div class="row">
+            <div id="content" class="col-lg-8">
+                {% block body %}{% endblock %}
             </div>
-            <div class="col-md-4" id="widgets">
-                <div class="col-lg-11 offset-lg-1">
-                    {% block widgets %}{% endblock %}
-                </div>
+            <div id="widgets" class="col-lg-4">
+                {% block widgets %}{% endblock %}
             </div>
         </div>
     </div>

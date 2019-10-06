@@ -18,10 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class WidgetsController extends BaseController
 {
-    const FB_MEMBERS_LIMIT = 100;
-
     const TWEET_LIMIT = 25;
-
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
@@ -92,6 +89,7 @@ class WidgetsController extends BaseController
         }
 
         return $this->render('City/Hinclude/evenements_details.html.twig', [
+
             'page' => $page,
             'place' => $event->getPlace(),
             'events' => $repo->findAllNext($event, $page, self::WIDGET_ITEM_LIMIT),

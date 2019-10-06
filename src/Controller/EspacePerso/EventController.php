@@ -83,9 +83,12 @@ class EventController extends BaseController
      */
     public function editAction(Request $request, Event $event, EventConstraintValidator $validator)
     {
-        $validator->setUpdatabilityCkeck(false);
+        if($event->getExternalId()) {
+            $event->setFbDateModification(new \DateTime());
+        }
 
         $form = $this->createForm(EventType::class, $event);
+        $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
@@ -119,8 +122,8 @@ class EventController extends BaseController
         $event->addCalendrier($calendrier);
 
         $form = $this->createForm(EventType::class, $event);
-        $form->handleRequest($request);
         $validator->setUpdatabilityCkeck(false);
+        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash(

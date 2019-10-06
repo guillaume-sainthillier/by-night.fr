@@ -1,3 +1,5 @@
+import '../app';
+
 var countLoads = 0;
 var isLoading = false;
 
@@ -33,7 +35,7 @@ function init_pagination() {
     $('#paginate').click(function (e) {
         isLoading = true;
         countLoads++;
-        $(this).attr('disabled', true).html($('<i>').addClass('fa fa-spin fa-spinner'));
+        $(this).attr("disabled", true).prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
 
         var self = $(this);
         var container = self.parent();

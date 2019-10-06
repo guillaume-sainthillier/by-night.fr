@@ -1,21 +1,70 @@
 #bread {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   background-color: white;
+  border-bottom: 1px solid #0000001a;
 
-  #fil-ariane {
-	background-color: white;
+  .btn .fa {
+	width: 14px;
+  }
+}
 
-	a {
-	  color: $primary;
-
-	  &:hover, &:focus {
-		color: #222;
-	  }
-	}
+.breadcrumb {
+  &.collapsed {
+	white-space: nowrap;
+	overflow: hidden;
+	flex-wrap: nowrap;
   }
 
-  .breadcrumb > li + li:before {
-	content: '>';
-	color: #222;
+  a {
+	color: $primary;
+
+	&:hover, &:focus {
+	  color: #222;
+	}
+  }
+}
+
+.breadcrumb-item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 0 auto;
+  flex-shrink: 1000;
+  display: inline-block;
+
+  &:first-child {
+	flex: 0 0 auto;
+	flex-shrink: 0.5;
+  }
+
+  &:last-child {
+	flex: 1 0 auto !important;
+  }
+}
+
+.breadcrumb > li + li:before {
+  content: '>';
+  color: #222;
+}
+
+@include media-breakpoint-down(md) {
+  #bread > .container {
+	padding: 0;
+  }
+
+  .breadcrumb-item {
+	font-size: $font-size-sm;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .breadcrumb.collapsed .breadcrumb-item {
+	&, &:last-child::before {
+	  display: none;
+	}
+
+	&:last-child {
+	  padding-left: 0;
+	  display: block;
+	}
   }
 }
