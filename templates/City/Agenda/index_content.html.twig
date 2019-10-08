@@ -2,9 +2,9 @@
     {% include "City/Event/block_preview_event.html.twig" with({'events': events, 'page': page}) %}
     {% include "ad2.html.twig" %}
     {% if events|length == maxPerEvent %}
-        <div>
+        <div class="text-center my-4">
             <a id="paginate"
-               class="btn btn-outline-primary btn-block my-4"
+               class="btn btn-outline-primary"
                href="{{ paginateURL }}"
                data-next="{{ (page + 1) }}">
                Plus d'événements

@@ -106,10 +106,6 @@ html body {
 	  padding: 0;
 	}
 
-	#container-fluid, #content, #widgets {
-	  @include reset-padding();
-	}
-
 	//Body
 	padding-top: 50px;
   }

@@ -1,5 +1,3 @@
-import '../app';
-
 import Widgets from '../components/Widgets';
 import CommentApp from "../components/CommentApp";
 

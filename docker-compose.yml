@@ -12,7 +12,8 @@ services:
             - redis
         volumes:
             - .:/app:cached
-            - ./var:/app/var:delegated
+            - var:/app/var
+            - build:/app/public/build
         ports:
             - 8000:80
 
@@ -22,6 +23,7 @@ services:
             - 8002:80
         volumes:
             - ./public:/assets:ro
+            - build:/assets/build:ro
             - ./docker/dev/assets/nginx.conf:/etc/nginx/nginx.conf:ro
 
     varnish:
@@ -74,3 +76,7 @@ services:
             - 5601:5601
         depends_on:
             - elasticsearch
+
+volumes:
+    var:
+    build:

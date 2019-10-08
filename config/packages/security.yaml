@@ -12,7 +12,7 @@ security:
 
     firewalls:
         dev:
-            pattern:  ^/(_(profiler|wdt)|bundles|media|prod|uploads)/
+            pattern:  ^/(_(profiler|wdt)|bundles|thumb|thumb-asset|media|uploads)/
             security: false
 
         main:

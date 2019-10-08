@@ -1,5 +1,3 @@
-import '../app';
-
 import 'bootstrap-select/dist/css/bootstrap-select.css';
 
 import 'typeahead.js/dist/bloodhound';

@@ -27,6 +27,7 @@ class WidgetsController extends BaseController
      */
     public function twitterAction(bool $disableTwitterFeed, Location $location, Twitter $twitter, $max_id = null)
     {
+        dump($disableTwitterFeed);
         if(! $disableTwitterFeed) {
             $results = $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT);
         } else {
@@ -89,7 +90,6 @@ class WidgetsController extends BaseController
         }
 
         return $this->render('City/Hinclude/evenements_details.html.twig', [
-
             'page' => $page,
             'place' => $event->getPlace(),
             'events' => $repo->findAllNext($event, $page, self::WIDGET_ITEM_LIMIT),
@@ -131,7 +131,9 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        return $this->render('City/Hinclude/evenements.html.twig', [
+        return $this->render('City/Hinclude/evenements_details.html.twig', [
+            'page' => $page,
+            'place' => $event->getPlace(),
             'events' => $repo->findAllSimilaires($event, $page, self::WIDGET_ITEM_LIMIT),
             'current' => $current,
             'count' => $count,

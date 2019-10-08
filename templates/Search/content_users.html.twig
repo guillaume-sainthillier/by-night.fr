@@ -5,9 +5,8 @@
 </div>
 
 {% if users|length == maxItems %}
-    <div>
-        <br/>
-        <a class="btn btn-lg btn-block btn-raised btn-primary more"
+    <div class="text-center my-4">
+        <a class="btn btn-outline-primary more"
            href="{{ path('app_search_query', {'q' : term, 'page': page+1, 'type' : 'membres'}) }}">
             Plus
         </a>

@@ -4,8 +4,6 @@
     <div class="{% block container_class 'container' %}" id="container">
         <h1>{% block titre 'Hello' %}</h1>
         {% include "layouts/_flash_messages.html.twig" %}
-        {% if no_ads is not defined %}{% include 'ad.html.twig' %}{% endif %}
         {% block body %}{% endblock %}
-        {% if no_ads is not defined %}{% include 'ad2.html.twig' %}{% endif %}
     </div>
 {% endblock %}

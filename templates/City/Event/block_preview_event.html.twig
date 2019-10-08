@@ -16,7 +16,7 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="{% if forceCard|default(false) %}col-12{% else %}col-sm-3{% endif %} image_soiree">
+            <div class="{% if forceCard|default(false) %}col-12{% else %}col-sm-3 col-lg-4{% endif %} image_soiree">
                 {% set original = eventProfilePicture.originalPicture(event) %}
                 {% if microdata %}
                     <meta itemprop="image" content="{{ original }}" />
@@ -33,7 +33,7 @@
                     </a>
                 </div>
             </div>
-            <div class="{% if forceCard|default(false) %}col-12{% else %}col-sm-9{% endif %} description_evenement">
+            <div class="{% if forceCard|default(false) %}col-12{% else %}col-sm-9 col-lg-8{% endif %} description_evenement">
                 <div class="card-body">
                     <h3 class="h5">
                         <a title="Tous les détails de {{ event.nom }} "
@@ -76,11 +76,10 @@
                     {% if event.placeName %}
                         <div class="detail-item" {% if microdata %}itemprop="location" itemscope itemtype="http://schema.org/Place"{% endif %}>
                             <i class="fa fa-map-marker float-left"></i>
-                            <a {% if microdata %}itemprop="name"{% endif %}
-                               href="{{ path('app_agenda_place', {'slug': place.slug, 'location': place.locationSlug}) }}"
+                            <span {% if microdata %}itemprop="name"{% endif %}
                                title="Sortir à {{ event.placeName }}">
-                                <strong>{{ event.placeName }}</strong>
-                            </a>
+                                <strong class="font-weight-normal">{{ event.placeName }}</strong>
+                            </span>
                             {% if microdata and event.latitude and event.longitude %}
                                 <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
                                     <meta itemprop="latitude" content="{{ event.latitude }}" />

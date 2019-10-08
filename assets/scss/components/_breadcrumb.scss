@@ -24,11 +24,8 @@
 }
 
 .breadcrumb-item {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 100%;
   flex: 0 auto;
-  flex-shrink: 1000;
   display: inline-block;
 
   &:first-child {
@@ -58,6 +55,10 @@
 
 @include media-breakpoint-down(sm) {
   .breadcrumb.collapsed .breadcrumb-item {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
 	&, &:last-child::before {
 	  display: none;
 	}

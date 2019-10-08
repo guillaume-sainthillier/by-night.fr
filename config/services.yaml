@@ -37,7 +37,6 @@ services:
             $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
             $monitor: "%env(APP_MONITOR)%"
             $disableTwitterFeed: "%disable_polled_feeds%"
-            $disableProgrammeTVFeed: "%disable_polled_feeds%"
             $assetThumb: "@app.asset_thumb"
 
     App\:

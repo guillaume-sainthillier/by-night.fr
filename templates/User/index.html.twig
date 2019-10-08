@@ -50,58 +50,49 @@
             </div>
         </div>
         <div class="col-md-9">
-            <div class="card">
-                <h3 class="card-header">Événements</h3>
-                <ul class="nav nav-tabs nav-fill">
-                    <li class="nav-item"><a class="nav-link active" href="#a-venir" data-toggle="tab">A venir</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#passes" data-toggle="tab">Passés</a></li>
-                </ul>
-
-                <div class="tab-content">
-                    <div class="tab-pane active" id="a-venir">
-                        <div class="card-body">
-                            {% if not next_events|length %}
-                                <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i>
-                                    Aucun événement de prévu pour {{ username }} !
-                                </div>
-                            {% else %}
-                                {% include "City/Event/block_preview_event.html.twig" with({'events' : next_events}) %}
-                            {% endif %}
+            <h3>Événements</h3>
+            <ul class="nav nav-tabs mb-2">
+                <li class="nav-item"><a class="nav-link active" href="#a-venir" data-toggle="tab">A venir</a></li>
+                <li class="nav-item"><a class="nav-link" href="#passes" data-toggle="tab">Passés</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="a-venir">
+                    {% if not next_events|length %}
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i>
+                            Aucun événement de prévu pour {{ username }} !
                         </div>
-                    </div>
-                    <div class="tab-pane" id="passes">
-                        <div class="card-body">
-                            {% if not previous_events|length %}
-                                <div class="alert alert-info">
-                                    <i class="fa fa-info-circle"></i>
-                                    Aucun événement passé pour {{ username }} !
-                                </div>
-                            {% else %}
-                                {% include "City/Event/block_preview_event.html.twig" with({'events' : previous_events}) %}
-                            {% endif %}
+                    {% else %}
+                        {% include "City/Event/block_preview_event.html.twig" with({'events' : next_events}) %}
+                    {% endif %}
+                </div>
+                <div class="tab-pane" id="passes">
+                    {% if not previous_events|length %}
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i>
+                            Aucun événement passé pour {{ username }} !
                         </div>
-                    </div>
+                    {% else %}
+                        {% include "City/Event/block_preview_event.html.twig" with({'events' : previous_events}) %}
+                    {% endif %}
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-4 mb-4">
-                    <div class="card h-100">
-                        <h3 class="card-header">Lieux favoris</h3>
-                        <div class="card-body">
-                            <div id="hero-donut" class="chart"></div>
-                        </div>
+                    <h3>Lieux favoris</h3>
+                    <div class="card">
+                        <div id="hero-donut" class="chart"></div>
                     </div>
                 </div>
                 <div class="col-sm-8 mb-4">
-                    <div class="card h-100">
-                        <h3 class="card-header">Activité</h3>
-                        <ul class="nav nav-tabs nav-fill" id="chartsActivite">
-                            <li class="nav-item"><a class="nav-link active" href="#annee" id="chartAnnee" data-toggle="tab">Année</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#mois" id="chartMois" data-toggle="tab">Mois</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#semaine" id="chartSemaine" data-toggle="tab">Semaine</a></li>
-                        </ul>
-                        <div class="card-body">
+                    <h3>Activité</h3>
+                    <ul class="nav nav-tabs mb-2" id="chartsActivite">
+                        <li class="nav-item"><a class="nav-link active" href="#annee" id="chartAnnee" data-toggle="tab">Année</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#mois" id="chartMois" data-toggle="tab">Mois</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#semaine" id="chartSemaine" data-toggle="tab">Semaine</a></li>
+                    </ul>
+                    <div class="card">
+                        <div class="card-body p-1">
                             <div class="tab-content">
                                 <div class="tab-pane fade show active" id="annee">
                                     <div id="chart-annee"

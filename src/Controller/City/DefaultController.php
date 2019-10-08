@@ -19,14 +19,12 @@ class DefaultController extends BaseController
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Event::class);
-
-        $search = (new SearchEvent())->setDu(null);
         $topEvents = $repo->findTopSoiree($location, 1, 7);
 
         return $this->render('City/Default/index.html.twig', [
             'location' => $location,
             'topEvents' => $topEvents,
-            'nbEvents' => $repo->findCountWithSearch($location, $search),
+            'nbEvents' => $repo->findCountWithSearch($location),
         ]);
     }
 }

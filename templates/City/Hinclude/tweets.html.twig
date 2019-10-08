@@ -24,7 +24,7 @@
                             <div class="TweetAuthor">
                                 <a class="TweetAuthor-link" href="{{ userURL }}">
                                 <span class="TweetAuthor-avatar">
-                                    <img class="Avatar loading" src="{{ originalTweet.user.profile_image_url_https }}">
+                                    <img class="Avatar" src="{{ originalTweet.user.profile_image_url_https }}">
                                 </span>
                                     <span class="TweetAuthor-name"
                                           title="{{ originalTweet.user.name }}">{{ originalTweet.user.name }}</span>
@@ -70,7 +70,7 @@
                                    href="https://twitter.com/intent/like?tweet_id={{ tweet.id }}">
                                     <div class="Icon Icon--heart TweetAction-icon" aria-label="J'aime" title="J'aime"
                                          role="img">
-                                        <i class="fa fa-heart"></i>
+                                        <i class="fa fa-heart-o"></i>
                                     </div>
                                 </a>
                             </li>
@@ -84,5 +84,5 @@
         <a class="more-content btn btn-outline-primary btn-block" rel="nofollow" href="{{ hasNextLink }}">Plus</a>
     {% endif %}
 {% else %}
-    <p>Aucun tweet par ici !</p>
+    <p class="px-4 mb-0">Aucun tweet par ici !</p>
 {% endif %}

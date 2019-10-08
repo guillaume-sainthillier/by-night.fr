@@ -83,7 +83,7 @@ class EventController extends BaseController
      */
     public function editAction(Request $request, Event $event, EventConstraintValidator $validator)
     {
-        if($event->getExternalId()) {
+        if ($event->getExternalId()) {
             $event->setFbDateModification(new \DateTime());
         }
 
@@ -151,10 +151,9 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/participer/{id}", name="app_user_participer", defaults={"participer": true, "interet": false})
-     * @Route("/interet/{id}", name="app_user_interesser", defaults={"participer": false, "interet": true})
+     * @Route("/participer/{id}", name="app_user_like", defaults={"participer": true, "interet": false})
      */
-    public function participerAction(Event $event, $participer, $interet)
+    public function like(Request $request, Event $event)
     {
         $user = $this->getUser();
 
@@ -164,10 +163,11 @@ class EventController extends BaseController
         if (null === $calendrier) {
             $calendrier = new Calendrier();
             $calendrier->setUser($user)->setEvent($event);
+            $em->persist($calendrier);
         }
-        $calendrier->setParticipe($participer)->setInteret($interet);
+        $isLike = $request->request->get('like') === 'true';
+        $calendrier->setParticipe($isLike);
 
-        $em->persist($calendrier);
         $em->flush();
 
         $repo = $em->getRepository(Event::class);
@@ -179,8 +179,8 @@ class EventController extends BaseController
 
         return new JsonResponse([
             'success' => true,
-            'participer' => $participer,
-            'interet' => $interet,
+            'like' => $isLike,
+            'likes' => $participations + $interets,
         ]);
     }
 }

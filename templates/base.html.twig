@@ -76,19 +76,12 @@ _______     __  _   _ _____ _____ _    _ _______
 
     <!-- CSS -->
     <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500%7CRoboto+Condensed:300' rel='stylesheet' type='text/css'>
-    {% block css %}
-        {{ encore_entry_link_tags('app') }}
-    {% endblock %}
+    {{ encore_entry_link_tags('app') }}
+    {% block css %}{% endblock %}
     <!-- ./CSS -->
 
-    {% if no_ads is not defined %}
+    {% if ads is defined %}
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({
-                google_ad_client: "ca-pub-2072406985754187",
-                enable_page_level_ads: true
-            });
-        </script>
     {% endif %}
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-45716709-2"></script>
@@ -168,9 +161,8 @@ _______     __  _   _ _____ _____ _    _ _______
 </button>
 
 <!-- JS -->
-{%- block js -%}
-    {{ encore_entry_script_tags('app') }}
-{%- endblock -%}
+{{ encore_entry_script_tags('app') }}
+{%- block js -%}{%- endblock -%}
 <script>
     App.init();
 </script>

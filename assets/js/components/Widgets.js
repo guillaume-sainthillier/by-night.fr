@@ -1,45 +1,8 @@
-import 'iscroll/build/iscroll';
-
 export default class Widgets {
-    constructor() {
-        this.scrollMap = [];
-    }
-
     init(selecteur) {
         const self = this;
         $(function () {
             self.initMoreWidgets($('.widget', selecteur || document));
-            self.initScrollable(selecteur);
-        });
-    }
-
-    //Deps: ['scrollable']
-    initScrollable(selecteur) {
-        const self = this;
-        return;
-        $(".scrollable", selecteur || document).each(function () {
-            if (!$(this).attr('id')) {
-                $(this).attr('id', 'scroll-' + Math.floor(Math.random() * 100000));
-            }
-
-            var id = $(this).attr('id');
-            if (!self.scrollMap[id]) {
-                self.scrollMap[id] = new IScroll("#" + id, {
-                    scrollbars: true,
-                    mouseWheel: true,
-                    interactiveScrollbars: true,
-                    shrinkScrollbars: false,
-                    fadeScrollbars: true
-                });
-
-                self.scrollMap[id].on('scrollStart', function () {
-                    App.initLazyLoading($("#" + id));
-                });
-
-                self.scrollMap[id].on('scrollEnd', function () {
-                    App.initLazyLoading($("#" + id));
-                });
-            }
         });
     }
 
@@ -87,12 +50,11 @@ export default class Widgets {
 
     scrollTo(elem, container, callback) {
         if (container.hasClass('scroll-area-horizontal')) {
-            var options = {'scrollLeft': $(container).scrollLeft() + elem.offset().left};
+            var options = {'scrollLeft': $(container).scrollLeft() + elem.position().left - $(container).position().left + 1};
         } else {
             var options = {'scrollTop': $(container).scrollTop() + elem.position().top};
         }
 
-        console.log(options, elem, container);
         $(container).animate(options, 800, callback);
     }
 }

@@ -17,9 +17,9 @@
 </div>
 
 <button type="button" href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
-   class="btn bmd-btn-fab bmd-btn-fab-sm participer {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }}"
-   data-href="{{ path('app_user_participer', {'id' : event.id}) }}">
-    <i class="fa {{ participer ? 'fa-heart' : 'fa-heart-o' }}"></i>
+   class="btn bmd-btn-fab bmd-btn-fab-sm participer btn-like-event {{ participer ? 'btn-primary' : '' }} {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }}"
+   data-href="{{ path('app_user_like', {'id' : event.id}) }}">
+    <i class="fa fa-heart"></i>
 </button>
 
 <small class="ml-3 text-muted {{ count == 0 ? 'd-none' : '' }}">{{ count }} intérêt{{ count > 1 ? "s" : "" }}</small>

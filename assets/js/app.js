@@ -121,7 +121,7 @@ class App {
         self.initConnexion(selecteur);
         self.initRegister(selecteur);
         self.initTooltips(selecteur);
-        self.initParticiper(selecteur);
+        self.initLike(selecteur);
         self.initMore(selecteur);
         self.initSelectpicker(selecteur);
         self.initDatepicker(selecteur);
@@ -235,34 +235,24 @@ class App {
     }
 
     //Deps: ['bootstrap']
-    initParticiper(selecteur) {
+    initLike(selecteur) {
         var options = {
-            "css_selecteur_participer": ".btn.participer",
-            "css_selecteur_interesser": ".btn.interesser",
-            "css_active_class": "btn-primary",
-            "css_unactive_class": "btn-default",
-            "css_buttons": ".buttons",
-            "css_hidden": "hidden",
-            "css_selecteur_icon": ".check"
+            "css_selecteur_like": ".btn-like-event",
+            "css_active_class": "btn-primary"
         };
 
-        $(options.css_selecteur_participer + ", " + options.css_selecteur_interesser, selecteur || document).click(function () {
+        $(options.css_selecteur_like, selecteur || document).click(function () {
             var btn = $(this);
 
-            if (btn.hasClass(options.css_active_class) || btn.hasClass('connexion')) {
+            if (btn.hasClass('connexion')) {
                 return false;
             }
 
             btn.attr('disabled', true);
-            $.post(btn.data("href")).done(function (msg) {
+            $.post(btn.data("href"), {'like': !btn.hasClass(options.css_active_class)}).done(function (msg) {
                 btn.attr('disabled', !msg.success);
                 if (msg.success) {
-                    var active = msg.participer ? $(options.css_selecteur_participer) : $(options.css_selecteur_interesser);
-                    var unActive = msg.participer ? $(options.css_selecteur_interesser) : $(options.css_selecteur_participer);
-
-                    unActive.removeClass(options.css_active_class).addClass(options.css_unactive_class).find(options.css_selecteur_icon).addClass(options.css_hidden);
-                    active.removeClass(options.css_unactive_class).addClass(options.css_active_class).find(options.css_selecteur_icon).removeClass(options.css_hidden);
-
+                    btn.toggleClass(options.css_active_class, msg.like);
                 }
             });
         });
@@ -336,7 +326,6 @@ class App {
     //Deps: ['modals', 'bootstrap']
     handleRegister($dialog) {
         const self = this;
-        console.log($dialog);
         self.initComponents($dialog);
         $dialog.find("form").unbind("submit").submit(function () {
             var href = $(this).attr("action");

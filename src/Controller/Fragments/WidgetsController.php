@@ -7,11 +7,7 @@ use App\Controller\TBNController as BaseController;
 use App\Entity\Calendrier;
 use App\Entity\Event;
 use App\Entity\User;
-use App\Parser\ProgrammeTVParser;
 use App\Picture\EventProfilePicture;
-use App\Social\FacebookAdmin;
-use Doctrine\Common\Cache\Cache as DoctrineCache;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,26 +16,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class WidgetsController extends BaseController
 {
     const WIDGET_ITEM_LIMIT = 7;
-
-    /**
-     * @Route("/programme-tv", name="app_agenda_programme_tv")
-     * @ReverseProxy(expires="tomorrow")
-     * @Cache(public=true)
-     *
-     * @return Response
-     */
-    public function programmeTVAction(bool $disableProgrammeTVFeed, ProgrammeTVParser $parser)
-    {
-        if(! $disableProgrammeTVFeed) {
-            $programmes = $parser->getProgrammesTV();
-        } else {
-            $programmes = [];
-        }
-
-        return $this->render('City/Hinclude/programme_tv.html.twig', [
-            'programmes' => $programmes,
-        ]);
-    }
 
     /**
      * @Route("/top/membres/{page}", name="app_agenda_top_membres", requirements={"page": "\d+"})

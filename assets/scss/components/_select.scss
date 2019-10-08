@@ -1,3 +1,12 @@
+.form-group .bootstrap-select.form-control {
+  height: $input-height;
+  .btn {
+	padding-left: 0;
+	padding-right: 0;
+  }
+}
+
+
 .dropdown.bootstrap-select {
   .dropdown-item {
 	max-width: 100%;

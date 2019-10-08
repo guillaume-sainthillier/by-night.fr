@@ -1,9 +1,8 @@
 {% include "City/Event/block_preview_event.html.twig" with({'events': events}) %}
 
 {% if events|length == maxItems %}
-    <div>
-        <br/>
-        <a class="btn btn-lg btn-block btn-raised btn-primary more" href="{{ path('app_search_query', {'q' : term, 'page': page+1, 'type' : 'evenements'}) }}">
+    <div class="text-center my-4">
+        <a class="btn btn-outline-primary more" href="{{ path('app_search_query', {'q' : term, 'page': page+1, 'type' : 'evenements'}) }}">
             Plus
         </a>
     </div>

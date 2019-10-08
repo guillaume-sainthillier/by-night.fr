@@ -1,3 +1,4 @@
+{% set ads = true %}
 {% extends "layouts/with-widget.html.twig" %}
 
 {%- block title -%}
@@ -8,7 +9,7 @@
 {% elseif type == 'famille' %}Sorties familles
 {% elseif type == 'spectacle' %}Spectacles
 {% elseif type == 'etudiant' %}Soirées étudiantes
-{% else %}Agenda des événements{% endif %}
+{% else %}Événements{% endif %}
 {% if placeName is null %} {{ location.atName }}{% endif %}
 {% if page > 1 %} (Page {{ page }}){% endif %}
 {%- endblock -%}
@@ -21,8 +22,8 @@
     {% elseif type == 'famille' %}Sorties familles
     {% elseif type == 'spectacle' %}Spectacles
     {% elseif type == 'etudiant' %}Soirées étudiantes
-    {% else %}Agenda des <strong>événements</strong>{% endif %}
-    {% if placeName is null %} {{ location.atValue }} <strong>{{- location.name -}}</strong>{% endif %}
+    {% else %}Événements{% endif %}
+    {% if placeName is null %} {{ location.atValue }} {{- location.name -}}{% endif %}
 {%- endblock -%}
 
 {% block breadcrumb %}
@@ -85,8 +86,8 @@
     </div>
 
     <div id="agenda" class="widget active" role="tabpanel" aria-labelledby="agenda-tab">
-        {% include "ad.html.twig" with({'marginTop': 0}) %}
         {% include "City/Agenda/block_criteres.html.twig" %}
+        {% include "ad.html.twig" with({'marginTop': 0}) %}
 
         {% if events|length == 0 %}
             <div class="alert alert-info">
@@ -121,10 +122,6 @@
     <!-- Top Membres -->
     {% include "City/Widget/top_membres.html.twig" %}
     <!-- ./Top Membres -->
-
-    <!-- Programme TV -->
-    {% include "City/Widget/programme_tv.html.twig" %}
-    <!-- ./Programme TV -->
 {%- endblock %}
 
 {% block css %}

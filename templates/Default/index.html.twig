@@ -1,4 +1,4 @@
-{% set no_ads = true %}
+{% set ads = true %}
 {% extends "layouts/full.html.twig" %}
 
 {% block full_breadcrumb '' %}
@@ -55,6 +55,7 @@
     </section>
     <section class="py-4">
         <div class="container">
+            {% include 'ad.html.twig' %}
             <h2>Ça bouge par ici</h2>
             <div class="row">
                 {% for stat in stats %}

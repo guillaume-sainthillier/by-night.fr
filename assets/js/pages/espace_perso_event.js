@@ -1,5 +1,3 @@
-import '../app';
-
 import 'bootstrap-datepicker/dist/css/bootstrap-datepicker3.css';
 import 'bootstrap-select/dist/css/bootstrap-select.css';
 

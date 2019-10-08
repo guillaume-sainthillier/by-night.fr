@@ -1,3 +1,4 @@
+{% set ads = true %}
 {% extends "layouts/stretch.html.twig" %}
 
 {% import "Form/macros.html.twig" as macros %}
@@ -94,7 +95,7 @@
                             {% set mapValue = event.placeName %}
                             <i class="fa fa-map-marker"></i>
                             <h2 class="mb-0">
-                                <strong itemprop="name">{{ event.placeName }}</strong>
+                                <strong class="font-weight-normal" itemprop="name">{{ event.placeName }}</strong>
                             </h2>
                         {% endif %}
 
@@ -118,7 +119,7 @@
                                             {% set mapValue = mapValue ~ " " ~ event.placeCity %}
                                             {% if event.place and event.place.city %}
                                                 <meta name="url" content="{{ path('app_agenda_agenda', {'location': place.locationSlug}) }}">
-                                                <strong itemprop="addressLocality">{{ event.placeCity }}</strong>
+                                                <strong class="font-weight-normal" itemprop="addressLocality">{{ event.placeCity }}</strong>
                                             {% endif %}
                                         {% endif %}
                                     </div>
@@ -167,6 +168,7 @@
         <div class="card-body">
             <div class="row">
                 <div itemprop="description" class="col-sm-8">
+                    {% include "ad.html.twig" with({'marginTop': 0}) %}
                     {{ descriptionSoiree|raw }}
                 </div>
                 <div class="col-sm-4 my-3 my-md-0 event-details">
@@ -220,7 +222,7 @@
                                     <a class="badge badge-info"
                                        title="{{ tag }} {{ event.place.location.atName }}"
                                        href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
-                                        <strong>{{ tag }}  {{ event.place.location.atName }}</strong>
+                                        <strong class="font-weight-normal">{{ tag }}  {{ event.place.location.atName }}</strong>
                                     </a>
                                 {% endfor %}
                             </p>
@@ -268,7 +270,12 @@
             {% include "City/Widget/next_evenements.html.twig" %}
         {% endif %}
     {% endif %}
+
     {% include "ad2.html.twig" with({'marginTop': 0}) %}
+
+    <!-- Événements similaires -->
+    {% include "City/Widget/evenements_similaires.html.twig" %}
+    <!-- ./Événements similaires -->
 {%- endblock %}
 
 {% block widgets -%}

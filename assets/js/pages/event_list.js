@@ -1,5 +1,3 @@
-import '../app';
-
 var countLoads = 0;
 var isLoading = false;
 

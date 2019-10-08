@@ -98,8 +98,3 @@ h1 {
   display: none!important;
 }
 
-@include media-breakpoint-down(md) {
-  .container-md {
-    @include make-container-max-widths();
-  }
-}
