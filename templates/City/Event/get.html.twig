@@ -214,20 +214,42 @@
                         </div>
                     {% endif %}
 
-                    {% if distinctTags|length %}
-                        <div class="detail-item">
-                            <i class="fa fa-tags"></i>
-                            <p class="tags">
-                                {% for tag in distinctTags %}
-                                    <a class="badge badge-info"
-                                       title="{{ tag }} {{ event.place.location.atName }}"
-                                       href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">{{ tag }}  {{ event.place.location.atName }}</strong>
-                                    </a>
-                                {% endfor %}
-                            </p>
-                        </div>
-                    {% endif %}
+                    <div class="detail-item">
+                        <i class="fa fa-tags"></i>
+                        <p class="tags">
+                            {% if event.place.country %}
+                            <a class="badge badge-info"
+                               title="Sortir en {{ event.place.country.name }}"
+                               href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}">
+                                <strong class="font-weight-normal">Événements en {{ event.place.country.name }}</strong>
+                            </a>
+                            {% endif %}
+
+                            {% if event.place.location.isCity %}
+                                <a class="badge badge-info"
+                                   title="Sortir {{ event.place.location.atName }}"
+                                   href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}">
+                                    <strong class="font-weight-normal">Événements {{ event.place.location.atName }}</strong>
+                                </a>
+                            {% endif %}
+                            {% if event.placeName %}
+                                <a class="badge badge-info"
+                                   title="Sortir à {{ event.placeName }}"
+                                   href="{{ path('app_agenda_place', {'slug': event.place.slug, 'location': event.place.locationSlug}) }}">
+                                    <strong class="font-weight-normal">Événements à {{ event.placeName }}</strong>
+                                </a>
+                            {% endif %}
+
+                            {% for tag in distinctTags %}
+                                <a class="badge badge-info"
+                                   title="{{ tag }} {{ event.place.location.atName }}"
+                                   href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
+                                    <strong class="font-weight-normal">{{ tag }} {{ event.place.location.atName }}</strong>
+                                </a>
+                            {% endfor %}
+                        </p>
+                    </div>
+
                     {% if event.source %}
                         <div class="detail-item">
                             <i class="fa fa-info"></i>

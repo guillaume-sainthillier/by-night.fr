@@ -176,15 +176,6 @@ class Place implements GeolocalizeInterface
     public function getLocationSlug()
     {
         return $this->getLocation()->getSlug();
-        if ($this->getCity()) {
-            return $this->getCity()->getSlug();
-        }
-
-        if ($this->getCountry()) {
-            return $this->getCountry()->getSlug();
-        }
-
-        return 'unknown';
     }
 
     public function setReject(Reject $reject = null)

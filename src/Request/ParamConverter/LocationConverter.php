@@ -54,6 +54,15 @@ class LocationConverter implements ParamConverterInterface
                 ->findBySlug($locationSlug);
         }
 
+        if($locationSlug === 'unknown') {
+            $noWhere = new Country();
+            $noWhere->setName('Nowhere');
+            $noWhere->setSlug($locationSlug);
+            $location->setCountry($noWhere);
+            $request->attributes->set($configuration->getName(), $location);
+            return;
+        }
+
         if ($entity) {
             $location->setCity($entity);
             $this->cityManager->setCurrentCity($entity);
