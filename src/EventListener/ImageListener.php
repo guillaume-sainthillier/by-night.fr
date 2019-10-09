@@ -77,16 +77,8 @@ class ImageListener implements EventSubscriberInterface
         $object = $event->getObject();
         $mapping = $event->getMapping();
 
-        if ($object instanceof User) {
-            $filters = ['thumb_user_large', 'thumb_user_evenement', 'thumb_user', 'thumb_user_menu', 'thumb_user_50', 'thumb_user_115'];
-        } elseif ($object instanceof Event) {
-            $filters = ['thumbs_evenement', 'thumb_evenement'];
-        } else {
-            return;
-        }
-
         $path = $mapping->getUriPrefix() . \DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
-        $this->paths[] = ['path' => $path, 'filters' => $filters];
+        $this->paths[] = $path;
     }
 
     public function onImageDeleted()
@@ -98,7 +90,7 @@ class ImageListener implements EventSubscriberInterface
 
         //Schedule CDN purging of old image path
         foreach($this->paths as $path) {
-            $this->purgeCdnCacheUrlProducer->schedulePurge($path['path']);
+            $this->purgeCdnCacheUrlProducer->schedulePurge('path');
         }
 
         unset($this->paths);

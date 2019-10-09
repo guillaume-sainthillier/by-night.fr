@@ -188,9 +188,6 @@
     "hwi/oauth-bundle": {
         "version": "0.5.3"
     },
-    "imagine/imagine": {
-        "version": "v0.7.1"
-    },
     "intervention/image": {
         "version": "2.5.0"
     },
@@ -240,23 +237,11 @@
             "var/storage/.gitignore"
         ]
     },
-    "league/flysystem-cached-adapter": {
-        "version": "1.0.9"
-    },
     "league/glide": {
         "version": "1.5.0"
     },
     "league/glide-symfony": {
         "version": "1.0.3"
-    },
-    "liip/imagine-bundle": {
-        "version": "1.8",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "1.8",
-            "ref": "d2a601ea5ccad81de2a131ed68481d012ed4667c"
-        }
     },
     "monolog/monolog": {
         "version": "1.23.0"

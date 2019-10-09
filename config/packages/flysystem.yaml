@@ -10,69 +10,24 @@ flysystem:
         s3.storage.reader:
             adapter: 's3_reader'
 
-        users.storage.reader:
-            adapter: 'aws'
-            options:
-                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
-                bucket: "%env(AWS_S3_BUCKET_NAME)%"
-                prefix: '/uploads/users'
-
-        users.storage.source:
-            adapter: 'aws'
-            options:
-                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
-                bucket: "%env(AWS_S3_BUCKET_NAME)%"
-                prefix: '/uploads/users'
-
         users.storage:
-            adapter: 'cache'
+            adapter: 'aws'
             options:
-                store: 'cache.flysystem.psr6'
-                source: 'users.storage.source'
+                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
+                prefix: '/uploads/users'
 
-        events.storage.source:
+        events.storage:
             adapter: 'aws'
             options:
                 client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
                 bucket: "%env(AWS_S3_BUCKET_NAME)%"
                 prefix: '/uploads/documents'
 
-        events.storage:
-            adapter: 'cache'
-            options:
-                store: 'cache.flysystem.psr6'
-                source: 'events.storage.source'
-
-        thumbs.storage.source:
-            adapter: 'aws'
-            options:
-                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
-                bucket: "%env(AWS_S3_BUCKET_NAME)%"
-                prefix: ''
-
         thumbs.storage:
-            adapter: 'cache'
-            options:
-                store: 'cache.flysystem.psr6'
-                source: 'thumbs.storage.source'
-
-        thumbs3.storage.source:
             adapter: 'local'
             options:
                 directory: '%kernel.project_dir%/var/storage/thumbs'
-
-        thumbs2.storage.source:
-            adapter: 'aws'
-            options:
-                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
-                bucket: "%env(AWS_S3_BUCKET_NAME)%"
-                prefix: '/thumb'
-
-        thumbs2.storage:
-            adapter: 'cache'
-            options:
-                store: 'cache.flysystem.psr6'
-                source: 'thumbs2.storage.source'
 
         assets.storage.reader:
             adapter: 'local'

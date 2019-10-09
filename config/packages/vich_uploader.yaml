@@ -4,7 +4,7 @@ services:
         calls:
             - method: mountFilesystems
               arguments:
-                - { users.storage: '@users.storage', events.storage: '@events.storage', 'thumbs.storage': '@thumbs.storage' }
+                - { users.storage: '@users.storage', events.storage: '@events.storage' }
 vich_uploader:
     db_driver: orm
     storage: flysystem

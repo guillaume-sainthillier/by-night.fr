@@ -3,7 +3,7 @@
 namespace App\Consumer;
 
 use App\Producer\PurgeCdnCacheUrlProducer;
-use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use League\Glide\Server;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -11,17 +11,17 @@ use Psr\Log\LoggerInterface;
 
 class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    /** @var CacheManager */
-    private $cacheManager;
+    /** @var Server */
+    private $glide;
 
     /** @var PurgeCdnCacheUrlProducer */
     private $purgeCdnCacheUrlProducer;
 
-    public function __construct(LoggerInterface $logger, CacheManager $cacheManager, PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer)
+    public function __construct(LoggerInterface $logger, Server $glide, PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer)
     {
         parent::__construct($logger);
 
-        $this->cacheManager = $cacheManager;
+        $this->glide = $glide;
         $this->purgeCdnCacheUrlProducer = $purgeCdnCacheUrlProducer;
     }
 
@@ -30,9 +30,7 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
         $result = [];
 
         /** @var AMQPMessage $message */
-        foreach ($messages as $i => $message) {
-            $path = \json_decode($message->getBody(), true);
-
+        foreach ($messages as $i => $path) {
             try {
                 $this->deleteThumbnails($path);
                 $result[(int)$message->delivery_info['delivery_tag']] = ConsumerInterface::MSG_ACK;
@@ -45,27 +43,8 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
         return $result;
     }
 
-    private function deleteThumbnails(array $path)
+    private function deleteThumbnails(string $path)
     {
-        $existingFilters = [];
-        $resolvedPaths = [];
-        foreach ($path['filters'] as $filter) {
-            if ($this->cacheManager->isStored($path['path'], $filter)) {
-                $resolvedPaths[] = $this->cacheManager->resolve($path['path'], $filter);
-                $existingFilters[] = $filter;
-            }
-        }
-
-        if (!$existingFilters) {
-            return;
-        }
-
-        //Optimize call
-        $this->cacheManager->remove($path['path'], $existingFilters);
-
-        //Schedule thumbnails image purge in cdn cache
-        foreach ($resolvedPaths as $resolvedPath) {
-            $this->purgeCdnCacheUrlProducer->schedulePurge($resolvedPath);
-        }
+        $this->glide->deleteCache($path);
     }
 }

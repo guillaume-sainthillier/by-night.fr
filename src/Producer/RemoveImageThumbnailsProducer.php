@@ -6,8 +6,8 @@ use OldSound\RabbitMqBundle\RabbitMq\Producer;
 
 class RemoveImageThumbnailsProducer extends Producer
 {
-    public function scheduleRemove(array $path): void
+    public function scheduleRemove(string $path): void
     {
-        $this->publish(json_encode($path));
+        $this->publish($path);
     }
 }

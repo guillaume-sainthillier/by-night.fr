@@ -4,17 +4,11 @@ namespace App\Picture;
 
 use App\Entity\User;
 use App\Twig\AssetExtension;
-use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Asset\Packages;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserProfilePicture
 {
-    /**
-     * @var CacheManager
-     */
-    private $cacheManager;
-
     /** @var UploaderHelper */
     private $helper;
 
@@ -24,10 +18,9 @@ class UserProfilePicture
     /** @var AssetExtension */
     private $assetExtension;
 
-    public function __construct(CacheManager $cacheManager, UploaderHelper $helper, Packages $packages, AssetExtension $assetExtension)
+    public function __construct(UploaderHelper $helper, Packages $packages, AssetExtension $assetExtension)
     {
         $this->assetExtension = $assetExtension;
-        $this->cacheManager = $cacheManager;
         $this->helper = $helper;
         $this->packages = $packages;
     }

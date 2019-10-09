@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use App\Picture\UserProfilePicture;
 use App\Twig\AssetExtension;
-use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -17,9 +16,6 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 
 class ImageTypeExtension extends AbstractTypeExtension
 {
-    /** @var CacheManager */
-    private $cacheManager;
-
     /** @var StorageInterface */
     private $storage;
 
@@ -32,10 +28,9 @@ class ImageTypeExtension extends AbstractTypeExtension
     /** @var EventProfilePicture */
     private $eventProfilePicture;
 
-    public function __construct(StorageInterface $storage, CacheManager $cacheManager, AssetExtension $assetExtension, UserProfilePicture $userProfilePicture, EventProfilePicture $eventProfilePicture)
+    public function __construct(StorageInterface $storage, AssetExtension $assetExtension, UserProfilePicture $userProfilePicture, EventProfilePicture $eventProfilePicture)
     {
         $this->storage = $storage;
-        $this->cacheManager = $cacheManager;
         $this->assetExtension = $assetExtension;
         $this->userProfilePicture = $userProfilePicture;
         $this->eventProfilePicture = $eventProfilePicture;

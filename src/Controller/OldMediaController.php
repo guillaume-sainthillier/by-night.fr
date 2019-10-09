@@ -5,12 +5,11 @@ namespace App\Controller;
 use App\Annotation\ReverseProxy;
 use App\Entity\Event;
 use App\Entity\User;
-use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use App\Twig\AssetExtension;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
+use Vich\UploaderBundle\Storage\StorageInterface;
 
 class OldMediaController extends AbstractController
 {
@@ -20,7 +19,7 @@ class OldMediaController extends AbstractController
      *
      * @return Response
      */
-    public function indexAction(string $filter, string $path, CacheManager $cacheManager, UploaderHelper $helper, Packages $packages)
+    public function indexAction(string $path, StorageInterface $storage, AssetExtension $assetExtension)
     {
         $infos = pathinfo($path);
 
@@ -36,9 +35,9 @@ class OldMediaController extends AbstractController
 
         if ($event) {
             if ($event->getPath() === $infos['basename']) {
-                $url = $cacheManager->getBrowserPath($helper->asset($event, 'file'), $filter);
+                $url = $assetExtension->thumb($storage->resolvePath($event, 'file'));
             } else {
-                $url = $cacheManager->getBrowserPath($helper->asset($event, 'systemFile'), $filter);
+                $url = $assetExtension->thumb($storage->resolvePath($event, 'systemFile'));
             }
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
@@ -55,9 +54,9 @@ class OldMediaController extends AbstractController
 
         if ($user) {
             if ($user->getPath() === $infos['basename']) {
-                $url = $cacheManager->getBrowserPath($helper->asset($user, 'imageFile'), $filter);
+                $url = $assetExtension->thumb($storage->resolvePath($user, 'imageFile'));
             } else {
-                $url = $cacheManager->getBrowserPath($helper->asset($user, 'imageSystemFile'), $filter);
+                $url = $assetExtension->thumb($storage->resolvePath($user, 'imageSystemFile'));
             }
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
