@@ -3,6 +3,7 @@
 
 {% set username = user.username|capitalize %}
 
+{% block page_id 'page-user' %}
 {% block title username %}
 {% block titre username %}
 
@@ -26,7 +27,7 @@
         <div class="col-md-3">
             <div class="card fiche_profil">
                 <div class="card-body text-center">
-                    {{ macros.userLazyThumb(app.user, 200, 200, {'class': 'mx-auto mb-2'}) }}
+                    {{ macros.userLazyThumb(user, 200, 200, {'class': 'mx-auto mb-2'}) }}
                     <h2>{{ username }}</h2>
                     {% if user.description %}
                         <hr />
@@ -50,8 +51,8 @@
             </div>
         </div>
         <div class="col-md-9">
-            <h3>Événements</h3>
             <ul class="nav nav-tabs mb-2">
+                <li class="nav-item"><a class="nav-link disabled" data-toggle="tab">Événements</a></li>
                 <li class="nav-item"><a class="nav-link active" href="#a-venir" data-toggle="tab">A venir</a></li>
                 <li class="nav-item"><a class="nav-link" href="#passes" data-toggle="tab">Passés</a></li>
             </ul>
@@ -79,14 +80,14 @@
             </div>
             <div class="row">
                 <div class="col-sm-4 mb-4">
-                    <h3>Lieux favoris</h3>
+                    <h3 class="align-nav">Lieux favoris</h3>
                     <div class="card">
                         <div id="hero-donut" class="chart"></div>
                     </div>
                 </div>
                 <div class="col-sm-8 mb-4">
-                    <h3>Activité</h3>
                     <ul class="nav nav-tabs mb-2" id="chartsActivite">
+                        <li class="nav-item"><a class="nav-link disabled" data-toggle="tab">Activité</a></li>
                         <li class="nav-item"><a class="nav-link active" href="#annee" id="chartAnnee" data-toggle="tab">Année</a></li>
                         <li class="nav-item"><a class="nav-link" href="#mois" id="chartMois" data-toggle="tab">Mois</a></li>
                         <li class="nav-item"><a class="nav-link" href="#semaine" id="chartSemaine" data-toggle="tab">Semaine</a></li>

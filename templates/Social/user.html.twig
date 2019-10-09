@@ -1,7 +1,7 @@
 {% if user.showSocials %}
     {% set info = user.info %}
 
-    {% if info and (info.facebookAccessToken or info.twitterNickname or info.googleAccessToken) %}
+    {% if info and (info.facebookAccessToken or info.twitterNickname) %}
         <hr/>
     {% endif %}
 

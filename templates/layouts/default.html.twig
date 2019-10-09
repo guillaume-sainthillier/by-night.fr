@@ -1,7 +1,7 @@
 {% extends "base.html.twig" %}
 
 {% block layout %}
-    <div class="{% block container_class 'container' %}" id="container">
+    <div class="{% block container_class 'container' %}" id="{% block page_id 'page' %}">
         <h1>{% block titre 'Hello' %}</h1>
         {% include "layouts/_flash_messages.html.twig" %}
         {% block body %}{% endblock %}

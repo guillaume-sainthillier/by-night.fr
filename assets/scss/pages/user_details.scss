@@ -1,32 +1,15 @@
-.record {
-  margin-bottom: 10px;
-
-  .badge {
-	display: inline-block;
-	font-size: 150%;
+#page-user {
+  @include media-breakpoint-up(sm) {
+	.align-nav {
+	  margin-top: 0.75rem;
+	  margin-bottom: 1.75rem;
+	}
   }
 
-  i {
-	min-width: 40px;
-  }
-}
-
-.fa-quote-left {
-  transition: all 0.3s ease-in-out;
-
-  &:hover {
-	background-color: #EEE;
-	transform: rotate(-180deg);
-  }
-}
-
-.fiche_profil {
-  h2 {
-	overflow-x: auto;
-	overflow-y: hidden;
-  }
-
-  strong {
-	display: block;
+  .fiche_profil {
+	h2 {
+	  overflow-x: auto;
+	  overflow-y: hidden;
+	}
   }
 }
