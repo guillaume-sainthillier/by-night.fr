@@ -65,7 +65,7 @@ COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-RUN mkdir -p /run/php var public/media public/uploads && \
+RUN mkdir -p /run/php var/cache var/log var/sessions var/storage var/datas public/uploads public/build && \
     APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
     APP_ENV=prod bin/console cache:clear --no-warmup && \
     APP_ENV=prod bin/console cache:warmup && \

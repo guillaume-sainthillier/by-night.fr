@@ -264,6 +264,9 @@
     "pagerfanta/pagerfanta": {
         "version": "v1.0.5"
     },
+    "paragonie/random_compat": {
+        "version": "v2.0.18"
+    },
     "php-amqplib/php-amqplib": {
         "version": "v2.7.0"
     },
@@ -527,6 +530,12 @@
     },
     "symfony/polyfill-apcu": {
         "version": "v1.6.0"
+    },
+    "symfony/polyfill-ctype": {
+        "version": "v1.12.0"
+    },
+    "symfony/polyfill-iconv": {
+        "version": "v1.12.0"
     },
     "symfony/polyfill-intl-icu": {
         "version": "v1.6.0"

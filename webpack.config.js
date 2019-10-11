@@ -51,8 +51,7 @@ Encore
      */
     .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
-    .enableSourceMaps(false)
-    // enables hashed filenames (e.g. app.abc123.css)
+    .enableSourceMaps(Encore.isProduction())
     .enableVersioning(Encore.isProduction())
 
     // enables @babel/preset-env polyfills
@@ -61,16 +60,8 @@ Encore
         useBuiltIns: 'usage',
         corejs: 3
     })
-
-    // enables Sass/SCSS support
     .enableSassLoader()
-
-    // uncomment if you use TypeScript
-    //.enableTypeScriptLoader()
-
-    // uncomment to get integrity="..." attributes on your script & link tags
-    // requires WebpackEncoreBundle 1.4 or higher
-    //.enableIntegrityHashes(Encore.isProduction())
+    .enableIntegrityHashes(Encore.isProduction())
 
     // uncomment if you're having problems with a jQuery plugin
     .autoProvidejQuery()
