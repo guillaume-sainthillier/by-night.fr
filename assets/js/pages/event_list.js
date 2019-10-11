@@ -3,7 +3,6 @@ var isLoading = false;
 
 $(function () {
     init_criteres();
-    init_shorcut_date();
     load_infinite_scroll();
     init_soirees();
 });
@@ -22,7 +21,7 @@ function load_infinite_scroll() {
         }
 
         var paginate = $('#paginate');
-        if ($(window).scrollTop() + $(window).height() > paginate.offset().top - marginScroll) {
+        if (paginate.length > 0 && $(window).scrollTop() + $(window).height() > paginate.offset().top - marginScroll) {
             isLoading = true;
             paginate.trigger('click');
         }
@@ -38,7 +37,7 @@ function init_pagination() {
         var self = $(this);
         var container = self.parent();
         var page = self.data('next');
-        var form = $('form[name="search"]');
+        var form = $('search-form');
         var pageInput = $('#search_page');
 
         pageInput.val(page);
@@ -92,18 +91,6 @@ function init_criteres() {
         block.hide()
             .removeClass(options.css_initial_hidden);
     }
-}
-
-/**
- * Initialise les boutons WE, cette semaine et ce mois
- * @returns {undefined}
- */
-function init_shorcut_date() {
-    $("select.shorcuts_date").unbind("change").change(function () {
-        var selected = $(this).find("option:selected");
-        $("#search_du").val(selected.data("date-debut") || "");
-        $("#search_au").val(selected.data("date-fin") || "");
-    });
 }
 
 

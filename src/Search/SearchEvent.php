@@ -49,13 +49,6 @@ class SearchEvent
     protected $term;
 
     /**
-     * @var int
-     * @Assert\NotBlank
-     * @Assert\GreaterThanOrEqual(0)
-     */
-    protected $page;
-
-    /**
      * @var Location|null
      */
     protected $location;
@@ -142,18 +135,6 @@ class SearchEvent
     public function setTerm(?string $term): SearchEvent
     {
         $this->term = $term;
-
-        return $this;
-    }
-
-    public function getPage(): int
-    {
-        return $this->page;
-    }
-
-    public function setPage(int $page): SearchEvent
-    {
-        $this->page = $page;
 
         return $this;
     }

@@ -76,14 +76,12 @@ class AgendaController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(Location $location, Request $request, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, $page = 1, $type = null, $tag = null, $slug = null)
+    public function indexAction(Location $location, Request $request, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, int $page = 1, string $type = null, string $tag = null, string $slug = null)
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
-        $isPost = $request->isMethod('POST');
-        $isUserPostSearch = $isPost && !$isAjax;
 
-        $routeParams = [
+        $routeParams = $request->query->all() + [
             'page' => $page + 1,
             'location' => $location->getSlug(),
         ];
@@ -124,18 +122,14 @@ class AgendaController extends BaseController
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
             'action' => $formAction,
+            'method' => 'get',
             'types_manif' => $types_manif,
         ]);
 
         //Bind du formulaire avec la requête courante
         $form->handleRequest($request);
-        if (! $form->isSubmitted() || $form->isValid()) {
+        if (!$form->isSubmitted() || $form->isValid()) {
             $isValid = true;
-            if ($isUserPostSearch) {
-                $page = 1;
-            } elseif ($isPost) {
-                $page = $search->getPage();
-            }
 
             //Recherche ElasticSearch
             $repository = $repositoryManager->getRepository(Event::class);
@@ -162,7 +156,6 @@ class AgendaController extends BaseController
             'maxPerEvent' => self::EVENT_PER_PAGE,
             'page' => $page,
             'search' => $search,
-            'isPost' => $isPost,
             'isValid' => $isValid,
             'isAjax' => $isAjax,
             'paginateURL' => $paginateURL,
@@ -189,23 +182,6 @@ class AgendaController extends BaseController
             }
             \ksort($type_manifestation);
             $cache->save($key, $type_manifestation, 24 * 60 * 60);
-        }
-
-        return $cache->fetch($key);
-    }
-
-    private function getPlaces(DoctrineCache $cache, EventRepository $repo, Location $location)
-    {
-        $key = 'places.' . $location->getSlug();
-
-        if (!$cache->contains($key)) {
-            $places = $repo->getEventPlaces($location);
-            $lieux = [];
-            foreach ($places as $place) {
-                $lieux[$place->getNom()] = $place->getId();
-            }
-
-            $cache->save($key, $lieux, 24 * 60 * 60);
         }
 
         return $cache->fetch($key);

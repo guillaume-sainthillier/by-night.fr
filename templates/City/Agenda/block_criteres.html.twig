@@ -1,4 +1,4 @@
-{{ form_start(form) }}
+{{ form_start(form, {'attr': {'id': 'search-form'}}) }}
 {{ form_errors(form) }}
 <div class="block_criteres card">
     <h2 class="card-header">
@@ -6,7 +6,7 @@
         Agenda
     </h2>
     <div class="card-body">
-        <div class="form-row main_criteres">
+        <div class="row main_criteres">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="shorcuts_date">Quand ?</label>
@@ -41,7 +41,7 @@
                 {{ form_row(form.type_manifestation) }}
             </div>
         </div>
-        {% if not isValid or (isPost and (search.au or search.lieux or search.term or search.range != 25 or isValid)) %}
+        {% if not isValid or search.au or search.term or search.range != 25 %}
             {% set options = {hiddenClass: '', iconClass: 'fa-chevron-up'} %}
         {% else %}
             {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}

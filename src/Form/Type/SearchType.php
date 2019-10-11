@@ -25,10 +25,6 @@ class SearchType extends AbstractType
             $data['du'] = \date('d/m/Y');
         }
 
-        if (empty($data['page'])) {
-            $data['page'] = 1;
-        }
-
         if (empty($data['range'])) {
             $data['range'] = 25;
         }
@@ -39,19 +35,16 @@ class SearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('page', HiddenType::class)
             ->add('du', DateType::class, [
                 'label' => 'Du',
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
-                'attr' => ['data-date-format' => 'dd/mm/yyyy'],
             ])
             ->add('au', DateType::class, [
                 'required' => false,
                 'label' => 'Au',
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
-                'attr' => ['data-date-format' => 'dd/mm/yyyy'],
             ])
             ->add('range', NumberType::class, [
                 'label' => 'Rayon (KM)',
@@ -78,6 +71,7 @@ class SearchType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'allow_extra_fields' => true,
             'types_manif' => [],
             'data_class' => SearchEvent::class,
             'csrf_protection' => false,
@@ -86,6 +80,6 @@ class SearchType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'search';
+        return '';
     }
 }

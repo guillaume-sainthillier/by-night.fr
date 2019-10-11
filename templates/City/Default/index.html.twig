@@ -29,9 +29,9 @@
             <h1>Votre sortie {{ location.atName }}</h1>
             <div class="no-margin-form card search_container">
                 <div class="card-body">
-                    <form name="app_search_event" class="m-0" role="search" action="{{ path('app_agenda_agenda', {'location': location.slug}) }}" method="POST">
-                        <input type="hidden" id="search_du" name="search[du]" value="" />
-                        <input type="hidden" id="search_au" name="search[au]" value="" />
+                    <form name="app_search_event" class="m-0" role="search" action="{{ path('app_agenda_agenda', {'location': location.slug}) }}" method="get">
+                        <input type="hidden" id="du" name="du" value="" />
+                        <input type="hidden" id="au" name="au" value="" />
                         <div class="form-group">
                             <label class="bmd-label-floating">Je veux sortir {{ location.atName }}</label>
                             <select name="shortcut" class="form-control shorcuts_date">
@@ -58,8 +58,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="bmd-label-floating">Et je cherche...</label>
-                            <input type="text" name="search[term]" value="" class="form-control">
+                            <label class="bmd-label-floating" for="term">Et je cherche...</label>
+                            <input type="text" id="term" name="term" value="" class="form-control">
                             <span class="bmd-help">Concert, bar, spectacle, enfant, soirée, ...</span>
                         </div>
 

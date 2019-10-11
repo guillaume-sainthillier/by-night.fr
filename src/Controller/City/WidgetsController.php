@@ -27,7 +27,6 @@ class WidgetsController extends BaseController
      */
     public function twitterAction(bool $disableTwitterFeed, Location $location, Twitter $twitter, $max_id = null)
     {
-        dump($disableTwitterFeed);
         if(! $disableTwitterFeed) {
             $results = $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT);
         } else {

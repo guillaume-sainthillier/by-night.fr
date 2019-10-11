@@ -126,6 +126,15 @@ class App {
         self.initSelectpicker(selecteur);
         self.initDatepicker(selecteur);
         self.initGallery(selecteur);
+        self.initShortcutDates(selecteur);
+    }
+
+    initShortcutDates(container) {
+        $("select.shorcuts_date", container || document).change(function () {
+            var selected = $(this).find("option:selected");
+            $("#du").val(selected.data("date-debut") || "");
+            $("#au").val(selected.data("date-fin") || "");
+        }).trigger('change');
     }
 
     initGallery(container) {

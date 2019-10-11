@@ -19,8 +19,10 @@
         </div>
     </a>
 {% else %}
-    <p>Aucun événement disponible. Vous avez une idée à proposer ? </p>
-    <a href="{{ path('app_event_new') }}" class="btn btn-outline-primary">Créer un événement</a>
+    <div class="scroll-item p-3">
+        <p>Aucun événement disponible. Vous avez une idée à proposer ? </p>
+        <a href="{{ path('app_event_new') }}" class="btn btn-outline-primary">Créer un événement</a>
+    </div>
 {% endfor %}
 {% if hasNextLink %}
     <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}

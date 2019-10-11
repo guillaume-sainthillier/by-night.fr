@@ -44,10 +44,4 @@ $(document).ready(function () {
             $(form).submit();
         }).on('keyup input', updateBtn);
     });
-
-    $("select.shorcuts_date").unbind("change").change(function () {
-        var selected = $(this).find("option:selected");
-        $("#city_autocomplete_du").val(selected.data("date-debut") || "");
-        $("#city_autocomplete_au").val(selected.data("date-fin") || "");
-    });
 });

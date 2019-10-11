@@ -23,7 +23,7 @@
     {% elseif type == 'spectacle' %}Spectacles
     {% elseif type == 'etudiant' %}Soirées étudiantes
     {% else %}Événements{% endif %}
-    {% if placeName is null %} {{ location.atValue }} {{- location.name -}}{% endif %}
+    {% if placeName is null %} {{ location.atName }}{% endif %}
 {%- endblock -%}
 
 {% block breadcrumb %}
@@ -92,7 +92,7 @@
         {% if events|length == 0 %}
             <div class="alert alert-info">
                 <i class="fa fa-info-circle"></i>
-                Aucun événement trouvé
+                Désolé, il n'y a aucun résultat votre recherche.
             </div>
         {% else %}
             <h3 class="info">

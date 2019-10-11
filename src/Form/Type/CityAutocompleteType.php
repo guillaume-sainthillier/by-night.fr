@@ -44,8 +44,8 @@ class CityAutocompleteType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
-        return 'app_city_picker';
+        return '';
     }
 }

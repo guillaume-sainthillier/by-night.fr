@@ -14,9 +14,12 @@
             <div class="card no-margin-form search_container">
                 <div class="card-body">
                     {{ form_start(autocomplete_form, { 'attr': {'class': 'form-city-picker m-0'} }) }}
+                    {{ form_errors(autocomplete_form) }}
+                    {{ form_errors(autocomplete_form.du) }}
+                    {{ form_errors(autocomplete_form.au) }}
                     <div class="form-group">
-                        <label class="bmd-label-floating">Je veux sortir</label>
-                        <select name="shortcut" class="form-control shorcuts_date">
+                        <label class="bmd-label-floating" for="shortcut">Je veux sortir</label>
+                        <select id="shortcut" class="form-control shorcuts_date">
                             <option value="">N'importe quand</option>
                             <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">
                                 Aujourd'hui
