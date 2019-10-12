@@ -8,40 +8,15 @@
     <div class="card-body">
         <div class="row main_criteres">
             <div class="col-md-6">
-                <div class="form-group">
-                    <label for="shorcuts_date">Quand ?</label>
-                    <select name="shortcut" id="shorcuts_date" class="form-control shorcuts_date">
-                        <option data-date-debut="{{ "now"|date('d/m/Y') }}"
-                                value="today" {{ app.request.get('shortcut') == 'today' ? 'selected': '' }}>
-                            Aujourd'hui
-                        </option>
-                        <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}"
-                                value="tomorrow" {{ app.request.get('shortcut') == 'tomorrow' ? 'selected': '' }}>
-                            Demain
-                        </option>
-                        <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
-                                data-date-fin="{{ "sunday this week"|date('d/m/Y') }}"
-                                value="weekend" {{ app.request.get('shortcut') == 'weekend' ? 'selected': '' }}>
-                            Ce Week-End
-                        </option>
-                        <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
-                                data-date-fin="{{ "sunday this week"|date('d/m/Y') }}"
-                                value="week" {{ app.request.get('shortcut') == 'week' ? 'selected': '' }}>
-                            Cette semaine
-                        </option>
-                        <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
-                                data-date-fin="{{ "last day of this month"|date('d/m/Y') }}"
-                                value="month" {{ app.request.get('shortcut') == 'month' ? 'selected': '' }}>
-                            Ce mois
-                        </option>
-                    </select>
-                </div>
+                {{ form_row(form.from) }}
+                {{ form_row(form.to) }}
+                {{ form_row(form.shortcut, {'label': 'Quand ?', 'label_attr': {'class': 'bmd-label-floating'}}) }}
             </div>
             <div class="col-md-6">
                 {{ form_row(form.type_manifestation) }}
             </div>
         </div>
-        {% if not isValid or search.au or search.term or search.range != 25 %}
+        {% if search.term or search.range != 25 %}
             {% set options = {hiddenClass: '', iconClass: 'fa-chevron-up'} %}
         {% else %}
             {% set options = {hiddenClass: 'hidden cache', iconClass: 'fa-chevron-down'} %}
@@ -54,14 +29,6 @@
             </button>
         </div>
         <div class="{{ options.hiddenClass }} criteres">
-            <div class="row">
-                <div class="col-6">
-                    {{ form_row(form.du) }}
-                </div>
-                <div class="col-6">
-                    {{ form_row(form.au) }}
-                </div>
-            </div>
             <div class="row">
                 <div class="col-md-9">
                     {{ form_row(form.term) }}

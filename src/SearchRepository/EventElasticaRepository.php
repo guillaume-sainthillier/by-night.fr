@@ -49,10 +49,10 @@ class EventElasticaRepository extends Repository
             $mainQuery->addMust($filterBool);
         }
 
-        if ($search->getDu()) {
-            if (!$search->getAu()) {
+        if ($search->getFrom()) {
+            if (!$search->getTo()) {
                 $mainQuery->addMust(new Range('date_fin', [
-                    'gte' => $search->getDu()->format('Y-m-d'),
+                    'gte' => $search->getFrom()->format('Y-m-d'),
                 ]));
             } else {
                 $filterDate = new BoolQuery();
@@ -67,31 +67,31 @@ class EventElasticaRepository extends Repository
                 //Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
                 $cas1 = new BoolQuery();
                 $cas1->addMust(new Range('date_debut', [
-                        'lte' => $search->getDu()->format('Y-m-d'),
+                        'lte' => $search->getFrom()->format('Y-m-d'),
                     ])
                 )->addMust(new Range('date_fin', [
-                    'gte' => $search->getAu()->format('Y-m-d'),
+                    'gte' => $search->getTo()->format('Y-m-d'),
                 ]));
 
                 //Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
                 $cas2 = new BoolQuery();
                 $cas2->addMust(new Range('date_debut', [
-                        'gte' => $search->getDu()->format('Y-m-d'),
+                        'gte' => $search->getFrom()->format('Y-m-d'),
                     ])
                 )->addMust(new Range('date_fin', [
-                    'lte' => $search->getAu()->format('Y-m-d'),
+                    'lte' => $search->getTo()->format('Y-m-d'),
                 ]));
 
                 //Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
                 $cas3 = new Range('date_debut', [
-                    'gte' => $search->getDu()->format('Y-m-d'),
-                    'lte' => $search->getAu()->format('Y-m-d'),
+                    'gte' => $search->getFrom()->format('Y-m-d'),
+                    'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
 
                 //Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
                 $cas4 = new Range('date_fin', [
-                    'gte' => $search->getDu()->format('Y-m-d'),
-                    'lte' => $search->getAu()->format('Y-m-d'),
+                    'gte' => $search->getFrom()->format('Y-m-d'),
+                    'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
 
                 $filterDate

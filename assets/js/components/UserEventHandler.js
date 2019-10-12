@@ -13,20 +13,6 @@ export default class UserEventHandler {
             $(".form-delete form").submit(function () {
                 return confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?");
             });
-
-            var dateFrom = $("#event_dateDebut");
-            var dateTo = $("#event_dateFin");
-
-            dateTo.datepicker('setStartDate', dateFrom.datepicker('getDate'));
-            dateFrom.datepicker('setEndDate', dateTo.datepicker('getDate'));
-
-            dateFrom.on('changeDate', function (e) {
-                dateTo.datepicker('setStartDate', e.date);
-            });
-
-            dateTo.on('changeDate', function (e) {
-                dateFrom.datepicker('setEndDate', e.date);
-            });
         });
     }
 

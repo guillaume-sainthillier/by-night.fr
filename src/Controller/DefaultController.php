@@ -23,9 +23,11 @@ class DefaultController extends AbstractController
      */
     public function indexAction(Request $request, CityManager $cityManager)
     {
-        $datas = [];
+        $datas = [
+            'from' => new \DateTime()
+        ];
         if ($city = $cityManager->getCity()) {
-            $datas = [
+            $datas += [
                 'name' => $city->getFullName(),
                 'city' => $city->getSlug(),
             ];
@@ -38,9 +40,19 @@ class DefaultController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $datas = $form->getData();
             $city = $datas['city'];
-            return $this->redirectToRoute('app_agenda_agenda', [
-                'location' => $city
-            ] + $datas);
+            $params = [];
+
+            if (!empty($datas['from'])) {
+                $params['from'] = $datas['from']->format('Y-m-d');
+            }
+
+            if (!empty($datas['to'])) {
+                $params['to'] = $datas['to']->format('Y-m-d');
+            }
+
+            return $this->redirectToRoute('app_agenda_agenda', $params + [
+                    'location' => $city
+                ]);
         }
 
         return $this->render('Default/index.html.twig', [

@@ -15,32 +15,9 @@
                 <div class="card-body">
                     {{ form_start(autocomplete_form, { 'attr': {'class': 'form-city-picker m-0'} }) }}
                     {{ form_errors(autocomplete_form) }}
-                    {{ form_errors(autocomplete_form.du) }}
-                    {{ form_errors(autocomplete_form.au) }}
-                    <div class="form-group">
-                        <label class="bmd-label-floating" for="shortcut">Je veux sortir</label>
-                        <select id="shortcut" class="form-control shorcuts_date">
-                            <option value="">N'importe quand</option>
-                            <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">
-                                Aujourd'hui
-                            </option>
-                            <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow">
-                                Demain
-                            </option>
-                            <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
-                                    data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">
-                                Ce Week End
-                            </option>
-                            <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
-                                    data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">
-                                Cette semaine
-                            </option>
-                            <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
-                                    data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">
-                                Ce mois
-                            </option>
-                        </select>
-                    </div>
+                    {{ form_row(autocomplete_form.from) }}
+                    {{ form_row(autocomplete_form.to) }}
+                    {{ form_row(autocomplete_form.shortcut, {'label': 'Je veux sortir', 'label_attr': {'class': 'bmd-label-floating'}, 'attr': {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}}) }}
                     {{ form_row(autocomplete_form.name, {'label_attr': {'class': 'bmd-label-floating'}}) }}
                     <div class="text-center">
                         <button class="btn btn-primary btn-raised choose-city-action" type="submit" disabled>

@@ -13,13 +13,13 @@ class SearchEvent
      * @Assert\NotBlank
      * @Assert\Date
      */
-    protected $du;
+    protected $from;
 
     /**
      * @var DateTime|null
      * @Assert\Date
      */
-    protected $au;
+    protected $to;
 
     /**
      * @var int
@@ -55,9 +55,8 @@ class SearchEvent
 
     public function __construct()
     {
-        $this->page = 1;
         $this->range = 25;
-        $this->du = new DateTime();
+        $this->from = new DateTime();
         $this->lieux = [];
         $this->type_manifestation = [];
     }
@@ -67,27 +66,39 @@ class SearchEvent
         return \array_unique(\array_filter(\explode(' ', $this->getTerm())));
     }
 
-    public function getDu(): ?DateTime
+    /**
+     * @return DateTime|null
+     */
+    public function getFrom(): ?DateTime
     {
-        return $this->du;
+        return $this->from;
     }
 
-    public function setDu(?DateTime $du): SearchEvent
+    /**
+     * @param DateTime|null $from
+     * @return SearchEvent
+     */
+    public function setFrom(?DateTime $from): SearchEvent
     {
-        $this->du = $du;
-
+        $this->from = $from;
         return $this;
     }
 
-    public function getAu(): ?DateTime
+    /**
+     * @return DateTime|null
+     */
+    public function getTo(): ?DateTime
     {
-        return $this->au;
+        return $this->to;
     }
 
-    public function setAu(?DateTime $au): SearchEvent
+    /**
+     * @param DateTime|null $to
+     * @return SearchEvent
+     */
+    public function setTo(?DateTime $to): SearchEvent
     {
-        $this->au = $au;
-
+        $this->to = $to;
         return $this;
     }
 

@@ -71,7 +71,6 @@ Encore
         'window.jQuery': 'jquery',
         'window.$': 'jquery',
         Popper: ['popper.js', 'default'],
-        IScroll: ['iscroll'],
     })
 
 // uncomment if you use API Platform Admin (composer req api-admin)

@@ -1,13 +1,8 @@
-.datepicker table tr td {
-  &.active,
-  &.active:hover,
-  &.active.disabled,
-  &.active.disabled:hover {
-	background-color: $primary !important;
-  }
+.daterangepicker td.active, .daterangepicker td.active:hover {
+  background-color: $primary!important;
 }
 
-.datepicker.dropdown-menu {
-  opacity: 1;
-  transform: scale(1);
+.daterangepicker .ranges li.active {
+  background-color: lighten($primary, 10)!important;
 }
+

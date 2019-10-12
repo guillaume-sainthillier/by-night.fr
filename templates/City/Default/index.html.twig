@@ -29,46 +29,19 @@
             <h1>Votre sortie {{ location.atName }}</h1>
             <div class="no-margin-form card search_container">
                 <div class="card-body">
-                    <form name="app_search_event" class="m-0" role="search" action="{{ path('app_agenda_agenda', {'location': location.slug}) }}" method="get">
-                        <input type="hidden" id="du" name="du" value="" />
-                        <input type="hidden" id="au" name="au" value="" />
-                        <div class="form-group">
-                            <label class="bmd-label-floating">Je veux sortir {{ location.atName }}</label>
-                            <select name="shortcut" class="form-control shorcuts_date">
-                                <option value="">N'importe quand</option>
-                                <option data-date-debut="{{ "now"|date('d/m/Y') }}" value="today">
-                                    Aujourd'hui
-                                </option>
-                                <option data-date-debut="{{ "tomorrow"|date('d/m/Y') }}" value="tomorrow">
-                                    Demain
-                                </option>
-                                <option data-date-debut="{{ "friday this week"|date('d/m/Y') }}"
-                                        data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="weekend">
-                                    Ce Week End
-                                </option>
-                                <option data-date-debut="{{ "monday this week"|date('d/m/Y') }}"
-                                        data-date-fin="{{ "sunday this week"|date('d/m/Y') }}" value="week">
-                                    Cette semaine
-                                </option>
-                                <option data-date-debut="{{ "first day of this month"|date('d/m/Y') }}"
-                                        data-date-fin="{{ "last day of this month"|date('d/m/Y') }}" value="month">
-                                    Ce mois
-                                </option>
-                            </select>
-                        </div>
+                    {{ form_start(form, {'action': path('app_agenda_agenda', {'location': location.slug})}) }}
+                        {{ form_row(form.from) }}
+                        {{ form_row(form.to) }}
+                        {{ form_row(form.shortcut, {'label': 'Je veux sortir ' ~ location.atName}) }}
+                        {{ form_row(form.term, {'label': 'Et je cherche...', 'attr': {'placeholder': 'Concert, bar, spectacle, enfant, soirée, ...'}}) }}
 
-                        <div class="form-group">
-                            <label class="bmd-label-floating" for="term">Et je cherche...</label>
-                            <input type="text" id="term" name="term" value="" class="form-control">
-                            <span class="bmd-help">Concert, bar, spectacle, enfant, soirée, ...</span>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-raised btn-primary search">
-                                C'est parti
-                            </button>
-                        </div>
-                    </form>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-raised btn-primary search">
+                                    C'est parti
+                                </button>
+                            </div>
+                        {{ form_rest(form)}}
+                    {{ form_end(form)}}
                 </div>
             </div>
         </div>

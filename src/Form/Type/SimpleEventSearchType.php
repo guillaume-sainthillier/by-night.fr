@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class CityAutocompleteType extends AbstractType
+class SimpleEventSearchType extends AbstractType
 {
     /** @var DateRangeBuilder */
     private $dateRangeBuilder;
@@ -32,30 +32,15 @@ class CityAutocompleteType extends AbstractType
     {
         $this->dateRangeBuilder->addShortcutDateFields($builder, 'from', 'to');
         $builder
-            ->add('name', TextType::class, [
-                'required' => true,
-                'label' => 'À',
-                'attr' => [
-                    'class' => 'city-picker',
-                ],
-            ])
-            ->add('city', HiddenType::class, [
-                'label' => false,
-                'attr' => [
-                    'class' => 'city-value',
-                ],
-                'required' => true,
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez choisir une ville pour continuer',
-                    ]),
-                ],
+            ->add('term', TextType::class, [
+                'required' => false
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'method' => 'get',
             'csrf_protection' => false,
         ]);
     }

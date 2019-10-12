@@ -4,6 +4,7 @@ namespace App\Form\Type;
 
 use App\Entity\Country;
 use App\Entity\Event;
+use App\Form\Builder\DateRangeBuilder;
 use App\Handler\DoctrineEventHandler;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -18,6 +19,8 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
@@ -28,13 +31,24 @@ class EventType extends AbstractType
      */
     private $doctrineEventHandler;
 
-    public function __construct(DoctrineEventHandler $doctrineEventHandler)
+    /** @var DateRangeBuilder */
+    private $dateRangeBuilder;
+
+    public function __construct(DoctrineEventHandler $doctrineEventHandler, DateRangeBuilder $dateRangeBuilder)
     {
         $this->doctrineEventHandler = $doctrineEventHandler;
+        $this->dateRangeBuilder = $dateRangeBuilder;
+    }
+
+    public function finishView(FormView $view, FormInterface $form, array $options)
+    {
+        parent::finishView($view, $form, $options);
+        $this->dateRangeBuilder->finishView($view, $form, $options);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->dateRangeBuilder->addDateFields($builder, 'dateDebut', 'dateFin');
         $builder
             ->add('nom', TextType::class, [
                 'label' => 'Titre',
@@ -53,24 +67,6 @@ class EventType extends AbstractType
                 'label' => 'Affiche / Flyer',
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],
-            ])
-            ->add('dateDebut', DateType::class, [
-                'label' => 'A partir du ',
-                'widget' => 'single_text',
-                'required' => true,
-                'format' => 'dd/MM/yyyy',
-                'attr' => [
-                    'placeholder' => 'Le / Du...',
-                ],
-            ])
-            ->add('dateFin', DateType::class, [
-                'label' => "Jusqu'au",
-                'widget' => 'single_text',
-                'required' => false,
-                'format' => 'dd/MM/yyyy',
-                'attr' => [
-                    'placeholder' => 'Au...',
-                ],
             ])
             ->add('horaires', TextType::class, [
                 'label' => 'Horaires',
