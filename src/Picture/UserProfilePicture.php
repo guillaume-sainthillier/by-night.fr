@@ -30,14 +30,14 @@ class UserProfilePicture
         if ($user->getPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($user, 'imageFile'),
-                'cdn'
+                'aws'
             );
         }
 
         if ($user->getSystemPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($user, 'imageSystemFile'),
-                'cdn'
+                'aws'
             );
         }
 

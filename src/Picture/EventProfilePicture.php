@@ -32,14 +32,14 @@ class EventProfilePicture
         if ($event->getPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($event, 'file'),
-                'cdn'
+                'aws'
             );
         }
 
         if ($event->getSystemPath()) {
             return $this->packages->getUrl(
                 $this->helper->asset($event, 'systemFile'),
-                'cdn'
+                'aws'
             );
         }
 

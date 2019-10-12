@@ -25,7 +25,7 @@ class ThumbController extends Controller
         $parameters = $request->query->all();
 
         if (empty($parameters['h']) && empty($parameters['w']) && empty($parameters['p'])) {
-            return new RedirectResponse($packages->getUrl($path, 'cdn'), Response::HTTP_MOVED_PERMANENTLY);
+            return new RedirectResponse($packages->getUrl($path, 'aws'), Response::HTTP_MOVED_PERMANENTLY);
         }
 
         if (count($parameters) > 0) {

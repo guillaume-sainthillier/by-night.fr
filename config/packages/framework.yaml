@@ -17,7 +17,7 @@ framework:
         base_urls: '%env(APP_ASSET_URL)%'
         packages:
             local:
-            cdn:
+            aws:
                 base_urls: "%env(AWS_S3_URL)%"
 
     esi: true
