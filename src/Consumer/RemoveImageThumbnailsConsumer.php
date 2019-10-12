@@ -30,7 +30,9 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
         $result = [];
 
         /** @var AMQPMessage $message */
-        foreach ($messages as $i => $path) {
+        foreach ($messages as $i => $message) {
+            $path = $message->getBody();
+
             try {
                 $this->deleteThumbnails($path);
                 $result[(int)$message->delivery_info['delivery_tag']] = ConsumerInterface::MSG_ACK;
