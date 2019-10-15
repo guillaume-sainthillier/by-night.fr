@@ -61,7 +61,7 @@ Encore
         corejs: 3
     })
     .enableSassLoader()
-    .enableIntegrityHashes(Encore.isProduction())
+    //.enableIntegrityHashes(Encore.isProduction())
 
     // uncomment if you're having problems with a jQuery plugin
     .autoProvidejQuery()
