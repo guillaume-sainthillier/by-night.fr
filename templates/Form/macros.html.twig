@@ -61,5 +61,5 @@
          data-src="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1}) }}"
          data-srcset="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1, 'dpr': 2}) }} 2x"
          alt="{{ event_seo.getEventShortTitle(event) }}"
-        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %}
+        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
