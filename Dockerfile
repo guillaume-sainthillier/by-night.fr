@@ -4,13 +4,13 @@ FROM node:8-alpine as builder
 ENV NODE_ENV=production
 WORKDIR /app
 
-ADD package.json yarn.lock Gruntfile.js ./
+ADD package.json webpack.config.js yarn.lock ./
 ADD assets ./assets
 
-RUN mkdir -p public/prod config/packages/prod && \
-    npm install -g yarn grunt-cli && \
+RUN mkdir -p public && \
+    npm install -g yarn && \
     NODE_ENV=development yarn install && \
-    grunt
+    yarn run build
 
 FROM php:7.3-fpm-stretch
 
@@ -58,9 +58,8 @@ COPY docker/prod/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/prod/supervisord-worker.conf /etc/supervisor/conf.d/supervisord-worker.conf
 
 COPY . /app
-COPY --from=builder /app/public/prod /assets
-COPY --from=builder /app/public/prod /app/public/prod
-COPY --from=builder /app/config/packages/prod/mapping_assets.yaml /app/config/packages/prod/mapping_assets.yaml
+COPY --from=builder /app/public/build /app/public/build
+COPY --from=builder /app/public/build /assets
 COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
