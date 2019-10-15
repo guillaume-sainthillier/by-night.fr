@@ -43,6 +43,10 @@ class EventProfilePicture
             );
         }
 
+        if ($event->getUrl()) {
+            return $event->getUrl();
+        }
+
         return $this->packages->getUrl(
             AssetExtension::ASSET_PREFIX . '/images/empty_event.png',
         );
@@ -56,10 +60,6 @@ class EventProfilePicture
 
         if ($event->getSystemPath()) {
             return $this->assetExtension->thumb($this->helper->asset($event, 'systemFile'), $params);
-        }
-
-        if ($event->getUrl()) {
-            return $event->getUrl();
         }
 
         return $this->assetExtension->thumbAsset(
