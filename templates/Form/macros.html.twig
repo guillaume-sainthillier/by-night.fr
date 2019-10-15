@@ -17,9 +17,9 @@
     <img class="img-fluid {{ attrs.class|default('') }}"
          width="{{ width }}"
          height="{{ height }}"
-         src="{{ thumbAsset(path, {'h': height, 'w': width}) }}"
-         srcset="{{ thumbAsset(path, {'h': height, 'w': width, 'dpr': 2}) }} 2x"
-    />
+         src="{{ thumbAsset(asset(path, 'local'), {'h': height, 'w': width}) }}"
+         srcset="{{ thumbAsset(asset(path, 'local'), {'h': height, 'w': width, 'dpr': 2}) }} 2x"
+        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
 
 {% macro userThumb(user, width, height, attrs) %}
@@ -29,7 +29,7 @@
          src="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop'}) }}"
          srcset="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'dpr': 2, 'fit': 'crop'}) }} 2x"
          alt="{{ user.username }}"
-    />
+        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
 
 {% macro userLazyThumb(user, width, height, attrs) %}
@@ -40,7 +40,7 @@
          data-src="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop'}) }}"
          data-srcset="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop', 'dpr': 2}) }} 2x"
          alt="{{ user.username }}"
-    />
+        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
 
 {% macro eventThumb(event, width, height, attrs) %}
@@ -50,7 +50,7 @@
          src="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1}) }}"
          srcset="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1, 'dpr': 2}) }} 2x"
          alt="{{ event_seo.getEventShortTitle(event) }}"
-    />
+        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
 
 {% macro eventLazyThumb(event, width, height, attrs) %}
@@ -61,5 +61,5 @@
          data-src="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1}) }}"
          data-srcset="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1, 'dpr': 2}) }} 2x"
          alt="{{ event_seo.getEventShortTitle(event) }}"
-    />
+        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %}
 {% endmacro %}

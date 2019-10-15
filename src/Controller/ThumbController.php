@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use League\Glide\Filesystem\FileNotFoundException;
 use League\Glide\Responses\SymfonyResponseFactory;
 use League\Glide\Server;
 use League\Glide\Signatures\SignatureException;
@@ -34,15 +35,15 @@ class ThumbController extends Controller
                 // added to generate URL without parameters that not produce 404, useful especially for sitemap
                 SignatureFactory::create($secret)->validateRequest($path, $parameters);
             } catch (SignatureException $e) {
-                throw $this->createNotFoundException('', $e);
+                throw $this->createNotFoundException($e->getMessage(), $e);
             }
         }
 
         $glide->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $glide->getImageResponse($path, $parameters);
-        } catch (\InvalidArgumentException $e) {
-            throw $this->createNotFoundException('', $e);
+        } catch (\InvalidArgumentException|FileNotFoundException $e) {
+            throw $this->createNotFoundException($e->getMessage(), $e);
         }
 
         return $response;
@@ -66,15 +67,15 @@ class ThumbController extends Controller
                 // added to generate URL without parameters that not produce 404, useful especially for sitemap
                 SignatureFactory::create($secret)->validateRequest($path, $parameters);
             } catch (SignatureException $e) {
-                throw $this->createNotFoundException('', $e);
+                throw $this->createNotFoundException($e->getMessage(), $e);
             }
         }
 
         $assetThumb->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $assetThumb->getImageResponse($path, $parameters);
-        } catch (\InvalidArgumentException $e) {
-            throw $this->createNotFoundException('', $e);
+        } catch (\InvalidArgumentException|FileNotFoundException $e) {
+            throw $this->createNotFoundException($e->getMessage(), $e);
         }
 
         return $response;
