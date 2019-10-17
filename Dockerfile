@@ -69,6 +69,6 @@ RUN mkdir -p /run/php var/cache var/log var/sessions var/storage/temp var/datas 
     APP_ENV=prod bin/console cache:clear --no-warmup && \
     APP_ENV=prod bin/console cache:warmup && \
     echo "<?php return [];" > .env.local.php && \
-    chown -R www-data:www-data var public/build public/bundles /assets public/uploads && \
+    chown -R www-data:www-data var public/build public/bundles /assets && \
     # Reduce container size
     rm -rf .git docker assets /root/.composer /root/.npm /tmp/*
