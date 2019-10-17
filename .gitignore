@@ -8,13 +8,6 @@
 
 #Public datas
 /public/sitemap/*
-/public/bundles/*
-/public/uploads/*
-/public/build/*
-/public/media/*
-
-#Assets
-/config/packages/prod/mapping_assets.yaml
 
 #NodeJS
 node_modules/
