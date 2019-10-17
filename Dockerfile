@@ -64,11 +64,11 @@ COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-RUN mkdir -p /run/php var/cache var/log var/sessions var/storage var/datas public/uploads public/build && \
+RUN mkdir -p /run/php var/cache var/log var/sessions var/storage/temp var/datas public/build && \
     APP_ENV=prod composer install --optimize-autoloader --no-interaction --no-ansi --no-dev && \
     APP_ENV=prod bin/console cache:clear --no-warmup && \
     APP_ENV=prod bin/console cache:warmup && \
     echo "<?php return [];" > .env.local.php && \
-    chown -R www-data:www-data var public/build /assets public/uploads && \
+    chown -R www-data:www-data var public/build public/bundles /assets public/uploads && \
     # Reduce container size
     rm -rf .git docker assets /root/.composer /root/.npm /tmp/*

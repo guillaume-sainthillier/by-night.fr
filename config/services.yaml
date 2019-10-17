@@ -25,7 +25,7 @@ services:
             $memoryCache: "@memory_cache"
             $secret: "%kernel.secret%"
             $webDir: "%kernel.project_dir%/public"
-            $tempPath: "%kernel.project_dir%/public/uploads/temp"
+            $tempPath: "%kernel.project_dir%/var/storage/temp"
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
             $enableFeeds: "%env(APP_ENABLE_TWITTER_FEED)%"
