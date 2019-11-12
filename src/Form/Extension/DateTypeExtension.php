@@ -15,7 +15,6 @@ class DateTypeExtension extends AbstractTypeExtension
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        //\Locale::setDefault('en_US');
         $resolver->setDefaults([
             'attr' => ['class' => 'widget_datepicker', 'autocomplete' => 'off'],
             'widget' => 'single_text',
