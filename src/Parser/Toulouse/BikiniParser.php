@@ -16,17 +16,9 @@ class BikiniParser extends AbstractParser
 {
     private const EVENTS_URL = 'https://lebikini.com/events.json';
 
-    /** @var array */
-    private $cache;
-
-    /** @var Crawler */
-    private $parser;
-
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
     {
         parent::__construct($logger, $eventProducer);
-        $this->cache = [];
-        $this->parser = new Crawler;
     }
 
     public function parse(bool $incremental): void

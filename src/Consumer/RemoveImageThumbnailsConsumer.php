@@ -14,15 +14,11 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
     /** @var Server */
     private $glide;
 
-    /** @var PurgeCdnCacheUrlProducer */
-    private $purgeCdnCacheUrlProducer;
-
     public function __construct(LoggerInterface $logger, Server $glide, PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer)
     {
         parent::__construct($logger);
 
         $this->glide = $glide;
-        $this->purgeCdnCacheUrlProducer = $purgeCdnCacheUrlProducer;
     }
 
     public function batchExecute(array $messages)
