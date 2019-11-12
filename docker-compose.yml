@@ -11,9 +11,7 @@ services:
             - rabbitmq
             - redis
         volumes:
-            - .:/app:cached
-            - var:/app/var
-            - build:/app/public/build
+            - nfsmount:/app
         ports:
             - 8000:80
 
@@ -23,7 +21,6 @@ services:
             - 8002:80
         volumes:
             - ./public:/assets:ro
-            - build:/assets/build:ro
             - ./docker/dev/assets/nginx.conf:/etc/nginx/nginx.conf:ro
         depends_on:
             - app
@@ -80,6 +77,10 @@ services:
             - elasticsearch
 
 volumes:
-    var:
-    build:
+    nfsmount:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+            device: ":/System/Volumes/Data/${PWD}"
     esdata:

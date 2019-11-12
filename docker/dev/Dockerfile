@@ -35,6 +35,11 @@ RUN apt-get update -q && \
     # Reduce layer size
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN curl -L https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) --output /usr/local/bin/gosu && \
+    chmod +x /usr/local/bin/gosu && \
+    addgroup bynight && \
+    adduser --home=/home/bynight --shell=/bin/bash --ingroup=bynight --disabled-password --quiet bynight
+
 # PHP Extensions
 RUN docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pdo pdo_mysql soap sockets zip && \
     pecl install apcu redis imagick-3.4.4 && \
@@ -55,7 +60,6 @@ COPY nginx.conf /etc/nginx/
 COPY php.ini /usr/local/etc/php/php.ini
 COPY pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY supervisord-worker.conf /etc/supervisor/conf.d/supervisord-worker.conf
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
