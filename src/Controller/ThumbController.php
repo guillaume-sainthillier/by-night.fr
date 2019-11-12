@@ -21,7 +21,7 @@ class ThumbController extends Controller
      * @Route("/thumb/{path}", requirements={"path"=".+"}, name="thumb_url", methods={"GET"})
      * @Cache(maxage=31536000, smaxage=31536000)
      */
-    public function event(Request $request, Server $glide, string $path, string $secret, Packages $packages)
+    public function thumb(Request $request, Server $glide, string $path, string $secret, Packages $packages)
     {
         $parameters = $request->query->all();
 
@@ -53,7 +53,7 @@ class ThumbController extends Controller
      * @Route("/thumb-asset/{path}", requirements={"path"=".+"}, name="thumb_asset_url", methods={"GET"})
      * @Cache(maxage=31536000, smaxage=31536000)
      */
-    public function thumbAsset(Request $request, Server $assetThumb, string $path, string $secret, Packages $packages)
+    public function thumbAsset(Request $request, Server $assetThumb, Packages $packages, string $path, string $secret)
     {
         $parameters = $request->query->all();
 
@@ -70,7 +70,7 @@ class ThumbController extends Controller
                 throw $this->createNotFoundException($e->getMessage(), $e);
             }
         }
-
+        
         $assetThumb->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $assetThumb->getImageResponse($path, $parameters);
