@@ -73,7 +73,7 @@ class EventProfilePicture
         }
 
         return $this->packages->getUrl(
-            AssetExtension::ASSET_PREFIX . '/images/empty_event.png',
+            AssetExtension::ASSET_PREFIX . '/images/empty_event.png'
         );
     }
 
