@@ -13,11 +13,6 @@ class AssetExtension extends Extension
 {
     const ASSET_PREFIX = 'build';
 
-    /**
-     * @var Packages
-     */
-    private $packages;
-
     /** @var RouterInterface */
     private $router;
 
@@ -28,7 +23,6 @@ class AssetExtension extends Extension
     {
         $this->router = $router;
         $this->secret = $secret;
-        $this->packages = $packages;
     }
 
     public function getFunctions()
