@@ -107,7 +107,7 @@ class DefaultController extends BaseController
 
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Event::class);
-        $str_date = $repo->getLastDateStatsUser($user);
+        $str_date = $repo->getLastUpdatedStatsUser($user);
 
         $response = $this->cacheVerif($str_date);
         if (null !== $response) {
@@ -119,7 +119,6 @@ class DefaultController extends BaseController
             }
         }
 
-        $datas = [];
         switch ($type) {
             case 'semaine':
                 $datas = $this->getDataOfWeek($repo, $user);

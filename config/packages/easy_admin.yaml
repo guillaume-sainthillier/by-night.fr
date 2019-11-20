@@ -39,7 +39,7 @@ easy_admin:
                     - { property: 'dateFin' }
                     - { property: 'horaires' }
                     - { property: 'descriptif' }
-                    - { property: 'fbDateModification' }
+                    - { property: 'externalUpdatedAt' }
                     - { property: 'modificationDerniereMinute' }
                     - { property: 'typeManifestation' }
                     - { property: 'categorieManifestation' }
@@ -125,7 +125,7 @@ easy_admin:
             list:
                 fields:
                     - { property: 'id' }
-                    - { property: 'lastDate' }
+                    - { property: 'updatedAt' }
                     - { property: 'event' }
                     - { property: 'user' }
                     - { property: 'participe' }
@@ -133,7 +133,7 @@ easy_admin:
             form:
                 fields:
                     - { property: 'id' }
-                    - { property: 'lastDate' }
+                    - { property: 'updatedAt' }
                     - { property: 'event', type: 'easyadmin_autocomplete' }
                     - { property: 'user', type: 'easyadmin_autocomplete' }
                     - { property: 'participe' }
@@ -143,7 +143,7 @@ easy_admin:
             list:
                 fields:
                     - { property: 'id' }
-                    - { property: 'dateCreation' }
+                    - { property: 'createdAt' }
                     - { property: 'event' }
                     - { property: 'user' }
                     - { property: 'isApprouve' }
@@ -152,8 +152,8 @@ easy_admin:
                     - { property: 'id' }
                     - { property: 'event', type: 'easyadmin_autocomplete' }
                     - { property: 'user', type: 'easyadmin_autocomplete' }
-                    - { property: 'dateCreation' }
-                    - { property: 'dateModification' }
+                    - { property: 'createdAt' }
+                    - { property: 'updatedAt' }
                     - { property: 'isApprouve' }
                     - { property: 'commentaire' }
         Exploration:

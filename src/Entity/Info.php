@@ -5,8 +5,6 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Info.
- *
  * @ORM\Table(name="Info", indexes={
  *     @ORM\Index(name="recherche_info_idx", columns={"facebook_id", "twitter_id", "google_id"})
  * })
@@ -17,13 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class Info
 {
-    /**
-     * @var int
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use EntityIdentityTrait;
 
     /**
      * @var bool
@@ -228,11 +220,6 @@ abstract class Info
     public function __toString()
     {
         return '#' . $this->id ?: '?';
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getHasSeeTuto(): ?bool

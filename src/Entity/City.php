@@ -66,4 +66,16 @@ class City extends AdminZone
     {
         return $this->parent;
     }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): AdminZone
+    {
+        $this->country = $country;
+
+        return $this;
+    }
 }

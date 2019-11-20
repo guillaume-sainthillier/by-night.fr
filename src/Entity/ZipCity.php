@@ -7,8 +7,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * ZipCity.
- *
  * @ORM\Table(name="zip_city", indexes={
  *     @ORM\Index(name="zip_city_postal_code_name_idx", columns={"country_id", "postal_code", "name"})
  * })
@@ -94,241 +92,91 @@ class ZipCity
     protected $parent;
 
     /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * @param int $id
-     *
-     * @return $this
+     * @return self
      */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Set postalCode.
-     *
-     * @param string $postalCode
-     *
-     * @return ZipCity
-     */
-    public function setPostalCode($postalCode)
+    public function getId(): ?int
     {
-        $this->postalCode = $postalCode;
-
-        return $this;
+        return $this->id;
     }
 
-    /**
-     * Get postalCode.
-     *
-     * @return string
-     */
-    public function getPostalCode()
+    public function getSlug(): ?string
     {
-        return $this->postalCode;
+        return $this->slug;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return ZipCity
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set latitude.
-     *
-     * @param float $latitude
-     *
-     * @return ZipCity
-     */
-    public function setLatitude($latitude)
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    /**
-     * Get latitude.
-     *
-     * @return float
-     */
-    public function getLatitude()
-    {
-        return $this->latitude;
-    }
-
-    /**
-     * Set longitude.
-     *
-     * @param float $longitude
-     *
-     * @return ZipCity
-     */
-    public function setLongitude($longitude)
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
-    /**
-     * Get longitude.
-     *
-     * @return float
-     */
-    public function getLongitude()
-    {
-        return $this->longitude;
-    }
-
-    /**
-     * Set admin1Code.
-     *
-     * @param string $admin1Code
-     *
-     * @return ZipCity
-     */
-    public function setAdmin1Code($admin1Code)
-    {
-        $this->admin1Code = $admin1Code;
-
-        return $this;
-    }
-
-    /**
-     * Get admin1Code.
-     *
-     * @return string
-     */
-    public function getAdmin1Code()
-    {
-        return $this->admin1Code;
-    }
-
-    /**
-     * Set admin2Code.
-     *
-     * @param string $admin2Code
-     *
-     * @return ZipCity
-     */
-    public function setAdmin2Code($admin2Code)
-    {
-        $this->admin2Code = $admin2Code;
-
-        return $this;
-    }
-
-    /**
-     * Get admin2Code.
-     *
-     * @return string
-     */
-    public function getAdmin2Code()
-    {
-        return $this->admin2Code;
-    }
-
-    /**
-     * Set country.
-     *
-     * @param Country $country
-     *
-     * @return ZipCity
-     */
-    public function setCountry(Country $country = null)
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    /**
-     * Get country.
-     *
-     * @return Country
-     */
-    public function getCountry()
-    {
-        return $this->country;
-    }
-
-    /**
-     * Set slug.
-     *
-     * @param string $slug
-     *
-     * @return ZipCity
-     */
-    public function setSlug($slug)
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
 
         return $this;
     }
 
-    /**
-     * Get slug.
-     *
-     * @return string
-     */
-    public function getSlug()
+    public function getPostalCode(): ?string
     {
-        return $this->slug;
+        return $this->postalCode;
     }
 
-    /**
-     * Set parent.
-     *
-     * @param City $parent
-     *
-     * @return ZipCity
-     */
-    public function setParent(City $parent = null)
+    public function setPostalCode(string $postalCode): self
     {
-        $this->parent = $parent;
+        $this->postalCode = $postalCode;
 
         return $this;
     }
 
-    /**
-     * Get parent.
-     *
-     * @return City
-     */
-    public function getParent()
+    public function getName(): ?string
     {
-        return $this->parent;
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(float $longitude): self
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getAdmin1Code(): ?string
+    {
+        return $this->admin1Code;
+    }
+
+    public function setAdmin1Code(string $admin1Code): self
+    {
+        $this->admin1Code = $admin1Code;
+
+        return $this;
     }
 
     public function getAdmin1Name(): ?string
@@ -336,9 +184,21 @@ class ZipCity
         return $this->admin1Name;
     }
 
-    public function setAdmin1Name(?string $admin1Name): ZipCity
+    public function setAdmin1Name(?string $admin1Name): self
     {
         $this->admin1Name = $admin1Name;
+
+        return $this;
+    }
+
+    public function getAdmin2Code(): ?string
+    {
+        return $this->admin2Code;
+    }
+
+    public function setAdmin2Code(string $admin2Code): self
+    {
+        $this->admin2Code = $admin2Code;
 
         return $this;
     }
@@ -348,9 +208,33 @@ class ZipCity
         return $this->admin2Name;
     }
 
-    public function setAdmin2Name(?string $admin2Name): ZipCity
+    public function setAdmin2Name(?string $admin2Name): self
     {
         $this->admin2Name = $admin2Name;
+
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getParent(): ?City
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?City $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }

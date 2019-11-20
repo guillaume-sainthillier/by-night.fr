@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,19 +11,13 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="Calendrier",
  *     uniqueConstraints={
  *         @ORM\UniqueConstraint(name="user_event_unique", columns={"user_id", "event_id"})
- *     })
- *     @ORM\HasLifecycleCallbacks
+ *     }
+ * )
  */
 class Calendrier
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use EntityIdentityTrait;
+    use EntityTimestampableTrait;
 
     /**
      * @var bool
@@ -53,161 +46,64 @@ class Calendrier
     protected $event;
 
     /**
-     * @var DateTime
-     *
-     * @ORM\Column(type="datetime")
-     */
-    protected $lastDate;
-
-    /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->lastDate = new DateTime();
         $this->participe = false;
         $this->interet = false;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function preUpload()
+    public function __toString()
     {
-        $this->lastDate = new DateTime();
+        return '#' . $this->id ?: '?';
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getParticipe(): ?bool
     {
-        return $this->id;
+        return $this->participe;
     }
 
-    /**
-     * Set participe.
-     *
-     * @param bool $participe
-     *
-     * @return Calendrier
-     */
-    public function setParticipe($participe)
+    public function setParticipe(bool $participe): self
     {
         $this->participe = $participe;
 
         return $this;
     }
 
-    /**
-     * Get participe.
-     *
-     * @return bool
-     */
-    public function getParticipe()
+    public function getInteret(): ?bool
     {
-        return $this->participe;
+        return $this->interet;
     }
 
-    /**
-     * Set interet.
-     *
-     * @param bool $interet
-     *
-     * @return Calendrier
-     */
-    public function setInteret($interet)
+    public function setInteret(bool $interet): self
     {
         $this->interet = $interet;
 
         return $this;
     }
 
-    /**
-     * Get interet.
-     *
-     * @return bool
-     */
-    public function getInteret()
+    public function getUser(): ?User
     {
-        return $this->interet;
+        return $this->user;
     }
 
-    /**
-     * Set user.
-     *
-     *
-     * @return Calendrier
-     */
-    public function setUser(User $user)
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    /**
-     * Get user.
-     *
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Set event.
-     *
-     *
-     * @return Calendrier
-     */
-    public function setEvent(Event $event)
-    {
-        $this->event = $event;
-
-        return $this;
-    }
-
-    /**
-     * Get event.
-     *
-     * @return Event
-     */
-    public function getEvent()
+    public function getEvent(): ?Event
     {
         return $this->event;
     }
 
-    /**
-     * Set lastDate.
-     *
-     * @param DateTime $lastDate
-     *
-     * @return Calendrier
-     */
-    public function setLastDate($lastDate)
+    public function setEvent(?Event $event): self
     {
-        $this->lastDate = $lastDate;
+        $this->event = $event;
 
         return $this;
-    }
-
-    /**
-     * Get lastDate.
-     *
-     * @return DateTime
-     */
-    public function getLastDate()
-    {
-        return $this->lastDate;
-    }
-
-    public function __toString()
-    {
-        return '#' . $this->id ?: '?';
     }
 }

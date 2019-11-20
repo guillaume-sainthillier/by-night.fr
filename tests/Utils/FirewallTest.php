@@ -33,7 +33,7 @@ class FirewallTest extends ContainerTestCase
 
         //L'événement ne doit pas être valide car il n'a pas changé
         $exploration = (new Exploration())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion(Firewall::VERSION);
-        $event = (new Event())->setFbDateModification($now);
+        $event = (new Event())->setExternalUpdatedAt($now);
         $this->firewall->filterEventExploration($exploration, $event);
         $this->assertEquals($exploration->getReject()->getReason(), $noNeedToUpdateReject->getReason());
 
@@ -41,13 +41,13 @@ class FirewallTest extends ContainerTestCase
         $exploration = (new Exploration())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion(Firewall::VERSION);
         $tomorrow = clone $now;
         $tomorrow->modify('+1 day');
-        $event = (new Event())->setFbDateModification($tomorrow);
+        $event = (new Event())->setExternalUpdatedAt($tomorrow);
         $this->firewall->filterEventExploration($exploration, $event);
         $this->assertEquals($exploration->getReject()->getReason(), $validReject->getReason());
 
         //L'événement ne doit être valide car la version du firewall a changé mais qu'il n'a pas changé
         $exploration = (new Exploration())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion('old version');
-        $event = (new Event())->setFbDateModification($now);
+        $event = (new Event())->setExternalUpdatedAt($now);
         $this->firewall->filterEventExploration($exploration, $event);
         $this->assertEquals($exploration->getReject()->getReason(), $noNeedToUpdateReject->getReason());
         $this->assertEquals($exploration->getFirewallVersion(), Firewall::VERSION);

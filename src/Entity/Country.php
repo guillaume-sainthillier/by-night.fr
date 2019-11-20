@@ -19,7 +19,6 @@ class Country
 {
     /**
      * @var string
-     *
      * @ORM\Column(type="string", length=2)
      * @ORM\Id
      * @Serializer\Groups({"list_event", "list_user", "list_city"})
@@ -72,122 +71,67 @@ class Country
 
     /**
      * Set id.
-     *
      * @param string $id
-     *
      * @return Country
      */
-    public function setId($id)
+    public function setId(string $id)
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get id.
-     *
-     * @return string
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * Set locale.
-     *
-     * @param string $locale
-     *
-     * @return Country
-     */
-    public function setLocale($locale)
+    public function getSlug(): ?string
     {
-        $this->locale = $locale;
-
-        return $this;
+        return $this->slug;
     }
 
-    /**
-     * Get locale.
-     *
-     * @return string
-     */
-    public function getLocale()
-    {
-        return $this->locale;
-    }
-
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Country
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set capital.
-     *
-     * @param string $capital
-     *
-     * @return Country
-     */
-    public function setCapital($capital)
-    {
-        $this->capital = $capital;
-
-        return $this;
-    }
-
-    /**
-     * Get capital.
-     *
-     * @return string
-     */
-    public function getCapital()
-    {
-        return $this->capital;
-    }
-
-    /**
-     * Set slug.
-     *
-     * @param string $slug
-     *
-     * @return Country
-     */
-    public function setSlug($slug)
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
 
         return $this;
     }
 
-    /**
-     * Get slug.
-     *
-     * @return string
-     */
-    public function getSlug()
+    public function getLocale(): ?string
     {
-        return $this->slug;
+        return $this->locale;
+    }
+
+    public function setLocale(?string $locale): self
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCapital(): ?string
+    {
+        return $this->capital;
+    }
+
+    public function setCapital(string $capital): self
+    {
+        $this->capital = $capital;
+
+        return $this;
     }
 
     public function getPostalCodeRegex(): ?string
@@ -195,7 +139,7 @@ class Country
         return $this->postalCodeRegex;
     }
 
-    public function setPostalCodeRegex(?string $postalCodeRegex): Country
+    public function setPostalCodeRegex(?string $postalCodeRegex): self
     {
         $this->postalCodeRegex = $postalCodeRegex;
 

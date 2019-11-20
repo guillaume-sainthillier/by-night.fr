@@ -14,14 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class HistoriqueMaj
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use EntityIdentityTrait;
 
     /**
      * @var DateTime
@@ -88,157 +81,75 @@ class HistoriqueMaj
         return $this->dateFin->getTimestamp() - $this->dateDebut->getTimestamp();
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getDateDebut(): ?\DateTimeInterface
     {
-        return $this->id;
+        return $this->dateDebut;
     }
 
-    /**
-     * Set dateDebut.
-     *
-     * @param DateTime $dateDebut
-     *
-     * @return HistoriqueMaj
-     */
-    public function setDateDebut($dateDebut)
+    public function setDateDebut(\DateTimeInterface $dateDebut): self
     {
         $this->dateDebut = $dateDebut;
 
         return $this;
     }
 
-    /**
-     * Get dateDebut.
-     *
-     * @return DateTime
-     */
-    public function getDateDebut()
+    public function getFromData(): ?string
     {
-        return $this->dateDebut;
+        return $this->fromData;
     }
 
-    /**
-     * Set fromData.
-     *
-     * @param string $fromData
-     *
-     * @return HistoriqueMaj
-     */
-    public function setFromData($fromData)
+    public function setFromData(string $fromData): self
     {
         $this->fromData = $fromData;
 
         return $this;
     }
 
-    /**
-     * Get fromData.
-     *
-     * @return string
-     */
-    public function getFromData()
+    public function getDateFin(): ?\DateTimeInterface
     {
-        return $this->fromData;
+        return $this->dateFin;
     }
 
-    /**
-     * Set dateFin.
-     *
-     * @param DateTime $dateFin
-     *
-     * @return HistoriqueMaj
-     */
-    public function setDateFin($dateFin)
+    public function setDateFin(\DateTimeInterface $dateFin): self
     {
         $this->dateFin = $dateFin;
 
         return $this;
     }
 
-    /**
-     * Get dateFin.
-     *
-     * @return DateTime
-     */
-    public function getDateFin()
+    public function getNouvellesSoirees(): ?int
     {
-        return $this->dateFin;
+        return $this->nouvellesSoirees;
     }
 
-    /**
-     * Set nouvellesSoirees.
-     *
-     * @param int $nouvellesSoirees
-     *
-     * @return HistoriqueMaj
-     */
-    public function setNouvellesSoirees($nouvellesSoirees)
+    public function setNouvellesSoirees(int $nouvellesSoirees): self
     {
         $this->nouvellesSoirees = $nouvellesSoirees;
 
         return $this;
     }
 
-    /**
-     * Get nouvellesSoirees.
-     *
-     * @return int
-     */
-    public function getNouvellesSoirees()
+    public function getUpdateSoirees(): ?int
     {
-        return $this->nouvellesSoirees;
+        return $this->updateSoirees;
     }
 
-    /**
-     * Set updateSoirees.
-     *
-     * @param int $updateSoirees
-     *
-     * @return HistoriqueMaj
-     */
-    public function setUpdateSoirees($updateSoirees)
+    public function setUpdateSoirees(int $updateSoirees): self
     {
         $this->updateSoirees = $updateSoirees;
 
         return $this;
     }
 
-    /**
-     * Get updateSoirees.
-     *
-     * @return int
-     */
-    public function getUpdateSoirees()
+    public function getExplorations(): ?int
     {
-        return $this->updateSoirees;
+        return $this->explorations;
     }
 
-    /**
-     * Set explorations.
-     *
-     * @param int $explorations
-     *
-     * @return HistoriqueMaj
-     */
-    public function setExplorations($explorations)
+    public function setExplorations(int $explorations): self
     {
         $this->explorations = $explorations;
 
         return $this;
-    }
-
-    /**
-     * Get explorations.
-     *
-     * @return int
-     */
-    public function getExplorations()
-    {
-        return $this->explorations;
     }
 }

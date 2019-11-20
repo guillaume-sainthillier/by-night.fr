@@ -16,12 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Exploration
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use EntityIdentityTrait;
 
     /**
      * @ORM\Column(type="string", length=127)
@@ -61,86 +56,9 @@ class Exploration
         return $this;
     }
 
-    public function getReject()
+    public function getReject(): ?Reject
     {
         return $this->reject;
-    }
-
-    /**
-     * Set lastUpdated.
-     *
-     * @param DateTime $lastUpdated
-     *
-     * @return Exploration
-     */
-    public function setLastUpdated($lastUpdated = null)
-    {
-        $this->lastUpdated = $lastUpdated;
-
-        return $this;
-    }
-
-    /**
-     * Get lastUpdated.
-     *
-     * @return DateTime
-     */
-    public function getLastUpdated()
-    {
-        return $this->lastUpdated;
-    }
-
-    /**
-     * Set reason.
-     *
-     * @param int $reason
-     *
-     * @return Exploration
-     */
-    public function setReason($reason)
-    {
-        $this->reason = $reason;
-
-        return $this;
-    }
-
-    /**
-     * Get reason.
-     *
-     * @return int
-     */
-    public function getReason()
-    {
-        return $this->reason;
-    }
-
-    /**
-     * Set firewallVersion.
-     *
-     * @param string $firewallVersion
-     *
-     * @return Exploration
-     */
-    public function setFirewallVersion($firewallVersion)
-    {
-        $this->firewallVersion = $firewallVersion;
-
-        return $this;
-    }
-
-    /**
-     * Get firewallVersion.
-     *
-     * @return string
-     */
-    public function getFirewallVersion()
-    {
-        return $this->firewallVersion;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getExternalId(): ?string
@@ -151,6 +69,42 @@ class Exploration
     public function setExternalId(string $externalId): self
     {
         $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    public function getLastUpdated(): ?\DateTimeInterface
+    {
+        return $this->lastUpdated;
+    }
+
+    public function setLastUpdated(?\DateTimeInterface $lastUpdated): self
+    {
+        $this->lastUpdated = $lastUpdated;
+
+        return $this;
+    }
+
+    public function getReason(): ?int
+    {
+        return $this->reason;
+    }
+
+    public function setReason(int $reason): self
+    {
+        $this->reason = $reason;
+
+        return $this;
+    }
+
+    public function getFirewallVersion(): ?string
+    {
+        return $this->firewallVersion;
+    }
+
+    public function setFirewallVersion(string $firewallVersion): self
+    {
+        $this->firewallVersion = $firewallVersion;
 
         return $this;
     }

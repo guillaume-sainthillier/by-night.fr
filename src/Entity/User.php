@@ -16,8 +16,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * User.
- *
  * @ORM\Table(name="User")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ExclusionPolicy("all")
@@ -27,6 +25,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class User extends BaseUser
 {
     use EntityTimestampableTrait;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -212,120 +211,130 @@ class User extends BaseUser
         return \ucfirst(parent::getUsername());
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function __toString()
+    {
+        return \sprintf('%s (#%s)', $this->username, $this->id);
+    }
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set firstname.
-     *
-     * @param string $firstname
-     *
-     * @return User
-     */
-    public function setFirstname($firstname)
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(?string $firstname): self
     {
         $this->firstname = $firstname;
 
         return $this;
     }
 
-    /**
-     * Get firstname.
-     *
-     * @return string
-     */
-    public function getFirstname()
+    public function getLastname(): ?string
     {
-        return $this->firstname;
+        return $this->lastname;
     }
 
-    /**
-     * Set lastname.
-     *
-     * @param string $lastname
-     *
-     * @return User
-     */
-    public function setLastname($lastname)
+    public function setLastname(?string $lastname): self
     {
         $this->lastname = $lastname;
 
         return $this;
     }
 
-    /**
-     * Get lastname.
-     *
-     * @return string
-     */
-    public function getLastname()
+    public function getDescription(): ?string
     {
-        return $this->lastname;
+        return $this->description;
     }
 
-    /**
-     * Set description.
-     *
-     * @param string $description
-     *
-     * @return User
-     */
-    public function setDescription($description)
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getFromLogin(): ?bool
     {
-        return $this->description;
+        return $this->fromLogin;
     }
 
-    /**
-     * Set fromLogin.
-     *
-     * @param bool $fromLogin
-     *
-     * @return User
-     */
-    public function setFromLogin($fromLogin)
+    public function setFromLogin(?bool $fromLogin): self
     {
         $this->fromLogin = $fromLogin;
 
         return $this;
     }
 
-    /**
-     * Get fromLogin.
-     *
-     * @return bool
-     */
-    public function getFromLogin()
+    public function getShowSocials(): ?bool
     {
-        return $this->fromLogin;
+        return $this->showSocials;
     }
 
-    /**
-     * Set info.
-     *
-     * @param UserInfo $info
-     *
-     * @return User
-     */
-    public function setInfo(UserInfo $info = null)
+    public function setShowSocials(?bool $showSocials): self
+    {
+        $this->showSocials = $showSocials;
+
+        return $this;
+    }
+
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    public function setWebsite(?string $website): self
+    {
+        $this->website = $website;
+
+        return $this;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(?string $path): self
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    public function getSystemPath(): ?string
+    {
+        return $this->systemPath;
+    }
+
+    public function setSystemPath(?string $systemPath): self
+    {
+        $this->systemPath = $systemPath;
+
+        return $this;
+    }
+
+    public function getInfo(): ?UserInfo
+    {
+        return $this->info;
+    }
+
+    public function setInfo(?UserInfo $info): self
     {
         $this->info = $info;
 
@@ -333,192 +342,45 @@ class User extends BaseUser
     }
 
     /**
-     * Get info.
-     *
-     * @return UserInfo
+     * @return Collection|Calendrier[]
      */
-    public function getInfo()
-    {
-        return $this->info;
-    }
-
-    /**
-     * Add calendriers.
-     *
-     *
-     * @return User
-     */
-    public function addCalendrier(Calendrier $calendriers)
-    {
-        $this->calendriers[] = $calendriers;
-
-        return $this;
-    }
-
-    /**
-     * Remove calendriers.
-     */
-    public function removeCalendrier(Calendrier $calendriers)
-    {
-        $this->calendriers->removeElement($calendriers);
-    }
-
-    /**
-     * Get calendriers.
-     *
-     * @return Collection
-     */
-    public function getCalendriers()
+    public function getCalendriers(): Collection
     {
         return $this->calendriers;
     }
 
-    /**
-     * Set showSocials.
-     *
-     * @param bool $showSocials
-     *
-     * @return User
-     */
-    public function setShowSocials($showSocials)
+    public function addCalendrier(Calendrier $calendrier): self
     {
-        $this->showSocials = $showSocials;
+        if (!$this->calendriers->contains($calendrier)) {
+            $this->calendriers[] = $calendrier;
+            $calendrier->setUser($this);
+        }
 
         return $this;
     }
 
-    /**
-     * Get showSocials.
-     *
-     * @return bool
-     */
-    public function getShowSocials()
+    public function removeCalendrier(Calendrier $calendrier): self
     {
-        return $this->showSocials;
-    }
-
-    /**
-     * Set website.
-     *
-     * @param string $website
-     *
-     * @return User
-     */
-    public function setWebsite($website)
-    {
-        $this->website = $website;
+        if ($this->calendriers->contains($calendrier)) {
+            $this->calendriers->removeElement($calendrier);
+            // set the owning side to null (unless already changed)
+            if ($calendrier->getUser() === $this) {
+                $calendrier->setUser(null);
+            }
+        }
 
         return $this;
     }
 
-    /**
-     * Get website.
-     *
-     * @return string
-     */
-    public function getWebsite()
+    public function getCity(): ?City
     {
-        return $this->website;
+        return $this->city;
     }
 
-    public function __toString()
-    {
-        return \sprintf('%s (#%s)', $this->username, $this->id);
-    }
-
-    /**
-     * Set path.
-     *
-     * @param string $path
-     *
-     * @return User
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
-    /**
-     * Get path.
-     *
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Set systemPath.
-     *
-     * @param string $systemPath
-     *
-     * @return User
-     */
-    public function setSystemPath($systemPath)
-    {
-        $this->systemPath = $systemPath;
-
-        return $this;
-    }
-
-    /**
-     * Get systemPath.
-     *
-     * @return string
-     */
-    public function getSystemPath()
-    {
-        return $this->systemPath;
-    }
-
-    /**
-     * Set slug.
-     *
-     * @param string $slug
-     *
-     * @return User
-     */
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    /**
-     * Get slug.
-     *
-     * @return string
-     */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
-
-    /**
-     * Set city.
-     *
-     * @param City $city
-     *
-     * @return User
-     */
-    public function setCity(City $city = null)
+    public function setCity(?City $city): self
     {
         $this->city = $city;
 
         return $this;
-    }
-
-    /**
-     * Get city.
-     *
-     * @return City
-     */
-    public function getCity()
-    {
-        return $this->city;
     }
 }

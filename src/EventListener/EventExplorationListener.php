@@ -28,7 +28,7 @@ class EventExplorationListener
 
         $exploration
             ->setFirewallVersion(Firewall::VERSION)
-            ->setLastUpdated($entity->getFbDateModification())
+            ->setLastUpdated($entity->getExternalUpdatedAt())
             ->setReason(Reject::EVENT_DELETED);
 
         $entityManager->persist($exploration);

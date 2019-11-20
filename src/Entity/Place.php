@@ -27,6 +27,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Place implements GeolocalizeInterface
 {
+    use EntityTimestampableTrait;
+
     /**
      * @var int
      *
@@ -173,399 +175,55 @@ class Place implements GeolocalizeInterface
         return $this->location = $location;
     }
 
-    public function getLocationSlug()
+    public function getLocationSlug(): string
     {
         return $this->getLocation()->getSlug();
     }
 
-    public function setReject(Reject $reject = null)
+    public function setReject(Reject $reject = null): self
     {
         $this->reject = $reject;
 
         return $this;
     }
 
-    public function getReject()
+    public function getReject(): ?Reject
     {
         return $this->reject;
     }
 
-    public function setId($id)
+    public function getLatitude(): float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(float $latitude): self
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(float $longitude): self
+    {
+        $this->longitude = $longitude;
+        return $this;
+    }
+
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @param $country
-     *
-     * @return Place
-     */
-    public function setCountryName($country)
-    {
-        $this->countryName = $country;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCountryName()
-    {
-        return $this->countryName;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * Set rue.
-     *
-     * @param string $rue
-     *
-     * @return Place
-     */
-    public function setRue($rue)
-    {
-        $this->rue = $rue;
-
-        return $this;
-    }
-
-    /**
-     * Get rue.
-     *
-     * @return string
-     */
-    public function getRue()
-    {
-        return $this->rue;
-    }
-
-    /**
-     * Set latitude.
-     *
-     * @param float $latitude
-     *
-     * @return Place
-     */
-    public function setLatitude($latitude)
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    /**
-     * Get latitude.
-     *
-     * @return float
-     */
-    public function getLatitude()
-    {
-        return $this->latitude;
-    }
-
-    /**
-     * Set longitude.
-     *
-     * @param float $longitude
-     *
-     * @return Place
-     */
-    public function setLongitude($longitude)
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
-    /**
-     * Get longitude.
-     *
-     * @return float
-     */
-    public function getLongitude()
-    {
-        return $this->longitude;
-    }
-
-    /**
-     * Set nom.
-     *
-     * @param string $nom
-     *
-     * @return Place
-     */
-    public function setNom($nom)
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    /**
-     * Get nom.
-     *
-     * @return string
-     */
-    public function getNom()
-    {
-        return $this->nom;
-    }
-
-    /**
-     * Set slug.
-     *
-     * @param string $slug
-     *
-     * @return Place
-     */
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    /**
-     * Get slug.
-     *
-     * @return string
-     */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
-
-    /**
-     * Set path.
-     *
-     * @param string $path
-     *
-     * @return Place
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
-    /**
-     * Get path.
-     *
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Set url.
-     *
-     * @param string $url
-     *
-     * @return Place
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * Get url.
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * Set ville.
-     *
-     * @param string $ville
-     *
-     * @return Place
-     */
-    public function setVille($ville)
-    {
-        $this->ville = $ville;
-
-        return $this;
-    }
-
-    /**
-     * Get ville.
-     *
-     * @return string
-     */
-    public function getVille()
-    {
-        return $this->ville;
-    }
-
-    /**
-     * Set codePostal.
-     *
-     * @param string $codePostal
-     *
-     * @return Place
-     */
-    public function setCodePostal($codePostal)
-    {
-        $this->codePostal = $codePostal;
-
-        return $this;
-    }
-
-    /**
-     * Get codePostal.
-     *
-     * @return string
-     */
-    public function getCodePostal()
-    {
-        return $this->codePostal;
-    }
-
-    /**
-     * Set facebookId.
-     *
-     * @param string $facebookId
-     *
-     * @return Place
-     */
-    public function setFacebookId($facebookId)
-    {
-        $this->facebookId = $facebookId;
-
-        return $this;
-    }
-
-    /**
-     * Get facebookId.
-     *
-     * @return string
-     */
-    public function getFacebookId()
-    {
-        return $this->facebookId;
-    }
-
-    public function __toString()
-    {
-        return \sprintf('%s (#%s)', $this->nom ?: '?', $this->id);
-    }
-
-    /**
-     * Set city.
-     *
-     * @param City $city
-     *
-     * @return Place
-     */
-    public function setCity(City $city = null)
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    /**
-     * Get city.
-     *
-     * @return City
-     */
-    public function getCity()
-    {
-        return $this->city;
-    }
-
-    /**
-     * Set zipCity.
-     *
-     * @param ZipCity $zipCity
-     *
-     * @return Place
-     */
-    public function setZipCity(ZipCity $zipCity = null)
-    {
-        $this->zipCity = $zipCity;
-
-        return $this;
-    }
-
-    /**
-     * Get zipCity.
-     *
-     * @return ZipCity
-     */
-    public function getZipCity()
-    {
-        return $this->zipCity;
-    }
-
-    /**
-     * Set country.
-     *
-     * @param Country $country
-     *
-     * @return Place
-     */
-    public function setCountry(Country $country = null)
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    /**
-     * Get country.
-     *
-     * @return Country
-     */
-    public function getCountry()
-    {
-        return $this->country;
-    }
-
-    /**
-     * Set isJunk.
-     *
-     * @param bool $isJunk
-     *
-     * @return Place
-     */
-    public function setJunk($isJunk)
-    {
-        $this->isJunk = $isJunk;
-
-        return $this;
-    }
-
-    /**
-     * Get isJunk.
-     *
-     * @return bool
-     */
-    public function isJunk()
-    {
-        return $this->isJunk;
     }
 
     public function getExternalId(): ?string
@@ -576,6 +234,138 @@ class Place implements GeolocalizeInterface
     public function setExternalId(?string $externalId): self
     {
         $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    public function getRue(): ?string
+    {
+        return $this->rue;
+    }
+
+    public function setRue(?string $rue): self
+    {
+        $this->rue = $rue;
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(?string $path): self
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): self
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(?string $ville): self
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getCodePostal(): ?string
+    {
+        return $this->codePostal;
+    }
+
+    public function setCodePostal(?string $codePostal): self
+    {
+        $this->codePostal = $codePostal;
+
+        return $this;
+    }
+
+    public function getFacebookId(): ?string
+    {
+        return $this->facebookId;
+    }
+
+    public function setFacebookId(?string $facebookId): self
+    {
+        $this->facebookId = $facebookId;
+
+        return $this;
+    }
+
+    public function getIsJunk(): ?bool
+    {
+        return $this->isJunk;
+    }
+
+    public function setIsJunk(?bool $isJunk): self
+    {
+        $this->isJunk = $isJunk;
+
+        return $this;
+    }
+
+    public function getCity(): ?City
+    {
+        return $this->city;
+    }
+
+    public function setCity(?City $city): self
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): self
+    {
+        $this->country = $country;
 
         return $this;
     }

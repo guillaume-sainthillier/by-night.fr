@@ -101,218 +101,114 @@ abstract class AdminZone
     }
 
     /**
-     * Set id.
-     *
      * @param int $id
-     *
-     * @return AdminZone
+     * @return self
      */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return AdminZone
-     */
-    public function setName($name)
+    public function getSlug(): ?string
     {
-        $this->name = $name;
-
-        return $this;
+        return $this->slug;
     }
 
-    /**
-     * Get name.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set latitude.
-     *
-     * @param float $latitude
-     *
-     * @return AdminZone
-     */
-    public function setLatitude($latitude)
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    /**
-     * Get latitude.
-     *
-     * @return float
-     */
-    public function getLatitude()
-    {
-        return $this->latitude;
-    }
-
-    /**
-     * Set longitude.
-     *
-     * @param float $longitude
-     *
-     * @return AdminZone
-     */
-    public function setLongitude($longitude)
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
-    /**
-     * Get longitude.
-     *
-     * @return float
-     */
-    public function getLongitude()
-    {
-        return $this->longitude;
-    }
-
-    /**
-     * Set admin1Code.
-     *
-     * @param string $admin1Code
-     *
-     * @return AdminZone
-     */
-    public function setAdmin1Code($admin1Code)
-    {
-        $this->admin1Code = $admin1Code;
-
-        return $this;
-    }
-
-    /**
-     * Get admin1Code.
-     *
-     * @return string
-     */
-    public function getAdmin1Code()
-    {
-        return $this->admin1Code;
-    }
-
-    /**
-     * Set admin2Code.
-     *
-     * @param string $admin2Code
-     *
-     * @return AdminZone
-     */
-    public function setAdmin2Code($admin2Code)
-    {
-        $this->admin2Code = $admin2Code;
-
-        return $this;
-    }
-
-    /**
-     * Get admin2Code.
-     *
-     * @return string
-     */
-    public function getAdmin2Code()
-    {
-        return $this->admin2Code;
-    }
-
-    /**
-     * Set country.
-     *
-     * @param Country $country
-     *
-     * @return AdminZone
-     */
-    public function setCountry(Country $country = null)
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    /**
-     * Get country.
-     *
-     * @return Country
-     */
-    public function getCountry()
-    {
-        return $this->country;
-    }
-
-    /**
-     * Set slug.
-     *
-     * @param string $slug
-     *
-     * @return AdminZone
-     */
-    public function setSlug($slug)
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
 
         return $this;
     }
 
-    /**
-     * Get slug.
-     *
-     * @return string
-     */
-    public function getSlug()
+    public function getName(): ?string
     {
-        return $this->slug;
+        return $this->name;
     }
 
-    /**
-     * Set population.
-     *
-     * @param int $population
-     *
-     * @return AdminZone
-     */
-    public function setPopulation($population)
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(float $longitude): self
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getPopulation(): ?int
+    {
+        return $this->population;
+    }
+
+    public function setPopulation(int $population): self
     {
         $this->population = $population;
 
         return $this;
     }
 
-    /**
-     * Get population.
-     *
-     * @return int
-     */
-    public function getPopulation()
+    public function getAdmin1Code(): ?string
     {
-        return $this->population;
+        return $this->admin1Code;
+    }
+
+    public function setAdmin1Code(?string $admin1Code): self
+    {
+        $this->admin1Code = $admin1Code;
+
+        return $this;
+    }
+
+    public function getAdmin2Code(): ?string
+    {
+        return $this->admin2Code;
+    }
+
+    public function setAdmin2Code(?string $admin2Code): self
+    {
+        $this->admin2Code = $admin2Code;
+
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): self
+    {
+        $this->country = $country;
+
+        return $this;
     }
 }

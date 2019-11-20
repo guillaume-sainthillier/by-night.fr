@@ -67,7 +67,7 @@ class Firewall
     public function hasEventToBeUpdated(Exploration $exploration, Event $event)
     {
         $explorationDate = $exploration->getLastUpdated();
-        $eventDateModification = $event->getFbDateModification();
+        $eventDateModification = $event->getExternalUpdatedAt();
 
         if (!$explorationDate || !$eventDateModification) {
             return true;
@@ -215,7 +215,7 @@ class Firewall
             if (!$exploration) {
                 $exploration = (new Exploration())
                     ->setExternalId($event->getExternalId())
-                    ->setLastUpdated($event->getFbDateModification())
+                    ->setLastUpdated($event->getExternalUpdatedAt())
                     ->setReject($event->getReject())
                     ->setReason($event->getReject()->getReason())
                     ->setFirewallVersion(self::VERSION);
@@ -223,8 +223,8 @@ class Firewall
                 $this->addExploration($exploration);
             } else {
                 //Pas besoin de paniquer l'EM si les dates sont équivalentes
-                if ($exploration->getLastUpdated() !== $event->getFbDateModification()) {
-                    $exploration->setLastUpdated($event->getFbDateModification());
+                if ($exploration->getLastUpdated() !== $event->getExternalUpdatedAt()) {
+                    $exploration->setLastUpdated($event->getExternalUpdatedAt());
                 }
 
                 $exploration

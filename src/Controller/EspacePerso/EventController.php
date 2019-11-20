@@ -84,7 +84,7 @@ class EventController extends BaseController
     public function editAction(Request $request, Event $event, EventConstraintValidator $validator)
     {
         if ($event->getExternalId()) {
-            $event->setFbDateModification(new \DateTime());
+            $event->setExternalUpdatedAt(new \DateTime());
         }
 
         $form = $this->createForm(EventType::class, $event);

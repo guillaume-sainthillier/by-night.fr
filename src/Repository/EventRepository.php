@@ -168,11 +168,11 @@ class EventRepository extends EntityRepository
             ->getScalarResult();
     }
 
-    public function getLastDateStatsUser(User $user)
+    public function getLastUpdatedStatsUser(User $user)
     {
         return $this->_em
             ->createQueryBuilder()
-            ->select('MAX(c.lastDate) as last_date')
+            ->select('MAX(c.updatedAt) as updatedAt')
             ->from('App:Calendrier', 'c')
             ->leftJoin('App:User', 'u', 'WITH', 'u = c.user')
             ->where('c.user = :user')

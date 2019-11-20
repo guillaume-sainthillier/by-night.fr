@@ -89,7 +89,7 @@ class Event implements GeolocalizeInterface
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected $fbDateModification;
+    protected $externalUpdatedAt;
 
     /**
      * @var DateTime
@@ -308,7 +308,7 @@ class Event implements GeolocalizeInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
-     * @ORM\OrderBy({"dateCreation": "DESC"})
+     * @ORM\OrderBy({"createdAt": "DESC"})
      */
     protected $commentaires;
 
@@ -473,6 +473,28 @@ class Event implements GeolocalizeInterface
         $to->modify(self::INDEX_TO);
 
         return $this->dateFin >= $from && $this->dateFin <= $to;
+    }
+
+    public function getLatitude(): float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(float $latitude): self
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(float $longitude): self
+    {
+        $this->longitude = $longitude;
+        return $this;
     }
 
     /**
@@ -653,14 +675,14 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function getFbDateModification(): ?\DateTimeInterface
+    public function getExternalUpdatedAt(): ?\DateTimeInterface
     {
-        return $this->fbDateModification;
+        return $this->externalUpdatedAt;
     }
 
-    public function setFbDateModification(?\DateTimeInterface $fbDateModification): self
+    public function setExternalUpdatedAt(?\DateTimeInterface $externalUpdatedAt): self
     {
-        $this->fbDateModification = $fbDateModification;
+        $this->externalUpdatedAt = $externalUpdatedAt;
 
         return $this;
     }
@@ -709,30 +731,6 @@ class Event implements GeolocalizeInterface
     public function setModificationDerniereMinute(?string $modificationDerniereMinute): self
     {
         $this->modificationDerniereMinute = $modificationDerniereMinute;
-
-        return $this;
-    }
-
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(?float $latitude): self
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(?float $longitude): self
-    {
-        $this->longitude = $longitude;
 
         return $this;
     }
@@ -893,12 +891,12 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function isBrouillon(): ?bool
+    public function getIsBrouillon(): ?bool
     {
         return $this->isBrouillon;
     }
 
-    public function setBrouillon(?bool $isBrouillon): self
+    public function setIsBrouillon(bool $isBrouillon): self
     {
         $this->isBrouillon = $isBrouillon;
 
@@ -1037,12 +1035,12 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function isArchive(): ?bool
+    public function getIsArchive(): ?bool
     {
         return $this->isArchive;
     }
 
-    public function setArchive(?bool $isArchive): self
+    public function setIsArchive(bool $isArchive): self
     {
         $this->isArchive = $isArchive;
 
@@ -1054,7 +1052,7 @@ class Event implements GeolocalizeInterface
         return $this->placeName;
     }
 
-    public function setPlaceName(?string $placeName): self
+    public function setPlaceName(string $placeName): self
     {
         $this->placeName = $placeName;
 
@@ -1218,4 +1216,5 @@ class Event implements GeolocalizeInterface
 
         return $this;
     }
+
 }
