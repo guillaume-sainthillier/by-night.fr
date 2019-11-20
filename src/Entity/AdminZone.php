@@ -29,7 +29,7 @@ abstract class AdminZone
 {
     /**
      * @var int
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @Groups({"list_event", "list_city", "list_user"})
      */
@@ -44,26 +44,26 @@ abstract class AdminZone
 
     /**
      * @var string
-     * @ORM\Column(name="name", type="string", length=200)
+     * @ORM\Column(type="string", length=200)
      * @Groups({"list_city"})
      */
     protected $name;
 
     /**
      * @var float
-     * @ORM\Column(name="latitude", type="float")
+     * @ORM\Column(type="float")
      */
     protected $latitude;
 
     /**
      * @var float
-     * @ORM\Column(name="longitude", type="float")
+     * @ORM\Column(type="float")
      */
     protected $longitude;
 
     /**
      * @var int
-     * @ORM\Column(name="population", type="integer")
+     * @ORM\Column(type="integer")
      */
     protected $population;
 

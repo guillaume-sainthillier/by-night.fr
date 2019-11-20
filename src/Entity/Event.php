@@ -67,7 +67,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(message="N'oubliez pas de nommer votre événement !")
      * @Groups({"list_event"})
      * @Expose
@@ -77,7 +77,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="descriptif", type="text", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Assert\NotBlank(message="N'oubliez pas de décrire votre événement !")
      * @Groups({"list_event"})
      * @Expose
@@ -87,14 +87,14 @@ class Event implements GeolocalizeInterface
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="fb_date_modification", type="datetime", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     protected $fbDateModification;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="date_debut", type="date", nullable=true)
+     * @ORM\Column(type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
      * @Groups({"list_event"})
      * @Expose
@@ -105,7 +105,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="date_fin", type="date", nullable=true)
+     * @ORM\Column(type="date", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      * @Type("DateTime<'Y-m-d'>")
@@ -115,21 +115,21 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="horaires", type="string", length=256, nullable=true)
+     * @ORM\Column(type="string", length=256, nullable=true)
      */
     protected $horaires;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="modification_derniere_minute", type="string", length=16, nullable=true)
+     * @ORM\Column(type="string", length=16, nullable=true)
      */
     protected $modificationDerniereMinute;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="latitude", type="float", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -138,7 +138,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var float
      *
-     * @ORM\Column(name="longitude", type="float", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -147,14 +147,14 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="adresse", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $adresse;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="type_manifestation", type="string", length=128, nullable=true)
+     * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -163,7 +163,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="categorie_manifestation", type="string", length=128, nullable=true)
+     * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -172,7 +172,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="theme_manifestation", type="string", length=128, nullable=true)
+     * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -181,14 +181,14 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="reservation_telephone", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $reservationTelephone;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="reservation_email", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Email
      */
     protected $reservationEmail;
@@ -196,7 +196,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="reservation_internet", type="string", length=512, nullable=true)
+     * @ORM\Column(type="string", length=512, nullable=true)
      * @Assert\Url
      */
     protected $reservationInternet;
@@ -204,14 +204,14 @@ class Event implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="tarif", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $tarif;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="from_data", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected $fromData;
 
@@ -242,7 +242,7 @@ class Event implements GeolocalizeInterface
     protected $path;
 
     /**
-     * @ORM\Column(type="string", name="system_path", length=61, nullable=true)
+     * @ORM\Column(type="string", length=61, nullable=true)
      */
     protected $systemPath;
 
@@ -269,35 +269,35 @@ class Event implements GeolocalizeInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="tweet_post_id", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected $tweetPostId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="facebook_event_id", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected $facebookEventId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="tweet_post_system_id", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected $tweetPostSystemId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="fb_post_id", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected $fbPostId;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="fb_post_system_id", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected $fbPostSystemId;
 
@@ -315,7 +315,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="facebook_owner_id", type="string", length=31, nullable=true)
+     * @ORM\Column(type="string", length=31, nullable=true)
      */
     protected $facebookOwnerId;
 
@@ -331,28 +331,28 @@ class Event implements GeolocalizeInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="fb_interets", type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     protected $fbInterets;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="participations", type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     protected $participations;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="interets", type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     protected $interets;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="source", type="string", length=256, nullable=true)
+     * @ORM\Column(type="string", length=256, nullable=true)
      */
     protected $source;
 
@@ -373,7 +373,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var bool
      *
-     * @ORM\Column(name="is_archive", type="boolean")
+     * @ORM\Column(type="boolean")
      */
     protected $isArchive;
 

@@ -16,7 +16,7 @@ class News
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -25,42 +25,42 @@ class News
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="date_debut", type="date")
+     * @ORM\Column(type="date")
      */
     private $dateDebut;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="date_fin", type="date")
+     * @ORM\Column(type="date")
      */
     private $dateFin;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="numero_edition", type="integer", unique=true)
+     * @ORM\Column(type="integer", unique=true)
      */
     private $numeroEdition;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="wordpress_post_id", type="integer", unique=true)
+     * @ORM\Column(type="integer", unique=true)
      */
     private $wordpressPostId;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="tweet_post_id", type="string", length=256, nullable=true)
+     * @ORM\Column(type="string", length=256, nullable=true)
      */
     private $tweetPostId;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="fb_post_id", type="string", length=256, nullable=true)
+     * @ORM\Column(type="string", length=256, nullable=true)
      */
     private $fbPostId;
 

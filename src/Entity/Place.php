@@ -30,7 +30,7 @@ class Place implements GeolocalizeInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @Groups({"list_event"})
@@ -46,7 +46,7 @@ class Place implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="rue", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -55,7 +55,7 @@ class Place implements GeolocalizeInterface
     /**
      * @var float
      *
-     * @ORM\Column(name="latitude", type="float", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -64,7 +64,7 @@ class Place implements GeolocalizeInterface
     /**
      * @var float
      *
-     * @ORM\Column(name="longitude", type="float", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -73,7 +73,7 @@ class Place implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
      * @Groups({"list_event"})
      * @Expose
@@ -83,33 +83,33 @@ class Place implements GeolocalizeInterface
     /**
      * @var string
      * @Gedmo\Slug(fields={"nom"})
-     * @ORM\Column(name="slug", type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $slug;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="path", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $path;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="url", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $url;
 
     /**
-     * @ORM\Column(name="ville", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
     protected $ville;
 
     /**
-     * @ORM\Column(name="code_postal", type="string", length=7, nullable=true)
+     * @ORM\Column(type="string", length=7, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
@@ -118,7 +118,7 @@ class Place implements GeolocalizeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="facebook_id", type="string", length=256, nullable=true)
+     * @ORM\Column(type="string", length=256, nullable=true)
      */
     protected $facebookId;
 
@@ -145,7 +145,7 @@ class Place implements GeolocalizeInterface
     protected $country;
 
     /**
-     * @ORM\Column(name="is_junk", type="boolean", nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
      */
     protected $isJunk;
 

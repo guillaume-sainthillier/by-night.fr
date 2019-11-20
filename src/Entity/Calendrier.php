@@ -20,7 +20,7 @@ class Calendrier
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -29,14 +29,14 @@ class Calendrier
     /**
      * @var bool
      *
-     * @ORM\Column(name="participe", type="boolean")
+     * @ORM\Column(type="boolean")
      */
     protected $participe;
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="interet", type="boolean")
+     * @ORM\Column(type="boolean")
      */
     protected $interet;
 
@@ -55,7 +55,7 @@ class Calendrier
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="last_date", type="datetime")
+     * @ORM\Column(type="datetime")
      */
     protected $lastDate;
 

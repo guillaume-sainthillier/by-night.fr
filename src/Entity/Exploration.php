@@ -31,21 +31,21 @@ class Exploration
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="last_updated", type="datetime", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $lastUpdated;
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="reason", type="integer", nullable=false)
+     * @ORM\Column(type="integer", nullable=false)
      */
     private $reason;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="firewall_version", type="string", length=7)
+     * @ORM\Column(type="string", length=7)
      */
     private $firewallVersion;
 

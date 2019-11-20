@@ -45,7 +45,7 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Groups({"list_user"})
      * @Expose
      */
@@ -54,7 +54,7 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\Column(name="lastname", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Groups({"list_user"})
      * @Expose
      */
@@ -63,7 +63,7 @@ class User extends BaseUser
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="string", length=127, nullable=true)
+     * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected $description;
 
@@ -85,17 +85,17 @@ class User extends BaseUser
     protected $city;
 
     /**
-     * @ORM\Column(name="from_login", type="boolean", nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
      */
-    protected $from_login;
+    protected $fromLogin;
 
     /**
-     * @ORM\Column(name="show_socials", type="boolean", nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
      */
-    protected $show_socials;
+    protected $showSocials;
 
     /**
-     * @ORM\Column(name="website", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $website;
 
@@ -127,7 +127,7 @@ class User extends BaseUser
     private $path;
 
     /**
-     * @ORM\Column(type="string", name="system_path", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      *
      * @var string
      */
@@ -295,7 +295,7 @@ class User extends BaseUser
     }
 
     /**
-     * Set from_login.
+     * Set fromLogin.
      *
      * @param bool $fromLogin
      *
@@ -303,19 +303,19 @@ class User extends BaseUser
      */
     public function setFromLogin($fromLogin)
     {
-        $this->from_login = $fromLogin;
+        $this->fromLogin = $fromLogin;
 
         return $this;
     }
 
     /**
-     * Get from_login.
+     * Get fromLogin.
      *
      * @return bool
      */
     public function getFromLogin()
     {
-        return $this->from_login;
+        return $this->fromLogin;
     }
 
     /**
@@ -382,7 +382,7 @@ class User extends BaseUser
      */
     public function setShowSocials($showSocials)
     {
-        $this->show_socials = $showSocials;
+        $this->showSocials = $showSocials;
 
         return $this;
     }
@@ -394,7 +394,7 @@ class User extends BaseUser
      */
     public function getShowSocials()
     {
-        return $this->show_socials;
+        return $this->showSocials;
     }
 
     /**

@@ -19,7 +19,7 @@ class ZipCity
 {
     /**
      * @var int
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue("AUTO")
      * @Serializer\Groups({"list_event", "list_city", "list_user"})
@@ -41,25 +41,25 @@ class ZipCity
 
     /**
      * @var string
-     * @ORM\Column(name="postal_code", type="string", length=20)
+     * @ORM\Column(type="string", length=20)
      */
     protected $postalCode;
 
     /**
      * @var string
-     * @ORM\Column(name="name", type="string", length=180)
+     * @ORM\Column(type="string", length=180)
      */
     protected $name;
 
     /**
      * @var float
-     * @ORM\Column(name="latitude", type="float")
+     * @ORM\Column(type="float")
      */
     protected $latitude;
 
     /**
      * @var float
-     * @ORM\Column(name="longitude", type="float")
+     * @ORM\Column(type="float")
      */
     protected $longitude;
 

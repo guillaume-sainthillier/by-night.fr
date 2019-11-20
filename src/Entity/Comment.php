@@ -20,7 +20,7 @@ class Comment
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -29,7 +29,7 @@ class Comment
     /**
      * @var string
      *
-     * @ORM\Column(name="commentaire", type="text")
+     * @ORM\Column(type="text")
      * @Assert\Length(min="3", minMessage="Le commentaire doit faire au moins {{ limit }} caractères")
      * @Assert\NotBlank(message="Le commentaire ne peut pas être vide")
      */
@@ -38,21 +38,21 @@ class Comment
     /**
      * @var bool
      *
-     * @ORM\Column(name="is_approuve", type="boolean")
+     * @ORM\Column(type="boolean")
      */
     protected $isApprouve;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="date_creation", type="datetime")
+     * @ORM\Column(type="datetime")
      */
     protected $dateCreation;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="date_modification", type="datetime")
+     * @ORM\Column(type="datetime")
      */
     protected $dateModification;
 
