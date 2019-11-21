@@ -261,7 +261,7 @@
 
                     {% set maPatisserieDisplayed = false %}
                     {% for word in ['patisserie', 'pâtisserie', 'chocolat', 'Gateau', 'Gâteau', 'atelier culinaire'] %}
-                        {% if not maPatisserieDisplayed and word in event.descriptif|lower or word in event.nom|lower %}
+                        {% if not maPatisserieDisplayed and (word in event.descriptif|lower or word in event.nom|lower) %}
                             {% set maPatisserieDisplayed = true %}
                             <div class="detail-item">
                                 <i class="fa fa-birthday-cake"></i>
