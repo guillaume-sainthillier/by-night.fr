@@ -152,7 +152,7 @@ class Place implements GeolocalizeInterface
     protected $isJunk;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $countryName;
 
@@ -178,6 +178,42 @@ class Place implements GeolocalizeInterface
     public function getLocationSlug(): string
     {
         return $this->getLocation()->getSlug();
+    }
+
+    /**
+     * @return ZipCity|null
+     */
+    public function getZipCity(): ?ZipCity
+    {
+        return $this->zipCity;
+    }
+
+    /**
+     * @param ZipCity|null $zipCity
+     * @return Place
+     */
+    public function setZipCity(?ZipCity $zipCity): Place
+    {
+        $this->zipCity = $zipCity;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCountryName(): ?string
+    {
+        return $this->countryName;
+    }
+
+    /**
+     * @param string|null $countryName
+     * @return Place
+     */
+    public function setCountryName(?string $countryName): Place
+    {
+        $this->countryName = $countryName;
+        return $this;
     }
 
     public function setReject(Reject $reject = null): self
