@@ -221,6 +221,14 @@ class Place implements GeolocalizeInterface
         return $this;
     }
 
+    public function __toString()
+    {
+        return sprintf('%s (#%s)',
+            $this->nom,
+            $this->id
+        );
+    }
+
     public function getId(): ?int
     {
         return $this->id;
