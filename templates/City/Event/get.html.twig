@@ -218,11 +218,11 @@
                         <i class="fa fa-tags"></i>
                         <p class="tags">
                             {% if event.place.country %}
-                            <a class="badge badge-info"
-                               title="Sortir en {{ event.place.country.name }}"
-                               href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}">
-                                <strong class="font-weight-normal">Événements en {{ event.place.country.name }}</strong>
-                            </a>
+                                <a class="badge badge-info"
+                                   title="Sortir en {{ event.place.country.name }}"
+                                   href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}">
+                                    <strong class="font-weight-normal">Événements en {{ event.place.country.name }}</strong>
+                                </a>
                             {% endif %}
 
                             {% if event.place.location.isCity %}
@@ -258,6 +258,19 @@
                             </p>
                         </div>
                     {% endif %}
+
+                    {% set maPatisserieDisplayed = false %}
+                    {% for word in ['patisserie', 'pâtisserie', 'chocolat', 'Gateau', 'Gâteau', 'atelier culinaire']|filter(v => not maPatisserieDisplayed) %}
+                        {% if word in event.descriptif|lower or word in event.nom|lower %}
+                            {% set maPatisserieDisplayed = true %}
+                            <div class="detail-item">
+                                <i class="fa fa-birthday-cake"></i>
+                                <p>
+                                    <a href="https://mapatisserie.fr">Blog de pâtisserie</a>
+                                </p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
