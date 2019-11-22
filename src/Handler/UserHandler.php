@@ -3,6 +3,7 @@
 namespace App\Handler;
 
 use App\Entity\User;
+use App\File\DeletableFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -74,11 +75,10 @@ class UserHandler
             $octets = \file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
-                $file = new UploadedFile($tempPath, $filename, null, null, true);
-                $user->setSystemPath($filename);
+                $file = new DeletableFile($tempPath, $filename, null, null, true);
                 $user->setImageSystemFile($file);
             } else {
-                $user->setImageSystemFile(null)->setSystemPath(null);
+                $user->setImageSystemFile(null);
             }
         }
     }
