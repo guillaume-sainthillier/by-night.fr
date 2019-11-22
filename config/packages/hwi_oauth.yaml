@@ -32,15 +32,6 @@ hwi_oauth:
             paths:
                 email:          email
                 profilepicture: picture.data.url
-        facebook_list_events:
-            type:                facebook
-            client_id:           '%env(FACEBOOK_API_ID)%'
-            client_secret:       '%env(FACEBOOK_API_SECRET)%'
-            scope:               email, user_events
-            infos_url:           https://graph.facebook.com/v3.3/me?fields=name,email,picture.type(large)
-            paths:
-                email:          email
-                profilepicture: picture.data.url
         facebook:
             type:                facebook
             client_id:           '%env(FACEBOOK_API_ID)%'

@@ -72,10 +72,6 @@ services:
         arguments:
             $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
 
-    App\Social\FacebookListEvents:
-        arguments:
-            $config: { id: "%env(FACEBOOK_API_ID)%", secret: "%env(FACEBOOK_API_SECRET)%"}
-
     App\Archive\EventArchivator:
         arguments:
             $objectPersister: "@fos_elastica.object_persister.event.event"

@@ -105,7 +105,7 @@ class EventRepository extends EntityRepository
             ->addOrderBy('a.id');
     }
 
-    public function findByInterval(DateTime $from, DateTime $to)
+    public function findByInterval(\DateTimeInterface $from, \DateTimeInterface $to)
     {
         $cities = $this->_em->getRepository(City::class)->findTopPopulation(50);
         $events = [];
@@ -464,7 +464,7 @@ class EventRepository extends EntityRepository
 
     //Appelé par EventParser
 
-    public function findOneByPlace($lieuNom, DateTime $dateDebut, DateTime $dateFin)
+    public function findOneByPlace($lieuNom, \DateTimeInterface $dateDebut, \DateTimeInterface $dateFin)
     {
         $query = $this
             ->createQueryBuilder('a')
