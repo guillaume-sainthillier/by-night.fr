@@ -18,9 +18,9 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% do menu.addItem(location.country.name, url('app_agenda_index', {'location': location.country.slug})) %}
+        {% do menu.addItem(location.country.displayName, url('app_agenda_index', {'location': location.country.slug})) %}
     {% else %}
-        {% do menu.addItem(location.city.country.name, url('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% do menu.addItem(location.city.country.displayName, url('app_agenda_index', {'location': location.city.country.slug})) %}
         {% do menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_agenda', {'location': location.city.slug})) %}
     {% endif %}
 
@@ -233,9 +233,9 @@
                             <p class="tags">
                                 {% if event.place.country %}
                                     <a class="badge badge-info"
-                                       title="Sortir en {{ event.place.country.name }}"
+                                       title="Sortir {{ event.place.country.atDisplayName }}"
                                        href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}">
-                                        <strong class="font-weight-normal">Événements en {{ event.place.country.name }}</strong>
+                                        <strong class="font-weight-normal">Événements {{ event.place.country.atDisplayName }}</strong>
                                     </a>
                                 {% endif %}
 

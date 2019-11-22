@@ -19,16 +19,7 @@ class Location
             return sprintf('%s By Night', $this->city->getName());
         }
 
-        return sprintf('By Night %s', $this->country->getName());
-    }
-
-    public function getAtValue()
-    {
-        if ($this->city) {
-            return 'à';
-        }
-
-        return 'en';
+        return sprintf('By Night %s', $this->country->getDisplayName());
     }
 
     public function getAtName()
@@ -38,7 +29,7 @@ class Location
         }
 
         if ($this->country) {
-            return sprintf('en %s', $this->country->getName());
+            return $this->country->getAtDisplayName();
         }
 
         return '';
@@ -51,7 +42,7 @@ class Location
         }
 
         if ($this->country) {
-            return $this->country->getName();
+            return $this->country->getDisplayName();
         }
 
         return '';

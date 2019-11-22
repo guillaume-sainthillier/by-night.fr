@@ -28,9 +28,9 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% do menu.addItem(location.country.name, url('app_agenda_index', {'location': location.country.slug})) %}
+        {% do menu.addItem(location.country.displayName, url('app_agenda_index', {'location': location.country.slug})) %}
     {% else %}
-        {% do menu.addItem(location.city.country.name, url('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% do menu.addItem(location.city.country.displayName, url('app_agenda_index', {'location': location.city.country.slug})) %}
         {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.city.slug})) %}
     {% endif %}
     {% do menu.addItem('Agenda', url('app_agenda_agenda', {'location': location.slug})) %}
@@ -51,7 +51,7 @@
 
 {% block meta_description -%}
     {{ block('titre')|striptags }}.
-    {% if location.isCountry %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir en {{ location.country.name }}.{% endif %}
+    {% if location.isCountry %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir {{ location.country.atDisplayName }}.{% endif %}
     {% if location.isCity %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir à {{ location.city.name }}.{% endif %}
 {%- endblock %}
 

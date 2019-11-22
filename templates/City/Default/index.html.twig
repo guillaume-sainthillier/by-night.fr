@@ -10,9 +10,9 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% do menu.addItem(location.country.name, url('app_agenda_index', {'location': location.country.slug})) %}
+        {% do menu.addItem(location.country.displayName, url('app_agenda_index', {'location': location.country.slug})) %}
     {% else %}
-        {% do menu.addItem(location.city.country.name, url('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% do menu.addItem(location.city.country.displayName, url('app_agenda_index', {'location': location.city.country.slug})) %}
         {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.slug})) %}
     {% endif %}
 {% endblock %}
@@ -46,7 +46,8 @@
             </div>
         </div>
         <div class="footer_wrapper">
-            <h2 class="text-primary h4">{{ nbEvents }} événements et bons plans culturels {{ location.atName }}</h2>
+            {% set s = nbEvents > 1 ? "s" : "" %}
+            <h2 class="text-primary h4">{{ nbEvents }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
         </div>
     </section>
     <section class="bg-white py-4">
@@ -72,7 +73,7 @@
                 <p>{{ location.appName }} est une solution alternative pour chercher et trouver facilement des
                     <strong>événements & bons plans culturels</strong> dans toutes les villes de {{ location.name }}.
                     Notre but est avant tout de centraliser les
-                    <strong>choses à faire en {{ location.name }}</strong> et vous
+                    <strong>choses à faire {{ location.atName }}</strong> et vous
                     offir une plateforme unique pour vous aider à trouver les meilleures <strong>idées sorties</strong>.
                 </p>
             {% endif %}

@@ -26,6 +26,7 @@ class Country
     private $id;
 
     /**
+     * @var string
      * @Gedmo\Slug(fields={"name"}, prefix="c--")
      * @ORM\Column(length=63, unique=true)
      * @Exclude
@@ -34,7 +35,6 @@ class Country
 
     /**
      * @var string
-     *
      * @ORM\Column(type="string", length=5, nullable=true)
      * @Exclude
      */
@@ -42,7 +42,6 @@ class Country
 
     /**
      * @var string
-     *
      * @ORM\Column(type="string", length=63)
      * @Serializer\Groups({"list_city"})
      */
@@ -50,7 +49,20 @@ class Country
 
     /**
      * @var string
-     *
+     * @ORM\Column(type="string", length=63)
+     * @Serializer\Groups({"list_city"})
+     */
+    private $displayName;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=63)
+     * @Serializer\Groups({"list_city"})
+     */
+    private $atDisplayName;
+
+    /**
+     * @var string
      * @ORM\Column(type="string", length=63)
      * @Exclude
      */
@@ -58,7 +70,6 @@ class Country
 
     /**
      * @var string|null
-     *
      * @ORM\Column(type="string", length=511, nullable=true)
      * @Exclude
      */
@@ -145,4 +156,29 @@ class Country
 
         return $this;
     }
+
+    public function getDisplayName(): ?string
+    {
+        return $this->displayName;
+    }
+
+    public function setDisplayName(string $displayName): self
+    {
+        $this->displayName = $displayName;
+
+        return $this;
+    }
+
+    public function getAtDisplayName(): ?string
+    {
+        return $this->atDisplayName;
+    }
+
+    public function setAtDisplayName(string $atDisplayName): self
+    {
+        $this->atDisplayName = $atDisplayName;
+
+        return $this;
+    }
+
 }

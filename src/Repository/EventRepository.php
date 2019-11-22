@@ -164,7 +164,7 @@ class EventRepository extends EntityRepository
 
         return $this->_em
             ->createQueryBuilder()
-            ->select('c.name, c.slug, COUNT(a.id) AS events')
+            ->select('c.displayName, c.atDisplayName, c.slug, COUNT(a.id) AS events')
             ->from('App:Event', 'a')
             ->join('a.place', 'p')
             ->join('p.country', 'c')

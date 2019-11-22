@@ -2,7 +2,7 @@
 
 {% block titre -%}
     {% if location.isCity %}Les actus à {{ location.city.name }}{% endif %}
-    {% if location.isCountry %}Les actus en {{ location.country.name }}{% endif %}
+    {% if location.isCountry %}Les actus {{ location.country.atDisplayName }}{% endif %}
 {%- endblock %}
 {% block widget_attr %}id="actus"{% endblock %}
 {% block icone 'fa-twitter' %}
