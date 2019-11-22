@@ -126,8 +126,14 @@ class App {
         self.initSelectpicker(selecteur);
         self.initGallery(selecteur);
         self.initShortcutDates(selecteur);
+        self.initFormErrors(selecteur);
     }
 
+    initFormErrors(container) {
+        $("label.bmd-label-static", container || document).each(function () {
+            $(this).toggleClass('position-static', $(this).find('.invalid-feedback').length > 0);
+        });
+    }
     initShortcutDates(container) {
         $("input.shorcuts_date", container || document).each(function () {
             $(this).removeAttr('name');
