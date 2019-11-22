@@ -4,18 +4,18 @@
     {% set titre = 'Recherche d\'événements, lieux et membres' %}
     {% set title = 'Recherche' %}
     {% set description = 'Recherche d\'événements, concerts, spectacles et membres' %}
-    {% set result = {count: (nbEvents + nbUsers), label: 'résultat'} %}
+    {% set result = {count: (events.nbResults + users.nbResults), label: 'résultat'} %}
     {% set nom = 'Tout' %}
 {% elseif type == 'evenements' %}
     {% set titre = 'Recherche d\'événements' %}
     {% set title = 'Recherche d\'événements' %}
     {% set description = 'Recherche d\'événements, concerts, spectacles, sorties' %}
-    {% set result = {count: nbEvents, label: 'événement'} %}
+    {% set result = {count: events.nbResults, label: 'événement'} %}
     {% set nom = 'Événements' %}
 {% elseif type == 'membres' %}
     {% set titre = 'Recherche de membres' %}
     {% set title = 'Recherche de membres' %}
-    {% set result = {count: nbUsers, label: 'membre'} %}
+    {% set result = {count: users.nbResults, label: 'membre'} %}
     {% set description = titre %}
     {% set nom = 'Membres' %}
 {% endif %}

@@ -89,14 +89,14 @@
         {% include "City/Agenda/block_criteres.html.twig" %}
         {% include "ad.html.twig" with({'marginTop': 0}) %}
 
-        {% if events|length == 0 %}
+        {% if events.nbResults == 0 %}
             <div class="alert alert-info">
                 <i class="fa fa-info-circle"></i>
                 Désolé, il n'y a aucun résultat pour votre recherche.
             </div>
         {% else %}
             <h3 class="info">
-                <span class="badge badge-info">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' : '' }}</span>
+                <span class="badge badge-info">{{ events.nbResults }} événement{{ events.nbResults > 1 ? 's' : '' }}</span>
             </h3>
             {% include "City/Agenda/index_content.html.twig" with({'partial': false}) %}
         {% endif %}

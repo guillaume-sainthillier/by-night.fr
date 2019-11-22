@@ -6,7 +6,9 @@ use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
-use Knp\Component\Pager\PaginatorInterface;
+use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +38,7 @@ class SearchController extends AbstractController
      *
      * @return Response
      */
-    public function searchAction(Request $request, RepositoryManagerInterface $rm, PaginatorInterface $paginator)
+    public function searchAction(Request $request, RepositoryManagerInterface $rm)
     {
         $q = \trim($request->get('q', null));
         $type = $request->get('type', null);
@@ -51,23 +53,18 @@ class SearchController extends AbstractController
             $type = null;
         }
 
-        $nbSoirees = 0;
-        $events = [];
-        $nbUsers = 0;
-        $users = [];
-
+        $events = new Pagerfanta(new ArrayAdapter([]));
+        $users = new Pagerfanta(new ArrayAdapter([]));
         if ($q) {
             if (!$type || 'evenements' === $type) { //Recherche d'événements
-                $query = $this->searchEvents($rm, $q);
-                $pagination = $paginator->paginate($query, $page, $maxItems);
-                $nbSoirees = $pagination->getTotalItemCount();
-                $events = $pagination;
+                $results = $this->searchEvents($rm, $q);
+                $events = new Pagerfanta(new FantaPaginatorAdapter($results));
+                $events->setCurrentPage($page)->setMaxPerPage($maxItems);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('Search/content_events.html.twig', [
                         'type' => $type,
                         'term' => $q,
-                        'maxItems' => $maxItems,
                         'page' => $page,
                         'events' => $events,
                     ]);
@@ -75,16 +72,14 @@ class SearchController extends AbstractController
             }
 
             if (!$type || 'membres' === $type) { //Recherche de membres
-                $query = $this->searchUsers($rm, $q);
-                $pagination = $paginator->paginate($query, $page, $maxItems);
-                $nbUsers = $pagination->getTotalItemCount();
-                $users = $pagination;
+                $results = $this->searchUsers($rm, $q);
+                $users = new Pagerfanta(new FantaPaginatorAdapter($results));
+                $users->setCurrentPage($page)->setMaxPerPage($maxItems);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('Search/content_users.html.twig', [
                         'type' => $type,
                         'term' => $q,
-                        'maxItems' => $maxItems,
                         'page' => $page,
                         'users' => $users,
                     ]);
@@ -96,11 +91,8 @@ class SearchController extends AbstractController
             'term' => $q,
             'type' => $type,
             'page' => $page,
-            'maxItems' => $maxItems,
             'events' => $events,
-            'nbEvents' => $nbSoirees,
             'users' => $users,
-            'nbUsers' => $nbUsers,
         ]);
     }
 }

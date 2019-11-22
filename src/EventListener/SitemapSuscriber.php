@@ -8,7 +8,6 @@ use App\Entity\Place;
 use App\Entity\User;
 use DateTime;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Knp\Component\Pager\PaginatorInterface;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;

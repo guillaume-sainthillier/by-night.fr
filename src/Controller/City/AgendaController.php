@@ -12,7 +12,9 @@ use App\Repository\EventRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
-use Knp\Component\Pager\PaginatorInterface;
+use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -77,7 +79,7 @@ class AgendaController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(Location $location, Request $request, CacheInterface $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, int $page = 1, string $type = null, string $tag = null, string $slug = null)
+    public function indexAction(Location $location, Request $request, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, int $page = 1, string $type = null, string $tag = null, string $slug = null)
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -135,14 +137,11 @@ class AgendaController extends BaseController
             //Recherche ElasticSearch
             $repository = $repositoryManager->getRepository(Event::class);
             $results = $repository->findWithSearch($search);
-
-            $pagination = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
-            $nbSoireesTotales = $pagination->getTotalItemCount();
-            $events = $pagination;
+            $events = new Pagerfanta(new FantaPaginatorAdapter($results));
+            $events->setCurrentPage($page)->setMaxPerPage(self::EVENT_PER_PAGE);
         } else {
             $isValid = false;
-            $nbSoireesTotales = 0;
-            $events = [];
+            $events = new Pagerfanta(new ArrayAdapter([]));
         }
 
         return $this->render('City/Agenda/index.html.twig', [
@@ -153,7 +152,6 @@ class AgendaController extends BaseController
             'tag' => $tag,
             'type' => $type,
             'events' => $events,
-            'nbEvents' => $nbSoireesTotales,
             'maxPerEvent' => self::EVENT_PER_PAGE,
             'page' => $page,
             'search' => $search,

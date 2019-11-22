@@ -7,9 +7,10 @@ use App\Entity\City;
 use App\Invalidator\TagsInvalidator;
 use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
+use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
 use FOS\HttpCache\ResponseTagger;
 use FOS\HttpCacheBundle\Configuration\Tag;
-use Knp\Component\Pager\PaginatorInterface;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +30,7 @@ class CityController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function cityAutocompleteAction(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
+    public function cityAutocompleteAction(ResponseTagger $responseTagger, Request $request, RepositoryManagerInterface $repositoryManager)
     {
         $term = \trim($request->get('q'));
         if (!$term) {
@@ -38,7 +39,8 @@ class CityController extends AbstractController
             /** @var CityElasticaRepository $repo */
             $repo = $repositoryManager->getRepository(City::class);
             $results = $repo->findWithSearch($term);
-            $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
+            $results = new Pagerfanta(new FantaPaginatorAdapter($results));
+            $results->setCurrentPage(1)->setMaxPerPage(self::MAX_RESULTS);
         }
 
         $jsonResults = [];

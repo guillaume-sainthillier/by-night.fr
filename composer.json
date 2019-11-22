@@ -43,7 +43,6 @@
         "guzzlehttp/psr7": "^1.5",
         "hwi/oauth-bundle": "^0.6",
         "jms/serializer-bundle": "^3.2",
-        "knplabs/knp-paginator-bundle": "^3.0",
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/flysystem-bundle": "^1.2",
         "league/glide-symfony": "^1.0",

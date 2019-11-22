@@ -4,10 +4,10 @@
     {% endfor %}
 </div>
 
-{% if users|length == maxItems %}
+{% if users.hasNextPage %}
     <div class="text-center my-4">
         <a class="btn btn-outline-primary more"
-           href="{{ path('app_search_query', {'q' : term, 'page': page+1, 'type' : 'membres'}) }}">
+           href="{{ path('app_search_query', {'q' : term, 'page': users.nextPage, 'type' : 'membres'}) }}">
             Plus
         </a>
     </div>
