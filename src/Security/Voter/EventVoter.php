@@ -18,7 +18,7 @@ class EventVoter extends Voter
             return true;
         }
 
-        return $user->hasRole('ROLE_ADMIN');
+        return false;
     }
 
     private function canDelete(Event $event, User $user)
@@ -32,6 +32,10 @@ class EventVoter extends Voter
 
         if (!$user instanceof User) {
             return false;
+        }
+
+        if($user->hasRole('ROLE_ADMIN')) {
+            return true;
         }
 
         switch ($attribute) {
