@@ -60,37 +60,11 @@ class App {
             return;
         }
 
-        var callback_enter = function (element) {
-            var width = $(element).width();
-            var ratio = $(element).attr('width') / $(element).attr('height');
-
-            var placeholder = $('<div>')
-                .addClass('placeholder')
-                .width(width)
-                .height(width / ratio);
-
-            placeholder.append($('<div>').addClass('loading-background'));
-            $(element).addClass('d-none');
-            $(element).after($(placeholder));
-        };
-
-        var callback_loaded = function (element) {
-            $(element).siblings('.placeholder').remove();
-            $(element).removeClass('d-none');
-        };
-
-        var callback_error = function (element) {
-            $(element).siblings('.placeholder').find('.loading-background').remove();
-        };
-
         if (images.length > 0) {
             new LazyLoad({
                 elements_selector: "img.loading",
                 threshold: 200,
                 container: (selecteur && selecteur[0]) || document,
-                /*callback_enter: callback_enter,
-                callback_loaded: callback_loaded,
-                callback_error: callback_error,*/
             });
         }
 
@@ -98,15 +72,11 @@ class App {
             new LazyLoad({
                 elements_selector: ".scroll-area",
                 container: (selecteur && selecteur[0]) || document,
-
                 callback_enter: function (el) {
                     new LazyLoad({
                         elements_selector: "img.loading",
                         threshold: 200,
                         container: el,
-                        /*callback_enter: callback_enter,
-                        callback_loaded: callback_loaded,
-                        callback_error: callback_error,*/
                     });
                 }
             });
