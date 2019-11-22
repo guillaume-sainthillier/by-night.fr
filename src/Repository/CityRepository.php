@@ -34,6 +34,19 @@ class CityRepository extends EntityRepository
             ->iterate();
     }
 
+    public function findTagSiteMap()
+    {
+        return parent::createQueryBuilder('c')
+            ->select('c.slug, e.typeManifestation, e.categorieManifestation, e.themeManifestation')
+            ->join('App:Place', 'p', 'WITH', 'p.city = c')
+            ->join('App:Event', 'e', 'WITH', 'e.place = p')
+            ->where('e.dateFin >= :from')
+            ->setParameter('from', date('Y-m-d'))
+            ->groupBy('c.slug, e.typeManifestation, e.categorieManifestation, e.themeManifestation')
+            ->getQuery()
+            ->iterate();
+    }
+
     public function findRandomNames(Country $country = null, $limit = 5)
     {
         $qb = parent::createQueryBuilder('c')

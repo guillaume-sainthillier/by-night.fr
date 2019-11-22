@@ -66,12 +66,42 @@ class SitemapSuscriber implements EventSubscriberInterface
             'places' => [$this, 'registerPlacesRoutes'],
             'users' => [$this, 'registerUserRoutes'],
             'events' => [$this, 'registerEventRoutes'],
+            'tags' => [$this, 'registerTagRoutes'],
         ];
 
         foreach ($sections as $name => $generateFunction) {
             if (!$section || $name === $section) {
                 \call_user_func($generateFunction, $name);
             }
+        }
+    }
+
+    private function registerTagRoutes($section)
+    {
+        $events = $this->doctrine->getRepository(City::class)->findTagSiteMap();
+
+        $cache = [];
+        $lastSlug = null;
+        foreach ($events as $event) {
+            $event = current($event);
+            $slug = $event['slug'];
+            if ($slug !== $lastSlug) {
+                unset($cache); //call GC
+                $cache = [];
+            }
+
+            $tags = $event['categorieManifestation'] . ',' . $event['typeManifestation'] . ',' . $event['themeManifestation'];
+            $tags = \array_unique(\array_map('trim', \array_map('ucfirst', \array_filter(\preg_split('#[,/]#', $tags)))));
+
+            foreach ($tags as $tag) {
+                if (!empty($cache[$tag])) {
+                    continue;
+                }
+
+                $cache[$tag] = true;
+                $this->addUrl($section, 'app_agenda_tags', ['location' => $event['slug'], 'tag' => $tag], null, UrlConcrete::CHANGEFREQ_DAILY);
+            }
+            $lastSlug = $slug;
         }
     }
 
