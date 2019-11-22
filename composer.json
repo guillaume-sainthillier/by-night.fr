@@ -91,6 +91,7 @@
         "twig/twig": "^2.6",
         "twistor/flysystem-http": "^0.2.0",
         "vich/uploader-bundle": "^1.9",
+        "white-october/pagerfanta-bundle": "^1.3",
         "whiteoctober/breadcrumbs-bundle": "^1.4"
     },
     "require-dev": {

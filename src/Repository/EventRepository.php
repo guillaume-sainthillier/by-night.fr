@@ -11,6 +11,8 @@ use DateTime;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class EventRepository extends EntityRepository
@@ -138,15 +140,22 @@ class EventRepository extends EntityRepository
         return $events;
     }
 
-    public function findAllByUser(UserInterface $user)
+    public function findAllByUser(UserInterface $user, int $page, int $limit)
     {
-        return $this
+        $query = $this
             ->createQueryBuilder('a')
             ->where('a.user = :user')
             ->setParameters(['user' => $user])
             ->orderBy('a.updatedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
+
+        $adapter = new DoctrineORMAdapter($query);
+        $pagerfanta = new Pagerfanta($adapter);
+
+        return $pagerfanta
+            ->setAllowOutOfRangePages(true)
+            ->setCurrentPage($page)
+            ->setMaxPerPage($limit);
     }
 
     public function getCountryEvents()

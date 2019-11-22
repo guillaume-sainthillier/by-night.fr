@@ -702,6 +702,9 @@
             "ref": "c4f5755b37fb65b9c6a3cbdae91205c15a137ed4"
         }
     },
+    "white-october/pagerfanta-bundle": {
+        "version": "v1.3.1"
+    },
     "whiteoctober/breadcrumbs-bundle": {
         "version": "1.2.3"
     },

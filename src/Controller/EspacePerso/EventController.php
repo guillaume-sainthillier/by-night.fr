@@ -15,6 +15,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends BaseController
 {
+    private const EVENT_PER_PAGE = 50;
+
     /**
      * @Route("/annuler/{slug}", name="app_event_annuler", requirements={"slug": ".+"})
      * @IsGranted("edit", subject="event")
@@ -50,10 +52,12 @@ class EventController extends BaseController
     /**
      * @Route("/mes-soirees", name="app_event_list")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $user = $this->getUser();
-        $events = $this->getDoctrine()->getRepository(Event::class)->findAllByUser($user);
+
+        $page = (int)$request->query->get('page', 1);
+        $events = $this->getDoctrine()->getRepository(Event::class)->findAllByUser($user, $page, self::EVENT_PER_PAGE);
 
         return $this->render('EspacePerso/liste.html.twig', [
             'events' => $events,
