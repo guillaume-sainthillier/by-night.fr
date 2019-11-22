@@ -903,18 +903,6 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function getIsBrouillon(): ?bool
-    {
-        return $this->isBrouillon;
-    }
-
-    public function setIsBrouillon(bool $isBrouillon): self
-    {
-        $this->isBrouillon = $isBrouillon;
-
-        return $this;
-    }
-
     public function getTweetPostId(): ?string
     {
         return $this->tweetPostId;
