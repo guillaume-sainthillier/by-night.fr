@@ -90,22 +90,22 @@ class SearchEvent
      * @param DateTime|null $from
      * @return SearchEvent
      */
-    public function setFrom(?DateTimeInterface $from): SearchEvent
+    public function setFrom(?\DateTimeInterface $from): SearchEvent
     {
         $this->from = $from;
         return $this;
     }
 
     /**
-     * @return DateTime|null
+     * @return \DateTimeInterface|null
      */
-    public function getTo(): ?DateTime
+    public function getTo(): ?\DateTimeInterface
     {
         return $this->to;
     }
 
     /**
-     * @param DateTime|null $to
+     * @param \DateTimeInterface|null $to
      * @return SearchEvent
      */
     public function setTo(?\DateTimeInterface $to): SearchEvent

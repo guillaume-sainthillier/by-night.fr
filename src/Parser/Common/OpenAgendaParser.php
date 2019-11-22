@@ -134,7 +134,7 @@ class OpenAgendaParser extends AbstractParser
         $horaires = null;
         if ($dateDebut instanceof \DateTimeInterface && $dateFin instanceof \DateTimeInterface && $dateDebut->getTimestamp() !== $dateFin->getTimestamp()) {
             $horaires = \sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
-        } elseif ($dateDebut instanceof \DateTime) {
+        } elseif ($dateDebut instanceof \DateTimeInterface) {
             $horaires = \sprintf('A %s', $dateDebut->format("H\hi"));
         }
 

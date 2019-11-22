@@ -84,14 +84,14 @@ class Event implements GeolocalizeInterface
     protected $descriptif;
 
     /**
-     * @var DateTime
+     * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $externalUpdatedAt;
 
     /**
-     * @var DateTime
+     * @var \DateTimeInterface
      *
      * @ORM\Column(type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
@@ -102,7 +102,7 @@ class Event implements GeolocalizeInterface
     protected $dateDebut;
 
     /**
-     * @var DateTime
+     * @var \DateTimeInterface
      *
      * @ORM\Column(type="date", nullable=true)
      * @Groups({"list_event"})

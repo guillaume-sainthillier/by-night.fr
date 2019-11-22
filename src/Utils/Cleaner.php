@@ -22,7 +22,7 @@ class Cleaner
 
     public function cleanEvent(Event $event)
     {
-        if (!$event->getDateFin() instanceof DateTime) {
+        if (!$event->getDateFin() instanceof \DateTimeInterface) {
             $event->setDateFin($event->getDateDebut());
         }
 
