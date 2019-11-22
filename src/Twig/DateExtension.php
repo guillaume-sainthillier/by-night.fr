@@ -27,12 +27,12 @@ class DateExtension extends Extension
         return new DateTime($string);
     }
 
-    public function diffDate(DateTime $date)
+    public function diffDate(\DateTimeInterface $date)
     {
         return $this->statsDiffDate($date)['full'];
     }
 
-    public function statsDiffDate(DateTime $date)
+    public function statsDiffDate(\DateTimeInterface $date)
     {
         $diff = $date->diff(new DateTime());
 
