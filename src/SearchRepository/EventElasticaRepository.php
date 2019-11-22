@@ -26,7 +26,7 @@ class EventElasticaRepository extends Repository
         $mainQuery = new BoolQuery();
 
         $mainQuery->addMust(new Term([
-            'is_brouillon' => false,
+            'brouillon' => false,
         ]));
 
         $location = null;
