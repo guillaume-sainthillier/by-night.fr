@@ -16,6 +16,12 @@
 
 	.detail-item {
 	  margin-bottom: 1rem;
+
+	  .tags a {
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	  }
 	}
   }
 }
