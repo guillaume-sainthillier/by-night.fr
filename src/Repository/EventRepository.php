@@ -85,11 +85,10 @@ class EventRepository extends EntityRepository
 
         return $this->_em
             ->createQuery('UPDATE App:Event a
-            SET a.isArchive = :archive
+            SET a.archive = true
             WHERE (a.dateFin < :from OR a.dateFin > :to)
-            AND a.isArchive = false')
+            AND a.archive = false')
             ->setParameters([
-                'archive' => true,
                 'from' => $from->format('Y-m-d'),
                 'to' => $to->format('Y-m-d'),
             ])
@@ -106,7 +105,7 @@ class EventRepository extends EntityRepository
 
         return $this
             ->createElasticaQueryBuilder('a')
-            ->where('a.isArchive = false')
+            ->where('a.archive = false')
             ->andWhere('a.dateFin < :from OR a.dateFin > :to')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),

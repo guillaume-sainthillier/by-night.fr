@@ -21,8 +21,8 @@ class CommentRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('a')
             ->from('App:Comment', 'a')
-            ->where('a.event = :event AND a.parent IS NULL AND a.isApprouve = :is_approuve')
-            ->setParameters([':event' => $event, 'is_approuve' => true])
+            ->where('a.event = :event AND a.parent IS NULL AND a.approuve = true')
+            ->setParameters([':event' => $event])
             ->orderBy('a.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
@@ -48,8 +48,8 @@ class CommentRepository extends EntityRepository
             ->createQueryBuilder()
             ->select('a')
             ->from('App:Comment', 'a')
-            ->where('a.parent = :parent AND a.isApprouve = :is_approuve')
-            ->setParameters([':parent' => $comment, 'is_approuve' => true])
+            ->where('a.parent = :parent AND a.approuve = true')
+            ->setParameters([':parent' => $comment])
             ->orderBy('a.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
@@ -62,8 +62,8 @@ class CommentRepository extends EntityRepository
         return $this->_em->createQueryBuilder()
             ->select('COUNT(a)')
             ->from('App:Comment', 'a')
-            ->where('a.event = :event AND a.parent IS NULL AND a.isApprouve = :is_approuve')
-            ->setParameters([':event' => $event, 'is_approuve' => true])
+            ->where('a.event = :event AND a.parent IS NULL AND a.approuve = true')
+            ->setParameters([':event' => $event])
             ->getQuery()
             ->getSingleScalarResult();
     }
@@ -73,8 +73,8 @@ class CommentRepository extends EntityRepository
         return $this->_em->createQueryBuilder()
             ->select('COUNT(a)')
             ->from('App:Comment', 'a')
-            ->where('a.parent = :parent AND a.isApprouve = :is_approuve')
-            ->setParameters([':parent' => $parent, 'is_approuve' => true])
+            ->where('a.parent = :parent AND a.approuve = true')
+            ->setParameters([':parent' => $parent])
             ->getQuery()
             ->getSingleScalarResult();
     }

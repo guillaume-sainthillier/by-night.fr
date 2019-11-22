@@ -149,7 +149,7 @@ class Place implements GeolocalizeInterface
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected $isJunk;
+    protected $junk;
 
     /**
      * @var string|null
@@ -378,18 +378,6 @@ class Place implements GeolocalizeInterface
         return $this;
     }
 
-    public function getIsJunk(): ?bool
-    {
-        return $this->isJunk;
-    }
-
-    public function setIsJunk(?bool $isJunk): self
-    {
-        $this->isJunk = $isJunk;
-
-        return $this;
-    }
-
     public function getCity(): ?City
     {
         return $this->city;
@@ -410,6 +398,18 @@ class Place implements GeolocalizeInterface
     public function setCountry(?Country $country): self
     {
         $this->country = $country;
+
+        return $this;
+    }
+
+    public function getJunk(): ?bool
+    {
+        return $this->junk;
+    }
+
+    public function setJunk(?bool $junk): self
+    {
+        $this->junk = $junk;
 
         return $this;
     }

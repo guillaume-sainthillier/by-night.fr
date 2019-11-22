@@ -264,7 +264,7 @@ class Event implements GeolocalizeInterface
      * @Groups({"list_event"})
      * @Expose
      */
-    protected $isBrouillon;
+    protected $brouillon;
 
     /**
      * @var int
@@ -375,7 +375,7 @@ class Event implements GeolocalizeInterface
      *
      * @ORM\Column(type="boolean")
      */
-    protected $isArchive;
+    protected $archive;
 
     /**
      * @var string
@@ -571,8 +571,8 @@ class Event implements GeolocalizeInterface
         $this->dateDebut = new DateTime();
         $this->calendriers = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
-        $this->isBrouillon = false;
-        $this->isArchive = false;
+        $this->brouillon = false;
+        $this->archive = false;
     }
 
     public function getLocationSlug()
@@ -1035,18 +1035,6 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function getIsArchive(): ?bool
-    {
-        return $this->isArchive;
-    }
-
-    public function setIsArchive(bool $isArchive): self
-    {
-        $this->isArchive = $isArchive;
-
-        return $this;
-    }
-
     public function getPlaceName(): ?string
     {
         return $this->placeName;
@@ -1213,6 +1201,30 @@ class Event implements GeolocalizeInterface
     public function setPlaceCountry(?Country $placeCountry): self
     {
         $this->placeCountry = $placeCountry;
+
+        return $this;
+    }
+
+    public function getBrouillon(): ?bool
+    {
+        return $this->brouillon;
+    }
+
+    public function setBrouillon(bool $brouillon): self
+    {
+        $this->brouillon = $brouillon;
+
+        return $this;
+    }
+
+    public function getArchive(): ?bool
+    {
+        return $this->archive;
+    }
+
+    public function setArchive(bool $archive): self
+    {
+        $this->archive = $archive;
 
         return $this;
     }

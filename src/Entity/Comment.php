@@ -32,7 +32,7 @@ class Comment
      *
      * @ORM\Column(type="boolean")
      */
-    protected $isApprouve;
+    protected $approuve;
 
     /**
      * @var User
@@ -67,7 +67,7 @@ class Comment
     public function __construct()
     {
         $this->reponses = new ArrayCollection();
-        $this->isApprouve = true;
+        $this->approuve = true;
     }
 
     public function __toString()
@@ -83,18 +83,6 @@ class Comment
     public function setCommentaire(string $commentaire): self
     {
         $this->commentaire = $commentaire;
-
-        return $this;
-    }
-
-    public function getIsApprouve(): ?bool
-    {
-        return $this->isApprouve;
-    }
-
-    public function setIsApprouve(bool $isApprouve): self
-    {
-        $this->isApprouve = $isApprouve;
 
         return $this;
     }
@@ -162,6 +150,18 @@ class Comment
                 $reponse->setParent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getApprouve(): ?bool
+    {
+        return $this->approuve;
+    }
+
+    public function setApprouve(bool $approuve): self
+    {
+        $this->approuve = $approuve;
 
         return $this;
     }
