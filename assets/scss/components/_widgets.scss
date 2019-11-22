@@ -257,6 +257,10 @@
 	flex-flow: column wrap;
 	justify-content: center;
 	align-items: center;
+
+	small {
+	  white-space: nowrap;
+	}
   }
 
   .list-group-item-text {
