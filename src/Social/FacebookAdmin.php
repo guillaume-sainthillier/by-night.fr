@@ -238,10 +238,11 @@ class FacebookAdmin extends FacebookListEvents
         $this->init();
         $key = 'pages.' . $id_page;
         if (!isset($this->cache[$key])) {
+            $accessToken = $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null;
             $request = $this->client->sendRequest('GET',
                 '/' . $id_page,
                 $params,
-                $this->getAccessToken()
+                $accessToken
             );
 
             $this->cache[$key] = $request->getGraphPage();
