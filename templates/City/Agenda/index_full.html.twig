@@ -55,6 +55,15 @@
     {% if location.isCity %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir à {{ location.city.name }}.{% endif %}
 {%- endblock %}
 
+{% block metas %}
+    {% if events.hasPreviousPage %}
+        <link rel="prev" href="{{ url(app.request.get('_route'), routeParams|merge({'page': events.getPreviousPage})) }}" />
+    {% endif %}
+    {% if events.hasNextPage %}
+        <link rel="next" href="{{ url(app.request.get('_route'), routeParams|merge({'page': events.getNextPage})) }}" />
+    {% endif %}
+{% endblock %}
+
 {% block body %}
     <div id="bottom-navigation" class="visible">
         <ul id="custom-tab" class="nav nav-tabs nav-fill justify-content-center bg-primary" role="tablist">
@@ -92,7 +101,7 @@
         {% if events.nbResults == 0 %}
             <div class="alert alert-info">
                 <i class="fa fa-info-circle"></i>
-                Désolé, il n'y a aucun résultat pour votre recherche.
+                Mince, on a trouvé aucun événement pour votre recherche. Avez-vous essayer de modifier votre critères ?
             </div>
         {% else %}
             <h3 class="info">

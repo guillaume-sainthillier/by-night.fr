@@ -45,9 +45,9 @@ class AgendaController extends BaseController
         $isAjax = $request->isXmlHttpRequest();
 
         $routeParams = $request->query->all() + [
-                'page' => $page + 1,
-                'location' => $location->getSlug(),
-            ];
+            'page' => $page + 1,
+            'location' => $location->getSlug(),
+        ];
 
         if (null !== $type) {
             $routeParams['type'] = $type;
@@ -56,8 +56,6 @@ class AgendaController extends BaseController
         } elseif (null !== $slug) {
             $routeParams['slug'] = $slug;
         }
-
-        $paginateURL = $this->generateUrl($request->attributes->get('_route'), $routeParams);
 
         //Récupération du repo des événements
         $em = $this->getDoctrine()->getManager();
@@ -117,7 +115,7 @@ class AgendaController extends BaseController
             'search' => $search,
             'isValid' => $isValid,
             'isAjax' => $isAjax,
-            'paginateURL' => $paginateURL,
+            'routeParams' => $routeParams,
             'form' => $form->createView(),
         ]);
     }
