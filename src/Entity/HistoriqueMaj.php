@@ -19,42 +19,42 @@ class HistoriqueMaj
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="date_debut", type="datetime")
+     * @ORM\Column(type="datetime")
      */
     private $dateDebut;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="from_data", type="string", length=127)
+     * @ORM\Column(type="string", length=127)
      */
     private $fromData;
 
     /**
      * @var DateTime
      *
-     * @ORM\Column(name="date_fin", type="datetime")
+     * @ORM\Column(type="datetime")
      */
     private $dateFin;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="nouvelles_soirees", type="integer")
+     * @ORM\Column(type="integer")
      */
     private $nouvellesSoirees;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="update_soirees", type="integer")
+     * @ORM\Column(type="integer")
      */
     private $updateSoirees;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="explorations", type="integer")
+     * @ORM\Column(type="integer")
      */
     private $explorations;
 

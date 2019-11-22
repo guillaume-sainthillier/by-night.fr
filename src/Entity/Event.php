@@ -260,7 +260,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var bool
      *
-     * @ORM\Column(name="isBrouillon", type="boolean")
+     * @ORM\Column(type="boolean")
      * @Groups({"list_event"})
      * @Expose
      */
@@ -322,7 +322,7 @@ class Event implements GeolocalizeInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="fb_participations", type="integer", nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
