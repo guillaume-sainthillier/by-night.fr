@@ -3,15 +3,7 @@
 namespace App\Social;
 
 use App\Exception\SocialException;
-use App\Utils\Monitor;
-use DateTime;
-use Facebook\Exceptions\FacebookSDKException;
 use Facebook\Facebook as Client;
-use Facebook\FacebookResponse;
-use Facebook\GraphNodes\GraphEdge;
-use Facebook\GraphNodes\GraphNode;
-use IntlDateFormatter;
-use Locale;
 
 /**
  * Description of Facebook.

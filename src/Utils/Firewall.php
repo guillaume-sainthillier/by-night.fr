@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Geolocalize\BoundaryInterface;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -119,8 +118,8 @@ class Firewall
         }
 
         //Pas de dates valides fournies
-        if (!$event->getDateDebut() instanceof DateTime ||
-            ($event->getDateFin() && !$event->getDateFin() instanceof DateTime)
+        if (!$event->getDateDebut() instanceof \DateTimeInterface ||
+            ($event->getDateFin() && !$event->getDateFin() instanceof \DateTimeInterface)
         ) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DATE);
         } elseif ($event->getDateFin() && $event->getDateFin() < $event->getDateDebut()) {

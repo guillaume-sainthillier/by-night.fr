@@ -2,22 +2,9 @@
 
 namespace App\Social;
 
-use App\App\SocialManager;
 use App\Entity\SiteInfo;
-use App\Picture\EventProfilePicture;
-use App\Utils\Monitor;
-use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
-use Facebook\Exceptions\FacebookResponseException;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\FacebookClient;
-use Facebook\FacebookResponse;
-use Facebook\GraphNodes\GraphNode;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Description of Facebook.
@@ -35,20 +22,6 @@ class FacebookAdmin extends Facebook
      */
     protected $_isInitialized;
 
-    protected function init()
-    {
-        parent::init();
-
-        if (!$this->_isInitialized) {
-            $this->_isInitialized = true;
-            $this->siteInfo = $this->socialManager->getSiteInfo();
-
-            if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
-                $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
-            }
-        }
-    }
-
     public function getNumberOfCount()
     {
         $this->init();
@@ -62,6 +35,20 @@ class FacebookAdmin extends Facebook
         }
 
         return 0;
+    }
+
+    protected function init()
+    {
+        parent::init();
+
+        if (!$this->_isInitialized) {
+            $this->_isInitialized = true;
+            $this->siteInfo = $this->socialManager->getSiteInfo();
+
+            if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
+                $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+            }
+        }
     }
 
     public function getPageFromId($id_page, $params = [])

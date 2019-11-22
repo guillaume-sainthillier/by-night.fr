@@ -9,14 +9,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SearchEvent
 {
     /**
-     * @var DateTime|null
+     * @var \DateTimeInterface|null
      * @Assert\NotBlank
      * @Assert\Date
      */
     protected $from;
 
     /**
-     * @var DateTime|null
+     * @var \DateTimeInterface|null
      * @Assert\Date
      */
     protected $to;
@@ -81,7 +81,7 @@ class SearchEvent
     /**
      * @return DateTime|null
      */
-    public function getFrom(): ?DateTime
+    public function getFrom(): ?\DateTimeInterface
     {
         return $this->from;
     }
@@ -90,7 +90,7 @@ class SearchEvent
      * @param DateTime|null $from
      * @return SearchEvent
      */
-    public function setFrom(?DateTime $from): SearchEvent
+    public function setFrom(?DateTimeInterface $from): SearchEvent
     {
         $this->from = $from;
         return $this;
@@ -108,7 +108,7 @@ class SearchEvent
      * @param DateTime|null $to
      * @return SearchEvent
      */
-    public function setTo(?DateTime $to): SearchEvent
+    public function setTo(?\DateTimeInterface $to): SearchEvent
     {
         $this->to = $to;
         return $this;
