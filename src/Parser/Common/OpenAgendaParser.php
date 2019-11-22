@@ -52,6 +52,11 @@ class OpenAgendaParser extends AbstractParser
         $this->cache = [];
     }
 
+    public static function getParserName(): string
+    {
+        return 'Open Agenda';
+    }
+
     public function parse(bool $incremental): void
     {
         foreach (self::AGENDA_IDS as $id) {
@@ -92,6 +97,35 @@ class OpenAgendaParser extends AbstractParser
             });
     }
 
+    private function sendRequest(int $agendaId, int $page): PromiseInterface
+    {
+        //https://openagenda.zendesk.com/hc/fr/articles/203034982-L-export-JSON-d-un-agenda
+        $uri = sprintf('https://openagenda.com/agendas/%s/events.json?oaq[lang]=fr&limit=%d&offset=%d', $agendaId, self::EVENT_BATCH_SIZE, $page * self::EVENT_BATCH_SIZE);
+
+        return $this->client
+            ->getAsync($uri)
+            ->then(function (ResponseInterface $result) {
+                return json_decode(copy_to_string($result->getBody()), true);
+            });
+    }
+
+    private function publishEvents(array $events): int
+    {
+        $nbParsed = 0;
+        foreach ($events as $event) {
+            if (!empty($this->cache['visited'][$event['uid']])) {
+                continue;
+            }
+
+            $this->cache['visited'][$event['uid']] = true;
+            $event = $this->getInfoEvent($event);
+            $this->publish($event);
+            $nbParsed++;
+        }
+
+        return $nbParsed;
+    }
+
     private function getInfoEvent(array $event): array
     {
         $dateDebut = \DateTime::createFromFormat('Y-m-d H:i', $event['firstDate'] . ' ' . $event['firstTimeStart']);
@@ -124,39 +158,5 @@ class OpenAgendaParser extends AbstractParser
             'placeCountryName' => $event['location']['countryCode'],
             'placeExternalId' => $event['locationUid'],
         ];
-    }
-
-    private function publishEvents(array $events): int
-    {
-        $nbParsed = 0;
-        foreach ($events as $event) {
-            if (!empty($this->cache['visited'][$event['uid']])) {
-                continue;
-            }
-
-            $this->cache['visited'][$event['uid']] = true;
-            $event = $this->getInfoEvent($event);
-            $this->publish($event);
-            $nbParsed++;
-        }
-
-        return $nbParsed;
-    }
-
-    private function sendRequest(int $agendaId, int $page): PromiseInterface
-    {
-        //https://openagenda.zendesk.com/hc/fr/articles/203034982-L-export-JSON-d-un-agenda
-        $uri = sprintf('https://openagenda.com/agendas/%s/events.json?oaq[lang]=fr&limit=%d&offset=%d', $agendaId, self::EVENT_BATCH_SIZE, $page * self::EVENT_BATCH_SIZE);
-
-        return $this->client
-            ->getAsync($uri)
-            ->then(function (ResponseInterface $result) {
-                return json_decode(copy_to_string($result->getBody()), true);
-            });
-    }
-
-    public static function getParserName(): string
-    {
-        return 'Open Agenda';
     }
 }

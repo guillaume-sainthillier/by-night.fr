@@ -38,25 +38,6 @@ class EventArchivator
     }
 
     /**
-     * @throws NonUniqueResultException
-     */
-    protected function countObjects(QueryBuilder $queryBuilder)
-    {
-        /* Clone the query builder before altering its field selection and DQL,
-         * lest we leave the query builder in a bad state for fetchSlice().
-         */
-        $qb = clone $queryBuilder;
-        $rootAliases = $queryBuilder->getRootAliases();
-
-        return $qb
-            ->select($qb->expr()->count($rootAliases[0]))
-            // Remove ordering for efficiency; it doesn't affect the count
-            ->resetDQLPart('orderBy')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    /**
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -87,5 +68,24 @@ class EventArchivator
         }
         $repo->updateNonIndexables();
         Monitor::finishProgressBar();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    protected function countObjects(QueryBuilder $queryBuilder)
+    {
+        /* Clone the query builder before altering its field selection and DQL,
+         * lest we leave the query builder in a bad state for fetchSlice().
+         */
+        $qb = clone $queryBuilder;
+        $rootAliases = $queryBuilder->getRootAliases();
+
+        return $qb
+            ->select($qb->expr()->count($rootAliases[0]))
+            // Remove ordering for efficiency; it doesn't affect the count
+            ->resetDQLPart('orderBy')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

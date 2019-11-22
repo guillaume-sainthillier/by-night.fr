@@ -143,6 +143,14 @@ class User extends BaseUser
     }
 
     /**
+     * @return File
+     */
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
      * of 'UploadedFile' is injected into this setter to trigger the  update. If this
      * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
@@ -169,9 +177,9 @@ class User extends BaseUser
     /**
      * @return File
      */
-    public function getImageFile()
+    public function getImageSystemFile()
     {
-        return $this->imageFile;
+        return $this->imageSystemFile;
     }
 
     /**
@@ -196,14 +204,6 @@ class User extends BaseUser
         }
 
         return $this;
-    }
-
-    /**
-     * @return File
-     */
-    public function getImageSystemFile()
-    {
-        return $this->imageSystemFile;
     }
 
     public function getUsername()

@@ -116,6 +116,15 @@ class ProfileController extends BaseController
         return $this->redirectToRoute('fos_user_profile_edit');
     }
 
+    private function createDeleteForm()
+    {
+        return $this->createFormBuilder()
+            ->add('delete_events', CheckboxType::class, [
+                'required' => false,
+            ])
+            ->getForm();
+    }
+
     /**
      * @Route("/edit", name="fos_user_profile_edit")
      *
@@ -165,14 +174,5 @@ class ProfileController extends BaseController
             'formChangePassword' => $formChangePassword->createView(),
             'formDelete' => $formDelete->createView(),
         ]);
-    }
-
-    private function createDeleteForm()
-    {
-        return $this->createFormBuilder()
-            ->add('delete_events', CheckboxType::class, [
-                'required' => false,
-            ])
-            ->getForm();
     }
 }

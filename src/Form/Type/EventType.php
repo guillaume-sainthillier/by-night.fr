@@ -10,7 +10,6 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -161,7 +160,7 @@ class EventType extends AbstractType
             ])
             ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
 
-        if($options['data'] !== null && null === $options['data']->getId()) {
+        if ($options['data'] !== null && null === $options['data']->getId()) {
             $builder
                 ->add('comment', TextareaType::class, [
                     'label' => 'Commentaire',
@@ -176,19 +175,19 @@ class EventType extends AbstractType
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             },
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             }
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             },
             function ($latitude) {
-                return (float) $latitude ?: null;
+                return (float)$latitude ?: null;
             }
         ));
     }

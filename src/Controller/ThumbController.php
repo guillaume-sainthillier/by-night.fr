@@ -70,7 +70,7 @@ class ThumbController extends Controller
                 throw $this->createNotFoundException($e->getMessage(), $e);
             }
         }
-        
+
         $assetThumb->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $assetThumb->getImageResponse($path, $parameters);

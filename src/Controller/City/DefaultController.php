@@ -7,7 +7,6 @@ use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Event;
 use App\Form\Type\SimpleEventSearchType;
-use App\Search\SearchEvent;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends BaseController

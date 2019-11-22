@@ -111,18 +111,6 @@ class Comment
         return $this;
     }
 
-    public function getParent(): ?self
-    {
-        return $this->parent;
-    }
-
-    public function setParent(?self $parent): self
-    {
-        $this->parent = $parent;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Comment[]
      */
@@ -150,6 +138,18 @@ class Comment
                 $reponse->setParent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }

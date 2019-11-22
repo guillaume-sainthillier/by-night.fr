@@ -69,6 +69,11 @@ class Country
         return $this->name;
     }
 
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
     /**
      * Set id.
      * @param string $id
@@ -79,11 +84,6 @@ class Country
         $this->id = $id;
 
         return $this;
-    }
-
-    public function getId(): ?string
-    {
-        return $this->id;
     }
 
     public function getSlug(): ?string

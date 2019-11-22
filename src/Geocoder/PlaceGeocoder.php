@@ -76,6 +76,52 @@ class PlaceGeocoder
         $this->setPlaceInfos($place, $data);
     }
 
+    private function getPlaceInfos(GoogleAddress $address)
+    {
+        $datas = [];
+        if ($address->getPostalCode()) {
+            $datas['postal_code'] = $address->getPostalCode();
+        }
+
+        if ($address->getLocality()) {
+            $datas['city'] = $address->getLocality();
+        }
+
+        if ($address->getStreetName()) {
+            $datas['rue'] = \trim(\sprintf('%s %s', $address->getStreetNumber(), $address->getStreetName()));
+        }
+
+        if ($address->getCountry()) {
+            $datas['country'] = $address->getCountry()->getCode();
+        }
+
+        foreach ($address->getAdminLevels() as $adminLevel) {
+            /** @var AdminLevel $adminLevel */
+            if (1 === $adminLevel->getLevel()) {
+                $datas['admin_zone_1'] = $adminLevel->getName();
+            } elseif (2 === $adminLevel->getLevel()) {
+                $datas['admin_zone_2'] = $adminLevel->getName();
+            }
+        }
+
+        return $datas;
+    }
+
+    private function setPlaceInfos(Place $place, array $gmapPlace)
+    {
+        if (isset($gmapPlace['country'])) {
+            $place->setCountryName($gmapPlace['country']);
+        }
+
+        if (isset($gmapPlace['city'])) {
+            $place->setVille($gmapPlace['city']);
+        }
+
+        if (isset($gmapPlace['postal_code'])) {
+            $place->setCodePostal($gmapPlace['postal_code']);
+        }
+    }
+
     public function geocodePlace(Place $place)
     {
         if (null === $place->getLongitude() || null === $place->getLatitude()) {
@@ -150,51 +196,5 @@ class PlaceGeocoder
 
         $gmapPlace = $this->getPlaceInfos($candidatePlace);
         $this->setPlaceInfos($place, $gmapPlace);
-    }
-
-    private function setPlaceInfos(Place $place, array $gmapPlace)
-    {
-        if (isset($gmapPlace['country'])) {
-            $place->setCountryName($gmapPlace['country']);
-        }
-
-        if (isset($gmapPlace['city'])) {
-            $place->setVille($gmapPlace['city']);
-        }
-
-        if (isset($gmapPlace['postal_code'])) {
-            $place->setCodePostal($gmapPlace['postal_code']);
-        }
-    }
-
-    private function getPlaceInfos(GoogleAddress $address)
-    {
-        $datas = [];
-        if ($address->getPostalCode()) {
-            $datas['postal_code'] = $address->getPostalCode();
-        }
-
-        if ($address->getLocality()) {
-            $datas['city'] = $address->getLocality();
-        }
-
-        if ($address->getStreetName()) {
-            $datas['rue'] = \trim(\sprintf('%s %s', $address->getStreetNumber(), $address->getStreetName()));
-        }
-
-        if ($address->getCountry()) {
-            $datas['country'] = $address->getCountry()->getCode();
-        }
-
-        foreach ($address->getAdminLevels() as $adminLevel) {
-            /** @var AdminLevel $adminLevel */
-            if (1 === $adminLevel->getLevel()) {
-                $datas['admin_zone_1'] = $adminLevel->getName();
-            } elseif (2 === $adminLevel->getLevel()) {
-                $datas['admin_zone_2'] = $adminLevel->getName();
-            }
-        }
-
-        return $datas;
     }
 }

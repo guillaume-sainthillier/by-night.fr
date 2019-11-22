@@ -44,7 +44,8 @@ abstract class AbstractParser implements ParserInterface
         return $this->parsedEvents;
     }
 
-    protected function logException(\Throwable $e) {
+    protected function logException(\Throwable $e)
+    {
         Monitor::writeException($e);
         $this->logger->error($e);
     }

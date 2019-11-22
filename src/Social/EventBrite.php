@@ -59,13 +59,6 @@ class EventBrite extends Social
         });
     }
 
-    public function getEventResults(array $searchParams): PromiseInterface
-    {
-        $this->init();
-
-        return $this->jsonRequest('/v3/events/search/?' . http_build_query($searchParams));
-    }
-
     private function jsonRequest(string $uri): ?PromiseInterface
     {
         return $this
@@ -91,6 +84,13 @@ class EventBrite extends Social
             $connection->close();
             $connection->connect();
         }
+    }
+
+    public function getEventResults(array $searchParams): PromiseInterface
+    {
+        $this->init();
+
+        return $this->jsonRequest('/v3/events/search/?' . http_build_query($searchParams));
     }
 
     public function getNumberOfCount()

@@ -66,6 +66,18 @@ class SearchEvent
         return \array_unique(\array_filter(\explode(' ', $this->getTerm())));
     }
 
+    public function getTerm(): ?string
+    {
+        return $this->term;
+    }
+
+    public function setTerm(?string $term): SearchEvent
+    {
+        $this->term = $term;
+
+        return $this;
+    }
+
     /**
      * @return DateTime|null
      */
@@ -134,18 +146,6 @@ class SearchEvent
     public function setLieux(array $lieux): SearchEvent
     {
         $this->lieux = $lieux;
-
-        return $this;
-    }
-
-    public function getTerm(): ?string
-    {
-        return $this->term;
-    }
-
-    public function setTerm(?string $term): SearchEvent
-    {
-        $this->term = $term;
 
         return $this;
     }

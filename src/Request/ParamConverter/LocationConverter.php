@@ -47,14 +47,14 @@ class LocationConverter implements ParamConverterInterface
 
         $location = new Location();
         $entity = null;
-        if(strpos('c--', $locationSlug) !== 0) {
+        if (strpos('c--', $locationSlug) !== 0) {
             $entity = $this
                 ->em
                 ->getRepository(City::class)
                 ->findBySlug($locationSlug);
         }
 
-        if($locationSlug === 'unknown') {
+        if ($locationSlug === 'unknown') {
             $noWhere = new Country();
             $noWhere->setName('Nowhere');
             $noWhere->setSlug($locationSlug);

@@ -32,7 +32,7 @@ class ConnectController extends BaseController
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
      * @param Request $request the active request
-     * @param string  $service name of the resource owner to connect to
+     * @param string $service name of the resource owner to connect to
      *
      * @return Response
      *
@@ -131,9 +131,24 @@ class ConnectController extends BaseController
     }
 
     /**
-     * @param Request $request     The active request
-     * @param array   $accessToken The access token
-     * @param string  $service     Name of the resource owner to connect to
+     * @return string|null
+     */
+    private function getTargetPath(SessionInterface $session)
+    {
+        foreach ($this->container->getParameter('hwi_oauth.firewall_names') as $providerKey) {
+            $sessionKey = '_security.' . $providerKey . '.target_path';
+            if ($session->has($sessionKey)) {
+                return $session->get($sessionKey);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Request $request The active request
+     * @param array $accessToken The access token
+     * @param string $service Name of the resource owner to connect to
      *
      * @return Response
      *
@@ -181,21 +196,6 @@ class ConnectController extends BaseController
         $this->get('event_dispatcher')->dispatch(HWIOAuthEvents::CONNECT_COMPLETED, $event);
 
         return $response;
-    }
-
-    /**
-     * @return string|null
-     */
-    private function getTargetPath(SessionInterface $session)
-    {
-        foreach ($this->container->getParameter('hwi_oauth.firewall_names') as $providerKey) {
-            $sessionKey = '_security.' . $providerKey . '.target_path';
-            if ($session->has($sessionKey)) {
-                return $session->get($sessionKey);
-            }
-        }
-
-        return null;
     }
 
     protected function refreshUser(UserInterface $user)

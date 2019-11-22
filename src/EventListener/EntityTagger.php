@@ -53,12 +53,6 @@ class EntityTagger
         $this->tag($entity);
     }
 
-    public function preRemove(LifecycleEventArgs $args)
-    {
-        $entity = $args->getEntity();
-        $this->tag($entity);
-    }
-
     private function tag($entity)
     {
         if ($entity instanceof User) {
@@ -70,5 +64,11 @@ class EntityTagger
         } elseif ($entity instanceof Calendrier) {
             $this->eventInvalidator->addCalendrier($entity);
         }
+    }
+
+    public function preRemove(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
+        $this->tag($entity);
     }
 }

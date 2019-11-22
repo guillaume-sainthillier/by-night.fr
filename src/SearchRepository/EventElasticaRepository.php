@@ -136,7 +136,7 @@ class EventElasticaRepository extends Repository
         if (false === $sortByScore) {
             $finalQuery->addSort(['date_fin' => 'asc']);
 
-            if($location) {
+            if ($location) {
                 $finalQuery->addSort(['_geo_distance' => [
                     "place.city.location" => $location,
                     "order" => "asc",

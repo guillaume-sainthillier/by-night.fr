@@ -50,13 +50,12 @@ class Firewall
         }
     }
 
-    private function hasExplorationToBeUpdated(Exploration $exploration)
+    public function addExploration(Exploration $exploration)
     {
-        if (self::VERSION !== $exploration->getFirewallVersion()) {
-            return true;
-        }
+        $reject = new Reject();
+        $reject->setReason($exploration->getReason());
 
-        return false;
+        $this->explorations[$exploration->getExternalId()] = $exploration->setReject($reject);
     }
 
     public function hasPlaceToBeUpdated(Exploration $exploration)
@@ -64,16 +63,9 @@ class Firewall
         return $this->hasExplorationToBeUpdated($exploration);
     }
 
-    public function hasEventToBeUpdated(Exploration $exploration, Event $event)
+    private function hasExplorationToBeUpdated(Exploration $exploration)
     {
-        $explorationDate = $exploration->getLastUpdated();
-        $eventDateModification = $event->getExternalUpdatedAt();
-
-        if (!$explorationDate || !$eventDateModification) {
-            return true;
-        }
-
-        if ($eventDateModification > $explorationDate) {
+        if (self::VERSION !== $exploration->getFirewallVersion()) {
             return true;
         }
 
@@ -107,80 +99,6 @@ class Firewall
     {
         $this->filterEventInfos($event);
         $this->filterEventPlace($event);
-    }
-
-    public function filterEventLocation(Event $event)
-    {
-        if (!$event->getPlace() || !$event->getPlace()->getReject()) {
-            return;
-        }
-
-        $reject = $event->getPlace()->getReject();
-        if (!$reject->isValid()) {
-            $event->getPlaceReject()->addReason($reject->getReason());
-            $event->getReject()->addReason($reject->getReason());
-        }
-    }
-
-    public function filterEventExploration(Exploration $exploration, Event $event)
-    {
-        $reject = $exploration->getReject();
-
-        //Aucune action sur un événement supprimé sur la plateforme par son créateur
-        if ($reject->isEventDeleted()) {
-            return;
-        }
-
-        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration);
-        $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
-
-        //L'évémenement n'a pas changé -> non valide
-        if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
-            $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-        //L'événement a changé -> valide
-        } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
-            $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
-        }
-
-        //L'exploration est ancienne -> maj de la version
-        if ($hasFirewallVersionChanged) {
-            $exploration->setFirewallVersion(self::VERSION);
-
-            //L'événement n'était pas valide -> valide
-            if (!$reject->hasNoNeedToUpdate()) {
-                $reject->setValid();
-            }
-        }
-    }
-
-    private function filterEventPlace(Event $event)
-    {
-        //Le nom du lieu doit comporter au moins 2 caractères
-        if (!$this->checkMinLengthValidity($event->getPlaceName(), 2)) {
-            $event->getPlaceReject()->addReason(Reject::BAD_PLACE_NAME);
-        }
-
-        $codePostal = $this->comparator->sanitizeNumber($event->getPlacePostalCode());
-        if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
-            $event->getPlaceReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
-        }
-
-        //Observation du lieu
-        if ($event->getPlaceExternalId()) {
-            $exploration = $this->getExploration($event->getPlaceExternalId());
-            if (!$exploration) {
-                $exploration = (new Exploration())
-                    ->setExternalId($event->getPlaceExternalId())
-                    ->setReject($event->getPlaceReject())
-                    ->setReason($event->getPlaceReject()->getReason())
-                    ->setFirewallVersion(self::VERSION);
-                $this->addExploration($exploration);
-            } else {
-                $exploration
-                    ->setReject($event->getPlaceReject())
-                    ->setReason($event->getPlaceReject()->getReason());
-            }
-        }
     }
 
     private function filterEventInfos(Event $event)
@@ -234,44 +152,9 @@ class Firewall
         }
     }
 
-    public function isPreciseLocation(GeolocalizeInterface $entity)
+    public function checkMinLengthValidity($str, $min)
     {
-        return $entity->getLatitude() && $entity->getLongitude();
-    }
-
-    public function isLocationBounded(GeolocalizeInterface $entity, BoundaryInterface $boundary)
-    {
-        return $this->isPreciseLocation($entity) &&
-            $this->isPreciseLocation($boundary) &&
-            $this->distance($entity, $boundary) <= $boundary->getDistanceMax();
-    }
-
-    private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
-    {
-        $theta = $entity->getLongitude() - $boundary->getLongitude();
-        $dist = \sin(\deg2rad($entity->getLatitude())) *
-            \sin(\deg2rad($boundary->getLatitude())) +
-            \cos(\deg2rad($entity->getLatitude())) *
-            \cos(\deg2rad($boundary->getLatitude())) *
-            \cos(\deg2rad($theta));
-        $dist = \acos($dist);
-        $dist = \rad2deg($dist);
-
-        return $dist * 111.189577; //60 * 1.1515 * 1.609344
-    }
-
-    /**
-     * @param $externalId
-     *
-     * @return Exploration|null
-     */
-    public function getExploration($externalId)
-    {
-        if (!isset($this->explorations[$externalId])) {
-            return null;
-        }
-
-        return $this->explorations[$externalId];
+        return isset(\trim($str)[$min]);
     }
 
     private function isSPAMContent($content)
@@ -293,9 +176,48 @@ class Firewall
         return false;
     }
 
-    public function getVilleHash($villeName)
+    /**
+     * @param $externalId
+     *
+     * @return Exploration|null
+     */
+    public function getExploration($externalId)
     {
-        return $this->comparator->sanitizeVille($villeName);
+        if (!isset($this->explorations[$externalId])) {
+            return null;
+        }
+
+        return $this->explorations[$externalId];
+    }
+
+    private function filterEventPlace(Event $event)
+    {
+        //Le nom du lieu doit comporter au moins 2 caractères
+        if (!$this->checkMinLengthValidity($event->getPlaceName(), 2)) {
+            $event->getPlaceReject()->addReason(Reject::BAD_PLACE_NAME);
+        }
+
+        $codePostal = $this->comparator->sanitizeNumber($event->getPlacePostalCode());
+        if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
+            $event->getPlaceReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
+        }
+
+        //Observation du lieu
+        if ($event->getPlaceExternalId()) {
+            $exploration = $this->getExploration($event->getPlaceExternalId());
+            if (!$exploration) {
+                $exploration = (new Exploration())
+                    ->setExternalId($event->getPlaceExternalId())
+                    ->setReject($event->getPlaceReject())
+                    ->setReason($event->getPlaceReject()->getReason())
+                    ->setFirewallVersion(self::VERSION);
+                $this->addExploration($exploration);
+            } else {
+                $exploration
+                    ->setReject($event->getPlaceReject())
+                    ->setReason($event->getPlaceReject()->getReason());
+            }
+        }
     }
 
     private function checkLengthValidity($str, $length)
@@ -303,17 +225,95 @@ class Firewall
         return \mb_strlen($this->comparator->sanitize($str)) === $length;
     }
 
-    public function checkMinLengthValidity($str, $min)
+    public function filterEventLocation(Event $event)
     {
-        return isset(\trim($str)[$min]);
+        if (!$event->getPlace() || !$event->getPlace()->getReject()) {
+            return;
+        }
+
+        $reject = $event->getPlace()->getReject();
+        if (!$reject->isValid()) {
+            $event->getPlaceReject()->addReason($reject->getReason());
+            $event->getReject()->addReason($reject->getReason());
+        }
     }
 
-    public function addExploration(Exploration $exploration)
+    public function filterEventExploration(Exploration $exploration, Event $event)
     {
-        $reject = new Reject();
-        $reject->setReason($exploration->getReason());
+        $reject = $exploration->getReject();
 
-        $this->explorations[$exploration->getExternalId()] = $exploration->setReject($reject);
+        //Aucune action sur un événement supprimé sur la plateforme par son créateur
+        if ($reject->isEventDeleted()) {
+            return;
+        }
+
+        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration);
+        $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
+
+        //L'évémenement n'a pas changé -> non valide
+        if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
+            $reject->addReason(Reject::NO_NEED_TO_UPDATE);
+            //L'événement a changé -> valide
+        } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
+            $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
+        }
+
+        //L'exploration est ancienne -> maj de la version
+        if ($hasFirewallVersionChanged) {
+            $exploration->setFirewallVersion(self::VERSION);
+
+            //L'événement n'était pas valide -> valide
+            if (!$reject->hasNoNeedToUpdate()) {
+                $reject->setValid();
+            }
+        }
+    }
+
+    public function hasEventToBeUpdated(Exploration $exploration, Event $event)
+    {
+        $explorationDate = $exploration->getLastUpdated();
+        $eventDateModification = $event->getExternalUpdatedAt();
+
+        if (!$explorationDate || !$eventDateModification) {
+            return true;
+        }
+
+        if ($eventDateModification > $explorationDate) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isLocationBounded(GeolocalizeInterface $entity, BoundaryInterface $boundary)
+    {
+        return $this->isPreciseLocation($entity) &&
+            $this->isPreciseLocation($boundary) &&
+            $this->distance($entity, $boundary) <= $boundary->getDistanceMax();
+    }
+
+    public function isPreciseLocation(GeolocalizeInterface $entity)
+    {
+        return $entity->getLatitude() && $entity->getLongitude();
+    }
+
+    private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
+    {
+        $theta = $entity->getLongitude() - $boundary->getLongitude();
+        $dist = \sin(\deg2rad($entity->getLatitude())) *
+            \sin(\deg2rad($boundary->getLatitude())) +
+            \cos(\deg2rad($entity->getLatitude())) *
+            \cos(\deg2rad($boundary->getLatitude())) *
+            \cos(\deg2rad($theta));
+        $dist = \acos($dist);
+        $dist = \rad2deg($dist);
+
+        return $dist * 111.189577; //60 * 1.1515 * 1.609344
+    }
+
+    public function getVilleHash($villeName)
+    {
+        return $this->comparator->sanitizeVille($villeName);
     }
 
     /**

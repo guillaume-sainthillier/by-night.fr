@@ -44,6 +44,16 @@ class City extends AdminZone
     }
 
     /**
+     * Get parent.
+     *
+     * @return AdminZone
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
      * Set parent.
      *
      * @param AdminZone $parent
@@ -55,16 +65,6 @@ class City extends AdminZone
         $this->parent = $parent;
 
         return $this;
-    }
-
-    /**
-     * Get parent.
-     *
-     * @return AdminZone
-     */
-    public function getParent()
-    {
-        return $this->parent;
     }
 
     public function getCountry(): ?Country

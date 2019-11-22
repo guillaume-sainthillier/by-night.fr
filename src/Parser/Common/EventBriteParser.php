@@ -29,6 +29,11 @@ class EventBriteParser extends AbstractParser
         $this->entityManager = $entityManager;
     }
 
+    public static function getParserName(): string
+    {
+        return 'EventBrite';
+    }
+
     public function parse(bool $incremental): void
     {
         if ($incremental) {
@@ -129,10 +134,5 @@ class EventBriteParser extends AbstractParser
         }
 
         return $tab_infos;
-    }
-
-    public static function getParserName(): string
-    {
-        return 'EventBrite';
     }
 }

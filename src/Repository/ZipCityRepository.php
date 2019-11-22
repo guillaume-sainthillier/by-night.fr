@@ -14,9 +14,26 @@ use Doctrine\ORM\EntityRepository;
 class ZipCityRepository extends EntityRepository
 {
     /**
+     * @param string $postalCode
+     * @param string|null $city
+     * @param string $country
+     *
+     * @return ZipCity|null
+     */
+    public function findByPostalCodeAndCity($postalCode, $city, $country = null)
+    {
+        $cities = $this->findByPostalCodeOrCity($postalCode, $city, $country);
+        if (1 === \count($cities)) {
+            return $cities[0];
+        }
+
+        return null;
+    }
+
+    /**
      * @param string|null $postalCode
      * @param string|null $city
-     * @param string      $country
+     * @param string $country
      *
      * @return ZipCity[]
      */
@@ -62,25 +79,8 @@ class ZipCityRepository extends EntityRepository
     }
 
     /**
-     * @param string      $postalCode
      * @param string|null $city
-     * @param string      $country
-     *
-     * @return ZipCity|null
-     */
-    public function findByPostalCodeAndCity($postalCode, $city, $country = null)
-    {
-        $cities = $this->findByPostalCodeOrCity($postalCode, $city, $country);
-        if (1 === \count($cities)) {
-            return $cities[0];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string|null $city
-     * @param string      $country
+     * @param string $country
      *
      * @return ZipCity[]
      */

@@ -17,26 +17,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class EventRepository extends EntityRepository
 {
-    public function createQueryBuilder($alias, $indexBy = null)
-    {
-        $qb = parent::createQueryBuilder($alias, $indexBy);
-
-        return $qb->select($alias, 'p')
-            ->addSelect('c')
-            ->addSelect('c2')
-            ->join($alias . '.place', 'p')
-            ->leftJoin('p.city', 'c')
-            ->leftJoin('c.parent', 'c2');
-    }
-
-    public function createElasticaQueryBuilder($alias, $indexBy = null)
-    {
-        return $this
-            ->createQueryBuilder($alias, $indexBy)
-            ->addSelect('c3')
-            ->join('p.country', 'c3');
-    }
-
     public function createIsActiveQueryBuilder()
     {
         $from = new DateTime();
@@ -53,6 +33,26 @@ class EventRepository extends EntityRepository
                 'from' => $from->format('Y-m-d'),
                 'to' => $to->format('Y-m-d'),
             ]);
+    }
+
+    public function createElasticaQueryBuilder($alias, $indexBy = null)
+    {
+        return $this
+            ->createQueryBuilder($alias, $indexBy)
+            ->addSelect('c3')
+            ->join('p.country', 'c3');
+    }
+
+    public function createQueryBuilder($alias, $indexBy = null)
+    {
+        $qb = parent::createQueryBuilder($alias, $indexBy);
+
+        return $qb->select($alias, 'p')
+            ->addSelect('c')
+            ->addSelect('c2')
+            ->join($alias . '.place', 'p')
+            ->leftJoin('p.city', 'c')
+            ->leftJoin('c.parent', 'c2');
     }
 
     public function findSiteMap(int $page, int $resultsPerPage)
@@ -246,6 +246,11 @@ class EventRepository extends EntityRepository
             ->execute();
     }
 
+    public function getCountParticipations(User $user)
+    {
+        return $this->getCountAllParticipations($user);
+    }
+
     protected function getCountAllParticipations(User $user, $isParticipation = true)
     {
         return $this->_em
@@ -260,14 +265,14 @@ class EventRepository extends EntityRepository
             ->getSingleScalarResult();
     }
 
-    public function getCountParticipations(User $user)
-    {
-        return $this->getCountAllParticipations($user);
-    }
-
     public function getCountInterets(User $user)
     {
         return $this->getCountAllParticipations($user, false);
+    }
+
+    public function getCountTendancesParticipation(Event $event)
+    {
+        return $this->getCountTendances($event);
     }
 
     protected function getCountTendances(Event $event, $isParticipation = true)
@@ -282,11 +287,6 @@ class EventRepository extends EntityRepository
             ->setParameters([':event' => $event->getId(), 'vrai' => true])
             ->getQuery()
             ->getSingleScalarResult();
-    }
-
-    public function getCountTendancesParticipation(Event $event)
-    {
-        return $this->getCountTendances($event);
     }
 
     public function getCountTendancesInterets(Event $event)
@@ -308,6 +308,17 @@ class EventRepository extends EntityRepository
             ->orderBy('nb_events', 'DESC')
             ->groupBy('u.id')
             ->setParameters([':event' => $event->getId()])
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->execute();
+    }
+
+    public function findAllSimilaires(Event $event, $page = 1, $limit = 7)
+    {
+        return $this
+            ->getFindAllSimilairesBuilder($event)
+            ->orderBy('a.nom', 'ASC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -336,17 +347,6 @@ class EventRepository extends EntityRepository
         }
 
         return $qb;
-    }
-
-    public function findAllSimilaires(Event $event, $page = 1, $limit = 7)
-    {
-        return $this
-            ->getFindAllSimilairesBuilder($event)
-            ->orderBy('a.nom', 'ASC')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
     }
 
     public function findAllSimilairesCount(Event $event)
@@ -388,6 +388,15 @@ class EventRepository extends EntityRepository
             ->getSingleScalarResult();
     }
 
+    public function findTopSoireeCount(Location $location)
+    {
+        return $this
+            ->getTopSoireeBuilder($location)
+            ->select('count(a.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     private function getTopSoireeBuilder(Location $location)
     {
         $du = new DateTime();
@@ -412,15 +421,6 @@ class EventRepository extends EntityRepository
             ->setParameter('to', $au->format('Y-m-d'));
     }
 
-    public function findTopSoireeCount(Location $location)
-    {
-        return $this
-            ->getTopSoireeBuilder($location)
-            ->select('count(a.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
     public function findTopSoiree(Location $location, $page = 1, $limit = 7)
     {
         $events = $this
@@ -443,21 +443,6 @@ class EventRepository extends EntityRepository
         return $events;
     }
 
-    private function buildLocationParameters(QueryBuilder $queryBuilder, Location $location)
-    {
-        if ($location->isCountry()) {
-            $queryBuilder
-                ->andWhere('p.country = :country')
-                ->setParameter('country', $location->getCountry()->getId());
-        } elseif ($location->isCity()) {
-            $queryBuilder
-                ->andWhere('p.city = :city')
-                ->setParameter('city', $location->getCity()->getId());
-        }
-
-        return $queryBuilder;
-    }
-
     public function findCountWithSearch(Location $location)
     {
         $from = new DateTime();
@@ -475,7 +460,23 @@ class EventRepository extends EntityRepository
             ->getSingleScalarResult();
     }
 
+    private function buildLocationParameters(QueryBuilder $queryBuilder, Location $location)
+    {
+        if ($location->isCountry()) {
+            $queryBuilder
+                ->andWhere('p.country = :country')
+                ->setParameter('country', $location->getCountry()->getId());
+        } elseif ($location->isCity()) {
+            $queryBuilder
+                ->andWhere('p.city = :city')
+                ->setParameter('city', $location->getCity()->getId());
+        }
+
+        return $queryBuilder;
+    }
+
     //Appelé par EventParser
+
     public function findOneByPlace($lieuNom, DateTime $dateDebut, DateTime $dateFin)
     {
         $query = $this

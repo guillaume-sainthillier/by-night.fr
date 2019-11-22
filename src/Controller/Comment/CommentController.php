@@ -36,6 +36,32 @@ class CommentController extends BaseController
         ]);
     }
 
+    protected function getCreateForm(Comment $comment, Event $event)
+    {
+        return $this->createForm(CommentType::class, $comment, [
+            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
+            'method' => 'POST',
+        ]);
+    }
+
+    protected function getNbComments(Event $event)
+    {
+        return $this->getCommentRepo()->findNBCommentaires($event);
+    }
+
+    /**
+     * @return CommentRepository
+     */
+    protected function getCommentRepo()
+    {
+        return $this->getDoctrine()->getRepository(Comment::class);
+    }
+
+    protected function getCommentaires(Event $event, $page = 1, $limit = 10)
+    {
+        return $this->getCommentRepo()->findAllByEvent($event, $page, $limit);
+    }
+
     /**
      * @Route("/{id}/{page}", name="app_comment_list", requirements={"id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
@@ -101,39 +127,13 @@ class CommentController extends BaseController
         ]);
     }
 
-    /**
-     * @return CommentRepository
-     */
-    protected function getCommentRepo()
-    {
-        return $this->getDoctrine()->getRepository(Comment::class);
-    }
-
-    protected function getCommentaires(Event $event, $page = 1, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllByEvent($event, $page, $limit);
-    }
-
     protected function getReponses(Comment $comment, $page = 1, $limit = 10)
     {
         return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
     }
 
-    protected function getNbComments(Event $event)
-    {
-        return $this->getCommentRepo()->findNBCommentaires($event);
-    }
-
     protected function getNbReponses(Comment $comment)
     {
         return $this->getCommentRepo()->findNBReponses($comment);
-    }
-
-    protected function getCreateForm(Comment $comment, Event $event)
-    {
-        return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
-            'method' => 'POST',
-        ]);
     }
 }

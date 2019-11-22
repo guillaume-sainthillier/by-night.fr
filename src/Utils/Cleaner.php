@@ -38,19 +38,24 @@ class Cleaner
             ->setHoraires(\mb_substr($event->getHoraires(), 0, 255) ?: null);
     }
 
+    private function clean($string)
+    {
+        return \trim($string);
+    }
+
     public function cleanPlace(Place $place)
     {
         $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
             ->setRue($this->cleanNormalString($place->getRue()) ?: null)
-            ->setLatitude((float) ($this->util->replaceNonNumericChars($place->getLatitude())) ?: null)
-            ->setLongitude((float) ($this->util->replaceNonNumericChars($place->getLongitude())) ?: null)
+            ->setLatitude((float)($this->util->replaceNonNumericChars($place->getLatitude())) ?: null)
+            ->setLongitude((float)($this->util->replaceNonNumericChars($place->getLongitude())) ?: null)
             ->setVille($this->cleanPostalString($place->getVille()) ?: null)
             ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
     }
 
-    private function clean($string)
+    private function cleanNormalString($string)
     {
-        return \trim($string);
+        return $this->cleanString($string, '');
     }
 
     private function cleanString($string, $delimiters = [])
@@ -60,11 +65,6 @@ class Cleaner
         $step3 = $this->util->deleteSpaceBetween($step2, $delimiters);
 
         return \trim($step3);
-    }
-
-    private function cleanNormalString($string)
-    {
-        return $this->cleanString($string, '');
     }
 
     private function cleanPostalString($string)

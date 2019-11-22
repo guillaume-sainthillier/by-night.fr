@@ -16,23 +16,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SearchController extends AbstractController
 {
-    private function searchEvents(RepositoryManagerInterface $rm, $q)
-    {
-        /** @var EventElasticaRepository $repoSearch */
-        $repoSearch = $rm->getRepository('App:Event');
-        $search = (new SearchEvent())->setTerm($q);
-
-        return $repoSearch->findWithSearch($search, true);
-    }
-
-    private function searchUsers(RepositoryManagerInterface $rm, $q)
-    {
-        /** @var UserElasticaRepository $repo */
-        $repo = $rm->getRepository('App:User');
-
-        return $repo->findWithSearch($q);
-    }
-
     /**
      * @Route("/", name="app_search_query")
      *
@@ -42,7 +25,7 @@ class SearchController extends AbstractController
     {
         $q = \trim($request->get('q', null));
         $type = $request->get('type', null);
-        $page = (int) ($request->get('page', 1));
+        $page = (int)($request->get('page', 1));
         $maxItems = 20;
 
         if ($page <= 0) {
@@ -94,5 +77,22 @@ class SearchController extends AbstractController
             'events' => $events,
             'users' => $users,
         ]);
+    }
+
+    private function searchEvents(RepositoryManagerInterface $rm, $q)
+    {
+        /** @var EventElasticaRepository $repoSearch */
+        $repoSearch = $rm->getRepository('App:Event');
+        $search = (new SearchEvent())->setTerm($q);
+
+        return $repoSearch->findWithSearch($search, true);
+    }
+
+    private function searchUsers(RepositoryManagerInterface $rm, $q)
+    {
+        /** @var UserElasticaRepository $repo */
+        $repo = $rm->getRepository('App:User');
+
+        return $repo->findWithSearch($q);
     }
 }

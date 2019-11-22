@@ -49,16 +49,16 @@ class Exploration
      */
     private $reject;
 
+    public function getReject(): ?Reject
+    {
+        return $this->reject;
+    }
+
     public function setReject(Reject $reject)
     {
         $this->reject = $reject;
 
         return $this;
-    }
-
-    public function getReject(): ?Reject
-    {
-        return $this->reject;
     }
 
     public function getExternalId(): ?string

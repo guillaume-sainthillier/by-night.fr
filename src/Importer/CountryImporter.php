@@ -65,11 +65,192 @@ class CountryImporter
         $this->deleteEmptyDatas($country);
     }
 
-    private function deleteEmptyDatas(Country $country)
+    private function createAdminZones(Country $country)
     {
-        $this->em->createQuery(' DELETE FROM App:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
-            'country' => $country->getId(),
-        ]);
+        $filepath = $this->downloadAndExtractGeoname(
+            'https://download.geonames.org/export/dump/' . $country->getId() . '.zip',
+            'cities.csv',
+            $country->getId()
+        );
+
+        $fd = \fopen($filepath, 'r');
+        if (false === $fd) {
+            return;
+        }
+
+        $i = 0;
+        while (false !== ($data = \fgetcsv($fd, 3000, "\t"))) {
+            if (!(\in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6])) {
+                continue;
+            }
+            ++$i;
+
+            if ('P' === $data[6]) {
+                $entity = new City();
+            } elseif ('ADM1' === $data[7]) {
+                $entity = new AdminZone1();
+            } else {
+                $entity = new AdminZone2();
+            }
+
+            $adminCode1 = $this->formatAdminZoneCode($data[10]);
+            $adminCode2 = $this->formatAdminZoneCode($data[11]);
+
+            $entity
+                ->setId((int)$data[0])
+                ->setName($data[1])
+                ->setPopulation((int)$data[14])
+                ->setLatitude((float)$data[4])
+                ->setLongitude((float)$data[5])
+                ->setAdmin1Code($adminCode1)
+                ->setAdmin2Code($adminCode2)
+                ->setCountry($country);
+
+            $this->sanitizeAdminZone($entity);
+
+            $this->em->merge($entity);
+            if (self::CITIES_PER_TRANSACTION === $i) {
+                $this->em->flush();
+                $this->em->clear(City::class);
+                $this->em->clear(AdminZone::class);
+                $this->em->clear(AdminZone1::class);
+                $this->em->clear(AdminZone2::class);
+                $i = 0;
+            }
+        }
+        $this->em->flush();
+        \fclose($fd);
+    }
+
+    private function downloadAndExtractGeoname($zipUrl, $filename, $countryId)
+    {
+        // Create var/datas/<CountryCode>
+        $filedir = $this->dataDir . \DIRECTORY_SEPARATOR . $countryId;
+        $filepath = $filedir . \DIRECTORY_SEPARATOR . $filename;
+        $fs = new Filesystem();
+        $fs->mkdir($filedir);
+
+        // Create /tmp/<CountryCode>
+        $tempdir = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $countryId;
+        $tempfile = $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.zip';
+        $fs = new Filesystem();
+        $fs->mkdir($tempdir);
+
+        // Download content
+        $content = file_get_contents($zipUrl);
+        $fs->dumpFile($tempfile, $content);
+
+        $zip = new \ZipArchive();
+        if (false === $zip->open($tempfile)) {
+            throw new IOException('Unable to unzip ' . $tempfile);
+        }
+
+        $zip->extractTo($tempdir);
+        $zip->close();
+
+        //move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
+        $fs->rename(
+            $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.txt',
+            $filepath,
+            true
+        );
+
+        if (!$fs->exists($filepath)) {
+            throw new IOException(\sprintf('File %s does not exists', $filepath));
+        }
+
+        return $filepath;
+    }
+
+    private function formatAdminZoneCode($code)
+    {
+        if ('0' === $code || '00' === $code) {
+            return $code;
+        }
+
+        $code = \ltrim($code, '0');
+
+        if ('' === $code) {
+            return null;
+        }
+
+        return $code;
+    }
+
+    private function sanitizeAdminZone(AdminZone $entity)
+    {
+        switch ($entity->getCountry()->getId()) {
+            case 'FR':
+                if ($entity instanceof AdminZone2) {
+                    $entity->setName(\str_replace([
+                            "Département d'",
+                            "Département de l'",
+                            'Département de la ',
+                            'Département des ',
+                            'Département de ',
+                            'Département du ',
+                            'Territoire de ',
+                        ], '', $entity->getName())
+                    );
+                }
+
+                break;
+        }
+    }
+
+    private function createZipCities(Country $country)
+    {
+        $filepath = $this->downloadAndExtractGeoname(
+            'https://download.geonames.org/export/zip/' . $country->getId() . '.zip',
+            'zip.csv',
+            $country->getId()
+        );
+
+        //Delete all zip cities
+        $this->em->createQuery('
+            DELETE FROM App:ZipCity zc
+            WHERE zc.country = :country
+        ')
+            ->setParameter('country', $country->getId())
+            ->execute();
+
+        $fd = \fopen($filepath, 'r');
+        if (false === $fd) {
+            return;
+        }
+
+        $i = 0;
+        while (false !== ($data = \fgetcsv($fd, 1000, "\t"))) {
+            if (!$data[4] || !$data[6]) {
+                continue;
+            }
+            ++$i;
+
+            $city = new ZipCity();
+
+            $adminCode1 = $this->formatAdminZoneCode($data[4]);
+            $adminCode2 = $this->formatAdminZoneCode($data[6]);
+
+            $city
+                ->setPostalCode($data[1])
+                ->setName($data[2])
+                ->setAdmin1Code($adminCode1)
+                ->setAdmin1Name(trim($data[3]) ?: null)
+                ->setAdmin2Code($adminCode2)
+                ->setAdmin2Name(trim($data[5]) ?: null)
+                ->setLatitude((float)$data[9])
+                ->setLongitude((float)$data[10])
+                ->setCountry($country);
+
+            $this->em->persist($city);
+            if (self::ZIP_CODES_PER_TRANSACTION === $i) {
+                $this->em->flush();
+                $this->em->clear(ZipCity::class);
+                $i = 0;
+            }
+        }
+        $this->em->flush();
+        \fclose($fd);
     }
 
     /**
@@ -331,191 +512,10 @@ class CountryImporter
         }
     }
 
-    private function createZipCities(Country $country)
+    private function deleteEmptyDatas(Country $country)
     {
-        $filepath = $this->downloadAndExtractGeoname(
-            'https://download.geonames.org/export/zip/' . $country->getId() . '.zip',
-            'zip.csv',
-            $country->getId()
-        );
-
-        //Delete all zip cities
-        $this->em->createQuery('
-            DELETE FROM App:ZipCity zc
-            WHERE zc.country = :country
-        ')
-            ->setParameter('country', $country->getId())
-            ->execute();
-
-        $fd = \fopen($filepath, 'r');
-        if (false === $fd) {
-            return;
-        }
-
-        $i = 0;
-        while (false !== ($data = \fgetcsv($fd, 1000, "\t"))) {
-            if (!$data[4] || !$data[6]) {
-                continue;
-            }
-            ++$i;
-
-            $city = new ZipCity();
-
-            $adminCode1 = $this->formatAdminZoneCode($data[4]);
-            $adminCode2 = $this->formatAdminZoneCode($data[6]);
-
-            $city
-                ->setPostalCode($data[1])
-                ->setName($data[2])
-                ->setAdmin1Code($adminCode1)
-                ->setAdmin1Name(trim($data[3]) ?: null)
-                ->setAdmin2Code($adminCode2)
-                ->setAdmin2Name(trim($data[5]) ?: null)
-                ->setLatitude((float) $data[9])
-                ->setLongitude((float) $data[10])
-                ->setCountry($country);
-
-            $this->em->persist($city);
-            if (self::ZIP_CODES_PER_TRANSACTION === $i) {
-                $this->em->flush();
-                $this->em->clear(ZipCity::class);
-                $i = 0;
-            }
-        }
-        $this->em->flush();
-        \fclose($fd);
-    }
-
-    private function createAdminZones(Country $country)
-    {
-        $filepath = $this->downloadAndExtractGeoname(
-            'https://download.geonames.org/export/dump/' . $country->getId() . '.zip',
-            'cities.csv',
-            $country->getId()
-        );
-
-        $fd = \fopen($filepath, 'r');
-        if (false === $fd) {
-            return;
-        }
-
-        $i = 0;
-        while (false !== ($data = \fgetcsv($fd, 3000, "\t"))) {
-            if (!(\in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6])) {
-                continue;
-            }
-            ++$i;
-
-            if ('P' === $data[6]) {
-                $entity = new City();
-            } elseif ('ADM1' === $data[7]) {
-                $entity = new AdminZone1();
-            } else {
-                $entity = new AdminZone2();
-            }
-
-            $adminCode1 = $this->formatAdminZoneCode($data[10]);
-            $adminCode2 = $this->formatAdminZoneCode($data[11]);
-
-            $entity
-                ->setId((int) $data[0])
-                ->setName($data[1])
-                ->setPopulation((int) $data[14])
-                ->setLatitude((float) $data[4])
-                ->setLongitude((float) $data[5])
-                ->setAdmin1Code($adminCode1)
-                ->setAdmin2Code($adminCode2)
-                ->setCountry($country);
-
-            $this->sanitizeAdminZone($entity);
-
-            $this->em->merge($entity);
-            if (self::CITIES_PER_TRANSACTION === $i) {
-                $this->em->flush();
-                $this->em->clear(City::class);
-                $this->em->clear(AdminZone::class);
-                $this->em->clear(AdminZone1::class);
-                $this->em->clear(AdminZone2::class);
-                $i = 0;
-            }
-        }
-        $this->em->flush();
-        \fclose($fd);
-    }
-
-    private function downloadAndExtractGeoname($zipUrl, $filename, $countryId)
-    {
-        // Create var/datas/<CountryCode>
-        $filedir = $this->dataDir . \DIRECTORY_SEPARATOR . $countryId;
-        $filepath = $filedir . \DIRECTORY_SEPARATOR . $filename;
-        $fs = new Filesystem();
-        $fs->mkdir($filedir);
-
-        // Create /tmp/<CountryCode>
-        $tempdir = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $countryId;
-        $tempfile = $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.zip';
-        $fs = new Filesystem();
-        $fs->mkdir($tempdir);
-
-        // Download content
-        $content = file_get_contents($zipUrl);
-        $fs->dumpFile($tempfile, $content);
-
-        $zip = new \ZipArchive();
-        if (false === $zip->open($tempfile)) {
-            throw new IOException('Unable to unzip ' . $tempfile);
-        }
-
-        $zip->extractTo($tempdir);
-        $zip->close();
-
-        //move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
-        $fs->rename(
-            $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.txt',
-            $filepath,
-            true
-        );
-
-        if (!$fs->exists($filepath)) {
-            throw new IOException(\sprintf('File %s does not exists', $filepath));
-        }
-
-        return $filepath;
-    }
-
-    private function sanitizeAdminZone(AdminZone $entity)
-    {
-        switch ($entity->getCountry()->getId()) {
-            case 'FR':
-                if ($entity instanceof AdminZone2) {
-                    $entity->setName(\str_replace([
-                            "Département d'",
-                            "Département de l'",
-                            'Département de la ',
-                            'Département des ',
-                            'Département de ',
-                            'Département du ',
-                            'Territoire de ',
-                        ], '', $entity->getName())
-                    );
-                }
-
-                break;
-        }
-    }
-
-    private function formatAdminZoneCode($code)
-    {
-        if ('0' === $code || '00' === $code) {
-            return $code;
-        }
-
-        $code = \ltrim($code, '0');
-
-        if ('' === $code) {
-            return null;
-        }
-
-        return $code;
+        $this->em->createQuery(' DELETE FROM App:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
+            'country' => $country->getId(),
+        ]);
     }
 }

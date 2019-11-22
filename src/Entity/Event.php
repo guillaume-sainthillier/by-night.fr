@@ -440,6 +440,15 @@ class Event implements GeolocalizeInterface
      */
     protected $placeCountry;
 
+    public function __construct()
+    {
+        $this->dateDebut = new DateTime();
+        $this->calendriers = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+        $this->brouillon = false;
+        $this->archive = false;
+    }
+
     public function getReject(): ?Reject
     {
         return $this->reject;
@@ -497,6 +506,11 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
+    public function getFile()
+    {
+        return $this->file;
+    }
+
     /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
      * of 'UploadedFile' is injected into this setter to trigger the  update. If this
@@ -521,9 +535,9 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function getFile()
+    public function getSystemFile()
     {
-        return $this->file;
+        return $this->systemFile;
     }
 
     /**
@@ -550,11 +564,6 @@ class Event implements GeolocalizeInterface
         return $this;
     }
 
-    public function getSystemFile()
-    {
-        return $this->systemFile;
-    }
-
     /**
      * @ORM\PrePersist
      * @ORM\PreUpdate
@@ -564,15 +573,6 @@ class Event implements GeolocalizeInterface
         if (null === $this->dateFin) {
             $this->dateFin = $this->dateDebut;
         }
-    }
-
-    public function __construct()
-    {
-        $this->dateDebut = new DateTime();
-        $this->calendriers = new ArrayCollection();
-        $this->commentaires = new ArrayCollection();
-        $this->brouillon = false;
-        $this->archive = false;
     }
 
     public function getLocationSlug()
@@ -588,9 +588,14 @@ class Event implements GeolocalizeInterface
         return 'unknown';
     }
 
-    public function setId($id)
+    public function getPlace(): ?Place
     {
-        $this->id = $id;
+        return $this->place;
+    }
+
+    public function setPlace(?Place $place): self
+    {
+        $this->place = $place;
 
         return $this;
     }
@@ -625,6 +630,13 @@ class Event implements GeolocalizeInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getExternalId(): ?string
@@ -1177,18 +1189,6 @@ class Event implements GeolocalizeInterface
                 $commentaire->setEvent(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getPlace(): ?Place
-    {
-        return $this->place;
-    }
-
-    public function setPlace(?Place $place): self
-    {
-        $this->place = $place;
 
         return $this;
     }

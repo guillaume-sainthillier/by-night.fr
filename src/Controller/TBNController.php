@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Event;
-use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;

@@ -104,14 +104,6 @@ abstract class Social
         $this->isInitialized = false;
     }
 
-    protected function init()
-    {
-        if (!$this->isInitialized) {
-            $this->isInitialized = true;
-            $this->constructClient();
-        }
-    }
-
     public function disconnectUser(User $user)
     {
         $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
@@ -119,6 +111,8 @@ abstract class Social
         $user->removeRole('ROLE_' . \mb_strtolower($social_name)); //Suppression du role ROLE_TWITTER
         $this->disconnectInfo($user->getInfo());
     }
+
+    abstract protected function getName();
 
     protected function disconnectInfo(Info $info)
     {
@@ -135,6 +129,14 @@ abstract class Social
     public function disconnectSite()
     {
         $this->disconnectInfo($this->socialManager->getSiteInfo());
+    }
+
+    public function connectUser(User $user, UserResponseInterface $response)
+    {
+        $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
+
+        $user->addRole('ROLE_' . \mb_strtolower($social_name)); //Ajout du role ROLE_TWITTER
+        $this->connectInfo($user->getInfo(), $response);
     }
 
     protected function connectInfo(Info $info, UserResponseInterface $response)
@@ -154,18 +156,22 @@ abstract class Social
         }
     }
 
-    public function connectUser(User $user, UserResponseInterface $response)
-    {
-        $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
-
-        $user->addRole('ROLE_' . \mb_strtolower($social_name)); //Ajout du role ROLE_TWITTER
-        $this->connectInfo($user->getInfo(), $response);
-    }
-
     public function connectSite(UserResponseInterface $response)
     {
         $this->connectInfo($this->socialManager->getSiteInfo(), $response);
     }
+
+    abstract public function getNumberOfCount();
+
+    protected function init()
+    {
+        if (!$this->isInitialized) {
+            $this->isInitialized = true;
+            $this->constructClient();
+        }
+    }
+
+    abstract protected function constructClient();
 
     protected function getLinkPicture(Event $event)
     {
@@ -185,10 +191,4 @@ abstract class Social
     {
         return $this->router->generate('app_user_details', ['id' => $user->getId(), 'slug' => $user->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
     }
-
-    abstract public function getNumberOfCount();
-
-    abstract protected function constructClient();
-
-    abstract protected function getName();
 }

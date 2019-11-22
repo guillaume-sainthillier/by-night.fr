@@ -19,21 +19,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EventController extends BaseController
 {
-    protected function getCreateCommentForm(Comment $comment, Event $event)
-    {
-        return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
-            'method' => 'POST',
-        ])
-            ->add('poster', SubmitType::class, [
-                'label' => 'Poster',
-                'attr' => [
-                    'class' => 'btn btn-primary btn-submit btn-raised',
-                    'data-loading-text' => 'En cours...',
-                ],
-            ]);
-    }
-
     /**
      * @Route("/soiree/{slug}--{id}", name="app_event_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/soiree/{slug}", name="app_event_details_old", requirements={"slug": "[^/]+"})
@@ -83,5 +68,20 @@ class EventController extends BaseController
                 'twitter' => $page->twitter,
             ],
         ]);
+    }
+
+    protected function getCreateCommentForm(Comment $comment, Event $event)
+    {
+        return $this->createForm(CommentType::class, $comment, [
+            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
+            'method' => 'POST',
+        ])
+            ->add('poster', SubmitType::class, [
+                'label' => 'Poster',
+                'attr' => [
+                    'class' => 'btn btn-primary btn-submit btn-raised',
+                    'data-loading-text' => 'En cours...',
+                ],
+            ]);
     }
 }

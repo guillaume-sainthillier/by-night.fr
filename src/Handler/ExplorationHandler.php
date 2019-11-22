@@ -28,6 +28,20 @@ class ExplorationHandler
         return $this->add('nbExplorations');
     }
 
+    protected function add($key)
+    {
+        if ($this->isStarted()) {
+            ++$this->stats[$key];
+        }
+
+        return $this;
+    }
+
+    public function isStarted()
+    {
+        return null !== $this->historique;
+    }
+
     public function addUpdate()
     {
         return $this->add('nbUpdates');
@@ -43,48 +57,6 @@ class ExplorationHandler
         return $this->add('nbBlacklists');
     }
 
-    protected function add($key)
-    {
-        if ($this->isStarted()) {
-            ++$this->stats[$key];
-        }
-
-        return $this;
-    }
-
-    public function getNbExplorations()
-    {
-        return $this->stats['nbExplorations'];
-    }
-
-    public function getNbUpdates()
-    {
-        return $this->stats['nbUpdates'];
-    }
-
-    public function getNbInserts()
-    {
-        return $this->stats['nbInserts'];
-    }
-
-    public function getNbBlackLists()
-    {
-        return $this->stats['nbBlacklists'];
-    }
-
-    /**
-     * @return HistoriqueMaj
-     */
-    public function getHistorique()
-    {
-        return $this->historique;
-    }
-
-    public function isStarted()
-    {
-        return null !== $this->historique;
-    }
-
     /**
      * @return HistoriqueMaj
      */
@@ -98,6 +70,34 @@ class ExplorationHandler
             ->setFromData('?');
 
         return $this->historique;
+    }
+
+    /**
+     * @return HistoriqueMaj
+     */
+    public function getHistorique()
+    {
+        return $this->historique;
+    }
+
+    public function getNbExplorations()
+    {
+        return $this->stats['nbExplorations'];
+    }
+
+    public function getNbBlackLists()
+    {
+        return $this->stats['nbBlacklists'];
+    }
+
+    public function getNbInserts()
+    {
+        return $this->stats['nbInserts'];
+    }
+
+    public function getNbUpdates()
+    {
+        return $this->stats['nbUpdates'];
     }
 
     public function start()

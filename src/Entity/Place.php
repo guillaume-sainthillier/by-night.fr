@@ -44,7 +44,57 @@ class Place implements GeolocalizeInterface
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected $externalId;
-
+    /**
+     * @ORM\Column(type="string", length=127, nullable=true)
+     * @Groups({"list_event"})
+     * @Expose
+     */
+    protected $ville;
+    /**
+     * @ORM\Column(type="string", length=7, nullable=true)
+     * @Groups({"list_event"})
+     * @Expose
+     */
+    protected $codePostal;
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=256, nullable=true)
+     */
+    protected $facebookId;
+    /**
+     * @var City|null
+     * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EAGER")
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"list_event"})
+     * @Expose
+     */
+    protected $city;
+    /**
+     * @var ZipCity|null
+     */
+    protected $zipCity;
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country")
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"list_event"})
+     * @Expose
+     */
+    protected $country;
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $junk;
+    /**
+     * @var string|null
+     */
+    protected $countryName;
+    /**
+     * @var Reject
+     */
+    protected $reject;
+    /** @var Location */
+    protected $location;
     /**
      * @var string
      *
@@ -53,7 +103,6 @@ class Place implements GeolocalizeInterface
      * @Expose
      */
     private $rue;
-
     /**
      * @var float
      *
@@ -62,7 +111,6 @@ class Place implements GeolocalizeInterface
      * @Expose
      */
     private $latitude;
-
     /**
      * @var float
      *
@@ -71,7 +119,6 @@ class Place implements GeolocalizeInterface
      * @Expose
      */
     private $longitude;
-
     /**
      * @var string
      *
@@ -81,21 +128,18 @@ class Place implements GeolocalizeInterface
      * @Expose
      */
     private $nom;
-
     /**
      * @var string
      * @Gedmo\Slug(fields={"nom"})
      * @ORM\Column(type="string", length=255, unique=true)
      */
     private $slug;
-
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $path;
-
     /**
      * @var string
      *
@@ -103,69 +147,14 @@ class Place implements GeolocalizeInterface
      */
     private $url;
 
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    protected $ville;
+    public function getLocationSlug(): string
+    {
+        return $this->getLocation()->getSlug();
+    }
 
-    /**
-     * @ORM\Column(type="string", length=7, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    protected $codePostal;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=256, nullable=true)
-     */
-    protected $facebookId;
-
-    /**
-     * @var City|null
-     * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EAGER")
-     * @ORM\JoinColumn(nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    protected $city;
-
-    /**
-     * @var ZipCity|null
-     */
-    protected $zipCity;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Country")
-     * @ORM\JoinColumn(nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
-    protected $country;
-
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    protected $junk;
-
-    /**
-     * @var string|null
-     */
-    protected $countryName;
-
-    /**
-     * @var Reject
-     */
-    protected $reject;
-
-    /** @var Location */
-    protected $location;
-
-    public function getLocation(): Location {
-        if(null !== $this->location) {
+    public function getLocation(): Location
+    {
+        if (null !== $this->location) {
             return $this->location;
         }
 
@@ -173,11 +162,6 @@ class Place implements GeolocalizeInterface
         $location->setCity($this->city);
         $location->setCountry($this->country);
         return $this->location = $location;
-    }
-
-    public function getLocationSlug(): string
-    {
-        return $this->getLocation()->getSlug();
     }
 
     /**
@@ -216,16 +200,16 @@ class Place implements GeolocalizeInterface
         return $this;
     }
 
+    public function getReject(): ?Reject
+    {
+        return $this->reject;
+    }
+
     public function setReject(Reject $reject = null): self
     {
         $this->reject = $reject;
 
         return $this;
-    }
-
-    public function getReject(): ?Reject
-    {
-        return $this->reject;
     }
 
     public function getLatitude(): ?float
@@ -250,13 +234,6 @@ class Place implements GeolocalizeInterface
         return $this;
     }
 
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     public function __toString()
     {
         return sprintf('%s (#%s)',
@@ -268,6 +245,13 @@ class Place implements GeolocalizeInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getExternalId(): ?string

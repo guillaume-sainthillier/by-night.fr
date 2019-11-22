@@ -6,10 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\VirtualProperty;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
  * Info.
@@ -93,11 +93,17 @@ abstract class AdminZone
      * @Groups({"list_city", "list_event"})
      * @Expose
      */
-    public function getLocation() {
+    public function getLocation()
+    {
         return [
             'lat' => $this->latitude,
             'lon' => $this->longitude
         ];
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     /**
@@ -109,11 +115,6 @@ abstract class AdminZone
         $this->id = $id;
 
         return $this;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getSlug(): ?string

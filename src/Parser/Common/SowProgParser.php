@@ -29,6 +29,11 @@ class SowProgParser extends AbstractParser
         ]);
     }
 
+    public static function getParserName(): string
+    {
+        return 'Sow Prog';
+    }
+
     public function parse(bool $incremental): void
     {
         $modifiedSince = true === $incremental ? 1000 * ((time() - 86400)) : 0;
@@ -114,10 +119,5 @@ class SowProgParser extends AbstractParser
         }
 
         return $tab_infos;
-    }
-
-    public static function getParserName(): string
-    {
-        return 'Sow Prog';
     }
 }

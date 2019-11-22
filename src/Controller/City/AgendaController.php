@@ -25,46 +25,6 @@ class AgendaController extends BaseController
 {
     const EVENT_PER_PAGE = 15;
 
-    protected function handleSearch(SearchEvent $search, Location $location, $type, $tag, Place $place = null)
-    {
-        $term = null;
-        if (null !== $place) {
-            $term = null;
-            $search->setLieux([$place->getId()]);
-            $formAction = $this->generateUrl('app_agenda_place', ['slug' => $place->getSlug(), 'location' => $location->getSlug()]);
-        } elseif (null !== $tag) {
-            $term = null;
-            $search->setTag($tag);
-            $formAction = $this->generateUrl('app_agenda_tags', ['tag' => $tag, 'location' => $location->getSlug()]);
-        } elseif (null !== $type) {
-            $formAction = $this->generateUrl('app_agenda_sortir', ['type' => $type, 'location' => $location->getSlug()]);
-            switch ($type) {
-                case 'exposition':
-                    $term = EventElasticaRepository::EXPO_TERMS;
-                    break;
-                case 'concert':
-                    $term = EventElasticaRepository::CONCERT_TERMS;
-                    break;
-                case 'famille':
-                    $term = EventElasticaRepository::FAMILY_TERMS;
-                    break;
-                case 'spectacle':
-                    $term = EventElasticaRepository::SHOW_TERMS;
-                    break;
-                case 'etudiant':
-                    $term = EventElasticaRepository::STUDENT_TERMS;
-                    break;
-            }
-        } else {
-            $formAction = $this->generateUrl('app_agenda_agenda', ['location' => $location->getSlug()]);
-        }
-
-        $search->setLocation($location);
-        $search->setTerm($term);
-
-        return $formAction;
-    }
-
     /**
      * @Route("/agenda/{page}", name="app_agenda_agenda", requirements={"page": "\d+"})
      * @Route("/agenda/sortir/{type}/{page}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
@@ -160,6 +120,46 @@ class AgendaController extends BaseController
             'paginateURL' => $paginateURL,
             'form' => $form->createView(),
         ]);
+    }
+
+    protected function handleSearch(SearchEvent $search, Location $location, $type, $tag, Place $place = null)
+    {
+        $term = null;
+        if (null !== $place) {
+            $term = null;
+            $search->setLieux([$place->getId()]);
+            $formAction = $this->generateUrl('app_agenda_place', ['slug' => $place->getSlug(), 'location' => $location->getSlug()]);
+        } elseif (null !== $tag) {
+            $term = null;
+            $search->setTag($tag);
+            $formAction = $this->generateUrl('app_agenda_tags', ['tag' => $tag, 'location' => $location->getSlug()]);
+        } elseif (null !== $type) {
+            $formAction = $this->generateUrl('app_agenda_sortir', ['type' => $type, 'location' => $location->getSlug()]);
+            switch ($type) {
+                case 'exposition':
+                    $term = EventElasticaRepository::EXPO_TERMS;
+                    break;
+                case 'concert':
+                    $term = EventElasticaRepository::CONCERT_TERMS;
+                    break;
+                case 'famille':
+                    $term = EventElasticaRepository::FAMILY_TERMS;
+                    break;
+                case 'spectacle':
+                    $term = EventElasticaRepository::SHOW_TERMS;
+                    break;
+                case 'etudiant':
+                    $term = EventElasticaRepository::STUDENT_TERMS;
+                    break;
+            }
+        } else {
+            $formAction = $this->generateUrl('app_agenda_agenda', ['location' => $location->getSlug()]);
+        }
+
+        $search->setLocation($location);
+        $search->setTerm($term);
+
+        return $formAction;
     }
 
     private function getTypesEvenements(CacheInterface $cache, EventRepository $repo, Location $location)

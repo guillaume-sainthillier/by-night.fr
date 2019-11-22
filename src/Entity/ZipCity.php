@@ -91,6 +91,11 @@ class ZipCity
      */
     protected $parent;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     /**
      * @param int $id
      * @return self
@@ -100,11 +105,6 @@ class ZipCity
         $this->id = $id;
 
         return $this;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getSlug(): ?string

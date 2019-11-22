@@ -100,14 +100,14 @@ class Reject
         return self::VALID === $this->reason;
     }
 
-    private function hasReason(int $reason)
-    {
-        return $reason === ($reason & $this->reason);
-    }
-
     public function isEventDeleted()
     {
         return $this->hasReason(self::EVENT_DELETED);
+    }
+
+    private function hasReason(int $reason)
+    {
+        return $reason === ($reason & $this->reason);
     }
 
     public function isBadUser()

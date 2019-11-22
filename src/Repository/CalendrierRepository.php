@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\Event;
 use Doctrine\ORM\EntityRepository;
 
 /**

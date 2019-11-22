@@ -2,7 +2,6 @@
 
 namespace App\Utils;
 
-use Exception;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
@@ -46,54 +45,9 @@ class Monitor
         }
     }
 
-    public static function getStats()
-    {
-        $stats = [];
-        foreach (self::$stats as $key => $stat) {
-            $stats[$key] = self::getTime($stat);
-        }
-
-        return $stats;
-    }
-
     public static function enableMonitoring($enable)
     {
         self::$enableMonitoring = $enable;
-    }
-
-    public static function formatMemory($bytes)
-    {
-        return round($bytes / 1000 / 1000, 2) . ' MB';
-    }
-
-    public static function formatDuration($microseconds)
-    {
-        return sprintf('%01.2f ms', $microseconds);
-    }
-
-    private static function getTime($stat)
-    {
-        $nbItems = \count($stat['time']);
-
-        if (0 === $nbItems) {
-            return [
-                'nb' => 0,
-                'avg' => 0,
-                'avg_memory' => 0,
-                'total' => 0,
-            ];
-        }
-        $somme = \array_sum($stat['time']);
-        $sommeMemory = \array_sum($stat['memory']);
-
-        return [
-            'nb' => $nbItems,
-            'total' => self::formatDuration($somme),
-            'avg' => $nbItems > 1 ? self::formatDuration($somme / $nbItems) : null,
-            'min' => $nbItems > 1 ? self::formatDuration(\min($stat['time'])) : null,
-            'max' => $nbItems > 1 ? self::formatDuration(\max($stat['time'])) : null,
-            'avg_memory' => $nbItems > 1 ? self::formatMemory($sommeMemory / $nbItems) : null,
-        ];
     }
 
     public static function write($message = null)
@@ -156,6 +110,60 @@ class Monitor
         self::$stats = [];
     }
 
+    public static function getStats()
+    {
+        $stats = [];
+        foreach (self::$stats as $key => $stat) {
+            $stats[$key] = self::getTime($stat);
+        }
+
+        return $stats;
+    }
+
+    private static function getTime($stat)
+    {
+        $nbItems = \count($stat['time']);
+
+        if (0 === $nbItems) {
+            return [
+                'nb' => 0,
+                'avg' => 0,
+                'avg_memory' => 0,
+                'total' => 0,
+            ];
+        }
+        $somme = \array_sum($stat['time']);
+        $sommeMemory = \array_sum($stat['memory']);
+
+        return [
+            'nb' => $nbItems,
+            'total' => self::formatDuration($somme),
+            'avg' => $nbItems > 1 ? self::formatDuration($somme / $nbItems) : null,
+            'min' => $nbItems > 1 ? self::formatDuration(\min($stat['time'])) : null,
+            'max' => $nbItems > 1 ? self::formatDuration(\max($stat['time'])) : null,
+            'avg_memory' => $nbItems > 1 ? self::formatMemory($sommeMemory / $nbItems) : null,
+        ];
+    }
+
+    public static function formatDuration($microseconds)
+    {
+        return sprintf('%01.2f ms', $microseconds);
+    }
+
+    public static function formatMemory($bytes)
+    {
+        return round($bytes / 1000 / 1000, 2) . ' MB';
+    }
+
+    public static function bench($message, callable $function)
+    {
+        $stopwatch = self::start($message);
+        $retour = \call_user_func($function);
+        self::stop($message, $stopwatch);
+
+        return $retour;
+    }
+
     public static function start($message): ?Stopwatch
     {
         $stopwatch = null;
@@ -174,21 +182,13 @@ class Monitor
         return $stopwatch;
     }
 
-    public static function stop($message, ?Stopwatch $stopwatch) {
+    public static function stop($message, ?Stopwatch $stopwatch)
+    {
         if (self::$enableMonitoring) {
             $event = $stopwatch->stop($message);
 
             self::$stats[$message]['time'][] = $event->getDuration();
             self::$stats[$message]['memory'][] = $event->getMemory();
         }
-    }
-
-    public static function bench($message, callable $function)
-    {
-        $stopwatch = self::start($message);
-        $retour = \call_user_func($function);
-        self::stop($message, $stopwatch);
-
-        return $retour;
     }
 }

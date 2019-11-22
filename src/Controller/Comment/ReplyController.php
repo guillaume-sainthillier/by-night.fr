@@ -35,6 +35,24 @@ class ReplyController extends AbstractController
         ]);
     }
 
+    protected function getReponses(Comment $comment, $page, $limit = 10)
+    {
+        return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
+    }
+
+    /**
+     * @return CommentRepository
+     */
+    protected function getCommentRepo()
+    {
+        return $this->getDoctrine()->getRepository(Comment::class);
+    }
+
+    protected function getNbReponses(Comment $comment)
+    {
+        return $this->getCommentRepo()->findNBReponses($comment);
+    }
+
     /**
      * @Route("/{id}/repondre", name="app_comment_reponse_new", requirements={"id": "\d+"})
      *
@@ -92,32 +110,12 @@ class ReplyController extends AbstractController
         ]);
     }
 
-    /**
-     * @return CommentRepository
-     */
-    protected function getCommentRepo()
+    protected function getCreateForm(Comment $reponse, Comment $comment)
     {
-        return $this->getDoctrine()->getRepository(Comment::class);
-    }
-
-    protected function getCommentaires(Event $event, $page, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllByEvent($event, $page, $limit);
-    }
-
-    protected function getReponses(Comment $comment, $page, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
-    }
-
-    protected function getNbComments(Event $event)
-    {
-        return $this->getCommentRepo()->findNBCommentaires($event);
-    }
-
-    protected function getNbReponses(Comment $comment)
-    {
-        return $this->getCommentRepo()->findNBReponses($comment);
+        return $this->createForm(CommentType::class, $reponse, [
+            'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
+            'method' => 'POST',
+        ]);
     }
 
     public function detailsAction(Comment $comment)
@@ -128,11 +126,13 @@ class ReplyController extends AbstractController
         ]);
     }
 
-    protected function getCreateForm(Comment $reponse, Comment $comment)
+    protected function getCommentaires(Event $event, $page, $limit = 10)
     {
-        return $this->createForm(CommentType::class, $reponse, [
-            'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
-            'method' => 'POST',
-        ]);
+        return $this->getCommentRepo()->findAllByEvent($event, $page, $limit);
+    }
+
+    protected function getNbComments(Event $event)
+    {
+        return $this->getCommentRepo()->findNBCommentaires($event);
     }
 }

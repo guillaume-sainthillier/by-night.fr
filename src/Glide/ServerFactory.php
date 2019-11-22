@@ -21,6 +21,11 @@ use League\Glide\Manipulators\Watermark;
 
 class ServerFactory extends \League\Glide\ServerFactory
 {
+    public static function create(array $config = [])
+    {
+        return (new self($config))->getServer();
+    }
+
     public function getManipulators()
     {
         return [
@@ -41,10 +46,5 @@ class ServerFactory extends \League\Glide\ServerFactory
             new Border(),
             new Encode(),
         ];
-    }
-
-    public static function create(array $config = [])
-    {
-        return (new self($config))->getServer();
     }
 }

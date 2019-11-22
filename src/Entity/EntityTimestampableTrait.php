@@ -23,14 +23,14 @@ trait EntityTimestampableTrait
      */
     protected $updatedAt;
 
-    public function setCreatedAt(\DateTimeImmutable $updatedAt)
-    {
-        $this->createdAt = $updatedAt;
-    }
-
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $updatedAt)
+    {
+        $this->createdAt = $updatedAt;
     }
 
     public function getUpdatedAt()

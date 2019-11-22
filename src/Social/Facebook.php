@@ -39,35 +39,42 @@ class Facebook extends Social
      */
     protected $client;
 
+    public function getPagePictureURL(GraphNode $object, $testCover = true, $testPicture = true)
+    {
+        $cover = $object->getField('cover');
+        if ($testCover && $cover && $cover->getField('source')) {
+            return $this->ensureGoodValue($cover->getField('source'));
+        }
+
+        $picture = $object->getField('picture');
+        if ($testPicture && $picture && $picture->getField('url') && false === $picture->getField('is_silhouette')) {
+            return $this->ensureGoodValue($picture->getField('url'));
+        }
+
+        return null;
+    }
+
+    public function ensureGoodValue($value)
+    {
+        return '<<not-applicable>>' !== $value ? $value : null;
+    }
+
+    public function getNumberOfCount()
+    {
+        throw new SocialException("Les droits de l'utilisateur sont insufisants pour récupérer des infos sur une page Facebook");
+    }
+
+    public function getName()
+    {
+        return 'Facebook';
+    }
+
     protected function constructClient()
     {
         $this->client = new Client([
             'app_id' => $this->id,
             'app_secret' => $this->secret,
         ]);
-    }
-
-    protected function findPaginated(GraphEdge $graph = null, $maxItems = 5000)
-    {
-        $datas = [];
-
-        while (null !== $graph && $graph->count() > 0 && \count($datas) < $maxItems) {
-            try {
-                if ($graph->getField('error_code')) {
-                    Monitor::writeln(\sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
-                    $graph = null;
-                } else {
-                    $currentData = $graph->all();
-                    $datas = \array_merge($datas, $currentData);
-                    $graph = $this->client->next($graph);
-                }
-            } catch (FacebookSDKException $ex) {
-                $graph = null;
-                Monitor::writeln(\sprintf('<error>Erreur dans findPaginated : %s</error>', $ex->getMessage()));
-            }
-        }
-
-        return $datas;
     }
 
     protected function findAssociativeEvents(FacebookResponse $response)
@@ -132,29 +139,27 @@ class Facebook extends Social
         return $datas;
     }
 
-    public function ensureGoodValue($value)
+    protected function findPaginated(GraphEdge $graph = null, $maxItems = 5000)
     {
-        return '<<not-applicable>>' !== $value ? $value : null;
-    }
+        $datas = [];
 
-    public function getPagePictureURL(GraphNode $object, $testCover = true, $testPicture = true)
-    {
-        $cover = $object->getField('cover');
-        if ($testCover && $cover && $cover->getField('source')) {
-            return $this->ensureGoodValue($cover->getField('source'));
+        while (null !== $graph && $graph->count() > 0 && \count($datas) < $maxItems) {
+            try {
+                if ($graph->getField('error_code')) {
+                    Monitor::writeln(\sprintf('<error>Erreur #%d : %s</error>', $graph->getField('error_code'), $graph->getField('error_msg')));
+                    $graph = null;
+                } else {
+                    $currentData = $graph->all();
+                    $datas = \array_merge($datas, $currentData);
+                    $graph = $this->client->next($graph);
+                }
+            } catch (FacebookSDKException $ex) {
+                $graph = null;
+                Monitor::writeln(\sprintf('<error>Erreur dans findPaginated : %s</error>', $ex->getMessage()));
+            }
         }
 
-        $picture = $object->getField('picture');
-        if ($testPicture && $picture && $picture->getField('url') && false === $picture->getField('is_silhouette')) {
-            return $this->ensureGoodValue($picture->getField('url'));
-        }
-
-        return null;
-    }
-
-    public function getNumberOfCount()
-    {
-        throw new SocialException("Les droits de l'utilisateur sont insufisants pour récupérer des infos sur une page Facebook");
+        return $datas;
     }
 
     protected function getDuree($dateDebut, $dateFin)
@@ -171,10 +176,5 @@ class Facebook extends Social
         $intl = new IntlDateFormatter(Locale::getDefault(), $dateFormat, $timeFormat);
 
         return $intl->format($date);
-    }
-
-    public function getName()
-    {
-        return 'Facebook';
     }
 }

@@ -91,6 +91,20 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
+    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null, string $changefreq = null)
+    {
+        $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $url = new UrlConcrete(
+            $url,
+            $lastMod ?: $this->now,
+            $changefreq ?: UrlConcrete::CHANGEFREQ_HOURLY,
+            1
+        );
+
+        $this->urlContainer->addUrl($url, $section);
+    }
+
     private function registerPlacesRoutes($section)
     {
         $places = $this->doctrine->getRepository(Place::class)->findSiteMap();
@@ -119,7 +133,7 @@ class SitemapSuscriber implements EventSubscriberInterface
                     'slug' => $event['slug'],
                     'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
                 ], DateTime::createFromImmutable($event['updatedAt'])
-                , $event['dateFin'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : null);
+                    , $event['dateFin'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : null);
             }
         }
     }
@@ -151,19 +165,5 @@ class SitemapSuscriber implements EventSubscriberInterface
         foreach ($staticRoutes as $route) {
             $this->addUrl($section, $route);
         }
-    }
-
-    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null, string $changefreq = null)
-    {
-        $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
-
-        $url = new UrlConcrete(
-            $url,
-            $lastMod ?: $this->now,
-            $changefreq ?: UrlConcrete::CHANGEFREQ_HOURLY,
-            1
-        );
-
-        $this->urlContainer->addUrl($url, $section);
     }
 }

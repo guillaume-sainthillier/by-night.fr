@@ -11,8 +11,6 @@ use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, BatchConsumerInterface
 {

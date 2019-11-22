@@ -73,7 +73,7 @@ class Comparator
             return 0;
         }
 
-        if($this->isExactSamePlace($a, $b)) {
+        if ($this->isExactSamePlace($a, $b)) {
             return 100;
         }
 
@@ -99,6 +99,45 @@ class Comparator
         }
 
         return 0;
+    }
+
+    private function getMatchingScoreTextWithoutCity($a, City $cityA = null, ZipCity $zipCityA = null, $b = null, City $cityB = null, ZipCity $zipCityB = null)
+    {
+        if ($a && $a === $b) {
+            return 100;
+        }
+
+        if ($cityA) {
+            $a = \str_ireplace($cityA->getName(), '', $a);
+        } elseif ($zipCityA) {
+            $a = \str_ireplace($zipCityA->getName(), '', $a);
+        }
+
+        if ($cityB) {
+            $b = \str_ireplace($cityB->getName(), '', $b);
+        } elseif ($zipCityB) {
+            $b = \str_ireplace($zipCityB->getName(), '', $b);
+        }
+
+        $a = $this->sanitize($a);
+        $b = $this->sanitize($b);
+
+        return $this->getMatchingScore($a, $b);
+    }
+
+    public function sanitize($string)
+    {
+        return Monitor::bench('Sanitize', function () use ($string) {
+            $string = $this->util->deleteStopWords($string);
+            $string = $this->util->utf8LowerCase($string);
+            $string = $this->util->replaceAccents($string);
+            $string = $this->util->replaceNonAlphanumericChars($string);
+            $string = $this->util->deleteStopWords($string);
+            $string = $this->util->deleteMultipleSpaces($string);
+            $string = \trim($string);
+
+            return $string;
+        });
     }
 
     private function getMatchingScore($a, $b)
@@ -140,35 +179,6 @@ class Comparator
         return $this->getMatchingScore($trimedA, $trimedB);
     }
 
-    private function getMatchingScoreTextWithoutCity($a, City $cityA = null, ZipCity $zipCityA = null, $b = null, City $cityB = null, ZipCity $zipCityB = null)
-    {
-        if ($a && $a === $b) {
-            return 100;
-        }
-
-        if ($cityA) {
-            $a = \str_ireplace($cityA->getName(), '', $a);
-        } elseif ($zipCityA) {
-            $a = \str_ireplace($zipCityA->getName(), '', $a);
-        }
-
-        if ($cityB) {
-            $b = \str_ireplace($cityB->getName(), '', $b);
-        } elseif ($zipCityB) {
-            $b = \str_ireplace($zipCityB->getName(), '', $b);
-        }
-
-        $a = $this->sanitize($a);
-        $b = $this->sanitize($b);
-
-        return $this->getMatchingScore($a, $b);
-    }
-
-    public function sanitizeNumber($string)
-    {
-        return \preg_replace('/\D/', '', $string);
-    }
-
     public function sanitizeRue($string)
     {
         $step1 = $this->util->utf8LowerCase($string);
@@ -178,26 +188,16 @@ class Comparator
         return \trim($step3);
     }
 
+    public function sanitizeNumber($string)
+    {
+        return \preg_replace('/\D/', '', $string);
+    }
+
     public function sanitizeVille($string)
     {
         $string = \preg_replace("#(^|[\s-]+)st([\s-]+)#i", 'saint', $string);
         $string = str_replace(' ', '', $string);
 
         return $this->sanitize($string);
-    }
-
-    public function sanitize($string)
-    {
-        return Monitor::bench('Sanitize', function () use ($string) {
-            $string = $this->util->deleteStopWords($string);
-            $string = $this->util->utf8LowerCase($string);
-            $string = $this->util->replaceAccents($string);
-            $string = $this->util->replaceNonAlphanumericChars($string);
-            $string = $this->util->deleteStopWords($string);
-            $string = $this->util->deleteMultipleSpaces($string);
-            $string = \trim($string);
-
-            return $string;
-        });
     }
 }

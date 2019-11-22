@@ -7,9 +7,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Pool;
-use function GuzzleHttp\Psr7\copy_to_string;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 
 abstract class Updater
 {

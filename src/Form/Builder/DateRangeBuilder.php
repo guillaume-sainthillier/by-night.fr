@@ -22,6 +22,19 @@ class DateRangeBuilder
         $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($fromName = $form->get('shortcut')->getConfig()->getOption('ranges'));
     }
 
+    public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName)
+    {
+        $ranges = [
+            'N\'importe quand' => [(new \DateTime('now'))->format('Y-m-d'), null],
+            'Aujourd\'hui' => [(new \DateTime('now'))->format('Y-m-d'), (new \DateTime('now'))->format('Y-m-d')],
+            'Demain' => [(new \DateTime('tomorrow'))->format('Y-m-d'), (new \DateTime('tomorrow'))->format('Y-m-d')],
+            'Ce week-end' => [(new \DateTime('friday this week'))->format('Y-m-d'), (new \DateTime('sunday this week'))->format('Y-m-d')],
+            'Cette semaine' => [(new \DateTime('monday this week'))->format('Y-m-d'), (new \DateTime('sunday this week'))->format('Y-m-d')],
+            'Ce mois' => [(new \DateTime('first day of this month'))->format('Y-m-d'), (new \DateTime('last day of this month'))->format('Y-m-d')],
+        ];
+        $this->addDateFields($builder, $fromName, $toName, $ranges);
+    }
+
     public function addDateFields(FormBuilderInterface $builder, string $fromName, string $toName, array $ranges = [])
     {
         $builder
@@ -124,18 +137,5 @@ class DateRangeBuilder
             \IntlDateFormatter::NONE);
 
         return $formatter->format($date->getTimestamp());
-    }
-
-    public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName)
-    {
-        $ranges = [
-            'N\'importe quand' => [(new \DateTime('now'))->format('Y-m-d'), null],
-            'Aujourd\'hui' => [(new \DateTime('now'))->format('Y-m-d'), (new \DateTime('now'))->format('Y-m-d')],
-            'Demain' => [(new \DateTime('tomorrow'))->format('Y-m-d'), (new \DateTime('tomorrow'))->format('Y-m-d')],
-            'Ce week-end' => [(new \DateTime('friday this week'))->format('Y-m-d'), (new \DateTime('sunday this week'))->format('Y-m-d')],
-            'Cette semaine' => [(new \DateTime('monday this week'))->format('Y-m-d'), (new \DateTime('sunday this week'))->format('Y-m-d')],
-            'Ce mois' => [(new \DateTime('first day of this month'))->format('Y-m-d'), (new \DateTime('last day of this month'))->format('Y-m-d')],
-        ];
-        $this->addDateFields($builder, $fromName, $toName, $ranges);
     }
 }

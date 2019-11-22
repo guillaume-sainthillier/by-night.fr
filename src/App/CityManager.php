@@ -37,23 +37,11 @@ class CityManager
     }
 
     /**
-     * @return $this
+     * @return City|null
      */
-    public function setCurrentCity(City $city)
+    public function getCity()
     {
-        $this->currentCity = $city;
-
-        return $this;
-    }
-
-    private function computeCityFromCookie()
-    {
-        $currentRequest = $this->requestStack->getCurrentRequest();
-        if ($currentRequest->cookies->has('app_city')) {
-            $this->cookieCity = $this->entityManager->getRepository(City::class)->findBySlug($currentRequest->cookies->get('app_city'));
-        } else {
-            $this->cookieCity = null;
-        }
+        return $this->getCurrentCity() ?: $this->getCookieCity();
     }
 
     /**
@@ -62,6 +50,16 @@ class CityManager
     public function getCurrentCity()
     {
         return $this->currentCity;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setCurrentCity(City $city)
+    {
+        $this->currentCity = $city;
+
+        return $this;
     }
 
     /**
@@ -76,11 +74,13 @@ class CityManager
         return $this->cookieCity;
     }
 
-    /**
-     * @return City|null
-     */
-    public function getCity()
+    private function computeCityFromCookie()
     {
-        return $this->getCurrentCity() ?: $this->getCookieCity();
+        $currentRequest = $this->requestStack->getCurrentRequest();
+        if ($currentRequest->cookies->has('app_city')) {
+            $this->cookieCity = $this->entityManager->getRepository(City::class)->findBySlug($currentRequest->cookies->get('app_city'));
+        } else {
+            $this->cookieCity = null;
+        }
     }
 }

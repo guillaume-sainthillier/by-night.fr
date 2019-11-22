@@ -41,31 +41,6 @@ class TagsInvalidator
         $this->tags = [];
     }
 
-    public static function getEventTag(Event $event)
-    {
-        return \sprintf('event-%d', $event->getId());
-    }
-
-    public static function getTendanceTag(Event $event)
-    {
-        return \sprintf('tendances-%d', $event->getId());
-    }
-
-    public static function getPlaceTag(Place $place)
-    {
-        return \sprintf('place-%d', $place->getId());
-    }
-
-    public static function getUserTag(User $user)
-    {
-        return \sprintf('user-%d', $user->getId());
-    }
-
-    public static function getCityTag(City $city)
-    {
-        return \sprintf('city-%d', $city->getId());
-    }
-
     public static function getMenuTag()
     {
         return 'menu';
@@ -77,14 +52,29 @@ class TagsInvalidator
         $this->tags[] = self::getCityTag($city);
     }
 
+    public static function getCityTag(City $city)
+    {
+        return \sprintf('city-%d', $city->getId());
+    }
+
     public function addUser(User $user)
     {
         $this->tags[] = self::getUserTag($user);
     }
 
+    public static function getUserTag(User $user)
+    {
+        return \sprintf('user-%d', $user->getId());
+    }
+
     public function addCalendrier(Calendrier $calendrier)
     {
         $this->tags[] = self::getTendanceTag($calendrier->getEvent());
+    }
+
+    public static function getTendanceTag(Event $event)
+    {
+        return \sprintf('tendances-%d', $event->getId());
     }
 
     public function addEvent(Event $event)
@@ -98,11 +88,21 @@ class TagsInvalidator
         }
     }
 
+    public static function getEventTag(Event $event)
+    {
+        return \sprintf('event-%d', $event->getId());
+    }
+
     public function addPlace(Place $place)
     {
         if ($place->getId()) {
             $this->tags[] = self::getPlaceTag($place);
         }
+    }
+
+    public static function getPlaceTag(Place $place)
+    {
+        return \sprintf('place-%d', $place->getId());
     }
 
     public function flush()

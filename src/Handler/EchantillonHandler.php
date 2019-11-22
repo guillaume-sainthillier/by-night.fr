@@ -31,6 +31,12 @@ class EchantillonHandler
         $this->init();
     }
 
+    private function init()
+    {
+        $this->initEvents();
+        $this->initPlaces();
+    }
+
     private function initEvents()
     {
         $this->events = [];
@@ -40,12 +46,6 @@ class EchantillonHandler
     {
         $this->countryPlaces = [];
         $this->cityPlaces = [];
-    }
-
-    private function init()
-    {
-        $this->initEvents();
-        $this->initPlaces();
     }
 
     public function clearEvents()
@@ -100,6 +100,17 @@ class EchantillonHandler
         }
     }
 
+    private function addPlace(Place $place)
+    {
+        $key = $place->getId() ?: spl_object_hash($place);
+
+        if ($place->getCity()) {
+            $this->cityPlaces[$place->getCity()->getId()][$key] = $place;
+        } elseif ($place->getCountry()) {
+            $this->countryPlaces[$place->getCountry()->getId()][$key] = $place;
+        }
+    }
+
     public function prefetchEventEchantillons(array $events)
     {
         $externalIds = [];
@@ -123,6 +134,13 @@ class EchantillonHandler
                 /** @var Event $candidate */
                 $this->addEvent($candidate);
             }
+        }
+    }
+
+    private function addEvent(Event $event)
+    {
+        if ($event->getExternalId()) {
+            $this->events[$event->getExternalId()] = $event;
         }
     }
 
@@ -179,29 +197,11 @@ class EchantillonHandler
         return [];
     }
 
-    private function addEvent(Event $event)
-    {
-        if ($event->getExternalId()) {
-            $this->events[$event->getExternalId()] = $event;
-        }
-    }
-
     public function addNewEvent(Event $event)
     {
         $this->addEvent($event);
         if ($event->getPlace()) {
             $this->addPlace($event->getPlace());
-        }
-    }
-
-    private function addPlace(Place $place)
-    {
-        $key = $place->getId() ?: spl_object_hash($place);
-
-        if ($place->getCity()) {
-            $this->cityPlaces[$place->getCity()->getId()][$key] = $place;
-        } elseif ($place->getCountry()) {
-            $this->countryPlaces[$place->getCountry()->getId()][$key] = $place;
         }
     }
 }

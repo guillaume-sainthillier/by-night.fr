@@ -111,6 +111,17 @@ class EventController extends BaseController
         ]);
     }
 
+    protected function createDeleteForm(Event $event)
+    {
+        return $this->createFormBuilder($event, [
+            'action' => $this->generateUrl('app_event_delete', [
+                'id' => $event->getId(),
+            ]),
+            'method' => 'DELETE',
+        ])
+            ->getForm();
+    }
+
     /**
      * @Route("/nouvelle-soiree", name="app_event_new")
      */
@@ -152,17 +163,6 @@ class EventController extends BaseController
         return $this->render('EspacePerso/new.html.twig', [
             'form' => $form->createView(),
         ]);
-    }
-
-    protected function createDeleteForm(Event $event)
-    {
-        return $this->createFormBuilder($event, [
-            'action' => $this->generateUrl('app_event_delete', [
-                'id' => $event->getId(),
-            ]),
-            'method' => 'DELETE',
-        ])
-            ->getForm();
     }
 
     /**

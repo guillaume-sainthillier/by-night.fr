@@ -7,20 +7,6 @@ use IntlDateFormatter;
 
 class EventSEO
 {
-    public function getEventDate(Event $event)
-    {
-        if (!$event->getDateFin() || $event->getDateDebut() === $event->getDateFin()) {
-            return \sprintf('le %s',
-                $this->formatDate($event->getDateDebut(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
-            );
-        }
-
-        return \sprintf('du %s au %s',
-            $this->formatDate($event->getDateDebut(), IntlDateFormatter::FULL, IntlDateFormatter::NONE),
-            $this->formatDate($event->getDateFin(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
-        );
-    }
-
     public function getEventDescription(Event $event)
     {
         $description = \sprintf('Découvrez %s.', $event->getNom());
@@ -60,14 +46,25 @@ class EventSEO
         return \trim($datetime);
     }
 
-    public function getEventShortTitle(Event $event)
+    public function getEventDate(Event $event)
     {
-        $shortTitle = $event->getNom();
-        if ($event->getModificationDerniereMinute()) {
-            $shortTitle = \sprintf('[%s] %s', $event->getModificationDerniereMinute(), $shortTitle);
+        if (!$event->getDateFin() || $event->getDateDebut() === $event->getDateFin()) {
+            return \sprintf('le %s',
+                $this->formatDate($event->getDateDebut(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
+            );
         }
 
-        return $shortTitle;
+        return \sprintf('du %s au %s',
+            $this->formatDate($event->getDateDebut(), IntlDateFormatter::FULL, IntlDateFormatter::NONE),
+            $this->formatDate($event->getDateFin(), IntlDateFormatter::FULL, IntlDateFormatter::NONE)
+        );
+    }
+
+    private function formatDate(\DateTimeInterface $date, $dateFormat, $timeFormat)
+    {
+        $formatter = IntlDateFormatter::create(null, $dateFormat, $timeFormat);
+
+        return $formatter->format($date->getTimestamp());
     }
 
     public function getEventFullTitle(Event $event)
@@ -81,10 +78,13 @@ class EventSEO
         return $title;
     }
 
-    private function formatDate(\DateTimeInterface $date, $dateFormat, $timeFormat)
+    public function getEventShortTitle(Event $event)
     {
-        $formatter = IntlDateFormatter::create(null, $dateFormat, $timeFormat);
+        $shortTitle = $event->getNom();
+        if ($event->getModificationDerniereMinute()) {
+            $shortTitle = \sprintf('[%s] %s', $event->getModificationDerniereMinute(), $shortTitle);
+        }
 
-        return $formatter->format($date->getTimestamp());
+        return $shortTitle;
     }
 }

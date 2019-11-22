@@ -20,6 +20,11 @@ class ProfileFormType extends BaseType
         $builder->remove('current_password');
     }
 
+    public function getName()
+    {
+        return 'app_user_profile';
+    }
+
     /**
      * Builds the embedded form representing the user.
      */
@@ -53,10 +58,5 @@ class ProfileFormType extends BaseType
                 'label' => 'Photo de profil',
                 'thumb_params' => ['w' => 200, 'h' => 200, 'fit' => 'fill'],
             ]);
-    }
-
-    public function getName()
-    {
-        return 'app_user_profile';
     }
 }

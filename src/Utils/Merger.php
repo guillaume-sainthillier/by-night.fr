@@ -66,22 +66,6 @@ class Merger
         ]);
     }
 
-    public function mergePlace(Place $a = null, Place $b = null)
-    {
-        return $this->merge($a, $b, [
-            'nom' => self::MERGE_LEFT,
-            'latitude' => self::MERGE_LEFT,
-            'longitude' => self::MERGE_LEFT,
-            'rue' => self::MERGE_LEFT,
-            'url' => self::MERGE_LEFT,
-            'ville' => self::MERGE_LEFT,
-            'codePostal' => self::MERGE_LEFT,
-            'facebook_id' => self::MERGE_LEFT,
-            'external_id' => self::MERGE_LEFT,
-            'reject',
-        ]);
-    }
-
     /**
      * Merge les champs de b dans a s'ils sont jugés plus pertinents.
      *
@@ -121,6 +105,11 @@ class Merger
         }
 
         return $a;
+    }
+
+    private function skakeToCamel($str)
+    {
+        return \str_replace(' ', '', \ucwords(\str_replace('_', ' ', $str)));
     }
 
     private function getBestContent($valueA, $valueB, $mergeType)
@@ -163,8 +152,19 @@ class Merger
         return isset($compareA[0]) ? ($valueA ?: null) : ($valueB ?: null);
     }
 
-    private function skakeToCamel($str)
+    public function mergePlace(Place $a = null, Place $b = null)
     {
-        return \str_replace(' ', '', \ucwords(\str_replace('_', ' ', $str)));
+        return $this->merge($a, $b, [
+            'nom' => self::MERGE_LEFT,
+            'latitude' => self::MERGE_LEFT,
+            'longitude' => self::MERGE_LEFT,
+            'rue' => self::MERGE_LEFT,
+            'url' => self::MERGE_LEFT,
+            'ville' => self::MERGE_LEFT,
+            'codePostal' => self::MERGE_LEFT,
+            'facebook_id' => self::MERGE_LEFT,
+            'external_id' => self::MERGE_LEFT,
+            'reject',
+        ]);
     }
 }

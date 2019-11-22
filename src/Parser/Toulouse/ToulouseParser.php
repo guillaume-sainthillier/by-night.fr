@@ -2,7 +2,6 @@
 
 namespace App\Parser\Toulouse;
 
-use App\Entity\Event;
 use App\Parser\AbstractParser;
 use DateTime;
 use ForceUTF8\Encoding;
@@ -17,13 +16,33 @@ class ToulouseParser extends AbstractParser
 {
     private const DOWNLOAD_URL = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true';
 
+    public static function getParserName(): string
+    {
+        return 'Toulouse';
+    }
+
     public function parse(bool $incremental): void
     {
         $fichier = $this->downloadCSV();
 
-        if(null !== $fichier) {
+        if (null !== $fichier) {
             $this->parseCSV($fichier);
         }
+    }
+
+    /**
+     * Télécharge un fichier CSV sur le repertoire TEMP depuis l'URI de l'Open Data Toulouse.
+     *
+     * @return string le chemin absolu vers le fichier
+     */
+    private function downloadCSV()
+    {
+        $data = \file_get_contents(self::DOWNLOAD_URL);
+        $path_file = \sprintf('%s/data_manifestations/agenda.csv', \sys_get_temp_dir());
+        $fs = new Filesystem();
+        $fs->dumpFile($path_file, $data);
+
+        return $path_file;
     }
 
     /**
@@ -60,8 +79,8 @@ class ToulouseParser extends AbstractParser
                 'modification_derniere_minute' => $tab[9],
                 'placeName' => $tab[10],
                 'placeStreet' => $tab[12],
-                'latitude' => (float) $tab[20] ?: null,
-                'longitude' => (float) $tab[21] ?: null,
+                'latitude' => (float)$tab[20] ?: null,
+                'longitude' => (float)$tab[21] ?: null,
                 'placePostalCode' => $tab[14],
                 'placeCity' => $tab[15],
                 'placeCountryName' => 'France',
@@ -78,25 +97,5 @@ class ToulouseParser extends AbstractParser
             $this->publish($event);
         }
         fclose($fic);
-    }
-
-    /**
-     * Télécharge un fichier CSV sur le repertoire TEMP depuis l'URI de l'Open Data Toulouse.
-     *
-     * @return string le chemin absolu vers le fichier
-     */
-    private function downloadCSV()
-    {
-        $data = \file_get_contents(self::DOWNLOAD_URL);
-        $path_file = \sprintf('%s/data_manifestations/agenda.csv', \sys_get_temp_dir());
-        $fs = new Filesystem();
-        $fs->dumpFile($path_file, $data);
-
-        return $path_file;
-    }
-
-    public static function getParserName(): string
-    {
-        return 'Toulouse';
     }
 }

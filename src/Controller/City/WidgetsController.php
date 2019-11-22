@@ -7,7 +7,6 @@ use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Event;
 use App\Social\Twitter;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -27,7 +26,7 @@ class WidgetsController extends BaseController
      */
     public function twitterAction(bool $disableTwitterFeed, Location $location, Twitter $twitter, $max_id = null)
     {
-        if(! $disableTwitterFeed) {
+        if (!$disableTwitterFeed) {
             $results = $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT);
         } else {
             $results = [];

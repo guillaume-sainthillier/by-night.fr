@@ -2,20 +2,13 @@
 
 namespace App\EventListener;
 
-use App\Consumer\RemoveImageThumbnailsConsumer;
-use App\Entity\Event;
-use App\Entity\User;
 use App\File\DeletableFile;
 use App\Producer\PurgeCdnCacheUrlProducer;
 use App\Producer\RemoveImageThumbnailsProducer;
-use GuzzleHttp\Client;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Asset\Packages;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Vich\UploaderBundle\Event\Events;
-use function GuzzleHttp\Promise\all;
 
 class ImageListener implements EventSubscriberInterface
 {
@@ -63,7 +56,7 @@ class ImageListener implements EventSubscriberInterface
 
     public function onImageUploaded()
     {
-        foreach($this->files as $file) {
+        foreach ($this->files as $file) {
             $fs = new Filesystem();
             $fs->remove($file->getPathname());
         }
@@ -84,12 +77,12 @@ class ImageListener implements EventSubscriberInterface
     public function onImageDeleted()
     {
         //Schedule thumbnails delete
-        foreach($this->paths as $path) {
+        foreach ($this->paths as $path) {
             $this->removeImageThumbnailsProducer->scheduleRemove($path);
         }
 
         //Schedule CDN purging of old image path
-        foreach($this->paths as $path) {
+        foreach ($this->paths as $path) {
             $this->purgeCdnCacheUrlProducer->schedulePurge('path');
         }
 

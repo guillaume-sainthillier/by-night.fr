@@ -79,34 +79,6 @@ class DoctrineEventHandler
      *
      * @return Event[]
      */
-    public function handleManyCLI(array $events, bool $flush = true)
-    {
-        $this->explorationHandler->start();
-        $events = $this->handleMany($events, $flush);
-
-        $historique = $this->explorationHandler->stop();
-        $this->em->persist($historique);
-        $this->em->flush();
-
-        Monitor::writeln('');
-        Monitor::displayStats();
-        Monitor::displayTable([
-            'NEWS' => $this->explorationHandler->getNbInserts(),
-            'UPDATES' => $this->explorationHandler->getNbUpdates(),
-            'BLACKLISTS' => $this->explorationHandler->getNbBlackLists(),
-            'EXPLORATIONS' => $this->explorationHandler->getNbExplorations(),
-        ]);
-
-        $this->explorationHandler->reset();
-
-        return $events;
-    }
-
-    /**
-     * @param Event[] $events
-     *
-     * @return Event[]
-     */
     public function handleMany(array $events, bool $flush = true)
     {
         if (!\count($events)) {
@@ -143,154 +115,6 @@ class DoctrineEventHandler
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
     }
 
-    /**
-     * @param Event[] $events
-     *
-     * @return Event[]
-     */
-    private function getAllowedEvents(array $events)
-    {
-        return \array_filter($events, [$this->firewall, 'isValid']);
-    }
-
-    /**
-     * @param Event[] $events
-     *
-     * @return Event[]
-     */
-    private function getNotAllowedEvents(array $events)
-    {
-        return \array_filter($events, function ($event) {
-            return !$this->firewall->isValid($event);
-        });
-    }
-
-    /**
-     * @param Event[] $events
-     *
-     * @return array
-     */
-    private function getChunks(array $events)
-    {
-        $chunks = [];
-        foreach ($events as $i => $event) {
-            if ($event->getPlace() && $event->getPlace()->getCity()) {
-                $key = 'city.' . $event->getPlace()->getCity()->getId();
-            } elseif ($event->getPlace() && $event->getPlace()->getCountry()) {
-                $key = 'country.' . $event->getPlace()->getCountry()->getId();
-            } else {
-                $key = 'unknown';
-            }
-
-            $chunks[$key][$i] = $event;
-        }
-
-        foreach ($chunks as $i => $chunk) {
-            $chunks[$i] = \array_chunk($chunk, self::BATCH_SIZE, true);
-        }
-
-        return $chunks;
-    }
-
-    /**
-     * @return Event[]
-     */
-    private function unChunk(array $chunks)
-    {
-        $flat = [];
-        foreach ($chunks as $chunk) {
-            $flat = \array_merge($flat, $chunk);
-        }
-
-        return $flat;
-    }
-
-    /**
-     * @param Event[] $events
-     *
-     * @return Event[]
-     */
-    private function mergeWithDatabase(array $events, bool $flush)
-    {
-        Monitor::createProgressBar(\count($events));
-
-        $chunks = $this->getChunks($events);
-
-        //Par localisation
-        foreach ($chunks as $chunk) {
-            $this->echantillonHandler->prefetchPlaceEchantillons($this->unChunk($chunk));
-
-            //Par n événements
-            foreach ($chunk as $currentEvents) {
-                $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
-
-                //Par événement
-                foreach ($currentEvents as $i => $event) {
-                    /** @var Event $event */
-                    $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
-                    $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
-
-                    $url = $event->getUrl();
-                    $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
-                    if (!$this->firewall->isValid($event)) {
-                        $this->explorationHandler->addBlackList();
-                    } else {
-                        //Image URL has changed or never downloaded
-                        if ($event->getUrl() && (!$event->getSystemPath() || $event->getUrl() !== $url)) {
-                            $this->handler->handleDownload($event);
-                        }
-
-                        $this->em->persist($event);
-                        $this->echantillonHandler->addNewEvent($event);
-                        if ($this->firewall->isPersisted($event)) {
-                            $this->explorationHandler->addUpdate();
-                        } else {
-                            $this->explorationHandler->addInsert();
-                        }
-                    }
-                    Monitor::advanceProgressBar();
-                    $events[$i] = $event;
-                }
-
-                if ($flush) {
-                    $this->commit();
-                    $this->clearEvents();
-                }
-            }
-
-            if ($flush) {
-                $this->clearPlaces();
-            }
-        }
-        Monitor::finishProgressBar();
-
-        return $events;
-    }
-
-    private function clearPlaces()
-    {
-        $this->em->clear(Place::class);
-        $this->echantillonHandler->clearPlaces();
-    }
-
-    private function clearEvents()
-    {
-        $this->em->clear(Event::class);
-        $this->echantillonHandler->clearEvents();
-    }
-
-    private function commit()
-    {
-        try {
-            $this->em->flush();
-        } catch (Exception $e) {
-            Monitor::writeln(\sprintf(
-                '<error>%s</error>',
-                $e->getMessage()
-            ));
-        }
-    }
-
     private function loadExplorations(array $events)
     {
         $ids = $this->getExplorationsIds($events);
@@ -300,27 +124,25 @@ class DoctrineEventHandler
         }
     }
 
-    private function flushExplorations()
+    /**
+     * @param Event[] $events
+     *
+     * @return int[]
+     */
+    private function getExplorationsIds(array $events)
     {
-        $explorations = $this->firewall->getExplorations();
-
-        $batchSize = 500;
-        $nbBatches = \ceil(\count($explorations) / $batchSize);
-
-        for ($i = 0; $i < $nbBatches; ++$i) {
-            $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
-            foreach ($currentExplorations as $exploration) {
-                /*
-                 * @var Exploration $exploration
-                 */
-                $exploration->setReason($exploration->getReject()->getReason());
-                $this->explorationHandler->addExploration();
-                $this->em->persist($exploration);
+        $ids = [];
+        foreach ($events as $event) {
+            if ($event->getExternalId()) {
+                $ids[$event->getExternalId()] = true;
             }
-            $this->em->flush();
+
+            if ($event->getPlaceExternalId()) {
+                $ids[$event->getPlaceExternalId()] = true;
+            }
         }
-        $this->em->clear(Exploration::class);
-        $this->firewall->flushExplorations();
+
+        return \array_keys($ids);
     }
 
     /**
@@ -379,6 +201,16 @@ class DoctrineEventHandler
                 $this->handler->cleanEvent($event);
             }
         }
+    }
+
+    public function guessEventLocation(Place $place)
+    {
+        //Pas besoin de trouver un lieu déjà blacklisté
+        if (!$place->getReject()->isValid()) {
+            return;
+        }
+
+        $this->guessEventCity($place);
     }
 
     private function guessEventCity(Place $place)
@@ -453,34 +285,202 @@ class DoctrineEventHandler
         }
     }
 
-    public function guessEventLocation(Place $place)
+    private function flushExplorations()
     {
-        //Pas besoin de trouver un lieu déjà blacklisté
-        if (!$place->getReject()->isValid()) {
-            return;
-        }
+        $explorations = $this->firewall->getExplorations();
 
-        $this->guessEventCity($place);
+        $batchSize = 500;
+        $nbBatches = \ceil(\count($explorations) / $batchSize);
+
+        for ($i = 0; $i < $nbBatches; ++$i) {
+            $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
+            foreach ($currentExplorations as $exploration) {
+                /*
+                 * @var Exploration $exploration
+                 */
+                $exploration->setReason($exploration->getReject()->getReason());
+                $this->explorationHandler->addExploration();
+                $this->em->persist($exploration);
+            }
+            $this->em->flush();
+        }
+        $this->em->clear(Exploration::class);
+        $this->firewall->flushExplorations();
     }
 
     /**
      * @param Event[] $events
      *
-     * @return int[]
+     * @return Event[]
      */
-    private function getExplorationsIds(array $events)
+    private function getAllowedEvents(array $events)
     {
-        $ids = [];
-        foreach ($events as $event) {
-            if ($event->getExternalId()) {
-                $ids[$event->getExternalId()] = true;
+        return \array_filter($events, [$this->firewall, 'isValid']);
+    }
+
+    /**
+     * @param Event[] $events
+     *
+     * @return Event[]
+     */
+    private function getNotAllowedEvents(array $events)
+    {
+        return \array_filter($events, function ($event) {
+            return !$this->firewall->isValid($event);
+        });
+    }
+
+    /**
+     * @param Event[] $events
+     *
+     * @return Event[]
+     */
+    private function mergeWithDatabase(array $events, bool $flush)
+    {
+        Monitor::createProgressBar(\count($events));
+
+        $chunks = $this->getChunks($events);
+
+        //Par localisation
+        foreach ($chunks as $chunk) {
+            $this->echantillonHandler->prefetchPlaceEchantillons($this->unChunk($chunk));
+
+            //Par n événements
+            foreach ($chunk as $currentEvents) {
+                $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
+
+                //Par événement
+                foreach ($currentEvents as $i => $event) {
+                    /** @var Event $event */
+                    $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
+                    $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
+
+                    $url = $event->getUrl();
+                    $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
+                    if (!$this->firewall->isValid($event)) {
+                        $this->explorationHandler->addBlackList();
+                    } else {
+                        //Image URL has changed or never downloaded
+                        if ($event->getUrl() && (!$event->getSystemPath() || $event->getUrl() !== $url)) {
+                            $this->handler->handleDownload($event);
+                        }
+
+                        $this->em->persist($event);
+                        $this->echantillonHandler->addNewEvent($event);
+                        if ($this->firewall->isPersisted($event)) {
+                            $this->explorationHandler->addUpdate();
+                        } else {
+                            $this->explorationHandler->addInsert();
+                        }
+                    }
+                    Monitor::advanceProgressBar();
+                    $events[$i] = $event;
+                }
+
+                if ($flush) {
+                    $this->commit();
+                    $this->clearEvents();
+                }
             }
 
-            if ($event->getPlaceExternalId()) {
-                $ids[$event->getPlaceExternalId()] = true;
+            if ($flush) {
+                $this->clearPlaces();
             }
         }
+        Monitor::finishProgressBar();
 
-        return \array_keys($ids);
+        return $events;
+    }
+
+    /**
+     * @param Event[] $events
+     *
+     * @return array
+     */
+    private function getChunks(array $events)
+    {
+        $chunks = [];
+        foreach ($events as $i => $event) {
+            if ($event->getPlace() && $event->getPlace()->getCity()) {
+                $key = 'city.' . $event->getPlace()->getCity()->getId();
+            } elseif ($event->getPlace() && $event->getPlace()->getCountry()) {
+                $key = 'country.' . $event->getPlace()->getCountry()->getId();
+            } else {
+                $key = 'unknown';
+            }
+
+            $chunks[$key][$i] = $event;
+        }
+
+        foreach ($chunks as $i => $chunk) {
+            $chunks[$i] = \array_chunk($chunk, self::BATCH_SIZE, true);
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * @return Event[]
+     */
+    private function unChunk(array $chunks)
+    {
+        $flat = [];
+        foreach ($chunks as $chunk) {
+            $flat = \array_merge($flat, $chunk);
+        }
+
+        return $flat;
+    }
+
+    private function commit()
+    {
+        try {
+            $this->em->flush();
+        } catch (Exception $e) {
+            Monitor::writeln(\sprintf(
+                '<error>%s</error>',
+                $e->getMessage()
+            ));
+        }
+    }
+
+    private function clearEvents()
+    {
+        $this->em->clear(Event::class);
+        $this->echantillonHandler->clearEvents();
+    }
+
+    private function clearPlaces()
+    {
+        $this->em->clear(Place::class);
+        $this->echantillonHandler->clearPlaces();
+    }
+
+    /**
+     * @param Event[] $events
+     *
+     * @return Event[]
+     */
+    public function handleManyCLI(array $events, bool $flush = true)
+    {
+        $this->explorationHandler->start();
+        $events = $this->handleMany($events, $flush);
+
+        $historique = $this->explorationHandler->stop();
+        $this->em->persist($historique);
+        $this->em->flush();
+
+        Monitor::writeln('');
+        Monitor::displayStats();
+        Monitor::displayTable([
+            'NEWS' => $this->explorationHandler->getNbInserts(),
+            'UPDATES' => $this->explorationHandler->getNbUpdates(),
+            'BLACKLISTS' => $this->explorationHandler->getNbBlackLists(),
+            'EXPLORATIONS' => $this->explorationHandler->getNbExplorations(),
+        ]);
+
+        $this->explorationHandler->reset();
+
+        return $events;
     }
 }

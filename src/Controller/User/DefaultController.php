@@ -32,30 +32,6 @@ class DefaultController extends BaseController
         return new RedirectResponse($this->generateUrl('app_search_query', $params));
     }
 
-    protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repoUser = $em->getRepository(User::class);
-
-        if (!$id) {
-            $user = $repoUser->findOneBy(['username' => $username]);
-        } else {
-            $user = $repoUser->find($id);
-        }
-
-        if (!$user || !$user->getSlug()) {
-            throw new NotFoundHttpException('User not found');
-        }
-
-        if ($user->getSlug() !== $slug) {
-            $routeParams = \array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
-
-            return new RedirectResponse($this->generateUrl($routeName, $routeParams));
-        }
-
-        return $user;
-    }
-
     /**
      * @Route("/{slug}--{id}", name="app_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/{username}", name="app_user_details_old", requirements={"username": "[^/]+"})
@@ -84,6 +60,30 @@ class DefaultController extends BaseController
             'etablissements' => $repo->findAllPlaces($user),
             'count_favoris' => $repo->getCountParticipations($user) + $repo->getCountInterets($user),
         ]);
+    }
+
+    protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
+    {
+        $em = $this->getDoctrine()->getManager();
+        $repoUser = $em->getRepository(User::class);
+
+        if (!$id) {
+            $user = $repoUser->findOneBy(['username' => $username]);
+        } else {
+            $user = $repoUser->find($id);
+        }
+
+        if (!$user || !$user->getSlug()) {
+            throw new NotFoundHttpException('User not found');
+        }
+
+        if ($user->getSlug() !== $slug) {
+            $routeParams = \array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
+
+            return new RedirectResponse($this->generateUrl($routeName, $routeParams));
+        }
+
+        return $user;
     }
 
     /**
@@ -184,6 +184,15 @@ class DefaultController extends BaseController
         return $this->fillDatas($final_datas, $datas);
     }
 
+    private function fillDatas(array $final_datas, array $datas)
+    {
+        foreach (array_keys($final_datas['categories']) as $key) {
+            $final_datas['data'][$key] = $datas[$key] ?? 0;
+        }
+
+        return array_map('array_values', $final_datas);
+    }
+
     protected function getDataOfMonth(EventRepository $repo, User $user)
     {
         $datas = $repo->getStatsUser($user, 'MONTH');
@@ -225,8 +234,8 @@ class DefaultController extends BaseController
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {
-            $minYear = (int) date('Y');
-            $maxYear = (int) date('Y');
+            $minYear = (int)date('Y');
+            $maxYear = (int)date('Y');
         }
 
         foreach (range($minYear, $maxYear) as $year) {
@@ -235,14 +244,5 @@ class DefaultController extends BaseController
         }
 
         return $this->fillDatas($final_datas, $datas);
-    }
-
-    private function fillDatas(array $final_datas, array $datas)
-    {
-        foreach (array_keys($final_datas['categories']) as $key) {
-            $final_datas['data'][$key] = $datas[$key] ?? 0;
-        }
-
-        return array_map('array_values', $final_datas);
     }
 }

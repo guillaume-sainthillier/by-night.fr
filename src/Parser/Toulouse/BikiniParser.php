@@ -5,9 +5,7 @@ namespace App\Parser\Toulouse;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTime;
-use Exception;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * @author Guillaume SAINTHILLIER
@@ -19,6 +17,11 @@ class BikiniParser extends AbstractParser
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
     {
         parent::__construct($logger, $eventProducer);
+    }
+
+    public static function getParserName(): string
+    {
+        return 'Bikini';
     }
 
     public function parse(bool $incremental): void
@@ -80,10 +83,5 @@ class BikiniParser extends AbstractParser
         }
 
         return $tab_retour;
-    }
-
-    public static function getParserName(): string
-    {
-        return 'Bikini';
     }
 }

@@ -87,6 +87,36 @@ class FOSUBUserProvider extends BaseClass
         return parent::getProperty($response);
     }
 
+    protected function hydrateUser(UserInterface $user, UserResponseInterface $response, $service)
+    {
+        if (!$user instanceof User) {
+            return;
+        }
+
+        if (null === $user->getInfo()) {
+            $user->setInfo(new UserInfo());
+        }
+
+        if (null === $user->getEmail()) {
+            $user->setEmail(null === $response->getEmail() ? $response->getNickname() . '@' . $service . '.fr' : $response->getEmail());
+        }
+
+        if (null === $user->getFirstname() && null === $user->getLastname()) {
+            $nom_prenoms = \preg_split('/ /', $response->getRealName());
+            $user->setFirstname($nom_prenoms[0]);
+            if (\count($nom_prenoms) > 0) {
+                $user->setLastname(\implode(' ', \array_slice($nom_prenoms, 1)));
+            }
+        }
+
+        if (null === $user->getUsername() || '' === $user->getUsername()) {
+            $user->setUsername($response->getNickname());
+        }
+
+        $social = $this->socialProvider->getSocial($service);
+        $social->connectUser($user, $response);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -130,35 +160,5 @@ class FOSUBUserProvider extends BaseClass
         $this->userManager->updateUser($user); // Mise à jour
 
         return $user;
-    }
-
-    protected function hydrateUser(UserInterface $user, UserResponseInterface $response, $service)
-    {
-        if (!$user instanceof User) {
-            return;
-        }
-
-        if (null === $user->getInfo()) {
-            $user->setInfo(new UserInfo());
-        }
-
-        if (null === $user->getEmail()) {
-            $user->setEmail(null === $response->getEmail() ? $response->getNickname() . '@' . $service . '.fr' : $response->getEmail());
-        }
-
-        if (null === $user->getFirstname() && null === $user->getLastname()) {
-            $nom_prenoms = \preg_split('/ /', $response->getRealName());
-            $user->setFirstname($nom_prenoms[0]);
-            if (\count($nom_prenoms) > 0) {
-                $user->setLastname(\implode(' ', \array_slice($nom_prenoms, 1)));
-            }
-        }
-
-        if (null === $user->getUsername() || '' === $user->getUsername()) {
-            $user->setUsername($response->getNickname());
-        }
-
-        $social = $this->socialProvider->getSocial($service);
-        $social->connectUser($user, $response);
     }
 }

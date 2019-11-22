@@ -37,7 +37,7 @@ class Location
             return sprintf('à %s', $this->city->getName());
         }
 
-        if($this->country) {
+        if ($this->country) {
             return sprintf('en %s', $this->country->getName());
         }
 
@@ -46,11 +46,11 @@ class Location
 
     public function getName()
     {
-        if($this->city) {
+        if ($this->city) {
             return $this->city->getName();
         }
 
-        if($this->country) {
+        if ($this->country) {
             return $this->country->getName();
         }
 
@@ -59,11 +59,11 @@ class Location
 
     public function getSlug()
     {
-        if($this->city) {
+        if ($this->city) {
             return $this->city->getSlug();
         }
 
-        if($this->country) {
+        if ($this->country) {
             return $this->country->getSlug();
         }
 
