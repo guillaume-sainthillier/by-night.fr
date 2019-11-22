@@ -19,7 +19,7 @@ class CountryRepository extends EntityRepository
             ->andWhere('LOWER(c.name) = :country OR LOWER(c.displayName) = :country OR c.id = :country')
             ->setParameter('country', \mb_strtolower($country))
             ->getQuery()
-            ->useResultCache(true)
+            ->enableResultCache()
             ->useQueryCache(true)
             ->getOneOrNullResult();
     }

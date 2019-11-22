@@ -74,7 +74,7 @@ class ZipCityRepository extends EntityRepository
         return $query
             ->getQuery()
             ->useQueryCache(true)
-            ->useResultCache(true)
+            ->enableResultCache()
             ->getResult();
     }
 

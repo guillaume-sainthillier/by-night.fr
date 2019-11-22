@@ -82,7 +82,7 @@ class CityRepository extends EntityRepository
             ->getQuery()
             ->setCacheable(true)
             ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
-            ->useResultCache(true)
+            ->enableResultCache()
             ->useQueryCache(true)
             ->getResult();
     }
@@ -95,7 +95,7 @@ class CityRepository extends EntityRepository
             ->getQuery()
             ->setCacheable(true)
             ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
-            ->useResultCache(true)
+            ->enableResultCache()
             ->useQueryCache(true)
             ->getResult();
     }
@@ -108,7 +108,7 @@ class CityRepository extends EntityRepository
             ->getQuery()
             ->setCacheable(true)
             ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
-            ->useResultCache(true)
+            ->enableResultCache()
             ->useQueryCache(true)
             ->getOneOrNullResult();
     }
