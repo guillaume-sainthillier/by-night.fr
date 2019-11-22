@@ -8,6 +8,9 @@
     {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
     {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
     {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
+    {% if form.comment is defined %}
+        {{ form_row(form.comment) }}
+    {% endif %}
 {% endblock %}
 
 {% block footer '' %}

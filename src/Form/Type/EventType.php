@@ -161,6 +161,19 @@ class EventType extends AbstractType
             ])
             ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
 
+        if($options['data'] !== null && null === $options['data']->getId()) {
+            $builder
+                ->add('comment', TextareaType::class, [
+                    'label' => 'Commentaire',
+                    'mapped' => false,
+                    'required' => false,
+                    'attr' => [
+                        'rows' => 8,
+                        'placeholder' => 'Laisser un commentaire qui sera visible par les internautes',
+                    ],
+                ]);
+        }
+
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
                 return (float) $latitude ?: null;
@@ -188,7 +201,8 @@ class EventType extends AbstractType
             return;
         }
 
-        $this->doctrineEventHandler->handleOne($data, false);
+        $data = $this->doctrineEventHandler->handleOne($data, false);
+        $event->setData($data);
     }
 
     public function configureOptions(OptionsResolver $resolver)

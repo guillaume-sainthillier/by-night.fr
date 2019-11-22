@@ -4,6 +4,7 @@ namespace App\Controller\EspacePerso;
 
 use App\Controller\TBNController as BaseController;
 use App\Entity\Calendrier;
+use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\EventType;
 use App\Validator\Constraints\EventConstraintValidator;
@@ -125,7 +126,17 @@ class EventController extends BaseController
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $em = $this->getDoctrine()->getManager();
+            if ($form->get('comment')->getData()) {
+                $event = $form->getData();
+                $comment = new Comment();
+                $comment
+                    ->setCommentaire($form->get('comment')->getData())
+                    ->setEvent($event)
+                    ->setUser($user);
+                $em->persist($comment);
+            }
+            $em->flush();
             $this->addFlash(
                 'success',
                 'Votre événement a bien été créé. Merci !'
