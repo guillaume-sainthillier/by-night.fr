@@ -22,16 +22,12 @@ class EventRepository extends EntityRepository
         $from = new DateTime();
         $from->modify(Event::INDEX_FROM);
 
-        $to = new DateTime();
-        $to->modify(Event::INDEX_TO);
-
         $qb = $this->createElasticaQueryBuilder('a');
 
         return $qb
-            ->where('a.dateFin BETWEEN :from AND :to')
+            ->where('a.dateFin >= :from')
             ->setParameters([
-                'from' => $from->format('Y-m-d'),
-                'to' => $to->format('Y-m-d'),
+                'from' => $from->format('Y-m-d')
             ]);
     }
 
@@ -80,19 +76,15 @@ class EventRepository extends EntityRepository
     public function updateNonIndexables()
     {
         $from = new DateTime();
-        $to = new DateTime();
-
         $from->modify(Event::INDEX_FROM);
-        $to->modify(Event::INDEX_TO);
 
         return $this->_em
             ->createQuery('UPDATE App:Event a
             SET a.archive = true
-            WHERE (a.dateFin < :from OR a.dateFin > :to)
+            WHERE a.dateFin < :from
             AND a.archive = false')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
-                'to' => $to->format('Y-m-d'),
             ])
             ->execute();
     }
@@ -100,18 +92,15 @@ class EventRepository extends EntityRepository
     public function findNonIndexablesBuilder()
     {
         $from = new DateTime();
-        $to = new DateTime();
 
         $from->modify(Event::INDEX_FROM);
-        $to->modify(Event::INDEX_TO);
 
         return $this
             ->createElasticaQueryBuilder('a')
             ->where('a.archive = false')
-            ->andWhere('a.dateFin < :from OR a.dateFin > :to')
+            ->andWhere('a.dateFin < :from')
             ->setParameters([
                 'from' => $from->format('Y-m-d'),
-                'to' => $to->format('Y-m-d'),
             ])
             ->addOrderBy('a.id');
     }
@@ -425,39 +414,37 @@ class EventRepository extends EntityRepository
     {
         $events = $this
             ->getTopSoireeBuilder($location)
-            ->orderBy('a.fbParticipations', 'DESC')
-            ->addOrderBy('a.fbInterets', 'DESC')
+            ->orderBy('a.dateFin', 'ASC')
+            ->addOrderBy('a.participations', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
 
-        \usort($events, function (Event $a, Event $b) {
-            if ($a->getDateFin() === $b->getDateFin()) {
-                return 0;
-            }
-
-            return $a->getDateFin() > $b->getDateFin() ? -1 : 1;
-        });
-
         return $events;
     }
 
-    public function findCountWithSearch(Location $location)
+    public function findUpcomingEvents(Location $location, int $page, int $limit)
     {
         $from = new DateTime();
 
         $qb = $this
             ->createQueryBuilder('a')
-            ->select('COUNT(a) as nombre')
             ->where('a.dateFin >= :from')
-            ->setParameter('from', $from->format('Y-m-d'));
+            ->setParameter('from', $from->format('Y-m-d'))
+            ->orderBy('a.dateFin', 'ASC')
+            ->addOrderBy('a.participations', 'DESC');
 
         $this->buildLocationParameters($qb, $location);
+        $query = $qb->getQuery();
 
-        return $qb
-            ->getQuery()
-            ->getSingleScalarResult();
+        $adapter = new DoctrineORMAdapter($query);
+        $pagerfanta = new Pagerfanta($adapter);
+
+        return $pagerfanta
+            ->setAllowOutOfRangePages(true)
+            ->setCurrentPage($page)
+            ->setMaxPerPage($limit);
     }
 
     private function buildLocationParameters(QueryBuilder $queryBuilder, Location $location)
@@ -505,16 +492,13 @@ class EventRepository extends EntityRepository
         $from = new DateTime();
         $from->modify(Event::INDEX_FROM);
 
-        $to = new DateTime();
-        $to->modify(Event::INDEX_TO);
-
         $qb = $this->_em
             ->createQueryBuilder()
             ->select('p')
             ->from('App:Event', 'a')
             ->join('App:Place', 'p', 'WITH', 'p = a.place')
             ->where("p.nom != ''")
-            ->andWhere('a.dateFin BETWEEN :from AND :to');
+            ->andWhere('a.dateFin >= :from');
 
         $this->buildLocationParameters($qb, $location);
         if ($location->isCountry()) {
@@ -523,7 +507,6 @@ class EventRepository extends EntityRepository
 
         return $qb
             ->setParameter('from', $from->format('Y-m-d'))
-            ->setParameter('to', $to->format('Y-m-d'))
             ->groupBy('p.nom')
             ->orderBy('p.nom')
             ->getQuery()
@@ -538,16 +521,13 @@ class EventRepository extends EntityRepository
         $from = new DateTime();
         $from->modify(Event::INDEX_FROM);
 
-        $to = new DateTime();
-        $to->modify(Event::INDEX_TO);
-
         $qb = $this->_em
             ->createQueryBuilder()
             ->select('a.categorieManifestation')
             ->from('App:Event', 'a')
             ->join('a.place', 'p')
             ->where("a.categorieManifestation != ''")
-            ->andWhere('a.dateFin BETWEEN :from AND :to');
+            ->andWhere('a.dateFin >= :from');
 
         if ($location->isCity()) {
             $qb->andWhere('p.city = :city')
@@ -560,7 +540,6 @@ class EventRepository extends EntityRepository
 
         $results = $qb
             ->setParameter('from', $from->format('Y-m-d'))
-            ->setParameter('to', $to->format('Y-m-d'))
             ->groupBy('a.categorieManifestation')
             ->orderBy('a.categorieManifestation', 'DESC')
             ->getQuery()

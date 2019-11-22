@@ -40,7 +40,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Event implements GeolocalizeInterface
 {
     const INDEX_FROM = '-6 months';
-    const INDEX_TO = '+2 years';
 
     use EntityTimestampableTrait;
 
@@ -478,10 +477,7 @@ class Event implements GeolocalizeInterface
         $from = new DateTime();
         $from->modify(self::INDEX_FROM);
 
-        $to = new DateTime();
-        $to->modify(self::INDEX_TO);
-
-        return $this->dateFin >= $from && $this->dateFin <= $to;
+        return $this->dateFin >= $from;
     }
 
     public function getLatitude(): ?float

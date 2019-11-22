@@ -23,13 +23,13 @@ class DefaultController extends BaseController
 
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Event::class);
-        $topEvents = $repo->findTopSoiree($location, 1, 7);
+        $topEvents = $repo->findUpcomingEvents($location, 1, 7);
 
         $form = $this->createForm(SimpleEventSearchType::class, $datas);
         return $this->render('City/Default/index.html.twig', [
             'location' => $location,
             'topEvents' => $topEvents,
-            'nbEvents' => $repo->findCountWithSearch($location),
+            'nbEvents' => $topEvents->getNbResults(),
             'form' => $form->createView()
         ]);
     }

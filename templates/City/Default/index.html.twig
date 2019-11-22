@@ -170,7 +170,7 @@
     </section>
     <section class="bg-white py-4">
         <div class="container">
-            <h2>Les concerts, spectacles et sorties cette semaine {{ location.atName }}</h2>
+            <h2>Les prochains concerts, spectacles et sorties {{ location.atName }}</h2>
             {% include 'City/Event/block_preview_event.html.twig' with({'events': topEvents, 'page': 1}) %}
 
             <div class="text-center mt-4">
