@@ -22,7 +22,7 @@ services:
         bind:
             $changePasswordFormFactory: "@fos_user.change_password.form.factory"
             $profileFormFactory: "@fos_user.profile.form.factory"
-            $memoryCache: "@memory_cache"
+            $memoryCache: "@redis.app_cache_pool"
             $secret: "%kernel.secret%"
             $webDir: "%kernel.project_dir%/public"
             $tempPath: "%kernel.project_dir%/var/storage/temp"

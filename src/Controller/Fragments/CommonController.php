@@ -10,7 +10,10 @@ use App\Entity\Country;
 use App\Social\Social;
 use App\Social\SocialProvider;
 use Doctrine\Common\Cache\Cache;
+use Psr\Cache\CacheItemInterface;
+use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class CommonController extends TBNController
 {
@@ -34,7 +37,7 @@ class CommonController extends TBNController
         ]);
     }
 
-    public function footer(Cache $memoryCache, SocialProvider $socialProvider, Country $country = null)
+    public function footer(CacheInterface $memoryCache, SocialProvider $socialProvider, Country $country = null)
     {
         $socials = [
             'facebook' => $socialProvider->getSocial(SocialProvider::FACEBOOK_ADMIN),
@@ -45,11 +48,10 @@ class CommonController extends TBNController
         foreach ($socials as $name => $service) {
             /** @var Social $service */
             $key = 'app.social_counts.' . $name;
-            if (!$memoryCache->contains($key)) {
-                $memoryCache->save($key, $service->getNumberOfCount(), self::LIFE_TIME_CACHE);
-            }
-
-            $params['count_' . $name] = $memoryCache->fetch($key);
+            $params['count_' . $name] = $memoryCache->get($key, function(CacheItemInterface $item) use($service) {
+                $item->expiresAfter(self::LIFE_TIME_CACHE);
+                return $service->getNumberOfCount();
+            });
         }
 
         $repo = $this->getDoctrine()->getRepository(City::class);

@@ -11,12 +11,13 @@ use App\Form\Type\SearchType;
 use App\Repository\EventRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
-use Doctrine\Common\Cache\Cache as DoctrineCache;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class AgendaController extends BaseController
 {
@@ -76,15 +77,15 @@ class AgendaController extends BaseController
      *
      * @return Response
      */
-    public function indexAction(Location $location, Request $request, DoctrineCache $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, int $page = 1, string $type = null, string $tag = null, string $slug = null)
+    public function indexAction(Location $location, Request $request, CacheInterface $memoryCache, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager, int $page = 1, string $type = null, string $tag = null, string $slug = null)
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
 
         $routeParams = $request->query->all() + [
-            'page' => $page + 1,
-            'location' => $location->getSlug(),
-        ];
+                'page' => $page + 1,
+                'location' => $location->getSlug(),
+            ];
 
         if (null !== $type) {
             $routeParams['type'] = $type;
@@ -163,11 +164,11 @@ class AgendaController extends BaseController
         ]);
     }
 
-    private function getTypesEvenements(DoctrineCache $cache, EventRepository $repo, Location $location)
+    private function getTypesEvenements(CacheInterface $cache, EventRepository $repo, Location $location)
     {
         $key = 'categories_evenements.' . $location->getSlug();
 
-        if (!$cache->contains($key)) {
+        return $cache->get($key, function (ItemInterface $item) use ($repo, $location) {
             $events_type_manifestation = $repo->getTypesEvenements($location);
             $type_manifestation = [];
 
@@ -181,9 +182,9 @@ class AgendaController extends BaseController
                 }
             }
             \ksort($type_manifestation);
-            $cache->save($key, $type_manifestation, 24 * 60 * 60);
-        }
+            $item->expiresAfter(24 * 60 * 60);
 
-        return $cache->fetch($key);
+            return $type_manifestation;
+        });
     }
 }
