@@ -45,9 +45,9 @@ class AgendaController extends BaseController
         $isAjax = $request->isXmlHttpRequest();
 
         $routeParams = $request->query->all() + [
-            'page' => $page + 1,
-            'location' => $location->getSlug(),
-        ];
+                'page' => $page + 1,
+                'location' => $location->getSlug(),
+            ];
 
         if (null !== $type) {
             $routeParams['type'] = $type;

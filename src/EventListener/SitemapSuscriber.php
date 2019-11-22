@@ -105,6 +105,20 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
+    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null, string $changefreq = null)
+    {
+        $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $url = new UrlConcrete(
+            $url,
+            $lastMod ?: $this->now,
+            $changefreq ?: UrlConcrete::CHANGEFREQ_HOURLY,
+            1
+        );
+
+        $this->urlContainer->addUrl($url, $section);
+    }
+
     private function registerAgendaRoutes($section)
     {
         $cities = $this->doctrine->getRepository(City::class)->findSiteMap();
@@ -119,20 +133,6 @@ class SitemapSuscriber implements EventSubscriberInterface
             $this->addUrl($section, 'app_agenda_sortir', ['type' => 'spectacle', 'location' => $city['slug']]);
             $this->addUrl($section, 'app_agenda_sortir', ['type' => 'exposition', 'location' => $city['slug']]);
         }
-    }
-
-    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null, string $changefreq = null)
-    {
-        $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
-
-        $url = new UrlConcrete(
-            $url,
-            $lastMod ?: $this->now,
-            $changefreq ?: UrlConcrete::CHANGEFREQ_HOURLY,
-            1
-        );
-
-        $this->urlContainer->addUrl($url, $section);
     }
 
     private function registerPlacesRoutes($section)
