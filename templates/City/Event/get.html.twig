@@ -294,7 +294,7 @@
 
     </div>
 
-    {% if event.isBrouillon %}
+    {% if event.brouillon %}
         <div class="alert alert-warning">
             <i class="fa fa-warning"></i>
             Cet événement n'est pas encore disponible publiquement. Merci de patienter encore un peu !
@@ -316,7 +316,7 @@
 {% block widgets -%}
     <div class="row">
         <div class="col-sm-6 col-md-12">
-            {% if not event.isBrouillon %}
+            {% if not event.brouillon %}
                 <!-- Tendances -->
                 {% include "City/Widget/tendances.html.twig" %}
                 <!-- ./Tendances -->
