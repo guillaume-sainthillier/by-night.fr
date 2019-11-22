@@ -18,7 +18,7 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.country.slug})) %}
+        {% do menu.addItem(location.country.name, url('app_agenda_index', {'location': location.country.slug})) %}
     {% else %}
         {% do menu.addItem(location.city.country.name, url('app_agenda_index', {'location': location.city.country.slug})) %}
         {% do menu.addItem('Sortir à ' ~ event.placeCity, url('app_agenda_agenda', {'location': location.city.slug})) %}
