@@ -104,7 +104,7 @@ class EventBriteParser extends AbstractParser
             'source' => $event['url'],
             'external_id' => 'EB-' . $event['id'],
             'url' => $event['logo']['original']['url'],
-            'fb_date_modification' => new \DateTime($event['changed']),
+            'external_updated_at' => new \DateTime($event['changed']),
             'latitude' => (float)$address['latitude'],
             'longitude' => (float)$address['longitude'],
             'placeStreet' => trim(sprintf('%s %s', $address['address_1'], $address['address_2'])),

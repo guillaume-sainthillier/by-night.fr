@@ -110,7 +110,7 @@ class OpenAgendaParser extends AbstractParser
             'source' => $event['canonicalUrl'],
             'external_id' => 'OA-' . $event['uid'],
             'url' => $event['originalImage'],
-            'fb_date_modification' => new \DateTime($event['updatedAt']),
+            'external_updated_at' => new \DateTime($event['updatedAt']),
             'date_debut' => $dateDebut,
             'date_fin' => $dateFin,
             'horaires' => $horaires,

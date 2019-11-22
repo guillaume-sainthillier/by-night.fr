@@ -59,7 +59,7 @@ class Merger
             'facebook_event_id',
             'facebook_owner_id',
             'source',
-            'fb_date_modification' => self::MERGE_RIGHT_IF_DIFFERENT,
+            'external_updated_at' => self::MERGE_RIGHT_IF_DIFFERENT,
             'from_data',
             'reject',
             'placeReject',

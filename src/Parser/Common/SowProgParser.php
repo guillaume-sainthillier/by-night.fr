@@ -51,7 +51,7 @@ class SowProgParser extends AbstractParser
             'source' => 'http://www.sowprog.com/',
             'external_id' => 'SP-' . $event['id'] . '-' . $currentSchedule['id'],
             'url' => $event['event']['picture'],
-            'fb_date_modification' => (new \DateTime)->setTimestamp($event['modificationDate'] / 1000),
+            'external_updated_at' => (new \DateTime)->setTimestamp($event['modificationDate'] / 1000),
         ];
 
         $tab_infos['type_manifestation'] = $event['event']['eventType']['label'];
