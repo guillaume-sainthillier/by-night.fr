@@ -50,9 +50,9 @@ easy_admin:
                     - { property: 'reservationInternet' }
                     - { property: 'tarif' }
                     - { property: 'fromData' }
-                    - { property: 'isBrouillon' }
+                    - { property: 'brouillon' }
                     - { property: 'source' }
-                    - { property: 'isArchive' }
+                    - { property: 'archive' }
                     - { type: 'group', columns: 4, label: 'Lieu' }
                     - { property: 'place', type: 'easyadmin_autocomplete' }
                     - { property: 'placeName' }
@@ -112,7 +112,7 @@ easy_admin:
                     - { property: 'slug' }
                     - { property: 'nom' }
                     - { property: 'facebookId' }
-                    - { property: 'isJunk' }
+                    - { property: 'junk' }
                     - { type: 'group', columns: 4, label: 'Lieu' }
                     - { property: 'rue' }
                     - { property: 'codePostal' }
