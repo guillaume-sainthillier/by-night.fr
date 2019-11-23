@@ -107,8 +107,8 @@ class Firewall
             $event->getReject()->addReason(Reject::BAD_EVENT_NAME);
         }
 
-        //La description de l'événment doit comporter au moins 20 caractères
-        if (!$this->checkMinLengthValidity($event->getDescriptif(), 20)) {
+        //La description de l'événement doit comporter au moins 20 caractères
+        if (!$this->checkMinLengthValidity($event->getDescriptif(), 10)) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DESCRIPTION);
         }
 
