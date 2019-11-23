@@ -34,8 +34,13 @@ abstract class AbstractParser implements ParserInterface
     public function publish(array $item): void
     {
         $item['from_data'] = static::getParserName();
-        $this->eventProducer->scheduleEvent($item);
-        $this->parsedEvents++;
+        try {
+            $this->eventProducer->scheduleEvent($item);
+            $this->parsedEvents++;
+        }catch (\JsonException $e) {
+            $this->logException($e, $item);
+            die;
+        }
     }
 
     public function getParsedEvents(): int
@@ -43,8 +48,8 @@ abstract class AbstractParser implements ParserInterface
         return $this->parsedEvents;
     }
 
-    protected function logException(\Throwable $e)
+    protected function logException(\Throwable $e, array $context = [])
     {
-        $this->logger->error($e);
+        $this->logger->error($e, $context);
     }
 }
