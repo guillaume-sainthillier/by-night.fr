@@ -14,11 +14,6 @@ class BikiniParser extends AbstractParser
 {
     private const EVENTS_URL = 'https://lebikini.com/events.json';
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
-    {
-        parent::__construct($logger, $eventProducer);
-    }
-
     public static function getParserName(): string
     {
         return 'Bikini';
