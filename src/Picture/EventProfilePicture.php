@@ -3,6 +3,7 @@
 namespace App\Picture;
 
 use App\Entity\Event;
+use App\Parser\Common\DataTourismeParser;
 use App\Parser\Common\EventBriteParser;
 use App\Parser\Common\OpenAgendaParser;
 use App\Parser\Common\SowProgParser;
@@ -68,6 +69,10 @@ class EventProfilePicture
             return $this->packages->getUrl('build/images/parsers/openagenda.jpg');
         }
 
+        if ($event->getFromData() === DataTourismeParser::getParserName()) {
+            return $this->packages->getUrl('build/images/parsers/data-tourisme.jpg');
+        }
+
         if ($event->getUrl()) {
             return $event->getUrl();
         }
@@ -118,6 +123,13 @@ class EventProfilePicture
         if ($event->getFromData() === OpenAgendaParser::getParserName()) {
             return $this->assetExtension->thumbAsset(
                 $this->packages->getUrl('build/images/parsers/openagenda.jpg', 'local'),
+                $params
+            );
+        }
+
+        if ($event->getFromData() === DataTourismeParser::getParserName()) {
+            return $this->assetExtension->thumbAsset(
+                $this->packages->getUrl('build/images/parsers/data-tourisme.jpg', 'local'),
                 $params
             );
         }

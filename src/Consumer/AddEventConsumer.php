@@ -39,12 +39,12 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
     public function execute(AMQPMessage $msg)
     {
         $datas = \json_decode($msg->getBody(), true);
-        $event = $this->eventFactory->fromArray($datas);
 
         try {
+            $event = $this->eventFactory->fromArray($datas);
             $this->doctrineEventHandler->handleOne($event);
         } catch (\Exception $e) {
-            $this->logger->critical($e);
+            $this->logger->critical($e, $datas);
 
             return ConsumerInterface::MSG_REJECT;
         }
@@ -57,18 +57,19 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
         $this->ping($this->entityManager->getConnection());
 
         $events = [];
-        /** @var AMQPMessage $message */
-        foreach ($messages as $message) {
-            $events[] = $this->eventFactory->fromArray(\json_decode($message->body, true));
-        }
-
         try {
+            /** @var AMQPMessage $message */
+            foreach ($messages as $message) {
+                $event = \json_decode($message->body, true);
+                $events[] = $this->eventFactory->fromArray($event);
+            }
+
             Monitor::bench('ADD EVENT BATCH', function () use ($events) {
                 $this->doctrineEventHandler->handleManyCLI($events);
             });
             Monitor::displayStats();
         } catch (\Exception $e) {
-            $this->logger->critical($e);
+            $this->logger->critical($e, $event ?? []);
 
             return ConsumerInterface::MSG_REJECT_REQUEUE;
         }

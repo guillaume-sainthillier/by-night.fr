@@ -41,6 +41,7 @@
         "google/recaptcha": "^1.2",
         "guzzlehttp/guzzle": "^6.3",
         "guzzlehttp/psr7": "^1.5",
+        "halaxa/json-machine": "^0.3.2",
         "hwi/oauth-bundle": "^0.6",
         "jms/serializer-bundle": "^3.2",
         "knplabs/knp-paginator-bundle": "^4.1",

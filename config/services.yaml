@@ -35,6 +35,8 @@ services:
             $cfZone: "%env(CF_ZONE)%"
             $sowprogUsername: "%env(SOWPROG_USER)%"
             $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
+            $dataTourismeAppKey: "%env(DATATOURISME_APP_KEY)%"
+            $dataTourismeCache: "@redis.datatourisme_cache_pool"
             $monitor: "%env(APP_MONITOR)%"
             $disableTwitterFeed: "%disable_polled_feeds%"
             $assetThumb: "@app.asset_thumb"
@@ -81,6 +83,7 @@ services:
             $parsers:
                 toulouse.opendata: '@App\Parser\Toulouse\ToulouseParser'
                 toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'
+                datatourisme: '@App\Parser\Common\DataTourismeParser'
                 openagenda: '@App\Parser\Common\OpenAgendaParser'
                 sowprog: '@App\Parser\Common\SowProgParser'
                 eventbrite: '@App\Parser\Common\EventBriteParser'
