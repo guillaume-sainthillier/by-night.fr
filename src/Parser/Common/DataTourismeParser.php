@@ -4,10 +4,12 @@ namespace App\Parser\Common;
 
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use GuzzleHttp\Client;
 use JsonMachine\JsonMachine;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Cache\CacheInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 
 class DataTourismeParser extends AbstractParser
 {
@@ -239,8 +241,7 @@ class DataTourismeParser extends AbstractParser
         return $events;
     }
 
-    private
-    function getResourceById(array $resource, bool $alwaysReturnList = false): array
+    private function getResourceById(array $resource, bool $alwaysReturnList = false): array
     {
         if (true === $alwaysReturnList && !isset($resource[0])) {
             return $this->getResourceById([$resource]);
@@ -272,17 +273,18 @@ class DataTourismeParser extends AbstractParser
         return $resource;
     }
 
-    private
-    function getFeed(string $url): string
+    private function getFeed(string $url): string
     {
         $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.jsonld', md5($url));
-        //file_put_contents($filePath, file_get_contents($url));
+
+        $client = new Client();
+        $response = $client->request('GET', $url);
+        file_put_contents($filePath, copy_to_string($response->getBody()));
 
         return $filePath;
     }
 
-    private
-    function getFrenchType(string $type): ?string
+    private function getFrenchType(string $type): ?string
     {
         $mapping = [
             'schema:BusinessEvent' => 'Business',
