@@ -186,38 +186,36 @@
                         {{ descriptionSoiree|raw }}
                     </div>
                     <div class="col-sm-4 my-3 my-md-0 event-details">
-                        {% for telephone in event.reservationTelephone|split(',') %}
-                            {% if telephone|length %}
-                                <div class="detail-item">
-                                    <i class="fa fa-phone"></i>
-                                    <p class="one-line">
-                                        <a href="tel:{{ telephone|trim }}">{{ telephone|trim }}</a>
-                                    </p>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                        {% for liens in event.reservationInternet|split(' ') %}
-                            {% for lien in liens|split(',') %}
-                                {% if lien|trim %}
-                                    <div class="detail-item">
-                                        <i class="fa fa-globe"></i>
-                                        <p class="one-line">
-                                            <a title="Aller sur le site internet de la réservation"
-                                               rel="nofollow"
-                                               href="{{ lien|ensure_protocol }}">{{ lien }}</a>
-                                        </p>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-                        {% if event.reservationEmail %}
+                        {% for telephone in event.reservationTelephone|split(',')|filter(v => v|trim|length > 0) %}
                             <div class="detail-item">
-                                <i class="fa fa-envelope-o"></i>
+                                <i class="fa fa-phone"></i>
                                 <p class="one-line">
-                                    <a href="mailto:{{ event.reservationEmail }}">{{ event.reservationEmail }}</a>
+                                    <a href="tel:{{ telephone|trim }}">{{ telephone|trim }}</a>
                                 </p>
                             </div>
-                        {% endif %}
+                        {% endfor %}
+                        {% for liens in event.reservationInternet|split(' ') %}
+                            {% for lien in liens|split(',')|filter(v => v|trim|length > 0) %}
+                                <div class="detail-item">
+                                    <i class="fa fa-globe"></i>
+                                    <p class="one-line">
+                                        <a title="Aller sur le site internet de la réservation"
+                                           rel="nofollow"
+                                           href="{{ lien|ensure_protocol }}">{{ lien }}</a>
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for emails in event.reservationEmail|split(' ') %}
+                            {% for email in emails|split(',')|filter(v => v|trim|length > 0) %}
+                                <div class="detail-item">
+                                    <i class="fa fa-envelope-o"></i>
+                                    <p class="one-line">
+                                        <a href="mailto:{{ email }}">{{ email }}</a>
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
                         {% if event.facebookEventId %}
                             <div class="detail-item">
                                 <i class="fa fa-facebook"></i>
