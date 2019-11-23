@@ -176,15 +176,18 @@ class App {
     initMore(container) {
         const self = this;
         $(".more", container || document).click(function (e) {
-            $(this).attr("disabled", true).prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
-            var container = $(this).parent();
-            container.load($(this).attr("href"), function () {
-                self.initMore(container);
-                self.initComponents(container);
-            });
-
             e.preventDefault();
-            return false;
+
+            $(this).attr('disabled', true).prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
+
+            var btn = $(this);
+            var container = btn.parent().prev();
+            $.get($(btn).attr("href"), function (html) {
+                var currentContainer = $('<div>').html(html);
+                btn.parent().remove();
+                currentContainer.insertAfter(container);
+                self.initComponents(currentContainer);
+            });
         });
     }
 

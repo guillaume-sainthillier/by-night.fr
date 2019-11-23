@@ -83,21 +83,22 @@ $(function () {
 
     function init_pagination() {
         $('#paginate').click(function (e) {
+            e.preventDefault();
+
             isLoading = true;
             countLoads++;
             $(this).attr('disabled', true).prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
 
-            var self = $(this);
-            var container = self.parent();
-            $.get($(self).attr('href')).done(function (html) {
-                isLoading = false;
-                self.replaceWith(html);
-                App.initComponents(container);
-                init_soirees(container);
+            var btn = $(this);
+            var container = btn.parent().prev();
+            $.get($(btn).attr("href"), function (html) {
+                isLoading = true;
+                var currentContainer = $('<div>').html(html);
+                btn.parent().remove();
+                currentContainer.insertAfter(container);
+                App.initComponents(currentContainer);
+                init_soirees(currentContainer);
             });
-
-            e.preventDefault();
-            return false;
         });
     }
 
