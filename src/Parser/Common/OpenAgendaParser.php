@@ -30,7 +30,6 @@ class OpenAgendaParser extends AbstractParser
         41148947, // https://openagenda.com/terres-de-montaigu?lang=fr
         22126321, // https://openagenda.com/tootsweet?lang=fr
         43896350, // https://openagenda.com/iledefrance?lang=fr
-        70171993, // https://openagenda.com/territoire-labaule-presquile-guerande-atlantique?lang=fr
         88167337, // https://openagenda.com/mediatheque-bibliotheques-st-denis-reunion?lang=fr
         69653526, // https://openagenda.com/france-numerique?lang=fr
         89904399, // https://openagenda.com/metropole-europeenne-de-lille?lang=fr
@@ -69,6 +68,11 @@ class OpenAgendaParser extends AbstractParser
         //Send first request to get events size
         return $this->sendRequest($agendaId, $page)
             ->then(function (array $result) use ($agendaId) {
+                if(! isset($result['events'])) {
+                    $exception = new \RuntimeException(sprintf("Unable to find events for agenda '%s'", $agendaId));
+                    $this->logException($exception);
+                    return new FulfilledPromise(null);
+                }
                 $this->publishEvents($result['events']);
 
                 $nbPages = ceil($result['total'] / self::EVENT_BATCH_SIZE);
