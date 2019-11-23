@@ -11,7 +11,6 @@ namespace App\Parser;
  */
 
 use App\Producer\EventProducer;
-use App\Utils\Monitor;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractParser implements ParserInterface

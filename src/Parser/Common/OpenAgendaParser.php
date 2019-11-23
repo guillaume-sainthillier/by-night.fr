@@ -68,7 +68,7 @@ class OpenAgendaParser extends AbstractParser
         //Send first request to get events size
         return $this->sendRequest($agendaId, $page)
             ->then(function (array $result) use ($agendaId) {
-                if(! isset($result['events'])) {
+                if (!isset($result['events'])) {
                     $exception = new \RuntimeException(sprintf("Unable to find events for agenda '%s'", $agendaId));
                     $this->logException($exception);
                     return new FulfilledPromise(null);

@@ -4,7 +4,6 @@ namespace App\Utils;
 
 use App\Entity\Event;
 use App\Entity\Place;
-use DateTime;
 
 /**
  * Description of Merger.

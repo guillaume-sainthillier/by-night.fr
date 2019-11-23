@@ -4,7 +4,6 @@ namespace App\Handler;
 
 use App\Entity\User;
 use App\File\DeletableFile;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserHandler
