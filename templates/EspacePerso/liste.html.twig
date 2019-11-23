@@ -75,9 +75,7 @@
                 </table>
             </div>
         </div>
-        {% if events.nbPages > 1 %}
-            {{ pagerfanta(events, 'twitter_bootstrap4_translated') }}
-        {% endif %}
+        {{ knp_pagination_render(events) }}
     {% else %}
         <div class="alert alert-info">
             <i class="fa fa-info-circle"></i> Aucun événement créé, publiez dès maintenant le vôtre !

@@ -46,8 +46,8 @@
             </div>
         </div>
         <div class="footer_wrapper">
-            {% set s = nbEvents > 1 ? "s" : "" %}
-            <h2 class="text-primary h4">{{ nbEvents }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
+            {% set s = events.totalItemCount > 1 ? "s" : "" %}
+            <h2 class="text-primary h4">{{ events.totalItemCount }} événement{{ s }} et bon{{ s }} plan{{ s }} culturel{{ s }} {{ location.atName }}</h2>
         </div>
     </section>
     <section class="bg-white py-4">
@@ -171,7 +171,7 @@
     <section class="bg-white py-4">
         <div class="container">
             <h2>Les prochains concerts, spectacles et sorties {{ location.atName }}</h2>
-            {% include 'City/Event/block_preview_event.html.twig' with({'events': topEvents, 'page': 1}) %}
+            {% include 'City/Event/block_preview_event.html.twig' with({'events': events, 'page': 1}) %}
 
             <div class="text-center mt-4">
                 <a href="{{ path('app_agenda_agenda', {'location': location.slug}) }}" class="btn btn-outline-primary">

@@ -48,18 +48,18 @@
             {% if result.count == 0 %}Aucun{% else %}{{ result.count }}{% endif %}
             {{ result.label }}{{ s }} trouvé{{ s }}
         </h2>
-        {% if events.nbResults > 0 and (not type or type == 'evenements') %}
+        {% if events.totalItemCount > 0 and (not type or type == 'evenements') %}
             {% if type != 'evenements' %}
-                {% set s = events.nbResults > 1 ? 's': null %}
-                <h3>Événement{{ s }} <span class="badge badge-info number number-sm">{{ events.nbResults }}</span></h3>
+                {% set s = events.totalItemCount > 1 ? 's': null %}
+                <h3>Événement{{ s }} <span class="badge badge-info number number-sm">{{ events.totalItemCount }}</span></h3>
             {% endif %}
             {% include "Search/content_events.html.twig" %}
         {% endif %}
 
-        {% if users.nbResults > 0 and (not type or type == 'membres') %}
+        {% if users.totalItemCount > 0 and (not type or type == 'membres') %}
             {% if type != 'membres' %}
-                {% set s = users.nbResults > 1 ? 's': null %}
-                <h3>Membre{{ s }} <span class="badge badge-info number number-sm">{{ users.nbResults }}</span></h3>
+                {% set s = users.totalItemCount > 1 ? 's': null %}
+                <h3>Membre{{ s }} <span class="badge badge-info number number-sm">{{ users.totalItemCount }}</span></h3>
             {% endif %}
             {% include "Search/content_users.html.twig" %}
         {% endif %}

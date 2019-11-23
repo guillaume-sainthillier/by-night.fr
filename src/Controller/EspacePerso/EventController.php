@@ -8,6 +8,7 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\EventType;
 use App\Validator\Constraints\EventConstraintValidator;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,12 +53,13 @@ class EventController extends BaseController
     /**
      * @Route("/mes-soirees", name="app_event_list")
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, PaginatorInterface $paginator)
     {
         $user = $this->getUser();
 
         $page = (int)$request->query->get('page', 1);
-        $events = $this->getDoctrine()->getRepository(Event::class)->findAllByUser($user, $page, self::EVENT_PER_PAGE);
+        $query = $this->getDoctrine()->getRepository(Event::class)->findAllByUser($user);
+        $events = $paginator->paginate($query, $page, self::EVENT_PER_PAGE);
 
         return $this->render('EspacePerso/liste.html.twig', [
             'events' => $events,

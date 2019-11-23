@@ -11,8 +11,6 @@ use DateTime;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-use Pagerfanta\Pagerfanta;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class EventRepository extends EntityRepository
@@ -129,22 +127,14 @@ class EventRepository extends EntityRepository
         return $events;
     }
 
-    public function findAllByUser(UserInterface $user, int $page, int $limit)
+    public function findAllByUser(UserInterface $user)
     {
-        $query = $this
+        return $this
             ->createQueryBuilder('a')
             ->where('a.user = :user')
             ->setParameters(['user' => $user])
             ->orderBy('a.updatedAt', 'DESC')
             ->getQuery();
-
-        $adapter = new DoctrineORMAdapter($query);
-        $pagerfanta = new Pagerfanta($adapter);
-
-        return $pagerfanta
-            ->setAllowOutOfRangePages(true)
-            ->setCurrentPage($page)
-            ->setMaxPerPage($limit);
     }
 
     public function getCountryEvents()
@@ -424,7 +414,7 @@ class EventRepository extends EntityRepository
         return $events;
     }
 
-    public function findUpcomingEvents(Location $location, int $page, int $limit)
+    public function findUpcomingEvents(Location $location)
     {
         $from = new DateTime();
 
@@ -436,15 +426,7 @@ class EventRepository extends EntityRepository
             ->addOrderBy('a.participations', 'DESC');
 
         $this->buildLocationParameters($qb, $location);
-        $query = $qb->getQuery();
-
-        $adapter = new DoctrineORMAdapter($query);
-        $pagerfanta = new Pagerfanta($adapter);
-
-        return $pagerfanta
-            ->setAllowOutOfRangePages(true)
-            ->setCurrentPage($page)
-            ->setMaxPerPage($limit);
+        return $qb->getQuery();
     }
 
     private function buildLocationParameters(QueryBuilder $queryBuilder, Location $location)

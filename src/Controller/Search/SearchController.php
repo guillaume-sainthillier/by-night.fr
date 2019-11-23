@@ -6,9 +6,7 @@ use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
-use FOS\ElasticaBundle\Paginator\FantaPaginatorAdapter;
-use Pagerfanta\Adapter\ArrayAdapter;
-use Pagerfanta\Pagerfanta;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +19,7 @@ class SearchController extends AbstractController
      *
      * @return Response
      */
-    public function searchAction(Request $request, RepositoryManagerInterface $rm)
+    public function searchAction(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm)
     {
         $q = \trim($request->get('q', null));
         $type = $request->get('type', null);
@@ -36,13 +34,12 @@ class SearchController extends AbstractController
             $type = null;
         }
 
-        $events = new Pagerfanta(new ArrayAdapter([]));
-        $users = new Pagerfanta(new ArrayAdapter([]));
+        $events = $paginator->paginate([]);
+        $users = $paginator->paginate([]);
         if ($q) {
             if (!$type || 'evenements' === $type) { //Recherche d'événements
                 $results = $this->searchEvents($rm, $q);
-                $events = new Pagerfanta(new FantaPaginatorAdapter($results));
-                $events->setCurrentPage($page)->setMaxPerPage($maxItems);
+                $events = $paginator->paginate($results, $page, $maxItems);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('Search/content_events.html.twig', [
@@ -56,8 +53,7 @@ class SearchController extends AbstractController
 
             if (!$type || 'membres' === $type) { //Recherche de membres
                 $results = $this->searchUsers($rm, $q);
-                $users = new Pagerfanta(new FantaPaginatorAdapter($results));
-                $users->setCurrentPage($page)->setMaxPerPage($maxItems);
+                $users = $paginator->paginate($results, $page, $maxItems);
 
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('Search/content_users.html.twig', [

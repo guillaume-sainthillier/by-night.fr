@@ -56,11 +56,11 @@
 {%- endblock %}
 
 {% block metas %}
-    {% if events.hasPreviousPage %}
-        <link rel="prev" href="{{ url(app.request.get('_route'), routeParams|merge({'page': events.getPreviousPage})) }}" />
+    {% if events.paginationData.previous is defined %}
+        <link rel="prev" href="{{ url(app.request.get('_route'), routeParams|merge({'page': events.paginationData.previous})) }}" />
     {% endif %}
-    {% if events.hasNextPage %}
-        <link rel="next" href="{{ url(app.request.get('_route'), routeParams|merge({'page': events.getNextPage})) }}" />
+    {% if events.paginationData.next is defined %}
+        <link rel="next" href="{{ url(app.request.get('_route'), routeParams|merge({'page': events.paginationData.next})) }}" />
     {% endif %}
 {% endblock %}
 
@@ -98,14 +98,14 @@
         {% include "City/Agenda/block_criteres.html.twig" %}
         {% include "ad.html.twig" with({'marginTop': 0}) %}
 
-        {% if events.nbResults == 0 %}
+        {% if events.totalItemCount == 0 %}
             <div class="alert alert-info">
                 <i class="fa fa-info-circle"></i>
                 Mince, on a trouvé aucun événement pour votre recherche. Avez-vous essayer de modifier vos critères ?
             </div>
         {% else %}
             <h3 class="info">
-                <span class="badge badge-info">{{ events.nbResults }} événement{{ events.nbResults > 1 ? 's' : '' }}</span>
+                <span class="badge badge-info">{{ events.totalItemCount }} événement{{ events.totalItemCount > 1 ? 's' : '' }}</span>
             </h3>
             {% include "City/Agenda/index_content.html.twig" with({'partial': false}) %}
         {% endif %}
