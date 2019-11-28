@@ -246,7 +246,7 @@
                                     </a>
                                 {% endif %}
 
-                                {% if event.place.location.isCity %}
+                                {% if event.place.location.isCity and event.placeName != event.place.location.name %}
                                     <a class="badge badge-info"
                                        title="Sortir {{ event.place.location.atName }}"
                                        href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}">
