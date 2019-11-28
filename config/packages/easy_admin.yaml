@@ -147,7 +147,7 @@ easy_admin:
                     - { property: 'createdAt' }
                     - { property: 'event' }
                     - { property: 'user' }
-                    - { property: 'isApprouve' }
+                    - { property: 'approuve' }
             form:
                 fields:
                     - { property: 'id' }
@@ -155,7 +155,7 @@ easy_admin:
                     - { property: 'user', type: 'easyadmin_autocomplete' }
                     - { property: 'createdAt' }
                     - { property: 'updatedAt' }
-                    - { property: 'isApprouve' }
+                    - { property: 'approuve' }
                     - { property: 'commentaire' }
         Exploration:
             class: App\Entity\Exploration
