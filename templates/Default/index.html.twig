@@ -17,8 +17,8 @@
                     {{ form_errors(autocomplete_form) }}
                     {{ form_row(autocomplete_form.from) }}
                     {{ form_row(autocomplete_form.to) }}
-                    {{ form_row(autocomplete_form.shortcut, {'label': 'Je veux sortir', 'label_attr': {'class': 'bmd-label-floating'}, 'attr': {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}}) }}
-                    {{ form_row(autocomplete_form.name, {'label_attr': {'class': 'bmd-label-floating'}}) }}
+                    {{ form_row(autocomplete_form.name, {'label': 'Je veux sortir à', 'label_attr': {'class': 'bmd-label-floating'}}) }}
+                    {{ form_row(autocomplete_form.shortcut, {'label': 'Et', 'label_attr': {'class': 'bmd-label-floating'}, 'attr': {'data-from': autocomplete_form.from.vars.id, 'data-to': autocomplete_form.to.vars.id}}) }}
                     <div class="text-center">
                         <button class="btn btn-primary btn-raised choose-city-action" type="submit" disabled>
                             C'est parti
