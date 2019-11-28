@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Geolocalize\GeolocalizeInterface;
+use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
@@ -482,7 +483,7 @@ class Event implements GeolocalizeInterface
     }
 
     public function isAffiliate(): bool {
-        return in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName()], true);
+        return in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName(), DigitickAwinParser::getParserName()], true);
     }
 
     public function getLatitude(): ?float

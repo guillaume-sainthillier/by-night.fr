@@ -89,6 +89,7 @@ services:
                 sowprog: '@App\Parser\Common\SowProgParser'
                 eventbrite: '@App\Parser\Common\EventBriteParser'
                 awin.fnac: '@App\Parser\Common\FnacSpectaclesAwinParser'
+                awin.digitick: '@App\Parser\Common\DigitickAwinParser'
 
     App\Importer\CountryImporter:
         arguments:

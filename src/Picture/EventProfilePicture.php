@@ -4,6 +4,7 @@ namespace App\Picture;
 
 use App\Entity\Event;
 use App\Parser\Common\DataTourismeParser;
+use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\EventBriteParser;
 use App\Parser\Common\OpenAgendaParser;
 use App\Parser\Common\SowProgParser;
@@ -73,6 +74,10 @@ class EventProfilePicture
             return $this->packages->getUrl('build/images/parsers/data-tourisme.jpg');
         }
 
+        if ($event->getFromData() === DigitickAwinParser::getParserName()) {
+            return $this->packages->getUrl('build/images/parsers/digitick.jpg');
+        }
+
         if ($event->getUrl()) {
             return $event->getUrl();
         }
@@ -130,6 +135,13 @@ class EventProfilePicture
         if ($event->getFromData() === DataTourismeParser::getParserName()) {
             return $this->assetExtension->thumbAsset(
                 $this->packages->getUrl('build/images/parsers/data-tourisme.jpg', 'local'),
+                $params
+            );
+        }
+
+        if ($event->getFromData() === DigitickAwinParser::getParserName()) {
+            return $this->assetExtension->thumbAsset(
+                $this->packages->getUrl('build/images/parsers/digitick.jpg', 'local'),
                 $params
             );
         }
