@@ -42,7 +42,7 @@ services:
         image: redis:alpine
 
     rabbitmq:
-        image: rabbitmq:3.7-management
+        image: rabbitmq:3.8-management
         ports:
             - 15672:15672
         volumes:
@@ -55,7 +55,7 @@ services:
             - BLACKFIRE_SERVER_TOKEN
 
     elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:6.7.2
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.8.5
         environment:
             - node.name=es01
             - bootstrap.memory_lock=true
@@ -70,7 +70,7 @@ services:
             - esdata:/usr/share/elasticsearch/data
 
     kibana:
-        image: docker.elastic.co/kibana/kibana:6.7.2
+        image: docker.elastic.co/kibana/kibana:6.8.5
         ports:
             - 5601:5601
         depends_on:
