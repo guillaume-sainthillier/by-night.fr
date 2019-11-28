@@ -337,6 +337,10 @@ class DoctrineEventHandler
      */
     private function mergeWithDatabase(array $events, bool $flush)
     {
+        if(0 === count($events)) {
+            return [];
+        }
+
         Monitor::createProgressBar(\count($events));
 
         $chunks = $this->getChunks($events);
