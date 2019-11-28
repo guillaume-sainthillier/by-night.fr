@@ -10,7 +10,7 @@
     "baseFont": "assets/fonts",
     "baseDist": "public/prod",
     "dependencies": {
-        "bootstrap": "^4.3.1",
+        "bootstrap": "^4.4.1",
         "bootstrap-material-design": "^4.1.2",
         "bootstrap-select": "^1.13.12",
         "daterangepicker": "^3.0.5",
