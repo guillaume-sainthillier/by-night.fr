@@ -103,17 +103,17 @@ class Firewall
     private function filterEventInfos(Event $event)
     {
         //Le nom de l'événement doit comporter au moins 3 caractères
-        if (!$this->checkMinLengthValidity($event->getNom(), 3)) {
+        if (! $event->isAffiliate() && !$this->checkMinLengthValidity($event->getNom(), 3)) {
             $event->getReject()->addReason(Reject::BAD_EVENT_NAME);
         }
 
         //La description de l'événement doit comporter au moins 20 caractères
-        if (!$this->checkMinLengthValidity($event->getDescriptif(), 10)) {
+        if (! $event->isAffiliate() && !$this->checkMinLengthValidity($event->getDescriptif(), 10)) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DESCRIPTION);
         }
 
         //Pas de SPAM dans la description
-        if ($this->isSPAMContent($event->getDescriptif())) {
+        if (! $event->isAffiliate() && $this->isSPAMContent($event->getDescriptif())) {
             $event->getReject()->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
