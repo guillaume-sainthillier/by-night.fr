@@ -37,9 +37,8 @@ abstract class AbstractParser implements ParserInterface
         try {
             $this->eventProducer->scheduleEvent($item);
             $this->parsedEvents++;
-        }catch (\JsonException $e) {
+        } catch (\JsonException $e) {
             $this->logException($e, $item);
-            die;
         }
     }
 
