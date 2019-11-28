@@ -143,9 +143,9 @@
 
                             {% if event.latitude and event.longitude %}
                                 <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-                            <meta itemprop="latitude" content="{{ event.latitude }}" />
-                            <meta itemprop="longitude" content="{{ event.longitude }}" />
-                        </span>
+                                    <meta itemprop="latitude" content="{{ event.latitude }}" />
+                                    <meta itemprop="longitude" content="{{ event.longitude }}" />
+                                </span>
                                 {% if not place.city %}
                                     {% set mapParameter = "place?q=" %}
                                     {% set mapValue = event.latitude ~ ',' ~ event.longitude %}
@@ -158,6 +158,15 @@
                                 <i class="fa fa-ticket"></i>
                                 <p>{{ event.tarif }}</p>
                             </div>
+                        {% endif %}
+
+                        {% if event.affiliate %}
+                        <div class="detail-item">
+                            <p>
+                                <a href="{{ event.source }}" class="btn btn-block btn-raised btn-primary" rel="sponsored">Je prends vite mes billets</a>
+                            </p>
+                            <small class="text-muted mt-2">Avec {{ event.fromData }}</small>
+                        </div>
                         {% endif %}
                         {% if event.user %}
                             <div class="detail-item">

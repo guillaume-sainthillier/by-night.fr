@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Geolocalize\GeolocalizeInterface;
+use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
 use DateTime;
@@ -478,6 +479,10 @@ class Event implements GeolocalizeInterface
         $from->modify(self::INDEX_FROM);
 
         return $this->dateFin >= $from;
+    }
+
+    public function isAffiliate(): bool {
+        return in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName()], true);
     }
 
     public function getLatitude(): ?float

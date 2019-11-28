@@ -35,6 +35,7 @@ services:
             $cfZone: "%env(CF_ZONE)%"
             $sowprogUsername: "%env(SOWPROG_USER)%"
             $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
+            $awinApiKey: "%env(AWIN_API_KEY)%"
             $dataTourismeAppKey: "%env(DATATOURISME_APP_KEY)%"
             $dataTourismeCache: "@redis.datatourisme_cache_pool"
             $monitor: "%env(APP_MONITOR)%"
@@ -87,6 +88,7 @@ services:
                 openagenda: '@App\Parser\Common\OpenAgendaParser'
                 sowprog: '@App\Parser\Common\SowProgParser'
                 eventbrite: '@App\Parser\Common\EventBriteParser'
+                awin.fnac: '@App\Parser\Common\FnacSpectaclesAwinParser'
 
     App\Importer\CountryImporter:
         arguments:
