@@ -27,18 +27,13 @@ RUN apt-get update -q && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require hirak/prestissimo --no-plugins --no-scripts && \
     #NPM
-    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
     apt-get install -y nodejs && \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    npm install -g grunt-cli yarn && \
+    npm install -g yarn && \
     # Reduce layer size
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN curl -L https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) --output /usr/local/bin/gosu && \
-    chmod +x /usr/local/bin/gosu && \
-    addgroup bynight && \
-    adduser --home=/home/bynight --shell=/bin/bash --ingroup=bynight --disabled-password --quiet bynight
 
 # PHP Extensions
 RUN docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pdo pdo_mysql soap sockets zip && \
