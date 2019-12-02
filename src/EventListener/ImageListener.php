@@ -83,7 +83,7 @@ class ImageListener implements EventSubscriberInterface
 
         //Schedule CDN purging of old image path
         foreach ($this->paths as $path) {
-            $this->purgeCdnCacheUrlProducer->schedulePurge('path');
+            $this->purgeCdnCacheUrlProducer->schedulePurge($path);
         }
 
         unset($this->paths);
