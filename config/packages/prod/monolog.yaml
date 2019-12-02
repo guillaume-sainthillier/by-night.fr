@@ -16,4 +16,3 @@ monolog:
         sentry:
             type: service
             id: Sentry\Monolog\Handler
-            level: error
