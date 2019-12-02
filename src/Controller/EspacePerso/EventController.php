@@ -33,6 +33,49 @@ class EventController extends BaseController
             'events' => $events,
         ]);
     }
+    
+    /**
+     * @Route("/nouvelle-soiree", name="app_event_new", methods={"GET", "POST"})
+     */
+    public function newAction(Request $request, EventConstraintValidator $validator)
+    {
+        $user = $this->getUser();
+        $event = (new Event())
+            ->setUser($user)
+            ->setParticipations(1);
+
+        $calendrier = (new Calendrier())
+            ->setUser($user)
+            ->setParticipe(true);
+        $event->addCalendrier($calendrier);
+
+        $form = $this->createForm(EventType::class, $event);
+        $validator->setUpdatabilityCkeck(false);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            if ($form->get('comment')->getData()) {
+                $event = $form->getData();
+                $comment = new Comment();
+                $comment
+                    ->setCommentaire($form->get('comment')->getData())
+                    ->setEvent($event)
+                    ->setUser($user);
+                $em->persist($comment);
+            }
+            $em->flush();
+            $this->addFlash(
+                'success',
+                'Votre événement a bien été créé. Merci !'
+            );
+
+            return $this->redirect($this->generateUrl('app_event_list'));
+        }
+
+        return $this->render('EspacePerso/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 
     /**
      * @Route("/{id}", name="app_event_edit", methods={"GET", "POST"})
@@ -108,51 +151,6 @@ class EventController extends BaseController
         $em->flush();
 
         return new JsonResponse(['success' => true]);
-    }
-
-
-
-    /**
-     * @Route("/nouvelle-soiree", name="app_event_new", methods={"GET", "POST"})
-     */
-    public function newAction(Request $request, EventConstraintValidator $validator)
-    {
-        $user = $this->getUser();
-        $event = (new Event())
-            ->setUser($user)
-            ->setParticipations(1);
-
-        $calendrier = (new Calendrier())
-            ->setUser($user)
-            ->setParticipe(true);
-        $event->addCalendrier($calendrier);
-
-        $form = $this->createForm(EventType::class, $event);
-        $validator->setUpdatabilityCkeck(false);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            if ($form->get('comment')->getData()) {
-                $event = $form->getData();
-                $comment = new Comment();
-                $comment
-                    ->setCommentaire($form->get('comment')->getData())
-                    ->setEvent($event)
-                    ->setUser($user);
-                $em->persist($comment);
-            }
-            $em->flush();
-            $this->addFlash(
-                'success',
-                'Votre événement a bien été créé. Merci !'
-            );
-
-            return $this->redirect($this->generateUrl('app_event_list'));
-        }
-
-        return $this->render('EspacePerso/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
     }
 
     /**
