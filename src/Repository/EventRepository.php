@@ -109,7 +109,7 @@ class EventRepository extends EntityRepository
             ->createQueryBuilder('a')
             ->where('a.user = :user')
             ->setParameters(['user' => $user])
-            ->orderBy('a.updatedAt', 'DESC')
+            ->orderBy('a.id', 'DESC')
             ->getQuery();
     }
 

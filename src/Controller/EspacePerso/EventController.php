@@ -19,39 +19,7 @@ class EventController extends BaseController
     private const EVENT_PER_PAGE = 50;
 
     /**
-     * @Route("/annuler/{slug}", name="app_event_annuler", requirements={"slug": ".+"})
-     * @IsGranted("edit", subject="event")
-     */
-    public function annulerAction(Request $request, Event $event)
-    {
-        $annuler = $request->get('annuler', 'true');
-        $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
-
-        $em = $this->getDoctrine()->getManager();
-        $event->setModificationDerniereMinute($modificationDerniereMinute);
-        $em->flush();
-
-        return new JsonResponse(['success' => true]);
-    }
-
-    /**
-     * @Route("/brouillon/{slug}", name="app_event_brouillon", requirements={"slug": ".+"})
-     * @IsGranted("edit", subject="event")
-     */
-    public function brouillonAction(Request $request, Event $event)
-    {
-        $brouillon = $request->get('brouillon', 'true');
-        $isBrouillon = 'true' === $brouillon;
-
-        $em = $this->getDoctrine()->getManager();
-        $event->setBrouillon($isBrouillon);
-        $em->flush();
-
-        return new JsonResponse(['success' => true]);
-    }
-
-    /**
-     * @Route("/mes-soirees", name="app_event_list")
+     * @Route("/mes-soirees", name="app_event_list", methods={"GET"})
      */
     public function indexAction(Request $request, PaginatorInterface $paginator)
     {
@@ -67,25 +35,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/supprimer/{id}", name="app_event_delete", requirements={"id": "\d+"})
-     * @IsGranted("edit", subject="event")
-     */
-    public function deleteAction(Event $event)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($event);
-        $em->flush();
-
-        $this->addFlash(
-            'success',
-            'Votre événement a bien été supprimé'
-        );
-
-        return $this->redirect($this->generateUrl('app_event_list'));
-    }
-
-    /**
-     * @Route("/corriger/{slug}", name="app_event_edit", requirements={"slug": ".+"})
+     * @Route("/{id}", name="app_event_edit", methods={"GET", "POST"})
      * @IsGranted("edit", subject="event")
      */
     public function editAction(Request $request, Event $event, EventConstraintValidator $validator)
@@ -104,28 +54,66 @@ class EventController extends BaseController
             return $this->redirect($this->generateUrl('app_event_list'));
         }
 
-        $formDelete = $this->createDeleteForm($event);
-
         return $this->render('EspacePerso/edit.html.twig', [
             'form' => $form->createView(),
             'event' => $event,
-            'form_delete' => $formDelete->createView(),
         ]);
     }
 
-    protected function createDeleteForm(Event $event)
+    /**
+     * @Route("{id}", name="app_event_delete", methods={"DELETE"})
+     * @IsGranted("delete", subject="event")
+     */
+    public function deleteAction(Request $request, Event $event)
     {
-        return $this->createFormBuilder($event, [
-            'action' => $this->generateUrl('app_event_delete', [
-                'id' => $event->getId(),
-            ]),
-            'method' => 'DELETE',
-        ])
-            ->getForm();
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($event);
+        $em->flush();
+
+        $this->addFlash(
+            'success',
+            'Votre événement a bien été supprimé'
+        );
+
+        return $this->redirect($this->generateUrl('app_event_list'));
     }
 
     /**
-     * @Route("/nouvelle-soiree", name="app_event_new")
+     * @Route("{id}/annuler", name="app_event_annuler", methods={"POST"})
+     * @IsGranted("edit", subject="event")
+     */
+    public function annulerAction(Request $request, Event $event)
+    {
+        $annuler = $request->request->get('annuler', 'true');
+        $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
+
+        $event->setModificationDerniereMinute($modificationDerniereMinute);
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    /**
+     * @Route("{id}/brouillon", name="app_event_brouillon", methods={"POST"})
+     * @IsGranted("edit", subject="event")
+     */
+    public function brouillonAction(Request $request, Event $event)
+    {
+        $brouillon = $request->request->get('brouillon', 'true');
+        $isBrouillon = 'true' === $brouillon;
+
+        $event->setBrouillon($isBrouillon);
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
+
+
+
+    /**
+     * @Route("/nouvelle-soiree", name="app_event_new", methods={"GET", "POST"})
      */
     public function newAction(Request $request, EventConstraintValidator $validator)
     {
@@ -168,7 +156,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/participer/{id}", name="app_user_like", defaults={"participer": true, "interet": false})
+     * @Route("/{id}/participer", name="app_user_like", defaults={"participer": true, "interet": false}, methods={"POST"})
      */
     public function like(Request $request, Event $event)
     {
@@ -182,9 +170,8 @@ class EventController extends BaseController
             $calendrier->setUser($user)->setEvent($event);
             $em->persist($calendrier);
         }
-        $isLike = $request->request->get('like') === 'true';
+        $isLike = $request->request->get('like', 'true') === 'true';
         $calendrier->setParticipe($isLike);
-
         $em->flush();
 
         $repo = $em->getRepository(Event::class);
