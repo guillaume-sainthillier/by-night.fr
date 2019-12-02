@@ -15,6 +15,7 @@ class OldMediaController extends AbstractController
 {
     /**
      * @Route("/media/cache/{filter}/{path}", requirements={"path"=".+"})
+     * @Route("/uploads/{path}", requirements={"path"=".+"})
      * @ReverseProxy(expires="1 year")
      *
      * @return Response
