@@ -103,30 +103,6 @@ class EventRepository extends EntityRepository
             ->addOrderBy('a.id');
     }
 
-    public function findByInterval(\DateTimeInterface $from, \DateTimeInterface $to)
-    {
-        $cities = $this->_em->getRepository(City::class)->findTopPopulation(50);
-        $events = [];
-        foreach ($cities as $city) {
-            /** @var City $city */
-            $events[$city->getName()] = $this
-                ->createQueryBuilder('a')
-                ->where('a.dateFin BETWEEN :debut AND :fin')
-                ->andWhere('p.city = :city')
-                ->orderBy('a.fbParticipations', 'DESC')
-                ->setMaxResults(3)
-                ->setParameters([
-                    ':debut' => $from->format('Y-m-d'),
-                    ':fin' => $to->format('Y-m-d'),
-                    ':city' => $city->getSlug(),
-                ])
-                ->getQuery()
-                ->getResult();
-        }
-
-        return $events;
-    }
-
     public function findAllByUser(UserInterface $user)
     {
         return $this
