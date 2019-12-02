@@ -142,9 +142,23 @@ class OpenAgendaParser extends AbstractParser
             $horaires = \sprintf('A %s', $dateDebut->format("H\hi"));
         }
 
+        $description = null;
+        if (isset($event['html']['fr'])) {
+            $description = $event['html']['fr'];
+        } elseif (isset($event['longDescription']['fr'])) {
+            $description = nl2br($event['longDescription']['fr']);
+        } elseif (isset($event['description']['fr'])) {
+            $description = nl2br($event['description']['fr']);
+        }
+
+        $type_manifestation = [];
+        foreach ($event['tags'] as $tag) {
+            $type_manifestation[] = $tag['label'];
+        }
+
         return [
             'nom' => $event['title']['fr'],
-            'descriptif' => $event['html']['fr'],
+            'descriptif' => $description,
             'source' => $event['canonicalUrl'],
             'external_id' => 'OA-' . $event['uid'],
             'url' => $event['originalImage'],
@@ -161,6 +175,7 @@ class OpenAgendaParser extends AbstractParser
             'placeCity' => $event['city'],
             'placeCountryName' => $event['location']['countryCode'],
             'placeExternalId' => $event['locationUid'],
+            'type_manifestation' => implode(', ', $type_manifestation) ?: null
         ];
     }
 }
