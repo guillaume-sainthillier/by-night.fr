@@ -8,8 +8,10 @@
     <div class="card-body">
         <div class="row main_criteres">
             <div class="col-md-6">
-                {{ form_row(form.from) }}
-                {{ form_row(form.to) }}
+                {{ form_widget(form.from) }}
+                {{ form_widget(form.to) }}
+                {{ form_errors(form.from) }}
+                {{ form_errors(form.to) }}
                 {{ form_row(form.shortcut, {'label': 'Quand ?', 'label_attr': {'class': 'bmd-label-floating'}}) }}
             </div>
             <div class="col-md-6">
