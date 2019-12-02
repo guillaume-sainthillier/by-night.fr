@@ -12,6 +12,7 @@ use App\Repository\EventRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
+use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,10 +43,10 @@ class AgendaController extends BaseController
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
 
-        $routeParams = $request->query->all() + [
-                'page' => $page + 1,
-                'location' => $location->getSlug(),
-            ];
+        $routeParams = array_merge($request->query->all(), [
+            'page' => $page + 1,
+            'location' => $location->getSlug(),
+        ]);
 
         if (null !== $type) {
             $routeParams['type'] = $type;
@@ -97,6 +98,10 @@ class AgendaController extends BaseController
         } else {
             $isValid = false;
             $events = $paginator->paginate([], $page, self::EVENT_PER_PAGE);
+        }
+
+        if ($events instanceof SlidingPagination && $page > max(1, $events->getPageCount())) {
+            return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getPageCount())]));
         }
 
         return $this->render('City/Agenda/index.html.twig', [
