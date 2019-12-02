@@ -55,6 +55,7 @@ COPY nginx.conf /etc/nginx/
 COPY php.ini /usr/local/etc/php/php.ini
 COPY pool.conf /usr/local/etc/php-fpm.d/www.conf
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord-worker.conf /etc/supervisor/conf.d/supervisord-worker.conf
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

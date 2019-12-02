@@ -15,6 +15,18 @@ services:
         ports:
             - 8000:80
 
+    worker:
+        build: ./docker/dev
+        container_name: worker
+        command: ["worker"]
+        depends_on:
+            - elasticsearch
+            - rabbitmq
+            - redis
+            - app
+        volumes:
+            - nfsmount:/app
+
     assets:
         image: nginx:1.17
         ports:

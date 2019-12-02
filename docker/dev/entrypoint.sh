@@ -4,5 +4,10 @@ set -e
 if [ $# -eq 0 ]; then
     supervisord -c /etc/supervisor/conf.d/supervisord.conf
 else
-    exec "$@"
+    if [ "$1" = "worker" ]; then
+        supervisord -c /etc/supervisor/conf.d/supervisord-worker.conf
+    else
+        exec "$@"
+    fi
 fi
+
