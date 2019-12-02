@@ -25,6 +25,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * Event.
  *
  * @ORM\Table(name="Agenda", indexes={
+ *     @ORM\Index(name="event_slug_idx", columns={"slug"}),
  *     @ORM\Index(name="event_theme_manifestation_idx", columns={"theme_manifestation"}),
  *     @ORM\Index(name="event_type_manifestation_idx", columns={"type_manifestation"}),
  *     @ORM\Index(name="event_categorie_manifestation_idx", columns={"categorie_manifestation"}),
@@ -60,8 +61,8 @@ class Event implements GeolocalizeInterface
     protected $externalId;
 
     /**
-     * @Gedmo\Slug(fields={"nom"})
-     * @ORM\Column(length=255, unique=true)
+     * @Gedmo\Slug(fields={"nom"}, unique=false)
+     * @ORM\Column(length=255)
      */
     protected $slug;
 
