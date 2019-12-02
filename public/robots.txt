@@ -2,10 +2,13 @@
 # www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
 
 User-agent: *
-Disallow:/media/*
 Disallow:/*/tweeter-feed/*
 Disallow:/login-social/*
 Disallow:/espace-perso/*
+Disallow:/top/membres/*
+Disallow:/*/top/soirees/*
+Disallow:/*/autres-soirees/*
+Disallow:/*/prochaines-soirees/*
 
 # Sitemap files
 Sitemap: https://by-night.fr/sitemap/sitemap.xml
