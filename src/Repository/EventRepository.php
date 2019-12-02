@@ -321,7 +321,6 @@ class EventRepository extends EntityRepository
             ->createQueryBuilder('a')
             ->where('a.dateFin >= :date_fin AND a.id != :id AND a.place = :place')
             ->orderBy('a.dateFin', 'ASC')
-            ->addOrderBy('a.fbParticipations', 'DESC')
             ->setParameters([':date_fin' => $from->format('Y-m-d'), ':id' => $event->getId(), ':place' => $event->getPlace()->getId()])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
