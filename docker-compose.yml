@@ -38,17 +38,16 @@ services:
             - app
 
     varnish:
-        image: million12/varnish
+        image: varnish:6.0
+        command: ["varnishd", "-F", "-f", "/etc/varnish/default.vcl", "-t" , "0"]
         ports:
             - 8001:80
         depends_on:
             - app
-        environment:
-            - "VARNISHD_PARAMS=-t 0"
         volumes:
-            - ./docker/dev/varnish/default.vcl:/etc/varnish/default.vcl
-            - ./docker/dev/varnish/fos:/etc/varnish/fos
-            - /var/lib/varnish
+            - ./docker/dev/varnish/default.vcl:/etc/varnish/default.vcl:ro
+            - ./docker/dev/varnish/fos:/etc/varnish/fos:ro
+            - /usr/local/var/varnish
 
     redis:
         image: redis:alpine
