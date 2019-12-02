@@ -54,6 +54,7 @@ services:
 
     rabbitmq:
         image: rabbitmq:3.8-management
+        hostname: 'mabbit'
         ports:
             - 15672:15672
         volumes:
