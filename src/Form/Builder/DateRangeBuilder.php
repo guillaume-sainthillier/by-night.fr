@@ -96,8 +96,8 @@ class DateRangeBuilder
                 $fromName = $shortcut->getConfig()->getOption('from');
                 $toName = $shortcut->getConfig()->getOption('to');
 
-                $from = $data[$fromName] ?? null;
-                $to = $data[$toName] ?? null;
+                $from = ($data[$fromName] ?? null) ?: null;
+                $to = ($data[$toName] ?? null) ?: null;
 
                 if (null === $from) {
                     return;
