@@ -24,7 +24,7 @@ class SearchEvent
     /**
      * @var int
      * @Assert\NotBlank
-     * @Assert\GreaterThanOrEqual(0)
+     * @Assert\GreaterThan(0)
      */
     protected $range;
 
