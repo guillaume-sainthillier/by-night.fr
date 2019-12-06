@@ -28,8 +28,8 @@ class AssetExtension extends Extension
     public function getFunctions()
     {
         return [
-            new TwigFunction('thumb', [$this, 'thumb']),
-            new TwigFunction('thumbAsset', [$this, 'thumbAsset']),
+            new TwigFunction('thumb', [$this, 'thumb'], ['is_safe' => ['html']]),
+            new TwigFunction('thumbAsset', [$this, 'thumbAsset'], ['is_safe' => ['html']]),
         ];
     }
 
