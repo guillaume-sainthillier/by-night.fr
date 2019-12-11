@@ -14,8 +14,8 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 class OldMediaController extends AbstractController
 {
     /**
-     * @Route("/media/cache/{filter}/{path}", requirements={"path"=".+"})
-     * @Route("/uploads/{path}", requirements={"path"=".+"})
+     * @Route("/media/cache/{filter}/{path}", requirements={"path": ".+"})
+     * @Route("/uploads/{path}", requirements={"path": ".+"})
      * @ReverseProxy(expires="1 year")
      *
      * @return Response
@@ -40,6 +40,7 @@ class OldMediaController extends AbstractController
             } else {
                 $url = $assetExtension->thumb($storage->resolvePath($event, 'systemFile'));
             }
+
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
 
@@ -63,9 +64,6 @@ class OldMediaController extends AbstractController
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
 
-
-        throw $this->createNotFoundException(
-            sprintf('Unable to find event or user for path "%s"', $path)
-        );
+        throw $this->createNotFoundException(sprintf('Unable to find event or user for path "%s"', $path));
     }
 }

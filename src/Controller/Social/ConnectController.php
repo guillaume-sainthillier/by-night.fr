@@ -32,7 +32,7 @@ class ConnectController extends BaseController
      * Connects a user to a given account if the user is logged in and connect is enabled.
      *
      * @param Request $request the active request
-     * @param string $service name of the resource owner to connect to
+     * @param string  $service name of the resource owner to connect to
      *
      * @return Response
      *
@@ -99,6 +99,7 @@ class ConnectController extends BaseController
                     'service' => $service,
                 ]);
             }
+
             return $this->getConfirmationResponse($request, $accessToken, $service);
         }
 
@@ -146,9 +147,9 @@ class ConnectController extends BaseController
     }
 
     /**
-     * @param Request $request The active request
-     * @param array $accessToken The access token
-     * @param string $service Name of the resource owner to connect to
+     * @param Request $request     The active request
+     * @param array   $accessToken The access token
+     * @param string  $service     Name of the resource owner to connect to
      *
      * @return Response
      *

@@ -6,8 +6,8 @@ use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use ForceUTF8\Encoding;
 use GuzzleHttp\Client;
-use Psr\Log\LoggerInterface;
 use function GuzzleHttp\Psr7\copy_to_string;
+use Psr\Log\LoggerInterface;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
@@ -36,12 +36,12 @@ abstract class AbstractAwinParser extends AbstractParser
 
         do {
             $xml->read();
-        } while ($xml->name != 'product');
+        } while ('product' != $xml->name);
 
-        while ($xml->name == 'product') {
+        while ('product' == $xml->name) {
             $event = $this->elementToArray(new \SimpleXMLElement($xml->readOuterXML()));
             $event = $this->getInfoEvents($event);
-            if (count($event) > 0) {
+            if (\count($event) > 0) {
                 $this->publish($event);
             }
 
@@ -54,7 +54,7 @@ abstract class AbstractAwinParser extends AbstractParser
     {
         $array = [];
         foreach ($element->children() as $node) {
-            $array[$node->getName()] = is_array($node) ? $this->elementToArray($node) : Encoding::toUTF8(utf8_decode($node));
+            $array[$node->getName()] = \is_array($node) ? $this->elementToArray($node) : Encoding::toUTF8(utf8_decode($node));
         }
 
         return $array;
@@ -65,7 +65,7 @@ abstract class AbstractAwinParser extends AbstractParser
         $client = new Client();
         $response = $client->request('GET', $url);
 
-        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
+        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
         file_put_contents($filePath, copy_to_string($response->getBody()));
 
         return $filePath;

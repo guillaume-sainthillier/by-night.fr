@@ -482,8 +482,9 @@ class Event implements GeolocalizeInterface
         return $this->dateFin >= $from;
     }
 
-    public function isAffiliate(): bool {
-        return in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName(), DigitickAwinParser::getParserName()], true);
+    public function isAffiliate(): bool
+    {
+        return \in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName(), DigitickAwinParser::getParserName()], true);
     }
 
     public function getLatitude(): ?float
@@ -494,6 +495,7 @@ class Event implements GeolocalizeInterface
     public function setLatitude(?float $latitude): self
     {
         $this->latitude = $latitude;
+
         return $this;
     }
 
@@ -505,6 +507,7 @@ class Event implements GeolocalizeInterface
     public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
+
         return $this;
     }
 
@@ -1218,5 +1221,4 @@ class Event implements GeolocalizeInterface
 
         return $this;
     }
-
 }

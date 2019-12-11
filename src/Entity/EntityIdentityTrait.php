@@ -16,8 +16,6 @@ trait EntityIdentityTrait
 
     /**
      * Returns the primary key identifier.
-     *
-     * @return int|null
      */
     public function getId(): ?int
     {

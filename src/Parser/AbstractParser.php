@@ -36,7 +36,7 @@ abstract class AbstractParser implements ParserInterface
         $item['from_data'] = static::getParserName();
         try {
             $this->eventProducer->scheduleEvent($item);
-            $this->parsedEvents++;
+            ++$this->parsedEvents;
         } catch (\JsonException $e) {
             $this->logException($e, $item);
         }

@@ -5,7 +5,6 @@ namespace App\EventListener;
 use App\File\DeletableFile;
 use App\Producer\PurgeCdnCacheUrlProducer;
 use App\Producer\RemoveImageThumbnailsProducer;
-use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Vich\UploaderBundle\Event\Events;

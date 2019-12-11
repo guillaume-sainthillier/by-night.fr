@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ThumbController extends Controller
 {
     /**
-     * @Route("/thumb/{path}", requirements={"path"=".+"}, name="thumb_url", methods={"GET"})
+     * @Route("/thumb/{path}", requirements={"path": ".+"}, name="thumb_url", methods={"GET"})
      * @Cache(maxage=31536000, smaxage=31536000)
      */
     public function thumb(Request $request, Server $glide, string $path, string $secret, Packages $packages)
@@ -29,7 +29,7 @@ class ThumbController extends Controller
             return new RedirectResponse($packages->getUrl($path, 'aws'), Response::HTTP_MOVED_PERMANENTLY);
         }
 
-        if (count($parameters) > 0) {
+        if (\count($parameters) > 0) {
             try {
                 // No signature validation if no parameters
                 // added to generate URL without parameters that not produce 404, useful especially for sitemap
@@ -42,7 +42,7 @@ class ThumbController extends Controller
         $glide->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $glide->getImageResponse($path, $parameters);
-        } catch (\InvalidArgumentException|FileNotFoundException $e) {
+        } catch (\InvalidArgumentException | FileNotFoundException $e) {
             throw $this->createNotFoundException($e->getMessage(), $e);
         }
 
@@ -50,7 +50,7 @@ class ThumbController extends Controller
     }
 
     /**
-     * @Route("/thumb-asset/{path}", requirements={"path"=".+"}, name="thumb_asset_url", methods={"GET"})
+     * @Route("/thumb-asset/{path}", requirements={"path": ".+"}, name="thumb_asset_url", methods={"GET"})
      * @Cache(maxage=31536000, smaxage=31536000)
      */
     public function thumbAsset(Request $request, Server $assetThumb, Packages $packages, string $path, string $secret)
@@ -61,7 +61,7 @@ class ThumbController extends Controller
             return new RedirectResponse($packages->getUrl($path), Response::HTTP_MOVED_PERMANENTLY);
         }
 
-        if (count($parameters) > 0) {
+        if (\count($parameters) > 0) {
             try {
                 // No signature validation if no parameters
                 // added to generate URL without parameters that not produce 404, useful especially for sitemap
@@ -74,7 +74,7 @@ class ThumbController extends Controller
         $assetThumb->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $assetThumb->getImageResponse($path, $parameters);
-        } catch (\InvalidArgumentException|FileNotFoundException $e) {
+        } catch (\InvalidArgumentException | FileNotFoundException $e) {
             throw $this->createNotFoundException($e->getMessage(), $e);
         }
 

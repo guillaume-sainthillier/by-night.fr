@@ -11,8 +11,8 @@ use App\Utils\Merger;
 use App\Utils\Monitor;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Psr\Log\LoggerInterface;
 use function GuzzleHttp\Psr7\copy_to_string;
+use Psr\Log\LoggerInterface;
 
 /**
  * Description of EventHandler.
@@ -58,7 +58,7 @@ class EventHandler
             $content = copy_to_string($response->getBody());
             $this->uploadFile($event, $content, $contentType);
         } catch (RequestException $e) {
-            if ($e->getResponse() && $e->getResponse()->getStatusCode() === 403) {
+            if ($e->getResponse() && 403 === $e->getResponse()->getStatusCode()) {
                 return;
             }
 

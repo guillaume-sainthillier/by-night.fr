@@ -160,7 +160,7 @@ class EventType extends AbstractType
             ])
             ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
 
-        if ($options['data'] !== null && null === $options['data']->getId()) {
+        if (null !== $options['data'] && null === $options['data']->getId()) {
             $builder
                 ->add('comment', TextareaType::class, [
                     'label' => 'Commentaire',
@@ -175,19 +175,19 @@ class EventType extends AbstractType
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float)$latitude ?: null;
+                return (float) $latitude ?: null;
             },
             function ($latitude) {
-                return (float)$latitude ?: null;
+                return (float) $latitude ?: null;
             }
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
             function ($latitude) {
-                return (float)$latitude ?: null;
+                return (float) $latitude ?: null;
             },
             function ($latitude) {
-                return (float)$latitude ?: null;
+                return (float) $latitude ?: null;
             }
         ));
     }

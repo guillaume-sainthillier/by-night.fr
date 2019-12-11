@@ -43,7 +43,7 @@ class EventElasticaRepository extends Repository
             $filterBool = new BoolQuery();
             $filterBool->addShould([
                 new GeoDistance('place.city.location', $search->getLocation()->getCity()->getLocation(), $search->getRange() . 'km'),
-                new Term(['place.city.id' => $search->getLocation()->getCity()->getId()])
+                new Term(['place.city.id' => $search->getLocation()->getCity()->getId()]),
             ]);
 
             $mainQuery->addMust($filterBool);
@@ -138,9 +138,9 @@ class EventElasticaRepository extends Repository
 
             if ($location) {
                 $finalQuery->addSort(['_geo_distance' => [
-                    "place.city.location" => $location,
-                    "order" => "asc",
-                    "unit" => "km"
+                    'place.city.location' => $location,
+                    'order' => 'asc',
+                    'unit' => 'km',
                 ]]);
             }
         }

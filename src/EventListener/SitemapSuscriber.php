@@ -143,7 +143,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $place = current($place);
             $this->addUrl($section, 'app_agenda_place', [
                 'slug' => $place['slug'],
-                'location' => $place['city_slug']
+                'location' => $place['city_slug'],
             ]);
         }
     }
@@ -153,7 +153,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         $nbEvents = $this->doctrine->getRepository(Event::class)->findSiteMapCount();
         $nbPages = ceil($nbEvents / self::ITEMS_PER_PAGE);
 
-        for ($i = 0; $i < $nbPages; $i++) {
+        for ($i = 0; $i < $nbPages; ++$i) {
             $events = $this->doctrine->getRepository(Event::class)->findSiteMap($i, self::ITEMS_PER_PAGE);
 
             foreach ($events as $event) {
@@ -162,8 +162,7 @@ class SitemapSuscriber implements EventSubscriberInterface
                     'id' => $event['id'],
                     'slug' => $event['slug'],
                     'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
-                ], DateTime::createFromImmutable($event['updatedAt'])
-                    , $event['dateFin'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : null);
+                ], DateTime::createFromImmutable($event['updatedAt']), $event['dateFin'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : null);
             }
         }
     }

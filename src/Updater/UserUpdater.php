@@ -31,7 +31,7 @@ class UserUpdater extends Updater
         $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
-        for ($i = 1; $i <= $nbBatchs; $i++) {
+        for ($i = 1; $i <= $nbBatchs; ++$i) {
             $users = $repo->getUsersWithInfo($from, $i, self::PAGINATION_SIZE);
             $fbIds = $this->extractFbIds($users);
             $fbStats = $this->facebookAdmin->getUserImagesFromIds($fbIds);

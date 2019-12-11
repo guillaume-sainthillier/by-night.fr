@@ -55,11 +55,11 @@ class SearchType extends AbstractType
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
-                'attr' => ['title' => 'Tous', 'data-live-search' => true],])
+                'attr' => ['title' => 'Tous', 'data-live-search' => true], ])
             ->add('term', TextType::class, [
                 'required' => false,
                 'label' => 'Mot-clés',
-                'attr' => ['placeholder' => 'Quel événement cherchez-vous ?'],])
+                'attr' => ['placeholder' => 'Quel événement cherchez-vous ?'], ])
             ->addEventListener(
                 FormEvents::PRE_SUBMIT,
                 [$this, 'onPreSubmit']

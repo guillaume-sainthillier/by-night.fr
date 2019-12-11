@@ -88,29 +88,23 @@ class SearchEvent
 
     /**
      * @param DateTime|null $from
-     * @return SearchEvent
      */
     public function setFrom(?\DateTimeInterface $from): SearchEvent
     {
         $this->from = $from;
+
         return $this;
     }
 
-    /**
-     * @return \DateTimeInterface|null
-     */
     public function getTo(): ?\DateTimeInterface
     {
         return $this->to;
     }
 
-    /**
-     * @param \DateTimeInterface|null $to
-     * @return SearchEvent
-     */
     public function setTo(?\DateTimeInterface $to): SearchEvent
     {
         $this->to = $to;
+
         return $this;
     }
 
@@ -170,6 +164,7 @@ class SearchEvent
     public function setRange(?int $range): SearchEvent
     {
         $this->range = $range;
+
         return $this;
     }
 }

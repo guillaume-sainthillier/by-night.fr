@@ -14,7 +14,8 @@ class Thumb extends BaseManipulator
 {
     /**
      * Maximum image size in pixels.
-     * @var integer|null
+     *
+     * @var int|null
      */
     protected $maxImageSize;
 
@@ -25,12 +26,14 @@ class Thumb extends BaseManipulator
 
     /**
      * Perform background image manipulation.
-     * @param Image $image The source image.
-     * @return Image The manipulated image.
+     *
+     * @param Image $image the source image
+     *
+     * @return Image the manipulated image
      */
     public function run(Image $image)
     {
-        if (is_null($this->thumb)) {
+        if (\is_null($this->thumb)) {
             return $image;
         }
 

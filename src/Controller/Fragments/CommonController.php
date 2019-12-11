@@ -48,6 +48,7 @@ class CommonController extends TBNController
             $key = 'app.social_counts.' . $name;
             $params['count_' . $name] = $memoryCache->get($key, function (CacheItemInterface $item) use ($service) {
                 $item->expiresAfter(self::LIFE_TIME_CACHE);
+
                 return $service->getNumberOfCount();
             });
         }

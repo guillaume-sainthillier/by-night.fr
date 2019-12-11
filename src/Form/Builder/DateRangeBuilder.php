@@ -57,7 +57,6 @@ class DateRangeBuilder
                 /** @var \DateTimeInterface|null $to */
                 $to = $form->get($toName)->getData();
 
-
                 if (null === $from) {
                     return;
                 }
@@ -70,6 +69,7 @@ class DateRangeBuilder
                 foreach ($ranges as $label => $range) {
                     if ($range[0] === $from && $range[1] === $to) {
                         $shortcut->setData($label);
+
                         return;
                     }
                 }
@@ -107,6 +107,7 @@ class DateRangeBuilder
                     if ($range[0] === $from && $range[1] === $to) {
                         $data['shortcut'] = $label;
                         $event->setData($data);
+
                         return;
                     }
                 }

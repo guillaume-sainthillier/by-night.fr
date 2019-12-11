@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Parser\Common;
-
 
 use App\Entity\Country;
 use App\Parser\AbstractParser;
@@ -59,6 +57,7 @@ class EventBriteParser extends AbstractParser
                     ->getEventResults($searchParams)
                     ->then(function (array $result) use (&$hasNextEvents) {
                         $hasNextEvents = $result['pagination']['has_more_items'];
+
                         return $result['events'];
                     })
                     ->wait();
@@ -110,8 +109,8 @@ class EventBriteParser extends AbstractParser
             'external_id' => 'EB-' . $event['id'],
             'url' => $event['logo']['original']['url'],
             'external_updated_at' => new \DateTime($event['changed']),
-            'latitude' => (float)$address['latitude'],
-            'longitude' => (float)$address['longitude'],
+            'latitude' => (float) $address['latitude'],
+            'longitude' => (float) $address['longitude'],
             'placeStreet' => trim(sprintf('%s %s', $address['address_1'], $address['address_2'])),
             'placePostalCode' => $address['postal_code'],
             'placeCity' => $address['city'],

@@ -97,7 +97,7 @@ abstract class AdminZone
     {
         return [
             'lat' => $this->latitude,
-            'lon' => $this->longitude
+            'lon' => $this->longitude,
         ];
     }
 
@@ -106,10 +106,6 @@ abstract class AdminZone
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     * @return self
-     */
     public function setId(int $id): self
     {
         $this->id = $id;

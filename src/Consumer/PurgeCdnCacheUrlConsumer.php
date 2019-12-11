@@ -32,7 +32,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
             'headers' => [
                 'X-Auth-Email' => $cfUserEmail,
                 'X-Auth-Key' => $cfUserKey,
-            ]
+            ],
         ]);
     }
 
@@ -49,10 +49,11 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
         try {
             $this->client->post(
                 sprintf('/client/v4/zones/%s/purge_cache', $this->cfZone),
-                ['json' => ["files" => $urls]]
+                ['json' => ['files' => $urls]]
             );
         } catch (\Exception $e) {
             $this->logger->critical($e);
+
             return ConsumerInterface::MSG_REJECT;
         }
 

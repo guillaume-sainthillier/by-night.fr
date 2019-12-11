@@ -46,8 +46,8 @@ class Cleaner
     {
         $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
             ->setRue($this->cleanNormalString($place->getRue()) ?: null)
-            ->setLatitude((float)($this->util->replaceNonNumericChars($place->getLatitude())) ?: null)
-            ->setLongitude((float)($this->util->replaceNonNumericChars($place->getLongitude())) ?: null)
+            ->setLatitude((float) ($this->util->replaceNonNumericChars($place->getLatitude())) ?: null)
+            ->setLongitude((float) ($this->util->replaceNonNumericChars($place->getLongitude())) ?: null)
             ->setVille($this->cleanPostalString($place->getVille()) ?: null)
             ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
     }

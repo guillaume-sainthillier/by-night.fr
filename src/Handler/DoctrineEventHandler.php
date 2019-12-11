@@ -295,9 +295,7 @@ class DoctrineEventHandler
         for ($i = 0; $i < $nbBatches; ++$i) {
             $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
             foreach ($currentExplorations as $exploration) {
-                /*
-                 * @var Exploration $exploration
-                 */
+                /** @var Exploration $exploration */
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->explorationHandler->addExploration();
                 $this->em->persist($exploration);
@@ -337,7 +335,7 @@ class DoctrineEventHandler
      */
     private function mergeWithDatabase(array $events, bool $flush)
     {
-        if(0 === count($events)) {
+        if (0 === \count($events)) {
             return [];
         }
 

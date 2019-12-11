@@ -13,7 +13,7 @@ class DigitickAwinParser extends AbstractAwinParser
 
     protected function getInfoEvents(array $datas): array
     {
-        if ($datas['is_for_sale'] === '0') {
+        if ('0' === $datas['is_for_sale']) {
             return [];
         }
 
@@ -40,17 +40,18 @@ class DigitickAwinParser extends AbstractAwinParser
             'placeCity' => $placeMatches[3],
             'placeStreet' => $placeMatches[1],
             'placeCountryName' => 'France',
-            'latitude' => (float)$datas['latitude'],
-            'longitude' => (float)$datas['longitude'],
-            'type_manifestation' => $datas['merchant_category'] === 'Expo' ? 'Exposition' : $datas['merchant_category'],
+            'latitude' => (float) $datas['latitude'],
+            'longitude' => (float) $datas['longitude'],
+            'type_manifestation' => 'Expo' === $datas['merchant_category'] ? 'Exposition' : $datas['merchant_category'],
         ];
+
         return $event;
     }
 
     private function replaceBBCodes($text)
     {
         // BBcode array
-        $find = array(
+        $find = [
             '~\[b\](.*?)\[/b\]~s',
             '~\[i\](.*?)\[/i\]~s',
             '~\[u\](.*?)\[/u\]~s',
@@ -58,10 +59,10 @@ class DigitickAwinParser extends AbstractAwinParser
             '~\[size=(.*?)\](.*?)\[/size\]~s',
             '~\[color=(.*?)\](.*?)\[/color\]~s',
             '~\[url=(.*?)\](.*?)\[/url\]~s',
-            '~\[img\](https?://.*?\.(?:jpg|jpeg|gif|png|bmp))\[/img\]~s'
-        );
+            '~\[img\](https?://.*?\.(?:jpg|jpeg|gif|png|bmp))\[/img\]~s',
+        ];
         // HTML tags to replace BBcode
-        $replace = array(
+        $replace = [
             '<b>$1</b>',
             '<i>$1</i>',
             '<span style="text-decoration:underline;">$1</span>',
@@ -69,8 +70,8 @@ class DigitickAwinParser extends AbstractAwinParser
             '$2',
             '$2',
             '<a href="$1">$2</a>',
-            '<img src="$1" alt="" />'
-        );
+            '<img src="$1" alt="" />',
+        ];
         // Replacing the BBcodes with corresponding HTML tags
         return preg_replace($find, $replace, $text);
     }

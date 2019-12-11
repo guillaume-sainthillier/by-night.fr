@@ -9,20 +9,13 @@ return PhpCsFixer\Config::create()
     ->setRules([
         '@Symfony' => true,
         '@DoctrineAnnotation' => true,
-        'comment_to_phpdoc' => false,
+        'array_syntax' => ['syntax' => 'short'],
         'phpdoc_summary' => false,
+        'no_superfluous_phpdoc_tags' => true,
+        'concat_space' => ['spacing' => 'one'],
         'native_constant_invocation' => true,
         'native_function_invocation' => ['include' => ['@compiler_optimized']],
-        'array_syntax' => ['syntax' => 'short'],
         'ordered_imports' => ['sort_algorithm' => 'alpha'],
-        'concat_space' => ['spacing' => 'one'],
-        'header_comment' => ['header' => ''],
-        'mb_str_functions' => true,
-        'method_chaining_indentation' => true,
-        'multiline_comment_opening_closing' => false,
-        'no_superfluous_phpdoc_tags' => true,
-        'no_useless_else' => true,
-        'single_line_comment_style' => false,
     ])
     ->setRiskyAllowed(true)
     ->setFinder($finder)

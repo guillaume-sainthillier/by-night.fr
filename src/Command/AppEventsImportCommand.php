@@ -42,10 +42,7 @@ class AppEventsImportCommand extends Command
     {
         $parserName = $input->getArgument('parser');
         if (empty($this->parsers[$parserName])) {
-            throw new LogicException(\sprintf(
-                'Le parser "%s" est introuvable',
-                $parserName
-            ));
+            throw new LogicException(\sprintf('Le parser "%s" est introuvable', $parserName));
         }
 
         $parser = $this->parsers[$parserName];

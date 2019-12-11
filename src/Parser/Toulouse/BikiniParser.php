@@ -3,9 +3,7 @@
 namespace App\Parser\Toulouse;
 
 use App\Parser\AbstractParser;
-use App\Producer\EventProducer;
 use DateTime;
-use Psr\Log\LoggerInterface;
 
 /**
  * @author Guillaume SAINTHILLIER
@@ -54,7 +52,7 @@ class BikiniParser extends AbstractParser
             'source' => $event['url'],
             'reservation_internet' => $event['ticketUrl'],
             'url' => $event['image'],
-            'modification_derniere_minute' => $event['status'] === 'postponed' ? 'REPORTE' : null,
+            'modification_derniere_minute' => 'postponed' === $event['status'] ? 'REPORTE' : null,
             'placeName' => $event['place']['name'],
             'placeCountryName' => 'FR',
             'tarif' => implode(' // ', $event['prices']),
@@ -63,14 +61,14 @@ class BikiniParser extends AbstractParser
         $placeParts = explode("\n", $event['place']['address']);
         $placeParts = array_map('trim', $placeParts);
 
-        if (count($placeParts) >= 2) {
+        if (\count($placeParts) >= 2) {
             if (preg_match("#^(\d+) (.+)$#", end($placeParts), $postalCodeAndCity)) {
                 $tab_retour['placePostalCode'] = $postalCodeAndCity[1];
                 $tab_retour['placeCity'] = $postalCodeAndCity[2];
             }
 
             //Skip first informations (i.e Parc Technologique du Canal)
-            if (count($placeParts) === 3) {
+            if (3 === \count($placeParts)) {
                 $tab_retour['placeStreet'] = $placeParts[1];
             } else {
                 $tab_retour['placeStreet'] = $placeParts[0];

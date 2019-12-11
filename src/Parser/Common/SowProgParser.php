@@ -5,8 +5,8 @@ namespace App\Parser\Common;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
-use Psr\Log\LoggerInterface;
 use function GuzzleHttp\Psr7\copy_to_string;
+use Psr\Log\LoggerInterface;
 
 /**
  * @author Guillaume SAINTHILLIER
@@ -24,8 +24,8 @@ class SowProgParser extends AbstractParser
             'base_uri' => 'https://agenda.sowprog.com',
             'auth' => [$sowprogUsername, $sowprogPassword],
             'headers' => [
-                'accept' => 'application/json'
-            ]
+                'accept' => 'application/json',
+            ],
         ]);
     }
 
@@ -56,7 +56,7 @@ class SowProgParser extends AbstractParser
             'source' => 'http://www.sowprog.com/',
             'external_id' => 'SP-' . $event['id'] . '-' . $currentSchedule['id'],
             'url' => $event['event']['picture'],
-            'external_updated_at' => (new \DateTime)->setTimestamp($event['modificationDate'] / 1000),
+            'external_updated_at' => (new \DateTime())->setTimestamp($event['modificationDate'] / 1000),
         ];
 
         $tab_infos['type_manifestation'] = $event['event']['eventType']['label'];
@@ -88,7 +88,7 @@ class SowProgParser extends AbstractParser
 
         if (!empty($event['eventPrice'])) {
             $prices = array_map(function (array $price) {
-                return sprintf('%s : %d%s', $price['label'], $price['price'], $price['currency'] === 'EUR' ? '€' : $price['currency']);
+                return sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']);
             }, $event['eventPrice']);
             $tab_infos['tarif'] = implode(' - ', $prices);
         }
@@ -108,8 +108,8 @@ class SowProgParser extends AbstractParser
 
             if ($location['contact']) {
                 $contact = $event['location']['contact'];
-                $tab_infos['latitude'] = (float)$contact['lattitude'];
-                $tab_infos['longitude'] = (float)$contact['longitude'];
+                $tab_infos['latitude'] = (float) $contact['lattitude'];
+                $tab_infos['longitude'] = (float) $contact['longitude'];
 
                 $tab_infos['placeStreet'] = trim(sprintf('%s %s', $contact['addressLine1'], $contact['addressLine2']));
                 $tab_infos['placePostalCode'] = $contact['zipCode'];

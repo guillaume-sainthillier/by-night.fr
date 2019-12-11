@@ -31,7 +31,7 @@ class SimpleEventSearchType extends AbstractType
         $this->dateRangeBuilder->addShortcutDateFields($builder, 'from', 'to');
         $builder
             ->add('term', TextType::class, [
-                'required' => false
+                'required' => false,
             ]);
     }
 

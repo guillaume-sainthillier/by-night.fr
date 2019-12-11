@@ -19,7 +19,7 @@ class DateTypeExtension extends AbstractTypeExtension
             'attr' => ['class' => 'widget_datepicker', 'autocomplete' => 'off'],
             'widget' => 'single_text',
             'html5' => false,
-            'format' => \IntlDateFormatter::SHORT
+            'format' => \IntlDateFormatter::SHORT,
         ]);
     }
 }

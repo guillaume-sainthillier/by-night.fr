@@ -28,7 +28,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
     protected function getInfoEvents(array $datas): array
     {
-        if ($datas['is_for_sale'] === '0' || trim($datas['custom_2']) === '') {
+        if ('0' === $datas['is_for_sale'] || '' === trim($datas['custom_2'])) {
             return [];
         }
 
@@ -37,7 +37,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         $fromDate = null;
         $startDates = array_filter(explode(';', $datas['custom_1']));
 
-        if (count($startDates) === 0) {
+        if (0 === \count($startDates)) {
             return [];
         }
         foreach ($startDates as $startDate) {
@@ -47,13 +47,13 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         }
         $seenHoraires = array_unique($seenHoraires);
 
-        if (count($seenHoraires) === 1) {
+        if (1 === \count($seenHoraires)) {
             $horaires = $seenHoraires[0];
         }
 
         $toDate = \DateTime::createFromFormat('d/m/Y H:i', $datas['valid_to']);
 
-        if ($fromDate->format('d/m H:i') === '31/12 23:59' && $fromDate->format('d/m/Y') === $toDate->format('d/m/Y')) {
+        if ('31/12 23:59' === $fromDate->format('d/m H:i') && $fromDate->format('d/m/Y') === $toDate->format('d/m/Y')) {
             $horaires = null;
             $fromDate->setDate($fromDate->format('Y'), 1, 1);
         }
@@ -75,10 +75,10 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             'placeName' => $datas['custom_2'],
             'placePostalCode' => $datas['custom_4'],
             'placeCity' => $datas['venue_address'],
-            'placeStreet' => in_array($datas['custom_6'], ['.', '-', ''], true) ? null : $datas['custom_6'],
+            'placeStreet' => \in_array($datas['custom_6'], ['.', '-', ''], true) ? null : $datas['custom_6'],
             'placeCountryName' => $datas['custom_3'],
-            'latitude' => (float)$datas['latitude'],
-            'longitude' => (float)$datas['longitude'],
+            'latitude' => (float) $datas['latitude'],
+            'longitude' => (float) $datas['longitude'],
         ];
 
         return $event;
@@ -92,6 +92,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
             try {
                 $client->request('HEAD', $imageUrl);
+
                 return $imageUrl;
             } catch (RequestException $exception) {
                 return $url;

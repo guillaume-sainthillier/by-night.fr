@@ -5,11 +5,11 @@ namespace App\Parser\Common;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
+use function GuzzleHttp\Psr7\copy_to_string;
 use JsonMachine\JsonMachine;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Cache\CacheInterface;
-use function GuzzleHttp\Psr7\copy_to_string;
 
 class DataTourismeParser extends AbstractParser
 {
@@ -73,19 +73,19 @@ class DataTourismeParser extends AbstractParser
 
         $datas['hasContact'] = $this->getResourceById($datas['hasContact'] ?? [], true);
         $datas['isLocatedAt'] = $this->getResourceById($datas['isLocatedAt']);
-        if (isset($datas['isLocatedAt'][0]) && is_array($datas['isLocatedAt'][0])) {
+        if (isset($datas['isLocatedAt'][0]) && \is_array($datas['isLocatedAt'][0])) {
             $datas['isLocatedAt'] = $datas['isLocatedAt'][0];
         }
 
-        if (isset($datas['isLocatedAt']['schema:address'][0]) && is_array($datas['isLocatedAt']['schema:address'][0])) {
+        if (isset($datas['isLocatedAt']['schema:address'][0]) && \is_array($datas['isLocatedAt']['schema:address'][0])) {
             $datas['isLocatedAt']['schema:address'] = $datas['isLocatedAt']['schema:address'][0];
         }
 
-        if (isset($datas['isLocatedAt']['schema:address']['hasAddressCity'][0]) && is_array($datas['isLocatedAt']['schema:address']['hasAddressCity'][0])) {
+        if (isset($datas['isLocatedAt']['schema:address']['hasAddressCity'][0]) && \is_array($datas['isLocatedAt']['schema:address']['hasAddressCity'][0])) {
             $datas['isLocatedAt']['schema:address']['hasAddressCity'] = $datas['isLocatedAt']['schema:address']['hasAddressCity'][0];
         }
 
-        if (isset($datas['isLocatedAt']['schema:address']['schema:addressLocality'][0]) && is_array($datas['isLocatedAt']['schema:address']['schema:addressLocality'][0])) {
+        if (isset($datas['isLocatedAt']['schema:address']['schema:addressLocality'][0]) && \is_array($datas['isLocatedAt']['schema:address']['schema:addressLocality'][0])) {
             $datas['isLocatedAt']['schema:address']['schema:addressLocality'] = $datas['isLocatedAt']['schema:address']['schema:addressLocality'][0];
         }
 
@@ -104,7 +104,7 @@ class DataTourismeParser extends AbstractParser
         $datas['hasTheme'] = $datas['hasTheme'] ?? [];
         $datas['hasTheme'] = isset($datas['hasTheme'][0]) ? $datas['hasTheme'] : [$datas['hasTheme']];
         foreach ($datas['hasTheme'] as $theme) {
-            if (!isset($theme['rdfs:label']['@value']) || in_array($theme['rdfs:label']['@value'], $typesManifestation, true)) {
+            if (!isset($theme['rdfs:label']['@value']) || \in_array($theme['rdfs:label']['@value'], $typesManifestation, true)) {
                 continue;
             }
             $categoriesManifestation[] = $theme['rdfs:label']['@value'];
@@ -120,11 +120,11 @@ class DataTourismeParser extends AbstractParser
         $longitude = null;
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'])) {
-            $latitude = (float)$datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
+            $latitude = (float) $datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
         }
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'])) {
-            $longitude = (float)$datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
+            $longitude = (float) $datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
         }
 
         $emails = [];
@@ -134,15 +134,15 @@ class DataTourismeParser extends AbstractParser
         foreach (['hasBookingContact', 'hasContact'] as $key) {
             foreach ($datas[$key] as $currentDatas) {
                 if (isset($currentDatas['schema:email'])) {
-                    $emails = array_merge($emails, is_array($currentDatas['schema:email']) ? $currentDatas['schema:email'] : [$currentDatas['schema:email']]);
+                    $emails = array_merge($emails, \is_array($currentDatas['schema:email']) ? $currentDatas['schema:email'] : [$currentDatas['schema:email']]);
                 }
 
                 if (isset($currentDatas['schema:telephone'])) {
-                    $phones = array_merge($phones, is_array($currentDatas['schema:telephone']) ? $currentDatas['schema:telephone'] : [$currentDatas['schema:telephone']]);
+                    $phones = array_merge($phones, \is_array($currentDatas['schema:telephone']) ? $currentDatas['schema:telephone'] : [$currentDatas['schema:telephone']]);
                 }
 
                 if (isset($currentDatas['foaf:homepage'])) {
-                    $websites = array_merge($websites, is_array($currentDatas['foaf:homepage']) ? $currentDatas['foaf:homepage'] : [$currentDatas['foaf:homepage']]);
+                    $websites = array_merge($websites, \is_array($currentDatas['foaf:homepage']) ? $currentDatas['foaf:homepage'] : [$currentDatas['foaf:homepage']]);
                 }
             }
         }
@@ -158,15 +158,15 @@ class DataTourismeParser extends AbstractParser
             dd($datas['isLocatedAt'], 'isLocatedAt');
         }
 
-        if (is_array($datas['isLocatedAt']['schema:address']['schema:addressLocality'])) {
+        if (\is_array($datas['isLocatedAt']['schema:address']['schema:addressLocality'])) {
             $datas['isLocatedAt']['schema:address']['schema:addressLocality'] = current($datas['isLocatedAt']['schema:address']['schema:addressLocality']);
         }
 
-        if (isset($datas['rdfs:label'][0]) && is_array($datas['rdfs:label'][0])) {
+        if (isset($datas['rdfs:label'][0]) && \is_array($datas['rdfs:label'][0])) {
             $datas['rdfs:label'] = $datas['rdfs:label'][0];
         }
 
-        if (isset($datas['owl:topObjectProperty']['dc:description'][0]) && is_array($datas['owl:topObjectProperty']['dc:description'][0])) {
+        if (isset($datas['owl:topObjectProperty']['dc:description'][0]) && \is_array($datas['owl:topObjectProperty']['dc:description'][0])) {
             $datas['owl:topObjectProperty']['dc:description'] = $datas['owl:topObjectProperty']['dc:description'][0];
         }
 
@@ -200,7 +200,7 @@ class DataTourismeParser extends AbstractParser
             'reservation_telephone' => implode(' ', $phones) ?: null,
         ];
 
-        if (is_array($event['placeStreet'])) {
+        if (\is_array($event['placeStreet'])) {
             $event['placeStreet'] = end($event['placeStreet']);
         }
 
@@ -247,7 +247,7 @@ class DataTourismeParser extends AbstractParser
             return $this->getResourceById([$resource]);
         }
 
-        if (isset($resource[0]) && is_array($resource[0])) {
+        if (isset($resource[0]) && \is_array($resource[0])) {
             foreach ($resource as $key => $value) {
                 $resource[$key] = $this->getResourceById($value);
             }
@@ -265,7 +265,7 @@ class DataTourismeParser extends AbstractParser
         }));
 
         foreach ($resource as $key => $value) {
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $resource[$key] = $this->getResourceById($value);
             }
         }
@@ -275,7 +275,7 @@ class DataTourismeParser extends AbstractParser
 
     private function getFeed(string $url): string
     {
-        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.jsonld', md5($url));
+        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.jsonld', md5($url));
 
         $client = new Client();
         $response = $client->request('GET', $url);

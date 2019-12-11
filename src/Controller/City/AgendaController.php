@@ -31,7 +31,6 @@ class AgendaController extends BaseController
      * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags", requirements={"page": "\d+"})
      * @ReverseProxy(expires="+30 minutes")
      *
-     * @param int $page
      * @param null $type
      * @param null $tag
      * @param null $slug

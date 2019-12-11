@@ -19,7 +19,7 @@ class DefaultController extends BaseController
     public function indexAction(Location $location, PaginatorInterface $paginator)
     {
         $datas = [
-            'from' => new \DateTime()
+            'from' => new \DateTime(),
         ];
 
         $em = $this->getDoctrine()->getManager();
@@ -28,10 +28,11 @@ class DefaultController extends BaseController
         $events = $paginator->paginate($query, 1, 7);
 
         $form = $this->createForm(SimpleEventSearchType::class, $datas);
+
         return $this->render('City/Default/index.html.twig', [
             'location' => $location,
             'events' => $events,
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
 }

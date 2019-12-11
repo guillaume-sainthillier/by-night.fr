@@ -161,42 +161,31 @@ class Place implements GeolocalizeInterface
         $location = new Location();
         $location->setCity($this->city);
         $location->setCountry($this->country);
+
         return $this->location = $location;
     }
 
-    /**
-     * @return ZipCity|null
-     */
     public function getZipCity(): ?ZipCity
     {
         return $this->zipCity;
     }
 
-    /**
-     * @param ZipCity|null $zipCity
-     * @return Place
-     */
     public function setZipCity(?ZipCity $zipCity): Place
     {
         $this->zipCity = $zipCity;
+
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCountryName(): ?string
     {
         return $this->countryName;
     }
 
-    /**
-     * @param string|null $countryName
-     * @return Place
-     */
     public function setCountryName(?string $countryName): Place
     {
         $this->countryName = $countryName;
+
         return $this;
     }
 
@@ -220,6 +209,7 @@ class Place implements GeolocalizeInterface
     public function setLatitude(?float $latitude): self
     {
         $this->latitude = $latitude;
+
         return $this;
     }
 
@@ -231,6 +221,7 @@ class Place implements GeolocalizeInterface
     public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
+
         return $this;
     }
 

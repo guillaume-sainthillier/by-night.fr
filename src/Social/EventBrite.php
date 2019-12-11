@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\PromiseInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -18,7 +19,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Contracts\Cache\CacheInterface;
-use function GuzzleHttp\Psr7\copy_to_string;
 
 class EventBrite extends Social
 {
@@ -52,6 +52,7 @@ class EventBrite extends Social
     public function getEventCategory(string $categoryId, string $locale)
     {
         $key = sprintf('eb.category.%s.%s', $categoryId, $locale);
+
         return $this->cache->get($key, function () use ($categoryId, $locale) {
             return $this
                 ->jsonRequest(sprintf('/v3/categories/%s/?locale=%s', $categoryId, $locale))
@@ -67,10 +68,11 @@ class EventBrite extends Social
             ->then(function (ResponseInterface $response) {
                 return json_decode(copy_to_string($response->getBody()), true);
             }, function (RequestException $exception) use ($uri) {
-                if ($exception->getResponse() && $exception->getResponse()->getStatusCode() === 429) {
-                    Monitor::writeln("<error>EVENTBRITE API LIMIT</error>");
+                if ($exception->getResponse() && 429 === $exception->getResponse()->getStatusCode()) {
+                    Monitor::writeln('<error>EVENTBRITE API LIMIT</error>');
                     sleep(3660);
                     $this->ping($this->entityManager->getConnection());
+
                     return $this->jsonRequest($uri);
                 }
 

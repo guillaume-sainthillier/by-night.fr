@@ -25,7 +25,7 @@ class EventController extends BaseController
     {
         $user = $this->getUser();
 
-        $page = (int)$request->query->get('page', 1);
+        $page = (int) $request->query->get('page', 1);
         $query = $this->getDoctrine()->getRepository(Event::class)->findAllByUser($user);
         $events = $paginator->paginate($query, $page, self::EVENT_PER_PAGE);
 
@@ -33,7 +33,7 @@ class EventController extends BaseController
             'events' => $events,
         ]);
     }
-    
+
     /**
      * @Route("/nouvelle-soiree", name="app_event_new", methods={"GET", "POST"})
      */
@@ -168,7 +168,7 @@ class EventController extends BaseController
             $calendrier->setUser($user)->setEvent($event);
             $em->persist($calendrier);
         }
-        $isLike = $request->request->get('like', 'true') === 'true';
+        $isLike = 'true' === $request->request->get('like', 'true');
         $calendrier->setParticipe($isLike);
         $em->flush();
 

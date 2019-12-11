@@ -23,7 +23,7 @@ class SearchController extends AbstractController
     {
         $q = \trim($request->get('q', null));
         $type = $request->get('type', null);
-        $page = (int)($request->get('page', 1));
+        $page = (int) ($request->get('page', 1));
         $maxItems = 20;
 
         if ($page <= 0) {

@@ -87,7 +87,7 @@ class Country
 
     /**
      * Set id.
-     * @param string $id
+     *
      * @return Country
      */
     public function setId(string $id)
@@ -180,5 +180,4 @@ class Country
 
         return $this;
     }
-
 }

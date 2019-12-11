@@ -24,7 +24,7 @@ class DefaultController extends AbstractController
     public function indexAction(Request $request, CityManager $cityManager)
     {
         $datas = [
-            'from' => new \DateTime()
+            'from' => new \DateTime(),
         ];
         if ($city = $cityManager->getCity()) {
             $datas += [
@@ -51,7 +51,7 @@ class DefaultController extends AbstractController
             }
 
             return $this->redirectToRoute('app_agenda_agenda', $params + [
-                    'location' => $city
+                    'location' => $city,
                 ]);
         }
 

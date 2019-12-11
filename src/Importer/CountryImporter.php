@@ -97,11 +97,11 @@ class CountryImporter
             $adminCode2 = $this->formatAdminZoneCode($data[11]);
 
             $entity
-                ->setId((int)$data[0])
+                ->setId((int) $data[0])
                 ->setName($data[1])
-                ->setPopulation((int)$data[14])
-                ->setLatitude((float)$data[4])
-                ->setLongitude((float)$data[5])
+                ->setPopulation((int) $data[14])
+                ->setLatitude((float) $data[4])
+                ->setLongitude((float) $data[5])
                 ->setAdmin1Code($adminCode1)
                 ->setAdmin2Code($adminCode2)
                 ->setCountry($country);
@@ -238,8 +238,8 @@ class CountryImporter
                 ->setAdmin1Name(trim($data[3]) ?: null)
                 ->setAdmin2Code($adminCode2)
                 ->setAdmin2Name(trim($data[5]) ?: null)
-                ->setLatitude((float)$data[9])
-                ->setLongitude((float)$data[10])
+                ->setLatitude((float) $data[9])
+                ->setLongitude((float) $data[10])
                 ->setCountry($country);
 
             $this->em->persist($city);

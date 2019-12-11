@@ -12,12 +12,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20191120193602 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return '';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('UPDATE Place p SET p.created_at = (SELECT MIN(a.created_at) FROM Agenda a WHERE a.place_id = p.id)');
@@ -28,9 +28,8 @@ final class Version20191120193602 extends AbstractMigration
         $this->addSql('UPDATE Calendrier c SET c.updated_at = c.created_at');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-
     }
 }

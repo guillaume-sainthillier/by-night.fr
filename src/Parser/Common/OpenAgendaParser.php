@@ -8,9 +8,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Promise\FulfilledPromise;
 use GuzzleHttp\Promise\PromiseInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use function GuzzleHttp\Psr7\copy_to_string;
 
 /**
  * @author Guillaume SAINTHILLIER
@@ -71,6 +71,7 @@ class OpenAgendaParser extends AbstractParser
                 if (!isset($result['events'])) {
                     $exception = new \RuntimeException(sprintf("Unable to find events for agenda '%s'", $agendaId));
                     $this->logException($exception);
+
                     return new FulfilledPromise(null);
                 }
                 $this->publishEvents($result['events']);
@@ -124,7 +125,7 @@ class OpenAgendaParser extends AbstractParser
             $this->cache['visited'][$event['uid']] = true;
             $event = $this->getInfoEvent($event);
             $this->publish($event);
-            $nbParsed++;
+            ++$nbParsed;
         }
 
         return $nbParsed;
@@ -175,7 +176,7 @@ class OpenAgendaParser extends AbstractParser
             'placeCity' => $event['city'],
             'placeCountryName' => $event['location']['countryCode'],
             'placeExternalId' => $event['locationUid'],
-            'type_manifestation' => implode(', ', $type_manifestation) ?: null
+            'type_manifestation' => implode(', ', $type_manifestation) ?: null,
         ];
     }
 }

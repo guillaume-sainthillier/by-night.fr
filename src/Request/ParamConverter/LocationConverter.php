@@ -47,19 +47,20 @@ class LocationConverter implements ParamConverterInterface
 
         $location = new Location();
         $entity = null;
-        if (strpos('c--', $locationSlug) !== 0) {
+        if (0 !== strpos('c--', $locationSlug)) {
             $entity = $this
                 ->em
                 ->getRepository(City::class)
                 ->findBySlug($locationSlug);
         }
 
-        if ($locationSlug === 'unknown') {
+        if ('unknown' === $locationSlug) {
             $noWhere = new Country();
             $noWhere->setName('Nowhere');
             $noWhere->setSlug($locationSlug);
             $location->setCountry($noWhere);
             $request->attributes->set($configuration->getName(), $location);
+
             return;
         }
 
@@ -76,10 +77,7 @@ class LocationConverter implements ParamConverterInterface
         }
 
         if (!$entity) {
-            throw new NotFoundHttpException(\sprintf(
-                "La location '%s' est introuvable",
-                $locationSlug
-            ));
+            throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug));
         }
 
         $request->attributes->set($configuration->getName(), $location);

@@ -234,8 +234,8 @@ class DefaultController extends BaseController
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {
-            $minYear = (int)date('Y');
-            $maxYear = (int)date('Y');
+            $minYear = (int) date('Y');
+            $maxYear = (int) date('Y');
         }
 
         foreach (range($minYear, $maxYear) as $year) {

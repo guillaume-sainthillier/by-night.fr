@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\App\Location;
-use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
@@ -25,7 +24,7 @@ class EventRepository extends EntityRepository
         return $qb
             ->where('a.dateFin >= :from')
             ->setParameters([
-                'from' => $from->format('Y-m-d')
+                'from' => $from->format('Y-m-d'),
             ]);
     }
 
@@ -63,7 +62,7 @@ class EventRepository extends EntityRepository
 
     public function findSiteMapCount(): int
     {
-        return (int)$this->createQueryBuilder('a')
+        return (int) $this->createQueryBuilder('a')
             ->addSelect('c3')
             ->join('p.country', 'c3')
             ->select('COUNT(a) as nb')
@@ -161,7 +160,7 @@ class EventRepository extends EntityRepository
 
         $ordered = [];
         foreach ($datas as $data) {
-            $ordered[$data['group']] = (int)$data['events'];
+            $ordered[$data['group']] = (int) $data['events'];
         }
 
         return $ordered;
@@ -401,6 +400,7 @@ class EventRepository extends EntityRepository
             ->addOrderBy('a.participations', 'DESC');
 
         $this->buildLocationParameters($qb, $location);
+
         return $qb->getQuery();
     }
 
