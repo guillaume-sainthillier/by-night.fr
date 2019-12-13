@@ -12,7 +12,7 @@ RUN mkdir -p public && \
     NODE_ENV=development yarn install && \
     yarn run build
 
-FROM php:7.3-fpm-alpine
+FROM php:7.4-fpm-alpine
 
 ARG APP_VERSION=dev
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
