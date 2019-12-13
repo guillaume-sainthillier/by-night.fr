@@ -84,19 +84,6 @@ class Firewall
         return null !== $object && null !== $object->getId();
     }
 
-    public function filterEventIntegrity(Event $event, User $oldEventUser = null)
-    {
-        if (!$oldEventUser) {
-            return;
-        }
-
-        if (null === $event->getUser() ||
-            ($event->getUser()->getId() !== $oldEventUser->getId())
-        ) {
-            $event->getReject()->addReason(Reject::BAD_USER);
-        }
-    }
-
     public function filterEvent(Event $event)
     {
         $this->filterEventInfos($event);
