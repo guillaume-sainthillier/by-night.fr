@@ -63,10 +63,6 @@ services:
         arguments:
             $config: { id: "%env(TWITTER_API_ID)%", secret: "%env(TWITTER_API_SECRET)%"}
 
-    App\Social\EventBrite:
-        arguments:
-            $config: { id: "unused", secret: "unused" }
-
     App\Social\Google:
         arguments:
             $config: { id: "unused", secret: "unused"}
@@ -87,7 +83,6 @@ services:
                 datatourisme: '@App\Parser\Common\DataTourismeParser'
                 openagenda: '@App\Parser\Common\OpenAgendaParser'
                 sowprog: '@App\Parser\Common\SowProgParser'
-                eventbrite: '@App\Parser\Common\EventBriteParser'
                 awin.fnac: '@App\Parser\Common\FnacSpectaclesAwinParser'
                 awin.digitick: '@App\Parser\Common\DigitickAwinParser'
 

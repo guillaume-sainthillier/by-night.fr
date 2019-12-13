@@ -36,7 +36,6 @@ security:
                     facebook: "/login-social/check-facebook"
                     google: "/login-social/check-google"
                     twitter: "/login-social/check-twitter"
-                    eventbrite: "/login-social/check-eventbrite"
                 login_path: fos_user_security_login
                 failure_path: fos_user_security_login
 

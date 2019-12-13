@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/social/{service}", requirements={"service": "facebook|twitter|google|eventbrite"})
+ * @Route("/social/{service}", requirements={"service": "facebook|twitter|google"})
  */
 class SocialController extends AbstractController
 {

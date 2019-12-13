@@ -46,8 +46,3 @@ hwi_oauth:
             client_id:           '%env(GOOGLE_API_ID)%'
             client_secret:       '%env(GOOGLE_API_SECRET)%'
             scope:               "email profile"
-        eventbrite:
-            type:                eventbrite
-            client_id:           '%env(EVENTBRITE_API_ID)%'
-            client_secret:       '%env(EVENTBRITE_API_SECRET)%'
-            infos_url:           https://www.eventbriteapi.com/v3/users/me/

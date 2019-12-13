@@ -169,7 +169,6 @@ easy_admin:
                     - { property: 'facebookId' }
                     - { property: 'googleId' }
                     - { property: 'twitterId' }
-                    - { property: 'eventBriteId' }
         UserInfo:
             class: App\Entity\UserInfo
             list:
