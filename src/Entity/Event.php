@@ -37,6 +37,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *     @ORM\Index(name="event_type_manifestation_idx", columns={"type_manifestation"}),
  *     @ORM\Index(name="event_categorie_manifestation_idx", columns={"categorie_manifestation"}),
  *     @ORM\Index(name="event_search_idx", columns={"place_id", "date_fin", "date_debut"}),
+ *     @ORM\Index(name="event_top_soiree_idx", columns={"date_fin", "participations"}),
  *     @ORM\Index(name="event_external_id_idx", columns={"external_id"})
  * })
  *
