@@ -10,7 +10,6 @@
 
 namespace App\Entity;
 
-use App\Geolocalize\GeolocalizeInterface;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;

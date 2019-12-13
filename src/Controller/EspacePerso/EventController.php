@@ -114,7 +114,7 @@ class EventController extends BaseController
     /**
      * @Route("{id}", name="app_event_delete", methods={"DELETE"})
      * @IsGranted("delete", subject="event")
-     * @param Event $event
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Event $event)

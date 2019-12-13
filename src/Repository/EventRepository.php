@@ -12,11 +12,9 @@ namespace App\Repository;
 
 use App\App\Location;
 use App\Entity\Event;
-use App\Entity\Place;
 use App\Entity\User;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\User\UserInterface;
 

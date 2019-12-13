@@ -17,7 +17,6 @@ namespace App\Social;
  */
 
 use App\App\SocialManager;
-use App\Entity\Event;
 use App\Entity\Info;
 use App\Entity\User;
 use App\Exception\SocialException;
@@ -26,7 +25,6 @@ use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 

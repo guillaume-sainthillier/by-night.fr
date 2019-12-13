@@ -11,7 +11,6 @@
 namespace App\Entity;
 
 use App\App\Location;
-use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
