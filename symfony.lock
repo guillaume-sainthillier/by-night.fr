@@ -264,6 +264,9 @@
     "paragonie/random_compat": {
         "version": "v2.0.18"
     },
+    "php": {
+        "version": "7.4"
+    },
     "php-amqplib/php-amqplib": {
         "version": "v2.7.0"
     },
