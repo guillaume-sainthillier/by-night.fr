@@ -79,11 +79,6 @@ class Firewall
         return $event->getReject()->isValid() && $event->getPlaceReject()->isValid();
     }
 
-    public function isPersisted($object)
-    {
-        return null !== $object && null !== $object->getId();
-    }
-
     public function filterEvent(Event $event)
     {
         $this->filterEventInfos($event);

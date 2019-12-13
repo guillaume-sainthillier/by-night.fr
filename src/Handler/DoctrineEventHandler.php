@@ -377,7 +377,7 @@ class DoctrineEventHandler
 
                         $this->em->persist($event);
                         $this->echantillonHandler->addNewEvent($event);
-                        if ($this->firewall->isPersisted($event)) {
+                        if (null !== $event->getId()) {
                             $this->explorationHandler->addUpdate();
                         } else {
                             $this->explorationHandler->addInsert();
