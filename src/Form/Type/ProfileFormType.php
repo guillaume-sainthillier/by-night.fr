@@ -42,6 +42,7 @@ class ProfileFormType extends BaseType
                 'required' => false,
                 'label' => 'Description',
                 'attr' => [
+                    'rows' => 6,
                     'placeholder' => 'Écrivez une courte description',
                 ],
             ])
