@@ -22,7 +22,7 @@ class MergerTest extends ContainerTestCase
      */
     protected $merger;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

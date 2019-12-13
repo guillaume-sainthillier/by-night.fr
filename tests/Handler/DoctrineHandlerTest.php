@@ -22,7 +22,7 @@ class DoctrineHandlerTest extends ContainerTestCase
      */
     protected $doctrineHandler;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

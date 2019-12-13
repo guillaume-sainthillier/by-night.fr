@@ -15,7 +15,7 @@ use Symfony\Component\Dotenv\Dotenv;
 
 abstract class ContainerTestCase extends KernelTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         (new Dotenv(true))->load(__DIR__ . '/../.env.test');
         static::bootKernel();
