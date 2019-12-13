@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormView;
 
 class DateRangeBuilder
 {
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form)
     {
         $fromName = $form->get('shortcut')->getConfig()->getOption('from');
         $toName = $form->get('shortcut')->getConfig()->getOption('to');
