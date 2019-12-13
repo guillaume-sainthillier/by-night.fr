@@ -154,10 +154,6 @@ class DataTourismeParser extends AbstractParser
         $updatedAt = new \DateTime($datas['lastUpdate']['@value']);
         $updatedAt->setTime(0, 0, 0);
 
-        if (!isset($datas['isLocatedAt']['schema:address']['schema:addressLocality'])) {
-            dd($datas['isLocatedAt'], 'isLocatedAt');
-        }
-
         if (\is_array($datas['isLocatedAt']['schema:address']['schema:addressLocality'])) {
             $datas['isLocatedAt']['schema:address']['schema:addressLocality'] = current($datas['isLocatedAt']['schema:address']['schema:addressLocality']);
         }
@@ -206,10 +202,6 @@ class DataTourismeParser extends AbstractParser
 
         //Multiple date handling
         foreach ($datas['takesPlaceAt'] as $date) {
-            if (!isset($date['startDate'])) {
-                dd($date, 'DATE');
-            }
-
             if (!isset($date['endDate'])) {
                 continue;
             }
