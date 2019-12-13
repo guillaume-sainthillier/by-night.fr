@@ -225,6 +225,12 @@ class Event implements GeolocalizeInterface
     protected $fromData;
 
     /**
+     * @var string
+     * @ORM\Column(type="string", length=7, nullable=true)
+     */
+    protected $parserVersion;
+
+    /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="path")
      * @Assert\Valid
      * @Assert\File(maxSize="6M")
@@ -1226,6 +1232,18 @@ class Event implements GeolocalizeInterface
     public function setArchive(bool $archive): self
     {
         $this->archive = $archive;
+
+        return $this;
+    }
+
+    public function getParserVersion(): ?string
+    {
+        return $this->parserVersion;
+    }
+
+    public function setParserVersion(?string $parserVersion): self
+    {
+        $this->parserVersion = $parserVersion;
 
         return $this;
     }

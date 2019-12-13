@@ -59,14 +59,14 @@ class Firewall
         $this->explorations[$exploration->getExternalId()] = $exploration->setReject($reject);
     }
 
-    public function hasPlaceToBeUpdated(Exploration $exploration)
+    public function hasPlaceToBeUpdated(Exploration $exploration, Event $event)
     {
-        return $this->hasExplorationToBeUpdated($exploration);
+        return $this->hasExplorationToBeUpdated($exploration, $event);
     }
 
-    private function hasExplorationToBeUpdated(Exploration $exploration)
+    private function hasExplorationToBeUpdated(Exploration $exploration, Event $event)
     {
-        if (self::VERSION !== $exploration->getFirewallVersion()) {
+        if (self::VERSION !== $exploration->getFirewallVersion() || $event->getParserVersion() !== $exploration->getFirewallVersion()) {
             return true;
         }
 
@@ -119,7 +119,8 @@ class Firewall
                     ->setLastUpdated($event->getExternalUpdatedAt())
                     ->setReject($event->getReject())
                     ->setReason($event->getReject()->getReason())
-                    ->setFirewallVersion(self::VERSION);
+                    ->setFirewallVersion(self::VERSION)
+                    ->setParserVersion($event->getParserVersion());
 
                 $this->addExploration($exploration);
             } else {
@@ -193,7 +194,8 @@ class Firewall
                     ->setExternalId($event->getPlaceExternalId())
                     ->setReject($event->getPlaceReject())
                     ->setReason($event->getPlaceReject()->getReason())
-                    ->setFirewallVersion(self::VERSION);
+                    ->setFirewallVersion(self::VERSION)
+                    ->setParserVersion($event->getParserVersion());
                 $this->addExploration($exploration);
             } else {
                 $exploration
@@ -230,7 +232,7 @@ class Firewall
             return;
         }
 
-        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration);
+        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration, $event);
         $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
 
         //L'évémenement n'a pas changé -> non valide
@@ -243,7 +245,9 @@ class Firewall
 
         //L'exploration est ancienne -> maj de la version
         if ($hasFirewallVersionChanged) {
-            $exploration->setFirewallVersion(self::VERSION);
+            $exploration
+                ->setFirewallVersion(self::VERSION)
+                ->setParserVersion($event->getParserVersion());
 
             //L'événement n'était pas valide -> valide
             if (!$reject->hasNoNeedToUpdate()) {

@@ -14,6 +14,8 @@ interface ParserInterface
 {
     public static function getParserName(): string;
 
+    public static function getParserVersion(): string;
+
     public function parse(bool $incremental): void;
 
     public function getParsedEvents(): int;

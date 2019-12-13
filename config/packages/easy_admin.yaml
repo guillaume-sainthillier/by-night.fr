@@ -49,9 +49,7 @@ easy_admin:
                     - { property: 'reservationEmail' }
                     - { property: 'reservationInternet' }
                     - { property: 'tarif' }
-                    - { property: 'fromData' }
                     - { property: 'brouillon' }
-                    - { property: 'source' }
                     - { property: 'archive' }
                     - { type: 'group', columns: 4, label: 'Lieu' }
                     - { property: 'place', type: 'easyadmin_autocomplete' }
@@ -65,10 +63,14 @@ easy_admin:
                     - { property: 'latitude' }
                     - { property: 'longitude' }
                     - { property: 'adresse' }
-                    - { type: 'group', columns: 12, label: 'Images' }
+                    - { type: 'group', columns: 8, label: 'Images' }
                     - { property: 'url' }
                     - { property: 'path'}
                     - { property: 'systemPath'}
+                    - { type: 'group', columns: 4, label: 'Parser' }
+                    - { property: 'fromData' }
+                    - { property: 'parserVersion' }
+                    - { property: 'source' }
         User:
             class: App\Entity\User
             list:

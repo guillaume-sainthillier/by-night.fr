@@ -34,6 +34,7 @@ abstract class AbstractParser implements ParserInterface
     public function publish(array $item): void
     {
         $item['from_data'] = static::getParserName();
+        $item['parser_version'] = static::getParserVersion();
         try {
             $this->eventProducer->scheduleEvent($item);
             ++$this->parsedEvents;
@@ -50,5 +51,10 @@ abstract class AbstractParser implements ParserInterface
     protected function logException(\Throwable $e, array $context = [])
     {
         $this->logger->error($e, $context);
+    }
+
+    public static function getParserVersion(): string
+    {
+        return '1.0';
     }
 }

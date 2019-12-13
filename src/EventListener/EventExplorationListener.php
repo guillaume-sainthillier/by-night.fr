@@ -36,6 +36,7 @@ class EventExplorationListener
 
         $exploration
             ->setFirewallVersion(Firewall::VERSION)
+            ->setParserVersion($entity->getParserVersion())
             ->setLastUpdated($entity->getExternalUpdatedAt())
             ->setReason(Reject::EVENT_DELETED);
 

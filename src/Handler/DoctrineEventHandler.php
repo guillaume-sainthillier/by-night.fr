@@ -194,7 +194,7 @@ class DoctrineEventHandler
             if ($event->getPlaceExternalId()) {
                 $exploration = $this->firewall->getExploration($event->getPlaceExternalId());
 
-                if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration) && !$exploration->getReject()->isValid()) {
+                if ($exploration && !$this->firewall->hasPlaceToBeUpdated($exploration, $event) && !$exploration->getReject()->isValid()) {
                     $event->getReject()->addReason($exploration->getReject()->getReason());
                     $event->getPlaceReject()->setReason($exploration->getReject()->getReason());
 

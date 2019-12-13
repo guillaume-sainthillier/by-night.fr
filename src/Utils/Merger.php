@@ -64,6 +64,7 @@ class Merger
             'source',
             'external_updated_at' => self::MERGE_RIGHT_IF_DIFFERENT,
             'from_data',
+            'parser_version',
             'reject',
             'placeReject',
         ]);
