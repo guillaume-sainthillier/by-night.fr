@@ -20,11 +20,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * ConnectController.
- *
- * @author Alexander <iam.asm89@gmail.com>
- */
 class ConnectController extends BaseController
 {
     /**

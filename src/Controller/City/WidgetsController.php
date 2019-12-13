@@ -10,11 +10,6 @@ use App\Social\Twitter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Description of MenuDroitController.
- *
- * @author guillaume
- */
 class WidgetsController extends BaseController
 {
     const TWEET_LIMIT = 25;

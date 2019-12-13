@@ -5,11 +5,6 @@ namespace App\Twig;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
-/**
- * Description of TBNExtension.
- *
- * @author guillaume
- */
 class ParseExtension extends Extension
 {
     public function getFilters()

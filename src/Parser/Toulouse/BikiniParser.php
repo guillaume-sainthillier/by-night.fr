@@ -5,9 +5,6 @@ namespace App\Parser\Toulouse;
 use App\Parser\AbstractParser;
 use DateTime;
 
-/**
- * @author Guillaume SAINTHILLIER
- */
 class BikiniParser extends AbstractParser
 {
     private const EVENTS_URL = 'https://lebikini.com/events.json';

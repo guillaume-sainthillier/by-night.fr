@@ -22,11 +22,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-/**
- * Description of Twitter.
- *
- * @author guillaume
- */
 abstract class Social
 {
     /**

@@ -12,9 +12,6 @@ use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * @author Guillaume SAINTHILLIER
- */
 class OpenAgendaParser extends AbstractParser
 {
     // Next step : 'https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/records'

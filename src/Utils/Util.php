@@ -2,11 +2,6 @@
 
 namespace App\Utils;
 
-/**
- * Description of Merger.
- *
- * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- */
 class Util
 {
     protected $stopWordsRegex;

@@ -5,11 +5,6 @@ namespace App\Twig;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
-/**
- * Description of TBNExtension.
- *
- * @author guillaume
- */
 class TweetExtension extends Extension
 {
     public function getFilters()

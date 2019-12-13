@@ -8,9 +8,6 @@ use GuzzleHttp\Client;
 use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Log\LoggerInterface;
 
-/**
- * @author Guillaume SAINTHILLIER
- */
 class SowProgParser extends AbstractParser
 {
     /** @var Client */

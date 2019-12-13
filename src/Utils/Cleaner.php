@@ -5,11 +5,6 @@ namespace App\Utils;
 use App\Entity\Event;
 use App\Entity\Place;
 
-/**
- * Description of Merger.
- *
- * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- */
 class Cleaner
 {
     private $util;

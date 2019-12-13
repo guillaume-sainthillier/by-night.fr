@@ -11,12 +11,6 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 13/12/2016
- * Time: 19:08.
- */
 class EventArchivator
 {
     const ITEMS_PER_TRANSACTION = 5000;

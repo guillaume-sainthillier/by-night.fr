@@ -10,11 +10,6 @@ use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use Doctrine\ORM\EntityManagerInterface;
 
-/**
- * Description of Firewall.
- *
- * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- */
 class Firewall
 {
     const VERSION = '1.1';

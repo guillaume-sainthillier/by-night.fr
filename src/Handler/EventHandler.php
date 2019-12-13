@@ -14,11 +14,6 @@ use GuzzleHttp\Exception\RequestException;
 use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Log\LoggerInterface;
 
-/**
- * Description of EventHandler.
- *
- * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- */
 class EventHandler
 {
     private $cleaner;

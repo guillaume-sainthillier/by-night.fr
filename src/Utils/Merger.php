@@ -6,11 +6,6 @@ use App\Entity\Event;
 use App\Entity\Place;
 use stdClass;
 
-/**
- * Description of Merger.
- *
- * @author Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
- */
 class Merger
 {
     const MERGE_LEFT = 'do_merge_left';

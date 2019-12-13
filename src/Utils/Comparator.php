@@ -7,9 +7,6 @@ use App\Entity\Place;
 use App\Entity\ZipCity;
 use Exception;
 
-/**
- * @author guillaume
- */
 class Comparator
 {
     /**

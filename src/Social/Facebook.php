@@ -5,11 +5,6 @@ namespace App\Social;
 use App\Exception\SocialException;
 use Facebook\Facebook as Client;
 
-/**
- * Description of Facebook.
- *
- * @author guillaume
- */
 class Facebook extends Social
 {
     /**

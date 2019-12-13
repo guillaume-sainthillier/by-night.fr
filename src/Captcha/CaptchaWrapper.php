@@ -5,12 +5,6 @@ namespace App\Captcha;
 use ReCaptcha\ReCaptcha;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 26/10/2016
- * Time: 22:28.
- */
 class CaptchaWrapper
 {
     /**

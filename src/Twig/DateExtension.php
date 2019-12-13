@@ -6,11 +6,6 @@ use DateTime;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 
-/**
- * Description of TBNExtension.
- *
- * @author guillaume
- */
 class DateExtension extends Extension
 {
     public function getFilters()

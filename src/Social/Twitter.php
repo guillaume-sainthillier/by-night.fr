@@ -11,11 +11,6 @@ use TwitterOAuth\Serializer\ArraySerializer;
  * Serializer Namespace
  */
 
-/**
- * Description of Twitter.
- *
- * @author guillaume
- */
 class Twitter extends Social
 {
     /**

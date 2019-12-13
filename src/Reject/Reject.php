@@ -4,12 +4,6 @@ namespace App\Reject;
 
 use LogicException;
 
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 26/11/2016
- * Time: 23:01.
- */
 class Reject
 {
     const VALID = 1;

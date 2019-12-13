@@ -4,11 +4,6 @@ namespace App\Exception;
 
 use Exception;
 
-/**
- * Description of SocialException.
- *
- * @author guillaume
- */
 class SocialException extends Exception
 {
     /**

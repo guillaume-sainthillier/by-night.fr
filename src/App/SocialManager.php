@@ -5,12 +5,6 @@ namespace App\App;
 use App\Entity\SiteInfo;
 use Doctrine\ORM\EntityManagerInterface;
 
-/**
- * Created by PhpStorm.
- * User: guillaume
- * Date: 14/12/2016
- * Time: 21:57.
- */
 class SocialManager
 {
     /**

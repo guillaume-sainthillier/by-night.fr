@@ -6,11 +6,6 @@ use App\Entity\SiteInfo;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\FacebookClient;
 
-/**
- * Description of Facebook.
- *
- * @author guillaume
- */
 class FacebookAdmin extends Facebook
 {
     /**
