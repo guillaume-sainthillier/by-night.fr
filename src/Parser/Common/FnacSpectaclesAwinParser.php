@@ -70,7 +70,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         $toDate->setTime(0, 0, 0);
         $fromDate->setTime(0, 0, 0);
 
-        $event = [
+        return [
             'external_id' => 'FS-' . $datas['merchant_product_id'],
             'date_debut' => $fromDate,
             'date_fin' => $toDate,
@@ -88,8 +88,6 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             'latitude' => (float) $datas['latitude'],
             'longitude' => (float) $datas['longitude'],
         ];
-
-        return $event;
     }
 
     private function getImageUrl(string $url)

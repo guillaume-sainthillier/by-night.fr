@@ -19,12 +19,12 @@ class EchantillonHandler
     /** @var EntityManagerInterface */
     private $em;
     /**
-     * @var Place[]
+     * @var Place[][]
      */
     private $countryPlaces;
 
     /**
-     * @var Place[]
+     * @var Place[][]
      */
     private $cityPlaces;
 

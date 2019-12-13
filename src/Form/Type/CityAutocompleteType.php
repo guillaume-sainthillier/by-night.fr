@@ -33,7 +33,7 @@ class CityAutocompleteType extends AbstractType
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         parent::finishView($view, $form, $options);
-        $this->dateRangeBuilder->finishView($view, $form, $options);
+        $this->dateRangeBuilder->finishView($view, $form);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

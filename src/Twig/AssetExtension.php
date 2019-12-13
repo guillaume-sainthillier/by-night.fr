@@ -11,7 +11,6 @@
 namespace App\Twig;
 
 use League\Glide\Signatures\SignatureFactory;
-use Symfony\Component\Asset\Packages;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension as Extension;
@@ -27,7 +26,7 @@ class AssetExtension extends Extension
     /** @var string */
     private $secret;
 
-    public function __construct(RouterInterface $router, Packages $packages, string $secret)
+    public function __construct(RouterInterface $router, string $secret)
     {
         $this->router = $router;
         $this->secret = $secret;

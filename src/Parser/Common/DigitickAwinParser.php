@@ -33,7 +33,7 @@ class DigitickAwinParser extends AbstractAwinParser
             return [];
         }
 
-        $event = [
+        return [
             'external_id' => 'DGT-' . $datas['merchant_product_id'],
             'date_debut' => $fromDate,
             'date_fin' => $toDate,
@@ -52,8 +52,6 @@ class DigitickAwinParser extends AbstractAwinParser
             'longitude' => (float) $datas['longitude'],
             'type_manifestation' => 'Expo' === $datas['merchant_category'] ? 'Exposition' : $datas['merchant_category'],
         ];
-
-        return $event;
     }
 
     private function replaceBBCodes($text)

@@ -12,7 +12,6 @@ namespace App\Utils;
 
 use App\Entity\Event;
 use App\Entity\Exploration;
-use App\Entity\User;
 use App\Geolocalize\BoundaryInterface;
 use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;

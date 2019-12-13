@@ -10,7 +10,6 @@
 
 namespace App\Consumer;
 
-use App\Producer\PurgeCdnCacheUrlProducer;
 use League\Glide\Server;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -22,7 +21,7 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
     /** @var Server */
     private $glide;
 
-    public function __construct(LoggerInterface $logger, Server $glide, PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer)
+    public function __construct(LoggerInterface $logger, Server $glide)
     {
         parent::__construct($logger);
 

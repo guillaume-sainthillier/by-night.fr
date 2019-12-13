@@ -384,7 +384,7 @@ class EventRepository extends EntityRepository
 
     public function findTopSoiree(Location $location, $page = 1, $limit = 7)
     {
-        $events = $this
+        return $this
             ->getTopSoireeBuilder($location)
             ->orderBy('a.dateFin', 'ASC')
             ->addOrderBy('a.participations', 'DESC')
@@ -392,8 +392,6 @@ class EventRepository extends EntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
-
-        return $events;
     }
 
     public function findUpcomingEvents(Location $location)
