@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Handler;
 
 use App\Entity\Event;
@@ -130,8 +138,8 @@ class EchantillonHandler
         if (\count($externalIds) > 0) {
             $repoEvent = $this->em->getRepository(Event::class);
             $candidates = $repoEvent->findBy(['externalId' => array_keys($externalIds)]);
+            /** @var Event $candidate */
             foreach ($candidates as $candidate) {
-                /** @var Event $candidate */
                 $this->addEvent($candidate);
             }
         }

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Handler;
 
 use App\Entity\City;
@@ -294,8 +302,8 @@ class DoctrineEventHandler
 
         for ($i = 0; $i < $nbBatches; ++$i) {
             $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
+            /** @var Exploration $exploration */
             foreach ($currentExplorations as $exploration) {
-                /** @var Exploration $exploration */
                 $exploration->setReason($exploration->getReject()->getReason());
                 $this->explorationHandler->addExploration();
                 $this->em->persist($exploration);

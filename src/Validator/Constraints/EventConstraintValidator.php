@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Validator\Constraints;
 
 use App\Entity\Event;
@@ -28,7 +36,8 @@ class EventConstraintValidator extends ConstraintValidator
     }
 
     /**
-     * @param Event $event
+     * @param Event           $event
+     * @param EventConstraint $constraint
      */
     public function validate($event, Constraint $constraint)
     {
@@ -38,7 +47,6 @@ class EventConstraintValidator extends ConstraintValidator
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
 
-        /** @var EventConstraint $constraint */
         if (!$reject || $reject->isValid()) {
             return;
         }
