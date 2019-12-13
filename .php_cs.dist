@@ -8,6 +8,7 @@ $finder = PhpCsFixer\Finder::create()
 return PhpCsFixer\Config::create()
     ->setRules([
         '@Symfony' => true,
+        '@Symfony:risky' => true,
         '@DoctrineAnnotation' => true,
         'array_syntax' => ['syntax' => 'short'],
         'phpdoc_summary' => false,

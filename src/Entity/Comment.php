@@ -119,7 +119,7 @@ class Comment
         return $this->reponses;
     }
 
-    public function addReponse(Comment $reponse): self
+    public function addReponse(self $reponse): self
     {
         if (!$this->reponses->contains($reponse)) {
             $this->reponses[] = $reponse;
@@ -129,7 +129,7 @@ class Comment
         return $this;
     }
 
-    public function removeReponse(Comment $reponse): self
+    public function removeReponse(self $reponse): self
     {
         if ($this->reponses->contains($reponse)) {
             $this->reponses->removeElement($reponse);

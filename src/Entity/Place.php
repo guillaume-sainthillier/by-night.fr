@@ -170,7 +170,7 @@ class Place implements GeolocalizeInterface
         return $this->zipCity;
     }
 
-    public function setZipCity(?ZipCity $zipCity): Place
+    public function setZipCity(?ZipCity $zipCity): self
     {
         $this->zipCity = $zipCity;
 
@@ -182,7 +182,7 @@ class Place implements GeolocalizeInterface
         return $this->countryName;
     }
 
-    public function setCountryName(?string $countryName): Place
+    public function setCountryName(?string $countryName): self
     {
         $this->countryName = $countryName;
 

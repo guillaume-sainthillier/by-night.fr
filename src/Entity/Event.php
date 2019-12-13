@@ -455,7 +455,7 @@ class Event implements GeolocalizeInterface
         return $this->reject;
     }
 
-    public function setReject(?Reject $reject): Event
+    public function setReject(?Reject $reject): self
     {
         $this->reject = $reject;
 
@@ -467,7 +467,7 @@ class Event implements GeolocalizeInterface
         return $this->placeReject;
     }
 
-    public function setPlaceReject(?Reject $placeReject): Event
+    public function setPlaceReject(?Reject $placeReject): self
     {
         $this->placeReject = $placeReject;
 

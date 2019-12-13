@@ -173,7 +173,7 @@ class AgendaController extends BaseController
                 $types_manifestation = \explode(',', $event_type_manifestation);
                 foreach ($types_manifestation as $type) {
                     $type = \array_map('trim', \explode('//', $type))[0];
-                    if (!\in_array($type, $type_manifestation) && '' != $type) {
+                    if (!\in_array($type, $type_manifestation, true) && '' !== $type) {
                         $type_manifestation[$type] = $type;
                     }
                 }

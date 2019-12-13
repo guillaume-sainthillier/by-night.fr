@@ -33,7 +33,7 @@ class Thumb extends BaseManipulator
      */
     public function run(Image $image)
     {
-        if (\is_null($this->thumb)) {
+        if (null === $this->thumb) {
             return $image;
         }
 

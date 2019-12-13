@@ -131,7 +131,7 @@ class Merger
                 return $valueA != $valueB ? $valueB : $valueA;
             case self::MERGE_RIGHT_IF_DATE_DIFFERENT:
                 if ($valueA && $valueB) {
-                    return $valueA->format('Y-m-d') != $valueB->format('Y-m-d') ? $valueB : $valueA;
+                    return $valueA->format('Y-m-d') !== $valueB->format('Y-m-d') ? $valueB : $valueA;
                 }
 
                 return $this->getBestContent($valueA, $valueB, self::MERGE_RIGHT_IF_DIFFERENT);

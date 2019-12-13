@@ -71,7 +71,7 @@ class SearchEvent
         return $this->term;
     }
 
-    public function setTerm(?string $term): SearchEvent
+    public function setTerm(?string $term): self
     {
         $this->term = $term;
 
@@ -89,7 +89,7 @@ class SearchEvent
     /**
      * @param DateTime|null $from
      */
-    public function setFrom(?\DateTimeInterface $from): SearchEvent
+    public function setFrom(?\DateTimeInterface $from): self
     {
         $this->from = $from;
 
@@ -101,7 +101,7 @@ class SearchEvent
         return $this->to;
     }
 
-    public function setTo(?\DateTimeInterface $to): SearchEvent
+    public function setTo(?\DateTimeInterface $to): self
     {
         $this->to = $to;
 
@@ -113,7 +113,7 @@ class SearchEvent
         return $this->tag;
     }
 
-    public function setTag(?string $tag): SearchEvent
+    public function setTag(?string $tag): self
     {
         $this->tag = $tag;
 
@@ -125,7 +125,7 @@ class SearchEvent
         return $this->type_manifestation;
     }
 
-    public function setTypeManifestation(array $type_manifestation): SearchEvent
+    public function setTypeManifestation(array $type_manifestation): self
     {
         $this->type_manifestation = $type_manifestation;
 
@@ -137,7 +137,7 @@ class SearchEvent
         return $this->lieux;
     }
 
-    public function setLieux(array $lieux): SearchEvent
+    public function setLieux(array $lieux): self
     {
         $this->lieux = $lieux;
 
@@ -149,7 +149,7 @@ class SearchEvent
         return $this->location;
     }
 
-    public function setLocation(?Location $location): SearchEvent
+    public function setLocation(?Location $location): self
     {
         $this->location = $location;
 
@@ -161,7 +161,7 @@ class SearchEvent
         return $this->range;
     }
 
-    public function setRange(?int $range): SearchEvent
+    public function setRange(?int $range): self
     {
         $this->range = $range;
 

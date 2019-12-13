@@ -36,9 +36,9 @@ abstract class AbstractAwinParser extends AbstractParser
 
         do {
             $xml->read();
-        } while ('product' != $xml->name);
+        } while ('product' !== $xml->name);
 
-        while ('product' == $xml->name) {
+        while ('product' === $xml->name) {
             $event = $this->elementToArray(new \SimpleXMLElement($xml->readOuterXML()));
             $event = $this->getInfoEvents($event);
             if (\count($event) > 0) {
