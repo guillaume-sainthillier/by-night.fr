@@ -12,43 +12,63 @@ RUN mkdir -p public && \
     NODE_ENV=development yarn install && \
     yarn run build
 
-FROM php:7.3-fpm-stretch
+FROM php:7.3-fpm-alpine
 
 ARG APP_VERSION=dev
-ENV TERM="xterm" \
-    DEBIAN_FRONTEND="noninteractive" \
-    COMPOSER_ALLOW_SUPERUSER=1 \
-    APP_VERSION="${APP_VERSION}"
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    APP_VERSION="${APP_VERSION}" \
+    TZ="Europs/Paris"
 
 EXPOSE 80
 WORKDIR /app
 
 # Install dependencies
-RUN apt-get update -q && \
-    apt-get install -qy \
+RUN apk add --no-cache \
+    bash \
+    icu-libs \
+    imagemagick \
+    libxml2 \
+    libzip \
     git \
-    gnupg \
-    libfreetype6-dev \
-    libicu-dev \
-    libjpeg62-turbo-dev \
-    libmagickwand-dev \
-    libpng-dev \
-    libxml2-dev \
-    libzip-dev \
     nginx \
     supervisor \
-    unzip && \
-    cp /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo "Europe/Paris" > /etc/timezone && \
+    tzdata \
+    zlib && \
+    echo "Europe/Paris" > /etc/timezone && \
     #Composer
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     composer global require hirak/prestissimo --no-plugins --no-scripts && \
     # Reduce layer size
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /var/cache/apk/* /tmp/*
 
 # PHP Extensions
-RUN docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pdo pdo_mysql soap sockets zip && \
+ENV PHPIZE_DEPS \
+    autoconf \
+    cmake \
+    file \
+    freetype-dev \
+    g++ \
+    gcc \
+    git \
+    icu-dev \
+    imagemagick-dev \
+    libc-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libxml2-dev \
+    libzip-dev \
+    make \
+    pcre-dev \
+    pkgconf \
+    re2c \
+    zlib-dev
+RUN apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS && \
+    docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pdo_mysql soap sockets zip && \
     pecl install apcu redis imagick-3.4.4 && \
-    docker-php-ext-enable apcu redis imagick
+    docker-php-ext-enable apcu redis imagick && \
+    apk del .build-deps && \
+    rm -rf /var/cache/apk/* /tmp/*
 
 # Config
 COPY docker/prod/nginx.conf /etc/nginx/
