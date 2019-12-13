@@ -175,23 +175,4 @@ abstract class Social
     }
 
     abstract protected function constructClient();
-
-    protected function getLinkPicture(Event $event)
-    {
-        return $this->eventProfilePicture->getOriginalPicture($event);
-    }
-
-    protected function getLink(Event $event)
-    {
-        return $this->router->generate('app_event_details', [
-            'slug' => $event->getSlug(),
-            'id' => $event->getSlug(),
-            'location' => $event->getLocationSlug(),
-        ], UrlGeneratorInterface::ABSOLUTE_URL);
-    }
-
-    protected function getMembreLink(User $user)
-    {
-        return $this->router->generate('app_user_details', ['id' => $user->getId(), 'slug' => $user->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
-    }
 }

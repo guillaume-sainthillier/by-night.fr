@@ -12,8 +12,6 @@ namespace App\Utils;
 
 use App\Entity\Event;
 use App\Entity\Exploration;
-use App\Geolocalize\BoundaryInterface;
-use App\Geolocalize\GeolocalizeInterface;
 use App\Reject\Reject;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -270,37 +268,6 @@ class Firewall
         }
 
         return false;
-    }
-
-    public function isLocationBounded(GeolocalizeInterface $entity, BoundaryInterface $boundary)
-    {
-        return $this->isPreciseLocation($entity) &&
-            $this->isPreciseLocation($boundary) &&
-            $this->distance($entity, $boundary) <= $boundary->getDistanceMax();
-    }
-
-    public function isPreciseLocation(GeolocalizeInterface $entity)
-    {
-        return $entity->getLatitude() && $entity->getLongitude();
-    }
-
-    private function distance(GeolocalizeInterface $entity, BoundaryInterface $boundary)
-    {
-        $theta = $entity->getLongitude() - $boundary->getLongitude();
-        $dist = \sin(\deg2rad($entity->getLatitude())) *
-            \sin(\deg2rad($boundary->getLatitude())) +
-            \cos(\deg2rad($entity->getLatitude())) *
-            \cos(\deg2rad($boundary->getLatitude())) *
-            \cos(\deg2rad($theta));
-        $dist = \acos($dist);
-        $dist = \rad2deg($dist);
-
-        return $dist * 111.189577; //60 * 1.1515 * 1.609344
-    }
-
-    public function getVilleHash($villeName)
-    {
-        return $this->comparator->sanitizeVille($villeName);
     }
 
     /**

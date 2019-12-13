@@ -24,17 +24,22 @@ use Psr\Log\LoggerInterface;
 
 class EventHandler
 {
+    /** @var Cleaner */
     private $cleaner;
 
+    /** @var Comparator */
     private $comparator;
 
+    /** @var Merger */
     private $merger;
 
+    /** @var LoggerInterface */
     private $logger;
 
+    /** @var string */
     private $tempPath;
 
-    public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, LoggerInterface $logger, $tempPath)
+    public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, LoggerInterface $logger, string $tempPath)
     {
         $this->cleaner = $cleaner;
         $this->comparator = $comparator;
@@ -139,13 +144,5 @@ class EventHandler
         return Monitor::bench('mergeEvent', function () use ($bestEvent, $notPersistedEvent) {
             return $this->merger->mergeEvent($bestEvent, $notPersistedEvent);
         });
-    }
-
-    /**
-     * @return Comparator
-     */
-    public function getComparator()
-    {
-        return $this->comparator;
     }
 }

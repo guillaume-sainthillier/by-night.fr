@@ -58,24 +58,6 @@ class Monitor
         self::$enableMonitoring = $enable;
     }
 
-    public static function write($message = null)
-    {
-        if (self::$output) {
-            self::$output->write($message);
-        }
-    }
-
-    public static function writeException(\Throwable $e)
-    {
-        self::writeln(\sprintf(
-            '<error>%s at %s(%d)</error> <info>%s</info>',
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTraceAsString()
-        ));
-    }
-
     public static function writeln($message = null)
     {
         if (self::$output) {

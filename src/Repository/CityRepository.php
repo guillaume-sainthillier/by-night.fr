@@ -108,19 +108,6 @@ class CityRepository extends EntityRepository
             ->getResult();
     }
 
-    public function findTopPopulation($maxResults)
-    {
-        return parent::createQueryBuilder('c')
-            ->orderBy('c.population', 'DESC')
-            ->setMaxResults($maxResults)
-            ->getQuery()
-            ->setCacheable(true)
-            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
-            ->enableResultCache()
-            ->useQueryCache(true)
-            ->getResult();
-    }
-
     public function findBySlug($slug)
     {
         return parent::createQueryBuilder('c')

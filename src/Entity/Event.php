@@ -47,7 +47,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @Vich\Uploadable
  * @EventConstraint
  */
-class Event implements GeolocalizeInterface
+class Event
 {
     const INDEX_FROM = '-6 months';
 
@@ -499,30 +499,6 @@ class Event implements GeolocalizeInterface
     public function isAffiliate(): bool
     {
         return \in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName(), DigitickAwinParser::getParserName()], true);
-    }
-
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(?float $latitude): self
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(?float $longitude): self
-    {
-        $this->longitude = $longitude;
-
-        return $this;
     }
 
     public function getFile()
@@ -1244,6 +1220,30 @@ class Event implements GeolocalizeInterface
     public function setParserVersion(?string $parserVersion): self
     {
         $this->parserVersion = $parserVersion;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
 
         return $this;
     }

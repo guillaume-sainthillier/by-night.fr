@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ExclusionPolicy("all")
  * @ORM\Entity(repositoryClass="App\Repository\PlaceRepository")
  */
-class Place implements GeolocalizeInterface
+class Place
 {
     use EntityTimestampableTrait;
 
@@ -209,30 +209,6 @@ class Place implements GeolocalizeInterface
         return $this;
     }
 
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(?float $latitude): self
-    {
-        $this->latitude = $latitude;
-
-        return $this;
-    }
-
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(?float $longitude): self
-    {
-        $this->longitude = $longitude;
-
-        return $this;
-    }
-
     public function __toString()
     {
         return sprintf('%s (#%s)',
@@ -393,6 +369,30 @@ class Place implements GeolocalizeInterface
     public function setJunk(?bool $junk): self
     {
         $this->junk = $junk;
+
+        return $this;
+    }
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
 
         return $this;
     }

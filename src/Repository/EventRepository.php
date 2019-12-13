@@ -22,20 +22,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class EventRepository extends EntityRepository
 {
-    public function createIsActiveQueryBuilder()
-    {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
-
-        $qb = $this->createElasticaQueryBuilder('a');
-
-        return $qb
-            ->where('a.dateFin >= :from')
-            ->setParameters([
-                'from' => $from->format('Y-m-d'),
-            ]);
-    }
-
     public function createElasticaQueryBuilder($alias, $indexBy = null)
     {
         return $this
@@ -423,57 +409,6 @@ class EventRepository extends EntityRepository
         }
 
         return $queryBuilder;
-    }
-
-    //Appelé par EventParser
-
-    public function findOneByPlace($lieuNom, \DateTimeInterface $dateDebut, \DateTimeInterface $dateFin)
-    {
-        $query = $this
-            ->createQueryBuilder('a')
-            ->where('p.nom = :nom')
-            ->andWhere('a.dateDebut = :date_debut')
-            ->andWhere('a.dateFin = :date_fin')
-            ->setParameters([':nom' => $lieuNom, 'date_debut' => $dateDebut->format('Y-m-d'), 'date_fin' => $dateFin->format('Y-m-d')])
-            ->getQuery()
-            ->setMaxResults(1);
-
-        try {
-            $event = $query->getSingleResult();
-        } catch (NoResultException $e) {
-            $event = null;
-        }
-
-        return $event;
-    }
-
-    /**
-     * @return Place[]
-     */
-    public function getEventPlaces(Location $location)
-    {
-        $from = new DateTime();
-        $from->modify(Event::INDEX_FROM);
-
-        $qb = $this->_em
-            ->createQueryBuilder()
-            ->select('p')
-            ->from('App:Event', 'a')
-            ->join('App:Place', 'p', 'WITH', 'p = a.place')
-            ->where("p.nom != ''")
-            ->andWhere('a.dateFin >= :from');
-
-        $this->buildLocationParameters($qb, $location);
-        if ($location->isCountry()) {
-            $qb->andWhere('p.city IS NULL');
-        }
-
-        return $qb
-            ->setParameter('from', $from->format('Y-m-d'))
-            ->groupBy('p.nom')
-            ->orderBy('p.nom')
-            ->getQuery()
-            ->execute();
     }
 
     /**
