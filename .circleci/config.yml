@@ -43,14 +43,14 @@ jobs:
                   name: "Build and push Docker image"
                   command: |
                       if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                          APP_DOCKER_IMAGE_TAG=dev
+                          APP_DOCKER_IMAGE_TAG=latest
                       else
                           APP_DOCKER_IMAGE_TAG=${CIRCLE_TAG#v}
                       fi
 
                       docker build -t ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} --build-arg APP_VERSION=${APP_DOCKER_IMAGE_TAG} .
                       if [ "${CIRCLE_TAG}" != "" ]; then
-                          docker tag ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} ${APP_DOCKER_IMAGE_NAME}:latest
+                          docker tag ${APP_DOCKER_IMAGE_NAME}:${APP_DOCKER_IMAGE_TAG} ${APP_DOCKER_IMAGE_NAME}:stable
                       fi
                       docker push ${APP_DOCKER_IMAGE_NAME}
             - save_cache:
