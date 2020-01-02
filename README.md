@@ -6,3 +6,14 @@ Plateforme de gestion d'événements en France.
 
 ## DEMO
 https://by-night.fr
+
+## Stack technique
+* PHP
+* Symfony
+* MySQL
+* Elastic Search
+* Redis
+* Sass
+* Webpack
+* Docker
+* AWS
