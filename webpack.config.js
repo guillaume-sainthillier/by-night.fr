@@ -93,8 +93,10 @@ Encore
             path.join(__dirname, 'node_modules/raphael/raphael.js'),
             path.join(__dirname, 'node_modules/summernote/src/js/**/*.js'),
             path.join(__dirname, 'node_modules/typeahead.js/src/**/*.js'),
-            path.join(__dirname, 'vendor/symfony/twig-bridge/**/*.html.twig'),
         ], {nodir: true}),
+        whitelistPatterns: () => [
+            /^custom-/
+        ]
     }))
 
 // uncomment if you use API Platform Admin (composer req api-admin)

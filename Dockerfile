@@ -6,6 +6,8 @@ WORKDIR /app
 
 ADD package.json webpack.config.js yarn.lock ./
 ADD assets ./assets
+ADD src ./src
+ADD templates ./templates
 
 RUN mkdir -p public && \
     NODE_ENV=development yarn install && \
