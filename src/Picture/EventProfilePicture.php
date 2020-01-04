@@ -85,9 +85,7 @@ class EventProfilePicture
             return $event->getUrl();
         }
 
-        return $this->packages->getUrl(
-            AssetExtension::ASSET_PREFIX . '/images/empty_event.png'
-        );
+        return $this->packages->getUrl('build/images/empty_event.png');
     }
 
     public function getPicture(Event $event, array $params = [])
@@ -143,7 +141,7 @@ class EventProfilePicture
         }
 
         return $this->assetExtension->thumbAsset(
-            $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/images/empty_event.png', 'local'),
+            $this->packages->getUrl('build/images/empty_event.png', 'local'),
             $params
         );
     }

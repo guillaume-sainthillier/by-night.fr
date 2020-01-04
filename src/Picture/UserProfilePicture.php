@@ -60,7 +60,7 @@ class UserProfilePicture
             }
         }
 
-        return $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/images/empty_user.png');
+        return $this->packages->getUrl('build/images/empty_user.png');
     }
 
     public function getProfilePicture(User $user, array $params = [])
@@ -90,7 +90,7 @@ class UserProfilePicture
     public function getDefaultProfilePicture(array $params = [])
     {
         return $this->assetExtension->thumbAsset(
-            $this->packages->getUrl(AssetExtension::ASSET_PREFIX . '/images/empty_user.png', 'local'),
+            $this->packages->getUrl('build/images/empty_user.png', 'local'),
             $params
         );
     }
