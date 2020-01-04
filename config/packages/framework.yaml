@@ -13,13 +13,6 @@ framework:
         cookie_samesite: lax
         save_path: "%kernel.project_dir%/var/sessions/%kernel.environment%"
 
-    assets:
-        base_urls: '%env(APP_ASSET_URL)%'
-        packages:
-            local:
-            aws:
-                base_urls: "%env(AWS_S3_URL)%"
-
     esi: true
     fragments: ~
     php_errors:

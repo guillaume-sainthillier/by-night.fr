@@ -1,3 +1,8 @@
 framework:
     assets:
         json_manifest_path: '%kernel.project_dir%/public/build/manifest.json'
+        base_urls: '%env(APP_ASSET_URL)%'
+        packages:
+            local:
+            aws:
+                base_urls: "%env(AWS_S3_URL)%"
