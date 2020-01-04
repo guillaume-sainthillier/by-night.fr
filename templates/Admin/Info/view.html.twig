@@ -8,7 +8,7 @@
 {%- endblock %}
 
 {% block body_admin -%}
-    {% for service in ['facebook', 'eventbrite', 'twitter'] %}
+    {% for service in ['facebook', 'twitter'] %}
         <div class="bloc_config">
             {% include "Social/social_info.html.twig" with { 'info': info, 'service': service } %}
         </div>
