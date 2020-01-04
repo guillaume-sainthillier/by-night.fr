@@ -35,15 +35,12 @@ Encore
         to: Encore.isProduction() ? 'images/[path][name].[hash:8].[ext]' : 'images/[path][name].[ext]',
     }])
 
-    // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
     .configureSplitChunks(function (splitChunks) {
-        // change the configuration
-        splitChunks.minSize = 0;
+        //https://github.com/webpack/webpack/blob/master/examples/many-pages/README.md
+        splitChunks.maxInitialRequests = 20; // for HTTP2
+        splitChunks.maxAsyncRequests = 20;
     })
-
-    // will require an extra script tag for runtime.js
-    // but, you probably want this, unless you're building a single-page app
     .enableSingleRuntimeChunk()
 
     /*
