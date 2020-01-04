@@ -1,5 +1,8 @@
+const path = require('path');
+const glob = require('glob-all');
 const Encore = require('@symfony/webpack-encore');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
+const PurgecssPlugin = require('purgecss-webpack-plugin');
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -8,7 +11,7 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 }
 
 Encore
-// directory where compiled assets will be stored
+    // directory where compiled assets will be stored
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
     .setPublicPath('/build')
@@ -75,6 +78,23 @@ Encore
     })
     .addPlugin(new MomentLocalesPlugin({
         localesToKeep: ['fr'],
+    }))
+    .addPlugin(new PurgecssPlugin({
+        paths: glob.sync([
+            path.join(__dirname, 'templates/**/*.html.twig'),
+            path.join(__dirname, 'assets/**/*.js'),
+            path.join(__dirname, 'src/**/*.php'),
+            path.join(__dirname, 'node_modules/bootstrap/js/src/**/*.js'),
+            path.join(__dirname, 'node_modules/bootstrap-material-design/js/*.js'),
+            path.join(__dirname, 'node_modules/bootstrap-select/js/bootstrap-select.js'),
+            path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
+            path.join(__dirname, 'node_modules/jquery-cookiebar/jquery.cookiebar.js'),
+            path.join(__dirname, 'node_modules/morris.js/morris.js'),
+            path.join(__dirname, 'node_modules/raphael/raphael.js'),
+            path.join(__dirname, 'node_modules/summernote/src/js/**/*.js'),
+            path.join(__dirname, 'node_modules/typeahead.js/src/**/*.js'),
+            path.join(__dirname, 'vendor/symfony/twig-bridge/**/*.html.twig'),
+        ], {nodir: true}),
     }))
 
 // uncomment if you use API Platform Admin (composer req api-admin)
