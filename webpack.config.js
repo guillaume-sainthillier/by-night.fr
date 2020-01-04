@@ -89,6 +89,7 @@ Encore
             path.join(__dirname, 'node_modules/bootstrap-select/js/bootstrap-select.js'),
             path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
             path.join(__dirname, 'node_modules/jquery-cookiebar/jquery.cookiebar.js'),
+            path.join(__dirname, 'node_modules/fancybox/dist/js/jquery.fancybox.js'),
             path.join(__dirname, 'node_modules/morris.js/morris.js'),
             path.join(__dirname, 'node_modules/raphael/raphael.js'),
             path.join(__dirname, 'node_modules/summernote/src/js/**/*.js'),
