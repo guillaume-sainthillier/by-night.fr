@@ -8,7 +8,6 @@ ADD package.json webpack.config.js yarn.lock ./
 ADD assets ./assets
 
 RUN mkdir -p public && \
-    npm install -g yarn && \
     NODE_ENV=development yarn install && \
     yarn run build
 
