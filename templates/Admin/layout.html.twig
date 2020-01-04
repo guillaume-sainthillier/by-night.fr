@@ -6,19 +6,13 @@
 {%- endblock %}
 
 {% block body %}
-<div class="card">
-    <div class="card-body">
-        {% block body_admin %}{% endblock %}
-    </div>
-</div>
+    {% block body_admin %}{% endblock %}
 {% endblock %}
 
 {% block title -%}
-    Administration -
-    {% block title_admin '' %}
+    Administration - {% block title_admin '' %}
 {%- endblock %}
     
 {% block titre -%}
-    Administration -
-    {% block titre_admin '' %}
+    Administration - {% block titre_admin '' %}
 {%- endblock %}
