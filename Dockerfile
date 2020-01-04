@@ -42,6 +42,7 @@ RUN apk add --no-cache \
     # Reduce layer size
     rm -rf /var/cache/apk/* /tmp/*
 
+RUN chown -R www-data:www-data /var/lib/nginx/tmp
 # PHP Extensions
 ENV PHPIZE_DEPS \
     autoconf \
