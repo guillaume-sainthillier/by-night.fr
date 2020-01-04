@@ -1,4 +1,5 @@
-var Encore = require('@symfony/webpack-encore');
+const Encore = require('@symfony/webpack-encore');
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -72,6 +73,9 @@ Encore
         'window.$': 'jquery',
         Popper: ['popper.js', 'default'],
     })
+    .addPlugin(new MomentLocalesPlugin({
+        localesToKeep: ['fr'],
+    }))
 
 // uncomment if you use API Platform Admin (composer req api-admin)
 //.enableReactPreset()
