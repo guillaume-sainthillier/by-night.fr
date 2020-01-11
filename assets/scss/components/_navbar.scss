@@ -38,6 +38,8 @@
 	position: relative;
 	background: rgba(241, 243, 244, 0.24);
 	border: 1px solid transparent;
+	height: 48px;
+	line-height: 46px;
 	transition: background 100ms ease-in, width 100ms ease-out;
 
 	&, input, input::placeholder {
@@ -49,7 +51,7 @@
 	}
 
 	input {
-	  height: 46px;
+	  height: 100%;
 	  width: 100%;
 	  padding-left: 3rem;
 	  color: $navbar-dark-color;
