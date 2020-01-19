@@ -71,16 +71,10 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
             $events[] = $this->eventFactory->fromArray($event);
         }
 
-        try {
-            Monitor::bench('ADD EVENT BATCH', function () use ($events) {
-                $this->doctrineEventHandler->handleManyCLI($events);
-            });
-            Monitor::displayStats();
-        } catch (\Exception $e) {
-            $this->logger->critical($e);
-
-            return ConsumerInterface::MSG_REJECT;
-        }
+        Monitor::bench('ADD EVENT BATCH', function () use ($events) {
+            $this->doctrineEventHandler->handleManyCLI($events);
+        });
+        Monitor::displayStats();
 
         return ConsumerInterface::MSG_ACK;
     }
