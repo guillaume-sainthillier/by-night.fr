@@ -13,11 +13,11 @@ namespace App\Parser\Common;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
-use function GuzzleHttp\Psr7\copy_to_string;
 use JsonMachine\JsonMachine;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Cache\CacheInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 
 class DataTourismeParser extends AbstractParser
 {
@@ -128,11 +128,11 @@ class DataTourismeParser extends AbstractParser
         $longitude = null;
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'])) {
-            $latitude = (float) $datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
+            $latitude = (float)$datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
         }
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'])) {
-            $longitude = (float) $datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
+            $longitude = (float)$datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
         }
 
         $emails = [];
@@ -183,6 +183,11 @@ class DataTourismeParser extends AbstractParser
             $description = $datas['rdfs:label']['@value'];
         }
 
+        $url = $propertyAccessor->getValue($datas, '[hasMainRepresentation][ebucore:hasRelatedResource][ebucore:locator][@value]');
+        if (!$url) {
+            $url = $propertyAccessor->getValue($datas, '[hasMainRepresentation][0][ebucore:hasRelatedResource][ebucore:locator][@value]');
+        }
+
         $event = [
             'external_updated_at' => $updatedAt,
             'nom' => $datas['rdfs:label']['@value'],
@@ -198,7 +203,7 @@ class DataTourismeParser extends AbstractParser
             'placeCountryName' => $country,
             'latitude' => $latitude,
             'longitude' => $longitude,
-            'url' => $propertyAccessor->getValue($datas, '[hasMainRepresentation][ebucore:hasRelatedResource][ebucore:locator][@value]'),
+            'url' => $url,
             'reservation_internet' => implode(' ', $websites) ?: null,
             'reservation_email' => implode(' ', $emails) ?: null,
             'reservation_telephone' => implode(' ', $phones) ?: null,
