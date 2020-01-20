@@ -16,6 +16,7 @@ backend default {
 
 acl invalidators {
     "app";
+    "worker";
     "localhost";
     "127.0.0.1";
     "::1";
