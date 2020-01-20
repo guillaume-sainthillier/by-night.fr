@@ -60,7 +60,7 @@ class SowProgParser extends AbstractParser
             'descriptif' => $event['event']['description'],
             'source' => 'http://www.sowprog.com/',
             'external_id' => 'SP-' . $event['id'] . '-' . $currentSchedule['id'],
-            'url' => $event['event']['picture'],
+            'url' => $event['event']['picture'] ?? null,
             'external_updated_at' => (new \DateTime())->setTimestamp($event['modificationDate'] / 1000),
         ];
 
