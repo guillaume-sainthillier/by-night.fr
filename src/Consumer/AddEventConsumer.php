@@ -52,7 +52,7 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
             $event = $this->eventFactory->fromArray($datas);
             $this->doctrineEventHandler->handleOne($event);
         } catch (\Exception $e) {
-            $this->logger->critical($e, $datas);
+            $this->logger->critical($e, ['datas' => $datas]);
 
             return ConsumerInterface::MSG_REJECT;
         }
@@ -67,8 +67,12 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
         /** @var AMQPMessage $message */
         $events = [];
         foreach ($messages as $message) {
-            $event = \json_decode($message->body, true);
-            $events[] = $this->eventFactory->fromArray($event);
+            $datas = \json_decode($message->getBody(), true);
+            try {
+                $events[] = $this->eventFactory->fromArray($datas);
+            } catch (\Exception $e) {
+                $this->logger->critical($e, ['datas' => $datas]);
+            }
         }
 
         Monitor::bench('ADD EVENT BATCH', function () use ($events) {
