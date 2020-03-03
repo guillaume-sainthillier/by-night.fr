@@ -25,7 +25,6 @@
     },
     "require": {
         "php": "^7.3",
-        "ext-apcu": "*",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-dom": "*",
