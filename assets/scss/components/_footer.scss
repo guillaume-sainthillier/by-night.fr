@@ -21,38 +21,6 @@ $tailleFooter: 100px;
 	}
   }
 
-  .social {
-	text-align: left;
-	border: 1px solid transparent;
-	display: block;
-	width: 100%;
-	padding: 0 1rem;
-	height: 50px;
-	line-height: 50px;
-	font-size: 35px;
-	margin-bottom: 0.5rem;
-
-	&:last-child {
-	  margin-bottom: 0;
-	}
-
-	&:hover {
-	  color: $warning;
-	  border: 1px dashed rgba(175, 162, 162, 0.78);
-	  background-color: rgba(202, 189, 189, 0.09);
-	  opacity: 0.7;
-	}
-
-	.fa {
-	  width: 1em;
-	}
-
-	span {
-	  font-size: 30px;
-	  color: #E9EFF5;
-	}
-  }
-
   .love {
 	font-size: 20px;
   }
