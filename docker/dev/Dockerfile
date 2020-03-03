@@ -52,8 +52,8 @@ ENV PHPIZE_DEPS \
 RUN apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS && \
     docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pdo_mysql soap sockets zip && \
-    pecl install apcu redis imagick-3.4.4 && \
-    docker-php-ext-enable apcu redis imagick && \
+    pecl install redis imagick-3.4.4 && \
+    docker-php-ext-enable redis imagick && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/* /tmp/*
 
