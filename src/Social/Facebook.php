@@ -20,11 +20,6 @@ class Facebook extends Social
      */
     protected $client;
 
-    public function getNumberOfCount()
-    {
-        throw new SocialException("Les droits de l'utilisateur sont insufisants pour récupérer des infos sur une page Facebook");
-    }
-
     public function getName()
     {
         return 'Facebook';

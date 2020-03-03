@@ -25,21 +25,6 @@ class FacebookAdmin extends Facebook
      */
     protected $_isInitialized;
 
-    public function getNumberOfCount()
-    {
-        $this->init();
-
-        try {
-            $page = $this->getPageFromId($this->socialManager->getFacebookIdPage(), ['fields' => 'fan_count']);
-
-            return $page->getField('fan_count');
-        } catch (FacebookSDKException $ex) {
-            $this->logger->error($ex);
-        }
-
-        return 0;
-    }
-
     protected function init()
     {
         parent::init();

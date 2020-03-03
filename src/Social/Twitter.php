@@ -38,22 +38,6 @@ class Twitter extends Social
         $this->client = new SingleUserAuth($config, new ArraySerializer());
     }
 
-    public function getNumberOfCount()
-    {
-        $this->init();
-
-        try {
-            $page = $this->client->get('users/show', ['screen_name' => $this->socialManager->getTwitterIdPage()]);
-            if (isset($page['followers_count'])) {
-                return $page['followers_count'];
-            }
-        } catch (Exception $e) {
-            $this->logger->error($e);
-        }
-
-        return 0;
-    }
-
     public function getTimeline(Location $location, $max_id, $limit)
     {
         $this->init();

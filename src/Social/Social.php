@@ -162,8 +162,6 @@ abstract class Social
         $this->connectInfo($this->socialManager->getSiteInfo(), $response);
     }
 
-    abstract public function getNumberOfCount();
-
     protected function init()
     {
         if (!$this->isInitialized) {

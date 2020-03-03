@@ -85,22 +85,6 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-sm-6 col-lg-3">
-                    <h3 class="h4 text-info">Réseaux sociaux</h3>
-                    {% if social_manager.facebookIdPage %}
-                        <a class="social" title="By Night sur Facebook" href="https://www.facebook.com/{{ social_manager.facebookIdPage }}">
-                            <i class="fa fa-facebook"></i>
-                            <span class="number number-xbig">{{ count_facebook }}</span>
-                        </a>
-                    {% endif %}
-
-                    {% if social_manager.twitterIdPage %}
-                        <a class="social" title="By Night sur Twitter" href="https://twitter.com/{{ social_manager.twitterIdPage }}">
-                            <i class="fa fa-twitter"></i>
-                            <span class="number number-xbig">{{ count_twitter }}</span>
-                        </a>
-                    {% endif %}
-                </div>
             </div>
             <hr />
             <div class="clearfix">

@@ -18,11 +18,6 @@ class Google extends Social
     {
     }
 
-    public function getNumberOfCount()
-    {
-        throw new BadMethodCallException('Not implemented');
-    }
-
     protected function getName()
     {
         return 'Google';

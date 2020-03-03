@@ -43,24 +43,9 @@ class CommonController extends TBNController
         ]);
     }
 
-    public function footer(CacheInterface $memoryCache, SocialProvider $socialProvider, Country $country = null)
+    public function footer(Country $country = null)
     {
-        $socials = [
-            'facebook' => $socialProvider->getSocial(SocialProvider::FACEBOOK_ADMIN),
-            'twitter' => $socialProvider->getSocial(SocialProvider::TWITTER),
-        ];
-
         $params = [];
-        foreach ($socials as $name => $service) {
-            /** @var Social $service */
-            $key = 'app.social_counts.' . $name;
-            $params['count_' . $name] = $memoryCache->get($key, function (CacheItemInterface $item) use ($service) {
-                $item->expiresAfter(self::LIFE_TIME_CACHE);
-
-                return $service->getNumberOfCount();
-            });
-        }
-
         $repo = $this->getDoctrine()->getRepository(City::class);
         $params['cities'] = $repo->findRandomNames($country);
 
