@@ -23,14 +23,16 @@ easy_admin:
             list:
                 fields:
                     - { property: 'id' }
+                    - { property: 'createdAt' }
+                    - { property: 'updatedAt' }
+                    - { property: 'fromData' }
                     - { property: 'nom' }
-                    - { property: 'dateDebut' }
-                    - { property: 'dateFin' }
                     - { property: 'place' }
             form:
                 fields:
                     - { type: 'group', columns: 8, label: 'Informations' }
                     - { property: 'id' }
+                    - { property: 'user', type: 'easyadmin_autocomplete' }
                     - { property: 'createdAt' }
                     - { property: 'updatedAt' }
                     - { property: 'externalId' }
