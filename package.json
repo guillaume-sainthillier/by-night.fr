@@ -31,7 +31,7 @@
         "vanilla-lazyload": "^12.0.2"
     },
     "devDependencies": {
-        "@symfony/webpack-encore": "^0.28.0",
+        "@symfony/webpack-encore": "^0.28.2",
         "core-js": "^3.0.0",
         "es6-promise": "^4.2.6",
         "node-sass": "^4.12.0",

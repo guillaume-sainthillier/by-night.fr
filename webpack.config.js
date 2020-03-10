@@ -56,10 +56,9 @@ Encore
     .enableVersioning(Encore.isProduction())
 
     // enables @babel/preset-env polyfills
-    .configureBabel(() => {
-    }, {
-        useBuiltIns: 'usage',
-        corejs: 3
+    .configureBabelPresetEnv((config) => {
+        config.useBuiltIns = 'usage';
+        config.corejs = 3;
     })
     .enableSassLoader()
     //.enableIntegrityHashes(Encore.isProduction())
@@ -96,10 +95,6 @@ Encore
             /^custom-/
         ]
     }))
-
-// uncomment if you use API Platform Admin (composer req api-admin)
-//.enableReactPreset()
-//.addEntry('admin', './assets/js/admin.js')
 ;
 
 module.exports = Encore.getWebpackConfig();
