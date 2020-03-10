@@ -10,7 +10,6 @@
 
 namespace App\Social;
 
-use App\Exception\SocialException;
 use Facebook\Facebook as Client;
 
 class Facebook extends Social

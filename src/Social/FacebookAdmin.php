@@ -11,7 +11,6 @@
 namespace App\Social;
 
 use App\Entity\SiteInfo;
-use Facebook\Exceptions\FacebookSDKException;
 use Facebook\FacebookClient;
 
 class FacebookAdmin extends Facebook

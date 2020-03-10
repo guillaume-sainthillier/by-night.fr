@@ -15,11 +15,7 @@ use App\App\CityManager;
 use App\Controller\TBNController;
 use App\Entity\City;
 use App\Entity\Country;
-use App\Social\Social;
-use App\Social\SocialProvider;
-use Psr\Cache\CacheItemInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\CacheInterface;
 
 class CommonController extends TBNController
 {

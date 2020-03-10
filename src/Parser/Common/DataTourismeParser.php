@@ -13,11 +13,11 @@ namespace App\Parser\Common;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
+use function GuzzleHttp\Psr7\copy_to_string;
 use JsonMachine\JsonMachine;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Cache\CacheInterface;
-use function GuzzleHttp\Psr7\copy_to_string;
 
 class DataTourismeParser extends AbstractParser
 {
@@ -128,11 +128,11 @@ class DataTourismeParser extends AbstractParser
         $longitude = null;
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'])) {
-            $latitude = (float)$datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
+            $latitude = (float) $datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
         }
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'])) {
-            $longitude = (float)$datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
+            $longitude = (float) $datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
         }
 
         $emails = [];

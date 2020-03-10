@@ -10,8 +10,6 @@
 
 namespace App\Social;
 
-use BadMethodCallException;
-
 class Google extends Social
 {
     public function constructClient()
