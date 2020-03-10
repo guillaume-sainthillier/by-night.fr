@@ -8,11 +8,12 @@ Plateforme de gestion d'événements en France.
 https://by-night.fr
 
 ## Stack technique
-* PHP
-* Symfony
-* MySQL
-* Elastic Search
-* Redis
+* PHP 7.4
+* Symfony 4.4
+* MySQL 5.6
+* Elastic Search 6.8
+* Varnish 6
+* Redis 5
 * Sass
 * Webpack
 * Docker
