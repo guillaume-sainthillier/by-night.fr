@@ -108,24 +108,20 @@ class SitemapSuscriber implements EventSubscriberInterface
                 }
 
                 $cache[$tag] = true;
-                $this->addUrl($section, 'app_agenda_tags', ['location' => $event['slug'], 'tag' => $tag], null, UrlConcrete::CHANGEFREQ_DAILY);
+                $this->addUrl(
+                    $section,
+                    'app_agenda_tags',
+                    [
+                        'location' => $event['slug'],
+                        'tag' => $tag,
+                    ],
+                    null,
+                    UrlConcrete::CHANGEFREQ_DAILY,
+                    0.8
+                );
             }
             $lastSlug = $slug;
         }
-    }
-
-    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null, string $changefreq = null)
-    {
-        $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
-
-        $url = new UrlConcrete(
-            $url,
-            $lastMod ?: $this->now,
-            $changefreq ?: UrlConcrete::CHANGEFREQ_HOURLY,
-            1
-        );
-
-        $this->urlContainer->addUrl($url, $section);
     }
 
     private function registerAgendaRoutes($section)
@@ -134,13 +130,13 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($cities as $city) {
             $city = current($city);
-            $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_agenda', ['location' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'concert', 'location' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'etudiant', 'location' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'famille', 'location' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'spectacle', 'location' => $city['slug']]);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'exposition', 'location' => $city['slug']]);
+            $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_agenda', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'concert', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'etudiant', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'famille', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'spectacle', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'exposition', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
         }
     }
 
@@ -150,10 +146,17 @@ class SitemapSuscriber implements EventSubscriberInterface
 
         foreach ($places as $place) {
             $place = current($place);
-            $this->addUrl($section, 'app_agenda_place', [
-                'slug' => $place['slug'],
-                'location' => $place['city_slug'],
-            ]);
+            $this->addUrl(
+                $section,
+                'app_agenda_place',
+                [
+                    'slug' => $place['slug'],
+                    'location' => $place['city_slug'],
+                ],
+                null,
+                UrlConcrete::CHANGEFREQ_NEVER,
+                0.1
+            );
         }
     }
 
@@ -167,11 +170,18 @@ class SitemapSuscriber implements EventSubscriberInterface
 
             foreach ($events as $event) {
                 $event = current($event);
-                $this->addUrl($section, 'app_event_details', [
-                    'id' => $event['id'],
-                    'slug' => $event['slug'],
-                    'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
-                ], DateTime::createFromImmutable($event['updatedAt']), $event['dateFin'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : null);
+                $this->addUrl(
+                    $section,
+                    'app_event_details',
+                    [
+                        'id' => $event['id'],
+                        'slug' => $event['slug'],
+                        'location' => $event['city_slug'] ?: ($event['country_slug'] ?: 'unknown'),
+                    ],
+                    DateTime::createFromImmutable($event['updatedAt']),
+                    $event['dateFin'] < $this->now ? UrlConcrete::CHANGEFREQ_NEVER : UrlConcrete::CHANGEFREQ_DAILY,
+                    $event['dateFin'] < $this->now ? 0.1 : 1.0
+                );
             }
         }
     }
@@ -182,10 +192,17 @@ class SitemapSuscriber implements EventSubscriberInterface
         foreach ($users as $user) {
             /** @var User $user */
             $user = $user[0];
-            $this->addUrl($section, 'app_user_details', [
-                'id' => $user->getId(),
-                'slug' => $user->getSlug(),
-            ], DateTime::createFromImmutable($user->getUpdatedAt()));
+            $this->addUrl(
+                $section,
+                'app_user_details',
+                [
+                    'id' => $user->getId(),
+                    'slug' => $user->getSlug(),
+                ],
+                DateTime::createFromImmutable($user->getUpdatedAt()),
+                UrlConcrete::CHANGEFREQ_DAILY,
+                0.4
+            );
         }
     }
 
@@ -203,5 +220,19 @@ class SitemapSuscriber implements EventSubscriberInterface
         foreach ($staticRoutes as $route) {
             $this->addUrl($section, $route);
         }
+    }
+
+    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null, string $changefreq = null, float $priority = 0.6)
+    {
+        $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $url = new UrlConcrete(
+            $url,
+            $lastMod,
+            $changefreq ?: UrlConcrete::CHANGEFREQ_DAILY,
+            $priority
+        );
+
+        $this->urlContainer->addUrl($url, $section);
     }
 }
