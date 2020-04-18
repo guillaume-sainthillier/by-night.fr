@@ -12,6 +12,7 @@ namespace App\Handler;
 
 use App\Entity\Event;
 use App\Entity\Place;
+use App\Exception\UnsupportedFileException;
 use App\File\DeletableFile;
 use App\Utils\Cleaner;
 use App\Utils\Comparator;
@@ -19,8 +20,8 @@ use App\Utils\Merger;
 use App\Utils\Monitor;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Log\LoggerInterface;
+use function GuzzleHttp\Psr7\copy_to_string;
 
 class EventHandler
 {
@@ -70,13 +71,26 @@ class EventHandler
                 return;
             }
 
-            $this->logger->error($e, ['event' => [
+            $this->logger->error($e->getMessage(), ['event' => [
                 'id' => $event->getId(),
                 'url' => $event->getUrl(),
+                'exception' => $e
+            ]]);
+        } catch (UnsupportedFileException $e) {
+            $this->logger->error($e->getMessage(), ['event' => [
+                'id' => $event->getId(),
+                'url' => $event->getUrl(),
+                'exception' => $e
             ]]);
         }
     }
 
+    /**
+     * @param Event $event
+     * @param $content
+     * @param $contentType
+     * @throws UnsupportedFileException
+     */
     public function uploadFile(Event $event, $content, $contentType)
     {
         switch ($contentType) {
@@ -91,7 +105,7 @@ class EventHandler
                 $ext = 'jpeg';
                 break;
             default:
-                throw new \RuntimeException(sprintf('Unable to find extension for mime type %s', $contentType));
+                throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType));
         }
 
         $filename = ($event->getId() ?: uniqid()) . '.' . $ext;
