@@ -24,11 +24,12 @@ jobs:
     - name: stop script if command error
       uses: appleboy/ssh-action@master
       env:
-        APP_PATH: ${{ secrets.APP_PATH }}
+        BY_NIGHT_PATH: ${{ secrets.BY_NIGHT_PATH }}
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
+        envs: BY_NIGHT_PATH
         script_stop: true
         script: |
           cd $APP_PATH
