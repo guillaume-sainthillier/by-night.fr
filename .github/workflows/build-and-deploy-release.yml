@@ -31,5 +31,4 @@ jobs:
         key: ${{ secrets.KEY }}
         script_stop: true
         script: |
-          cd ${APP_PATH}
-          sudo /bin/bash ./deploy.sh
+          cd ${APP_PATH} && /bin/bash ./deploy.sh
