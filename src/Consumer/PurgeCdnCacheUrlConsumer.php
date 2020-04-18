@@ -62,7 +62,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'urls' => $urls,
-                'exception' => $e
+                'exception' => $e,
             ]);
 
             return ConsumerInterface::MSG_REJECT;

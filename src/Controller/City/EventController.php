@@ -17,7 +17,6 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Picture\EventProfilePicture;
-use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use SocialLinks\Page;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -48,10 +47,6 @@ class EventController extends BaseController
 
     /**
      * @Cache(expires="+12 hours", smaxage="43200")
-     *
-     * @return Response
-     *
-     * @throws Exception
      */
     public function shareAction(Event $event, EventProfilePicture $eventProfilePicture)
     {

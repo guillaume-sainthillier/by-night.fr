@@ -22,7 +22,7 @@ class DefaultController extends BaseController
 {
     /**
      * @Route("/", name="app_agenda_index")
-     * @ReverseProxy(expires="+2 hours")
+     * @ReverseProxy(expires="tomorrow")
      */
     public function indexAction(Location $location, PaginatorInterface $paginator)
     {

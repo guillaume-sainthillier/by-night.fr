@@ -43,12 +43,6 @@ class DefaultController extends BaseController
     /**
      * @Route("/{slug}--{id}", name="app_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/{username}", name="app_user_details_old", requirements={"username": "[^/]+"})
-     *
-     * @param null $id
-     * @param null $slug
-     * @param null $username
-     *
-     * @return object|RedirectResponse|Response|null
      */
     public function indexAction($id = null, $slug = null, $username = null)
     {
@@ -70,6 +64,9 @@ class DefaultController extends BaseController
         ]);
     }
 
+    /**
+     * @return User|RedirectResponse|null
+     */
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
     {
         $em = $this->getDoctrine()->getManager();

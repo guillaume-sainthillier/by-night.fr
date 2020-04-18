@@ -10,6 +10,7 @@
 
 namespace App\Invalidator;
 
+use App\App\Location;
 use App\Entity\Calendrier;
 use App\Entity\City;
 use App\Entity\Event;
@@ -101,11 +102,18 @@ class TagsInvalidator
         return \sprintf('event-%d', $event->getId());
     }
 
+    public static function getLocationTag(Location $location)
+    {
+        return \sprintf('location-%s', $location->getId());
+    }
+
     public function addPlace(Place $place)
     {
         if ($place->getId()) {
             $this->tags[] = self::getPlaceTag($place);
         }
+
+        $this->tags[] = self::getLocationTag($place->getLocation());
     }
 
     public static function getPlaceTag(Place $place)
@@ -132,7 +140,7 @@ class TagsInvalidator
             $this->tagHandler->invalidateTags($tags);
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage(), [
-                'exception' => $e
+                'exception' => $e,
             ]);
         }
 

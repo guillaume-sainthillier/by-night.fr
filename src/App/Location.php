@@ -21,6 +21,19 @@ class Location
     /** @var Country|null */
     private $country;
 
+    public function getId()
+    {
+        if ($this->city) {
+            return $this->city->getId();
+        }
+
+        if ($this->country) {
+            return $this->country->getId();
+        }
+
+        return 'unknown';
+    }
+
     public function getAppName()
     {
         if ($this->city) {

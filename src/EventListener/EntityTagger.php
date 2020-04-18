@@ -13,6 +13,7 @@ namespace App\EventListener;
 use App\Entity\Calendrier;
 use App\Entity\City;
 use App\Entity\Event;
+use App\Entity\Place;
 use App\Entity\User;
 use App\Invalidator\TagsInvalidator;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -39,9 +40,9 @@ class EntityTagger
         $entity = $args->getEntity();
 
         if ($entity instanceof City) {
-            $this->eventInvalidator->addCity($entity);
+            $this->tag($entity);
         } elseif ($entity instanceof Event && $entity->getPlace()) {
-            $this->eventInvalidator->addPlace($entity->getPlace());
+            $this->tag($entity->getPlace());
         }
     }
 
@@ -49,13 +50,19 @@ class EntityTagger
     {
         $entity = $args->getEntity();
 
-        //Flag old place too in cause it has changed
+        //Flag old place too in case it has changed
         if ($entity instanceof Event && $entity->getPlace()) {
-            $this->eventInvalidator->addPlace($entity->getPlace());
+            $this->tag($entity->getPlace());
         }
     }
 
     public function postUpdate(LifecycleEventArgs $args)
+    {
+        $entity = $args->getEntity();
+        $this->tag($entity);
+    }
+
+    public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
         $this->tag($entity);
@@ -71,12 +78,8 @@ class EntityTagger
             $this->eventInvalidator->addEvent($entity);
         } elseif ($entity instanceof Calendrier) {
             $this->eventInvalidator->addCalendrier($entity);
+        } elseif ($entity instanceof Place) {
+            $this->eventInvalidator->addPlace($entity);
         }
-    }
-
-    public function preRemove(LifecycleEventArgs $args)
-    {
-        $entity = $args->getEntity();
-        $this->tag($entity);
     }
 }

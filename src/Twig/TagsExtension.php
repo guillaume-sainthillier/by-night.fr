@@ -26,6 +26,8 @@ class TagsExtension extends Extension
     public function getTags($type, $object = null)
     {
         switch ($type) {
+            case 'location':
+                return TagsInvalidator::getLocationTag($object);
             case 'event':
                 return TagsInvalidator::getEventTag($object);
             case 'place':

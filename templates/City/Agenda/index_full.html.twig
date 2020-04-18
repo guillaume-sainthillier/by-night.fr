@@ -1,5 +1,6 @@
 {% set ads = true %}
 {% extends "layouts/with-widget.html.twig" %}
+{% do fos_httpcache_tag(tags('location', location)) %}
 
 {%- block title -%}
 {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
