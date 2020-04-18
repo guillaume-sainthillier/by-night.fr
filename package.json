@@ -19,6 +19,7 @@
         "glob-all": "^3.1.0",
         "jquery": "^3.2.1",
         "jquery-cookiebar": "^1.0.5",
+        "lazysizes": "^5.2.0",
         "moment": "^2.24.0",
         "moment-locales-webpack-plugin": "^1.1.2",
         "morris.js": "^0.5.0",
@@ -27,8 +28,7 @@
         "raphael": "^2.2.7",
         "summernote": "^0.8.8",
         "typeahead-addresspicker": "^1.0.1",
-        "typeahead.js": "^0.10.5",
-        "vanilla-lazyload": "^12.0.2"
+        "typeahead.js": "^0.10.5"
     },
     "devDependencies": {
         "@symfony/webpack-encore": "^0.28.2",

@@ -33,11 +33,11 @@
 {% endmacro %}
 
 {% macro userLazyThumb(user, width, height, attrs) %}
-    <img class="loading img-fluid rounded-circle {{ attrs.class|default('') }}"
+    <img class="img-fluid blur-up lazyload rounded-circle {{ attrs.class|default('') }}"
          width="{{ width }}"
          height="{{ height }}"
-         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
-         data-src="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop'}) }}"
+         src="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop'}) }}"
+         srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
          data-srcset="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop', 'dpr': 2}) }} 2x"
          alt="{{ user.username }}"
         {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
@@ -54,11 +54,11 @@
 {% endmacro %}
 
 {% macro eventLazyThumb(event, width, height, attrs) %}
-    <img class="img-fluid loading {{ attrs.class|default('') }}"
-         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAABCAQAAABeK7cBAAAAC0lEQVR42mNkAAIAAAoAAv/lxKUAAAAASUVORK5CYII="
+    <img class="img-fluid blur-up lazyload {{ attrs.class|default('') }}"
          width="{{ width }}"
          height="{{ height }}"
-         data-src="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1}) }}"
+         src="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1}) }}"
+         srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
          data-srcset="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1, 'dpr': 2}) }} 2x"
          alt="{{ event_seo.getEventShortTitle(event) }}"
         {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />

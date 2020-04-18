@@ -3,7 +3,7 @@ import '../scss/app.scss';
 import './vendors';
 import './overrides';
 import './collections';
-import LazyLoad from "vanilla-lazyload";
+import 'lazysizes';
 
 class App {
     init(selecteur) {
@@ -53,40 +53,9 @@ class App {
         });
     }
 
-    initLazyLoading(selecteur) {
-        var images = $("img.loading", selecteur || document);
-        var scrollAreas = $(".scroll-area", selecteur || document);
-        if (images.length === 0 && scrollAreas.length === 0) {
-            return;
-        }
-
-        if (images.length > 0) {
-            new LazyLoad({
-                elements_selector: "img.loading",
-                threshold: 200,
-                container: (selecteur && selecteur[0]) || document,
-            });
-        }
-
-        if (scrollAreas.length > 0) {
-            new LazyLoad({
-                elements_selector: ".scroll-area",
-                container: (selecteur && selecteur[0]) || document,
-                callback_enter: function (el) {
-                    new LazyLoad({
-                        elements_selector: "img.loading",
-                        threshold: 200,
-                        container: el,
-                    });
-                }
-            });
-        }
-    }
-
     initComponents(selecteur) {
         const self = this;
         $(selecteur || 'body').data('bmd.bootstrapMaterialDesign', null).bootstrapMaterialDesign();
-        self.initLazyLoading(selecteur);
         self.initAutofocus(selecteur);
         self.initConnexion(selecteur);
         self.initRegister(selecteur);
