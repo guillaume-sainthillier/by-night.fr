@@ -1,0 +1,35 @@
+name: Build And Deploy Release
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Get release version
+      id: get_version
+      run: echo ::set-env name=APP_VERSION::$(echo ${GITHUB_REF} | sed -e "s/refs\/tags\///g" | sed -E "s/v?([0-9]+)\.([0-9+])\.([0-9]+)(-[a-zA-Z]+(\.[0-9]+)?)?/\1.\2.\3\4 \1.\2\4 \1\4/g")
+    - name: Publish to Docker Repository
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: guystlr/by-night
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        buildargs: APP_VERSION
+        tags: "stable,${{ env.APP_VERSION }}"
+    - name: stop script if command error
+      uses: appleboy/ssh-action@master
+      env:
+        APP_PATH: ${{ secrets.APP_PATH }}
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        script_stop: true
+        script: |
+          cd ${APP_PATH}
+          sudo /bin/bash ./deploy.sh
