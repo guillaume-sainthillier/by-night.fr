@@ -1,9 +1,7 @@
-name: Build and Deploy
+name: Build Latest
 
 on:
   push:
-    tags:
-      - v*
     branches:
       - master
 
@@ -14,9 +12,11 @@ jobs:
     - uses: actions/checkout@master
     - name: Publish to Docker Repository
       uses: elgohr/Publish-Docker-Github-Action@master
+      env:
+        APP_VERSION: latest
       with:
         name: guystlr/by-night
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        cache: true
-        tag_names: true
+        buildargs: APP_VERSION
+        tags: "${{ env.APP_VERSION }}"
