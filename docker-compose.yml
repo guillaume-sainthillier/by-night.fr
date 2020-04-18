@@ -1,32 +1,6 @@
 version: '3.4'
 
 services:
-    app:
-        build: ./docker/dev
-        environment:
-            - BLACKFIRE_CLIENT_ID
-            - BLACKFIRE_CLIENT_TOKEN
-        depends_on:
-            - elasticsearch
-            - rabbitmq
-            - redis
-        volumes:
-            - nfsmount:/app
-        ports:
-            - 8000:80
-
-    worker:
-        build: ./docker/dev
-        container_name: worker
-        command: ["worker"]
-        depends_on:
-            - elasticsearch
-            - rabbitmq
-            - redis
-            - app
-        volumes:
-            - nfsmount:/app
-
     assets:
         image: nginx:1.17-alpine
         ports:
@@ -34,16 +8,12 @@ services:
         volumes:
             - ./public:/assets:ro
             - ./docker/dev/assets/nginx.conf:/etc/nginx/nginx.conf:ro
-        depends_on:
-            - app
 
     varnish:
         image: varnish:6.0
         command: ["varnishd", "-F", "-f", "/etc/varnish/default.vcl", "-t" , "0"]
         ports:
             - 8001:80
-        depends_on:
-            - app
         volumes:
             - ./docker/dev/varnish/default.vcl:/etc/varnish/default.vcl:ro
             - ./docker/dev/varnish/fos:/etc/varnish/fos:ro
@@ -51,11 +21,14 @@ services:
 
     redis:
         image: redis:alpine
+        ports:
+            - 6379:6379
 
     rabbitmq:
         image: rabbitmq:3.8-management
         hostname: 'mabbit'
         ports:
+            - 5672:5672
             - 15672:15672
         volumes:
             - /var/lib/rabbitmq
@@ -89,10 +62,4 @@ services:
             - elasticsearch
 
 volumes:
-    nfsmount:
-        driver: local
-        driver_opts:
-            type: nfs
-            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
-            device: ":/System/Volumes/Data/${PWD}"
     esdata:
