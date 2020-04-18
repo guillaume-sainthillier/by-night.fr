@@ -32,5 +32,5 @@ jobs:
         envs: BY_NIGHT_PATH
         script_stop: true
         script: |
-          cd $APP_PATH
+          cd $BY_NIGHT_PATH
           sudo /bin/bash ./deploy.sh
