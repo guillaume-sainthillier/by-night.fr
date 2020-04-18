@@ -39,7 +39,7 @@ abstract class AbstractParser implements ParserInterface
             $this->eventProducer->scheduleEvent($item);
             ++$this->parsedEvents;
         } catch (\JsonException $e) {
-            $this->logException($e, $item);
+            $this->logException($e, ['item' => $item]);
         }
     }
 
@@ -48,9 +48,9 @@ abstract class AbstractParser implements ParserInterface
         return $this->parsedEvents;
     }
 
-    protected function logException(\Throwable $e, array $context = [])
+    protected function logException(\Throwable $exception, array $context = [])
     {
-        $this->logger->error($e, $context);
+        $this->logger->error($exception->getMessage(), $context + ['exception' => $exception]);
     }
 
     public static function getParserVersion(): string

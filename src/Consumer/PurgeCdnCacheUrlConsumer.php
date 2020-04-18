@@ -60,7 +60,10 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
                 ['json' => ['files' => $urls]]
             );
         } catch (\Exception $e) {
-            $this->logger->critical($e);
+            $this->logger->error($e->getMessage(), [
+                'urls' => $urls,
+                'exception' => $e
+            ]);
 
             return ConsumerInterface::MSG_REJECT;
         }

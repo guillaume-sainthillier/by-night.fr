@@ -75,7 +75,7 @@ class OpenAgendaParser extends AbstractParser
             ->then(function (array $result) use ($agendaId) {
                 if (!isset($result['events'])) {
                     $exception = new \RuntimeException(sprintf("Unable to find events for agenda '%s'", $agendaId));
-                    $this->logException($exception);
+                    $this->logException($exception, ['agendaId' => $agendaId, 'page' => $page]);
 
                     return new FulfilledPromise(null);
                 }

@@ -131,7 +131,9 @@ class TagsInvalidator
         try {
             $this->tagHandler->invalidateTags($tags);
         } catch (Exception $e) {
-            $this->logger->critical($e);
+            $this->logger->critical($e->getMessage(), [
+                'exception' => $e
+            ]);
         }
 
         unset($this->tags); //Call GC

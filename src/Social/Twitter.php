@@ -15,10 +15,6 @@ use Exception;
 use TwitterOAuth\Auth\SingleUserAuth;
 use TwitterOAuth\Serializer\ArraySerializer;
 
-/*
- * Serializer Namespace
- */
-
 class Twitter extends Social
 {
     /**
@@ -43,21 +39,24 @@ class Twitter extends Social
         $this->init();
 
         $name = $location->isCountry() ? $location->getCountry()->getName() : $location->getCity()->getName();
+        $params = [
+            'q' => \sprintf('#%s filter:safe', $name),
+            'lang' => 'fr',
+            'result_type' => 'recent',
+            'count' => $limit,
+        ];
+
+        if ($max_id) {
+            $params['max_id'] = $max_id;
+        }
+
         try {
-            $params = [
-                'q' => \sprintf('#%s filter:safe', $name),
-                'lang' => 'fr',
-                'result_type' => 'recent',
-                'count' => $limit,
-            ];
-
-            if ($max_id) {
-                $params['max_id'] = $max_id;
-            }
-
             return $this->client->get('search/tweets', $params);
         } catch (Exception $e) {
-            $this->logger->error($e);
+            $this->logger->error($e->getMessage(), [
+                'params' => $params,
+                'exception' => $e,
+            ]);
         }
 
         return [];
