@@ -20,8 +20,8 @@ use App\Utils\Merger;
 use App\Utils\Monitor;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Psr\Log\LoggerInterface;
 use function GuzzleHttp\Psr7\copy_to_string;
+use Psr\Log\LoggerInterface;
 
 class EventHandler
 {
@@ -74,21 +74,21 @@ class EventHandler
             $this->logger->error($e->getMessage(), ['event' => [
                 'id' => $event->getId(),
                 'url' => $event->getUrl(),
-                'exception' => $e
+                'exception' => $e,
             ]]);
         } catch (UnsupportedFileException $e) {
             $this->logger->error($e->getMessage(), ['event' => [
                 'id' => $event->getId(),
                 'url' => $event->getUrl(),
-                'exception' => $e
+                'exception' => $e,
             ]]);
         }
     }
 
     /**
-     * @param Event $event
      * @param $content
      * @param $contentType
+     *
      * @throws UnsupportedFileException
      */
     public function uploadFile(Event $event, $content, $contentType)
