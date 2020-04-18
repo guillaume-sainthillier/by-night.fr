@@ -32,4 +32,4 @@ jobs:
         script_stop: true
         script: |
           cd ${APP_PATH}
-          sudo /bin/bash ./deploy.sh
+          sudo /bin/bash deploy.sh
