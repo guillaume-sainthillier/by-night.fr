@@ -3,7 +3,7 @@ import 'daterangepicker/daterangepicker.css';
 
 import 'typeahead.js/dist/bloodhound';
 import 'typeahead.js/dist/typeahead.bundle';
-import 'bootstrap-select/dist/js/bootstrap-select.min.js';
+import 'bootstrap-select/js/bootstrap-select.js';
 import 'bootstrap-select/js/i18n/defaults-fr_FR.js';
 import 'moment/locale/fr';
 import 'daterangepicker';
