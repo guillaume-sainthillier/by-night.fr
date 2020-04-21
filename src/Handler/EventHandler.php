@@ -91,7 +91,7 @@ class EventHandler
      *
      * @throws UnsupportedFileException
      */
-    public function uploadFile(Event $event, $content, $contentType)
+    private function uploadFile(Event $event, $content, $contentType)
     {
         switch ($contentType) {
             case 'image/gif':
@@ -114,10 +114,10 @@ class EventHandler
 
         if ($octets > 0) {
             $file = new DeletableFile($tempPath, $filename, $contentType, null, true);
-            $event->setSystemFile($file);
+            $event->setImageSystemFile($file);
         } else {
             unlink($tempPath);
-            $event->setSystemFile(null);
+            $event->setImageSystemFile(null);
         }
     }
 

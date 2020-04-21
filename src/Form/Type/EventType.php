@@ -70,7 +70,7 @@ class EventType extends AbstractType
                     'placeholder' => 'Décrivez votre événement...',
                 ],
             ])
-            ->add('file', VichImageType::class, [
+            ->add('imageFile', VichImageType::class, [
                 'label' => 'Affiche / Flyer',
                 'required' => false,
                 'thumb_params' => ['h' => 200, 'w' => 400, 'thumb' => 1],

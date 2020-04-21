@@ -35,14 +35,14 @@ class UserProfilePicture
 
     public function getOriginalProfilePicture(User $user)
     {
-        if ($user->getPath()) {
+        if ($user->getImage()->getName()) {
             return $this->packages->getUrl(
                 $this->helper->asset($user, 'imageFile'),
                 'aws'
             );
         }
 
-        if ($user->getSystemPath()) {
+        if ($user->getImageSystem()->getName()) {
             return $this->packages->getUrl(
                 $this->helper->asset($user, 'imageSystemFile'),
                 'aws'
@@ -65,11 +65,11 @@ class UserProfilePicture
 
     public function getProfilePicture(User $user, array $params = [])
     {
-        if ($user->getPath()) {
+        if ($user->getImage()->getName()) {
             return $this->assetExtension->thumb($this->helper->asset($user, 'imageFile'), $params);
         }
 
-        if ($user->getSystemPath()) {
+        if ($user->getImageSystem()->getName()) {
             return $this->assetExtension->thumb($this->helper->asset($user, 'imageSystemFile'), $params);
         }
 

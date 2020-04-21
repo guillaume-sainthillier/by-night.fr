@@ -43,16 +43,16 @@ class EventProfilePicture
 
     public function getOriginalPicture(Event $event)
     {
-        if ($event->getPath()) {
+        if ($event->getImage()->getName()) {
             return $this->packages->getUrl(
-                $this->helper->asset($event, 'file'),
+                $this->helper->asset($event, 'imageFile'),
                 'aws'
             );
         }
 
-        if ($event->getSystemPath()) {
+        if ($event->getImageSystem()->getName()) {
             return $this->packages->getUrl(
-                $this->helper->asset($event, 'systemFile'),
+                $this->helper->asset($event, 'imageSystemFile'),
                 'aws'
             );
         }
@@ -90,12 +90,12 @@ class EventProfilePicture
 
     public function getPicture(Event $event, array $params = [])
     {
-        if ($event->getPath()) {
-            return $this->assetExtension->thumb($this->helper->asset($event, 'file'), $params);
+        if ($event->getImage()->getName()) {
+            return $this->assetExtension->thumb($this->helper->asset($event, 'imageFile'), $params);
         }
 
-        if ($event->getSystemPath()) {
-            return $this->assetExtension->thumb($this->helper->asset($event, 'systemFile'), $params);
+        if ($event->getImageSystem()->getName()) {
+            return $this->assetExtension->thumb($this->helper->asset($event, 'imageSystemFile'), $params);
         }
 
         if ($event->getFromData() === BikiniParser::getParserName()) {

@@ -36,17 +36,17 @@ class OldMediaController extends AbstractController
         /** @var Event $event */
         $event = $eventRepository
             ->createQueryBuilder('e')
-            ->where('e.systemPath = :path OR e.path = :path')
+            ->where('e.image.name = :path OR e.imageSystem.name = :path')
             ->setParameter('path', $infos['basename'])
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
 
         if ($event) {
-            if ($event->getPath() === $infos['basename']) {
-                $url = $assetExtension->thumb($storage->resolvePath($event, 'file'));
+            if ($event->getImage()->getName() === $infos['basename']) {
+                $url = $assetExtension->thumb($storage->resolvePath($event, 'imageFile'));
             } else {
-                $url = $assetExtension->thumb($storage->resolvePath($event, 'systemFile'));
+                $url = $assetExtension->thumb($storage->resolvePath($event, 'imageSystemFile'));
             }
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
@@ -56,14 +56,14 @@ class OldMediaController extends AbstractController
         /** @var User $user */
         $user = $userRepository
             ->createQueryBuilder('u')
-            ->where('u.systemPath = :path OR u.path = :path')
+            ->where('u.image.name = :path OR u.imageSystem.name = :path')
             ->setParameter('path', $infos['basename'])
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
 
         if ($user) {
-            if ($user->getPath() === $infos['basename']) {
+            if ($user->getImage()->getName() === $infos['basename']) {
                 $url = $assetExtension->thumb($storage->resolvePath($user, 'imageFile'));
             } else {
                 $url = $assetExtension->thumb($storage->resolvePath($user, 'imageSystemFile'));

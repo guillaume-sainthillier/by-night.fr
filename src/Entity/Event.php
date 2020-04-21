@@ -26,6 +26,7 @@ use JMS\Serializer\Annotation\Type;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -232,35 +233,50 @@ class Event
     protected $parserVersion;
 
     /**
-     * @Vich\UploadableField(mapping="event_image", fileNameProperty="path")
+     * @var File
+     * @Vich\UploadableField(mapping="event_image", fileNameProperty="image.name", size="image.size", mimeType="image.mimeType", originalName="image.originalName", dimensions="image.dimensions")
      * @Assert\Valid
      * @Assert\File(maxSize="6M")
      * @Assert\Image
      */
-    protected $file;
+    private $imageFile;
 
     /**
-     * @Vich\UploadableField(mapping="event_image", fileNameProperty="systemPath")
-     * @Assert\Valid
-     * @Assert\File(maxSize="6M")
-     * @Assert\Image
+     * @var EmbeddedFile
+     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
      */
-    protected $systemFile;
+    private $image;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageHash;
+
+    /**
+     * @var File
+     * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageSystem.name", size="imageSystem.size", mimeType="imageSystem.mimeType", originalName="imageSystem.originalName", dimensions="imageSystem.dimensions")
+     * @Assert\Valid
+     * @Assert\Image(maxSize="6M")
+     */
+    private $imageSystemFile;
+
+    /**
+     * @var EmbeddedFile
+     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
+     */
+    private $imageSystem;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageSystemHash;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $name;
-
-    /**
-     * @ORM\Column(type="string", length=61, nullable=true)
-     */
-    protected $path;
-
-    /**
-     * @ORM\Column(type="string", length=61, nullable=true)
-     */
-    protected $systemPath;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -463,6 +479,8 @@ class Event
         $this->commentaires = new ArrayCollection();
         $this->brouillon = false;
         $this->archive = false;
+        $this->image = new \Vich\UploaderBundle\Entity\File();
+        $this->imageSystem = new \Vich\UploaderBundle\Entity\File();
     }
 
     public function getReject(): ?Reject
@@ -502,25 +520,24 @@ class Event
         return \in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName(), DigitickAwinParser::getParserName()], true);
     }
 
-    public function getFile()
+    /**
+     * @return File
+     */
+    public function getImageFile(): ?File
     {
-        return $this->file;
+        return $this->imageFile;
     }
 
     /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
-     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * of 'UploadedFile' is injected into this setter to trigger the update. If this
      * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
-     *
-     * @param File|UploadedFile $image
-     *
-     * @return Event
      */
-    public function setFile(File $image = null)
+    public function setImageFile(File $image = null): self
     {
-        $this->file = $image;
+        $this->imageFile = $image;
 
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
@@ -531,25 +548,24 @@ class Event
         return $this;
     }
 
-    public function getSystemFile()
+    /**
+     * @return File
+     */
+    public function getImageSystemFile(): ?File
     {
-        return $this->systemFile;
+        return $this->imageSystemFile;
     }
 
     /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
-     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * of 'UploadedFile' is injected into this setter to trigger the update. If this
      * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
-     *
-     * @param File|UploadedFile $image
-     *
-     * @return Event
      */
-    public function setSystemFile(File $image = null)
+    public function setImageSystemFile(File $image = null): self
     {
-        $this->systemFile = $image;
+        $this->imageSystemFile = $image;
 
         if ($image) {
             // It is required that at least one field changes if you are using doctrine
@@ -859,30 +875,6 @@ class Event
     public function setName(?string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getPath(): ?string
-    {
-        return $this->path;
-    }
-
-    public function setPath(?string $path): self
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
-    public function getSystemPath(): ?string
-    {
-        return $this->systemPath;
-    }
-
-    public function setSystemPath(?string $systemPath): self
-    {
-        $this->systemPath = $systemPath;
 
         return $this;
     }
@@ -1245,6 +1237,54 @@ class Event
     public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getImage(): \Vich\UploaderBundle\Entity\File
+    {
+        return $this->image;
+    }
+
+    public function setImage(\Vich\UploaderBundle\Entity\File $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getImageSystem(): \Vich\UploaderBundle\Entity\File
+    {
+        return $this->imageSystem;
+    }
+
+    public function setImageSystem(\Vich\UploaderBundle\Entity\File $imageSystem): self
+    {
+        $this->imageSystem = $imageSystem;
+
+        return $this;
+    }
+
+    public function getImageHash(): ?string
+    {
+        return $this->imageHash;
+    }
+
+    public function setImageHash(?string $imageHash): self
+    {
+        $this->imageHash = $imageHash;
+
+        return $this;
+    }
+
+    public function getImageSystemHash(): ?string
+    {
+        return $this->imageSystemHash;
+    }
+
+    public function setImageSystemHash(?string $imageSystemHash): self
+    {
+        $this->imageSystemHash = $imageSystemHash;
 
         return $this;
     }

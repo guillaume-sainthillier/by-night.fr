@@ -1,35 +1,28 @@
-services:
-    oneup_flysystem.mount_manager:
-        class: League\Flysystem\MountManager
-        calls:
-            - method: mountFilesystems
-              arguments:
-                - { users.storage: '@users.storage', events.storage: '@events.storage' }
 vich_uploader:
     db_driver: orm
     storage: flysystem
 
     mappings:
         user_image:
-            uri_prefix:         /uploads/users
+            uri_prefix: /uploads/users
             upload_destination: users.storage
-            namer:              vich_uploader.namer_uniqid
-            inject_on_load:     false
-            delete_on_update:   true
-            delete_on_remove:   true
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
             directory_namer:
                 service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
                 options:
-                    date_time_property: createdAt
+                    date_time_property: updatedAt
 
         event_image:
-            uri_prefix:         /uploads/documents
+            uri_prefix: /uploads/documents
             upload_destination: events.storage
-            namer:              vich_uploader.namer_uniqid
-            inject_on_load:     false
-            delete_on_update:   true
-            delete_on_remove:   true
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
             directory_namer:
                 service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
                 options:
-                    date_time_property: createdAt
+                    date_time_property: updatedAt

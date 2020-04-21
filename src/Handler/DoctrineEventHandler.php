@@ -371,7 +371,7 @@ class DoctrineEventHandler
                         $this->explorationHandler->addBlackList();
                     } else {
                         //Image URL has changed or never downloaded
-                        if ($event->getUrl() && (!$event->getSystemPath() || $event->getUrl() !== $url)) {
+                        if ($event->getUrl() && (!$event->getImageSystem()->getName() || $event->getUrl() !== $url)) {
                             $this->handler->handleDownload($event);
                         }
 

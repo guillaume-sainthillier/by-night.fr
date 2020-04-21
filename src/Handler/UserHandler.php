@@ -32,11 +32,11 @@ class UserHandler
 
     public function hasToUploadNewImage(?string $newContent, User $user)
     {
-        if ($user->getPath() || !$user->getInfo()) {
+        if ($user->getImage()->getName() || !$user->getInfo()) {
             return false;
         }
 
-        if (!$user->getSystemPath()) {
+        if (!$user->getImageSystem()->getName()) {
             return true;
         }
 

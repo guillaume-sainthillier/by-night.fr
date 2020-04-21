@@ -21,6 +21,7 @@ use JMS\Serializer\Annotation\Expose;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -107,38 +108,45 @@ class User extends BaseUser
     protected $website;
 
     /**
-     * @Vich\UploadableField(mapping="user_image", fileNameProperty="path")
+     * @var File
+     * @Vich\UploadableField(mapping="user_image", fileNameProperty="image.name", size="image.size", mimeType="image.mimeType", originalName="image.originalName", dimensions="image.dimensions")
      * @Assert\Valid
      * @Assert\File(maxSize="6M")
      * @Assert\Image
-     *
-     * @var File
      */
     private $imageFile;
 
     /**
-     * @Vich\UploadableField(mapping="user_image", fileNameProperty="systemPath")
-     * @Assert\Valid
-     * @Assert\File(maxSize="6M")
-     * @Assert\Image
-     *
+     * @var EmbeddedFile
+     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
+     */
+    private $image;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageHash;
+
+    /**
      * @var File
+     * @Vich\UploadableField(mapping="user_image", fileNameProperty="imageSystem.name", size="imageSystem.size", mimeType="imageSystem.mimeType", originalName="imageSystem.originalName", dimensions="imageSystem.dimensions")
+     * @Assert\Valid
+     * @Assert\Image(maxSize="6M")
      */
     private $imageSystemFile;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     *
-     * @var string
+     * @var EmbeddedFile
+     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
      */
-    private $path;
+    private $imageSystem;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     *
      * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $systemPath;
+    private $imageSystemHash;
 
     public function __construct()
     {
@@ -148,28 +156,26 @@ class User extends BaseUser
         $this->setShowSocials(true);
         $this->calendriers = new ArrayCollection();
         $this->info = new UserInfo();
+        $this->image = new \Vich\UploaderBundle\Entity\File();
+        $this->imageSystem = new \Vich\UploaderBundle\Entity\File();
     }
 
     /**
      * @return File
      */
-    public function getImageFile()
+    public function getImageFile(): ?File
     {
         return $this->imageFile;
     }
 
     /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
-     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * of 'UploadedFile' is injected into this setter to trigger the update. If this
      * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
-     *
-     * @param File|UploadedFile $image
-     *
-     * @return User
      */
-    public function setImageFile(File $image = null)
+    public function setImageFile(File $image = null): self
     {
         $this->imageFile = $image;
 
@@ -185,23 +191,19 @@ class User extends BaseUser
     /**
      * @return File
      */
-    public function getImageSystemFile()
+    public function getImageSystemFile(): ?File
     {
         return $this->imageSystemFile;
     }
 
     /**
      * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
-     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
+     * of 'UploadedFile' is injected into this setter to trigger the update. If this
      * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
      * must be able to accept an instance of 'File' as the bundle will inject one here
      * during Doctrine hydration.
-     *
-     * @param File|UploadedFile $image
-     *
-     * @return User
      */
-    public function setImageSystemFile(File $image = null)
+    public function setImageSystemFile(File $image = null): self
     {
         $this->imageSystemFile = $image;
 
@@ -313,30 +315,6 @@ class User extends BaseUser
         return $this;
     }
 
-    public function getPath(): ?string
-    {
-        return $this->path;
-    }
-
-    public function setPath(?string $path): self
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
-    public function getSystemPath(): ?string
-    {
-        return $this->systemPath;
-    }
-
-    public function setSystemPath(?string $systemPath): self
-    {
-        $this->systemPath = $systemPath;
-
-        return $this;
-    }
-
     public function getInfo(): ?UserInfo
     {
         return $this->info;
@@ -388,6 +366,54 @@ class User extends BaseUser
     public function setCity(?City $city): self
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    public function getImage(): \Vich\UploaderBundle\Entity\File
+    {
+        return $this->image;
+    }
+
+    public function setImage(\Vich\UploaderBundle\Entity\File $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getImageSystem(): \Vich\UploaderBundle\Entity\File
+    {
+        return $this->imageSystem;
+    }
+
+    public function setImageSystem(\Vich\UploaderBundle\Entity\File $imageSystem): self
+    {
+        $this->imageSystem = $imageSystem;
+
+        return $this;
+    }
+
+    public function getImageHash(): ?string
+    {
+        return $this->imageHash;
+    }
+
+    public function setImageHash(?string $imageHash): self
+    {
+        $this->imageHash = $imageHash;
+
+        return $this;
+    }
+
+    public function getImageSystemHash(): ?string
+    {
+        return $this->imageSystemHash;
+    }
+
+    public function setImageSystemHash(?string $imageSystemHash): self
+    {
+        $this->imageSystemHash = $imageSystemHash;
 
         return $this;
     }
