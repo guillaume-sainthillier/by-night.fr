@@ -9,11 +9,11 @@
     {% if download_uri is defined and download_uri %}
         <a class="image-gallery ripple" href="{{ download_uri }}">
             {% if image_thumb_uri is not null %}
-                <img class="img-fluid loading"
-                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+                <img class="img-fluid blur-up lazyload"
                      {% if image_thumb_params.w is defined %}width="{{ image_thumb_params.w }}"{% endif %}
                      {% if image_thumb_params.h is defined %}height="{{ image_thumb_params.h }}"{% endif %}
-                     data-src="{{ image_thumb_uri }}"
+                     src="{{ image_thumb_uri }}"
+                     srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
                      data-srcset="{{ image_thumb_uri_retina }} 2x"
                      alt="" />
             {% endif %}
