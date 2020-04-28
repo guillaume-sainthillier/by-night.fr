@@ -13,7 +13,7 @@ vich_uploader:
             directory_namer:
                 service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
                 options:
-                    date_time_property: updatedAt
+                    date_time_property: createdAt
 
         event_image:
             uri_prefix: /uploads/documents
@@ -25,4 +25,4 @@ vich_uploader:
             directory_namer:
                 service: Vich\UploaderBundle\Naming\CurrentDateTimeDirectoryNamer
                 options:
-                    date_time_property: updatedAt
+                    date_time_property: createdAt
