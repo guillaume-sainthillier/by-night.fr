@@ -8,7 +8,7 @@ import 'lazysizes';
 class App {
     init(selecteur) {
         const self = this;
-        $(document).ready(function () {
+        $(document).ready(function() {
             self.initComponents(selecteur);
             self.initPopups();
             self.initScrollTo();
@@ -22,31 +22,50 @@ class App {
         var bread = $('#bread .breadcrumb');
         var btnCollapse = $('#bread .btn');
 
-        btnCollapse.click(function () {
+        btnCollapse.click(function() {
             bread.toggleClass('collapsed');
-            $(this).find('.fa').toggleClass('fa-chevron-down').toggleClass('fa-chevron-right');
+            $(this)
+                .find('.fa')
+                .toggleClass('fa-chevron-down')
+                .toggleClass('fa-chevron-right');
         });
     }
 
     initHeaderSearch() {
         var searchForm = $('.navbar .search-form');
         var searchBackdrop = $('#search-menu-backdrop');
-        searchForm.find("input").focus(function () {
-            searchForm.addClass('focus');
-            searchBackdrop.addClass('open');
-        }).blur(function () {
-            searchForm.removeClass('focus');
-            searchBackdrop.removeClass('open');
-        });
+        searchForm
+            .find('input')
+            .focus(function() {
+                searchForm.addClass('focus');
+                searchBackdrop.addClass('open');
+            })
+            .blur(function() {
+                searchForm.removeClass('focus');
+                searchBackdrop.removeClass('open');
+            });
     }
 
     initPopups() {
-        $('a.popup').click(function () {
+        $('a.popup').click(function() {
             var width = 520,
                 height = 350,
-                leftPosition = (window.screen.width / 2) - ((width / 2) + 10),
-                topPosition = (window.screen.height / 2) - ((height / 2) + 50),
-                windowFeatures = "status=no,height=" + height + ",width=" + width + ",left=" + leftPosition + ",top=" + topPosition + ",screenX=" + leftPosition + ",screenY=" + topPosition + ",toolbar=0,status=0";
+                leftPosition = window.screen.width / 2 - (width / 2 + 10),
+                topPosition = window.screen.height / 2 - (height / 2 + 50),
+                windowFeatures =
+                    'status=no,height=' +
+                    height +
+                    ',width=' +
+                    width +
+                    ',left=' +
+                    leftPosition +
+                    ',top=' +
+                    topPosition +
+                    ',screenX=' +
+                    leftPosition +
+                    ',screenY=' +
+                    topPosition +
+                    ',toolbar=0,status=0';
 
             window.open($(this).attr('href'), 'sharer', windowFeatures);
             return false;
@@ -55,7 +74,9 @@ class App {
 
     initComponents(selecteur) {
         const self = this;
-        $(selecteur || 'body').data('bmd.bootstrapMaterialDesign', null).bootstrapMaterialDesign();
+        $(selecteur || 'body')
+            .data('bmd.bootstrapMaterialDesign', null)
+            .bootstrapMaterialDesign();
         self.initAutofocus(selecteur);
         self.initConnexion(selecteur);
         self.initRegister(selecteur);
@@ -69,39 +90,42 @@ class App {
     }
 
     initFormErrors(container) {
-        $("label.bmd-label-static", container || document).each(function () {
+        $('label.bmd-label-static', container || document).each(function() {
             $(this).toggleClass('position-static', $(this).find('.invalid-feedback').length > 0);
         });
     }
     initShortcutDates(container) {
-        $("input.shorcuts_date", container || document).each(function () {
+        $('input.shorcuts_date', container || document).each(function() {
             $(this).removeAttr('name');
             var input = this;
-            var fromInput = $("#" + $(this).data('from'));
-            var toInput = $("#" + $(this).data('to'));
+            var fromInput = $('#' + $(this).data('from'));
+            var toInput = $('#' + $(this).data('to'));
 
             var moment = require('moment');
 
             var ranges = {};
-            $.each($(input).data('ranges'), function (label, values) {
+            $.each($(input).data('ranges'), function(label, values) {
                 ranges[label] = [moment(values[0]), values[1] === null ? null : moment(values[1])];
             });
 
-            $(input).daterangepicker({
-                startDate: fromInput.val() ? moment(fromInput.val()) : moment(),
-                endDate: toInput.val() ? moment(toInput.val()) : null,
-                autoUpdateInput: false,
-                ranges: ranges,
-                alwaysShowCalendars: Object.keys(ranges).length === 0,
-                showCustomRangeLabel: Object.keys(ranges).length > 0,
-                "locale": {
-                    "applyLabel": "OK",
-                    "cancelLabel": "Annuler",
-                    "fromLabel": "Du",
-                    "toLabel": "Au",
-                    "customRangeLabel": "Personnalisé",
+            $(input).daterangepicker(
+                {
+                    startDate: fromInput.val() ? moment(fromInput.val()) : moment(),
+                    endDate: toInput.val() ? moment(toInput.val()) : null,
+                    autoUpdateInput: false,
+                    ranges: ranges,
+                    alwaysShowCalendars: Object.keys(ranges).length === 0,
+                    showCustomRangeLabel: Object.keys(ranges).length > 0,
+                    locale: {
+                        applyLabel: 'OK',
+                        cancelLabel: 'Annuler',
+                        fromLabel: 'Du',
+                        toLabel: 'Au',
+                        customRangeLabel: 'Personnalisé',
+                    },
                 },
-            }, cb);
+                cb
+            );
 
             function cb(start, end, label) {
                 var datas = $(input).data('daterangepicker');
@@ -117,41 +141,45 @@ class App {
                     }
                 }
 
-                fromInput.val(start.isValid() ? start.format('YYYY-MM-DD') : "");
-                toInput.val(end.isValid() ? end.format('YYYY-MM-DD') : "");
+                fromInput.val(start.isValid() ? start.format('YYYY-MM-DD') : '');
+                toInput.val(end.isValid() ? end.format('YYYY-MM-DD') : '');
             }
         });
     }
 
     initGallery(container) {
-        $(".image-gallery", container || document).each(function () {
-            $(this).fancybox({
-                helpers: {
-                    title: {
-                        type: 'inside',
-                        position: 'top'
+        $('.image-gallery', container || document).each(function() {
+            $(this)
+                .fancybox({
+                    helpers: {
+                        title: {
+                            type: 'inside',
+                            position: 'top',
+                        },
+                        overlay: {
+                            locked: false,
+                        },
                     },
-                    overlay: {
-                        locked: false
-                    }
-                }
-            }).click(function () {
-                return false;
-            });
+                })
+                .click(function() {
+                    return false;
+                });
         });
     }
 
     //Deps: []
     initMore(container) {
         const self = this;
-        $(".more", container || document).click(function (e) {
+        $('.more', container || document).click(function(e) {
             e.preventDefault();
 
-            $(this).attr('disabled', true).prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
+            $(this)
+                .attr('disabled', true)
+                .prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ');
 
             var btn = $(this);
             var container = btn.parent().prev();
-            $.get($(btn).attr("href"), function (html) {
+            $.get($(btn).attr('href'), function(html) {
                 var currentContainer = $('<div>').html(html);
                 btn.parent().remove();
                 currentContainer.insertAfter(container);
@@ -179,48 +207,48 @@ class App {
      * @returns {void}
      */
     initSelectpicker(selecteur) {
-        $('select', selecteur || document).each(function () {
+        $('select', selecteur || document).each(function() {
             $(this).selectpicker({
-                'style': $(this).data('style') || 'btn-primary'
+                style: $(this).data('style') || 'btn-primary',
             });
         });
     }
 
     //Deps: []
     initAutofocus(selecteur) {
-        $("[autofocus]", selecteur || document).focus();
+        $('[autofocus]', selecteur || document).focus();
     }
 
     //Deps: []
     initMenuOnScrollListener() {
         var navbar = $('.navbar');
-        var toggler = navbar.find(".navbar-toggler");
-        var href = $(toggler).data("target");
+        var toggler = navbar.find('.navbar-toggler');
+        var href = $(toggler).data('target');
         var elem = $(href);
 
-        $(window).scrolled(200, function () {
-            if (!toggler.hasClass("collapsed")) {
+        $(window).scrolled(200, function() {
+            if (!toggler.hasClass('collapsed')) {
                 $(elem).collapse('hide');
             }
         });
 
-        $(window).scroll(function () {
+        $(window).scroll(function() {
             if ($(window).scrollTop() > 0) {
                 $(navbar).addClass('navbar-shadow');
             } else {
                 $(navbar).removeClass('navbar-shadow');
             }
-        })
+        });
     }
 
     //Deps: ['bootstrap']
     initLike(selecteur) {
         var options = {
-            "css_selecteur_like": ".btn-like-event",
-            "css_active_class": "btn-primary"
+            css_selecteur_like: '.btn-like-event',
+            css_active_class: 'btn-primary',
         };
 
-        $(options.css_selecteur_like, selecteur || document).click(function () {
+        $(options.css_selecteur_like, selecteur || document).click(function() {
             var btn = $(this);
 
             if (btn.hasClass('connexion')) {
@@ -228,7 +256,7 @@ class App {
             }
 
             btn.attr('disabled', true);
-            $.post(btn.data("href"), {'like': !btn.hasClass(options.css_active_class)}).done(function (msg) {
+            $.post(btn.data('href'), { like: !btn.hasClass(options.css_active_class) }).done(function(msg) {
                 btn.attr('disabled', !msg.success);
                 if (msg.success) {
                     btn.toggleClass(options.css_active_class, msg.like);
@@ -250,7 +278,7 @@ class App {
             outDelay: 200,
             containerID: 'toTop',
             scrollSpeed: 400,
-            easingType: 'linear'
+            easingType: 'linear',
         };
 
         var toTopHidden = true;
@@ -260,12 +288,12 @@ class App {
             return;
         }
 
-        toTop.click(function (e) {
+        toTop.click(function(e) {
             e.preventDefault();
-            $("html, body").animate({'scrollTop': 0}, settings.scrollSpeed, settings.easingType);
+            $('html, body').animate({ scrollTop: 0 }, settings.scrollSpeed, settings.easingType);
         });
 
-        $(window).scrolled(200, function () {
+        $(window).scrolled(200, function() {
             var sd = $(this).scrollTop();
             if (sd > settings.min && toTopHidden) {
                 toTop.fadeIn(settings.inDelay);
@@ -281,83 +309,111 @@ class App {
     popup(href, parent, width, height, left, top) {
         window.parent_elem = parent;
 
-        width = width || 800,
-            height = height || 500,
-            left = left || ($(window).width() / 2) - (width / 2),
-            top = top || ($(window).height() / 2) - (height / 2);
+        (width = width || 800),
+            (height = height || 500),
+            (left = left || $(window).width() / 2 - width / 2),
+            (top = top || $(window).height() / 2 - height / 2);
 
-        window.open(href, null, 'width=' + width + ',height=' + height + ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=' + left + ',top=' + top + ',toolbar=0');
+        window.open(
+            href,
+            null,
+            'width=' +
+                width +
+                ',height=' +
+                height +
+                ',toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=' +
+                left +
+                ',top=' +
+                top +
+                ',toolbar=0'
+        );
     }
 
     //Deps: ['modals']
     initRegister(selecteur) {
         const self = this;
-        $(".register", selecteur || document).unbind("click").click(function () {
-            var $dialog = $("#dialog_details");
-            $dialog.modal("show").modal("loading").load($(this).attr("href"), function () {
-                self.handleRegister($dialog);
-            });
+        $('.register', selecteur || document)
+            .unbind('click')
+            .click(function() {
+                var $dialog = $('#dialog_details');
+                $dialog
+                    .modal('show')
+                    .modal('loading')
+                    .load($(this).attr('href'), function() {
+                        self.handleRegister($dialog);
+                    });
 
-            return false;
-        });
+                return false;
+            });
     }
 
     //Deps: ['modals', 'bootstrap']
     handleRegister($dialog) {
         const self = this;
         self.initComponents($dialog);
-        $dialog.find("form").unbind("submit").submit(function () {
-            var href = $(this).attr("action");
-            var datas = $(this).serialize();
-            var submit_button = $("#_register");
-            submit_button.button("loading");
-            $.post(href, datas).done(function (data) {
-                submit_button.button("reset");
+        $dialog
+            .find('form')
+            .unbind('submit')
+            .submit(function() {
+                var href = $(this).attr('action');
+                var datas = $(this).serialize();
+                var submit_button = $('#_register');
+                submit_button.button('loading');
+                $.post(href, datas).done(function(data) {
+                    submit_button.button('reset');
 
-                if (typeof data.success === "boolean" && data.success) {
-                    $dialog.modal("hide");
-                    location.reload();
-                } else {
-                    $dialog.html(data);
-                    self.handleRegister($dialog); //ne rien mettre après
-                }
+                    if (typeof data.success === 'boolean' && data.success) {
+                        $dialog.modal('hide');
+                        location.reload();
+                    } else {
+                        $dialog.html(data);
+                        self.handleRegister($dialog); //ne rien mettre après
+                    }
+                });
+                return false;
             });
-            return false;
-        });
     }
 
     //Deps: ['modals']
     initConnexion(selecteur) {
         const self = this;
-        $(".connexion", selecteur || document).unbind("click").click(function (e) {
-            var $dialog = $("#dialog_details");
-            $dialog.modal("show").modal("loading").load($(this).attr("href"), function () {
-                self.handleLogin($dialog);
+        $('.connexion', selecteur || document)
+            .unbind('click')
+            .click(function(e) {
+                var $dialog = $('#dialog_details');
+                $dialog
+                    .modal('show')
+                    .modal('loading')
+                    .load($(this).attr('href'), function() {
+                        self.handleLogin($dialog);
+                    });
+                return false;
             });
-            return false;
-        });
     }
 
     //Deps: ['modals', 'bootstrap']
     handleLogin($dialog) {
         const self = this;
         self.initComponents($dialog);
-        $dialog.find("form").unbind("submit").submit(function () {
-            var href = $(this).attr("action");
-            var datas = $(this).serialize();
-            var submit_button = $("#_submit");
-            submit_button.button("loading");
-            $.post(href, datas).done(function (data) {
-                submit_button.button("reset");
-                if (!data.success) {
-                    $dialog.modal("setLittleErreur", data.message);
-                } else {
-                    $dialog.modal("hide");
-                    location.reload();
-                }
+        $dialog
+            .find('form')
+            .unbind('submit')
+            .submit(function() {
+                var href = $(this).attr('action');
+                var datas = $(this).serialize();
+                var submit_button = $('#_submit');
+                submit_button.button('loading');
+                $.post(href, datas).done(function(data) {
+                    submit_button.button('reset');
+                    if (!data.success) {
+                        $dialog.modal('setLittleErreur', data.message);
+                    } else {
+                        $dialog.modal('hide');
+                        location.reload();
+                    }
+                });
+                return false;
             });
-            return false;
-        });
     }
 }
 

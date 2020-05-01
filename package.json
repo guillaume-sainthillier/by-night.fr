@@ -34,8 +34,10 @@
         "@symfony/webpack-encore": "^0.28.2",
         "core-js": "^3.0.0",
         "es6-promise": "^4.2.6",
+        "husky": "^4.2.5",
         "node-sass": "^4.12.0",
         "node-sass-tilde-importer": "^1.0.2",
+        "prettier": "^2.0.5",
         "regenerator-runtime": "^0.13.2",
         "sass-loader": "^7.0.1",
         "webpack-notifier": "^1.6.0"
@@ -45,5 +47,13 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.{js,css,md}": "prettier --write"
     }
 }

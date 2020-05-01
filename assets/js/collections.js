@@ -1,12 +1,12 @@
-/* 
+/*
  * Gestion des collections Symfony2
- * 
+ *
  * Dépendances: jQuery, bootstrap, js/scripts.js
- * 
+ *
  * @author Guillaume Sainthillier
  */
 
-$(function () {
+$(function() {
     init_collections();
 });
 
@@ -21,7 +21,7 @@ $(function () {
  * - Déclarer l'attribut data-allow-delete, correspondant au libellé du verbe Supprimer (ex: supprimer)
  */
 function init_collections() {
-    $('.widget_collection').each(function () {
+    $('.widget_collection').each(function() {
         var $bloc = $(this);
         var $mainLabel = $bloc.prev('label.control-label');
         var childs = $bloc.children('div.form-group');
@@ -35,20 +35,19 @@ function init_collections() {
             index++;
         } else {
             // Pour chaque catégorie déjà existante, on ajoute un lien de suppression (si la suppression est autorisée)
-            childs.each(function (i) {
+            childs.each(function(i) {
                 ajouterLienSuppression($(this));
             });
         }
 
         $('<a href="#" class="btn btn-sm btn-success ml-2"><i class="fa fa-plus"></i></a>')
             .appendTo($mainLabel)
-            .click(function (e) {
+            .click(function(e) {
                 ajouterBloc($bloc, index);
                 index++;
                 e.preventDefault();
                 return false;
             });
-
     });
 }
 
@@ -59,7 +58,12 @@ function init_collections() {
  * @param {number} index l'index de l'item à ajouter
  */
 function ajouterBloc($bloc, index) {
-    var $prototype = $($bloc.data('prototype').replace(/__name__label__/g, (index + 1)).replace(/__name__/g, index));
+    var $prototype = $(
+        $bloc
+            .data('prototype')
+            .replace(/__name__label__/g, index + 1)
+            .replace(/__name__/g, index)
+    );
     ajouterLienSuppression($prototype);
     $bloc.append($prototype);
     App.initComponents($prototype);
@@ -72,13 +76,15 @@ function ajouterBloc($bloc, index) {
  * @returns {void}
  */
 function ajouterLienSuppression($prototype) {
-    var $lienSuppression = $('<a href="#" class="btn btn-sm btn-danger btn-sm margin_left_10"><i class="fa fa-times"></i></a>');
+    var $lienSuppression = $(
+        '<a href="#" class="btn btn-sm btn-danger btn-sm margin_left_10"><i class="fa fa-times"></i></a>'
+    );
 
     // Ajout du lien
     $prototype.children('label.control-label').append($lienSuppression);
 
     // Ajout du listener sur le clic du lien
-    $lienSuppression.click(function (e) {
+    $lienSuppression.click(function(e) {
         $prototype.remove();
         e.preventDefault(); // évite qu'un # apparaisse dans l'URL
         return false;

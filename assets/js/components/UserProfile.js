@@ -1,8 +1,8 @@
 export default class UserProfile {
     init() {
-        $(function () {
-            $("#btnDelete").click(function () {
-                $("#modalDelete").modal();
+        $(function() {
+            $('#btnDelete').click(function() {
+                $('#modalDelete').modal();
             });
         });
     }

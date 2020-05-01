@@ -1,82 +1,89 @@
 export default class SocialLogin {
     init() {
         const self = this;
-        $(function () {
+        $(function() {
             self.initOnOff();
 
             //Actions par défaut
-            $("body").on("wantConnect", function (event, ck) {
+            $('body').on('wantConnect', function(event, ck) {
                 self.launchSocialConnect(ck);
             });
 
-            $("body").on("wantDisconnect", function (event, ck) {
+            $('body').on('wantDisconnect', function(event, ck) {
                 self.launchSocialDisconnect(ck);
             });
 
-            $("body").on("hasDisconnected", function (event, ck) {
+            $('body').on('hasDisconnected', function(event, ck) {
                 self.onDisconnectedSocial(ck);
             });
 
             //Appelée par la popup ouverte lors de la connexion à un réseau social
-            $("body").on("hasConnected", function (event, ui) {
+            $('body').on('hasConnected', function(event, ui) {
                 var ck = ui.target;
                 var user = ui.user;
 
-                var bloc_config = $(ck).closest(".bloc_config");
+                var bloc_config = $(ck).closest('.bloc_config');
 
                 $(ck).prop('checked', true);
-                bloc_config.find(".username").text(user.username);
-                bloc_config.find(".when_on").show("normal", function () {
-                    $(this).removeClass("hidden");
+                bloc_config.find('.username').text(user.username);
+                bloc_config.find('.when_on').show('normal', function() {
+                    $(this).removeClass('hidden');
                 });
             });
         });
     }
 
     initOnOff() {
-        $(".bloc_config input:checkbox").each(function () {
-            $(this).unbind("change").change(function () {
-                var ck = $(this);
-                $(ck).prop('checked', !$(ck).prop('checked'));
-                if ($(ck).prop('checked')) //Déconnexion
-                {
-                    $("body").trigger("wantDisconnect", ck);
-                } else //Connexion
-                {
-                    $("body").trigger("wantConnect", ck);
-                }
-            });
+        $('.bloc_config input:checkbox').each(function() {
+            $(this)
+                .unbind('change')
+                .change(function() {
+                    var ck = $(this);
+                    $(ck).prop('checked', !$(ck).prop('checked'));
+                    if ($(ck).prop('checked')) {
+                        //Déconnexion
+                        $('body').trigger('wantDisconnect', ck);
+                    } //Connexion
+                    else {
+                        $('body').trigger('wantConnect', ck);
+                    }
+                });
         });
     }
 
     //Deps: ['app/App']
     launchSocialConnect(ck) {
-        App.popup($(ck).data("href-connect"), ck);
+        App.popup($(ck).data('href-connect'), ck);
     }
 
     launchSocialDisconnect(ck) {
         const self = this;
-        var dialog = $("#dialog_details").modal("loading").modal("show");
+        var dialog = $('#dialog_details')
+            .modal('loading')
+            .modal('show');
 
-        dialog.load($(ck).data("href-disconnect"), function () {
-            self.initModalCheckbox(dialog.modal("getBody").find("input:checkbox"));
-            dialog.find("form").unbind("submit").submit(function () {
-                dialog.modal("loading");
-                $.post($(this).attr("action")).done(function () {
-                    dialog.modal("hide");
-                    $("body").trigger("hasDisconnected", $(ck));
+        dialog.load($(ck).data('href-disconnect'), function() {
+            self.initModalCheckbox(dialog.modal('getBody').find('input:checkbox'));
+            dialog
+                .find('form')
+                .unbind('submit')
+                .submit(function() {
+                    dialog.modal('loading');
+                    $.post($(this).attr('action')).done(function() {
+                        dialog.modal('hide');
+                        $('body').trigger('hasDisconnected', $(ck));
+                    });
+                    return false;
                 });
-                return false;
-            });
         });
     }
 
     onDisconnectedSocial(ck) {
-        var bloc_config = $(ck).closest(".bloc_config");
+        var bloc_config = $(ck).closest('.bloc_config');
 
-        $(ck).prop("checked", false);
-        bloc_config.find(".when_on").hide("normal", function () {
-            $(this).addClass("hidden");
+        $(ck).prop('checked', false);
+        bloc_config.find('.when_on').hide('normal', function() {
+            $(this).addClass('hidden');
         });
     }
 
@@ -86,13 +93,17 @@ export default class SocialLogin {
      * @returns {undefined}
      */
     initModalCheckbox(ck) {
-        $(ck).unbind("click").click(function () {
-            var div_alert = $(this).closest(".modal-body").find(".alert");
-            if ($(this).prop("checked")) {
-                div_alert.removeClass("hidden");
-            } else {
-                div_alert.addClass("hidden");
-            }
-        });
+        $(ck)
+            .unbind('click')
+            .click(function() {
+                var div_alert = $(this)
+                    .closest('.modal-body')
+                    .find('.alert');
+                if ($(this).prop('checked')) {
+                    div_alert.removeClass('hidden');
+                } else {
+                    div_alert.addClass('hidden');
+                }
+            });
     }
 }

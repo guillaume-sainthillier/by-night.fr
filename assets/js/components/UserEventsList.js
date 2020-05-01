@@ -1,33 +1,35 @@
 export default class UserEventsList {
     init() {
-        $(function () {
-            $(".form-delete").submit(function () {
-                return confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?");
+        $(function() {
+            $('.form-delete').submit(function() {
+                return confirm(
+                    "Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?"
+                );
             });
 
-            $('.brouillon').change(function () {
+            $('.brouillon').change(function() {
                 var self = $(this);
 
                 console.log(self.prop('checked'));
                 self.attr('disabled', true);
                 $.post(self.data('href'), {
-                    brouillon: !self.prop('checked')
-                }).done(function () {
+                    brouillon: !self.prop('checked'),
+                }).done(function() {
                     self.attr('disabled', false);
                 });
             });
 
-            $('.annuler').change(function () {
+            $('.annuler').change(function() {
                 var self = $(this);
 
                 console.log(self.prop('checked'));
                 self.attr('disabled', true);
                 $.post(self.data('href'), {
-                    annuler: self.prop('checked')
-                }).done(function () {
+                    annuler: self.prop('checked'),
+                }).done(function() {
                     self.attr('disabled', false);
                 });
             });
         });
     }
-};
+}

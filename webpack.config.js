@@ -30,13 +30,15 @@ Encore
     .addEntry('espace_perso_event', './assets/js/pages/espace_perso_event.js')
     .addEntry('search', './assets/js/pages/search.js')
 
-    .copyFiles([{
-        from: './assets/images',
-        to: Encore.isProduction() ? 'images/[path][name].[hash:8].[ext]' : 'images/[path][name].[ext]',
-    }])
+    .copyFiles([
+        {
+            from: './assets/images',
+            to: Encore.isProduction() ? 'images/[path][name].[hash:8].[ext]' : 'images/[path][name].[ext]',
+        },
+    ])
 
     .splitEntryChunks()
-    .configureSplitChunks(function (splitChunks) {
+    .configureSplitChunks(function(splitChunks) {
         //https://github.com/webpack/webpack/blob/master/examples/many-pages/README.md
         splitChunks.maxInitialRequests = 20; // for HTTP2
         splitChunks.maxAsyncRequests = 20;
@@ -56,7 +58,7 @@ Encore
     .enableVersioning(Encore.isProduction())
 
     // enables @babel/preset-env polyfills
-    .configureBabelPresetEnv((config) => {
+    .configureBabelPresetEnv(config => {
         config.useBuiltIns = 'usage';
         config.corejs = 3;
     })
@@ -72,30 +74,34 @@ Encore
         'window.$': 'jquery',
         Popper: ['popper.js', 'default'],
     })
-    .addPlugin(new MomentLocalesPlugin({
-        localesToKeep: ['fr'],
-    }))
-    .addPlugin(new PurgecssPlugin({
-        paths: glob.sync([
-            path.join(__dirname, 'templates/**/*.html.twig'),
-            path.join(__dirname, 'assets/**/*.js'),
-            path.join(__dirname, 'src/**/*.php'),
-            path.join(__dirname, 'node_modules/bootstrap/js/src/**/*.js'),
-            path.join(__dirname, 'node_modules/bootstrap-material-design/js/*.js'),
-            path.join(__dirname, 'node_modules/bootstrap-select/js/bootstrap-select.js'),
-            path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
-            path.join(__dirname, 'node_modules/jquery-cookiebar/jquery.cookiebar.js'),
-            path.join(__dirname, 'node_modules/fancybox/dist/js/jquery.fancybox.js'),
-            path.join(__dirname, 'node_modules/lazysizes/lazysizes.js'),
-            path.join(__dirname, 'node_modules/morris.js/morris.js'),
-            path.join(__dirname, 'node_modules/raphael/raphael.js'),
-            path.join(__dirname, 'node_modules/summernote/src/js/**/*.js'),
-            path.join(__dirname, 'node_modules/typeahead.js/src/**/*.js'),
-        ], {nodir: true}),
-        whitelistPatterns: () => [
-            /^custom-/
-        ]
-    }))
-;
+    .addPlugin(
+        new MomentLocalesPlugin({
+            localesToKeep: ['fr'],
+        })
+    )
+    .addPlugin(
+        new PurgecssPlugin({
+            paths: glob.sync(
+                [
+                    path.join(__dirname, 'templates/**/*.html.twig'),
+                    path.join(__dirname, 'assets/**/*.js'),
+                    path.join(__dirname, 'src/**/*.php'),
+                    path.join(__dirname, 'node_modules/bootstrap/js/src/**/*.js'),
+                    path.join(__dirname, 'node_modules/bootstrap-material-design/js/*.js'),
+                    path.join(__dirname, 'node_modules/bootstrap-select/js/bootstrap-select.js'),
+                    path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
+                    path.join(__dirname, 'node_modules/jquery-cookiebar/jquery.cookiebar.js'),
+                    path.join(__dirname, 'node_modules/fancybox/dist/js/jquery.fancybox.js'),
+                    path.join(__dirname, 'node_modules/lazysizes/lazysizes.js'),
+                    path.join(__dirname, 'node_modules/morris.js/morris.js'),
+                    path.join(__dirname, 'node_modules/raphael/raphael.js'),
+                    path.join(__dirname, 'node_modules/summernote/src/js/**/*.js'),
+                    path.join(__dirname, 'node_modules/typeahead.js/src/**/*.js'),
+                ],
+                { nodir: true }
+            ),
+            whitelistPatterns: () => [/^custom-/],
+        })
+    );
 
 module.exports = Encore.getWebpackConfig();

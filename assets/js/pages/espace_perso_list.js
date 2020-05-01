@@ -1,3 +1,3 @@
-import UserEventsList from "../components/UserEventsList";
+import UserEventsList from '../components/UserEventsList';
 
 new UserEventsList().init();
