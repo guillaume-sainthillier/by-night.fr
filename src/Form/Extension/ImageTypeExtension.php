@@ -47,7 +47,7 @@ class ImageTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public static function getExtendedTypes()
+    public static function getExtendedTypes(): iterable
     {
         return [VichImageType::class];
     }

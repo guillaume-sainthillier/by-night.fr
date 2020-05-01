@@ -46,7 +46,7 @@ class AppEventsImportCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $parserName = $input->getArgument('parser');
         if (empty($this->parsers[$parserName])) {
@@ -67,5 +67,6 @@ class AppEventsImportCommand extends Command
             '<info>%d</info> événements parsés',
             $nbEvents
         ));
+        return 0;
     }
 }

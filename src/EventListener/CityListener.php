@@ -35,7 +35,7 @@ class CityListener implements EventSubscriberInterface
 
         $request = $event->getRequest();
         if ($request->attributes->has('_current_city') && $request->attributes->get('_current_city') !== $request->cookies->get('app_city')) {
-            $cookie = new Cookie('app_city', $request->attributes->get('_current_city'), '+1 year');
+            $cookie = Cookie::create('app_city', $request->attributes->get('_current_city'), '+1 year');
             $event->getResponse()->headers->setCookie($cookie);
         }
     }

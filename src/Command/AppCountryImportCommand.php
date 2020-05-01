@@ -92,7 +92,7 @@ class AppCountryImportCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->countryImporter->import(
             $input->getArgument('id'),
@@ -100,5 +100,6 @@ class AppCountryImportCommand extends Command
             $input->getArgument('capital'),
             $input->getArgument('locale')
         );
+        return 0;
     }
 }
