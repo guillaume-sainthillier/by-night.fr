@@ -74,7 +74,7 @@ class CommentController extends BaseController
      * @Route("/{id}/{page}", name="app_comment_list", requirements={"id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function listAction(Event $event, $page = 1)
+    public function list(Event $event, $page = 1)
     {
         $offset = 10;
         $comment = new Comment();
@@ -93,7 +93,7 @@ class CommentController extends BaseController
     /**
      * @Route("/{id}/nouveau", name="app_comment_new", requirements={"id": "\d+"})
      */
-    public function newAction(Request $request, Event $event)
+    public function new(Request $request, Event $event)
     {
         $comment = new Comment();
         $form = $this->getCreateForm($comment, $event);

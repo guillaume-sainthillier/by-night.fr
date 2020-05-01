@@ -37,7 +37,7 @@ class CityController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function cityAutocompleteAction(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
+    public function cityAutocomplete(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
     {
         $term = \trim($request->get('q'));
         if ($term === '') {

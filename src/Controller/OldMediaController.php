@@ -28,7 +28,7 @@ class OldMediaController extends AbstractController
      *
      * @return Response
      */
-    public function indexAction(string $path, StorageInterface $storage, AssetExtension $assetExtension)
+    public function index(string $path, StorageInterface $storage, AssetExtension $assetExtension)
     {
         $infos = pathinfo($path);
 

@@ -31,7 +31,7 @@ class EventController extends BaseController
      * @Route("/soiree/{slug}", name="app_event_details_old", requirements={"slug": "[^/]+"})
      * @ReverseProxy(expires="+1 month")
      */
-    public function detailsAction(Location $location, $slug, $id = null)
+    public function details(Location $location, $slug, $id = null)
     {
         $result = $this->checkEventUrl($location->getSlug(), $slug, $id);
         if ($result instanceof Response) {
@@ -48,7 +48,7 @@ class EventController extends BaseController
     /**
      * @Cache(expires="+12 hours", smaxage="43200")
      */
-    public function shareAction(Event $event, EventProfilePicture $eventProfilePicture)
+    public function share(Event $event, EventProfilePicture $eventProfilePicture)
     {
         $link = $this->generateUrl('app_event_details', [
             'slug' => $event->getSlug(),

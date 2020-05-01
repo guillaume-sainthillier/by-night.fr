@@ -30,7 +30,7 @@ class DefaultController extends AbstractController
      *
      * @return Response
      */
-    public function indexAction(Request $request, CityManager $cityManager)
+    public function index(Request $request, CityManager $cityManager)
     {
         $datas = [
             'from' => new DateTime(),

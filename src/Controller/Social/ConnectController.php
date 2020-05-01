@@ -43,7 +43,7 @@ class ConnectController extends BaseController
      * @throws NotFoundHttpException if `connect` functionality was not enabled
      * @throws AccessDeniedException if no user is authenticated
      */
-    public function connectServiceAction(Request $request, $service)
+    public function connectService(Request $request, $service)
     {
         $connect = $this->container->getParameter('hwi_oauth.connect');
         if (!$connect) {

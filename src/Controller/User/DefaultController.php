@@ -29,7 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DefaultController extends BaseController
 {
-    public function urlRedirectAction($term)
+    public function urlRedirect($term)
     {
         $params = [
             'type' => 'membres',
@@ -46,7 +46,7 @@ class DefaultController extends BaseController
      * @Route("/{slug}--{id}", name="app_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/{username}", name="app_user_details_old", requirements={"username": "[^/]+"})
      */
-    public function indexAction($id = null, $slug = null, $username = null)
+    public function index($id = null, $slug = null, $username = null)
     {
         $result = $this->checkUserUrl($slug, $username, $id, 'app_user_details');
         if ($result instanceof Response) {
@@ -100,7 +100,7 @@ class DefaultController extends BaseController
      *
      * @return object|JsonResponse|RedirectResponse|null
      */
-    public function statsAction(Request $request, $type, $id = null, $slug = null, $username = null)
+    public function stats(Request $request, $type, $id = null, $slug = null, $username = null)
     {
         $result = $this->checkUserUrl($slug, $username, $id, 'app_user_stats', ['type' => $type]);
         if ($result instanceof Response) {

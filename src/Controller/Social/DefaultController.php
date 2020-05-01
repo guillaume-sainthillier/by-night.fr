@@ -31,7 +31,7 @@ class DefaultController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function disconnectAction(Social $social, UserCheckerInterface $userChecker, UserManagerInterface $userManager)
+    public function disconnect(Social $social, UserCheckerInterface $userChecker, UserManagerInterface $userManager)
     {
         $user = $this->getUser();
         $social->disconnectUser($user);
@@ -55,7 +55,7 @@ class DefaultController extends AbstractController
      *
      * @return Response
      */
-    public function disconnectConfirmAction($service)
+    public function disconnectConfirm($service)
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,

@@ -27,7 +27,7 @@ class WidgetsController extends BaseController
      * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"})
      * @ReverseProxy(expires="1 hour")
      */
-    public function twitterAction(bool $disableTwitterFeed, Location $location, Twitter $twitter, $max_id = null)
+    public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, $max_id = null)
     {
         $results = !$disableTwitterFeed ? $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT) : [];
 
@@ -58,7 +58,7 @@ class WidgetsController extends BaseController
      * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_event_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function nextEventsAction(Location $location, $slug, $id = null, $page = 1)
+    public function nextEvents(Location $location, $slug, $id = null, $page = 1)
     {
         $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_prochaines_soirees', [
             'page' => $page,
@@ -98,7 +98,7 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug":"[^/]+", "id":"\d+", "page":"\d+"}) */
-    public function soireesSimilairesAction(Location $location, $slug, $id = null, $page = 1)
+    public function soireesSimilaires(Location $location, $slug, $id = null, $page = 1)
     {
         $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_soirees_similaires', [
             'page' => $page,
@@ -140,7 +140,7 @@ class WidgetsController extends BaseController
      * @Route("/top/soirees/{page}", name="app_agenda_top_soirees", requirements={"page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function topSoireesAction(Location $location, $page = 1)
+    public function topSoirees(Location $location, $page = 1)
     {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(Event::class);

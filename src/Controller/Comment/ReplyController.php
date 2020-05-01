@@ -30,7 +30,7 @@ class ReplyController extends AbstractController
      *
      * @return Response
      */
-    public function listAction(Comment $comment, $page = 1)
+    public function list(Comment $comment, $page = 1)
     {
         $limit = 5;
 
@@ -66,7 +66,7 @@ class ReplyController extends AbstractController
      *
      * @return JsonResponse|RedirectResponse|Response
      */
-    public function newAction(Request $request, Comment $comment)
+    public function new(Request $request, Comment $comment)
     {
         $reponse = new Comment();
         $form = $this->getCreateForm($reponse, $comment);
@@ -126,7 +126,7 @@ class ReplyController extends AbstractController
         ]);
     }
 
-    public function detailsAction(Comment $comment)
+    public function details(Comment $comment)
     {
         return $this->render('Comment/Reply/details.html.twig', [
             'comment' => $comment,

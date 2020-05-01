@@ -33,7 +33,7 @@ class WidgetsController extends BaseController
      *
      * @return Response
      */
-    public function topMembresAction($page = 1)
+    public function topMembres($page = 1)
     {
         if ($page <= 1) {
             $page = 1;

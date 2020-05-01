@@ -31,7 +31,7 @@ class EventController extends BaseController
     /**
      * @Route("/mes-soirees", name="app_event_list", methods={"GET"})
      */
-    public function indexAction(Request $request, PaginatorInterface $paginator)
+    public function index(Request $request, PaginatorInterface $paginator)
     {
         $user = $this->getUser();
 
@@ -47,7 +47,7 @@ class EventController extends BaseController
     /**
      * @Route("/nouvelle-soiree", name="app_event_new", methods={"GET", "POST"})
      */
-    public function newAction(Request $request, EventConstraintValidator $validator)
+    public function new(Request $request, EventConstraintValidator $validator)
     {
         $user = $this->getUser();
         $event = (new Event())
@@ -91,7 +91,7 @@ class EventController extends BaseController
      * @Route("/{id}", name="app_event_edit", methods={"GET", "POST"})
      * @IsGranted("edit", subject="event")
      */
-    public function editAction(Request $request, Event $event, EventConstraintValidator $validator)
+    public function edit(Request $request, Event $event, EventConstraintValidator $validator)
     {
         if ($event->getExternalId()) {
             $event->setExternalUpdatedAt(new DateTime());
@@ -119,7 +119,7 @@ class EventController extends BaseController
      *
      * @return RedirectResponse
      */
-    public function deleteAction(Event $event)
+    public function delete(Event $event)
     {
         $em = $this->getDoctrine()->getManager();
         $em->remove($event);
@@ -137,7 +137,7 @@ class EventController extends BaseController
      * @Route("{id}/annuler", name="app_event_annuler", methods={"POST"})
      * @IsGranted("edit", subject="event")
      */
-    public function annulerAction(Request $request, Event $event)
+    public function annuler(Request $request, Event $event)
     {
         $annuler = $request->request->get('annuler', 'true');
         $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
@@ -153,7 +153,7 @@ class EventController extends BaseController
      * @Route("{id}/brouillon", name="app_event_brouillon", methods={"POST"})
      * @IsGranted("edit", subject="event")
      */
-    public function brouillonAction(Request $request, Event $event)
+    public function brouillon(Request $request, Event $event)
     {
         $brouillon = $request->request->get('brouillon', 'true');
         $isBrouillon = 'true' === $brouillon;

@@ -33,7 +33,7 @@ class SocialController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function connectInfoAction($service, SessionInterface $session)
+    public function connectInfo($service, SessionInterface $session)
     {
         $session->set('connect_site', true);
 
@@ -50,7 +50,7 @@ class SocialController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function disconnectSiteAction(Social $social, SocialManager $socialManager)
+    public function disconnectSite(Social $social, SocialManager $socialManager)
     {
         $social->disconnectSite();
 
@@ -68,7 +68,7 @@ class SocialController extends AbstractController
      *
      * @return Response
      */
-    public function disconnectConfirmAction($service)
+    public function disconnectConfirm($service)
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,

@@ -54,7 +54,7 @@ class ProfileController extends BaseController
     /**
      * @Route("/show", name="fos_user_profile_show")
      */
-    public function showAction()
+    public function show()
     {
         return $this->redirectToRoute('fos_user_profile_edit');
     }
@@ -64,7 +64,7 @@ class ProfileController extends BaseController
      *
      * @return RedirectResponse
      */
-    public function deleteAction(Request $request, UserManagerInterface $userManager)
+    public function delete(Request $request, UserManagerInterface $userManager)
     {
         $user = $this->getUser();
         if (!\is_object($user) || !$user instanceof UserInterface) {
@@ -136,7 +136,7 @@ class ProfileController extends BaseController
      *
      * @return RedirectResponse|Response|null
      */
-    public function editAction(Request $request)
+    public function edit(Request $request)
     {
         $user = $this->getUser();
         if (!\is_object($user) || !$user instanceof UserInterface) {

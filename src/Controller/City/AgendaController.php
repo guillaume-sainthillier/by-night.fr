@@ -38,7 +38,7 @@ class AgendaController extends BaseController
      * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags", requirements={"page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function indexAction(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, int $page = 1, string $type = null, string $tag = null, string $slug = null)
+    public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, int $page = 1, string $type = null, string $tag = null, string $slug = null)
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();

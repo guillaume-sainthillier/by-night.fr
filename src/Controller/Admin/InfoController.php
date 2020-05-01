@@ -27,7 +27,7 @@ class InfoController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function listAction(SocialManager $socialManager)
+    public function list(SocialManager $socialManager)
     {
         $info = $socialManager->getSiteInfo();
 
@@ -48,7 +48,7 @@ class InfoController extends AbstractController
      *
      * @return Response
      */
-    public function viewAction(SiteInfo $info)
+    public function view(SiteInfo $info)
     {
         return $this->render('Admin/Info/view.html.twig', [
             'info' => $info,

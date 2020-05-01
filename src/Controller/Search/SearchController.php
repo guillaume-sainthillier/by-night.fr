@@ -27,7 +27,7 @@ class SearchController extends AbstractController
      *
      * @return Response
      */
-    public function searchAction(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm)
+    public function search(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm)
     {
         $q = \trim($request->get('q', null));
         $type = $request->get('type', null);

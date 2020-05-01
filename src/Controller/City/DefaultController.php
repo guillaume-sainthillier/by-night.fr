@@ -25,7 +25,7 @@ class DefaultController extends BaseController
      * @Route("/", name="app_agenda_index")
      * @ReverseProxy(expires="tomorrow")
      */
-    public function indexAction(Location $location, PaginatorInterface $paginator)
+    public function index(Location $location, PaginatorInterface $paginator)
     {
         $datas = [
             'from' => new DateTime(),
