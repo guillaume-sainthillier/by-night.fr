@@ -12,20 +12,15 @@ namespace App\Updater;
 
 use App\Social\FacebookAdmin;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Pool;
 use function GuzzleHttp\Psr7\copy_to_string;
-use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 abstract class Updater
 {
-    const POOL_SIZE = 5;
-
-    /**
-     * @var Client
-     */
+    /** @var HttpClientInterface */
     protected $client;
 
     /**
@@ -38,12 +33,16 @@ abstract class Updater
      */
     protected $facebookAdmin;
 
-    public function __construct(EntityManagerInterface $entityManager, FacebookAdmin $facebookAdmin)
+    /** @var LoggerInterface */
+    protected $logger;
+
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin)
     {
         $this->entityManager = $entityManager;
+        $this->logger = $logger;
         $this->facebookAdmin = $facebookAdmin;
 
-        $this->client = new Client();
+        $this->client = HttpClient::create();
     }
 
     abstract public function update(\DateTimeInterface $from);

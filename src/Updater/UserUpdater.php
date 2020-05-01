@@ -15,19 +15,20 @@ use App\Handler\UserHandler;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 
 class UserUpdater extends Updater
 {
-    const PAGINATION_SIZE = 50;
+    private const PAGINATION_SIZE = 50;
 
-    /**
-     * @var UserHandler
-     */
+    /** @var UserHandler */
     protected $userHandler;
 
-    public function __construct(EntityManagerInterface $entityManager, FacebookAdmin $facebookAdmin, UserHandler $userHandler)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, UserHandler $userHandler)
     {
-        parent::__construct($entityManager, $facebookAdmin);
+        parent::__construct($entityManager, $logger, $facebookAdmin);
+
         $this->userHandler = $userHandler;
     }
 
@@ -57,23 +58,46 @@ class UserUpdater extends Updater
         }, $users)));
     }
 
-    protected function doUpdate(array $users, array $downloadUrls)
+    /**
+     * @param User[] $users
+     */
+    private function doUpdate(array $users, array $downloadUrls)
     {
-        $responses = $this->downloadUrls($downloadUrls);
+        $responses = [];
+
         foreach ($users as $user) {
-            /** @var User $user */
-            if (empty($responses[$user->getInfo()->getFacebookId()])) {
+            if (empty($downloadUrls[$user->getInfo()->getFacebookId()])) {
                 continue;
             }
 
-            $response = $responses[$user->getInfo()->getFacebookId()];
-            if ($this->userHandler->hasToUploadNewImage($response['content'], $user)) {
-                $this->userHandler->uploadFile($user, $response['content'], $response['contentType']);
+            $uri = $downloadUrls[$user->getInfo()->getFacebookId()];
+            $responses[] = $this->client->request('GET', $uri, [
+                'user_data' => $user,
+            ]);
+        }
+
+        foreach ($this->client->stream($responses) as $response => $chunk) {
+            try {
+                if ($chunk->isFirst() && 200 !== $response->getStatusCode()) {
+                    continue;
+                } elseif ($chunk->isLast()) {
+                    $content = $response->getContent();
+                    $user = $response->getInfo('user_data');
+
+                    if ($this->userHandler->hasToUploadNewImage($content, $user)) {
+                        $contentType = $response->getHeaders()['content-type'][0];
+                        dump($response->getInfo('url'), $response->getInfo('user_data')->getInfo()->getFacebookId(), $contentType);
+                        $this->userHandler->uploadFile($user, $content, $contentType);
+                    }
+                }
+            } catch (HttpExceptionInterface $e) {
+                $infos = $response->getInfo();
+                unset($infos['user_data']);
             }
         }
     }
 
-    protected function doFlush()
+    private function doFlush()
     {
         $this->entityManager->flush();
         $this->entityManager->clear(User::class);

@@ -477,6 +477,12 @@
             "ref": "8c507e663cf8a8c023d4287974d909bf68f06814"
         }
     },
+    "symfony/http-client": {
+        "version": "v4.4.7"
+    },
+    "symfony/http-client-contracts": {
+        "version": "v2.0.1"
+    },
     "symfony/http-foundation": {
         "version": "v3.4.1"
     },
