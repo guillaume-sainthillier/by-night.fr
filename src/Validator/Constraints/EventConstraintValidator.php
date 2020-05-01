@@ -18,11 +18,9 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class EventConstraintValidator extends ConstraintValidator
 {
-    /** @var RouterInterface */
-    private $router;
+    private RouterInterface $router;
 
-    /** @var bool */
-    private $checkIfUpdate;
+    private bool $checkIfUpdate;
 
     public function __construct(RouterInterface $router)
     {

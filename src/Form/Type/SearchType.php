@@ -25,8 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SearchType extends AbstractType
 {
-    /** @var DateRangeBuilder */
-    private $dateRangeBuilder;
+    private DateRangeBuilder $dateRangeBuilder;
 
     public function __construct(DateRangeBuilder $dateRangeBuilder)
     {

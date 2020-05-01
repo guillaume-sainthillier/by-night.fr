@@ -26,153 +26,151 @@ abstract class Info
     use EntityIdentityTrait;
 
     /**
-     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
-    protected $hasSeeTuto;
+    protected ?bool $hasSeeTuto = null;
 
     /**
-     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
-    protected $hasSeeAskingSocial;
+    protected ?bool $hasSeeAskingSocial = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_id;
+    protected ?string $facebook_id = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_access_token;
+    protected ?string $facebook_access_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_token_secret;
+    protected ?string $facebook_token_secret = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_refresh_token;
+    protected ?string $facebook_refresh_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_email;
+    protected ?string $facebook_email = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_expires_in;
+    protected ?string $facebook_expires_in = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_nickname;
+    protected ?string $facebook_nickname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_realname;
+    protected ?string $facebook_realname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $facebook_profile_picture;
+    protected ?string $facebook_profile_picture = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_id;
+    protected ?string $google_id = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_access_token;
+    protected ?string $google_access_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_token_secret;
+    protected ?string $google_token_secret = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_refresh_token;
+    protected ?string $google_refresh_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_email;
+    protected ?string $google_email = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_expires_in;
+    protected ?string $google_expires_in = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_nickname;
+    protected ?string $google_nickname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_realname;
+    protected ?string $google_realname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $google_profile_picture;
+    protected ?string $google_profile_picture = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_id;
+    protected ?string $twitter_id = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_access_token;
+    protected ?string $twitter_access_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_token_secret;
+    protected ?string $twitter_token_secret = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_refresh_token;
+    protected ?string $twitter_refresh_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_email;
+    protected ?string $twitter_email = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_expires_in;
+    protected ?string $twitter_expires_in = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_nickname;
+    protected ?string $twitter_nickname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_realname;
+    protected ?string $twitter_realname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected $twitter_profile_picture;
+    protected ?string $twitter_profile_picture = null;
 
     public function __construct()
     {

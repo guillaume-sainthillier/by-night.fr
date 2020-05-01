@@ -28,30 +28,28 @@ class Calendrier
     use EntityTimestampableTrait;
 
     /**
-     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
-    protected $participe;
+    protected ?bool $participe = null;
 
     /**
-     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
-    protected $interet;
+    protected ?bool $interet = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $user;
+    protected ?User $user = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $event;
+    protected ?Event $event = null;
 
     /**
      * Constructor.

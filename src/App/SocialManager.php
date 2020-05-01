@@ -15,25 +15,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class SocialManager
 {
-    /**
-     * @var string
-     */
-    private $facebookIdPage;
+    private string $facebookIdPage;
 
-    /**
-     * @var string
-     */
-    private $twitterIdPage;
+    private string $twitterIdPage;
 
     /**
      * @var SiteInfo
      */
     private $siteInfo;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage)
     {

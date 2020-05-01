@@ -18,11 +18,9 @@ use Twig\TwigFunction;
 
 class AssetExtension extends Extension
 {
-    /** @var RouterInterface */
-    private $router;
+    private RouterInterface $router;
 
-    /** @var string */
-    private $secret;
+    private string $secret;
 
     public function __construct(RouterInterface $router, string $secret)
     {

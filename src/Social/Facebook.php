@@ -14,10 +14,7 @@ use Facebook\Facebook as Client;
 
 class Facebook extends Social
 {
-    /**
-     * @var Client
-     */
-    protected $client;
+    protected Client $client;
 
     public function getName()
     {

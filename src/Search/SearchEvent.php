@@ -18,49 +18,31 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SearchEvent
 {
     /**
-     * @var DateTimeInterface|null
      * @Assert\NotBlank
      * @Assert\Date
      */
-    protected $from;
+    protected ?DateTimeInterface $from = null;
 
     /**
-     * @var DateTimeInterface|null
      * @Assert\Date
      */
-    protected $to;
+    protected ?DateTimeInterface $to = null;
 
     /**
-     * @var int
      * @Assert\NotBlank
      * @Assert\GreaterThan(0)
      */
-    protected $range;
+    protected ?int $range = null;
 
-    /**
-     * @var string|null
-     */
-    protected $tag;
+    protected ?string $tag = null;
 
-    /**
-     * @var array
-     */
-    protected $type_manifestation;
+    protected array $type_manifestation;
 
-    /**
-     * @var array
-     */
-    protected $lieux;
+    protected array $lieux;
 
-    /**
-     * @var string|null
-     */
-    protected $term;
+    protected ?string $term = null;
 
-    /**
-     * @var Location|null
-     */
-    protected $location;
+    protected ?Location $location = null;
 
     public function __construct()
     {

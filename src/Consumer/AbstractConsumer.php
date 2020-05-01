@@ -14,8 +14,7 @@ use Psr\Log\LoggerInterface;
 
 abstract class AbstractConsumer
 {
-    /** @var LoggerInterface */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {

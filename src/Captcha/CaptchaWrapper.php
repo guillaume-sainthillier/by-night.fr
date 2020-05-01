@@ -15,15 +15,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class CaptchaWrapper
 {
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+    private RequestStack $requestStack;
 
-    /**
-     * @var string
-     */
-    private $secret;
+    private string $secret;
 
     public function __construct(RequestStack $requestStack, $secret)
     {

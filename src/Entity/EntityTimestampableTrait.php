@@ -17,20 +17,18 @@ use Gedmo\Mapping\Annotation as Gedmo;
 trait EntityTimestampableTrait
 {
     /**
-     * @var DateTimeImmutable
      *
      * @ORM\Column(type="datetime_immutable")
      * @Gedmo\Timestampable(on="create")
      */
-    protected $createdAt;
+    protected ?DateTimeImmutable $createdAt = null;
 
     /**
-     * @var DateTimeImmutable
      *
      * @ORM\Column(type="datetime_immutable")
      * @Gedmo\Timestampable(on="update")
      */
-    protected $updatedAt;
+    protected ?DateTimeImmutable $updatedAt = null;
 
     public function getCreatedAt()
     {

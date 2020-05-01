@@ -16,10 +16,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PopulateListener implements EventSubscriberInterface
 {
-    /**
-     * @var IndexManager
-     */
-    private $indexManager;
+    private IndexManager $indexManager;
 
     public function __construct(IndexManager $indexManager)
     {

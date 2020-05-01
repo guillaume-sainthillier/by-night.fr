@@ -30,57 +30,30 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 abstract class Social
 {
-    /**
-     * @var string
-     */
-    protected $id;
+    protected string $id;
 
     /**
      * @var array
      */
     protected $config;
 
-    /**
-     * @var string
-     */
-    protected $secret;
+    protected string $secret;
 
-    /**
-     * @var TokenStorageInterface
-     */
-    protected $tokenStorage;
+    protected TokenStorageInterface $tokenStorage;
 
-    /**
-     * @var RouterInterface
-     */
-    protected $router;
+    protected RouterInterface $router;
 
-    /**
-     * @var SessionInterface
-     */
-    protected $session;
+    protected SessionInterface $session;
 
-    /**
-     * @var RequestStack
-     */
-    protected $requestStack;
+    protected RequestStack $requestStack;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    protected LoggerInterface $logger;
 
-    /**
-     * @var EventProfilePicture
-     */
-    protected $eventProfilePicture;
+    protected EventProfilePicture $eventProfilePicture;
 
-    /**
-     * @var SocialManager
-     */
-    protected $socialManager;
+    protected SocialManager $socialManager;
 
-    protected $isInitialized;
+    protected bool $isInitialized;
 
     public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager)
     {

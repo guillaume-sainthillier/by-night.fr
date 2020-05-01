@@ -34,21 +34,21 @@ class Reject
 
     const BAD_PLACE_NAME = 512;
 
-    const BAD_PLACE_LOCATION = 1024;
+    const BAD_PLACE_LOCATION = 1_024;
 
-    const BAD_PLACE_CITY_NAME = 2048;
+    const BAD_PLACE_CITY_NAME = 2_048;
 
-    const BAD_PLACE_CITY_POSTAL_CODE = 4096;
+    const BAD_PLACE_CITY_POSTAL_CODE = 4_096;
 
-    const BAD_USER = 8192;
+    const BAD_USER = 8_192;
 
-    const EVENT_DELETED = 16384;
+    const EVENT_DELETED = 16_384;
 
-    const NO_COUNTRY_PROVIDED = 131072;
+    const NO_COUNTRY_PROVIDED = 131_072;
 
-    const BAD_COUNTRY = 262144;
+    const BAD_COUNTRY = 262_144;
 
-    protected $reason;
+    protected int $reason;
 
     public function __construct()
     {

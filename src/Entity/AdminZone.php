@@ -36,64 +36,56 @@ use JMS\Serializer\Annotation\VirtualProperty;
 abstract class AdminZone
 {
     /**
-     * @var int
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @Groups({"list_event", "list_city", "list_user"})
      */
-    protected $id;
+    protected ?int $id = null;
 
     /**
      * @Gedmo\Slug(fields={"name"})
      * @ORM\Column(length=200, unique=true)
      * @Exclude
      */
-    protected $slug;
+    protected ?string $slug = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=200)
      * @Groups({"list_city"})
      */
-    protected $name;
+    protected ?string $name = null;
 
     /**
-     * @var float
      * @ORM\Column(type="float")
      */
-    protected $latitude;
+    protected float $latitude = 0.0;
 
     /**
-     * @var float
      * @ORM\Column(type="float")
      */
-    protected $longitude;
+    protected float $longitude = 0.0;
 
     /**
-     * @var int
      * @ORM\Column(type="integer")
      */
-    protected $population;
+    protected int $population = 0;
 
     /**
-     * @var Country
      * @ORM\ManyToOne(targetEntity="App\Entity\Country", fetch="EXTRA_LAZY")
      */
-    protected $country;
+    protected ?Country $country = null;
 
     /**
-     * @var string
      * @ORM\Column(name="admin1_code", type="string", length=20, nullable=true)
      * @Exclude
      */
-    protected $admin1Code;
+    protected ?string $admin1Code = null;
 
     /**
-     * @var string
      * @ORM\Column(name="admin2_code", type="string", length=80, nullable=true)
      * @Exclude
      */
-    protected $admin2Code;
+    protected ?string $admin2Code = null;
 
     /**
      * @VirtualProperty

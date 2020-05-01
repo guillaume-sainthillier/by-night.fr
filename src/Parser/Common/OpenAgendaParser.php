@@ -27,29 +27,27 @@ class OpenAgendaParser extends AbstractParser
 {
     // Next step : 'https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/records'
     private const AGENDA_IDS = [
-        93184572, // https://openagenda.com/fetedelascience2019_hautsdefrance?lang=fr
-        49405812, // https://openagenda.com/saison-culturelle-en-france?lang=fr
-        7430297, // https://openagenda.com/agenda-culturel-grand-est?lang=fr
-        1108324, // https://openagenda.com/un-air-de-bordeaux?lang=fr
-        92445297, // https://openagenda.com/fetedelascience2019_occitanie?lang=fr
-        13613180, // https://openagenda.com/grand-chatellerault?lang=fr
-        87948516, // https://openagenda.com/agenda-different-seine-maritime?lang=fr
-        93184572, // https://openagenda.com/fetedelascience2019_hautsdefrance?lang=fr
-        41148947, // https://openagenda.com/terres-de-montaigu?lang=fr
-        22126321, // https://openagenda.com/tootsweet?lang=fr
-        43896350, // https://openagenda.com/iledefrance?lang=fr
-        88167337, // https://openagenda.com/mediatheque-bibliotheques-st-denis-reunion?lang=fr
-        69653526, // https://openagenda.com/france-numerique?lang=fr
-        89904399, // https://openagenda.com/metropole-europeenne-de-lille?lang=fr
+        93_184_572, // https://openagenda.com/fetedelascience2019_hautsdefrance?lang=fr
+        49_405_812, // https://openagenda.com/saison-culturelle-en-france?lang=fr
+        7_430_297, // https://openagenda.com/agenda-culturel-grand-est?lang=fr
+        1_108_324, // https://openagenda.com/un-air-de-bordeaux?lang=fr
+        92_445_297, // https://openagenda.com/fetedelascience2019_occitanie?lang=fr
+        13_613_180, // https://openagenda.com/grand-chatellerault?lang=fr
+        87_948_516, // https://openagenda.com/agenda-different-seine-maritime?lang=fr
+        93_184_572, // https://openagenda.com/fetedelascience2019_hautsdefrance?lang=fr
+        41_148_947, // https://openagenda.com/terres-de-montaigu?lang=fr
+        22_126_321, // https://openagenda.com/tootsweet?lang=fr
+        43_896_350, // https://openagenda.com/iledefrance?lang=fr
+        88_167_337, // https://openagenda.com/mediatheque-bibliotheques-st-denis-reunion?lang=fr
+        69_653_526, // https://openagenda.com/france-numerique?lang=fr
+        89_904_399, // https://openagenda.com/metropole-europeenne-de-lille?lang=fr
     ];
 
     private const EVENT_BATCH_SIZE = 300;
 
-    /** @var Client */
-    private $client;
+    private Client $client;
 
-    /** @var array */
-    private $cache;
+    private array $cache;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
     {
@@ -89,13 +87,11 @@ class OpenAgendaParser extends AbstractParser
                     //Send next requests
                     $requests = function ($nbPages) use ($agendaId) {
                         for ($page = 1; $page <= $nbPages - 1; ++$page) {
-                            yield function () use ($agendaId, $page) {
-                                return $this
-                                    ->sendRequest($agendaId, $page)
-                                    ->then(function (array $results) {
-                                        $this->publishEvents($results['events']);
-                                    });
-                            };
+                            yield fn() => $this
+                                ->sendRequest($agendaId, $page)
+                                ->then(function (array $results) {
+                                    $this->publishEvents($results['events']);
+                                });
                         }
                     };
 
@@ -117,9 +113,7 @@ class OpenAgendaParser extends AbstractParser
 
         return $this->client
             ->getAsync($uri)
-            ->then(function (ResponseInterface $result) {
-                return json_decode(copy_to_string($result->getBody()), true, 512, JSON_THROW_ON_ERROR);
-            });
+            ->then(fn(ResponseInterface $result) => json_decode(copy_to_string($result->getBody()), true, 512, JSON_THROW_ON_ERROR));
     }
 
     private function publishEvents(array $events): int

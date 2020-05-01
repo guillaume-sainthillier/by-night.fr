@@ -20,8 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AppImagesUpdateCommand extends Command
 {
-    /** @var UserUpdater */
-    private $userUpdater;
+    private UserUpdater $userUpdater;
 
     public function __construct(UserUpdater $userUpdater)
     {

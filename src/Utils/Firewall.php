@@ -20,17 +20,11 @@ class Firewall
 {
     const VERSION = '1.1';
 
-    private $explorations;
+    private array $explorations;
 
-    /**
-     * @var Comparator
-     */
-    private $comparator;
+    private Comparator $comparator;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
     public function __construct(EntityManagerInterface $em, Comparator $comparator)
     {

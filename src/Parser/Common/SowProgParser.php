@@ -19,8 +19,7 @@ use Psr\Log\LoggerInterface;
 
 class SowProgParser extends AbstractParser
 {
-    /** @var Client */
-    private $client;
+    private Client $client;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer, string $sowprogUsername, string $sowprogPassword)
     {
@@ -42,7 +41,7 @@ class SowProgParser extends AbstractParser
 
     public function parse(bool $incremental): void
     {
-        $modifiedSince = $incremental ? 1000 * ((time() - 86400)) : 0;
+        $modifiedSince = $incremental ? 1_000 * ((time() - 86_400)) : 0;
         $response = $this->client->get('/rest/v1_2/scheduledEvents/search?modifiedSince=' . $modifiedSince);
         $events = json_decode(copy_to_string($response->getBody()), true, 512, JSON_THROW_ON_ERROR);
 
@@ -62,7 +61,7 @@ class SowProgParser extends AbstractParser
             'source' => 'http://www.sowprog.com/',
             'external_id' => 'SP-' . $event['id'] . '-' . $currentSchedule['id'],
             'url' => $event['event']['picture'] ?? null,
-            'external_updated_at' => (new DateTime())->setTimestamp($event['modificationDate'] / 1000),
+            'external_updated_at' => (new DateTime())->setTimestamp($event['modificationDate'] / 1_000),
         ];
 
         $tab_infos['type_manifestation'] = $event['event']['eventType']['label'];
@@ -93,16 +92,12 @@ class SowProgParser extends AbstractParser
         }
 
         if (!empty($event['eventPrice'])) {
-            $prices = array_map(function (array $price) {
-                return sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']);
-            }, $event['eventPrice']);
+            $prices = array_map(fn(array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $event['eventPrice']);
             $tab_infos['tarif'] = implode(' - ', $prices);
         }
 
         if (!empty($event['ticketStore'])) {
-            $tickets = array_map(function (array $ticket) {
-                return $ticket['url'];
-            }, $event['ticketStore']);
+            $tickets = array_map(fn(array $ticket) => $ticket['url'], $event['ticketStore']);
             $tab_infos['reservation_internet'] = implode(' ', $tickets);
         }
 

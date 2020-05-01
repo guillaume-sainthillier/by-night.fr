@@ -25,14 +25,11 @@ class DataTourismeParser extends AbstractParser
     private const INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
     private const UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
 
-    /** @var string */
-    private $tempPath;
+    private string $tempPath;
 
-    /** @var string */
-    private $dataTourismeAppKey;
+    private string $dataTourismeAppKey;
 
-    /** @var CacheInterface */
-    private $cache;
+    private CacheInterface $cache;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer, CacheInterface $dataTourismeCache, string $tempPath, string $dataTourismeAppKey)
     {
@@ -110,7 +107,7 @@ class DataTourismeParser extends AbstractParser
         $typesManifestation = array_filter(array_unique($typesManifestation));
 
         $categoriesManifestation = [];
-        $datas['hasTheme'] = $datas['hasTheme'] ?? [];
+        $datas['hasTheme'] ??= [];
         $datas['hasTheme'] = isset($datas['hasTheme'][0]) ? $datas['hasTheme'] : [$datas['hasTheme']];
         foreach ($datas['hasTheme'] as $theme) {
             if (!isset($theme['rdfs:label']['@value']) || \in_array($theme['rdfs:label']['@value'], $typesManifestation, true)) {
@@ -143,15 +140,15 @@ class DataTourismeParser extends AbstractParser
         foreach (['hasBookingContact', 'hasContact'] as $key) {
             foreach ($datas[$key] as $currentDatas) {
                 if (isset($currentDatas['schema:email'])) {
-                    $emails = array_merge($emails, \is_array($currentDatas['schema:email']) ? $currentDatas['schema:email'] : [$currentDatas['schema:email']]);
+                    $emails = [...$emails, ...\is_array($currentDatas['schema:email']) ? $currentDatas['schema:email'] : [$currentDatas['schema:email']]];
                 }
 
                 if (isset($currentDatas['schema:telephone'])) {
-                    $phones = array_merge($phones, \is_array($currentDatas['schema:telephone']) ? $currentDatas['schema:telephone'] : [$currentDatas['schema:telephone']]);
+                    $phones = [...$phones, ...\is_array($currentDatas['schema:telephone']) ? $currentDatas['schema:telephone'] : [$currentDatas['schema:telephone']]];
                 }
 
                 if (isset($currentDatas['foaf:homepage'])) {
-                    $websites = array_merge($websites, \is_array($currentDatas['foaf:homepage']) ? $currentDatas['foaf:homepage'] : [$currentDatas['foaf:homepage']]);
+                    $websites = [...$websites, ...\is_array($currentDatas['foaf:homepage']) ? $currentDatas['foaf:homepage'] : [$currentDatas['foaf:homepage']]];
                 }
             }
         }
@@ -266,9 +263,7 @@ class DataTourismeParser extends AbstractParser
         }
 
         $key = str_replace(':', '', $resource['@id']);
-        $resource = array_merge($resource, $this->cache->get($key, function () use ($resource) {
-            return $resource;
-        }));
+        $resource = array_merge($resource, $this->cache->get($key, fn() => $resource));
 
         foreach ($resource as $key => $value) {
             if (\is_array($value)) {

@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AppEventsImportCommand extends Command
 {
     /** @var ParserInterface[] */
-    private $parsers;
+    private array $parsers;
 
     public function __construct(array $parsers)
     {

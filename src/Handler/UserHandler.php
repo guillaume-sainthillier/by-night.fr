@@ -17,12 +17,10 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserHandler
 {
-    private $tempPath;
-    private $webDir;
+    private string $tempPath;
+    private string $webDir;
 
-    /** @var UploaderHelper
-     */
-    private $helper;
+    private UploaderHelper $helper;
 
     public function __construct(UploaderHelper $helper, string $webDir, string $tempPath)
     {

@@ -21,10 +21,9 @@ use Doctrine\ORM\Mapping as ORM;
 class AdminZone2 extends AdminZone
 {
     /**
-     * @var AdminZone1
      * @ORM\ManyToOne(targetEntity="App\Entity\AdminZone1", fetch="EXTRA_LAZY")
      */
-    protected $parent;
+    protected ?AdminZone1 $parent = null;
 
     /**
      * Get parent.

@@ -10,6 +10,7 @@
 
 namespace App\Factory;
 
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 use DateTime;
 use DateTimeZone;
 use App\Entity\Event;
@@ -18,10 +19,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class EventFactory
 {
-    /**
-     * @var PropertyAccessorInterface
-     */
-    private $propertyAccessor;
+    private PropertyAccessor $propertyAccessor;
 
     public function __construct()
     {

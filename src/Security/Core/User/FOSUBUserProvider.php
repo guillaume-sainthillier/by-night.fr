@@ -22,15 +22,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class FOSUBUserProvider extends BaseClass
 {
-    /**
-     * @var SocialProvider
-     */
-    private $socialProvider;
+    private SocialProvider $socialProvider;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(UserManagerInterface $userManager, array $properties, EntityManagerInterface $entityManager, SocialProvider $socialProvider)
     {

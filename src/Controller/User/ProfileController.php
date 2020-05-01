@@ -34,14 +34,12 @@ class ProfileController extends BaseController
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
 
-    /** @var FactoryInterface */
-    private $profileFormFactory;
+    private FactoryInterface $profileFormFactory;
 
     /** @var UserManagerInterface */
     private $userManager;
 
-    /** @var FactoryInterface */
-    private $changePasswordFormFactory;
+    private FactoryInterface $changePasswordFormFactory;
 
     public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $profileFormFactory, UserManagerInterface $userManager, FactoryInterface $changePasswordFormFactory)
     {

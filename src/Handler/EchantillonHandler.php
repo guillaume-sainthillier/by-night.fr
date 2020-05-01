@@ -19,22 +19,21 @@ class EchantillonHandler
 {
     public $newPlaces;
     public $fbPlaces;
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
     /**
      * @var Place[][]
      */
-    private $countryPlaces;
+    private array $countryPlaces;
 
     /**
      * @var Place[][]
      */
-    private $cityPlaces;
+    private array $cityPlaces;
 
     /**
      * @var Event[]
      */
-    private $events;
+    private array $events;
 
     public function __construct(EntityManagerInterface $em)
     {

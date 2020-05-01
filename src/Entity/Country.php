@@ -26,62 +26,54 @@ use JMS\Serializer\Annotation\ExclusionPolicy;
 class Country
 {
     /**
-     * @var string
      * @ORM\Column(type="string", length=2)
      * @ORM\Id
      * @Serializer\Groups({"list_event", "list_user", "list_city"})
      */
-    private $id;
+    private ?string $id = null;
 
     /**
-     * @var string
      * @Gedmo\Slug(fields={"name"}, prefix="c--")
      * @ORM\Column(length=63, unique=true)
      * @Exclude
      */
-    private $slug;
+    private ?string $slug = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=5, nullable=true)
      * @Exclude
      */
-    private $locale;
+    private ?string $locale = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=63)
      * @Serializer\Groups({"list_city"})
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=63)
      * @Serializer\Groups({"list_city"})
      */
-    private $displayName;
+    private ?string $displayName = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=63)
      * @Serializer\Groups({"list_city"})
      */
-    private $atDisplayName;
+    private ?string $atDisplayName = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=63)
      * @Exclude
      */
-    private $capital;
+    private ?string $capital = null;
 
     /**
-     * @var string|null
      * @ORM\Column(type="string", length=511, nullable=true)
      * @Exclude
      */
-    private $postalCodeRegex;
+    private ?string $postalCodeRegex = null;
 
     public function __toString()
     {

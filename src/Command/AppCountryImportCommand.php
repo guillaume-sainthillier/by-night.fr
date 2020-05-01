@@ -20,10 +20,7 @@ use Symfony\Component\Console\Question\Question;
 
 class AppCountryImportCommand extends Command
 {
-    /**
-     * @var CountryImporter
-     */
-    private $countryImporter;
+    private CountryImporter $countryImporter;
 
     /**
      * {@inheritdoc}

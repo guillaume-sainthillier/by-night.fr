@@ -20,14 +20,11 @@ use Symfony\Component\Asset\Packages;
 
 class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    /** @var Packages */
-    private $packages;
+    private Packages $packages;
 
-    /** @var Client */
-    private $client;
+    private Client $client;
 
-    /** @var string */
-    private $cfZone;
+    private string $cfZone;
 
     public function __construct(LoggerInterface $logger, Packages $packages, string $cfUserEmail, string $cfUserKey, string $cfZone)
     {

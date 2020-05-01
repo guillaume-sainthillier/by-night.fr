@@ -15,7 +15,7 @@ use DateTime;
 
 class ExplorationHandler
 {
-    private $stats;
+    private ?array $stats = null;
 
     private $historique;
 

@@ -17,10 +17,7 @@ use Exception;
 
 class Comparator
 {
-    /**
-     * @var Util
-     */
-    private $util;
+    private Util $util;
 
     public function __construct(Util $util)
     {

@@ -32,10 +32,7 @@ class Merger
 
     const DEFAULT_MERGE = self::MERGE_RIGHT;
 
-    /**
-     * @var Comparator
-     */
-    private $comparator;
+    private Comparator $comparator;
 
     public function __construct(Comparator $comparator)
     {

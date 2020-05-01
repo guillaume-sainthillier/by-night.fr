@@ -19,8 +19,7 @@ use Psr\Log\LoggerInterface;
 
 class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    /** @var Server */
-    private $glide;
+    private Server $glide;
 
     public function __construct(LoggerInterface $logger, Server $glide)
     {

@@ -25,20 +25,15 @@ use Psr\Log\LoggerInterface;
 
 class EventHandler
 {
-    /** @var Cleaner */
-    private $cleaner;
+    private Cleaner $cleaner;
 
-    /** @var Comparator */
-    private $comparator;
+    private Comparator $comparator;
 
-    /** @var Merger */
-    private $merger;
+    private Merger $merger;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var string */
-    private $tempPath;
+    private string $tempPath;
 
     public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, LoggerInterface $logger, string $tempPath)
     {
@@ -126,26 +121,18 @@ class EventHandler
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Event $event)
     {
-        $place = Monitor::bench('Handle Place', function () use ($persistedPlaces, $event) {
-            return $this->handlePlace($persistedPlaces, $event->getPlace());
-        });
+        $place = Monitor::bench('Handle Place', fn() => $this->handlePlace($persistedPlaces, $event->getPlace()));
         $event->setPlace($place);
 
-        return Monitor::bench('Handle Event', function () use ($persistedEvents, $event) {
-            return $this->handleEvent($persistedEvents, $event);
-        });
+        return Monitor::bench('Handle Event', fn() => $this->handleEvent($persistedEvents, $event));
     }
 
     public function handlePlace(array $persistedPlaces, Place $notPersistedPlace)
     {
-        $bestPlace = Monitor::bench('getBestPlace', function () use ($persistedPlaces, $notPersistedPlace) {
-            return $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace);
-        });
+        $bestPlace = Monitor::bench('getBestPlace', fn() => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
 
         //On fusionne la place existant avec celle découverte (même si NULL)
-        return Monitor::bench('mergePlace', function () use ($bestPlace, $notPersistedPlace) {
-            return $this->merger->mergePlace($bestPlace, $notPersistedPlace);
-        });
+        return Monitor::bench('mergePlace', fn() => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
     }
 
     public function handleEvent(array $persistedEvents, Event $notPersistedEvent)
@@ -153,8 +140,6 @@ class EventHandler
         $bestEvent = \count($persistedEvents) > 0 ? current($persistedEvents) : null;
 
         //On fusionne l'event existant avec celui découvert (même si NULL)
-        return Monitor::bench('mergeEvent', function () use ($bestEvent, $notPersistedEvent) {
-            return $this->merger->mergeEvent($bestEvent, $notPersistedEvent);
-        });
+        return Monitor::bench('mergeEvent', fn() => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
     }
 }

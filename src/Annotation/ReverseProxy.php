@@ -17,15 +17,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
  */
 class ReverseProxy extends ConfigurationAnnotation
 {
-    /**
-     * @var int|null
-     */
-    private $ttl;
+    private ?int $ttl = null;
 
-    /**
-     * @var string|null
-     */
-    private $expires;
+    private ?string $expires = null;
 
     public function getTtl(): ?int
     {

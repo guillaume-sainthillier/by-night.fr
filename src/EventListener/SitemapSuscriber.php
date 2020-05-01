@@ -25,27 +25,15 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapSuscriber implements EventSubscriberInterface
 {
-    private const ITEMS_PER_PAGE = 5000;
+    private const ITEMS_PER_PAGE = 5_000;
 
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
-    /**
-     * @var ManagerRegistry
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var UrlContainerInterface
-     */
-    private $urlContainer = null;
+    private ?UrlContainerInterface $urlContainer = null;
 
-    /**
-     * @var DateTime
-     */
-    private $now;
+    private DateTime $now;
 
     public function __construct(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager)
     {

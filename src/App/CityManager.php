@@ -16,25 +16,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class CityManager
 {
-    /**
-     * @var City|null
-     */
-    private $currentCity;
+    private ?City $currentCity = null;
 
-    /**
-     * @var City|null
-     */
-    private $cookieCity;
+    private ?bool $cookieCity = null;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
+    private RequestStack $requestStack;
 
     public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack)
     {

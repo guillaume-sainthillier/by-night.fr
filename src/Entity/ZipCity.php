@@ -24,80 +24,69 @@ use JMS\Serializer\Annotation as Serializer;
 class ZipCity
 {
     /**
-     * @var int
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue("AUTO")
      * @Serializer\Groups({"list_event", "list_city", "list_user"})
      * @Serializer\Expose
      */
-    protected $id;
+    protected ?int $id = null;
 
     /**
      * @Gedmo\Slug(fields={"postalCode", "name"})
      * @ORM\Column(length=201, unique=true)
      */
-    protected $slug;
+    protected ?string $slug = null;
 
     /**
-     * @var Country
      * @ORM\ManyToOne(targetEntity="App\Entity\Country", fetch="EXTRA_LAZY")
      */
-    protected $country;
+    protected ?Country $country = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=20)
      */
-    protected $postalCode;
+    protected ?string $postalCode = null;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=180)
      */
-    protected $name;
+    protected ?string $name = null;
 
     /**
-     * @var float
      * @ORM\Column(type="float")
      */
-    protected $latitude;
+    protected float $latitude = 0.0;
 
     /**
-     * @var float
      * @ORM\Column(type="float")
      */
-    protected $longitude;
+    protected float $longitude = 0.0;
 
     /**
-     * @var string
      * @ORM\Column(name="admin1_code", type="string", length=20)
      */
-    protected $admin1Code;
+    protected ?string $admin1Code = null;
 
     /**
-     * @var string|null
      * @ORM\Column(name="admin1_name", type="string", length=100, nullable=true)
      */
-    protected $admin1Name;
+    protected ?string $admin1Name = null;
 
     /**
-     * @var string
      * @ORM\Column(name="admin2_code", type="string", length=80)
      */
-    protected $admin2Code;
+    protected ?string $admin2Code = null;
 
     /**
-     * @var string|null
      * @ORM\Column(name="admin2_name", type="string", length=100, nullable=true)
      */
-    protected $admin2Name;
+    protected ?string $admin2Name = null;
 
     /**
-     * @var City
      * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EXTRA_LAZY")
      */
-    protected $parent;
+    protected ?City $parent = null;
 
     public function getId(): ?int
     {

@@ -27,50 +27,45 @@ class Comment
     use EntityTimestampableTrait;
 
     /**
-     * @var string
      *
      * @ORM\Column(type="text")
      * @Assert\Length(min="3", minMessage="Le commentaire doit faire au moins {{ limit }} caractères")
      * @Assert\NotBlank(message="Le commentaire ne peut pas être vide")
      */
-    protected $commentaire;
+    protected ?string $commentaire = null;
 
     /**
-     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
-    protected $approuve;
+    protected bool $approuve;
 
     /**
-     * @var User
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $user;
+    protected ?User $user = null;
 
     /**
-     * @var Event
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="commentaires")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected $event;
+    protected ?Event $event = null;
 
     /**
-     * @var Comment
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="reponses")
      * @ORM\JoinColumn(nullable=true)
      */
-    protected $parent;
+    protected ?Comment $parent = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"createdAt": "DESC"})
      */
-    protected $reponses;
+    protected Collection $reponses;
 
     public function __construct()
     {

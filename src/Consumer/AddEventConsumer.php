@@ -23,18 +23,11 @@ use Psr\Log\LoggerInterface;
 
 class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, BatchConsumerInterface
 {
-    /**
-     * @var EventFactory
-     */
-    private $eventFactory;
+    private EventFactory $eventFactory;
 
-    /**
-     * @var DoctrineEventHandler
-     */
-    private $doctrineEventHandler;
+    private DoctrineEventHandler $doctrineEventHandler;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(LoggerInterface $logger, EntityManagerInterface $entityManager, EventFactory $eventFactory, DoctrineEventHandler $doctrineEventHandler)
     {

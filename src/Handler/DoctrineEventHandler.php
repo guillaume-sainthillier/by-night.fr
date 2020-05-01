@@ -10,6 +10,7 @@
 
 namespace App\Handler;
 
+use Doctrine\Persistence\ObjectRepository;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Event;
@@ -28,40 +29,19 @@ class DoctrineEventHandler
 {
     const BATCH_SIZE = 50;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var CityRepository
-     */
-    private $repoCity;
+    private ObjectRepository $repoCity;
 
-    /**
-     * @var ZipCityRepository
-     */
-    private $repoZipCity;
+    private ObjectRepository $repoZipCity;
 
-    /**
-     * @var EventHandler
-     */
-    private $handler;
+    private EventHandler $handler;
 
-    /**
-     * @var Firewall
-     */
-    private $firewall;
+    private Firewall $firewall;
 
-    /**
-     * @var EchantillonHandler
-     */
-    private $echantillonHandler;
+    private EchantillonHandler $echantillonHandler;
 
-    /**
-     * @var ExplorationHandler
-     */
-    private $explorationHandler;
+    private ExplorationHandler $explorationHandler;
 
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler)
     {
@@ -256,7 +236,7 @@ class DoctrineEventHandler
         //Ville
         if (!$zipCity && $place->getVille()) {
             $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
-            if (1 === \count($zipCities)) {
+            if (1 === (is_countable($zipCities) ? \count($zipCities) : 0)) {
                 $zipCity = $zipCities[0];
             }
         }
@@ -264,7 +244,7 @@ class DoctrineEventHandler
         //CP
         if (!$zipCity && $place->getCodePostal()) {
             $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
-            if (1 === \count($zipCities)) {
+            if (1 === (is_countable($zipCities) ? \count($zipCities) : 0)) {
                 $zipCity = $zipCities[0];
             }
         }
@@ -321,9 +301,7 @@ class DoctrineEventHandler
      */
     private function getAllowedEvents(array $events)
     {
-        return \array_filter($events, function (Event $event) {
-            return $this->firewall->isValid($event);
-        });
+        return \array_filter($events, fn(Event $event) => $this->firewall->isValid($event));
     }
 
     /**
@@ -333,9 +311,7 @@ class DoctrineEventHandler
      */
     private function getNotAllowedEvents(array $events)
     {
-        return \array_filter($events, function ($event) {
-            return !$this->firewall->isValid($event);
-        });
+        return \array_filter($events, fn($event) => !$this->firewall->isValid($event));
     }
 
     /**

@@ -33,13 +33,9 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class EventType extends AbstractType
 {
-    /**
-     * @var DoctrineEventHandler
-     */
-    private $doctrineEventHandler;
+    private DoctrineEventHandler $doctrineEventHandler;
 
-    /** @var DateRangeBuilder */
-    private $dateRangeBuilder;
+    private DateRangeBuilder $dateRangeBuilder;
 
     public function __construct(DoctrineEventHandler $doctrineEventHandler, DateRangeBuilder $dateRangeBuilder)
     {
@@ -139,10 +135,8 @@ class EventType extends AbstractType
                 'label' => 'Pays',
                 'placeholder' => '?',
                 'class' => Country::class,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('c')
-                        ->orderBy('c.name', 'ASC');
-                },
+                'query_builder' => fn(EntityRepository $er) => $er->createQueryBuilder('c')
+                    ->orderBy('c.name', 'ASC'),
                 'choice_label' => 'name',
             ])
             ->add('reservationInternet', UrlType::class, [
@@ -182,21 +176,13 @@ class EventType extends AbstractType
         }
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
-            function ($latitude) {
-                return (float) $latitude ?: null;
-            },
-            function ($latitude) {
-                return (float) $latitude ?: null;
-            }
+            fn($latitude) => (float) $latitude ?: null,
+            fn($latitude) => (float) $latitude ?: null
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
-            function ($latitude) {
-                return (float) $latitude ?: null;
-            },
-            function ($latitude) {
-                return (float) $latitude ?: null;
-            }
+            fn($latitude) => (float) $latitude ?: null,
+            fn($latitude) => (float) $latitude ?: null
         ));
     }
 

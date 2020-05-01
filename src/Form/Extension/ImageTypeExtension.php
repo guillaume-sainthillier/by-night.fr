@@ -24,17 +24,13 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 
 class ImageTypeExtension extends AbstractTypeExtension
 {
-    /** @var StorageInterface */
-    private $storage;
+    private StorageInterface $storage;
 
-    /** @var AssetExtension */
-    private $assetExtension;
+    private AssetExtension $assetExtension;
 
-    /** @var UserProfilePicture */
-    private $userProfilePicture;
+    private UserProfilePicture $userProfilePicture;
 
-    /** @var EventProfilePicture */
-    private $eventProfilePicture;
+    private EventProfilePicture $eventProfilePicture;
 
     public function __construct(StorageInterface $storage, AssetExtension $assetExtension, UserProfilePicture $userProfilePicture, EventProfilePicture $eventProfilePicture)
     {

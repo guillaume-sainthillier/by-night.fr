@@ -26,50 +26,45 @@ class HistoriqueMaj
     use EntityIdentityTrait;
 
     /**
-     * @var DateTime
      *
      * @ORM\Column(type="datetime")
      */
-    private $dateDebut;
+    private DateTimeInterface $dateDebut;
 
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=127)
      */
-    private $fromData;
+    private ?string $fromData = null;
 
     /**
-     * @var DateTime
      *
      * @ORM\Column(type="datetime")
      */
-    private $dateFin;
+    private DateTimeInterface $dateFin;
 
     /**
-     * @var int
      *
      * @ORM\Column(type="integer")
      */
-    private $nouvellesSoirees;
+    private int $nouvellesSoirees = 0;
 
     /**
-     * @var int
      *
      * @ORM\Column(type="integer")
      */
-    private $updateSoirees;
+    private int $updateSoirees = 0;
 
     /**
-     * @var int
      *
      * @ORM\Column(type="integer")
      */
-    private $explorations;
+    private int $explorations = 0;
 
     public function __construct()
     {
         $this->dateDebut = new DateTime();
+        $this->dateFin = new DateTime();
     }
 
     /**

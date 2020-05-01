@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Parser\AbstractParser;
 use DateTimeInterface;
 use App\Reject\Reject;
 use DateTime;
@@ -28,39 +29,32 @@ class Exploration
     /**
      * @ORM\Column(type="string", length=127, unique=true)
      */
-    protected $externalId;
+    protected ?string $externalId = null;
 
     /**
-     * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $lastUpdated;
+    private ?DateTimeInterface $lastUpdated = null;
 
     /**
-     * @var bool
      *
      * @ORM\Column(type="integer", nullable=false)
      */
-    private $reason;
+    private int $reason = Reject::VALID;
 
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=7)
      */
-    private $firewallVersion;
+    private string $firewallVersion = '1.0';
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=7, nullable=true)
      */
-    protected $parserVersion;
+    protected ?string $parserVersion = null;
 
-    /**
-     * @var Reject
-     */
-    private $reject;
+    private ?Reject $reject = null;
 
     public function getReject(): ?Reject
     {

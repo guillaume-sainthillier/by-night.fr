@@ -49,105 +49,96 @@ class User extends BaseUser
      * @Gedmo\Slug(fields={"username"})
      * @ORM\Column(length=128, unique=true)
      */
-    protected $slug;
+    protected ?string $slug = null;
 
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Groups({"list_user"})
      * @Expose
      */
-    protected $firstname;
+    protected ?string $firstname = null;
 
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Groups({"list_user"})
      * @Expose
      */
-    protected $lastname;
+    protected ?string $lastname = null;
 
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected $description;
+    protected ?string $description = null;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\UserInfo", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
-    protected $info;
+    protected ?UserInfo $info = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="user")
      */
-    protected $calendriers;
+    protected Collection $calendriers;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\City")
      * @ORM\JoinColumn(nullable=true)
      */
-    protected $city;
+    protected ?City $city = null;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected $fromLogin;
+    protected ?bool $fromLogin = null;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected $showSocials;
+    protected ?bool $showSocials = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected $website;
+    protected ?string $website = null;
 
     /**
-     * @var File
      * @Vich\UploadableField(mapping="user_image", fileNameProperty="image.name", size="image.size", mimeType="image.mimeType", originalName="image.originalName", dimensions="image.dimensions")
      * @Assert\Valid
      * @Assert\File(maxSize="6M")
      * @Assert\Image
      */
-    private $imageFile;
+    private ?File $imageFile = null;
 
     /**
-     * @var EmbeddedFile
      * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
      */
-    private $image;
+    private EmbeddedFile $image;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $imageHash;
+    private ?string $imageHash = null;
 
     /**
-     * @var File
      * @Vich\UploadableField(mapping="user_image", fileNameProperty="imageSystem.name", size="imageSystem.size", mimeType="imageSystem.mimeType", originalName="imageSystem.originalName", dimensions="imageSystem.dimensions")
      * @Assert\Valid
      * @Assert\Image(maxSize="6M")
      */
-    private $imageSystemFile;
+    private ?File $imageSystemFile = null;
 
     /**
-     * @var EmbeddedFile
      * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
      */
-    private $imageSystem;
+    private EmbeddedFile $imageSystem;
 
     /**
-     * @var string
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $imageSystemHash;
+    private ?string $imageSystemHash = null;
 
     public function __construct()
     {
@@ -157,8 +148,8 @@ class User extends BaseUser
         $this->setShowSocials(true);
         $this->calendriers = new ArrayCollection();
         $this->info = new UserInfo();
-        $this->image = new \Vich\UploaderBundle\Entity\File();
-        $this->imageSystem = new \Vich\UploaderBundle\Entity\File();
+        $this->image = new EmbeddedFile();
+        $this->imageSystem = new EmbeddedFile();
     }
 
     /**

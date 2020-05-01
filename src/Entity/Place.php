@@ -37,7 +37,6 @@ class Place
     use EntityTimestampableTrait;
 
     /**
-     * @var int
      *
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -45,114 +44,96 @@ class Place
      * @Groups({"list_event"})
      * @Expose
      */
-    protected $id;
+    protected ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected $externalId;
+    protected ?string $externalId = null;
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected $ville;
+    protected ?string $ville = null;
     /**
      * @ORM\Column(type="string", length=7, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected $codePostal;
+    protected ?string $codePostal = null;
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=256, nullable=true)
      */
-    protected $facebookId;
+    protected ?string $facebookId = null;
     /**
-     * @var City|null
      * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected $city;
-    /**
-     * @var ZipCity|null
-     */
-    protected $zipCity;
+    protected ?City $city = null;
+    protected ?ZipCity $zipCity = null;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Country")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected $country;
+    protected ?Country $country = null;
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected $junk;
+    protected ?bool $junk = null;
+    protected ?string $countryName = null;
+    protected ?Reject $reject = null;
+    protected ?Location $location = null;
+
     /**
-     * @var string|null
-     */
-    protected $countryName;
-    /**
-     * @var Reject
-     */
-    protected $reject;
-    /** @var Location */
-    protected $location;
-    /**
-     * @var string
      *
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    private $rue;
+    private ?string $rue = null;
     /**
-     * @var float
      *
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    private $latitude;
+    private ?float $latitude = null;
     /**
-     * @var float
      *
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    private $longitude;
+    private ?float $longitude = null;
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
      * @Groups({"list_event"})
      * @Expose
      */
-    private $nom;
+    private ?string $nom = null;
     /**
-     * @var string
      * @Gedmo\Slug(fields={"nom"})
      * @ORM\Column(type="string", length=255, unique=true)
      */
-    private $slug;
+    private ?string $slug = null;
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $path;
+    private ?string $path = null;
     /**
-     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $url;
+    private ?string $url = null;
 
     public function getLocationSlug(): string
     {

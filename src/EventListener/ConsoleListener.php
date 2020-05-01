@@ -19,11 +19,10 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class ConsoleListener implements EventSubscriberInterface
 {
-    /** @var int */
-    private $monitor;
+    private int $monitor;
 
     /** @var Stopwatch[] */
-    private $stopwatches = [];
+    private array $stopwatches = [];
 
     public function __construct(int $monitor)
     {

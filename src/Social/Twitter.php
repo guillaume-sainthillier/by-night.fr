@@ -17,10 +17,7 @@ use TwitterOAuth\Serializer\ArraySerializer;
 
 class Twitter extends Social
 {
-    /**
-     * @var SingleUserAuth
-     */
-    protected $client;
+    protected SingleUserAuth $client;
 
     public function constructClient()
     {

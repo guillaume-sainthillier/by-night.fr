@@ -17,14 +17,11 @@ use Psr\Log\LoggerInterface;
 
 abstract class AbstractParser implements ParserInterface
 {
-    /** @var EventProducer */
-    private $eventProducer;
+    private EventProducer $eventProducer;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /** @var int */
-    private $parsedEvents;
+    private int $parsedEvents;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
     {

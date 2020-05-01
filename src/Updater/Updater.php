@@ -21,21 +21,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 abstract class Updater
 {
-    /** @var HttpClientInterface */
-    protected $client;
+    protected HttpClientInterface $client;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
+    protected EntityManagerInterface $entityManager;
 
-    /**
-     * @var FacebookAdmin
-     */
-    protected $facebookAdmin;
+    protected FacebookAdmin $facebookAdmin;
 
-    /** @var LoggerInterface */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin)
     {

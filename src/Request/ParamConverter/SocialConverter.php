@@ -19,10 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SocialConverter implements ParamConverterInterface
 {
-    /**
-     * @var SocialProvider
-     */
-    private $socialProvider;
+    private SocialProvider $socialProvider;
 
     public function __construct(SocialProvider $socialProvider)
     {

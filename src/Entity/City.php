@@ -24,16 +24,15 @@ use JMS\Serializer\Annotation\Groups;
 class City extends AdminZone
 {
     /**
-     * @var AdminZone
      * @ORM\ManyToOne(targetEntity="App\Entity\AdminZone", fetch="EAGER")
      * @Groups({"list_city"})
      */
-    protected $parent;
+    protected ?AdminZone $parent = null;
 
     /**
      * @Groups({"list_city"})
      */
-    protected $country;
+    protected ?Country $country = null;
 
     public function __toString()
     {

@@ -15,11 +15,9 @@ use App\Entity\Country;
 
 class Location
 {
-    /** @var City|null */
-    private $city;
+    private ?City $city = null;
 
-    /** @var Country|null */
-    private $country;
+    private ?Country $country = null;
 
     public function getId()
     {

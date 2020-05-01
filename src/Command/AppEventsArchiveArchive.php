@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AppEventsArchiveArchive extends Command
 {
-    private $eventArchivator;
+    private EventArchivator $eventArchivator;
 
     /**
      * {@inheritdoc}

@@ -15,12 +15,11 @@ use Doctrine\ORM\Mapping as ORM;
 trait EntityIdentityTrait
 {
     /**
-     * @var int|null
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    protected ?int $id = null;
 
     /**
      * Returns the primary key identifier.

@@ -18,19 +18,13 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class Monitor
 {
-    /**
-     * @var OutputInterface
-     */
-    public static $output;
+    public static OutputInterface $output;
 
-    /**
-     * @var ProgressBar
-     */
-    private static $progressBar;
+    private static ProgressBar $progressBar;
 
     private static $enableMonitoring;
 
-    private static $stats = [];
+    private static array $stats = [];
 
     public static function createProgressBar($nbSteps)
     {
@@ -142,7 +136,7 @@ class Monitor
 
     public static function formatMemory($bytes)
     {
-        return round($bytes / 1000 / 1000, 2) . ' MB';
+        return round($bytes / 1_000 / 1_000, 2) . ' MB';
     }
 
     public static function bench($message, callable $function)

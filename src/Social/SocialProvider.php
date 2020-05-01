@@ -19,10 +19,7 @@ class SocialProvider
     const TWITTER = 'twitter';
     const GOOGLE = 'google';
 
-    /**
-     * @var array
-     */
-    private $socials;
+    private array $socials;
 
     public function __construct(Facebook $facebook, FacebookAdmin $facebookAdmin, Twitter $twitter, Google $google)
     {

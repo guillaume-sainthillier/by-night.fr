@@ -31,7 +31,7 @@ easy_admin:
             form:
                 fields:
                     - { type: 'group', columns: 8, label: 'Informations' }
-                    - { property: 'id' }
+                    - { property: 'id', type_options: { disabled: true } }
                     - { property: 'user', type: 'easyadmin_autocomplete' }
                     - { property: 'createdAt' }
                     - { property: 'updatedAt' }
@@ -67,8 +67,8 @@ easy_admin:
                     - { property: 'adresse' }
                     - { type: 'group', columns: 8, label: 'Images' }
                     - { property: 'url' }
-                    - { property: 'path'}
-                    - { property: 'systemPath'}
+                    - { property: 'image.name'}
+                    - { property: 'imageSystem.name'}
                     - { type: 'group', columns: 4, label: 'Parser' }
                     - { property: 'fromData' }
                     - { property: 'parserVersion' }
@@ -84,7 +84,7 @@ easy_admin:
             form:
                 fields:
                     - { type: 'group', columns: 8, label: 'Informations' }
-                    - { property: 'id' }
+                    - { property: 'id', type_options: { disabled: true } }
                     - { property: 'slug' }
                     - { property: 'username' }
                     - { property: 'roles' }
@@ -98,8 +98,8 @@ easy_admin:
                     - { property: 'website' }
                     - { property: 'lastLogin' }
                     - { type: 'group', columns: 4, label: 'Médias' }
-                    - { property: 'path' }
-                    - { property: 'systemPath' }
+                    - { property: 'image.name' }
+                    - { property: 'imageSystem.name' }
         Place:
             class: App\Entity\Place
             list:
@@ -111,7 +111,7 @@ easy_admin:
             form:
                 fields:
                     - { type: 'group', columns: 8, label: 'Informations' }
-                    - { property: 'id' }
+                    - { property: 'id', type_options: { disabled: true } }
                     - { property: 'externalId' }
                     - { property: 'slug' }
                     - { property: 'nom' }
@@ -129,7 +129,7 @@ easy_admin:
             class: App\Entity\Calendrier
             list:
                 fields:
-                    - { property: 'id' }
+                    - { property: 'id', type_options: { disabled: true } }
                     - { property: 'updatedAt' }
                     - { property: 'event' }
                     - { property: 'user' }
@@ -137,7 +137,7 @@ easy_admin:
                     - { property: 'interet' }
             form:
                 fields:
-                    - { property: 'id' }
+                    - { property: 'id', type_options: { disabled: true } }
                     - { property: 'updatedAt' }
                     - { property: 'event', type: 'easyadmin_autocomplete' }
                     - { property: 'user', type: 'easyadmin_autocomplete' }
@@ -154,7 +154,7 @@ easy_admin:
                     - { property: 'approuve' }
             form:
                 fields:
-                    - { property: 'id' }
+                    - { property: 'id', type_options: { disabled: true } }
                     - { property: 'event', type: 'easyadmin_autocomplete' }
                     - { property: 'user', type: 'easyadmin_autocomplete' }
                     - { property: 'createdAt' }
@@ -193,7 +193,7 @@ easy_admin:
                     - { property: 'displayName' }
             form:
                 fields:
-                    - { property: 'id' }
+                    - { property: 'id', type_options: { disabled: true } }
                     - { property: 'locale' }
                     - { property: 'name' }
                     - { property: 'displayName' }

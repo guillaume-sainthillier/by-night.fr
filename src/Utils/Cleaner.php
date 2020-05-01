@@ -16,7 +16,7 @@ use App\Entity\Place;
 
 class Cleaner
 {
-    private $util;
+    private Util $util;
 
     public function __construct(Util $util)
     {

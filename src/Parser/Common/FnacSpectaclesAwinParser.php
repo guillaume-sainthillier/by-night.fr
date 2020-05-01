@@ -21,8 +21,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 {
     private const DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/23455/columns/aw_deep_link,product_name,aw_product_id,merchant_product_id,merchant_image_url,description,merchant_category,search_price,is_for_sale,custom_1,valid_to,product_short_description,custom_2,custom_4,custom_6,custom_3,Tickets%3Avenue_address,Tickets%3Alatitude,Tickets%3Alongitude/format/xml-tree/compression/gzip/';
 
-    /** @var CacheInterface */
-    private $cache;
+    private CacheInterface $cache;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer, string $tempPath, string $awinApiKey, CacheInterface $memoryCache)
     {

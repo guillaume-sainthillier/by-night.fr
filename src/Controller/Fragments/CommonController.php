@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommonController extends TBNController
 {
-    const LIFE_TIME_CACHE = 86400; // 3600*24
+    const LIFE_TIME_CACHE = 86_400; // 3600*24
 
     /**
      * @Route("/_private/header/{id}", name="app_private_header", requirements={"id": "\d+"})

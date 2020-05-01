@@ -22,25 +22,13 @@ use Psr\Log\LoggerInterface;
 
 class TagsInvalidator
 {
-    /**
-     * @var CacheManager
-     */
-    private $tagHandler;
+    private CacheManager $tagHandler;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var bool
-     */
-    private $debug;
+    private bool $debug;
 
-    /**
-     * @var array
-     */
-    private $tags;
+    private array $tags;
 
     public function __construct(CacheManager $tagHandler, LoggerInterface $logger, $debug)
     {

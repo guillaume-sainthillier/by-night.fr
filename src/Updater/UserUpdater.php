@@ -23,8 +23,7 @@ class UserUpdater extends Updater
 {
     private const PAGINATION_SIZE = 50;
 
-    /** @var UserHandler */
-    protected $userHandler;
+    protected UserHandler $userHandler;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, UserHandler $userHandler)
     {
@@ -54,9 +53,7 @@ class UserUpdater extends Updater
 
     private function extractFbIds(array $users)
     {
-        return array_filter(array_unique(array_map(function (User $user) {
-            return $user->getInfo()->getFacebookId();
-        }, $users)));
+        return array_filter(array_unique(array_map(fn(User $user) => $user->getInfo()->getFacebookId(), $users)));
     }
 
     /**

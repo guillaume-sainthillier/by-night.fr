@@ -21,11 +21,9 @@ use Psr\Log\LoggerInterface;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
-    /** @var string */
-    private $awinApiKey;
+    private string $awinApiKey;
 
-    /** @var string */
-    private $tempPath;
+    private string $tempPath;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer, string $tempPath, string $awinApiKey)
     {

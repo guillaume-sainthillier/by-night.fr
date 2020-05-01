@@ -28,15 +28,9 @@ class CountryImporter
     private const ZIP_CODES_PER_TRANSACTION = 500;
     private const CITIES_PER_TRANSACTION = 50;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /**
-     * @var string
-     */
-    private $dataDir;
+    private string $dataDir;
 
     public function __construct(EntityManagerInterface $em, string $dataDir)
     {
@@ -88,7 +82,7 @@ class CountryImporter
         }
 
         $i = 0;
-        while (false !== ($data = \fgetcsv($fd, 3000, "\t"))) {
+        while (false !== ($data = \fgetcsv($fd, 3_000, "\t"))) {
             if (!\in_array($data[7], ['ADM1', 'ADM2']) && 'P' !== $data[6]) {
                 continue;
             }
@@ -229,7 +223,7 @@ class CountryImporter
         }
 
         $i = 0;
-        while (false !== ($data = \fgetcsv($fd, 1000, "\t"))) {
+        while (false !== ($data = \fgetcsv($fd, 1_000, "\t"))) {
             if (!$data[4] || !$data[6]) {
                 continue;
             }

@@ -20,10 +20,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class EntityTagger
 {
-    /**
-     * @var TagsInvalidator
-     */
-    private $eventInvalidator;
+    private TagsInvalidator $eventInvalidator;
 
     public function __construct(TagsInvalidator $eventInvalidator)
     {

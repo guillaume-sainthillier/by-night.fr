@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraint;
 
 class ReCaptchaResponse extends Constraint
 {
-    public $message = 'Le captcha est incorrect.';
+    public string $message = 'Le captcha est incorrect.';
 
     public function validatedBy()
     {

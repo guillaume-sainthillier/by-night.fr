@@ -23,15 +23,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
-    /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
+    protected TranslatorInterface $translator;
 
-    /**
-     * @var RouterInterface
-     */
-    protected $router;
+    protected RouterInterface $router;
 
     public function __construct(TranslatorInterface $translator, RouterInterface $router)
     {

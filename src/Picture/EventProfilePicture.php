@@ -23,16 +23,11 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class EventProfilePicture
 {
-    /** @var UploaderHelper
-     */
-    private $helper;
+    private UploaderHelper $helper;
 
-    /** @var Packages
-     */
-    private $packages;
+    private Packages $packages;
 
-    /** @var AssetExtension */
-    private $assetExtension;
+    private AssetExtension $assetExtension;
 
     public function __construct(UploaderHelper $helper, Packages $packages, AssetExtension $assetExtension)
     {
