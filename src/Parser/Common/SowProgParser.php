@@ -44,7 +44,7 @@ class SowProgParser extends AbstractParser
     {
         $modifiedSince = $incremental ? 1000 * ((time() - 86400)) : 0;
         $response = $this->client->get('/rest/v1_2/scheduledEvents/search?modifiedSince=' . $modifiedSince);
-        $events = json_decode(copy_to_string($response->getBody()), true);
+        $events = json_decode(copy_to_string($response->getBody()), true, 512, JSON_THROW_ON_ERROR);
 
         foreach ($events['eventDescription'] as $event) {
             foreach ($event['eventSchedule']['eventScheduleDate'] as $schedule) {

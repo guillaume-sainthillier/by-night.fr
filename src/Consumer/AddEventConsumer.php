@@ -47,7 +47,7 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
 
     public function execute(AMQPMessage $msg)
     {
-        $datas = \json_decode($msg->getBody(), true);
+        $datas = \json_decode($msg->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         try {
             $event = $this->eventFactory->fromArray($datas);
@@ -71,7 +71,7 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
         /** @var AMQPMessage $message */
         $events = [];
         foreach ($messages as $message) {
-            $datas = \json_decode($message->getBody(), true);
+            $datas = \json_decode($message->getBody(), true, 512, JSON_THROW_ON_ERROR);
             try {
                 $events[] = $this->eventFactory->fromArray($datas);
             } catch (Exception $e) {

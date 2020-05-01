@@ -276,7 +276,7 @@ class DoctrineEventHandler
         //City
         if (!$city && $place->getVille()) {
             $cities = $this->repoCity->findByName($place->getVille(), $place->getCountry()->getId());
-            if (1 === \count($cities)) {
+            if (1 === (is_countable($cities) ? \count($cities) : 0)) {
                 $city = $cities[0];
             }
         }

@@ -30,7 +30,7 @@ class DateRangeBuilder
 
         $view->children['shortcut']->vars['attr']['data-from'] = $view->children[$fromName]->vars['id'];
         $view->children['shortcut']->vars['attr']['data-to'] = $view->children[$toName]->vars['id'];
-        $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($fromName = $form->get('shortcut')->getConfig()->getOption('ranges'));
+        $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($fromName = $form->get('shortcut')->getConfig()->getOption('ranges'), JSON_THROW_ON_ERROR);
     }
 
     public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName)

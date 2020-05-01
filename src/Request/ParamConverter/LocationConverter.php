@@ -55,7 +55,7 @@ class LocationConverter implements ParamConverterInterface
 
         $location = new Location();
         $entity = null;
-        if (0 !== strpos('c--', $locationSlug)) {
+        if (0 !== strpos('c--', (string) $locationSlug)) {
             $entity = $this
                 ->em
                 ->getRepository(City::class)

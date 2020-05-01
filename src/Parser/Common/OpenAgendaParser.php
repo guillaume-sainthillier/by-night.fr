@@ -118,7 +118,7 @@ class OpenAgendaParser extends AbstractParser
         return $this->client
             ->getAsync($uri)
             ->then(function (ResponseInterface $result) {
-                return json_decode(copy_to_string($result->getBody()), true);
+                return json_decode(copy_to_string($result->getBody()), true, 512, JSON_THROW_ON_ERROR);
             });
     }
 
