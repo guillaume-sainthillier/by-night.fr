@@ -18,11 +18,11 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class Monitor
 {
-    public static OutputInterface $output;
+    public static ?OutputInterface $output = null;
 
-    private static ProgressBar $progressBar;
+    private static ?ProgressBar $progressBar = null;
 
-    private static $enableMonitoring;
+    private static bool $enableMonitoring = false;
 
     private static array $stats = [];
 

@@ -10,6 +10,8 @@
 
 namespace App\Security\Core\User;
 
+use App\Repository\InfoRepository;
+use App\Repository\UserRepository;
 use App\Entity\Info;
 use App\Entity\User;
 use App\Entity\UserInfo;
@@ -25,13 +27,23 @@ class FOSUBUserProvider extends BaseClass
     private SocialProvider $socialProvider;
 
     private EntityManagerInterface $entityManager;
+    /**
+     * @var \App\Repository\InfoRepository
+     */
+    private $infoRepository;
+    /**
+     * @var \App\Repository\UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(UserManagerInterface $userManager, array $properties, EntityManagerInterface $entityManager, SocialProvider $socialProvider)
+    public function __construct(UserManagerInterface $userManager, array $properties, EntityManagerInterface $entityManager, SocialProvider $socialProvider, InfoRepository $infoRepository, UserRepository $userRepository)
     {
         parent::__construct($userManager, $properties);
 
         $this->entityManager = $entityManager;
         $this->socialProvider = $socialProvider;
+        $this->infoRepository = $infoRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function connectSite(UserResponseInterface $response)
@@ -68,11 +80,11 @@ class FOSUBUserProvider extends BaseClass
 
     protected function findUserBySocialInfo(UserResponseInterface $cle, $valeur)
     {
-        $repo = $this->entityManager->getRepository(Info::class);
+        $repo = $this->infoRepository;
 
         $info = $repo->findOneBy([$this->getProperty($cle) => $valeur]);
         if (null !== $info) {
-            return $this->entityManager->getRepository(User::class)->findOneBy([
+            return $this->userRepository->findOneBy([
                 'info' => $info,
             ]);
         }

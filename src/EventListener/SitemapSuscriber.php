@@ -10,6 +10,10 @@
 
 namespace App\EventListener;
 
+use App\Repository\CityRepository;
+use App\Repository\PlaceRepository;
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
@@ -34,12 +38,32 @@ class SitemapSuscriber implements EventSubscriberInterface
     private ?UrlContainerInterface $urlContainer = null;
 
     private DateTime $now;
+    /**
+     * @var \App\Repository\CityRepository
+     */
+    private $cityRepository;
+    /**
+     * @var \App\Repository\PlaceRepository
+     */
+    private $placeRepository;
+    /**
+     * @var \App\Repository\EventRepository
+     */
+    private $eventRepository;
+    /**
+     * @var \App\Repository\UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager)
+    public function __construct(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager, CityRepository $cityRepository, PlaceRepository $placeRepository, EventRepository $eventRepository, UserRepository $userRepository)
     {
         $this->urlGenerator = $urlGenerator;
         $this->entityManager = $entityManager;
         $this->now = new DateTime();
+        $this->cityRepository = $cityRepository;
+        $this->placeRepository = $placeRepository;
+        $this->eventRepository = $eventRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -75,7 +99,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerTagRoutes($section)
     {
-        $events = $this->entityManager->getRepository(City::class)->findTagSiteMap();
+        $events = $this->cityRepository->findTagSiteMap();
 
         $cache = [];
         $lastSlug = null;
@@ -114,7 +138,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerAgendaRoutes($section)
     {
-        $cities = $this->entityManager->getRepository(City::class)->findSiteMap();
+        $cities = $this->cityRepository->findSiteMap();
 
         foreach ($cities as $city) {
             $city = current($city);
@@ -130,7 +154,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerPlacesRoutes($section)
     {
-        $places = $this->entityManager->getRepository(Place::class)->findSiteMap();
+        $places = $this->placeRepository->findSiteMap();
 
         foreach ($places as $place) {
             $place = current($place);
@@ -150,11 +174,11 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerEventRoutes($section)
     {
-        $nbEvents = $this->entityManager->getRepository(Event::class)->findSiteMapCount();
+        $nbEvents = $this->eventRepository->findSiteMapCount();
         $nbPages = ceil($nbEvents / self::ITEMS_PER_PAGE);
 
         for ($i = 0; $i < $nbPages; ++$i) {
-            $events = $this->entityManager->getRepository(Event::class)->findSiteMap($i, self::ITEMS_PER_PAGE);
+            $events = $this->eventRepository->findSiteMap($i, self::ITEMS_PER_PAGE);
 
             foreach ($events as $event) {
                 $event = current($event);
@@ -176,7 +200,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerUserRoutes($section)
     {
-        $users = $this->entityManager->getRepository(User::class)->findSiteMap();
+        $users = $this->userRepository->findSiteMap();
         foreach ($users as $user) {
             /** @var User $user */
             $user = $user[0];

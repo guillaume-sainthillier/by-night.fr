@@ -10,6 +10,7 @@
 
 namespace App\Updater;
 
+use App\Repository\UserRepository;
 use DateTimeInterface;
 use App\Entity\User;
 use App\Handler\UserHandler;
@@ -24,17 +25,22 @@ class UserUpdater extends Updater
     private const PAGINATION_SIZE = 50;
 
     protected UserHandler $userHandler;
+    /**
+     * @var \App\Repository\UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, UserHandler $userHandler)
+    public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, UserHandler $userHandler, UserRepository $userRepository)
     {
         parent::__construct($entityManager, $logger, $facebookAdmin);
 
         $this->userHandler = $userHandler;
+        $this->userRepository = $userRepository;
     }
 
     public function update(DateTimeInterface $from)
     {
-        $repo = $this->entityManager->getRepository(User::class);
+        $repo = $this->userRepository;
         $count = $repo->getUserFbIdsCount($from);
 
         $nbBatchs = \ceil($count / self::PAGINATION_SIZE);

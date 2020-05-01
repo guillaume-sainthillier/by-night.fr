@@ -10,6 +10,8 @@
 
 namespace App\Controller;
 
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
 use App\Annotation\ReverseProxy;
 use App\Entity\Event;
 use App\Entity\User;
@@ -22,6 +24,19 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 class OldMediaController extends AbstractController
 {
     /**
+     * @var \App\Repository\EventRepository
+     */
+    private $eventRepository;
+    /**
+     * @var \App\Repository\UserRepository
+     */
+    private $userRepository;
+    public function __construct(EventRepository $eventRepository, UserRepository $userRepository)
+    {
+        $this->eventRepository = $eventRepository;
+        $this->userRepository = $userRepository;
+    }
+    /**
      * @Route("/media/cache/{filter}/{path}", requirements={"path": ".+"})
      * @Route("/uploads/{path}", requirements={"path": ".+"})
      * @ReverseProxy(expires="1 year")
@@ -32,7 +47,7 @@ class OldMediaController extends AbstractController
     {
         $infos = pathinfo($path);
 
-        $eventRepository = $this->getDoctrine()->getRepository(Event::class);
+        $eventRepository = $this->eventRepository;
         /** @var Event $event */
         $event = $eventRepository
             ->createQueryBuilder('e')
@@ -52,7 +67,7 @@ class OldMediaController extends AbstractController
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
 
-        $userRepository = $this->getDoctrine()->getRepository(User::class);
+        $userRepository = $this->userRepository;
         /** @var User $user */
         $user = $userRepository
             ->createQueryBuilder('u')

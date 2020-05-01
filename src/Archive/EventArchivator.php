@@ -26,11 +26,16 @@ class EventArchivator
     private ObjectPersisterInterface $objectPersister;
 
     private EntityManagerInterface $entityManager;
+    /**
+     * @var \App\Repository\EventRepository
+     */
+    private $eventRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, ObjectPersisterInterface $objectPersister)
+    public function __construct(EntityManagerInterface $entityManager, ObjectPersisterInterface $objectPersister, EventRepository $eventRepository)
     {
         $this->entityManager = $entityManager;
         $this->objectPersister = $objectPersister;
+        $this->eventRepository = $eventRepository;
     }
 
     /**
@@ -40,7 +45,7 @@ class EventArchivator
     public function archive()
     {
         /** @var EventRepository $repo */
-        $repo = $this->entityManager->getRepository(Event::class);
+        $repo = $this->eventRepository;
         $qb = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
 

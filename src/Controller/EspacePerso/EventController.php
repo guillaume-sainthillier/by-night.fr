@@ -10,6 +10,8 @@
 
 namespace App\Controller\EspacePerso;
 
+use App\Repository\EventRepository;
+use App\Repository\CalendrierRepository;
 use DateTime;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Controller\TBNController as BaseController;
@@ -22,11 +24,23 @@ use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends BaseController
 {
     private const EVENT_PER_PAGE = 50;
+
+    /**
+     * @var \App\Repository\CalendrierRepository
+     */
+    private CalendrierRepository $calendrierRepository;
+
+    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, CalendrierRepository $calendrierRepository)
+    {
+        parent::__construct($requestStack, $eventRepository);
+        $this->calendrierRepository = $calendrierRepository;
+    }
 
     /**
      * @Route("/mes-soirees", name="app_event_list", methods={"GET"})
@@ -36,7 +50,7 @@ class EventController extends BaseController
         $user = $this->getUser();
 
         $page = (int) $request->query->get('page', 1);
-        $query = $this->getDoctrine()->getRepository(Event::class)->findAllByUser($user);
+        $query = $this->eventRepository->findAllByUser($user);
         $events = $paginator->paginate($query, $page, self::EVENT_PER_PAGE);
 
         return $this->render('EspacePerso/liste.html.twig', [
@@ -173,7 +187,7 @@ class EventController extends BaseController
         $user = $this->getUser();
 
         $em = $this->getDoctrine()->getManager();
-        $calendrier = $em->getRepository(Calendrier::class)->findOneBy(['user' => $user, 'event' => $event]);
+        $calendrier = $this->calendrierRepository->findOneBy(['user' => $user, 'event' => $event]);
 
         if (null === $calendrier) {
             $calendrier = new Calendrier();
@@ -184,7 +198,7 @@ class EventController extends BaseController
         $calendrier->setParticipe($isLike);
         $em->flush();
 
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
         $participations = $repo->getCountTendancesParticipation($event);
         $interets = $repo->getCountTendancesInterets($event);
 

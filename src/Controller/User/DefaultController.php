@@ -10,6 +10,7 @@
 
 namespace App\Controller\User;
 
+use App\Repository\UserRepository;
 use IntlDateFormatter;
 use Locale;
 use App\Controller\TBNController as BaseController;
@@ -20,6 +21,7 @@ use DateTime;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,6 +31,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DefaultController extends BaseController
 {
+    /**
+     * @var \App\Repository\UserRepository
+     */
+    private $userRepository;
+    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, UserRepository $userRepository)
+    {
+        parent::__construct($requestStack, $eventRepository);
+        $this->userRepository = $userRepository;
+    }
     public function urlRedirect($term)
     {
         $params = [
@@ -55,7 +66,7 @@ class DefaultController extends BaseController
         $user = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
 
         return $this->render('User/index.html.twig', [
             'user' => $user,
@@ -72,7 +83,7 @@ class DefaultController extends BaseController
     protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
     {
         $em = $this->getDoctrine()->getManager();
-        $repoUser = $em->getRepository(User::class);
+        $repoUser = $this->userRepository;
 
         $user = !$id ? $repoUser->findOneBy(['username' => $username]) : $repoUser->find($id);
 
@@ -109,7 +120,7 @@ class DefaultController extends BaseController
         $user = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
         $str_date = $repo->getLastUpdatedStatsUser($user);
 
         $response = $this->cacheVerif($str_date);

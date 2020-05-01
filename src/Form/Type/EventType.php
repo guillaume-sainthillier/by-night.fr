@@ -14,6 +14,7 @@ use App\Entity\Country;
 use App\Entity\Event;
 use App\Form\Builder\DateRangeBuilder;
 use App\Handler\DoctrineEventHandler;
+use App\Repository\CountryRepository;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -135,8 +136,7 @@ class EventType extends AbstractType
                 'label' => 'Pays',
                 'placeholder' => '?',
                 'class' => Country::class,
-                'query_builder' => fn(EntityRepository $er) => $er->createQueryBuilder('c')
-                    ->orderBy('c.name', 'ASC'),
+                'query_builder' => fn(CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
                 'choice_label' => 'name',
             ])
             ->add('reservationInternet', UrlType::class, [

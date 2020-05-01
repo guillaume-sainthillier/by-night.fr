@@ -10,6 +10,9 @@
 
 namespace App\Controller\Fragments;
 
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
+use App\Repository\CalendrierRepository;
 use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Calendrier;
@@ -17,6 +20,7 @@ use App\Entity\Event;
 use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use SocialLinks\Page;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -24,6 +28,20 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class WidgetsController extends BaseController
 {
     const WIDGET_ITEM_LIMIT = 7;
+    /**
+     * @var \App\Repository\UserRepository
+     */
+    private $userRepository;
+    /**
+     * @var \App\Repository\CalendrierRepository
+     */
+    private $calendrierRepository;
+    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, UserRepository $userRepository, CalendrierRepository $calendrierRepository)
+    {
+        parent::__construct($requestStack, $eventRepository);
+        $this->userRepository = $userRepository;
+        $this->calendrierRepository = $calendrierRepository;
+    }
 
     /**
      * @Route("/top/membres/{page}", name="app_agenda_top_membres", requirements={"page": "\d+"})
@@ -40,7 +58,7 @@ class WidgetsController extends BaseController
         }
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(User::class);
+        $repo = $this->userRepository;
 
         $count = $repo->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -64,7 +82,7 @@ class WidgetsController extends BaseController
     public function tendances(Event $event, EventProfilePicture $eventProfilePicture)
     {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
 
         $participer = false;
         $interet = false;
@@ -72,7 +90,7 @@ class WidgetsController extends BaseController
         /** @var User $user */
         $user = $this->getUser();
         if ($user) {
-            $repoCalendrier = $em->getRepository(Calendrier::class);
+            $repoCalendrier = $this->calendrierRepository;
             $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'event' => $event]);
             if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();

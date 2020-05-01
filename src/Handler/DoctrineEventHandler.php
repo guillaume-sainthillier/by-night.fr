@@ -10,6 +10,7 @@
 
 namespace App\Handler;
 
+use App\Repository\CountryRepository;
 use Doctrine\Persistence\ObjectRepository;
 use App\Entity\City;
 use App\Entity\Country;
@@ -31,9 +32,11 @@ class DoctrineEventHandler
 
     private EntityManagerInterface $em;
 
-    private ObjectRepository $repoCity;
+    private CityRepository $repoCity;
 
-    private ObjectRepository $repoZipCity;
+    private ZipCityRepository $repoZipCity;
+
+    private CountryRepository $countryRepository;
 
     private EventHandler $handler;
 
@@ -43,15 +46,16 @@ class DoctrineEventHandler
 
     private ExplorationHandler $explorationHandler;
 
-    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler)
+    public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, CityRepository $cityRepository, ZipCityRepository $zipCityRepository, CountryRepository $countryRepository)
     {
         $this->em = $em;
-        $this->repoCity = $em->getRepository(City::class);
-        $this->repoZipCity = $em->getRepository(ZipCity::class);
+        $this->repoCity = $cityRepository;
+        $this->repoZipCity = $zipCityRepository;
         $this->handler = $handler;
         $this->firewall = $firewall;
         $this->echantillonHandler = $echantillonHandler;
         $this->explorationHandler = new ExplorationHandler();
+        $this->countryRepository = $countryRepository;
     }
 
     /**
@@ -205,7 +209,7 @@ class DoctrineEventHandler
     {
         //Recherche du pays en premier lieu
         if ($place->getCountryName() && (!$place->getCountry() || $place->getCountry()->getName() !== $place->getCountryName())) {
-            $country = $this->em->getRepository(Country::class)->findByName($place->getCountryName());
+            $country = $this->countryRepository->findByName($place->getCountryName());
             $place->setCountry($country);
         }
 

@@ -10,6 +10,8 @@
 
 namespace App\Request\ParamConverter;
 
+use App\Repository\CityRepository;
+use App\Repository\CountryRepository;
 use App\App\CityManager;
 use App\App\Location;
 use App\Entity\City;
@@ -26,11 +28,21 @@ class LocationConverter implements ParamConverterInterface
     private EntityManagerInterface $em;
 
     private CityManager $cityManager;
+    /**
+     * @var \App\Repository\CityRepository
+     */
+    private $cityRepository;
+    /**
+     * @var \App\Repository\CountryRepository
+     */
+    private $countryRepository;
 
-    public function __construct(EntityManagerInterface $em, CityManager $cityManager)
+    public function __construct(EntityManagerInterface $em, CityManager $cityManager, CityRepository $cityRepository, CountryRepository $countryRepository)
     {
         $this->em = $em;
         $this->cityManager = $cityManager;
+        $this->cityRepository = $cityRepository;
+        $this->countryRepository = $countryRepository;
     }
 
     public function apply(Request $request, ParamConverter $configuration)
@@ -50,9 +62,7 @@ class LocationConverter implements ParamConverterInterface
         $location = new Location();
         $entity = null;
         if (0 !== strpos('c--', (string) $locationSlug)) {
-            $entity = $this
-                ->em
-                ->getRepository(City::class)
+            $entity = $this->cityRepository
                 ->findBySlug($locationSlug);
         }
 
@@ -71,9 +81,7 @@ class LocationConverter implements ParamConverterInterface
             $this->cityManager->setCurrentCity($entity);
             $request->attributes->set('_current_city', $locationSlug);
         } else {
-            $entity = $this
-                ->em
-                ->getRepository(Country::class)
+            $entity = $this->countryRepository
                 ->findOneBy(['slug' => $locationSlug]);
             $location->setCountry($entity);
         }

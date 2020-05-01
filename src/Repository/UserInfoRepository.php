@@ -10,21 +10,22 @@
 
 namespace App\Repository;
 
-use App\Entity\AdminZone1;
+use App\Entity\Info;
+use App\Entity\UserInfo;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method AdminZone1|null find($id, $lockMode = null, $lockVersion = null)
- * @method AdminZone1|null findOneBy(array $criteria, array $orderBy = null)
- * @method AdminZone1[]    findAll()
- * @method AdminZone1[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method UserInfo|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserInfo|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserInfo[]    findAll()
+ * @method UserInfo[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AdminZone1Repository extends ServiceEntityRepository
+class UserInfoRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, AdminZone1::class);
+        parent::__construct($registry, UserInfo::class);
     }
 }

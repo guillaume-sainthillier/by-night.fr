@@ -10,6 +10,7 @@
 
 namespace App\Controller;
 
+use App\Repository\EventRepository;
 use App\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -17,19 +18,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TBNController extends AbstractController
 {
-    private RequestStack $requestStack;
+    protected RequestStack $requestStack;
 
-    public function __construct(RequestStack $requestStack)
+    protected EventRepository $eventRepository;
+
+    public function __construct(RequestStack $requestStack, EventRepository $eventRepository)
     {
         $this->requestStack = $requestStack;
+        $this->eventRepository = $eventRepository;
     }
 
     protected function checkEventUrl($locationSlug, $eventSlug, $eventId, $routeName = 'app_event_details', array $extraParams = [])
     {
-        $em = $this->getDoctrine()->getManager();
-        $repoEvent = $em->getRepository(Event::class);
-
-        $event = !$eventId ? $repoEvent->findOneBy(['slug' => $eventSlug]) : $repoEvent->find($eventId);
+        $repoEvent = $this->eventRepository;
+        $event = !$eventId ? $this->repository->findOneBy(['slug' => $eventSlug]) : $this->repository->find($eventId);
 
         if (!$event || !$event->getSlug()) {
             throw $this->createNotFoundException('Event not found');

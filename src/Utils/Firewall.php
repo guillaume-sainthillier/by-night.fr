@@ -10,6 +10,7 @@
 
 namespace App\Utils;
 
+use App\Repository\ExplorationRepository;
 use DateTimeInterface;
 use App\Entity\Event;
 use App\Entity\Exploration;
@@ -25,17 +26,22 @@ class Firewall
     private Comparator $comparator;
 
     private EntityManagerInterface $em;
+    /**
+     * @var \App\Repository\ExplorationRepository
+     */
+    private $explorationRepository;
 
-    public function __construct(EntityManagerInterface $em, Comparator $comparator)
+    public function __construct(EntityManagerInterface $em, Comparator $comparator, ExplorationRepository $explorationRepository)
     {
         $this->em = $em;
         $this->comparator = $comparator;
         $this->explorations = [];
+        $this->explorationRepository = $explorationRepository;
     }
 
     public function loadExplorations(array $ids)
     {
-        $explorations = $this->em->getRepository(Exploration::class)->findBy([
+        $explorations = $this->explorationRepository->findBy([
             'externalId' => $ids,
         ]);
 

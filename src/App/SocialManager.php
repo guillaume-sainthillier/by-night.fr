@@ -25,20 +25,24 @@ class SocialManager
     private $siteInfo;
 
     private EntityManagerInterface $entityManager;
+    /**
+     * @var App\Repository\SiteInfoRepository
+     */
+    private $siteInfoRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage)
+    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage, \App\Repository\SiteInfoRepository $siteInfoRepository)
     {
         $this->entityManager = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
         $this->twitterIdPage = $twitterIdPage;
         $this->siteInfo = false;
+        $this->siteInfoRepository = $siteInfoRepository;
     }
 
     public function getSiteInfo(): SiteInfo
     {
         if (false === $this->siteInfo) {
-            $this->siteInfo = $this->entityManager
-                ->getRepository(SiteInfo::class)
+            $this->siteInfo = $this->siteInfoRepository
                 ->findOneBy([]);
         }
 

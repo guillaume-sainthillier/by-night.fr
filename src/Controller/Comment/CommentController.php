@@ -16,12 +16,24 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
+use App\Repository\EventRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommentController extends BaseController
 {
+    /**
+     * @var \App\Repository\CommentRepository
+     */
+    private $commentRepository;
+
+    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, CommentRepository $commentRepository)
+    {
+        parent::__construct($requestStack, $eventRepository);
+        $this->commentRepository = $commentRepository;
+    }
     /**
      * @Route("/form/{id}", name="app_comment_form", requirements={"id": "\d+"})
      */
@@ -62,7 +74,7 @@ class CommentController extends BaseController
      */
     protected function getCommentRepo()
     {
-        return $this->getDoctrine()->getRepository(Comment::class);
+        return $this->commentRepository;
     }
 
     protected function getCommentaires(Event $event, $page = 1, $limit = 10)

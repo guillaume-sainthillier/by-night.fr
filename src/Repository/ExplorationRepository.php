@@ -10,8 +10,21 @@
 
 namespace App\Repository;
 
+use App\Entity\Exploration;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class ExplorationRepository extends EntityRepository
+/**
+ * @method Exploration|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Exploration|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Exploration[]    findAll()
+ * @method Exploration[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class ExplorationRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Exploration::class);
+    }
 }

@@ -10,6 +10,7 @@
 
 namespace App\Controller\City;
 
+use App\Repository\PlaceRepository;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
@@ -23,6 +24,7 @@ use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -30,6 +32,16 @@ use Symfony\Contracts\Cache\ItemInterface;
 class AgendaController extends BaseController
 {
     const EVENT_PER_PAGE = 15;
+    /**
+     * @var \App\Repository\PlaceRepository
+     */
+    private $placeRepository;
+
+    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, PlaceRepository $placeRepository)
+    {
+        parent::__construct($requestStack, $eventRepository);
+        $this->placeRepository = $placeRepository;
+    }
 
     /**
      * @Route("/agenda/{page}", name="app_agenda_agenda", requirements={"page": "\d+"})
@@ -58,14 +70,14 @@ class AgendaController extends BaseController
 
         //Récupération du repo des événements
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
 
         //Recherche des événements
         $search = new SearchEvent();
         $place = null;
 
         if (null !== $slug) {
-            $place = $em->getRepository(Place::class)->findOneBy(['slug' => $slug]);
+            $place = $this->placeRepository->findOneBy(['slug' => $slug]);
             if (!$place) {
                 return $this->redirectToRoute('app_agenda_agenda', ['location' => $location->getSlug()]);
             }
@@ -92,7 +104,7 @@ class AgendaController extends BaseController
             $isValid = true;
 
             //Recherche ElasticSearch
-            $repository = $repositoryManager->getRepository(Event::class);
+            $repository = $this->eventRepository;
             $results = $repository->findWithSearch($search);
             $events = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
         } else {

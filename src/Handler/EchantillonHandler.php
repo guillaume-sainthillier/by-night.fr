@@ -10,6 +10,8 @@
 
 namespace App\Handler;
 
+use App\Repository\PlaceRepository;
+use App\Repository\EventRepository;
 use RuntimeException;
 use App\Entity\Event;
 use App\Entity\Place;
@@ -34,11 +36,21 @@ class EchantillonHandler
      * @var Event[]
      */
     private array $events;
+    /**
+     * @var \App\Repository\PlaceRepository
+     */
+    private $placeRepository;
+    /**
+     * @var \App\Repository\EventRepository
+     */
+    private $eventRepository;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, PlaceRepository $placeRepository, EventRepository $eventRepository)
     {
         $this->em = $em;
         $this->init();
+        $this->placeRepository = $placeRepository;
+        $this->eventRepository = $eventRepository;
     }
 
     private function init()
@@ -84,7 +96,7 @@ class EchantillonHandler
             }
         }
 
-        $repoPlace = $this->em->getRepository(Place::class);
+        $repoPlace = $this->placeRepository;
 
         //On prend toutes les places déjà connues par leur city ID
         if (\count($cityIds) > 0) {
@@ -138,7 +150,7 @@ class EchantillonHandler
         }
 
         if (\count($externalIds) > 0) {
-            $repoEvent = $this->em->getRepository(Event::class);
+            $repoEvent = $this->eventRepository;
             $candidates = $repoEvent->findBy(['externalId' => array_keys($externalIds)]);
             /** @var Event $candidate */
             foreach ($candidates as $candidate) {

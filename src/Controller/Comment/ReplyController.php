@@ -14,15 +14,29 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
+use App\Repository\EventRepository;
+use App\Controller\TBNController as BaseController;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ReplyController extends AbstractController
+class ReplyController extends BaseController
 {
+    /**
+     * @var \App\Repository\CommentRepository
+     */
+    private $commentRepository;
+
+    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, CommentRepository $commentRepository)
+    {
+        parent::__construct($requestStack, $eventRepository);
+        $this->commentRepository = $commentRepository;
+    }
+
     /**
      * @Route("/{id}/reponses/{page}", name="app_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})
      *
@@ -53,7 +67,7 @@ class ReplyController extends AbstractController
      */
     protected function getCommentRepo()
     {
-        return $this->getDoctrine()->getRepository(Comment::class);
+        return $this->commentRepository;
     }
 
     protected function getNbReponses(Comment $comment)

@@ -10,6 +10,7 @@
 
 namespace App\Controller\City;
 
+use App\Repository\EventRepository;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
@@ -70,7 +71,7 @@ class WidgetsController extends BaseController
         $event = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
 
         $count = $repo->findAllNextCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -110,7 +111,7 @@ class WidgetsController extends BaseController
         $event = $result;
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
 
         $count = $repo->findAllSimilairesCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -143,7 +144,7 @@ class WidgetsController extends BaseController
     public function topSoirees(Location $location, $page = 1)
     {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
 
         $current = $page * self::WIDGET_ITEM_LIMIT;
         $count = $repo->findTopSoireeCount($location);

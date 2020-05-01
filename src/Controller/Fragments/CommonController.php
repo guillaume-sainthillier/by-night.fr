@@ -10,16 +10,30 @@
 
 namespace App\Controller\Fragments;
 
+use App\Repository\CityRepository;
 use App\Annotation\ReverseProxy;
 use App\App\CityManager;
 use App\Controller\TBNController;
 use App\Entity\City;
 use App\Entity\Country;
+use App\Repository\EventRepository;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommonController extends TBNController
 {
-    const LIFE_TIME_CACHE = 86_400; // 3600*24
+    const LIFE_TIME_CACHE = 86_400;
+
+    /**
+     * @var \App\Repository\CityRepository
+     */
+    private $cityRepository;
+
+    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, CityRepository $cityRepository)
+    {
+        parent::__construct($requestStack, $eventRepository);
+        $this->cityRepository = $cityRepository;
+    }
 
     /**
      * @Route("/_private/header/{id}", name="app_private_header", requirements={"id": "\d+"})
@@ -29,7 +43,7 @@ class CommonController extends TBNController
     {
         $city = null;
         if ($id) {
-            $city = $this->getDoctrine()->getRepository(City::class)->find($id);
+            $city = $this->cityRepository->find($id);
         }
 
         $city = $city ?: $cityManager->getCity();
@@ -42,7 +56,7 @@ class CommonController extends TBNController
     public function footer(Country $country = null)
     {
         $params = [];
-        $repo = $this->getDoctrine()->getRepository(City::class);
+        $repo = $this->cityRepository;
         $params['cities'] = $repo->findRandomNames($country);
 
         return $this->render('fragments/footer.html.twig', $params);

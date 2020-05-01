@@ -44,7 +44,7 @@ services:
 
     App\:
         resource: '../src/*'
-        exclude: '../src/{Annotation,Entity,Exception,Kernel.php,Migrations,Geolocalize,Glide,Producer,Reject,Repository,Search}'
+        exclude: '../src/{Annotation,Entity,Exception,Kernel.php,Migrations,Geolocalize,Glide,Producer,Reject,Search}'
 
     App\Controller\:
         resource: '../src/Controller'

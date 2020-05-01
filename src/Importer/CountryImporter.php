@@ -10,6 +10,7 @@
 
 namespace App\Importer;
 
+use App\Repository\CountryRepository;
 use ZipArchive;
 use App\Entity\AdminZone;
 use App\Entity\AdminZone1;
@@ -31,11 +32,16 @@ class CountryImporter
     private EntityManagerInterface $em;
 
     private string $dataDir;
+    /**
+     * @var \App\Repository\CountryRepository
+     */
+    private $countryRepository;
 
-    public function __construct(EntityManagerInterface $em, string $dataDir)
+    public function __construct(EntityManagerInterface $em, string $dataDir, CountryRepository $countryRepository)
     {
         $this->em = $em;
         $this->dataDir = $dataDir;
+        $this->countryRepository = $countryRepository;
     }
 
     /**
@@ -46,7 +52,7 @@ class CountryImporter
         /**
          * @var Country
          */
-        $country = $this->em->getRepository(Country::class)->find($id);
+        $country = $this->countryRepository->find($id);
         if (!$country) {
             $country = new Country();
             $country

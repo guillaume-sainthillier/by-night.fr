@@ -10,6 +10,7 @@
 
 namespace App\Controller\City;
 
+use App\Repository\EventRepository;
 use DateTime;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
@@ -21,6 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends BaseController
 {
+
     /**
      * @Route("/", name="app_agenda_index")
      * @ReverseProxy(expires="tomorrow")
@@ -32,7 +34,7 @@ class DefaultController extends BaseController
         ];
 
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository(Event::class);
+        $repo = $this->eventRepository;
         $query = $repo->findUpcomingEvents($location);
         $events = $paginator->paginate($query, 1, 7);
 

@@ -10,6 +10,7 @@
 
 namespace App\Controller;
 
+use App\Repository\EventRepository;
 use DateTime;
 use App\Annotation\ReverseProxy;
 use App\App\CityManager;
@@ -23,6 +24,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends AbstractController
 {
     const EVENT_PER_CATEGORY = 7;
+    /**
+     * @var \App\Repository\EventRepository
+     */
+    private $eventRepository;
+    public function __construct(EventRepository $eventRepository)
+    {
+        $this->eventRepository = $eventRepository;
+    }
 
     /**
      * @Route("/", name="app_main_index")
@@ -42,7 +51,7 @@ class DefaultController extends AbstractController
             ];
         }
 
-        $stats = $this->getDoctrine()->getManager()->getRepository(Event::class)->getCountryEvents();
+        $stats = $this->eventRepository->getCountryEvents();
         $form = $this->createForm(CityAutocompleteType::class, $datas);
 
         $form->handleRequest($request);

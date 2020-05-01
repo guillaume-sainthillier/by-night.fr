@@ -10,6 +10,7 @@
 
 namespace App\Controller\Api;
 
+use App\Repository\CityRepository;
 use App\Annotation\ReverseProxy;
 use App\Entity\City;
 use App\Invalidator\TagsInvalidator;
@@ -29,6 +30,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class CityController extends AbstractController
 {
     const MAX_RESULTS = 7;
+    /**
+     * @var \App\Repository\CityRepository
+     */
+    private $cityRepository;
+    public function __construct(CityRepository $cityRepository)
+    {
+        $this->cityRepository = $cityRepository;
+    }
 
     /**
      * @Route("/villes", name="app_api_city")
@@ -44,7 +53,7 @@ class CityController extends AbstractController
             $results = [];
         } else {
             /** @var CityElasticaRepository $repo */
-            $repo = $repositoryManager->getRepository(City::class);
+            $repo = $this->cityRepository;
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }

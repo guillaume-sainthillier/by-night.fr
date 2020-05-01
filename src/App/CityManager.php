@@ -10,6 +10,7 @@
 
 namespace App\App;
 
+use App\Repository\CityRepository;
 use App\Entity\City;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -23,13 +24,18 @@ class CityManager
     private EntityManagerInterface $entityManager;
 
     private RequestStack $requestStack;
+    /**
+     * @var \App\Repository\CityRepository
+     */
+    private $cityRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack)
+    public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack, CityRepository $cityRepository)
     {
         $this->entityManager = $entityManager;
         $this->requestStack = $requestStack;
         $this->currentCity = null;
         $this->cookieCity = false;
+        $this->cityRepository = $cityRepository;
     }
 
     /**
@@ -74,7 +80,7 @@ class CityManager
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
         if ($currentRequest->cookies->has('app_city')) {
-            $this->cookieCity = $this->entityManager->getRepository(City::class)->findBySlug($currentRequest->cookies->get('app_city'));
+            $this->cookieCity = $this->cityRepository->findBySlug($currentRequest->cookies->get('app_city'));
         } else {
             $this->cookieCity = null;
         }
