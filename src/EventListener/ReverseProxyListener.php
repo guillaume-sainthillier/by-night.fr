@@ -10,6 +10,8 @@
 
 namespace App\EventListener;
 
+use DateTime;
+use DateTimeZone;
 use App\Annotation\ReverseProxy;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -56,8 +58,8 @@ class ReverseProxyListener implements EventSubscriberInterface
         if (null !== $reverseProxyConfiguration->getTtl()) {
             $ttl = $reverseProxyConfiguration->getTtl();
         } else {
-            $date = \DateTime::createFromFormat('U', strtotime($reverseProxyConfiguration->getExpires()), new \DateTimeZone('UTC'));
-            $now = \DateTime::createFromFormat('U', strtotime('now'), new \DateTimeZone('UTC'));
+            $date = DateTime::createFromFormat('U', strtotime($reverseProxyConfiguration->getExpires()), new DateTimeZone('UTC'));
+            $now = DateTime::createFromFormat('U', strtotime('now'), new DateTimeZone('UTC'));
 
             $ttl = max($date->format('U') - $now->format('U'), 0);
         }

@@ -10,6 +10,7 @@
 
 namespace App\Updater;
 
+use DateTimeInterface;
 use App\Social\FacebookAdmin;
 use Doctrine\ORM\EntityManagerInterface;
 use function GuzzleHttp\Psr7\copy_to_string;
@@ -45,7 +46,7 @@ abstract class Updater
         $this->client = HttpClient::create();
     }
 
-    abstract public function update(\DateTimeInterface $from);
+    abstract public function update(DateTimeInterface $from);
 
     protected function downloadUrls(array $urls)
     {

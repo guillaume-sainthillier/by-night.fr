@@ -10,6 +10,7 @@
 
 namespace App\Twig;
 
+use RuntimeException;
 use App\Invalidator\TagsInvalidator;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFunction;
@@ -40,6 +41,6 @@ class TagsExtension extends Extension
                 return TagsInvalidator::getMenuTag();
         }
 
-        throw new \RuntimeException(sprintf('No tags for %s', $type));
+        throw new RuntimeException(sprintf('No tags for %s', $type));
     }
 }

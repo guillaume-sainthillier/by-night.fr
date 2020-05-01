@@ -10,6 +10,7 @@
 
 namespace App\Consumer;
 
+use Exception;
 use GuzzleHttp\Client;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -59,7 +60,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
                 sprintf('/client/v4/zones/%s/purge_cache', $this->cfZone),
                 ['json' => ['files' => $urls]]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'urls' => $urls,
                 'exception' => $e,

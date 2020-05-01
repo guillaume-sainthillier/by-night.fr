@@ -10,6 +10,7 @@
 
 namespace App\Importer;
 
+use ZipArchive;
 use App\Entity\AdminZone;
 use App\Entity\AdminZone1;
 use App\Entity\AdminZone2;
@@ -88,7 +89,7 @@ class CountryImporter
 
         $i = 0;
         while (false !== ($data = \fgetcsv($fd, 3000, "\t"))) {
-            if (!(\in_array($data[7], ['ADM1', 'ADM2']) || 'P' === $data[6])) {
+            if (!\in_array($data[7], ['ADM1', 'ADM2']) && 'P' !== $data[6]) {
                 continue;
             }
             ++$i;
@@ -148,7 +149,7 @@ class CountryImporter
         $content = file_get_contents($zipUrl);
         $fs->dumpFile($tempfile, $content);
 
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         if (false === $zip->open($tempfile)) {
             throw new IOException('Unable to unzip ' . $tempfile);
         }

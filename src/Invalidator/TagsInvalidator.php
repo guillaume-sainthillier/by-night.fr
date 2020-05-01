@@ -92,7 +92,7 @@ class TagsInvalidator
             $this->tags[] = self::getEventTag($event);
         }
 
-        if ($event->getPlace()) {
+        if ($event->getPlace() !== null) {
             $this->addPlace($event->getPlace());
         }
     }
@@ -132,7 +132,7 @@ class TagsInvalidator
 
         $tags = \array_filter(\array_unique($this->tags));
 
-        if (!\count($tags)) {
+        if (\count($tags) === 0) {
             return;
         }
 

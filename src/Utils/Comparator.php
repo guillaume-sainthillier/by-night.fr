@@ -63,13 +63,8 @@ class Comparator
         if (null === $a || null === $b) {
             return false;
         }
-
-        if (($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
-            ($a->getId() && $a->getId() === $b->getId())) {
-            return true;
-        }
-
-        return false;
+        return ($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
+            ($a->getId() && $a->getId() === $b->getId());
     }
 
     public function getMatchingScorePlace(Place $a = null, Place $b = null)
@@ -112,15 +107,15 @@ class Comparator
             return 100;
         }
 
-        if ($cityA) {
+        if ($cityA !== null) {
             $a = \str_ireplace($cityA->getName(), '', $a);
-        } elseif ($zipCityA) {
+        } elseif ($zipCityA !== null) {
             $a = \str_ireplace($zipCityA->getName(), '', $a);
         }
 
-        if ($cityB) {
+        if ($cityB !== null) {
             $b = \str_ireplace($cityB->getName(), '', $b);
-        } elseif ($zipCityB) {
+        } elseif ($zipCityB !== null) {
             $b = \str_ireplace($zipCityB->getName(), '', $b);
         }
 
@@ -139,9 +134,8 @@ class Comparator
             $string = $this->util->replaceNonAlphanumericChars($string);
             $string = $this->util->deleteStopWords($string);
             $string = $this->util->deleteMultipleSpaces($string);
-            $string = \trim($string);
 
-            return $string;
+            return \trim($string);
         });
     }
 

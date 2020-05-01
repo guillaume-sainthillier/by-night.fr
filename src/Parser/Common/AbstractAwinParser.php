@@ -10,6 +10,8 @@
 
 namespace App\Parser\Common;
 
+use XMLReader;
+use SimpleXMLElement;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use ForceUTF8\Encoding;
@@ -39,7 +41,7 @@ abstract class AbstractAwinParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $path = $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));
-        $xml = new \XMLReader();
+        $xml = new XMLReader();
         $xml->open('compress.zlib://' . $path);
 
         do {
@@ -47,7 +49,7 @@ abstract class AbstractAwinParser extends AbstractParser
         } while ('product' !== $xml->name);
 
         while ('product' === $xml->name) {
-            $event = $this->elementToArray(new \SimpleXMLElement($xml->readOuterXML()));
+            $event = $this->elementToArray(new SimpleXMLElement($xml->readOuterXML()));
             $event = $this->getInfoEvents($event);
             if (\count($event) > 0) {
                 $this->publish($event);
@@ -58,7 +60,7 @@ abstract class AbstractAwinParser extends AbstractParser
         }
     }
 
-    private function elementToArray(\SimpleXMLElement $element): array
+    private function elementToArray(SimpleXMLElement $element): array
     {
         $array = [];
         foreach ($element->children() as $node) {

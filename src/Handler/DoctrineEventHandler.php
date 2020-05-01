@@ -89,7 +89,7 @@ class DoctrineEventHandler
      */
     public function handleMany(array $events, bool $flush = true)
     {
-        if (!\count($events)) {
+        if (\count($events) === 0) {
             return [];
         }
 
@@ -127,7 +127,7 @@ class DoctrineEventHandler
     {
         $ids = $this->getExplorationsIds($events);
 
-        if (\count($ids)) {
+        if (\count($ids) > 0) {
             $this->firewall->loadExplorations($ids);
         }
     }
@@ -177,12 +177,12 @@ class DoctrineEventHandler
                 $exploration = $this->firewall->getExploration($event->getExternalId());
 
                 //Une exploration a déjà eu lieu
-                if ($exploration) {
+                if ($exploration !== null) {
                     $this->firewall->filterEventExploration($exploration, $event);
                     $reject = $exploration->getReject();
 
                     //Celle-ci a déjà conduit à l'élimination de l'événement
-                    if (!$reject->isValid()) {
+                    if ($reject->isValid() === null) {
                         $event->getReject()->setReason($reject->getReason());
 
                         continue;
@@ -214,7 +214,7 @@ class DoctrineEventHandler
     public function guessEventLocation(Place $place)
     {
         //Pas besoin de trouver un lieu déjà blacklisté
-        if (!$place->getReject()->isValid()) {
+        if ($place->getReject()->isValid() === null) {
             return;
         }
 
@@ -230,7 +230,7 @@ class DoctrineEventHandler
         }
 
         //Pas de pays détecté -> next
-        if (!$place->getCountry()) {
+        if ($place->getCountry() === null) {
             if ($place->getCountryName()) {
                 $place->getReject()->addReason(Reject::BAD_COUNTRY);
             } else {
@@ -269,7 +269,7 @@ class DoctrineEventHandler
             }
         }
 
-        if ($zipCity) {
+        if ($zipCity !== null) {
             $city = $zipCity->getParent();
         }
 
@@ -284,11 +284,11 @@ class DoctrineEventHandler
         $place->setCity($city)->setZipCity($zipCity);
         if ($city) {
             $place->setCountry($city->getCountry());
-        } elseif ($zipCity) {
+        } elseif ($zipCity !== null) {
             $place->setCountry($zipCity->getCountry());
         }
 
-        if ($place->getCity()) {
+        if ($place->getCity() !== null) {
             $place->getReject()->setReason(Reject::VALID);
         }
     }
@@ -321,7 +321,9 @@ class DoctrineEventHandler
      */
     private function getAllowedEvents(array $events)
     {
-        return \array_filter($events, [$this->firewall, 'isValid']);
+        return \array_filter($events, function (Event $event) {
+            return $this->firewall->isValid($event);
+        });
     }
 
     /**

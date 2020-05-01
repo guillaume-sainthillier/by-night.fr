@@ -59,7 +59,7 @@ class EventArchivator
                 ->getQuery()
                 ->getResult();
 
-            if (!\count($events)) {
+            if (\count($events) === 0) {
                 continue;
             }
 

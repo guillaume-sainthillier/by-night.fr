@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use DateTime;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
@@ -41,7 +42,7 @@ class SowProgParser extends AbstractParser
 
     public function parse(bool $incremental): void
     {
-        $modifiedSince = true === $incremental ? 1000 * ((time() - 86400)) : 0;
+        $modifiedSince = $incremental ? 1000 * ((time() - 86400)) : 0;
         $response = $this->client->get('/rest/v1_2/scheduledEvents/search?modifiedSince=' . $modifiedSince);
         $events = json_decode(copy_to_string($response->getBody()), true);
 
@@ -61,14 +62,14 @@ class SowProgParser extends AbstractParser
             'source' => 'http://www.sowprog.com/',
             'external_id' => 'SP-' . $event['id'] . '-' . $currentSchedule['id'],
             'url' => $event['event']['picture'] ?? null,
-            'external_updated_at' => (new \DateTime())->setTimestamp($event['modificationDate'] / 1000),
+            'external_updated_at' => (new DateTime())->setTimestamp($event['modificationDate'] / 1000),
         ];
 
         $tab_infos['type_manifestation'] = $event['event']['eventType']['label'];
         $tab_infos['categorie_manifestation'] = $event['event']['eventStyle']['label'];
 
-        $tab_infos['date_debut'] = new \DateTime($currentSchedule['date']);
-        $tab_infos['date_fin'] = new \DateTime($currentSchedule['endDate']);
+        $tab_infos['date_debut'] = new DateTime($currentSchedule['date']);
+        $tab_infos['date_fin'] = new DateTime($currentSchedule['endDate']);
 
         if ($currentSchedule['startHour'] && $currentSchedule['startHour'] !== $currentSchedule['endHour']) {
             $tab_infos['horaires'] = sprintf(

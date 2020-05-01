@@ -10,6 +10,7 @@
 
 namespace App\Search;
 
+use DateTimeInterface;
 use App\App\Location;
 use DateTime;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -17,14 +18,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SearchEvent
 {
     /**
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      * @Assert\NotBlank
      * @Assert\Date
      */
     protected $from;
 
     /**
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      * @Assert\Date
      */
     protected $to;
@@ -89,7 +90,7 @@ class SearchEvent
     /**
      * @return DateTime|null
      */
-    public function getFrom(): ?\DateTimeInterface
+    public function getFrom(): ?DateTimeInterface
     {
         return $this->from;
     }
@@ -97,19 +98,19 @@ class SearchEvent
     /**
      * @param DateTime|null $from
      */
-    public function setFrom(?\DateTimeInterface $from): self
+    public function setFrom(?DateTimeInterface $from): self
     {
         $this->from = $from;
 
         return $this;
     }
 
-    public function getTo(): ?\DateTimeInterface
+    public function getTo(): ?DateTimeInterface
     {
         return $this->to;
     }
 
-    public function setTo(?\DateTimeInterface $to): self
+    public function setTo(?DateTimeInterface $to): self
     {
         $this->to = $to;
 

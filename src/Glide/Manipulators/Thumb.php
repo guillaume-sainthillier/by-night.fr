@@ -53,8 +53,6 @@ class Thumb extends BaseManipulator
         $size->setParams($this->params + ['fit' => 'stretch']);
         $new = $size->run($new);
 
-        $image = $new->insert($image, 'center-center', 0, 0);
-
-        return $image;
+        return $new->insert($image, 'center-center', 0, 0);
     }
 }

@@ -10,6 +10,8 @@
 
 namespace App\Factory;
 
+use DateTime;
+use DateTimeZone;
 use App\Entity\Event;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -33,7 +35,7 @@ class EventFactory
         foreach ($datas as $field => $value) {
             //Cas spécial : traitement d'un datetime
             if (\is_array($value) && isset($value['date'])) {
-                $value = new \DateTime($value['date'], new \DateTimeZone($value['timezone']));
+                $value = new DateTime($value['date'], new DateTimeZone($value['timezone']));
             }
             $this->propertyAccessor->setValue($event, $field, $value);
         }

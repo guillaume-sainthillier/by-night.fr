@@ -10,6 +10,7 @@
 
 namespace App\Utils;
 
+use DateTimeInterface;
 use App\Entity\Event;
 use App\Entity\Exploration;
 use App\Reject\Reject;
@@ -64,11 +65,7 @@ class Firewall
 
     private function hasExplorationToBeUpdated(Exploration $exploration, Event $event)
     {
-        if (self::VERSION !== $exploration->getFirewallVersion() || $event->getParserVersion() !== $exploration->getFirewallVersion()) {
-            return true;
-        }
-
-        return false;
+        return self::VERSION !== $exploration->getFirewallVersion() || $event->getParserVersion() !== $exploration->getFirewallVersion();
     }
 
     public function isValid(Event $event)
@@ -100,8 +97,8 @@ class Firewall
         }
 
         //Pas de dates valides fournies
-        if (!$event->getDateDebut() instanceof \DateTimeInterface ||
-            ($event->getDateFin() && !$event->getDateFin() instanceof \DateTimeInterface)
+        if (!$event->getDateDebut() instanceof DateTimeInterface ||
+            ($event->getDateFin() && !$event->getDateFin() instanceof DateTimeInterface)
         ) {
             $event->getReject()->addReason(Reject::BAD_EVENT_DATE);
         } elseif ($event->getDateFin() && $event->getDateFin() < $event->getDateDebut()) {
@@ -111,7 +108,7 @@ class Firewall
         //Observation de l'événement
         if ($event->getExternalId()) {
             $exploration = $this->getExploration($event->getExternalId());
-            if (!$exploration) {
+            if ($exploration === null) {
                 $exploration = (new Exploration())
                     ->setExternalId($event->getExternalId())
                     ->setLastUpdated($event->getExternalUpdatedAt())
@@ -187,7 +184,7 @@ class Firewall
         //Observation du lieu
         if ($event->getPlaceExternalId()) {
             $exploration = $this->getExploration($event->getPlaceExternalId());
-            if (!$exploration) {
+            if ($exploration === null) {
                 $exploration = (new Exploration())
                     ->setExternalId($event->getPlaceExternalId())
                     ->setReject($event->getPlaceReject())
@@ -215,7 +212,7 @@ class Firewall
         }
 
         $reject = $event->getPlace()->getReject();
-        if (!$reject->isValid()) {
+        if ($reject->isValid() === null) {
             $event->getPlaceReject()->addReason($reject->getReason());
             $event->getReject()->addReason($reject->getReason());
         }
@@ -226,7 +223,7 @@ class Firewall
         $reject = $exploration->getReject();
 
         //Aucune action sur un événement supprimé sur la plateforme par son créateur
-        if ($reject->isEventDeleted()) {
+        if ($reject->isEventDeleted() !== null) {
             return;
         }
 
@@ -248,7 +245,7 @@ class Firewall
                 ->setParserVersion($event->getParserVersion());
 
             //L'événement n'était pas valide -> valide
-            if (!$reject->hasNoNeedToUpdate()) {
+            if ($reject->hasNoNeedToUpdate() === null) {
                 $reject->setValid();
             }
         }
@@ -262,12 +259,7 @@ class Firewall
         if (!$explorationDate || !$eventDateModification) {
             return true;
         }
-
-        if ($eventDateModification > $explorationDate) {
-            return true;
-        }
-
-        return false;
+        return $eventDateModification > $explorationDate;
     }
 
     /**

@@ -50,7 +50,7 @@ class UserProfilePicture
         }
 
         $info = $user->getInfo();
-        if ($info) {
+        if ($info !== null) {
             if (null !== $info->getFacebookProfilePicture()) {
                 return $info->getFacebookProfilePicture();
             } elseif (null !== $info->getTwitterProfilePicture()) {
@@ -74,7 +74,7 @@ class UserProfilePicture
         }
 
         $info = $user->getInfo();
-        if ($info) {
+        if ($info !== null) {
             if (null !== $info->getFacebookProfilePicture()) {
                 return $info->getFacebookProfilePicture();
             } elseif (null !== $info->getTwitterProfilePicture()) {

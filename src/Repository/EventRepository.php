@@ -282,11 +282,11 @@ class EventRepository extends EntityRepository
                 ':id' => $event->getId(),
             ]);
 
-        if ($event->getPlace()->getCity()) {
+        if ($event->getPlace()->getCity() !== null) {
             $qb
                 ->andWhere('p.city = :city')
                 ->setParameter('city', $event->getPlace()->getCity()->getId());
-        } elseif ($event->getPlace()->getCountry()) {
+        } elseif ($event->getPlace()->getCountry() !== null) {
             $qb
                 ->andWhere('p.country = :country')
                 ->setParameter('country', $event->getPlace()->getCountry()->getId());

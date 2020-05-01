@@ -10,6 +10,7 @@
 
 namespace App\Repository;
 
+use DateTimeInterface;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -27,7 +28,7 @@ class UserRepository extends EntityRepository
             ->iterate();
     }
 
-    public function getUserFbIdsCount(\DateTimeInterface $from)
+    public function getUserFbIdsCount(DateTimeInterface $from)
     {
         return (int) $this->createQueryBuilder('u')
             ->select('count(i.facebook_id)')
@@ -40,7 +41,7 @@ class UserRepository extends EntityRepository
             ->getSingleScalarResult();
     }
 
-    public function getUsersWithInfo(\DateTimeInterface $from, int $page, int $limit)
+    public function getUsersWithInfo(DateTimeInterface $from, int $page, int $limit)
     {
         return $this->createQueryBuilder('u')
             ->select('u', 'i')

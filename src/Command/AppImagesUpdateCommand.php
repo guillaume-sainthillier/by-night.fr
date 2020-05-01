@@ -10,6 +10,7 @@
 
 namespace App\Command;
 
+use DateTime;
 use App\Updater\UserUpdater;
 use App\Utils\Monitor;
 use Symfony\Component\Console\Command\Command;
@@ -45,7 +46,7 @@ class AppImagesUpdateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $from = new \DateTime($input->getOption('from'));
+        $from = new DateTime($input->getOption('from'));
 
         Monitor::writeln('Mise à jour des images <info>utilisateur</info>');
         $this->userUpdater->update($from);

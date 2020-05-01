@@ -10,6 +10,7 @@
 
 namespace App\Twig;
 
+use DateTimeInterface;
 use DateTime;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
@@ -30,12 +31,12 @@ class DateExtension extends Extension
         return new DateTime($string);
     }
 
-    public function diffDate(\DateTimeInterface $date)
+    public function diffDate(DateTimeInterface $date)
     {
         return $this->statsDiffDate($date)['full'];
     }
 
-    public function statsDiffDate(\DateTimeInterface $date)
+    public function statsDiffDate(DateTimeInterface $date)
     {
         $diff = $date->diff(new DateTime());
 

@@ -66,8 +66,7 @@ class ParseExtension extends Extension
     private function trimBr($string)
     {
         $string = \preg_replace('/^\s*(?:<br\s*\/?>\s*)*/i', '', $string);
-        $string = \preg_replace('/\s*(?:<br\s*\/?>\s*)*$/i', '', $string);
 
-        return $string;
+        return \preg_replace('/\s*(?:<br\s*\/?>\s*)*$/i', '', $string);
     }
 }

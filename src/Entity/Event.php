@@ -10,6 +10,8 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
+use DateTimeImmutable;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
@@ -70,7 +72,7 @@ class Event
     protected $externalId;
 
     /**
-     * @Gedmo\Slug(fields={"nom"}, unique=false)
+     * @Gedmo\Slug(fields={"nom"})
      * @ORM\Column(length=255)
      */
     protected $slug;
@@ -96,14 +98,14 @@ class Event
     protected $descriptif;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $externalUpdatedAt;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
@@ -114,7 +116,7 @@ class Event
     protected $dateDebut;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(type="date", nullable=true)
      * @Groups({"list_event"})
@@ -539,10 +541,10 @@ class Event
     {
         $this->imageFile = $image;
 
-        if ($image) {
+        if ($image !== null) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new \DateTimeImmutable();
+            $this->updatedAt = new DateTimeImmutable();
         }
 
         return $this;
@@ -567,10 +569,10 @@ class Event
     {
         $this->imageSystemFile = $image;
 
-        if ($image) {
+        if ($image !== null) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new \DateTimeImmutable();
+            $this->updatedAt = new DateTimeImmutable();
         }
 
         return $this;
@@ -699,36 +701,36 @@ class Event
         return $this;
     }
 
-    public function getExternalUpdatedAt(): ?\DateTimeInterface
+    public function getExternalUpdatedAt(): ?DateTimeInterface
     {
         return $this->externalUpdatedAt;
     }
 
-    public function setExternalUpdatedAt(?\DateTimeInterface $externalUpdatedAt): self
+    public function setExternalUpdatedAt(?DateTimeInterface $externalUpdatedAt): self
     {
         $this->externalUpdatedAt = $externalUpdatedAt;
 
         return $this;
     }
 
-    public function getDateDebut(): ?\DateTimeInterface
+    public function getDateDebut(): ?DateTimeInterface
     {
         return $this->dateDebut;
     }
 
-    public function setDateDebut(?\DateTimeInterface $dateDebut): self
+    public function setDateDebut(?DateTimeInterface $dateDebut): self
     {
         $this->dateDebut = $dateDebut;
 
         return $this;
     }
 
-    public function getDateFin(): ?\DateTimeInterface
+    public function getDateFin(): ?DateTimeInterface
     {
         return $this->dateFin;
     }
 
-    public function setDateFin(?\DateTimeInterface $dateFin): self
+    public function setDateFin(?DateTimeInterface $dateFin): self
     {
         $this->dateFin = $dateFin;
 

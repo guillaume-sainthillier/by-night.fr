@@ -10,6 +10,8 @@
 
 namespace App\Controller\User;
 
+use IntlDateFormatter;
+use Locale;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Event;
 use App\Entity\User;
@@ -72,11 +74,7 @@ class DefaultController extends BaseController
         $em = $this->getDoctrine()->getManager();
         $repoUser = $em->getRepository(User::class);
 
-        if (!$id) {
-            $user = $repoUser->findOneBy(['username' => $username]);
-        } else {
-            $user = $repoUser->find($id);
-        }
+        $user = !$id ? $repoUser->findOneBy(['username' => $username]) : $repoUser->find($id);
 
         if (!$user || !$user->getSlug()) {
             throw new NotFoundHttpException('User not found');
@@ -115,13 +113,11 @@ class DefaultController extends BaseController
         $str_date = $repo->getLastUpdatedStatsUser($user);
 
         $response = $this->cacheVerif($str_date);
-        if (null !== $response) {
-            // Vérifie que l'objet Response n'est pas modifié
-            // pour un objet Request donné
-            if ($response->isNotModified($request)) {
-                // Retourne immédiatement un objet 304 Response
-                return $response;
-            }
+        // Vérifie que l'objet Response n'est pas modifié
+        // pour un objet Request donné
+        if (null !== $response && $response->isNotModified($request)) {
+            // Retourne immédiatement un objet 304 Response
+            return $response;
         }
 
         switch ($type) {
@@ -147,12 +143,11 @@ class DefaultController extends BaseController
     {
         $response = new JsonResponse();
 
-        if (null !== $str_date) {
-            //2014-05-08 11:49:21
-            if (($date = DateTime::createFromFormat('Y-m-d H:i:s', $str_date))) {
-                $response->setPublic(); //Afin d'être partagée avec tout le monde
-                $response->setLastModified($date);
-            }
+        //2014-05-08 11:49:21
+        if (null !== $str_date && ($date = DateTime::createFromFormat('Y-m-d H:i:s', $str_date))) {
+            $response->setPublic();
+            //Afin d'être partagée avec tout le monde
+            $response->setLastModified($date);
         }
 
         return $response;
@@ -171,10 +166,10 @@ class DefaultController extends BaseController
         foreach (range(1, 7) as $day) {
             $date = new DateTime('0' . $day . '-01-' . date('Y'));
             $dayNumber = $date->format('w');
-            $dateFormatter = \IntlDateFormatter::create(
-                \Locale::getDefault(),
-                \IntlDateFormatter::NONE,
-                \IntlDateFormatter::NONE
+            $dateFormatter = IntlDateFormatter::create(
+                Locale::getDefault(),
+                IntlDateFormatter::NONE,
+                IntlDateFormatter::NONE
             );
 
             $dateFormatter->setPattern('EEE');
@@ -210,10 +205,10 @@ class DefaultController extends BaseController
 
         foreach (range(1, 12) as $month) {
             $date = new DateTime('01-' . $month . '-' . date('Y'));
-            $dateFormatter = \IntlDateFormatter::create(
-                \Locale::getDefault(),
-                \IntlDateFormatter::NONE,
-                \IntlDateFormatter::NONE
+            $dateFormatter = IntlDateFormatter::create(
+                Locale::getDefault(),
+                IntlDateFormatter::NONE,
+                IntlDateFormatter::NONE
             );
 
             $dateFormatter->setPattern('MMM');
@@ -235,7 +230,7 @@ class DefaultController extends BaseController
             'full_categories' => [],
         ];
 
-        if (\count($datas)) {
+        if (\count($datas) > 0) {
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {

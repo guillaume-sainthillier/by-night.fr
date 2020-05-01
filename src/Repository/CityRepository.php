@@ -61,7 +61,7 @@ class CityRepository extends EntityRepository
             ->select('c.name, c.slug, c2.name AS country')
             ->join('c.country', 'c2');
 
-        if ($country) {
+        if ($country !== null) {
             $qb
                 ->where('c2 = :country')
                 ->setParameter('country', $country->getId());

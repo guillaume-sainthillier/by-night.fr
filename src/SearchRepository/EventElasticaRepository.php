@@ -38,7 +38,7 @@ class EventElasticaRepository extends Repository
         ]));
 
         $location = null;
-        if ($search->getLieux()) {
+        if ($search->getLieux() !== []) {
             $mainQuery->addMust(
                 new Terms('place.id', $search->getLieux())
             );
@@ -57,8 +57,8 @@ class EventElasticaRepository extends Repository
             $mainQuery->addMust($filterBool);
         }
 
-        if ($search->getFrom()) {
-            if (!$search->getTo()) {
+        if ($search->getFrom() !== null) {
+            if ($search->getTo() === null) {
                 $mainQuery->addMust(new Range('date_fin', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                 ]));
@@ -132,7 +132,7 @@ class EventElasticaRepository extends Repository
             $mainQuery->addMust($query);
         }
 
-        if ($search->getTypeManifestation()) {
+        if ($search->getTypeManifestation() !== []) {
             $communeTypeManifestationQuery = new Match();
             $communeTypeManifestationQuery->setField('type_manifestation', \implode(' ', $search->getTypeManifestation()));
             $mainQuery->addMust($communeTypeManifestationQuery);
@@ -141,7 +141,7 @@ class EventElasticaRepository extends Repository
         //Construction de la requête finale
         $finalQuery = Query::create($mainQuery);
 
-        if (false === $sortByScore) {
+        if (!$sortByScore) {
             $finalQuery->addSort(['date_fin' => 'asc']);
 
             if ($location) {

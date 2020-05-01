@@ -40,7 +40,7 @@ class CityController extends AbstractController
     public function cityAutocompleteAction(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
     {
         $term = \trim($request->get('q'));
-        if (!$term) {
+        if ($term === '') {
             $results = [];
         } else {
             /** @var CityElasticaRepository $repo */

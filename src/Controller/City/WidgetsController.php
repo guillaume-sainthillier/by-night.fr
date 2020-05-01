@@ -29,11 +29,7 @@ class WidgetsController extends BaseController
      */
     public function twitterAction(bool $disableTwitterFeed, Location $location, Twitter $twitter, $max_id = null)
     {
-        if (!$disableTwitterFeed) {
-            $results = $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT);
-        } else {
-            $results = [];
-        }
+        $results = !$disableTwitterFeed ? $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT) : [];
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
@@ -101,9 +97,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}))3
-     * @ReverseProxy(expires="tomorrow")
-     */
+     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug":"[^/]+", "id":"\d+", "page":"\d+"}) */
     public function soireesSimilairesAction(Location $location, $slug, $id = null, $page = 1)
     {
         $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_soirees_similaires', [

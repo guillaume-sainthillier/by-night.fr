@@ -10,6 +10,7 @@
 
 namespace App\Controller\City;
 
+use DateTime;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
@@ -27,7 +28,7 @@ class DefaultController extends BaseController
     public function indexAction(Location $location, PaginatorInterface $paginator)
     {
         $datas = [
-            'from' => new \DateTime(),
+            'from' => new DateTime(),
         ];
 
         $em = $this->getDoctrine()->getManager();

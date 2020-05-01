@@ -44,7 +44,7 @@ abstract class AdminZone
     protected $id;
 
     /**
-     * @Gedmo\Slug(fields={"name"}, updatable=false)
+     * @Gedmo\Slug(fields={"name"})
      * @ORM\Column(length=200, unique=true)
      * @Exclude
      */

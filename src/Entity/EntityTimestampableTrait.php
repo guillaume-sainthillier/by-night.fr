@@ -10,13 +10,14 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 trait EntityTimestampableTrait
 {
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      *
      * @ORM\Column(type="datetime_immutable")
      * @Gedmo\Timestampable(on="create")
@@ -24,7 +25,7 @@ trait EntityTimestampableTrait
     protected $createdAt;
 
     /**
-     * @var \DateTimeImmutable
+     * @var DateTimeImmutable
      *
      * @ORM\Column(type="datetime_immutable")
      * @Gedmo\Timestampable(on="update")
@@ -36,7 +37,7 @@ trait EntityTimestampableTrait
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $updatedAt)
+    public function setCreatedAt(DateTimeImmutable $updatedAt)
     {
         $this->createdAt = $updatedAt;
     }
@@ -46,7 +47,7 @@ trait EntityTimestampableTrait
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt)
+    public function setUpdatedAt(DateTimeImmutable $updatedAt)
     {
         $this->updatedAt = $updatedAt;
     }

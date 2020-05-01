@@ -30,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")
- * @ORM\Entity(repositoryClass="App\Repository\PlaceRepository")
+ * @ORM\Entity
  */
 class Place
 {

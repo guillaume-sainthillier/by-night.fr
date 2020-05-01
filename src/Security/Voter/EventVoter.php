@@ -10,6 +10,7 @@
 
 namespace App\Security\Voter;
 
+use LogicException;
 use App\Entity\Event;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -39,16 +40,12 @@ class EventVoter extends Voter
                 return $this->canDelete($subject, $user);
         }
 
-        throw new \LogicException('This code should not be reached!');
+        throw new LogicException('This code should not be reached!');
     }
 
     private function canEdit(Event $event, User $user)
     {
-        if ($event->getUser() === $user) {
-            return true;
-        }
-
-        return false;
+        return $event->getUser() === $user;
     }
 
     private function canDelete(Event $event, User $user)

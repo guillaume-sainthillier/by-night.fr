@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use DateTime;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -49,7 +50,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             return [];
         }
         foreach ($startDates as $startDate) {
-            $startDate = \DateTime::createFromFormat('d/m/Y H:i', $startDate);
+            $startDate = DateTime::createFromFormat('d/m/Y H:i', $startDate);
             $seenHoraires[] = sprintf('À %s', $startDate->format('H\hi'));
             $fromDate = $startDate;
         }
@@ -59,7 +60,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             $horaires = $seenHoraires[0];
         }
 
-        $toDate = \DateTime::createFromFormat('d/m/Y H:i', $datas['valid_to']);
+        $toDate = DateTime::createFromFormat('d/m/Y H:i', $datas['valid_to']);
 
         if ('31/12 23:59' === $fromDate->format('d/m H:i') && $fromDate->format('d/m/Y') === $toDate->format('d/m/Y')) {
             $horaires = null;

@@ -10,12 +10,15 @@
 
 namespace App\Handler;
 
+use RuntimeException;
 use App\Entity\Event;
 use App\Entity\Place;
 use Doctrine\ORM\EntityManagerInterface;
 
 class EchantillonHandler
 {
+    public $newPlaces;
+    public $fbPlaces;
     /** @var EntityManagerInterface */
     private $em;
     /**
@@ -112,9 +115,9 @@ class EchantillonHandler
     {
         $key = $place->getId() ?: spl_object_hash($place);
 
-        if ($place->getCity()) {
+        if ($place->getCity() !== null) {
             $this->cityPlaces[$place->getCity()->getId()][$key] = $place;
-        } elseif ($place->getCountry()) {
+        } elseif ($place->getCountry() !== null) {
             $this->countryPlaces[$place->getCountry()->getId()][$key] = $place;
         }
     }
@@ -129,7 +132,7 @@ class EchantillonHandler
             }
 
             if (!$event->getExternalId()) {
-                throw new \RuntimeException('Unable to find echantillon without an external ID');
+                throw new RuntimeException('Unable to find echantillon without an external ID');
             }
 
             $externalIds[$event->getExternalId()] = true;
@@ -157,10 +160,10 @@ class EchantillonHandler
      */
     public function getPlaceEchantillons(Event $event)
     {
-        if ($event->getPlace()) {
+        if ($event->getPlace() !== null) {
             $place = $this->searchPlaceByExternalId($event->getPlace()->getExternalId());
 
-            if ($place) {
+            if ($place !== null) {
                 return [$place];
             }
         }
@@ -208,7 +211,7 @@ class EchantillonHandler
     public function addNewEvent(Event $event)
     {
         $this->addEvent($event);
-        if ($event->getPlace()) {
+        if ($event->getPlace() !== null) {
             $this->addPlace($event->getPlace());
         }
     }

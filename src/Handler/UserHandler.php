@@ -10,6 +10,7 @@
 
 namespace App\Handler;
 
+use RuntimeException;
 use App\Entity\User;
 use App\File\DeletableFile;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
@@ -55,7 +56,7 @@ class UserHandler
 
     public function uploadFile(User $user, $content, $contentType)
     {
-        if (!$user->getInfo()) {
+        if ($user->getInfo() === null) {
             return;
         }
 
@@ -74,7 +75,7 @@ class UserHandler
                     $ext = 'jpeg';
                     break;
                 default:
-                    throw new \RuntimeException(sprintf('Unable to find extension for mime type %s', $contentType));
+                    throw new RuntimeException(sprintf('Unable to find extension for mime type %s', $contentType));
             }
 
             $filename = $user->getId() . '.' . $ext;

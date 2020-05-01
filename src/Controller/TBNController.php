@@ -32,11 +32,7 @@ class TBNController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $repoEvent = $em->getRepository(Event::class);
 
-        if (!$eventId) {
-            $event = $repoEvent->findOneBy(['slug' => $eventSlug]);
-        } else {
-            $event = $repoEvent->find($eventId);
-        }
+        $event = !$eventId ? $repoEvent->findOneBy(['slug' => $eventSlug]) : $repoEvent->find($eventId);
 
         if (!$event || !$event->getSlug()) {
             throw $this->createNotFoundException('Event not found');

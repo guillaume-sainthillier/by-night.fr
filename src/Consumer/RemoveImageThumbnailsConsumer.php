@@ -10,6 +10,7 @@
 
 namespace App\Consumer;
 
+use Exception;
 use League\Glide\Server;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -39,7 +40,7 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
             try {
                 $this->deleteThumbnails($path);
                 $result[(int) $message->delivery_info['delivery_tag']] = ConsumerInterface::MSG_ACK;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->error($e->getMessage(), [
                     'path' => $path,
                     'exception' => $e,

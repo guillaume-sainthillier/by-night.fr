@@ -10,6 +10,7 @@
 
 namespace App\Updater;
 
+use DateTimeInterface;
 use App\Entity\User;
 use App\Handler\UserHandler;
 use App\Social\FacebookAdmin;
@@ -32,7 +33,7 @@ class UserUpdater extends Updater
         $this->userHandler = $userHandler;
     }
 
-    public function update(\DateTimeInterface $from)
+    public function update(DateTimeInterface $from)
     {
         $repo = $this->entityManager->getRepository(User::class);
         $count = $repo->getUserFbIdsCount($from);

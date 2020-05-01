@@ -10,6 +10,8 @@
 
 namespace App\Controller\EspacePerso;
 
+use DateTime;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Calendrier;
 use App\Entity\Comment;
@@ -92,7 +94,7 @@ class EventController extends BaseController
     public function editAction(Request $request, Event $event, EventConstraintValidator $validator)
     {
         if ($event->getExternalId()) {
-            $event->setExternalUpdatedAt(new \DateTime());
+            $event->setExternalUpdatedAt(new DateTime());
         }
 
         $form = $this->createForm(EventType::class, $event);
@@ -115,7 +117,7 @@ class EventController extends BaseController
      * @Route("{id}", name="app_event_delete", methods={"DELETE"})
      * @IsGranted("delete", subject="event")
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      */
     public function deleteAction(Event $event)
     {

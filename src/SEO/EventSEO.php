@@ -10,6 +10,7 @@
 
 namespace App\SEO;
 
+use DateTimeInterface;
 use App\Entity\Event;
 use IntlDateFormatter;
 
@@ -30,7 +31,7 @@ class EventSEO
 
         $tags = $event->getDistinctTags();
 
-        if (\count($tags)) {
+        if (\count($tags) > 0) {
             $description .= \sprintf(' %s.', \implode(', ', $tags));
         }
 
@@ -68,7 +69,7 @@ class EventSEO
         );
     }
 
-    private function formatDate(\DateTimeInterface $date, $dateFormat, $timeFormat)
+    private function formatDate(DateTimeInterface $date, $dateFormat, $timeFormat)
     {
         $formatter = IntlDateFormatter::create(null, $dateFormat, $timeFormat);
 

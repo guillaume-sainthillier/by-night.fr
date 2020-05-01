@@ -23,11 +23,11 @@ class Location
 
     public function getId()
     {
-        if ($this->city) {
+        if ($this->city !== null) {
             return $this->city->getId();
         }
 
-        if ($this->country) {
+        if ($this->country !== null) {
             return $this->country->getId();
         }
 
@@ -36,7 +36,7 @@ class Location
 
     public function getAppName()
     {
-        if ($this->city) {
+        if ($this->city !== null) {
             return sprintf('%s By Night', $this->city->getName());
         }
 
@@ -45,11 +45,11 @@ class Location
 
     public function getAtName()
     {
-        if ($this->city) {
+        if ($this->city !== null) {
             return sprintf('à %s', $this->city->getName());
         }
 
-        if ($this->country) {
+        if ($this->country !== null) {
             return $this->country->getAtDisplayName();
         }
 
@@ -58,11 +58,11 @@ class Location
 
     public function getName()
     {
-        if ($this->city) {
+        if ($this->city !== null) {
             return $this->city->getName();
         }
 
-        if ($this->country) {
+        if ($this->country !== null) {
             return $this->country->getDisplayName();
         }
 
@@ -71,11 +71,11 @@ class Location
 
     public function getSlug()
     {
-        if ($this->city) {
+        if ($this->city !== null) {
             return $this->city->getSlug();
         }
 
-        if ($this->country) {
+        if ($this->country !== null) {
             return $this->country->getSlug();
         }
 

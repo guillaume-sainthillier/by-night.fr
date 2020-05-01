@@ -10,6 +10,7 @@
 
 namespace App\EventListener;
 
+use Vich\UploaderBundle\Event\Event;
 use App\File\DeletableFile;
 use App\Producer\PurgeCdnCacheUrlProducer;
 use App\Producer\RemoveImageThumbnailsProducer;
@@ -50,7 +51,7 @@ class ImageListener implements EventSubscriberInterface
     }
 
     // Remove manual uploads from container
-    public function onImageUpload(\Vich\UploaderBundle\Event\Event $event)
+    public function onImageUpload(Event $event)
     {
         //file become an instance of File just after upload, we have to track it before the change
         $file = $event->getMapping()->getFile($event->getObject());
@@ -72,7 +73,7 @@ class ImageListener implements EventSubscriberInterface
         $this->files = [];
     }
 
-    public function onImageDelete(\Vich\UploaderBundle\Event\Event $event)
+    public function onImageDelete(Event $event)
     {
         $object = $event->getObject();
         $mapping = $event->getMapping();

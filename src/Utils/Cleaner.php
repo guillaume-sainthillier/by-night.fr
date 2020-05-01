@@ -10,6 +10,7 @@
 
 namespace App\Utils;
 
+use DateTimeInterface;
 use App\Entity\Event;
 use App\Entity\Place;
 
@@ -24,7 +25,7 @@ class Cleaner
 
     public function cleanEvent(Event $event)
     {
-        if (!$event->getDateFin() instanceof \DateTimeInterface) {
+        if (!$event->getDateFin() instanceof DateTimeInterface) {
             $event->setDateFin($event->getDateDebut());
         }
 

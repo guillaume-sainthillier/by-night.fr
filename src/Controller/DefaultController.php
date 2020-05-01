@@ -10,6 +10,7 @@
 
 namespace App\Controller;
 
+use DateTime;
 use App\Annotation\ReverseProxy;
 use App\App\CityManager;
 use App\Entity\Event;
@@ -32,9 +33,9 @@ class DefaultController extends AbstractController
     public function indexAction(Request $request, CityManager $cityManager)
     {
         $datas = [
-            'from' => new \DateTime(),
+            'from' => new DateTime(),
         ];
-        if ($city = $cityManager->getCity()) {
+        if (($city = $cityManager->getCity()) !== null) {
             $datas += [
                 'name' => $city->getFullName(),
                 'city' => $city->getSlug(),

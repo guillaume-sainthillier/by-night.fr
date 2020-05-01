@@ -10,6 +10,8 @@
 
 namespace App\Parser;
 
+use JsonException;
+use Throwable;
 use App\Producer\EventProducer;
 use Psr\Log\LoggerInterface;
 
@@ -38,7 +40,7 @@ abstract class AbstractParser implements ParserInterface
         try {
             $this->eventProducer->scheduleEvent($item);
             ++$this->parsedEvents;
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             $this->logException($e, ['item' => $item]);
         }
     }
@@ -48,7 +50,7 @@ abstract class AbstractParser implements ParserInterface
         return $this->parsedEvents;
     }
 
-    protected function logException(\Throwable $exception, array $context = [])
+    protected function logException(Throwable $exception, array $context = [])
     {
         $this->logger->error($exception->getMessage(), $context + ['exception' => $exception]);
     }

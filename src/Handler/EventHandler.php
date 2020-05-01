@@ -52,7 +52,7 @@ class EventHandler
     public function cleanEvent(Event $event)
     {
         $this->cleaner->cleanEvent($event);
-        if ($event->getPlace()) {
+        if ($event->getPlace() !== null) {
             $this->cleaner->cleanPlace($event->getPlace());
         }
     }
@@ -131,11 +131,9 @@ class EventHandler
         });
         $event->setPlace($place);
 
-        $event = Monitor::bench('Handle Event', function () use ($persistedEvents, $event) {
+        return Monitor::bench('Handle Event', function () use ($persistedEvents, $event) {
             return $this->handleEvent($persistedEvents, $event);
         });
-
-        return $event;
     }
 
     public function handlePlace(array $persistedPlaces, Place $notPersistedPlace)

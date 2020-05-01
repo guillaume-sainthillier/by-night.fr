@@ -122,7 +122,7 @@ class ConnectController extends BaseController
         $event = new GetResponseUserEvent($this->getUser(), $request);
         $this->get('event_dispatcher')->dispatch(HWIOAuthEvents::CONNECT_INITIALIZE, $event);
 
-        if ($response = $event->getResponse()) {
+        if (($response = $event->getResponse()) !== null) {
             return $response;
         }
 

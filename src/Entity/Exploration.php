@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use App\Reject\Reject;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -85,12 +86,12 @@ class Exploration
         return $this;
     }
 
-    public function getLastUpdated(): ?\DateTimeInterface
+    public function getLastUpdated(): ?DateTimeInterface
     {
         return $this->lastUpdated;
     }
 
-    public function setLastUpdated(?\DateTimeInterface $lastUpdated): self
+    public function setLastUpdated(?DateTimeInterface $lastUpdated): self
     {
         $this->lastUpdated = $lastUpdated;
 

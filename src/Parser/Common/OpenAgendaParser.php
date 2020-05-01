@@ -10,6 +10,9 @@
 
 namespace App\Parser\Common;
 
+use RuntimeException;
+use DateTime;
+use DateTimeInterface;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
@@ -74,7 +77,7 @@ class OpenAgendaParser extends AbstractParser
         return $this->sendRequest($agendaId, $page)
             ->then(function (array $result) use ($agendaId, $page) {
                 if (!isset($result['events'])) {
-                    $exception = new \RuntimeException(sprintf("Unable to find events for agenda '%s'", $agendaId));
+                    $exception = new RuntimeException(sprintf("Unable to find events for agenda '%s'", $agendaId));
                     $this->logException($exception, ['agendaId' => $agendaId, 'page' => $page]);
 
                     return new FulfilledPromise(null);
@@ -138,13 +141,13 @@ class OpenAgendaParser extends AbstractParser
 
     private function getInfoEvent(array $event): array
     {
-        $dateDebut = \DateTime::createFromFormat('Y-m-d H:i', $event['firstDate'] . ' ' . $event['firstTimeStart']);
-        $dateFin = \DateTime::createFromFormat('Y-m-d H:i', $event['lastDate'] . ' ' . $event['lastTimeEnd']);
+        $dateDebut = DateTime::createFromFormat('Y-m-d H:i', $event['firstDate'] . ' ' . $event['firstTimeStart']);
+        $dateFin = DateTime::createFromFormat('Y-m-d H:i', $event['lastDate'] . ' ' . $event['lastTimeEnd']);
 
         $horaires = null;
-        if ($dateDebut instanceof \DateTimeInterface && $dateFin instanceof \DateTimeInterface && $dateDebut->getTimestamp() !== $dateFin->getTimestamp()) {
+        if ($dateDebut instanceof DateTimeInterface && $dateFin instanceof DateTimeInterface && $dateDebut->getTimestamp() !== $dateFin->getTimestamp()) {
             $horaires = \sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
-        } elseif ($dateDebut instanceof \DateTimeInterface) {
+        } elseif ($dateDebut instanceof DateTimeInterface) {
             $horaires = \sprintf('A %s', $dateDebut->format("H\hi"));
         }
 
@@ -168,7 +171,7 @@ class OpenAgendaParser extends AbstractParser
             'source' => $event['canonicalUrl'],
             'external_id' => 'OA-' . $event['uid'],
             'url' => $event['originalImage'],
-            'external_updated_at' => new \DateTime($event['updatedAt']),
+            'external_updated_at' => new DateTime($event['updatedAt']),
             'date_debut' => $dateDebut,
             'date_fin' => $dateFin,
             'horaires' => $horaires,

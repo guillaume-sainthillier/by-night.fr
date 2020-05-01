@@ -10,6 +10,7 @@
 
 namespace App\Controller;
 
+use InvalidArgumentException;
 use League\Glide\Filesystem\FileNotFoundException;
 use League\Glide\Responses\SymfonyResponseFactory;
 use League\Glide\Server;
@@ -50,7 +51,7 @@ class ThumbController extends Controller
         $glide->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $glide->getImageResponse($path, $parameters);
-        } catch (\InvalidArgumentException | FileNotFoundException $e) {
+        } catch (InvalidArgumentException | FileNotFoundException $e) {
             throw $this->createNotFoundException($e->getMessage(), $e);
         }
 
@@ -82,7 +83,7 @@ class ThumbController extends Controller
         $assetThumb->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $assetThumb->getImageResponse($path, $parameters);
-        } catch (\InvalidArgumentException | FileNotFoundException $e) {
+        } catch (InvalidArgumentException | FileNotFoundException $e) {
             throw $this->createNotFoundException($e->getMessage(), $e);
         }
 

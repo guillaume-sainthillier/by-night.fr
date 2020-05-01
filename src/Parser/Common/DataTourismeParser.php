@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use DateTime;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use GuzzleHttp\Client;
@@ -159,7 +160,7 @@ class DataTourismeParser extends AbstractParser
         $phones = array_filter(array_unique($phones));
         $emails = array_filter(array_unique($emails));
 
-        $updatedAt = new \DateTime($datas['lastUpdate']['@value']);
+        $updatedAt = new DateTime($datas['lastUpdate']['@value']);
         $updatedAt->setTime(0, 0, 0);
 
         if (\is_array($datas['isLocatedAt']['schema:address']['schema:addressLocality'])) {
@@ -218,8 +219,8 @@ class DataTourismeParser extends AbstractParser
             if (!isset($date['endDate'])) {
                 continue;
             }
-            $from = new \DateTime($date['startDate']['@value']);
-            $to = new \DateTime($date['endDate']['@value']);
+            $from = new DateTime($date['startDate']['@value']);
+            $to = new DateTime($date['endDate']['@value']);
             $horaires = null;
 
             $startTime = $propertyAccessor->getValue($date, '[startTime][@value]');
@@ -248,7 +249,7 @@ class DataTourismeParser extends AbstractParser
 
     private function getResourceById(array $resource, bool $alwaysReturnList = false): array
     {
-        if (true === $alwaysReturnList && !isset($resource[0])) {
+        if ($alwaysReturnList && !isset($resource[0])) {
             return $this->getResourceById([$resource]);
         }
 

@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use DateTime;
 class DigitickAwinParser extends AbstractAwinParser
 {
     private const DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/22739/columns/aw_deep_link,product_name,aw_product_id,merchant_product_id,merchant_image_url,description,merchant_category,search_price,Tickets%3Aevent_date,Tickets%3Avenue_name,Tickets%3Avenue_address,Tickets%3Aevent_name,Tickets%3Alongitude,Tickets%3Alatitude,is_for_sale/format/xml-tree/compression/gzip/';
@@ -25,8 +26,8 @@ class DigitickAwinParser extends AbstractAwinParser
             return [];
         }
 
-        $fromDate = \DateTime::createFromFormat('Y-m-d H:i:s', $datas['event_date']);
-        $toDate = \DateTime::createFromFormat('Y-m-d H:i:s', $datas['event_date']);
+        $fromDate = DateTime::createFromFormat('Y-m-d H:i:s', $datas['event_date']);
+        $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $datas['event_date']);
         $horaires = sprintf('À %s', $fromDate->format('H\hi'));
 
         if (!preg_match('#^(.+) (\d{5}) (.+)$#', $datas['venue_address'], $placeMatches)) {

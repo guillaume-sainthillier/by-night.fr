@@ -10,6 +10,7 @@
 
 namespace App\Consumer;
 
+use Exception;
 use App\Factory\EventFactory;
 use App\Handler\DoctrineEventHandler;
 use App\Utils\Monitor;
@@ -51,7 +52,7 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
         try {
             $event = $this->eventFactory->fromArray($datas);
             $this->doctrineEventHandler->handleOne($event);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->critical($e->getMessage(), [
                 'datas' => $datas,
                 'exception' => $e,
@@ -73,7 +74,7 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
             $datas = \json_decode($message->getBody(), true);
             try {
                 $events[] = $this->eventFactory->fromArray($datas);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger->critical($e->getMessage(), [
                     'datas' => $datas,
                     'exception' => $e,
@@ -91,7 +92,7 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
 
     private function ping(Connection $connection)
     {
-        if (false === $connection->ping()) {
+        if (!$connection->ping()) {
             $connection->close();
             $connection->connect();
         }

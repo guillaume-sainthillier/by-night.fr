@@ -72,12 +72,7 @@ class BikiniParser extends AbstractParser
                 $tab_retour['placeCity'] = $postalCodeAndCity[2];
             }
 
-            //Skip first informations (i.e Parc Technologique du Canal)
-            if (3 === \count($placeParts)) {
-                $tab_retour['placeStreet'] = $placeParts[1];
-            } else {
-                $tab_retour['placeStreet'] = $placeParts[0];
-            }
+            $tab_retour['placeStreet'] = 3 === \count($placeParts) ? $placeParts[1] : $placeParts[0];
         }
 
         return $tab_retour;

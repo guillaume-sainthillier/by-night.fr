@@ -45,13 +45,9 @@ class WidgetsController extends BaseController
         $count = $repo->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
-        if ($current < $count) {
-            $hasNextLink = $this->generateUrl('app_agenda_top_membres', [
-                'page' => $page + 1,
-            ]);
-        } else {
-            $hasNextLink = null;
-        }
+        $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_membres', [
+            'page' => $page + 1,
+        ]) : null;
 
         return $this->render('City/Hinclude/membres.html.twig', [
             'membres' => $repo->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
