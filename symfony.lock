@@ -11,6 +11,12 @@
     "clue/stream-filter": {
         "version": "v1.4.0"
     },
+    "composer/package-versions-deprecated": {
+        "version": "1.8.0"
+    },
+    "composer/xdebug-handler": {
+        "version": "1.4.1"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -173,6 +179,9 @@
     "hoa/zformat": {
         "version": "1.17.01.10"
     },
+    "http-interop/http-factory-guzzle": {
+        "version": "1.0.0"
+    },
     "hwi/oauth-bundle": {
         "version": "0.5.3"
     },
@@ -184,6 +193,9 @@
     },
     "jean85/pretty-package-versions": {
         "version": "1.2"
+    },
+    "jetbrains/phpstorm-stubs": {
+        "version": "v2019.3"
     },
     "jms/metadata": {
         "version": "1.6.0"
@@ -205,6 +217,12 @@
     },
     "knplabs/knp-paginator-bundle": {
         "version": "v4.1.0"
+    },
+    "laminas/laminas-code": {
+        "version": "3.4.1"
+    },
+    "laminas/laminas-eventmanager": {
+        "version": "3.2.1"
     },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.1"
@@ -243,6 +261,15 @@
     "neitanod/forceutf8": {
         "version": "v2.0.1"
     },
+    "nette/finder": {
+        "version": "v2.5.2"
+    },
+    "nette/robot-loader": {
+        "version": "v3.2.3"
+    },
+    "nette/utils": {
+        "version": "v3.1.1"
+    },
     "nikic/php-parser": {
         "version": "v4.1.0"
     },
@@ -251,6 +278,9 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.1.1"
+    },
+    "ondram/ci-detector": {
+        "version": "3.3.0"
     },
     "pagerfanta/pagerfanta": {
         "version": "v1.0.5"
@@ -312,6 +342,15 @@
     "phpseclib/phpseclib": {
         "version": "2.0.23"
     },
+    "phpstan/phpdoc-parser": {
+        "version": "0.4.4"
+    },
+    "phpstan/phpstan": {
+        "version": "0.12.19"
+    },
+    "phpstan/phpstan-phpunit": {
+        "version": "0.12.8"
+    },
     "presta/sitemap-bundle": {
         "version": "1.5.x-dev"
     },
@@ -333,6 +372,9 @@
     "psr/log": {
         "version": "1.0.2"
     },
+    "psr/simple-cache": {
+        "version": "1.0.1"
+    },
     "ralouphie/getallheaders": {
         "version": "2.0.5"
     },
@@ -342,11 +384,17 @@
     "react/promise": {
         "version": "v2.5.1"
     },
+    "rector/rector": {
+        "version": "v0.7.21"
+    },
     "ricardoper/twitteroauth": {
         "version": "v2.1.6"
     },
     "ruflin/elastica": {
         "version": "5.3.0"
+    },
+    "sebastian/diff": {
+        "version": "4.0.0"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
@@ -543,11 +591,17 @@
     "symfony/polyfill-iconv": {
         "version": "v1.12.0"
     },
+    "symfony/polyfill-intl-grapheme": {
+        "version": "v1.15.0"
+    },
     "symfony/polyfill-intl-icu": {
         "version": "v1.6.0"
     },
     "symfony/polyfill-intl-idn": {
         "version": "v1.11.0"
+    },
+    "symfony/polyfill-intl-normalizer": {
+        "version": "v1.15.0"
     },
     "symfony/polyfill-mbstring": {
         "version": "v1.6.0"
@@ -557,6 +611,9 @@
     },
     "symfony/polyfill-php73": {
         "version": "v1.11.0"
+    },
+    "symfony/polyfill-uuid": {
+        "version": "v1.15.0"
     },
     "symfony/process": {
         "version": "v3.4.1"
@@ -602,6 +659,9 @@
     },
     "symfony/stopwatch": {
         "version": "v3.4.1"
+    },
+    "symfony/string": {
+        "version": "v5.0.8"
     },
     "symfony/swiftmailer-bundle": {
         "version": "2.5",
@@ -683,6 +743,24 @@
     },
     "symfony/yaml": {
         "version": "v3.4.1"
+    },
+    "symplify/auto-bind-parameter": {
+        "version": "v7.3.1"
+    },
+    "symplify/autowire-array-parameter": {
+        "version": "v7.3.1"
+    },
+    "symplify/package-builder": {
+        "version": "v7.3.1"
+    },
+    "symplify/set-config-resolver": {
+        "version": "v7.3.1"
+    },
+    "symplify/smart-file-system": {
+        "version": "v7.3.1"
+    },
+    "tracy/tracy": {
+        "version": "v2.7.4"
     },
     "twig/extensions": {
         "version": "1.0",
