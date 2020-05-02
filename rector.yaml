@@ -1,10 +1,18 @@
 parameters:
     auto_import_names: true
-    symfony_container_xml_path: 'var/cache/dev/App_KernelDevDebugContainer.xml'
+    symfony_container_xml_path: 'var/cache/dev/srcApp_KernelDevDebugContainer.xml'
     paths:
         - 'src'
     sets:
         - 'code-quality'
-        - 'symfony42'
-        - 'symfony43'
-        - 'symfony44'
+        - 'doctrine-repository-as-service'
+        - 'symfony'
+        #- 'symfony-code-quality'
+        - 'php71'
+        - 'php72'
+        - 'php73'
+        - 'php74'
+
+services:
+    Rector\Symfony\Rector\Controller\AddFlashRector: null
+    Rector\Symfony\Rector\Controller\RedirectToRouteRector: null
