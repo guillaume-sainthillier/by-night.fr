@@ -102,6 +102,10 @@ Encore
             ),
             whitelistPatterns: () => [/^custom-/],
         })
-    );
+    )
+    .addAliases({
+        jquery: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
+        $: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
+    });
 
 module.exports = Encore.getWebpackConfig();
