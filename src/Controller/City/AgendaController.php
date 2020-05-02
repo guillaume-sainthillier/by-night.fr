@@ -13,6 +13,7 @@ namespace App\Controller\City;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
+use App\Entity\Event;
 use App\Entity\Place;
 use App\Form\Type\SearchType;
 use App\Repository\EventRepository;
@@ -31,10 +32,8 @@ use Symfony\Contracts\Cache\ItemInterface;
 class AgendaController extends BaseController
 {
     const EVENT_PER_PAGE = 15;
-    /**
-     * @var \App\Repository\PlaceRepository
-     */
-    private $placeRepository;
+
+    private PlaceRepository $placeRepository;
 
     public function __construct(RequestStack $requestStack, EventRepository $eventRepository, PlaceRepository $placeRepository)
     {
@@ -68,7 +67,6 @@ class AgendaController extends BaseController
         }
 
         //Récupération du repo des événements
-        $em = $this->getDoctrine()->getManager();
         $repo = $this->eventRepository;
 
         //Recherche des événements
@@ -102,8 +100,8 @@ class AgendaController extends BaseController
         if (!$form->isSubmitted() || $form->isValid()) {
             $isValid = true;
 
-            //Recherche ElasticSearch
-            $repository = $this->eventRepository;
+            /** @var EventElasticaRepository $repository */
+            $repository = $repositoryManager->getRepository(Event::class);
             $results = $repository->findWithSearch($search);
             $events = $paginator->paginate($results, $page, self::EVENT_PER_PAGE);
         } else {

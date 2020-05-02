@@ -19,22 +19,19 @@ class CityManager
 {
     private ?City $currentCity = null;
 
-    private ?bool $cookieCity = null;
+    private ?City $cookieCity = null;
+    private bool $initCooky = false;
 
     private EntityManagerInterface $entityManager;
 
     private RequestStack $requestStack;
-    /**
-     * @var \App\Repository\CityRepository
-     */
-    private $cityRepository;
+
+    private CityRepository $cityRepository;
 
     public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack, CityRepository $cityRepository)
     {
         $this->entityManager = $entityManager;
         $this->requestStack = $requestStack;
-        $this->currentCity = null;
-        $this->cookieCity = false;
         $this->cityRepository = $cityRepository;
     }
 
@@ -69,8 +66,9 @@ class CityManager
      */
     public function getCookieCity()
     {
-        if (false === $this->cookieCity) {
+        if (false === $this->initCooky) {
             $this->computeCityFromCookie();
+            $this->initCooky = true;
         }
 
         return $this->cookieCity;

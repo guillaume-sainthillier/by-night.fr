@@ -29,8 +29,7 @@ class TBNController extends AbstractController
 
     protected function checkEventUrl($locationSlug, $eventSlug, $eventId, $routeName = 'app_event_details', array $extraParams = [])
     {
-        $repoEvent = $this->eventRepository;
-        $event = !$eventId ? $this->repository->findOneBy(['slug' => $eventSlug]) : $this->repository->find($eventId);
+        $event = !$eventId ? $this->eventRepository->findOneBy(['slug' => $eventSlug]) : $this->eventRepository->find($eventId);
 
         if (!$event || !$event->getSlug()) {
             throw $this->createNotFoundException('Event not found');
