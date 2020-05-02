@@ -59,8 +59,18 @@ class Twitter extends Social
         return [];
     }
 
-    protected function getName()
+    protected function getInfoProperties(): array
     {
-        return 'Twitter';
+        return ['id', 'accessToken', 'refreshToken', 'expires', 'realname', 'nickname', 'email', 'profilePicture'];
+    }
+
+    public function getInfoPropertyPrefix(): ?string
+    {
+        return 'twitter';
+    }
+
+    protected function getRoleName(): string
+    {
+        return 'ROLE_TWITTER';
     }
 }

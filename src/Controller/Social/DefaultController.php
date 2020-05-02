@@ -10,40 +10,37 @@
 
 namespace App\Controller\Social;
 
+use App\Security\UserSocialAuthenticator;
 use App\Social\Social;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccountStatusException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 /**
- * @Route("/{service}", requirements={"service": "facebook|twitter|google"})
+ * @Route("/{service<%patterns.social%>}")
  */
 class DefaultController extends AbstractController
 {
     /**
      * @Route("/deconnexion", name="app_disconnect_service")
-     * @ParamConverter("social", options={"default_facebook_name": "facebook"})
-     *
      * @return JsonResponse
      */
-    public function disconnect(Social $social, UserCheckerInterface $userChecker, UserManagerInterface $userManager)
+    public function disconnect(Social $social, Request $request, GuardAuthenticatorHandler $guardAuthenticatorHandler, UserSocialAuthenticator $socialAuthenticator)
     {
         $user = $this->getUser();
         $social->disconnectUser($user);
+        $this->getDoctrine()->getManager()->flush();
 
-        try {
-            $userChecker->checkPreAuth($user);
-            $userChecker->checkPostAuth($user);
-
-            $userManager->updateUser($user);
-            $userManager->reloadUser($user);
-        } catch (AccountStatusException $e) {
-        }
+        //Reload user roles as they have changed
+        $token = $socialAuthenticator->createAuthenticatedToken($user, 'main');
+        $guardAuthenticatorHandler->authenticateWithToken($token, $request);
 
         return new JsonResponse(['success' => true]);
     }

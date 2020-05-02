@@ -16,8 +16,13 @@ class Google extends Social
     {
     }
 
-    protected function getName()
+    public function getInfoPropertyPrefix(): ?string
     {
-        return 'Google';
+        return 'google';
+    }
+
+    protected function getRoleName(): string
+    {
+        return 'ROLE_GOOGLE';
     }
 }

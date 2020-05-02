@@ -93,7 +93,7 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected ?bool $fromLogin = null;
+    protected bool $fromLogin;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
@@ -144,8 +144,8 @@ class User extends BaseUser
     {
         parent::__construct();
 
-        $this->setFromLogin(false);
-        $this->setShowSocials(true);
+        $this->fromLogin = false;
+        $this->showSocials = true;
         $this->calendriers = new ArrayCollection();
         $this->info = new UserInfo();
         $this->image = new EmbeddedFile();

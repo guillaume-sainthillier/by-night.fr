@@ -17,7 +17,9 @@ class SocialProvider
     const FACEBOOK = 'facebook';
     const FACEBOOK_ADMIN = 'facebook_admin';
     const TWITTER = 'twitter';
+    const TWITTER_ADMIN = 'twitter_admin';
     const GOOGLE = 'google';
+    const GOOGLE_ADMIN = 'google_admin';
 
     private array $socials;
 
@@ -27,7 +29,9 @@ class SocialProvider
             self::FACEBOOK => $facebook,
             self::FACEBOOK_ADMIN => $facebookAdmin,
             self::TWITTER => $twitter,
+            self::TWITTER_ADMIN => $twitter,
             self::GOOGLE => $google,
+            self::GOOGLE_ADMIN => $google,
         ];
     }
 

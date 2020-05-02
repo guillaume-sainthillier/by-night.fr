@@ -26,18 +26,6 @@ abstract class Info
     use EntityIdentityTrait;
 
     /**
-     *
-     * @ORM\Column(type="boolean")
-     */
-    protected ?bool $hasSeeTuto = null;
-
-    /**
-     *
-     * @ORM\Column(type="boolean")
-     */
-    protected ?bool $hasSeeAskingSocial = null;
-
-    /**
      * @ORM\Column(length=255, nullable=true)
      */
     protected ?string $facebook_id = null;
@@ -50,11 +38,6 @@ abstract class Info
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $facebook_token_secret = null;
-
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
     protected ?string $facebook_refresh_token = null;
 
     /**
@@ -63,14 +46,9 @@ abstract class Info
     protected ?string $facebook_email = null;
 
     /**
-     * @ORM\Column(length=255, nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?string $facebook_expires_in = null;
-
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
-    protected ?string $facebook_nickname = null;
+    protected ?int $facebook_expires = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
@@ -95,11 +73,6 @@ abstract class Info
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $google_token_secret = null;
-
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
     protected ?string $google_refresh_token = null;
 
     /**
@@ -108,14 +81,9 @@ abstract class Info
     protected ?string $google_email = null;
 
     /**
-     * @ORM\Column(length=255, nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?string $google_expires_in = null;
-
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
-    protected ?string $google_nickname = null;
+    protected ?int $google_expires = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
@@ -140,11 +108,6 @@ abstract class Info
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $twitter_token_secret = null;
-
-    /**
-     * @ORM\Column(length=255, nullable=true)
-     */
     protected ?string $twitter_refresh_token = null;
 
     /**
@@ -153,9 +116,9 @@ abstract class Info
     protected ?string $twitter_email = null;
 
     /**
-     * @ORM\Column(length=255, nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?string $twitter_expires_in = null;
+    protected ?int $twitter_expires = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
@@ -172,39 +135,9 @@ abstract class Info
      */
     protected ?string $twitter_profile_picture = null;
 
-    public function __construct()
-    {
-        $this->hasSeeTuto = false;
-        $this->hasSeeAskingSocial = false;
-    }
-
     public function __toString()
     {
         return '#' . $this->id ?: '?';
-    }
-
-    public function getHasSeeTuto(): ?bool
-    {
-        return $this->hasSeeTuto;
-    }
-
-    public function setHasSeeTuto(bool $hasSeeTuto): self
-    {
-        $this->hasSeeTuto = $hasSeeTuto;
-
-        return $this;
-    }
-
-    public function getHasSeeAskingSocial(): ?bool
-    {
-        return $this->hasSeeAskingSocial;
-    }
-
-    public function setHasSeeAskingSocial(bool $hasSeeAskingSocial): self
-    {
-        $this->hasSeeAskingSocial = $hasSeeAskingSocial;
-
-        return $this;
     }
 
     public function getFacebookId(): ?string
@@ -227,18 +160,6 @@ abstract class Info
     public function setFacebookAccessToken(?string $facebook_access_token): self
     {
         $this->facebook_access_token = $facebook_access_token;
-
-        return $this;
-    }
-
-    public function getFacebookTokenSecret(): ?string
-    {
-        return $this->facebook_token_secret;
-    }
-
-    public function setFacebookTokenSecret(?string $facebook_token_secret): self
-    {
-        $this->facebook_token_secret = $facebook_token_secret;
 
         return $this;
     }
@@ -267,26 +188,14 @@ abstract class Info
         return $this;
     }
 
-    public function getFacebookExpiresIn(): ?string
+    public function getFacebookExpires(): ?int
     {
-        return $this->facebook_expires_in;
+        return $this->facebook_expires;
     }
 
-    public function setFacebookExpiresIn(?string $facebook_expires_in): self
+    public function setFacebookExpires(?int $facebook_expires): self
     {
-        $this->facebook_expires_in = $facebook_expires_in;
-
-        return $this;
-    }
-
-    public function getFacebookNickname(): ?string
-    {
-        return $this->facebook_nickname;
-    }
-
-    public function setFacebookNickname(?string $facebook_nickname): self
-    {
-        $this->facebook_nickname = $facebook_nickname;
+        $this->facebook_expires = $facebook_expires;
 
         return $this;
     }
@@ -339,18 +248,6 @@ abstract class Info
         return $this;
     }
 
-    public function getGoogleTokenSecret(): ?string
-    {
-        return $this->google_token_secret;
-    }
-
-    public function setGoogleTokenSecret(?string $google_token_secret): self
-    {
-        $this->google_token_secret = $google_token_secret;
-
-        return $this;
-    }
-
     public function getGoogleRefreshToken(): ?string
     {
         return $this->google_refresh_token;
@@ -375,26 +272,14 @@ abstract class Info
         return $this;
     }
 
-    public function getGoogleExpiresIn(): ?string
+    public function getGoogleExpires(): ?int
     {
-        return $this->google_expires_in;
+        return $this->google_expires;
     }
 
-    public function setGoogleExpiresIn(?string $google_expires_in): self
+    public function setGoogleExpires(?int $google_expires): self
     {
-        $this->google_expires_in = $google_expires_in;
-
-        return $this;
-    }
-
-    public function getGoogleNickname(): ?string
-    {
-        return $this->google_nickname;
-    }
-
-    public function setGoogleNickname(?string $google_nickname): self
-    {
-        $this->google_nickname = $google_nickname;
+        $this->google_expires = $google_expires;
 
         return $this;
     }
@@ -447,18 +332,6 @@ abstract class Info
         return $this;
     }
 
-    public function getTwitterTokenSecret(): ?string
-    {
-        return $this->twitter_token_secret;
-    }
-
-    public function setTwitterTokenSecret(?string $twitter_token_secret): self
-    {
-        $this->twitter_token_secret = $twitter_token_secret;
-
-        return $this;
-    }
-
     public function getTwitterRefreshToken(): ?string
     {
         return $this->twitter_refresh_token;
@@ -483,14 +356,14 @@ abstract class Info
         return $this;
     }
 
-    public function getTwitterExpiresIn(): ?string
+    public function getTwitterExpires(): ?int
     {
-        return $this->twitter_expires_in;
+        return $this->twitter_expires;
     }
 
-    public function setTwitterExpiresIn(?string $twitter_expires_in): self
+    public function setTwitterExpires(?int $twitter_expires): self
     {
-        $this->twitter_expires_in = $twitter_expires_in;
+        $this->twitter_expires = $twitter_expires;
 
         return $this;
     }

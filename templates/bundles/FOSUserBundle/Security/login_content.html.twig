@@ -7,19 +7,19 @@
 <div class="row no-gutters text-center mt-4">
     <div class="col-4">
         <a class="social-facebook social big-social p-1" title="Connectez vous avec Facebook"
-           href="{{ hwi_oauth_login_url('facebook') }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
+           href="{{ path('login_social_start', {service: 'facebook'}) }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-facebook"></i>
         </a>
     </div>
     <div class="col-4">
         <a class="social-twitter social big-social p-1" title="Connectez vous avec Twitter"
-           href="{{ hwi_oauth_login_url('twitter') }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
+           href="{{ path('login_social_start', {service: 'twitter'}) }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-twitter"></i>
         </a>
     </div>
     <div class="col-4">
         <a class="social-google social big-social p-1" title="Connectez vous avec Google"
-           href="{{ hwi_oauth_login_url('google') }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
+           href="{{ path('login_social_start', {service: 'google'}) }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-google"></i>
         </a>
     </div>

@@ -50,7 +50,7 @@ class InfoController extends AbstractController
      */
     public function view(SiteInfo $info)
     {
-        return $this->render('Admin/Info/view.html.twig', [
+        return $this->render('Admin/Social/view.html.twig', [
             'info' => $info,
         ]);
     }

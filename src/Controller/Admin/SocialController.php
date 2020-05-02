@@ -22,40 +22,22 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/social/{service}", requirements={"service": "facebook|twitter|google"})
+ * @Route("/social/{service<%patterns.admin_social%>}")
  */
 class SocialController extends AbstractController
 {
     /**
-     * @Route("/connexion", name="app_administration_connect_site")
-     *
-     * @param $service
-     *
-     * @return RedirectResponse
-     */
-    public function connectInfo($service, SessionInterface $session)
-    {
-        $session->set('connect_site', true);
-
-        $url = $this->generateUrl('hwi_oauth_service_redirect', [
-            'service' => SocialProvider::FACEBOOK === $service ? SocialProvider::FACEBOOK_ADMIN : $service,
-        ]);
-
-        return $this->redirect($url);
-    }
-
-    /**
      * @Route("/deconnexion", name="app_administration_disconnect_service")
-     * @ParamConverter("social", options={"default_facebook_name": "facebook_admin"})
      *
      * @return JsonResponse
      */
-    public function disconnectSite(Social $social, SocialManager $socialManager)
+    public function disconnect(Social $social, SocialManager $socialManager): Response
     {
-        $social->disconnectSite();
+        $siteInfo = $socialManager->getSiteInfo();
+        $social->disconnectSite($siteInfo);
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($socialManager->getSiteInfo());
+        $em->persist($siteInfo);
         $em->flush();
 
         return new JsonResponse(['success' => true]);
@@ -68,7 +50,7 @@ class SocialController extends AbstractController
      *
      * @return Response
      */
-    public function disconnectConfirm($service)
+    public function disconnectConfirm($service): Response
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,

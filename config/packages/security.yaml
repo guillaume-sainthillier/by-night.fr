@@ -19,6 +19,9 @@ security:
             anonymous: true
             pattern: ^/
 
+            guard:
+                authenticators:
+                    - App\Security\UserSocialAuthenticator
             form_login:
                 provider: fos_userbundle
                 #csrf_token_generator: security.csrf.token_manager
@@ -28,19 +31,6 @@ security:
                 check_path: fos_user_security_check
                 success_handler: App\Handler\AuthenticationHandler
                 failure_handler: App\Handler\AuthenticationHandler
-
-            oauth:
-                remember_me: true
-                resource_owners:
-                    facebook_admin: "/login-social/check-facebook-admin"
-                    facebook: "/login-social/check-facebook"
-                    google: "/login-social/check-google"
-                    twitter: "/login-social/check-twitter"
-                login_path: fos_user_security_login
-                failure_path: fos_user_security_login
-
-                oauth_user_provider:
-                    service: App\Security\Core\User\FOSUBUserProvider
 
             remember_me:
                 secret:   '%kernel.secret%'

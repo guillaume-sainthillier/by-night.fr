@@ -1,0 +1,28 @@
+knpu_oauth2_client:
+    clients:
+        facebook:
+            type: facebook
+            client_id: '%env(FACEBOOK_API_ID)%'
+            client_secret: '%env(FACEBOOK_API_SECRET)%'
+            redirect_route: login_social_check
+            redirect_params: { service: 'facebook' }
+            graph_api_version: v2.12
+        facebook_admin:
+            type: facebook
+            client_id: '%env(FACEBOOK_API_ID)%'
+            client_secret: '%env(FACEBOOK_API_SECRET)%'
+            redirect_route: admin_login_social_check
+            redirect_params: { service: 'facebook_admin' }
+            graph_api_version: v2.12
+        google:
+            type:                google
+            client_id:           '%env(GOOGLE_API_ID)%'
+            client_secret:       '%env(GOOGLE_API_SECRET)%'
+            redirect_route: login_social_check
+            redirect_params: { service: 'google' }
+        google_admin:
+            type:                google
+            client_id:           '%env(GOOGLE_API_ID)%'
+            client_secret:       '%env(GOOGLE_API_SECRET)%'
+            redirect_route: admin_login_social_check
+            redirect_params: { service: 'google_admin' }

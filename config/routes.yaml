@@ -7,6 +7,10 @@ app.social:
     prefix:   /social
     type:     annotation
 
+app.security:
+    resource: "../src/Controller/Security"
+    type:     annotation
+
 app.espace_perso:
     resource: "../src/Controller/EspacePerso"
     prefix:   /espace-perso
@@ -68,39 +72,6 @@ fos_user_resetting:
 fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profil
-
-#Login réseaux sociaux
-hwi_oauth_security:
-    resource: "@HWIOAuthBundle/Resources/config/routing/login_41.xml"
-    prefix: /login-social
-
-#Login réseaux sociaux
-hwi_oauth_connect:
-    resource: "@HWIOAuthBundle/Resources/config/routing/connect_41.xml"
-    prefix: /login-social
-
-#Login réseaux sociaux
-hwi_oauth_redirect:
-    resource: "@HWIOAuthBundle/Resources/config/routing/redirect_41.xml"
-    prefix:   /login-social
-
-#Login réseaux sociaux override
-app_hwi_oauth_connect:
-    resource: "../src/Controller/Social/ConnectController.php"
-    prefix: /login-social
-    type:     annotation
-
-#Login twitter
-twitter_login:
-    path: /login/check-twitter
-
-#Login facebook
-facebook_login:
-    path: /login/check-facebook
-
-#Login Google
-google_login:
-    path: /login/check-google
 
 #La ville est définie à partir d'ici
 app.city:

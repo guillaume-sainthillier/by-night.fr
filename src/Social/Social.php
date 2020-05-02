@@ -18,13 +18,14 @@ namespace App\Social;
 
 use App\App\SocialManager;
 use App\Entity\Info;
+use App\Entity\SiteInfo;
 use App\Entity\User;
 use App\Exception\SocialException;
 use App\Picture\EventProfilePicture;
-use HWI\Bundle\OAuthBundle\OAuth\Response\UserResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -35,7 +36,7 @@ abstract class Social
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     protected string $secret;
 
@@ -78,61 +79,60 @@ abstract class Social
         $this->isInitialized = false;
     }
 
+    abstract public function getInfoPropertyPrefix(): ?string;
+    abstract protected function getRoleName(): string;
+
+    public function connectSite(SiteInfo $info, array $datas)
+    {
+        $this->connectInfo($info, $datas);
+    }
+
+    public function disconnectSite(SiteInfo $info)
+    {
+        $this->disconnectInfo($info);
+    }
+
+    public function connectUser(User $user, array $datas)
+    {
+        $user->addRole($this->getRoleName());
+        $this->connectInfo($user->getInfo(), $datas);
+    }
+
     public function disconnectUser(User $user)
     {
-        $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
-
-        $user->removeRole('ROLE_' . \mb_strtolower($social_name)); //Suppression du role ROLE_TWITTER
+        $user->removeRole($this->getRoleName());
         $this->disconnectInfo($user->getInfo());
     }
 
-    abstract protected function getName();
+    protected function connectInfo(Info $info, array $datas)
+    {
+        $propertyPrefix = $this->getInfoPropertyPrefix();
+        $propertyAccess = PropertyAccess::createPropertyAccessor();
+
+        foreach ($this->getInfoProperties() as $property) {
+            if (empty($datas[$property])) {
+                continue;
+            }
+            $value = $datas[$property];
+            $fullProperty = $propertyPrefix . ucfirst($property);
+            $propertyAccess->setValue($info, $fullProperty, $value);
+        }
+    }
 
     protected function disconnectInfo(Info $info)
     {
-        if (null !== $info) {
-            $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
-            $methods = ['Id', 'AccessToken', 'RefreshToken', 'TokenSecret', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
-            foreach ($methods as $methode) {
-                $setter = 'set' . \ucfirst($social_name) . \ucfirst($methode);
-                $info->$setter(null);
-            }
+        $propertyPrefix = $this->getInfoPropertyPrefix();
+        $propertyAccess = PropertyAccess::createPropertyAccessor();
+
+        foreach ($this->getInfoProperties() as $property) {
+            $fullProperty = $propertyPrefix . ucfirst($property);
+            $propertyAccess->setValue($info, $fullProperty, null);
         }
     }
 
-    public function disconnectSite()
+    protected function getInfoProperties(): array
     {
-        $this->disconnectInfo($this->socialManager->getSiteInfo());
-    }
-
-    public function connectUser(User $user, UserResponseInterface $response)
-    {
-        $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
-
-        $user->addRole('ROLE_' . \mb_strtolower($social_name)); //Ajout du role ROLE_TWITTER
-        $this->connectInfo($user->getInfo(), $response);
-    }
-
-    protected function connectInfo(Info $info, UserResponseInterface $response)
-    {
-        $social_name = $this->getName(); //On récupère le nom du child (Twitter, Google, Facebook)
-        if (null !== $info) {
-            $methods = ['AccessToken', 'RefreshToken', 'TokenSecret', 'ExpiresIn', 'Nickname', 'RealName', 'Email', 'ProfilePicture'];
-            foreach ($methods as $methode) {
-                $setter = 'set' . \ucfirst($social_name) . \ucfirst($methode); // setSocialUsername
-                $getter = 'get' . \ucfirst($methode); //getSocialUsername
-
-                $info->$setter($response->$getter());
-            }
-
-            $setter_id = 'set' . \ucfirst($social_name) . 'Id';
-            $info->$setter_id($response->getUsername());
-        }
-    }
-
-    public function connectSite(UserResponseInterface $response)
-    {
-        $this->connectInfo($this->socialManager->getSiteInfo(), $response);
+        return ['id', 'accessToken', 'refreshToken', 'expires', 'realname', 'email', 'profilePicture'];
     }
 
     protected function init()

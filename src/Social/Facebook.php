@@ -16,16 +16,21 @@ class Facebook extends Social
 {
     protected Client $client;
 
-    public function getName()
-    {
-        return 'Facebook';
-    }
-
     protected function constructClient()
     {
         $this->client = new Client([
             'app_id' => $this->id,
             'app_secret' => $this->secret,
         ]);
+    }
+
+    public function getInfoPropertyPrefix(): ?string
+    {
+        return 'facebook';
+    }
+
+    protected function getRoleName(): string
+    {
+        return 'ROLE_FACEBOOK';
     }
 }

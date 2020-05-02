@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block titre 'Connexion réussie' %}
+{% block title 'Connexion réussie' %}
+
+{% set userInfo = {
+    'username' : userInformation.name,
+    'email' : userInformation.email
+} %}
+
+{% block hwi_oauth_content -%}
+    <div class="alert alert-success">
+        <i class="fa fa-check"></i>
+        Bienvenue {{ userInformation.name }}
+    </div>
+    <br/>
+    <div class="spinner-grow text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <span>Veuillez patienter, vous allez être redirigé vers la page d'accueil ...</span>
+{%- endblock %}
+
+{% block head_js %}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.opener !== "undefined" && window.opener !== null && window.opener.parent_elem !== "undefined") {
+            window.opener
+                .$('body')
+                .trigger("hasConnected", {
+                    'user': {{ userInfo|json_encode|raw }},
+                    'target': window.opener.parent_elem
+                });
+            window.close();
+        } else {
+            document.location = "{{ path('app_main_index') }}";
+        }
+    </script>
+{% endblock %}

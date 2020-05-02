@@ -1,4 +1,4 @@
 {% extends "Social/social.html.twig" %}
 
-{% block url_connect path('app_administration_connect_site', {'service' : service}) %}
-{% block url_disconnect path('app_administration_disconnect_service_confirm', {'service' : service}) %}
+{% block url_connect path('admin_login_social_start', {'service' : service ~ '_admin'}) %}
+{% block url_disconnect path('app_administration_disconnect_service_confirm', {'service' : service ~ '_admin'}) %}

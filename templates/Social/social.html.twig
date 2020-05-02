@@ -5,12 +5,16 @@
         <input type="checkbox"
             {{ isGranted ? "checked": "" }}
            data-href-disconnect="{% block url_disconnect path('app_disconnect_service_confirm', { 'service': service}) %}"
-           data-href-connect="{% block url_connect hwi_oauth_login_url(service) %}" >
+           data-href-connect="{% block url_connect path('login_social_start', {service: service}) %}" >
         {{ service|capitalize }}
         <span class="when_on {{ isGranted ? "show" : "hidden" }} text-primary">
             Connecté sous
             <span class="username">
-                {{ service == 'twitter' ? '@': '' }}{{ attribute(info, service ~ "NickName") }}
+                {% if service == 'twitter' %}
+                    @{{ attribute(info, service ~ "NickName") }}
+                {% else %}
+                    {{ attribute(info, service ~ "Realname") }}
+                {% endif %}
             </span>
         </span>
     </label>

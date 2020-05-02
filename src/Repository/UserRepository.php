@@ -88,4 +88,19 @@ class UserRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function findOneBySocial(string $email, string $infoPrefix, $socialId): ?User {
+        return $this
+            ->createQueryBuilder('u')
+            ->select('u')
+            ->addSelect('i')
+            ->leftJoin('u.info', 'i')
+            ->where('u.email = :email')
+            ->setParameter('email', $email)
+            ->orWhere(sprintf('i.%s_id = :socialId', $infoPrefix))
+            ->setParameter('socialId', $socialId)
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getOneOrNullResult();
+    }
 }
