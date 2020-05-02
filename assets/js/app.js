@@ -77,7 +77,6 @@ class App {
         $(selecteur || 'body')
             .data('bmd.bootstrapMaterialDesign', null)
             .bootstrapMaterialDesign();
-        self.initAutofocus(selecteur);
         self.initConnexion(selecteur);
         self.initRegister(selecteur);
         self.initTooltips(selecteur);
@@ -212,11 +211,6 @@ class App {
                 style: $(this).data('style') || 'btn-primary',
             });
         });
-    }
-
-    //Deps: []
-    initAutofocus(selecteur) {
-        $('[autofocus]', selecteur || document).focus();
     }
 
     //Deps: []
