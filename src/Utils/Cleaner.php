@@ -10,9 +10,9 @@
 
 namespace App\Utils;
 
-use DateTimeInterface;
 use App\Entity\Event;
 use App\Entity\Place;
+use DateTimeInterface;
 
 class Cleaner
 {

@@ -10,8 +10,8 @@
 
 namespace App\SEO;
 
-use DateTimeInterface;
 use App\Entity\Event;
+use DateTimeInterface;
 use IntlDateFormatter;
 
 class EventSEO

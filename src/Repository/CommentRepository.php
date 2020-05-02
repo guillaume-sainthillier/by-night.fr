@@ -13,8 +13,6 @@ namespace App\Repository;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\User;
-use Doctrine\ORM\EntityRepository;
-
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -30,7 +28,7 @@ class CommentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Comment::class);
     }
-    
+
     public function findAllByEvent(Event $event, $page = 1, $limit = 10)
     {
         return $this->_em

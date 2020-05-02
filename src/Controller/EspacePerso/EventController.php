@@ -10,19 +10,19 @@
 
 namespace App\Controller\EspacePerso;
 
-use App\Repository\EventRepository;
-use App\Repository\CalendrierRepository;
-use DateTime;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Calendrier;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\EventType;
+use App\Repository\CalendrierRepository;
+use App\Repository\EventRepository;
 use App\Validator\Constraints\EventConstraintValidator;
+use DateTime;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;

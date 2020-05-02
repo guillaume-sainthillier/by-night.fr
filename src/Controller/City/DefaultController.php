@@ -10,19 +10,16 @@
 
 namespace App\Controller\City;
 
-use App\Repository\EventRepository;
-use DateTime;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Event;
 use App\Form\Type\SimpleEventSearchType;
+use DateTime;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends BaseController
 {
-
     /**
      * @Route("/", name="app_agenda_index")
      * @ReverseProxy(expires="tomorrow")

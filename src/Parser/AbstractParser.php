@@ -10,10 +10,10 @@
 
 namespace App\Parser;
 
-use JsonException;
-use Throwable;
 use App\Producer\EventProducer;
+use JsonException;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 abstract class AbstractParser implements ParserInterface
 {

@@ -10,8 +10,8 @@
 
 namespace App\Twig;
 
-use DateTimeInterface;
 use DateTime;
+use DateTimeInterface;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFilter;
 

@@ -10,9 +10,9 @@
 
 namespace App\Security\Voter;
 
-use LogicException;
 use App\Entity\Event;
 use App\Entity\User;
+use LogicException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 

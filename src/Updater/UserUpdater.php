@@ -10,12 +10,12 @@
 
 namespace App\Updater;
 
-use App\Repository\UserRepository;
-use DateTimeInterface;
 use App\Entity\User;
 use App\Handler\UserHandler;
+use App\Repository\UserRepository;
 use App\Social\FacebookAdmin;
 use App\Utils\Monitor;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
@@ -59,7 +59,7 @@ class UserUpdater extends Updater
 
     private function extractFbIds(array $users)
     {
-        return array_filter(array_unique(array_map(fn(User $user) => $user->getInfo()->getFacebookId(), $users)));
+        return array_filter(array_unique(array_map(fn (User $user) => $user->getInfo()->getFacebookId(), $users)));
     }
 
     /**

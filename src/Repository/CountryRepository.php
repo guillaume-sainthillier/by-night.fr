@@ -11,8 +11,6 @@
 namespace App\Repository;
 
 use App\Entity\Country;
-use Doctrine\ORM\EntityRepository;
-
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -28,6 +26,7 @@ class CountryRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Country::class);
     }
+
     public function findByName($country)
     {
         return $this

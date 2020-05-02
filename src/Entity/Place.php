@@ -37,7 +37,6 @@ class Place
     use EntityTimestampableTrait;
 
     /**
-     *
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -63,7 +62,6 @@ class Place
      */
     protected ?string $codePostal = null;
     /**
-     *
      * @ORM\Column(type="string", length=256, nullable=true)
      */
     protected ?string $facebookId = null;
@@ -91,28 +89,24 @@ class Place
     protected ?Location $location = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
     private ?string $rue = null;
     /**
-     *
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
     private ?float $latitude = null;
     /**
-     *
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
     private ?float $longitude = null;
     /**
-     *
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
      * @Groups({"list_event"})
@@ -125,12 +119,10 @@ class Place
      */
     private ?string $slug = null;
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private ?string $path = null;
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private ?string $url = null;

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Security;
 
 use App\Entity\User;
@@ -55,10 +63,9 @@ class UserSocialAuthenticator extends SocialAuthenticator
         $this->twitterOAuth = $twitterOAuth;
     }
 
-
     public function supports(Request $request)
     {
-        return $request->attributes->get('_route') === 'login_social_check';
+        return 'login_social_check' === $request->attributes->get('_route');
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)
@@ -89,12 +96,12 @@ class UserSocialAuthenticator extends SocialAuthenticator
 
             //Avoir duplicate exception
             $initialUsername = $existingUser->getUsername();
-            for ($i = 1; ; $i++) {
+            for ($i = 1;; ++$i) {
                 $username = $existingUser->getUsername();
                 $encoding = mb_detect_encoding($username);
                 $usernameCanonical = $encoding
-                    ? mb_convert_case($username, MB_CASE_LOWER, $encoding)
-                    : mb_convert_case($username, MB_CASE_LOWER);
+                    ? mb_convert_case($username, \MB_CASE_LOWER, $encoding)
+                    : mb_convert_case($username, \MB_CASE_LOWER);
                 $existingUser->setUsernameCanonical($usernameCanonical);
                 $persistedUser = $this->userRepository->findOneBy(['usernameCanonical' => $usernameCanonical]);
                 if (null === $persistedUser) {
@@ -124,7 +131,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
     {
         return new RedirectResponse(
             $this->router->generate('login_social_success', [
-                'service' => $request->attributes->get('service')
+                'service' => $request->attributes->get('service'),
             ])
         );
     }
@@ -134,16 +141,17 @@ class UserSocialAuthenticator extends SocialAuthenticator
         $service = $request->attributes->get('service');
 
         //Still use Oauth 1.0...
-        if (in_array($service, [SocialProvider::TWITTER], true)) {
+        if (\in_array($service, [SocialProvider::TWITTER], true)) {
             return [
                 'service' => $service,
-                'token' => $this->fetchTwitterAccessToken()
+                'token' => $this->fetchTwitterAccessToken(),
             ];
         }
         $client = $this->clientRegistry->getClient($service);
+
         return [
             'service' => $service,
-            'token' => $this->fetchAccessToken($client)
+            'token' => $this->fetchAccessToken($client),
         ];
     }
 
@@ -162,6 +170,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
     {
         dd($exception);
         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+
         return new RedirectResponse(
             $this->router->generate('fos_user_security_login'),
             Response::HTTP_TEMPORARY_REDIRECT

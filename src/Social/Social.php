@@ -80,6 +80,7 @@ abstract class Social
     }
 
     abstract public function getInfoPropertyPrefix(): ?string;
+
     abstract protected function getRoleName(): string;
 
     public function connectSite(SiteInfo $info, array $datas)

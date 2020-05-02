@@ -10,12 +10,11 @@
 
 namespace App\Controller;
 
-use App\Repository\EventRepository;
-use DateTime;
 use App\Annotation\ReverseProxy;
 use App\App\CityManager;
-use App\Entity\Event;
 use App\Form\Type\CityAutocompleteType;
+use App\Repository\EventRepository;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,6 +27,7 @@ class DefaultController extends AbstractController
      * @var \App\Repository\EventRepository
      */
     private $eventRepository;
+
     public function __construct(EventRepository $eventRepository)
     {
         $this->eventRepository = $eventRepository;
@@ -44,7 +44,7 @@ class DefaultController extends AbstractController
         $datas = [
             'from' => new DateTime(),
         ];
-        if (($city = $cityManager->getCity()) !== null) {
+        if (null !== ($city = $cityManager->getCity())) {
             $datas += [
                 'name' => $city->getFullName(),
                 'city' => $city->getSlug(),

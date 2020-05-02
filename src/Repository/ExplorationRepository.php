@@ -11,7 +11,6 @@
 namespace App\Repository;
 
 use App\Entity\Exploration;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

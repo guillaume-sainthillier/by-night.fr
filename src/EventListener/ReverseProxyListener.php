@@ -10,9 +10,9 @@
 
 namespace App\EventListener;
 
+use App\Annotation\ReverseProxy;
 use DateTime;
 use DateTimeZone;
-use App\Annotation\ReverseProxy;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;

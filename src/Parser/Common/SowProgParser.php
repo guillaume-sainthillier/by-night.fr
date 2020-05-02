@@ -10,9 +10,9 @@
 
 namespace App\Parser\Common;
 
-use DateTime;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use DateTime;
 use GuzzleHttp\Client;
 use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Log\LoggerInterface;
@@ -43,7 +43,7 @@ class SowProgParser extends AbstractParser
     {
         $modifiedSince = $incremental ? 1_000 * ((time() - 86_400)) : 0;
         $response = $this->client->get('/rest/v1_2/scheduledEvents/search?modifiedSince=' . $modifiedSince);
-        $events = json_decode(copy_to_string($response->getBody()), true, 512, JSON_THROW_ON_ERROR);
+        $events = json_decode(copy_to_string($response->getBody()), true, 512, \JSON_THROW_ON_ERROR);
 
         foreach ($events['eventDescription'] as $event) {
             foreach ($event['eventSchedule']['eventScheduleDate'] as $schedule) {
@@ -92,12 +92,12 @@ class SowProgParser extends AbstractParser
         }
 
         if (!empty($event['eventPrice'])) {
-            $prices = array_map(fn(array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $event['eventPrice']);
+            $prices = array_map(fn (array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $event['eventPrice']);
             $tab_infos['tarif'] = implode(' - ', $prices);
         }
 
         if (!empty($event['ticketStore'])) {
-            $tickets = array_map(fn(array $ticket) => $ticket['url'], $event['ticketStore']);
+            $tickets = array_map(fn (array $ticket) => $ticket['url'], $event['ticketStore']);
             $tab_infos['reservation_internet'] = implode(' ', $tickets);
         }
 

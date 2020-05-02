@@ -10,7 +10,6 @@
 
 namespace App\Controller\City;
 
-use App\Repository\EventRepository;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
@@ -98,7 +97,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug":"[^/]+", "id":"\d+", "page":"\d+"}) */
+     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}) */
     public function soireesSimilaires(Location $location, $slug, $id = null, $page = 1)
     {
         $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_soirees_similaires', [

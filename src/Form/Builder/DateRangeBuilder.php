@@ -10,11 +10,11 @@
 
 namespace App\Form\Builder;
 
+use App\Form\Type\HiddenDateType;
+use App\Form\Type\ShortcutType;
 use DateTime;
 use DateTimeInterface;
 use IntlDateFormatter;
-use App\Form\Type\HiddenDateType;
-use App\Form\Type\ShortcutType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -30,7 +30,7 @@ class DateRangeBuilder
 
         $view->children['shortcut']->vars['attr']['data-from'] = $view->children[$fromName]->vars['id'];
         $view->children['shortcut']->vars['attr']['data-to'] = $view->children[$toName]->vars['id'];
-        $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($fromName = $form->get('shortcut')->getConfig()->getOption('ranges'), JSON_THROW_ON_ERROR);
+        $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($fromName = $form->get('shortcut')->getConfig()->getOption('ranges'), \JSON_THROW_ON_ERROR);
     }
 
     public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName)

@@ -34,6 +34,7 @@ class CommentController extends BaseController
         parent::__construct($requestStack, $eventRepository);
         $this->commentRepository = $commentRepository;
     }
+
     /**
      * @Route("/form/{id}", name="app_comment_form", requirements={"id": "\d+"})
      */

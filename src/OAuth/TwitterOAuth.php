@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\OAuth;
 
 use Abraham\TwitterOAuth\TwitterOAuth as BaseClient;
@@ -31,13 +39,14 @@ class TwitterOAuth
     public function redirect(string $redirectUri): RedirectResponse
     {
         $client = new BaseClient($this->clientId, $this->clientSecret);
-        $request_token = $client->oauth('oauth/request_token', array('oauth_callback' => $redirectUri));
+        $request_token = $client->oauth('oauth/request_token', ['oauth_callback' => $redirectUri]);
 
         $session = $this->getCurrentSession();
         $session->set(self::OAUTH_TOKEN_SESSION_KEY, $request_token['oauth_token']);
         $session->set(self::OAUTH_TOKEN_SECRET_SESSION_KEY, $request_token['oauth_token_secret']);
 
-        $url = $client->url('oauth/authenticate', array('oauth_token' => $request_token['oauth_token']));
+        $url = $client->url('oauth/authenticate', ['oauth_token' => $request_token['oauth_token']]);
+
         return new RedirectResponse($url);
     }
 
@@ -66,7 +75,7 @@ class TwitterOAuth
         $client = new BaseClient($this->clientId, $this->clientSecret, $givenOauthToken, $oauthTokenSecret);
 
         try {
-            $access_token = $client->oauth("oauth/access_token", array("oauth_verifier" => $givenOauthVerifier));
+            $access_token = $client->oauth('oauth/access_token', ['oauth_verifier' => $givenOauthVerifier]);
         } catch (TwitterOAuthException $exception) {
             throw new InvalidStateException($exception->getMessage(), $exception->getCode(), $exception);
         }
@@ -74,14 +83,14 @@ class TwitterOAuth
         return new TwitterAccessToken([
             'resource_owner_id' => 'twitter',
             'access_token' => $access_token['oauth_token'],
-            'oauth_token_secret' => $access_token['oauth_token_secret']
+            'oauth_token_secret' => $access_token['oauth_token_secret'],
         ]);
     }
 
     public function fetchUserFromToken(TwitterAccessToken $token): ResourceOwnerInterface
     {
         $client = new BaseClient($this->clientId, $this->clientSecret, $token->getToken(), $token->getTokenSecret());
-        $content = $client->get("account/verify_credentials", ['include_email' => true]);
+        $content = $client->get('account/verify_credentials', ['include_email' => true]);
 
         return new TwitterUser(json_decode(json_encode($content), true));
     }

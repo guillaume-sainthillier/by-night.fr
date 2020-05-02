@@ -12,10 +12,8 @@ namespace App\Repository;
 
 use App\Entity\City;
 use App\Entity\Country;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
-
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -30,6 +28,7 @@ class CityRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, City::class);
     }
+
     public function createQueryBuilder($alias, $indexBy = null)
     {
         return parent::createQueryBuilder($alias, $indexBy)
@@ -69,7 +68,7 @@ class CityRepository extends ServiceEntityRepository
             ->select('c.name, c.slug, c2.name AS country')
             ->join('c.country', 'c2');
 
-        if ($country !== null) {
+        if (null !== $country) {
             $qb
                 ->where('c2 = :country')
                 ->setParameter('country', $country->getId());

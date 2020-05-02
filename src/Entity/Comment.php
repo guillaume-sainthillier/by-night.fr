@@ -27,7 +27,6 @@ class Comment
     use EntityTimestampableTrait;
 
     /**
-     *
      * @ORM\Column(type="text")
      * @Assert\Length(min="3", minMessage="Le commentaire doit faire au moins {{ limit }} caractères")
      * @Assert\NotBlank(message="Le commentaire ne peut pas être vide")
@@ -35,27 +34,23 @@ class Comment
     protected ?string $commentaire = null;
 
     /**
-     *
      * @ORM\Column(type="boolean")
      */
     protected bool $approuve;
 
     /**
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false)
      */
     protected ?User $user = null;
 
     /**
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="commentaires")
      * @ORM\JoinColumn(nullable=false)
      */
     protected ?Event $event = null;
 
     /**
-     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="reponses")
      * @ORM\JoinColumn(nullable=true)
      */

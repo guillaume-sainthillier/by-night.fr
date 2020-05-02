@@ -10,14 +10,13 @@
 
 namespace App\Controller\City;
 
-use App\Repository\PlaceRepository;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Event;
 use App\Entity\Place;
 use App\Form\Type\SearchType;
 use App\Repository\EventRepository;
+use App\Repository\PlaceRepository;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;

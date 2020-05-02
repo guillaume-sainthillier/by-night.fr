@@ -60,6 +60,7 @@ class Comparator
         if (null === $a || null === $b) {
             return false;
         }
+
         return ($a->getExternalId() && $a->getExternalId() === $b->getExternalId()) ||
             ($a->getId() && $a->getId() === $b->getId());
     }
@@ -104,15 +105,15 @@ class Comparator
             return 100;
         }
 
-        if ($cityA !== null) {
+        if (null !== $cityA) {
             $a = \str_ireplace($cityA->getName(), '', $a);
-        } elseif ($zipCityA !== null) {
+        } elseif (null !== $zipCityA) {
             $a = \str_ireplace($zipCityA->getName(), '', $a);
         }
 
-        if ($cityB !== null) {
+        if (null !== $cityB) {
             $b = \str_ireplace($cityB->getName(), '', $b);
-        } elseif ($zipCityB !== null) {
+        } elseif (null !== $zipCityB) {
             $b = \str_ireplace($zipCityB->getName(), '', $b);
         }
 

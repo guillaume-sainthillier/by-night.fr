@@ -67,6 +67,7 @@ class AppEventsImportCommand extends Command
             '<info>%d</info> événements parsés',
             $nbEvents
         ));
+
         return 0;
     }
 }

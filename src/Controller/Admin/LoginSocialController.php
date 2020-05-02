@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace App\Controller\Admin;
 
@@ -23,7 +30,7 @@ class LoginSocialController extends AbstractController
      */
     public function connectCheck(string $service, Social $social, SocialManager $socialManager, ClientRegistry $clientRegistry, OAuthDataProvider $OAuthDataProvider, TwitterOAuth $twitterOAuth)
     {
-        if ($service === SocialProvider::TWITTER_ADMIN) {
+        if (SocialProvider::TWITTER_ADMIN === $service) {
             $accessToken = $twitterOAuth->getAccessToken();
         } else {
             $client = $clientRegistry->getClient($service);
@@ -38,8 +45,8 @@ class LoginSocialController extends AbstractController
         return $this->render('security/connect_success.html.twig', [
             'userInformation' => [
                 'name' => $datas['realname'],
-                'email' => $datas['email']
-            ]
+                'email' => $datas['email'],
+            ],
         ]);
     }
 
@@ -55,7 +62,7 @@ class LoginSocialController extends AbstractController
             case 'twitter_admin':
                 return $twitterOAuth->redirect(
                     $this->generateUrl('admin_login_social_check', [
-                        'service' => $service
+                        'service' => $service,
                     ], UrlGeneratorInterface::ABSOLUTE_URL)
                 );
             default:
@@ -67,8 +74,8 @@ class LoginSocialController extends AbstractController
             ->getClient($service)
             ->redirect($scopes, [
                 'redirect_uri' => $this->generateUrl('admin_login_social_check', [
-                    'service' => $service
-                ], UrlGeneratorInterface::ABSOLUTE_URL)
+                    'service' => $service,
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
             ]);
     }
 }

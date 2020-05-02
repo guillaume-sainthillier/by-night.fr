@@ -10,9 +10,9 @@
 
 namespace App\Command;
 
-use DateTime;
 use App\Updater\UserUpdater;
 use App\Utils\Monitor;
+use DateTime;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -49,6 +49,7 @@ class AppImagesUpdateCommand extends Command
 
         Monitor::writeln('Mise à jour des images <info>utilisateur</info>');
         $this->userUpdater->update($from);
+
         return 0;
     }
 }

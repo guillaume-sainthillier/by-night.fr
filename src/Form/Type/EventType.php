@@ -15,7 +15,6 @@ use App\Entity\Event;
 use App\Form\Builder\DateRangeBuilder;
 use App\Handler\DoctrineEventHandler;
 use App\Repository\CountryRepository;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -136,7 +135,7 @@ class EventType extends AbstractType
                 'label' => 'Pays',
                 'placeholder' => '?',
                 'class' => Country::class,
-                'query_builder' => fn(CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
+                'query_builder' => fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
                 'choice_label' => 'name',
             ])
             ->add('reservationInternet', UrlType::class, [
@@ -176,13 +175,13 @@ class EventType extends AbstractType
         }
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
-            fn($latitude) => (float) $latitude ?: null,
-            fn($latitude) => (float) $latitude ?: null
+            fn ($latitude) => (float) $latitude ?: null,
+            fn ($latitude) => (float) $latitude ?: null
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
-            fn($latitude) => (float) $latitude ?: null,
-            fn($latitude) => (float) $latitude ?: null
+            fn ($latitude) => (float) $latitude ?: null,
+            fn ($latitude) => (float) $latitude ?: null
         ));
     }
 

@@ -11,6 +11,7 @@
 namespace App\Exception;
 
 use Exception;
+
 class UnsupportedFileException extends Exception
 {
 }

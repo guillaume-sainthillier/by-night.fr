@@ -12,7 +12,6 @@ namespace App\Repository;
 
 use App\Entity\User;
 use DateTimeInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -28,6 +27,7 @@ class UserRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, User::class);
     }
+
     public function findSiteMap()
     {
         return $this->createQueryBuilder('u')
@@ -89,7 +89,8 @@ class UserRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function findOneBySocial(string $email, string $infoPrefix, $socialId): ?User {
+    public function findOneBySocial(string $email, string $infoPrefix, $socialId): ?User
+    {
         return $this
             ->createQueryBuilder('u')
             ->select('u')

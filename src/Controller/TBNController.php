@@ -11,7 +11,6 @@
 namespace App\Controller;
 
 use App\Repository\EventRepository;
-use App\Entity\Event;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;

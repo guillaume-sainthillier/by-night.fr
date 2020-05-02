@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Security;
 
 use App\OAuth\TwitterAccessToken;
@@ -30,7 +38,7 @@ class OAuthDataProvider
         $datas = [
             'accessToken' => $token->getToken(),
             'refreshToken' => $token->getRefreshToken(),
-            'expires' => $token->getExpires()
+            'expires' => $token->getExpires(),
         ];
 
         if ($token instanceof TwitterAccessToken) {

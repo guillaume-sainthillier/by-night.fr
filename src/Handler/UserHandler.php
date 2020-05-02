@@ -10,9 +10,9 @@
 
 namespace App\Handler;
 
-use RuntimeException;
 use App\Entity\User;
 use App\File\DeletableFile;
+use RuntimeException;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserHandler
@@ -54,7 +54,7 @@ class UserHandler
 
     public function uploadFile(User $user, $content, $contentType)
     {
-        if ($user->getInfo() === null) {
+        if (null === $user->getInfo()) {
             return;
         }
 

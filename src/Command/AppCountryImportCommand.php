@@ -97,6 +97,7 @@ class AppCountryImportCommand extends Command
             $input->getArgument('capital'),
             $input->getArgument('locale')
         );
+
         return 0;
     }
 }

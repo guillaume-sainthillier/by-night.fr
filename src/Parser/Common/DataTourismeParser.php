@@ -10,9 +10,9 @@
 
 namespace App\Parser\Common;
 
-use DateTime;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use DateTime;
 use GuzzleHttp\Client;
 use function GuzzleHttp\Psr7\copy_to_string;
 use JsonMachine\JsonMachine;
@@ -263,7 +263,7 @@ class DataTourismeParser extends AbstractParser
         }
 
         $key = str_replace(':', '', $resource['@id']);
-        $resource = array_merge($resource, $this->cache->get($key, fn() => $resource));
+        $resource = array_merge($resource, $this->cache->get($key, fn () => $resource));
 
         foreach ($resource as $key => $value) {
             if (\is_array($value)) {

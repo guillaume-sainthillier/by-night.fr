@@ -10,17 +10,13 @@
 
 namespace App\EventListener;
 
-use App\Repository\CityRepository;
-use App\Repository\PlaceRepository;
-use App\Repository\EventRepository;
-use App\Repository\UserRepository;
-use App\Entity\City;
-use App\Entity\Event;
-use App\Entity\Place;
 use App\Entity\User;
+use App\Repository\CityRepository;
+use App\Repository\EventRepository;
+use App\Repository\PlaceRepository;
+use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Presta\SitemapBundle\Event\SitemapPopulateEvent;
 use Presta\SitemapBundle\Service\UrlContainerInterface;
 use Presta\SitemapBundle\Sitemap\Url\UrlConcrete;

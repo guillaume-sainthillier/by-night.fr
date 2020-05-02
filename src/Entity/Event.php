@@ -10,13 +10,13 @@
 
 namespace App\Entity;
 
-use DateTimeInterface;
-use DateTimeImmutable;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
 use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -78,7 +78,6 @@ class Event
     protected ?string $slug = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank(message="N'oubliez pas de nommer votre événement !")
      * @Groups({"list_event"})
@@ -87,7 +86,6 @@ class Event
     protected ?string $nom = null;
 
     /**
-     *
      * @ORM\Column(type="text", nullable=true)
      * @Assert\NotBlank(message="N'oubliez pas de décrire votre événement !")
      * @Groups({"list_event"})
@@ -96,13 +94,11 @@ class Event
     protected ?string $descriptif = null;
 
     /**
-     *
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected ?DateTimeInterface $externalUpdatedAt = null;
 
     /**
-     *
      * @ORM\Column(type="date", nullable=true)
      * @Assert\NotBlank(message="Vous devez donner une date à votre événement")
      * @Groups({"list_event"})
@@ -112,7 +108,6 @@ class Event
     protected ?DateTimeInterface $dateDebut = null;
 
     /**
-     *
      * @ORM\Column(type="date", nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -121,19 +116,16 @@ class Event
     protected ?DateTimeInterface $dateFin = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=256, nullable=true)
      */
     protected ?string $horaires = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=16, nullable=true)
      */
     protected ?string $modificationDerniereMinute = null;
 
     /**
-     *
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -141,7 +133,6 @@ class Event
     protected ?float $latitude = null;
 
     /**
-     *
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -149,13 +140,11 @@ class Event
     protected ?float $longitude = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected ?string $adresse = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -163,7 +152,6 @@ class Event
     protected ?string $typeManifestation = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -171,7 +159,6 @@ class Event
     protected ?string $categorieManifestation = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -179,33 +166,28 @@ class Event
     protected ?string $themeManifestation = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected ?string $reservationTelephone = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Email
      */
     protected ?string $reservationEmail = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=512, nullable=true)
      * @Assert\Url
      */
     protected ?string $reservationInternet = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected ?string $tarif = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected ?string $fromData = null;
@@ -267,7 +249,6 @@ class Event
     protected ?User $user = null;
 
     /**
-     *
      * @ORM\Column(type="boolean")
      * @Groups({"list_event"})
      * @Expose
@@ -275,31 +256,26 @@ class Event
     protected ?bool $brouillon = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected ?string $tweetPostId = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected ?string $facebookEventId = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected ?string $tweetPostSystemId = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected ?string $fbPostId = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected ?string $fbPostSystemId = null;
@@ -316,13 +292,11 @@ class Event
     protected Collection $commentaires;
 
     /**
-     *
      * @ORM\Column(type="string", length=31, nullable=true)
      */
     protected ?string $facebookOwnerId = null;
 
     /**
-     *
      * @ORM\Column(type="integer", nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -330,25 +304,21 @@ class Event
     protected ?int $fbParticipations = null;
 
     /**
-     *
      * @ORM\Column(type="integer", nullable=true)
      */
     protected ?int $fbInterets = null;
 
     /**
-     *
      * @ORM\Column(type="integer", nullable=true)
      */
     protected ?int $participations = null;
 
     /**
-     *
      * @ORM\Column(type="integer", nullable=true)
      */
     protected ?int $interets = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=256, nullable=true)
      */
     protected ?string $source = null;
@@ -365,13 +335,11 @@ class Event
     protected ?Reject $reject = null;
 
     /**
-     *
      * @ORM\Column(type="boolean")
      */
     protected ?bool $archive = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
      * @Groups({"list_event"})
@@ -380,7 +348,6 @@ class Event
     protected ?string $placeName = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
@@ -407,7 +374,6 @@ class Event
     protected ?string $placeExternalId = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected ?string $placeFacebookId = null;
@@ -489,7 +455,7 @@ class Event
     {
         $this->imageFile = $image;
 
-        if ($image !== null) {
+        if (null !== $image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             $this->updatedAt = new DateTimeImmutable();
@@ -517,7 +483,7 @@ class Event
     {
         $this->imageSystemFile = $image;
 
-        if ($image !== null) {
+        if (null !== $image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             $this->updatedAt = new DateTimeImmutable();

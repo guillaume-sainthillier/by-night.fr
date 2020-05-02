@@ -45,6 +45,7 @@ class AppEventsArchiveArchive extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->eventArchivator->archive();
+
         return 0;
     }
 }

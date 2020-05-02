@@ -10,8 +10,8 @@
 
 namespace App\Entity;
 
-use DateTimeInterface;
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,37 +26,31 @@ class HistoriqueMaj
     use EntityIdentityTrait;
 
     /**
-     *
      * @ORM\Column(type="datetime")
      */
     private DateTimeInterface $dateDebut;
 
     /**
-     *
      * @ORM\Column(type="string", length=127)
      */
     private ?string $fromData = null;
 
     /**
-     *
      * @ORM\Column(type="datetime")
      */
     private DateTimeInterface $dateFin;
 
     /**
-     *
      * @ORM\Column(type="integer")
      */
     private int $nouvellesSoirees = 0;
 
     /**
-     *
      * @ORM\Column(type="integer")
      */
     private int $updateSoirees = 0;
 
     /**
-     *
      * @ORM\Column(type="integer")
      */
     private int $explorations = 0;

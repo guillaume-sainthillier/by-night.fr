@@ -10,10 +10,10 @@
 
 namespace App\EventListener;
 
-use App\Repository\ExplorationRepository;
 use App\Entity\Event;
 use App\Entity\Exploration;
 use App\Reject\Reject;
+use App\Repository\ExplorationRepository;
 use App\Utils\Firewall;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
@@ -23,10 +23,12 @@ class EventExplorationListener
      * @var \App\Repository\ExplorationRepository
      */
     private $explorationRepository;
+
     public function __construct(ExplorationRepository $explorationRepository)
     {
         $this->explorationRepository = $explorationRepository;
     }
+
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();

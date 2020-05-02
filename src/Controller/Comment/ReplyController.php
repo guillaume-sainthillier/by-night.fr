@@ -10,13 +10,12 @@
 
 namespace App\Controller\Comment;
 
+use App\Controller\TBNController as BaseController;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
-use App\Controller\TBNController as BaseController;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

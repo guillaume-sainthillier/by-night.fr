@@ -10,11 +10,11 @@
 
 namespace App\Controller;
 
-use App\Repository\EventRepository;
-use App\Repository\UserRepository;
 use App\Annotation\ReverseProxy;
 use App\Entity\Event;
 use App\Entity\User;
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
 use App\Twig\AssetExtension;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,11 +31,13 @@ class OldMediaController extends AbstractController
      * @var \App\Repository\UserRepository
      */
     private $userRepository;
+
     public function __construct(EventRepository $eventRepository, UserRepository $userRepository)
     {
         $this->eventRepository = $eventRepository;
         $this->userRepository = $userRepository;
     }
+
     /**
      * @Route("/media/cache/{filter}/{path}", requirements={"path": ".+"})
      * @Route("/uploads/{path}", requirements={"path": ".+"})

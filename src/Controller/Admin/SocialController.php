@@ -12,13 +12,9 @@ namespace App\Controller\Admin;
 
 use App\App\SocialManager;
 use App\Social\Social;
-use App\Social\SocialProvider;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -47,8 +43,6 @@ class SocialController extends AbstractController
      * @Route("/deconnexion/confirmation", name="app_administration_disconnect_service_confirm")
      *
      * @param $service
-     *
-     * @return Response
      */
     public function disconnectConfirm($service): Response
     {

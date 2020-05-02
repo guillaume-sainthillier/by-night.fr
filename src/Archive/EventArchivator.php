@@ -10,7 +10,6 @@
 
 namespace App\Archive;
 
-use App\Entity\Event;
 use App\Repository\EventRepository;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,7 +57,7 @@ class EventArchivator
                 ->getQuery()
                 ->getResult();
 
-            if ((is_countable($events) ? \count($events) : 0) === 0) {
+            if (0 === (is_countable($events) ? \count($events) : 0)) {
                 continue;
             }
 

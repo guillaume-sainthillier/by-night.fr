@@ -10,11 +10,10 @@
 
 namespace App\Parser\Common;
 
-use RuntimeException;
-use DateTime;
-use DateTimeInterface;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use DateTime;
+use DateTimeInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Pool;
 use GuzzleHttp\Promise\FulfilledPromise;
@@ -22,6 +21,7 @@ use GuzzleHttp\Promise\PromiseInterface;
 use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class OpenAgendaParser extends AbstractParser
 {
@@ -87,7 +87,7 @@ class OpenAgendaParser extends AbstractParser
                     //Send next requests
                     $requests = function ($nbPages) use ($agendaId) {
                         for ($page = 1; $page <= $nbPages - 1; ++$page) {
-                            yield fn() => $this
+                            yield fn () => $this
                                 ->sendRequest($agendaId, $page)
                                 ->then(function (array $results) {
                                     $this->publishEvents($results['events']);
@@ -113,7 +113,7 @@ class OpenAgendaParser extends AbstractParser
 
         return $this->client
             ->getAsync($uri)
-            ->then(fn(ResponseInterface $result) => json_decode(copy_to_string($result->getBody()), true, 512, JSON_THROW_ON_ERROR));
+            ->then(fn (ResponseInterface $result) => json_decode(copy_to_string($result->getBody()), true, 512, \JSON_THROW_ON_ERROR));
     }
 
     private function publishEvents(array $events): int

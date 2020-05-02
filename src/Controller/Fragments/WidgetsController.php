@@ -10,15 +10,14 @@
 
 namespace App\Controller\Fragments;
 
-use App\Repository\EventRepository;
-use App\Repository\UserRepository;
-use App\Repository\CalendrierRepository;
 use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Calendrier;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Picture\EventProfilePicture;
+use App\Repository\CalendrierRepository;
+use App\Repository\EventRepository;
+use App\Repository\UserRepository;
 use SocialLinks\Page;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +35,7 @@ class WidgetsController extends BaseController
      * @var \App\Repository\CalendrierRepository
      */
     private $calendrierRepository;
+
     public function __construct(RequestStack $requestStack, EventRepository $eventRepository, UserRepository $userRepository, CalendrierRepository $calendrierRepository)
     {
         parent::__construct($requestStack, $eventRepository);

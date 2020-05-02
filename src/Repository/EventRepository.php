@@ -14,11 +14,10 @@ use App\App\Location;
 use App\Entity\Event;
 use App\Entity\User;
 use DateTime;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @method Event|null find($id, $lockMode = null, $lockVersion = null)
@@ -32,6 +31,7 @@ class EventRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Event::class);
     }
+
     public function createElasticaQueryBuilder($alias, $indexBy = null)
     {
         return $this
@@ -294,11 +294,11 @@ class EventRepository extends ServiceEntityRepository
                 ':id' => $event->getId(),
             ]);
 
-        if ($event->getPlace()->getCity() !== null) {
+        if (null !== $event->getPlace()->getCity()) {
             $qb
                 ->andWhere('p.city = :city')
                 ->setParameter('city', $event->getPlace()->getCity()->getId());
-        } elseif ($event->getPlace()->getCountry() !== null) {
+        } elseif (null !== $event->getPlace()->getCountry()) {
             $qb
                 ->andWhere('p.country = :country')
                 ->setParameter('country', $event->getPlace()->getCountry()->getId());

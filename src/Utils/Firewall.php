@@ -10,11 +10,11 @@
 
 namespace App\Utils;
 
-use App\Repository\ExplorationRepository;
-use DateTimeInterface;
 use App\Entity\Event;
 use App\Entity\Exploration;
 use App\Reject\Reject;
+use App\Repository\ExplorationRepository;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class Firewall
@@ -108,7 +108,7 @@ class Firewall
         //Observation de l'événement
         if ($event->getExternalId()) {
             $exploration = $this->getExploration($event->getExternalId());
-            if ($exploration === null) {
+            if (null === $exploration) {
                 $exploration = (new Exploration())
                     ->setExternalId($event->getExternalId())
                     ->setLastUpdated($event->getExternalUpdatedAt())
@@ -184,7 +184,7 @@ class Firewall
         //Observation du lieu
         if ($event->getPlaceExternalId()) {
             $exploration = $this->getExploration($event->getPlaceExternalId());
-            if ($exploration === null) {
+            if (null === $exploration) {
                 $exploration = (new Exploration())
                     ->setExternalId($event->getPlaceExternalId())
                     ->setReject($event->getPlaceReject())
@@ -212,7 +212,7 @@ class Firewall
         }
 
         $reject = $event->getPlace()->getReject();
-        if ($reject->isValid() === null) {
+        if (null === $reject->isValid()) {
             $event->getPlaceReject()->addReason($reject->getReason());
             $event->getReject()->addReason($reject->getReason());
         }
@@ -223,7 +223,7 @@ class Firewall
         $reject = $exploration->getReject();
 
         //Aucune action sur un événement supprimé sur la plateforme par son créateur
-        if ($reject->isEventDeleted() !== null) {
+        if (null !== $reject->isEventDeleted()) {
             return;
         }
 
@@ -245,7 +245,7 @@ class Firewall
                 ->setParserVersion($event->getParserVersion());
 
             //L'événement n'était pas valide -> valide
-            if ($reject->hasNoNeedToUpdate() === null) {
+            if (null === $reject->hasNoNeedToUpdate()) {
                 $reject->setValid();
             }
         }
@@ -259,6 +259,7 @@ class Firewall
         if (!$explorationDate || !$eventDateModification) {
             return true;
         }
+
         return $eventDateModification > $explorationDate;
     }
 

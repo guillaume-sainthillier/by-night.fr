@@ -10,9 +10,9 @@
 
 namespace App\Search;
 
-use DateTimeInterface;
 use App\App\Location;
 use DateTime;
+use DateTimeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class SearchEvent

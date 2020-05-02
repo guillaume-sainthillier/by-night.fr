@@ -10,16 +10,13 @@
 
 namespace App\Handler;
 
-use App\Repository\CountryRepository;
-use Doctrine\Persistence\ObjectRepository;
 use App\Entity\City;
-use App\Entity\Country;
 use App\Entity\Event;
 use App\Entity\Exploration;
 use App\Entity\Place;
-use App\Entity\ZipCity;
 use App\Reject\Reject;
 use App\Repository\CityRepository;
+use App\Repository\CountryRepository;
 use App\Repository\ZipCityRepository;
 use App\Utils\Firewall;
 use App\Utils\Monitor;
@@ -73,7 +70,7 @@ class DoctrineEventHandler
      */
     public function handleMany(array $events, bool $flush = true)
     {
-        if (\count($events) === 0) {
+        if (0 === \count($events)) {
             return [];
         }
 
@@ -161,12 +158,12 @@ class DoctrineEventHandler
                 $exploration = $this->firewall->getExploration($event->getExternalId());
 
                 //Une exploration a déjà eu lieu
-                if ($exploration !== null) {
+                if (null !== $exploration) {
                     $this->firewall->filterEventExploration($exploration, $event);
                     $reject = $exploration->getReject();
 
                     //Celle-ci a déjà conduit à l'élimination de l'événement
-                    if ($reject->isValid() === null) {
+                    if (null === $reject->isValid()) {
                         $event->getReject()->setReason($reject->getReason());
 
                         continue;
@@ -198,7 +195,7 @@ class DoctrineEventHandler
     public function guessEventLocation(Place $place)
     {
         //Pas besoin de trouver un lieu déjà blacklisté
-        if ($place->getReject()->isValid() === null) {
+        if (null === $place->getReject()->isValid()) {
             return;
         }
 
@@ -214,7 +211,7 @@ class DoctrineEventHandler
         }
 
         //Pas de pays détecté -> next
-        if ($place->getCountry() === null) {
+        if (null === $place->getCountry()) {
             if ($place->getCountryName()) {
                 $place->getReject()->addReason(Reject::BAD_COUNTRY);
             } else {
@@ -253,7 +250,7 @@ class DoctrineEventHandler
             }
         }
 
-        if ($zipCity !== null) {
+        if (null !== $zipCity) {
             $city = $zipCity->getParent();
         }
 
@@ -268,11 +265,11 @@ class DoctrineEventHandler
         $place->setCity($city)->setZipCity($zipCity);
         if ($city) {
             $place->setCountry($city->getCountry());
-        } elseif ($zipCity !== null) {
+        } elseif (null !== $zipCity) {
             $place->setCountry($zipCity->getCountry());
         }
 
-        if ($place->getCity() !== null) {
+        if (null !== $place->getCity()) {
             $place->getReject()->setReason(Reject::VALID);
         }
     }
@@ -305,7 +302,7 @@ class DoctrineEventHandler
      */
     private function getAllowedEvents(array $events)
     {
-        return \array_filter($events, fn(Event $event) => $this->firewall->isValid($event));
+        return \array_filter($events, fn (Event $event) => $this->firewall->isValid($event));
     }
 
     /**
@@ -315,7 +312,7 @@ class DoctrineEventHandler
      */
     private function getNotAllowedEvents(array $events)
     {
-        return \array_filter($events, fn($event) => !$this->firewall->isValid($event));
+        return \array_filter($events, fn ($event) => !$this->firewall->isValid($event));
     }
 
     /**

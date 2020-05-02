@@ -52,7 +52,6 @@ class User extends BaseUser
     protected ?string $slug = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Groups({"list_user"})
      * @Expose
@@ -60,7 +59,6 @@ class User extends BaseUser
     protected ?string $firstname = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Groups({"list_user"})
      * @Expose
@@ -68,7 +66,6 @@ class User extends BaseUser
     protected ?string $lastname = null;
 
     /**
-     *
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     protected ?string $description = null;
@@ -171,7 +168,7 @@ class User extends BaseUser
     {
         $this->imageFile = $image;
 
-        if ($image !== null) {
+        if (null !== $image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             $this->updatedAt = new DateTimeImmutable();
@@ -199,7 +196,7 @@ class User extends BaseUser
     {
         $this->imageSystemFile = $image;
 
-        if ($image !== null) {
+        if (null !== $image) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             $this->updatedAt = new DateTimeImmutable();

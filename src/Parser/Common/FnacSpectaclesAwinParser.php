@@ -10,8 +10,8 @@
 
 namespace App\Parser\Common;
 
-use DateTime;
 use App\Producer\EventProducer;
+use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;

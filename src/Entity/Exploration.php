@@ -10,10 +10,9 @@
 
 namespace App\Entity;
 
-use App\Parser\AbstractParser;
-use DateTimeInterface;
 use App\Reject\Reject;
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,19 +31,16 @@ class Exploration
     protected ?string $externalId = null;
 
     /**
-     *
      * @ORM\Column(type="datetime", nullable=true)
      */
     private ?DateTimeInterface $lastUpdated = null;
 
     /**
-     *
      * @ORM\Column(type="integer", nullable=false)
      */
     private int $reason = Reject::VALID;
 
     /**
-     *
      * @ORM\Column(type="string", length=7)
      */
     private string $firewallVersion = '1.0';

@@ -10,12 +10,11 @@
 
 namespace App\Controller\Fragments;
 
-use App\Repository\CityRepository;
 use App\Annotation\ReverseProxy;
 use App\App\CityManager;
 use App\Controller\TBNController;
-use App\Entity\City;
 use App\Entity\Country;
+use App\Repository\CityRepository;
 use App\Repository\EventRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;

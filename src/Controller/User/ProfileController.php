@@ -10,17 +10,14 @@
 
 namespace App\Controller\User;
 
-use App\Repository\EventRepository;
-use App\Repository\CommentRepository;
 use App\Entity\Calendrier;
-use App\Entity\Comment;
-use App\Entity\Event;
+use App\Repository\CommentRepository;
+use App\Repository\EventRepository;
 use FOS\UserBundle\Controller\ProfileController as BaseController;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\Form\Factory\FactoryInterface;
-use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -42,6 +39,7 @@ class ProfileController extends BaseController
     private $userManager;
 
     private FactoryInterface $changePasswordFormFactory;
+
     /**
      * @var \App\Repository\EventRepository
      */
@@ -53,12 +51,13 @@ class ProfileController extends BaseController
 
     public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $profileFormFactory, UserManagerInterface $userManager, FactoryInterface $changePasswordFormFactory, EventRepository $eventRepository, CommentRepository $commentRepository)
     {
+        parent::__construct($eventDispatcher, $profileFormFactory, $userManager);
+
         $this->eventDispatcher = $eventDispatcher;
         $this->profileFormFactory = $profileFormFactory;
         $this->userManager = $userManager;
         $this->changePasswordFormFactory = $changePasswordFormFactory;
 
-        parent::__construct($eventDispatcher, $profileFormFactory, $userManager);
         $this->eventRepository = $eventRepository;
         $this->commentRepository = $commentRepository;
     }

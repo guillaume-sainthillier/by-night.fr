@@ -57,8 +57,8 @@ class EventElasticaRepository extends Repository
             $mainQuery->addMust($filterBool);
         }
 
-        if ($search->getFrom() !== null) {
-            if ($search->getTo() === null) {
+        if (null !== $search->getFrom()) {
+            if (null === $search->getTo()) {
                 $mainQuery->addMust(new Range('date_fin', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                 ]));

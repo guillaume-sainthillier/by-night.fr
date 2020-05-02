@@ -10,9 +10,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Info;
 use App\Entity\SiteInfo;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -10,8 +10,8 @@
 
 namespace App\Twig;
 
-use RuntimeException;
 use App\Invalidator\TagsInvalidator;
+use RuntimeException;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFunction;
 

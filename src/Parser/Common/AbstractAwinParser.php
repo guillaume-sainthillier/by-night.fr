@@ -10,14 +10,14 @@
 
 namespace App\Parser\Common;
 
-use XMLReader;
-use SimpleXMLElement;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use ForceUTF8\Encoding;
 use GuzzleHttp\Client;
 use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Log\LoggerInterface;
+use SimpleXMLElement;
+use XMLReader;
 
 abstract class AbstractAwinParser extends AbstractParser
 {

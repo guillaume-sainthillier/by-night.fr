@@ -10,8 +10,8 @@
 
 namespace App\Updater;
 
-use DateTimeInterface;
 use App\Social\FacebookAdmin;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Http\Message\ResponseInterface;

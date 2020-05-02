@@ -28,13 +28,11 @@ class Calendrier
     use EntityTimestampableTrait;
 
     /**
-     *
      * @ORM\Column(type="boolean")
      */
     protected ?bool $participe = null;
 
     /**
-     *
      * @ORM\Column(type="boolean")
      */
     protected ?bool $interet = null;

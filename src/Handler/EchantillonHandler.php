@@ -10,12 +10,12 @@
 
 namespace App\Handler;
 
-use App\Repository\PlaceRepository;
-use App\Repository\EventRepository;
-use RuntimeException;
 use App\Entity\Event;
 use App\Entity\Place;
+use App\Repository\EventRepository;
+use App\Repository\PlaceRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 
 class EchantillonHandler
 {
@@ -126,9 +126,9 @@ class EchantillonHandler
     {
         $key = $place->getId() ?: spl_object_hash($place);
 
-        if ($place->getCity() !== null) {
+        if (null !== $place->getCity()) {
             $this->cityPlaces[$place->getCity()->getId()][$key] = $place;
-        } elseif ($place->getCountry() !== null) {
+        } elseif (null !== $place->getCountry()) {
             $this->countryPlaces[$place->getCountry()->getId()][$key] = $place;
         }
     }
@@ -171,10 +171,10 @@ class EchantillonHandler
      */
     public function getPlaceEchantillons(Event $event)
     {
-        if ($event->getPlace() !== null) {
+        if (null !== $event->getPlace()) {
             $place = $this->searchPlaceByExternalId($event->getPlace()->getExternalId());
 
-            if ($place !== null) {
+            if (null !== $place) {
                 return [$place];
             }
         }
@@ -222,7 +222,7 @@ class EchantillonHandler
     public function addNewEvent(Event $event)
     {
         $this->addEvent($event);
-        if ($event->getPlace() !== null) {
+        if (null !== $event->getPlace()) {
             $this->addPlace($event->getPlace());
         }
     }

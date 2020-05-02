@@ -11,8 +11,6 @@
 namespace App\Repository;
 
 use App\Entity\HistoriqueMaj;
-use Doctrine\ORM\EntityRepository;
-
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -27,7 +25,7 @@ class HistoriqueMajRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, HistoriqueMaj::class);
     }
-    
+
     public function findAll()
     {
         return $this->findBy([], ['id' => 'DESC']);

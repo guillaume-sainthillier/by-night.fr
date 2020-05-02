@@ -10,8 +10,8 @@
 
 namespace App\App;
 
-use App\Repository\CityRepository;
 use App\Entity\City;
+use App\Repository\CityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 

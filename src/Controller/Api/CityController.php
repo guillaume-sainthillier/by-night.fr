@@ -10,10 +10,10 @@
 
 namespace App\Controller\Api;
 
-use App\Repository\CityRepository;
 use App\Annotation\ReverseProxy;
 use App\Entity\City;
 use App\Invalidator\TagsInvalidator;
+use App\Repository\CityRepository;
 use App\SearchRepository\CityElasticaRepository;
 use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use FOS\HttpCache\ResponseTagger;
@@ -34,6 +34,7 @@ class CityController extends AbstractController
      * @var \App\Repository\CityRepository
      */
     private $cityRepository;
+
     public function __construct(CityRepository $cityRepository)
     {
         $this->cityRepository = $cityRepository;
@@ -49,7 +50,7 @@ class CityController extends AbstractController
     public function cityAutocomplete(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
     {
         $term = \trim($request->get('q'));
-        if ($term === '') {
+        if ('' === $term) {
             $results = [];
         } else {
             /** @var CityElasticaRepository $repo */

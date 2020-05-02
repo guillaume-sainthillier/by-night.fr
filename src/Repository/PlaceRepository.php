@@ -11,7 +11,6 @@
 namespace App\Repository;
 
 use App\Entity\Place;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -27,6 +26,7 @@ class PlaceRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Place::class);
     }
+
     public function findSiteMap()
     {
         return $this->createQueryBuilder('p')

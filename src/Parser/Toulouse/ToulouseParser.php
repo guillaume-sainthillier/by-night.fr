@@ -59,7 +59,7 @@ class ToulouseParser extends AbstractParser
         \fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
 
         while ($cursor = \fgetcsv($fic, 0, ';', '"', '"')) {
-            $tab = \array_map(fn($e) => Encoding::toUTF8($e), $cursor);
+            $tab = \array_map(fn ($e) => Encoding::toUTF8($e), $cursor);
 
             if (!$tab[1] && !$tab[2]) {
                 continue;

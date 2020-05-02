@@ -10,14 +10,13 @@
 
 namespace App\Controller\User;
 
-use App\Repository\UserRepository;
-use IntlDateFormatter;
-use Locale;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Event;
 use App\Entity\User;
 use App\Repository\EventRepository;
+use App\Repository\UserRepository;
 use DateTime;
+use IntlDateFormatter;
+use Locale;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,11 +34,13 @@ class DefaultController extends BaseController
      * @var \App\Repository\UserRepository
      */
     private $userRepository;
+
     public function __construct(RequestStack $requestStack, EventRepository $eventRepository, UserRepository $userRepository)
     {
         parent::__construct($requestStack, $eventRepository);
         $this->userRepository = $userRepository;
     }
+
     public function urlRedirect($term)
     {
         $params = [

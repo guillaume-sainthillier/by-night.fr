@@ -10,12 +10,12 @@
 
 namespace App\EventListener;
 
-use Vich\UploaderBundle\Event\Event;
 use App\File\DeletableFile;
 use App\Producer\PurgeCdnCacheUrlProducer;
 use App\Producer\RemoveImageThumbnailsProducer;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
 class ImageListener implements EventSubscriberInterface

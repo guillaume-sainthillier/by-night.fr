@@ -25,7 +25,7 @@ class BikiniParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         //Récupère les différents liens à parser depuis le flux RSS
-        $datas = json_decode(file_get_contents(self::EVENTS_URL), true, 512, JSON_THROW_ON_ERROR);
+        $datas = json_decode(file_get_contents(self::EVENTS_URL), true, 512, \JSON_THROW_ON_ERROR);
 
         foreach ($datas['events'] as $event) {
             $event = $this->getInfosEvent($event);

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\OAuth;
 
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -50,9 +58,10 @@ class TwitterUser implements ResourceOwnerInterface
 
     private function getResponseValue($key)
     {
-        if (array_key_exists($key, $this->response)) {
+        if (\array_key_exists($key, $this->response)) {
             return $this->response[$key];
         }
+
         return null;
     }
 }
