@@ -8,7 +8,7 @@
 
 {% block body %}
     <div class="list-group scroll-area-content">
-        {{ render_esi(controller('App\\Controller\\City\\WidgetsController::topSoireesAction', {
+        {{ render_esi(controller('App\\Controller\\City\\WidgetsController::topSoirees', {
             'location': location.slug
         })) }}
     </div>

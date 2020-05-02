@@ -3,7 +3,7 @@
 {% block titre %}Événements similaires{% endblock %}
 {% block icone %}fa-star{% endblock %}
 {% block body %}
-    {{ render_esi(controller('App\\Controller\\City\\WidgetsController::soireesSimilairesAction', {
+    {{ render_esi(controller('App\\Controller\\City\\WidgetsController::soireesSimilaires', {
         'slug': event.slug,
         'id': event.id,
         'location': event.locationSlug
