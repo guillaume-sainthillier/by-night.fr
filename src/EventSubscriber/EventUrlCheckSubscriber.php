@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\EventSubscriber;
 
 use App\Event\EventCheckUrlEvent;
@@ -35,10 +43,7 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
         }
 
         if (null === $event) {
-            throw new NotFoundHttpException(null === $e->getEventId() ?
-                sprintf('Event with slug "%s" not found', $e->getEventSlug()) :
-                sprintf('Event with id "%d" not found', $e->getEventId())
-            );
+            throw new NotFoundHttpException(null === $e->getEventId() ? sprintf('Event with slug "%s" not found', $e->getEventSlug()) : sprintf('Event with id "%d" not found', $e->getEventId()));
         }
 
         if (null === $this->requestStack->getParentRequest() && (

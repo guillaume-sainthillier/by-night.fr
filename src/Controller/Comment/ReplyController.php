@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -12,7 +12,6 @@ namespace App\Controller\Comment;
 
 use App\Controller\TBNController as BaseController;
 use App\Entity\Comment;
-use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;

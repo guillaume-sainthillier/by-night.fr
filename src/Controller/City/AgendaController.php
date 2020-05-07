@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -24,7 +24,6 @@ use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;

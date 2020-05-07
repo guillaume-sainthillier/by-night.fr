@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -13,15 +13,12 @@ namespace App\Controller\City;
 use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
-use App\Entity\Comment;
 use App\Entity\Event;
 use App\Event\EventCheckUrlEvent;
 use App\Event\Events;
-use App\Form\Type\CommentType;
 use App\Picture\EventProfilePicture;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use SocialLinks\Page;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;

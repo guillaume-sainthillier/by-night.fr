@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -163,8 +163,8 @@ class DefaultController extends BaseController
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {
-            $minYear = (int)date('Y');
-            $maxYear = (int)date('Y');
+            $minYear = (int) date('Y');
+            $maxYear = (int) date('Y');
         }
 
         foreach (range($minYear, $maxYear) as $year) {
