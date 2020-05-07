@@ -25,7 +25,7 @@ class CommonController extends TBNController
     const LIFE_TIME_CACHE = 86_400;
 
     /**
-     * @Route("/_private/header/{id}", name="app_private_header", requirements={"id": "\d+"})
+     * @Route("/_private/header/{id<%patterns.id%>}", name="app_private_header")
      * @ReverseProxy(expires="+1 day")
      */
     public function header(CityManager $cityManager, CityRepository $cityRepository, ?int $id = null): Response

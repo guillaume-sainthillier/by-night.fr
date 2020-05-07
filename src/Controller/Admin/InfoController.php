@@ -42,7 +42,7 @@ class InfoController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="app_administration_info_edit", requirements={"id": "\d+"})
+     * @Route("/{id<%patterns.id%>}", name="app_administration_info_edit")
      */
     public function view(SiteInfo $info): Response
     {

@@ -92,7 +92,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/{id}", name="app_event_edit", methods={"GET", "POST"})
+     * @Route("/{id<%patterns.id%>}", name="app_event_edit", methods={"GET", "POST"})
      * @IsGranted("edit", subject="event")
      */
     public function edit(Request $request, Event $event, EventConstraintValidator $validator): Response
@@ -118,7 +118,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("{id}", name="app_event_delete", methods={"DELETE"})
+     * @Route("{id<%patterns.id%>}", name="app_event_delete", methods={"DELETE"})
      * @IsGranted("delete", subject="event")
      */
     public function delete(Event $event): Response
@@ -136,7 +136,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("{id}/annuler", name="app_event_annuler", methods={"POST"})
+     * @Route("{id<%patterns.id%>}/annuler", name="app_event_annuler", methods={"POST"})
      * @IsGranted("edit", subject="event")
      */
     public function annuler(Request $request, Event $event): Response
@@ -152,7 +152,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("{id}/brouillon", name="app_event_brouillon", methods={"POST"})
+     * @Route("{id<%patterns.id%>}/brouillon", name="app_event_brouillon", methods={"POST"})
      * @IsGranted("edit", subject="event")
      */
     public function brouillon(Request $request, Event $event): Response
@@ -168,7 +168,7 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/{id}/participer", name="app_user_like", methods={"POST"})
+     * @Route("/{id<%patterns.id%>}/participer", name="app_user_like", methods={"POST"})
      */
     public function like(Request $request, Event $event, EventRepository $eventRepository, CalendrierRepository $calendrierRepository): Response
     {

@@ -10,8 +10,12 @@ parameters:
     class.guzzle.client: Guzzle\Http\Client
     class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
     twitter.baseurl: https://api.twitter.com/1.1
-    patterns.social: '(facebook|google|twitter)'
-    patterns.admin_social: '(facebook_admin|google_admin|twitter_admin)'
+    patterns.path: '.+'
+    patterns.page: '[1-9](\d*)'
+    patterns.id: '\d+'
+    patterns.slug: '[^/]+'
+    patterns.social: 'facebook|google|twitter'
+    patterns.admin_social: 'facebook_admin|google_admin|twitter_admin'
 
 services:
     App\Producer\EventProducer: "@old_sound_rabbit_mq.add_event_producer"

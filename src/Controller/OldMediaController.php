@@ -24,8 +24,8 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 class OldMediaController extends AbstractController
 {
     /**
-     * @Route("/media/cache/{filter}/{path}", requirements={"path": ".+"})
-     * @Route("/uploads/{path}", requirements={"path": ".+"})
+     * @Route("/media/cache/{filter}/{path<%patterns.path%>}")
+     * @Route("/uploads/{path<%patterns.path%>}")
      * @ReverseProxy(expires="1 year")
      */
     public function index(string $path, StorageInterface $storage, AssetExtension $assetExtension, EventRepository $eventRepository, UserRepository $userRepository): Response

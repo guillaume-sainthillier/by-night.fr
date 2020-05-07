@@ -29,7 +29,7 @@ class WidgetsController extends BaseController
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/top/membres/{page}", name="app_agenda_top_membres", requirements={"page": "\d+"})
+     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_membres")
      * @ReverseProxy(expires="6 hours")
      */
     public function topMembres(UserRepository $userRepository, int $page = 1): Response
@@ -54,7 +54,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/_private/tendances/{id}", name="app_event_tendances", requirements={"id": "\d+"})
+     * @Route("/_private/tendances/{id<%patterns.id%>}", name="app_event_tendances")
      * @ReverseProxy(expires="1 year")
      */
     public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, CalendrierRepository $calendrierRepository): Response

@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ThumbController extends Controller
 {
     /**
-     * @Route("/thumb/{path}", requirements={"path": ".+"}, name="thumb_url", methods={"GET"})
+     * @Route("/thumb/{path<%patterns.path%>}", name="thumb_url", methods={"GET"})
      * @Cache(maxage=31536000, smaxage=31536000)
      */
     public function thumb(Request $request, Server $glide, string $path, string $secret, Packages $packages): Response
@@ -59,7 +59,7 @@ class ThumbController extends Controller
     }
 
     /**
-     * @Route("/thumb-asset/{path}", requirements={"path": ".+"}, name="thumb_asset_url", methods={"GET"})
+     * @Route("/thumb-asset/{path<%patterns.path%>}", name="thumb_asset_url", methods={"GET"})
      * @Cache(maxage=31536000, smaxage=31536000)
      */
     public function thumbAsset(Request $request, Server $assetThumb, Packages $packages, string $path, string $secret): Response

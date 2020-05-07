@@ -59,7 +59,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_event_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
+     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}", name="app_event_prochaines_soirees")
      * @ReverseProxy(expires="tomorrow")
      */
     public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1): Response
@@ -96,7 +96,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}) */
+     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}", name="app_event_soirees_similaires") */
     public function soireesSimilaires(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_soirees_similaires', ['page' => $page]);
@@ -130,7 +130,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/top/soirees/{page}", name="app_agenda_top_soirees", requirements={"page": "\d+"})
+     * @Route("/top/soirees/{page<%patterns.page%>}", name="app_agenda_top_soirees")
      * @ReverseProxy(expires="tomorrow")
      */
     public function topSoirees(Location $location, EventRepository $eventRepository, int $page = 1): Response

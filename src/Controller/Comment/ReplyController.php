@@ -26,7 +26,7 @@ class ReplyController extends BaseController
     const REPLIES_PER_PAGE = 5;
 
     /**
-     * @Route("/{id}/reponses/{page}", name="app_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})
+     * @Route("/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}", name="app_comment_reponse_list")
      */
     public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response
     {
@@ -40,7 +40,7 @@ class ReplyController extends BaseController
     }
 
     /**
-     * @Route("/{id}/repondre", name="app_comment_reponse_new", requirements={"id": "\d+"})
+     * @Route("/{id<%patterns.id%>}/repondre", name="app_comment_reponse_new")
      * @IsGranted("ROLE_USER")
      */
     public function new(Request $request, Comment $comment, CommentRepository $commentRepository): Response
