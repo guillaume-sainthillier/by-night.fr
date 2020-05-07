@@ -48,12 +48,7 @@ class ToulouseParser extends AbstractParser
         return $path_file;
     }
 
-    /**
-     * @param string $fichier le chemin absolu vers le fichier
-     *
-     * @return int le nombre d'events parsés
-     */
-    protected function parseCSV($fichier): void
+    private function parseCSV(string $fichier): void
     {
         $fic = \fopen($fichier, 'r');
         \fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne

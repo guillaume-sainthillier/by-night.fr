@@ -36,7 +36,7 @@ class ExplorationHandler
         return $this->add('nbExplorations');
     }
 
-    protected function add($key)
+    private function add($key)
     {
         if ($this->isStarted()) {
             ++$this->stats[$key];

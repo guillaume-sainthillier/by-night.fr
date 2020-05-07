@@ -49,32 +49,32 @@ class User extends BaseUser
      * @Gedmo\Slug(fields={"username"})
      * @ORM\Column(length=128, unique=true)
      */
-    protected ?string $slug = null;
+    private ?string $slug = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Groups({"list_user"})
      * @Expose
      */
-    protected ?string $firstname = null;
+    private ?string $firstname = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Serializer\Groups({"list_user"})
      * @Expose
      */
-    protected ?string $lastname = null;
+    private ?string $lastname = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $description = null;
+    private ?string $description = null;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\UserInfo", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
-    protected ?UserInfo $info = null;
+    private ?UserInfo $info = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="user")
@@ -85,7 +85,7 @@ class User extends BaseUser
      * @ORM\ManyToOne(targetEntity="App\Entity\City")
      * @ORM\JoinColumn(nullable=true)
      */
-    protected ?City $city = null;
+    private ?City $city = null;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
@@ -95,12 +95,12 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected ?bool $showSocials = null;
+    private ?bool $showSocials = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected ?string $website = null;
+    private ?string $website = null;
 
     /**
      * @Vich\UploadableField(mapping="user_image", fileNameProperty="image.name", size="image.size", mimeType="image.mimeType", originalName="image.originalName", dimensions="image.dimensions")

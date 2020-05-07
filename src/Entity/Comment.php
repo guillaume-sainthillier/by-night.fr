@@ -31,7 +31,7 @@ class Comment
      * @Assert\Length(min="3", minMessage="Le commentaire doit faire au moins {{ limit }} caractères")
      * @Assert\NotBlank(message="Le commentaire ne peut pas être vide")
      */
-    protected ?string $commentaire = null;
+    private ?string $commentaire = null;
 
     /**
      * @ORM\Column(type="boolean")
@@ -42,19 +42,19 @@ class Comment
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected ?User $user = null;
+    private ?User $user = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="commentaires")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected ?Event $event = null;
+    private ?Event $event = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="reponses")
      * @ORM\JoinColumn(nullable=true)
      */
-    protected ?Comment $parent = null;
+    private ?Comment $parent = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")

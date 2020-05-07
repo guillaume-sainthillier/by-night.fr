@@ -30,24 +30,24 @@ class Calendrier
     /**
      * @ORM\Column(type="boolean")
      */
-    protected ?bool $participe = null;
+    private ?bool $participe = null;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    protected ?bool $interet = null;
+    private ?bool $interet = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected ?User $user = null;
+    private ?User $user = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="calendriers")
      * @ORM\JoinColumn(nullable=false)
      */
-    protected ?Event $event = null;
+    private ?Event $event = null;
 
     /**
      * Constructor.

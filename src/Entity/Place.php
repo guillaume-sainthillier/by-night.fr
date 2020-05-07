@@ -43,50 +43,50 @@ class Place
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?int $id = null;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $externalId = null;
+    private ?string $externalId = null;
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $ville = null;
+    private ?string $ville = null;
     /**
      * @ORM\Column(type="string", length=7, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $codePostal = null;
+    private ?string $codePostal = null;
     /**
      * @ORM\Column(type="string", length=256, nullable=true)
      */
-    protected ?string $facebookId = null;
+    private ?string $facebookId = null;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?City $city = null;
-    protected ?ZipCity $zipCity = null;
+    private ?City $city = null;
+    private ?ZipCity $zipCity = null;
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Country")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?Country $country = null;
+    private ?Country $country = null;
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected ?bool $junk = null;
-    protected ?string $countryName = null;
-    protected ?Reject $reject = null;
-    protected ?Location $location = null;
+    private ?bool $junk = null;
+    private ?string $countryName = null;
+    private ?Reject $reject = null;
+    private ?Location $location = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)

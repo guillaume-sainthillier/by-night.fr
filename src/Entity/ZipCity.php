@@ -30,28 +30,28 @@ class ZipCity
      * @Serializer\Groups({"list_event", "list_city", "list_user"})
      * @Serializer\Expose
      */
-    protected ?int $id = null;
+    private ?int $id = null;
 
     /**
      * @Gedmo\Slug(fields={"postalCode", "name"})
      * @ORM\Column(length=201, unique=true)
      */
-    protected ?string $slug = null;
+    private ?string $slug = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Country", fetch="EXTRA_LAZY")
      */
-    protected ?Country $country = null;
+    private ?Country $country = null;
 
     /**
      * @ORM\Column(type="string", length=20)
      */
-    protected ?string $postalCode = null;
+    private ?string $postalCode = null;
 
     /**
      * @ORM\Column(type="string", length=180)
      */
-    protected ?string $name = null;
+    private ?string $name = null;
 
     /**
      * @ORM\Column(type="float")
@@ -66,27 +66,27 @@ class ZipCity
     /**
      * @ORM\Column(name="admin1_code", type="string", length=20)
      */
-    protected ?string $admin1Code = null;
+    private ?string $admin1Code = null;
 
     /**
      * @ORM\Column(name="admin1_name", type="string", length=100, nullable=true)
      */
-    protected ?string $admin1Name = null;
+    private ?string $admin1Name = null;
 
     /**
      * @ORM\Column(name="admin2_code", type="string", length=80)
      */
-    protected ?string $admin2Code = null;
+    private ?string $admin2Code = null;
 
     /**
      * @ORM\Column(name="admin2_name", type="string", length=100, nullable=true)
      */
-    protected ?string $admin2Name = null;
+    private ?string $admin2Name = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EXTRA_LAZY")
      */
-    protected ?City $parent = null;
+    private ?City $parent = null;
 
     public function getId(): ?int
     {

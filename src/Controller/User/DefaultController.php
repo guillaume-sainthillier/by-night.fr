@@ -82,7 +82,7 @@ class DefaultController extends BaseController
         return new JsonResponse($datas);
     }
 
-    protected function getDataOfWeek(EventRepository $repo, User $user)
+    private function getDataOfWeek(EventRepository $repo, User $user)
     {
         $datas = $repo->getStatsUser($user, 'DAYOFWEEK');
 
@@ -122,7 +122,7 @@ class DefaultController extends BaseController
         return array_map('array_values', $final_datas);
     }
 
-    protected function getDataOfMonth(EventRepository $repo, User $user)
+    private function getDataOfMonth(EventRepository $repo, User $user)
     {
         $datas = $repo->getStatsUser($user, 'MONTH');
 
@@ -149,7 +149,7 @@ class DefaultController extends BaseController
         return $this->fillDatas($final_datas, $datas);
     }
 
-    protected function getDataOfYear(EventRepository $repo, User $user)
+    private function getDataOfYear(EventRepository $repo, User $user)
     {
         $datas = $repo->getStatsUser($user, 'YEAR');
 

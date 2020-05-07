@@ -19,7 +19,7 @@ trait EntityIdentityTrait
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected ?int $id = null;
+    private ?int $id = null;
 
     /**
      * Returns the primary key identifier.

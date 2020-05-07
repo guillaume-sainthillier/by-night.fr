@@ -21,28 +21,28 @@ class SearchEvent
      * @Assert\NotBlank
      * @Assert\Date
      */
-    protected ?DateTimeInterface $from = null;
+    private ?DateTimeInterface $from = null;
 
     /**
      * @Assert\Date
      */
-    protected ?DateTimeInterface $to = null;
+    private ?DateTimeInterface $to = null;
 
     /**
      * @Assert\NotBlank
      * @Assert\GreaterThan(0)
      */
-    protected ?int $range = null;
+    private ?int $range = null;
 
-    protected ?string $tag = null;
+    private ?string $tag = null;
 
     protected array $type_manifestation;
 
     protected array $lieux;
 
-    protected ?string $term = null;
+    private ?string $term = null;
 
-    protected ?Location $location = null;
+    private ?Location $location = null;
 
     public function __construct()
     {

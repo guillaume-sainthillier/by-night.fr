@@ -39,32 +39,4 @@ abstract class Updater
     }
 
     abstract public function update(DateTimeInterface $from);
-
-    protected function downloadUrls(array $urls)
-    {
-        $requests = function ($urls) {
-            foreach ($urls as $i => $url) {
-                yield $i => new Request('GET', $url);
-            }
-        };
-
-        $responses = [];
-        $pool = new Pool($this->client, $requests($urls), [
-            'concurrency' => self::POOL_SIZE,
-            'fulfilled' => function (ResponseInterface $response, $index) use (&$responses) {
-                $responses[$index] = [
-                    'contentType' => current($response->getHeader('Content-Type')),
-                    'content' => copy_to_string($response->getBody()),
-                ];
-            },
-            'rejected' => function (RequestException $reason, $index) use (&$responses) {
-                $responses[$index] = null;
-            },
-        ]);
-
-        $promise = $pool->promise();
-        $promise->wait();
-
-        return $responses;
-    }
 }

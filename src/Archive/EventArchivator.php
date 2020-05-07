@@ -25,10 +25,8 @@ class EventArchivator
     private ObjectPersisterInterface $objectPersister;
 
     private EntityManagerInterface $entityManager;
-    /**
-     * @var \App\Repository\EventRepository
-     */
-    private $eventRepository;
+
+    private EventRepository $eventRepository;
 
     public function __construct(EntityManagerInterface $entityManager, ObjectPersisterInterface $objectPersister, EventRepository $eventRepository)
     {
@@ -43,7 +41,6 @@ class EventArchivator
      */
     public function archive()
     {
-        /** @var EventRepository $repo */
         $repo = $this->eventRepository;
         $qb = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
@@ -73,7 +70,7 @@ class EventArchivator
     /**
      * @throws NonUniqueResultException
      */
-    protected function countObjects(QueryBuilder $queryBuilder)
+    private function countObjects(QueryBuilder $queryBuilder)
     {
         /* Clone the query builder before altering its field selection and DQL,
          * lest we leave the query builder in a bad state for fetchSlice().

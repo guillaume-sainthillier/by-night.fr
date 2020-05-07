@@ -28,112 +28,112 @@ abstract class Info
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $facebook_id = null;
+    private ?string $facebook_id = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $facebook_access_token = null;
+    private ?string $facebook_access_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $facebook_refresh_token = null;
+    private ?string $facebook_refresh_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $facebook_email = null;
+    private ?string $facebook_email = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?int $facebook_expires = null;
+    private ?int $facebook_expires = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $facebook_realname = null;
+    private ?string $facebook_realname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $facebook_profile_picture = null;
+    private ?string $facebook_profile_picture = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $google_id = null;
+    private ?string $google_id = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $google_access_token = null;
+    private ?string $google_access_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $google_refresh_token = null;
+    private ?string $google_refresh_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $google_email = null;
+    private ?string $google_email = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?int $google_expires = null;
+    private ?int $google_expires = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $google_realname = null;
+    private ?string $google_realname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $google_profile_picture = null;
+    private ?string $google_profile_picture = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $twitter_id = null;
+    private ?string $twitter_id = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $twitter_access_token = null;
+    private ?string $twitter_access_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $twitter_refresh_token = null;
+    private ?string $twitter_refresh_token = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $twitter_email = null;
+    private ?string $twitter_email = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?int $twitter_expires = null;
+    private ?int $twitter_expires = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $twitter_nickname = null;
+    private ?string $twitter_nickname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $twitter_realname = null;
+    private ?string $twitter_realname = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
      */
-    protected ?string $twitter_profile_picture = null;
+    private ?string $twitter_profile_picture = null;
 
     public function __toString()
     {

@@ -155,7 +155,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
         ];
     }
 
-    protected function fetchTwitterAccessToken()
+    private function fetchTwitterAccessToken()
     {
         try {
             return $this->twitterOAuth->getAccessToken();

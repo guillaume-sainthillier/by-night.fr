@@ -28,7 +28,7 @@ class Exploration
     /**
      * @ORM\Column(type="string", length=127, unique=true)
      */
-    protected ?string $externalId = null;
+    private ?string $externalId = null;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -48,7 +48,7 @@ class Exploration
     /**
      * @ORM\Column(type="string", length=7, nullable=true)
      */
-    protected ?string $parserVersion = null;
+    private ?string $parserVersion = null;
 
     private ?Reject $reject = null;
 

@@ -64,18 +64,18 @@ class Event
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?int $id = null;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $externalId = null;
+    private ?string $externalId = null;
 
     /**
      * @Gedmo\Slug(fields={"nom"})
      * @ORM\Column(length=255)
      */
-    protected ?string $slug = null;
+    private ?string $slug = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -83,7 +83,7 @@ class Event
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $nom = null;
+    private ?string $nom = null;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -91,12 +91,12 @@ class Event
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $descriptif = null;
+    private ?string $descriptif = null;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected ?DateTimeInterface $externalUpdatedAt = null;
+    private ?DateTimeInterface $externalUpdatedAt = null;
 
     /**
      * @ORM\Column(type="date", nullable=true)
@@ -105,7 +105,7 @@ class Event
      * @Expose
      * @Type("DateTime<'Y-m-d'>")
      */
-    protected ?DateTimeInterface $dateDebut = null;
+    private ?DateTimeInterface $dateDebut = null;
 
     /**
      * @ORM\Column(type="date", nullable=true)
@@ -113,89 +113,89 @@ class Event
      * @Expose
      * @Type("DateTime<'Y-m-d'>")
      */
-    protected ?DateTimeInterface $dateFin = null;
+    private ?DateTimeInterface $dateFin = null;
 
     /**
      * @ORM\Column(type="string", length=256, nullable=true)
      */
-    protected ?string $horaires = null;
+    private ?string $horaires = null;
 
     /**
      * @ORM\Column(type="string", length=16, nullable=true)
      */
-    protected ?string $modificationDerniereMinute = null;
+    private ?string $modificationDerniereMinute = null;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?float $latitude = null;
+    private ?float $latitude = null;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?float $longitude = null;
+    private ?float $longitude = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected ?string $adresse = null;
+    private ?string $adresse = null;
 
     /**
      * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $typeManifestation = null;
+    private ?string $typeManifestation = null;
 
     /**
      * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $categorieManifestation = null;
+    private ?string $categorieManifestation = null;
 
     /**
      * @ORM\Column(type="string", length=128, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $themeManifestation = null;
+    private ?string $themeManifestation = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected ?string $reservationTelephone = null;
+    private ?string $reservationTelephone = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Email
      */
-    protected ?string $reservationEmail = null;
+    private ?string $reservationEmail = null;
 
     /**
      * @ORM\Column(type="string", length=512, nullable=true)
      * @Assert\Url
      */
-    protected ?string $reservationInternet = null;
+    private ?string $reservationInternet = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected ?string $tarif = null;
+    private ?string $tarif = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $fromData = null;
+    private ?string $fromData = null;
 
     /**
      * @ORM\Column(type="string", length=7, nullable=true)
      */
-    protected ?string $parserVersion = null;
+    private ?string $parserVersion = null;
 
     /**
      * @Vich\UploadableField(mapping="event_image", fileNameProperty="image.name", size="image.size", mimeType="image.mimeType", originalName="image.originalName", dimensions="image.dimensions")
@@ -235,50 +235,50 @@ class Event
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected ?string $name = null;
+    private ?string $name = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected ?string $url = null;
+    private ?string $url = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
      */
-    protected ?User $user = null;
+    private ?User $user = null;
 
     /**
      * @ORM\Column(type="boolean")
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?bool $brouillon = null;
+    private ?bool $brouillon = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $tweetPostId = null;
+    private ?string $tweetPostId = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $facebookEventId = null;
+    private ?string $facebookEventId = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $tweetPostSystemId = null;
+    private ?string $tweetPostSystemId = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $fbPostId = null;
+    private ?string $fbPostId = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $fbPostSystemId = null;
+    private ?string $fbPostSystemId = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
@@ -294,34 +294,34 @@ class Event
     /**
      * @ORM\Column(type="string", length=31, nullable=true)
      */
-    protected ?string $facebookOwnerId = null;
+    private ?string $facebookOwnerId = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?int $fbParticipations = null;
+    private ?int $fbParticipations = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?int $fbInterets = null;
+    private ?int $fbInterets = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?int $participations = null;
+    private ?int $participations = null;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    protected ?int $interets = null;
+    private ?int $interets = null;
 
     /**
      * @ORM\Column(type="string", length=256, nullable=true)
      */
-    protected ?string $source = null;
+    private ?string $source = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"}, fetch="EAGER")
@@ -330,14 +330,14 @@ class Event
      * @Expose
      * @Assert\Valid
      */
-    protected ?Place $place = null;
+    private ?Place $place = null;
 
-    protected ?Reject $reject = null;
+    private ?Reject $reject = null;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    protected ?bool $archive = null;
+    private ?bool $archive = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -345,48 +345,48 @@ class Event
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $placeName = null;
+    private ?string $placeName = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $placeStreet = null;
+    private ?string $placeStreet = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $placeCity = null;
+    private ?string $placeCity = null;
 
     /**
      * @ORM\Column(type="string", length=7, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
-    protected ?string $placePostalCode = null;
+    private ?string $placePostalCode = null;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
-    protected ?string $placeExternalId = null;
+    private ?string $placeExternalId = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected ?string $placeFacebookId = null;
+    private ?string $placeFacebookId = null;
 
-    protected ?Reject $placeReject = null;
+    private ?Reject $placeReject = null;
 
-    protected ?string $placeCountryName = null;
+    private ?string $placeCountryName = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Country")
      * @ORM\JoinColumn(nullable=true)
      */
-    protected ?Country $placeCountry = null;
+    private ?Country $placeCountry = null;
 
     public function __construct()
     {

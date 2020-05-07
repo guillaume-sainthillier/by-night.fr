@@ -15,8 +15,8 @@ use Facebook\FacebookClient;
 
 class FacebookAdmin extends Facebook
 {
-    protected SiteInfo $siteInfo;
-    protected bool $_isInitialized;
+    private SiteInfo $siteInfo;
+    private bool $_isInitialized;
 
     protected function init()
     {
