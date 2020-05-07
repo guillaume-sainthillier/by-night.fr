@@ -40,7 +40,7 @@ class ProfileController extends BaseController
 
     private FactoryInterface $changePasswordFormFactory;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $profileFormFactory, UserManagerInterface $userManager, FactoryInterface $changePasswordFormFactory, EventRepository $eventRepository, CommentRepository $commentRepository)
+    public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $profileFormFactory, UserManagerInterface $userManager, FactoryInterface $changePasswordFormFactory)
     {
         parent::__construct($eventDispatcher, $profileFormFactory, $userManager);
 
@@ -53,17 +53,15 @@ class ProfileController extends BaseController
     /**
      * @Route("/show", name="fos_user_profile_show")
      */
-    public function show()
+    public function show(): Response
     {
         return $this->redirectToRoute('fos_user_profile_edit');
     }
 
     /**
      * @Route("/delete", name="app_user_delete")
-     *
-     * @return RedirectResponse
      */
-    public function delete(Request $request, UserManagerInterface $userManager, EventRepository $eventRepository, CommentRepository $commentRepository)
+    public function delete(Request $request, UserManagerInterface $userManager, EventRepository $eventRepository, CommentRepository $commentRepository): Response
     {
         $user = $this->getUser();
         if (!\is_object($user) || !$user instanceof UserInterface) {
@@ -132,10 +130,8 @@ class ProfileController extends BaseController
 
     /**
      * @Route("/edit", name="fos_user_profile_edit")
-     *
-     * @return RedirectResponse|Response|null
      */
-    public function edit(Request $request)
+    public function edit(Request $request): Response
     {
         $user = $this->getUser();
         if (!\is_object($user) || !$user instanceof UserInterface) {

@@ -27,10 +27,8 @@ class DefaultController extends AbstractController
     /**
      * @Route("/", name="app_main_index")
      * @ReverseProxy(expires="tomorrow")
-     *
-     * @return Response
      */
-    public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository)
+    public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository): Response
     {
         $datas = [
             'from' => new DateTime(),

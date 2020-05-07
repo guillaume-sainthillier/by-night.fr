@@ -19,6 +19,7 @@ use App\Repository\CommentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommentController extends BaseController
@@ -28,7 +29,7 @@ class CommentController extends BaseController
     /**
      * @Route("/form/{id}", name="app_comment_form", requirements={"id": "\d+"})
      */
-    public function form(Event $event, CommentRepository $commentRepository, int $page = 1)
+    public function form(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comment = new Comment();
 
@@ -55,7 +56,7 @@ class CommentController extends BaseController
      * @Route("/{id}/{page}", name="app_comment_list", requirements={"id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function list(Event $event, CommentRepository $commentRepository, int $page = 1)
+    public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         return $this->render('Comment/list.html.twig', [
             'nb_comments' => $commentRepository->findNBCommentaires($event),
@@ -70,7 +71,7 @@ class CommentController extends BaseController
      * @Route("/{id}/nouveau", name="app_comment_new", requirements={"id": "\d+"})
      * @IsGranted("ROLE_USER")
      */
-    public function newComment(Request $request, Event $event, CommentRepository $commentRepository)
+    public function newComment(Request $request, Event $event, CommentRepository $commentRepository): Response
     {
         $user = $this->getUser();
         $comment = new Comment();

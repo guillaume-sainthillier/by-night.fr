@@ -24,10 +24,8 @@ class InfoController extends AbstractController
 {
     /**
      * @Route("/", name="app_administration_info_index")
-     *
-     * @return RedirectResponse
      */
-    public function list(SocialManager $socialManager)
+    public function list(SocialManager $socialManager): Response
     {
         $info = $socialManager->getSiteInfo();
 
@@ -45,10 +43,8 @@ class InfoController extends AbstractController
 
     /**
      * @Route("/{id}", name="app_administration_info_edit", requirements={"id": "\d+"})
-     *
-     * @return Response
      */
-    public function view(SiteInfo $info)
+    public function view(SiteInfo $info): Response
     {
         return $this->render('Admin/Social/view.html.twig', [
             'info' => $info,

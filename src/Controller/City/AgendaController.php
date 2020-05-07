@@ -25,6 +25,7 @@ use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -40,7 +41,7 @@ class AgendaController extends BaseController
      * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags", requirements={"page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, string $type = null, string $tag = null, string $slug = null)
+    public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -120,7 +121,7 @@ class AgendaController extends BaseController
         ]);
     }
 
-    protected function handleSearch(SearchEvent $search, Location $location, $type, $tag, Place $place = null)
+    private function handleSearch(SearchEvent $search, Location $location, $type, $tag, Place $place = null)
     {
         $term = null;
         if (null !== $place) {

@@ -22,6 +22,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -35,10 +36,8 @@ class CityController extends AbstractController
      * @Route("/villes", name="app_api_city")
      * @ReverseProxy(expires="1 year")
      * @Tag("autocomplete-city")
-     *
-     * @return JsonResponse
      */
-    public function cityAutocomplete(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager)
+    public function cityAutocomplete(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager): Response
     {
         $term = \trim($request->get('q'));
         if ('' === $term) {

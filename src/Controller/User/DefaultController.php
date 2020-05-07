@@ -15,16 +15,11 @@ use App\Entity\User;
 use App\Event\Events;
 use App\Event\UserCheckUrlEvent;
 use App\Repository\EventRepository;
-use App\Repository\UserRepository;
 use DateTime;
 use IntlDateFormatter;
 use Locale;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -37,7 +32,7 @@ class DefaultController extends BaseController
      * @Route("/{slug}--{id}", name="app_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/{username}", name="app_user_details_old", requirements={"username": "[^/]+"})
      */
-    public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null)
+    public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
         $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_details');
         $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
@@ -58,14 +53,8 @@ class DefaultController extends BaseController
     /**
      * @Route("/{slug}--{id}/stats/{type}", name="app_user_stats", requirements={"slug": "[^/]+", "id": "\d+", "type": "semaine|mois|annee"})
      * @Route("/{username}/stats/{type}", name="app_user_stats_old", requirements={"username": "[^/]+", "type": "semaine|mois|annee"})
-     *
-     * @param $type
-     * @param null $id
-     * @param null $slug
-     * @param null $username
-     *
      */
-    public function stats(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null)
+    public function stats(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
         $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_stats', ['type' => $type]);
         $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);

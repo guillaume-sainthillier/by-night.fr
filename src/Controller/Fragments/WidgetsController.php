@@ -31,12 +31,8 @@ class WidgetsController extends BaseController
     /**
      * @Route("/top/membres/{page}", name="app_agenda_top_membres", requirements={"page": "\d+"})
      * @ReverseProxy(expires="6 hours")
-     *
-     * @param int $page
-     *
-     * @return Response
      */
-    public function topMembres(UserRepository $userRepository, int $page = 1)
+    public function topMembres(UserRepository $userRepository, int $page = 1): Response
     {
         if ($page <= 1) {
             $page = 1;
@@ -61,7 +57,7 @@ class WidgetsController extends BaseController
      * @Route("/_private/tendances/{id}", name="app_event_tendances", requirements={"id": "\d+"})
      * @ReverseProxy(expires="1 year")
      */
-    public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, CalendrierRepository $calendrierRepository)
+    public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, CalendrierRepository $calendrierRepository): Response
     {
         $participer = false;
         $interet = false;

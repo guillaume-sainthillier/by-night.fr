@@ -31,7 +31,7 @@ class WidgetsController extends BaseController
      * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"})
      * @ReverseProxy(expires="1 hour")
      */
-    public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, $max_id = null)
+    public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, int $max_id = null): Response
     {
         $results = !$disableTwitterFeed ? $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT) : [];
 
@@ -62,7 +62,7 @@ class WidgetsController extends BaseController
      * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_event_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1)
+    public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_prochaines_soirees', ['page' => $page]);
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
@@ -97,7 +97,7 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}) */
-    public function soireesSimilaires(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1)
+    public function soireesSimilaires(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_soirees_similaires', ['page' => $page]);
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
@@ -133,7 +133,7 @@ class WidgetsController extends BaseController
      * @Route("/top/soirees/{page}", name="app_agenda_top_soirees", requirements={"page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function topSoirees(Location $location, EventRepository $eventRepository, int $page = 1)
+    public function topSoirees(Location $location, EventRepository $eventRepository, int $page = 1): Response
     {
         $current = $page * self::WIDGET_ITEM_LIMIT;
         $count = $eventRepository->findTopSoireeCount($location);

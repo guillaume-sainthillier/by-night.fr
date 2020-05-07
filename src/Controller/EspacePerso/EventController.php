@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends BaseController
@@ -34,7 +35,7 @@ class EventController extends BaseController
     /**
      * @Route("/mes-soirees", name="app_event_list", methods={"GET"})
      */
-    public function index(Request $request, PaginatorInterface $paginator, EventRepository $eventRepository)
+    public function index(Request $request, PaginatorInterface $paginator, EventRepository $eventRepository): Response
     {
         $user = $this->getUser();
 
@@ -50,7 +51,7 @@ class EventController extends BaseController
     /**
      * @Route("/nouvelle-soiree", name="app_event_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, EventConstraintValidator $validator)
+    public function new(Request $request, EventConstraintValidator $validator): Response
     {
         $user = $this->getUser();
         $event = (new Event())
@@ -94,7 +95,7 @@ class EventController extends BaseController
      * @Route("/{id}", name="app_event_edit", methods={"GET", "POST"})
      * @IsGranted("edit", subject="event")
      */
-    public function edit(Request $request, Event $event, EventConstraintValidator $validator)
+    public function edit(Request $request, Event $event, EventConstraintValidator $validator): Response
     {
         if ($event->getExternalId()) {
             $event->setExternalUpdatedAt(new DateTime());
@@ -119,10 +120,8 @@ class EventController extends BaseController
     /**
      * @Route("{id}", name="app_event_delete", methods={"DELETE"})
      * @IsGranted("delete", subject="event")
-     *
-     * @return RedirectResponse
      */
-    public function delete(Event $event)
+    public function delete(Event $event): Response
     {
         $em = $this->getDoctrine()->getManager();
         $em->remove($event);
@@ -140,7 +139,7 @@ class EventController extends BaseController
      * @Route("{id}/annuler", name="app_event_annuler", methods={"POST"})
      * @IsGranted("edit", subject="event")
      */
-    public function annuler(Request $request, Event $event)
+    public function annuler(Request $request, Event $event): Response
     {
         $annuler = $request->request->get('annuler', 'true');
         $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
@@ -156,7 +155,7 @@ class EventController extends BaseController
      * @Route("{id}/brouillon", name="app_event_brouillon", methods={"POST"})
      * @IsGranted("edit", subject="event")
      */
-    public function brouillon(Request $request, Event $event)
+    public function brouillon(Request $request, Event $event): Response
     {
         $brouillon = $request->request->get('brouillon', 'true');
         $isBrouillon = 'true' === $brouillon;
@@ -169,9 +168,9 @@ class EventController extends BaseController
     }
 
     /**
-     * @Route("/{id}/participer", name="app_user_like", defaults={"participer": true, "interet": false}, methods={"POST"})
+     * @Route("/{id}/participer", name="app_user_like", methods={"POST"})
      */
-    public function like(Request $request, Event $event, EventRepository $eventRepository, CalendrierRepository $calendrierRepository)
+    public function like(Request $request, Event $event, EventRepository $eventRepository, CalendrierRepository $calendrierRepository): Response
     {
         $user = $this->getUser();
 

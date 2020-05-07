@@ -26,10 +26,8 @@ class DefaultController extends AbstractController
 {
     /**
      * @Route("/deconnexion", name="app_disconnect_service")
-     *
-     * @return JsonResponse
      */
-    public function disconnect(Social $social, Request $request, GuardAuthenticatorHandler $guardAuthenticatorHandler, UserSocialAuthenticator $socialAuthenticator)
+    public function disconnect(Social $social, Request $request, GuardAuthenticatorHandler $guardAuthenticatorHandler, UserSocialAuthenticator $socialAuthenticator): Response
     {
         $user = $this->getUser();
         $social->disconnectUser($user);
@@ -44,12 +42,8 @@ class DefaultController extends AbstractController
 
     /**
      * @Route("/deconnexion/confirmation", name="app_disconnect_service_confirm")
-     *
-     * @param $service
-     *
-     * @return Response
      */
-    public function disconnectConfirm($service)
+    public function disconnectConfirm(string $service): Response
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,

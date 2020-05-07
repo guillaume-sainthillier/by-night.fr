@@ -14,6 +14,7 @@ use App\Entity\User;
 use App\OAuth\TwitterOAuth;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -25,7 +26,7 @@ class LoginSocialController extends AbstractController
     /**
      * @Route("/check-{service<%patterns.social%>}", name="login_social_check")
      */
-    public function connectCheck()
+    public function connectCheck(): Response
     {
         throw new \Exception('This code should not be reach!');
     }
@@ -33,7 +34,7 @@ class LoginSocialController extends AbstractController
     /**
      * @Route("/{service<%patterns.social%>}", name="login_social_start")
      */
-    public function connect(string $service, ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth)
+    public function connect(string $service, ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth): Response
     {
         switch ($service) {
             case 'facebook':
@@ -61,7 +62,7 @@ class LoginSocialController extends AbstractController
     /**
      * @Route("/success-{service<%patterns.social%>}", name="login_social_success", methods={"GET"})
      */
-    public function success()
+    public function success(): Response
     {
         /** @var User $user */
         $user = $this->getUser();

@@ -12,6 +12,7 @@ namespace App\Controller\Legacy;
 
 use App\Annotation\ReverseProxy;
 use App\Controller\TBNController as BaseController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -22,7 +23,7 @@ class LegacyController extends BaseController
     /**
      * @Route("/cookie", name="app_main_cookie", methods={"GET"})
      */
-    public function cookie()
+    public function cookie(): Response
     {
         return $this->render('Legacy/cookies.html.twig');
     }
@@ -30,7 +31,7 @@ class LegacyController extends BaseController
     /**
      * @Route("/mentions-legales", name="app_mentions_legales", methods={"GET"})
      */
-    public function mentionLegales()
+    public function mentionLegales(): Response
     {
         return $this->render('Legacy/mentions.html.twig');
     }
@@ -38,7 +39,7 @@ class LegacyController extends BaseController
     /**
      * @Route("/a-propos", name="app_about", methods={"GET"})
      */
-    public function about()
+    public function about(): Response
     {
         return $this->render('Legacy/about.html.twig');
     }
@@ -46,7 +47,7 @@ class LegacyController extends BaseController
     /**
      * @Route("/en-savoir-plus", name="app_plus", methods={"GET"})
      */
-    public function plus()
+    public function plus(): Response
     {
         return $this->render('Legacy/plus.html.twig');
     }

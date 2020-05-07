@@ -17,6 +17,7 @@ use App\Entity\Country;
 use App\Repository\CityRepository;
 use App\Repository\EventRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommonController extends TBNController
@@ -27,7 +28,7 @@ class CommonController extends TBNController
      * @Route("/_private/header/{id}", name="app_private_header", requirements={"id": "\d+"})
      * @ReverseProxy(expires="+1 day")
      */
-    public function header(CityManager $cityManager, CityRepository $cityRepository, ?int $id = null)
+    public function header(CityManager $cityManager, CityRepository $cityRepository, ?int $id = null): Response
     {
         $city = null;
         if ($id) {
@@ -41,7 +42,7 @@ class CommonController extends TBNController
         ]);
     }
 
-    public function footer(CityRepository $cityRepository, Country $country = null)
+    public function footer(CityRepository $cityRepository, Country $country = null): Response
     {
         $params = [];
         $repo = $cityRepository;

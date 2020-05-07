@@ -24,8 +24,6 @@ class SocialController extends AbstractController
 {
     /**
      * @Route("/deconnexion", name="app_administration_disconnect_service")
-     *
-     * @return JsonResponse
      */
     public function disconnect(Social $social, SocialManager $socialManager): Response
     {
@@ -41,10 +39,8 @@ class SocialController extends AbstractController
 
     /**
      * @Route("/deconnexion/confirmation", name="app_administration_disconnect_service_confirm")
-     *
-     * @param $service
      */
-    public function disconnectConfirm($service): Response
+    public function disconnectConfirm(string $service): Response
     {
         return $this->render('Social/confirm.html.twig', [
             'service' => $service,

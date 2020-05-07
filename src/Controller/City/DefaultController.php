@@ -17,6 +17,7 @@ use App\Form\Type\SimpleEventSearchType;
 use App\Repository\EventRepository;
 use DateTime;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends BaseController
@@ -25,7 +26,7 @@ class DefaultController extends BaseController
      * @Route("/", name="app_agenda_index")
      * @ReverseProxy(expires="tomorrow")
      */
-    public function index(Location $location, PaginatorInterface $paginator, EventRepository $eventRepository)
+    public function index(Location $location, PaginatorInterface $paginator, EventRepository $eventRepository): Response
     {
         $datas = [
             'from' => new DateTime(),

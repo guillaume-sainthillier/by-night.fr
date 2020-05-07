@@ -10,6 +10,8 @@
 
 namespace App\Controller\Search;
 
+use App\Entity\Event;
+use App\Entity\User;
 use App\Search\SearchEvent;
 use App\SearchRepository\EventElasticaRepository;
 use App\SearchRepository\UserElasticaRepository;
@@ -24,10 +26,8 @@ class SearchController extends AbstractController
 {
     /**
      * @Route("/", name="app_search_query")
-     *
-     * @return Response
      */
-    public function search(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm)
+    public function search(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm): Response
     {
         $q = \trim($request->get('q', null));
         $type = $request->get('type', null);
@@ -83,19 +83,19 @@ class SearchController extends AbstractController
         ]);
     }
 
-    private function searchEvents(RepositoryManagerInterface $rm, $q)
+    private function searchEvents(RepositoryManagerInterface $rm, ?string $q)
     {
         /** @var EventElasticaRepository $repoSearch */
-        $repoSearch = $rm->getRepository('App:Event');
+        $repoSearch = $rm->getRepository(Event::class);
         $search = (new SearchEvent())->setTerm($q);
 
         return $repoSearch->findWithSearch($search, true);
     }
 
-    private function searchUsers(RepositoryManagerInterface $rm, $q)
+    private function searchUsers(RepositoryManagerInterface $rm, ?string $q)
     {
         /** @var UserElasticaRepository $repo */
-        $repo = $rm->getRepository('App:User');
+        $repo = $rm->getRepository(User::class);
 
         return $repo->findWithSearch($q);
     }

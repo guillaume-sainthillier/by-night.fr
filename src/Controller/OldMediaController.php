@@ -27,10 +27,8 @@ class OldMediaController extends AbstractController
      * @Route("/media/cache/{filter}/{path}", requirements={"path": ".+"})
      * @Route("/uploads/{path}", requirements={"path": ".+"})
      * @ReverseProxy(expires="1 year")
-     *
-     * @return Response
      */
-    public function index(string $path, StorageInterface $storage, AssetExtension $assetExtension, EventRepository $eventRepository, UserRepository $userRepository)
+    public function index(string $path, StorageInterface $storage, AssetExtension $assetExtension, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
         $infos = pathinfo($path);
 

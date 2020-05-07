@@ -17,6 +17,7 @@ use App\Social\Social;
 use App\Social\SocialProvider;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -28,7 +29,7 @@ class LoginSocialController extends AbstractController
     /**
      * @Route("/check-{service<%patterns.admin_social%>}", name="admin_login_social_check")
      */
-    public function connectCheck(string $service, Social $social, SocialManager $socialManager, ClientRegistry $clientRegistry, OAuthDataProvider $OAuthDataProvider, TwitterOAuth $twitterOAuth)
+    public function connectCheck(string $service, Social $social, SocialManager $socialManager, ClientRegistry $clientRegistry, OAuthDataProvider $OAuthDataProvider, TwitterOAuth $twitterOAuth): Response
     {
         if (SocialProvider::TWITTER_ADMIN === $service) {
             $accessToken = $twitterOAuth->getAccessToken();
@@ -53,7 +54,7 @@ class LoginSocialController extends AbstractController
     /**
      * @Route("/{service<%patterns.admin_social%>}", name="admin_login_social_start")
      */
-    public function connect(string $service, ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth)
+    public function connect(string $service, ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth): Response
     {
         switch ($service) {
             case 'facebook_admin':

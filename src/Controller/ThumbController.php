@@ -30,7 +30,7 @@ class ThumbController extends Controller
      * @Route("/thumb/{path}", requirements={"path": ".+"}, name="thumb_url", methods={"GET"})
      * @Cache(maxage=31536000, smaxage=31536000)
      */
-    public function thumb(Request $request, Server $glide, string $path, string $secret, Packages $packages)
+    public function thumb(Request $request, Server $glide, string $path, string $secret, Packages $packages): Response
     {
         $parameters = $request->query->all();
 
@@ -62,7 +62,7 @@ class ThumbController extends Controller
      * @Route("/thumb-asset/{path}", requirements={"path": ".+"}, name="thumb_asset_url", methods={"GET"})
      * @Cache(maxage=31536000, smaxage=31536000)
      */
-    public function thumbAsset(Request $request, Server $assetThumb, Packages $packages, string $path, string $secret)
+    public function thumbAsset(Request $request, Server $assetThumb, Packages $packages, string $path, string $secret): Response
     {
         $parameters = $request->query->all();
 

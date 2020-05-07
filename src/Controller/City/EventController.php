@@ -34,7 +34,7 @@ class EventController extends BaseController
      * @Route("/soiree/{slug}", name="app_event_details_old", requirements={"slug": "[^/]+"})
      * @ReverseProxy(expires="+1 month")
      */
-    public function details(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null)
+    public function details(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
@@ -52,7 +52,7 @@ class EventController extends BaseController
     /**
      * @Cache(expires="+12 hours", smaxage="43200")
      */
-    public function share(Event $event, EventProfilePicture $eventProfilePicture)
+    public function share(Event $event, EventProfilePicture $eventProfilePicture): Response
     {
         $link = $this->generateUrl('app_event_details', [
             'slug' => $event->getSlug(),
@@ -75,20 +75,5 @@ class EventController extends BaseController
                 'twitter' => $page->twitter,
             ],
         ]);
-    }
-
-    protected function getCreateCommentForm(Comment $comment, Event $event)
-    {
-        return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
-            'method' => 'POST',
-        ])
-            ->add('poster', SubmitType::class, [
-                'label' => 'Poster',
-                'attr' => [
-                    'class' => 'btn btn-primary btn-submit btn-raised',
-                    'data-loading-text' => 'En cours...',
-                ],
-            ]);
     }
 }

@@ -27,12 +27,8 @@ class ReplyController extends BaseController
 
     /**
      * @Route("/{id}/reponses/{page}", name="app_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})
-     *
-     * @param $page
-     *
-     * @return Response
      */
-    public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1)
+    public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response
     {
         return $this->render('Comment/Reply/list.html.twig', [
             'comments' => $commentRepository->findAllReponses($comment, $page, self::REPLIES_PER_PAGE),
@@ -47,7 +43,7 @@ class ReplyController extends BaseController
      * @Route("/{id}/repondre", name="app_comment_reponse_new", requirements={"id": "\d+"})
      * @IsGranted("ROLE_USER")
      */
-    public function new(Request $request, Comment $comment, CommentRepository $commentRepository)
+    public function new(Request $request, Comment $comment, CommentRepository $commentRepository): Response
     {
         $user = $this->getUser();
         $reponse = new Comment();
