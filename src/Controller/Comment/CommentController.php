@@ -27,7 +27,7 @@ class CommentController extends BaseController
     const COMMENTS_PER_PAGE = 10;
 
     /**
-     * @Route("/form/{id<%patterns.id%>}", name="app_comment_form")
+     * @Route("/form/{id<%patterns.id%>}", name="app_comment_form", methods={"GET"})
      */
     public function form(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
@@ -53,7 +53,7 @@ class CommentController extends BaseController
     }
 
     /**
-     * @Route("/{id<%patterns.id%>}/{page<%patterns.page%>}", name="app_comment_list")
+     * @Route("/{id<%patterns.id%>}/{page<%patterns.page%>}", name="app_comment_list", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
@@ -68,7 +68,7 @@ class CommentController extends BaseController
     }
 
     /**
-     * @Route("/{id<%patterns.id%>}/nouveau", name="app_comment_new")
+     * @Route("/{id<%patterns.id%>}/nouveau", name="app_comment_new", methods={"GET", "POST"})
      * @IsGranted("ROLE_USER")
      */
     public function newComment(Request $request, Event $event, CommentRepository $commentRepository): Response

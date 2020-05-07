@@ -25,7 +25,7 @@ class DefaultController extends AbstractController
     const EVENT_PER_CATEGORY = 7;
 
     /**
-     * @Route("/", name="app_main_index")
+     * @Route("/", name="app_main_index", methods={"GET", "POST"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository): Response

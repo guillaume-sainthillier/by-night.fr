@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends BaseController
 {
     /**
-     * @Route("/", name="app_agenda_index")
+     * @Route("/", name="app_agenda_index", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function index(Location $location, PaginatorInterface $paginator, EventRepository $eventRepository): Response

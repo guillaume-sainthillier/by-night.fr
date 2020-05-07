@@ -28,7 +28,7 @@ class WidgetsController extends BaseController
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"})
+     * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"}, methods={"GET"})
      * @ReverseProxy(expires="1 hour")
      */
     public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, int $max_id = null): Response
@@ -59,7 +59,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}", name="app_event_prochaines_soirees")
+     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}", name="app_event_prochaines_soirees", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1): Response
@@ -96,7 +96,9 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}", name="app_event_soirees_similaires") */
+     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}", name="app_event_soirees_similaires", methods={"GET"})
+     * @ReverseProxy(expires="tomorrow")
+     */
     public function soireesSimilaires(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_soirees_similaires', ['page' => $page]);
@@ -130,7 +132,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/top/soirees/{page<%patterns.page%>}", name="app_agenda_top_soirees")
+     * @Route("/top/soirees/{page<%patterns.page%>}", name="app_agenda_top_soirees", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function topSoirees(Location $location, EventRepository $eventRepository, int $page = 1): Response

@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class LoginSocialController extends AbstractController
 {
     /**
-     * @Route("/check-{service<%patterns.admin_social%>}", name="admin_login_social_check")
+     * @Route("/check-{service<%patterns.admin_social%>}", name="admin_login_social_check", methods={"GET", "POST"})
      */
     public function connectCheck(string $service, Social $social, SocialManager $socialManager, ClientRegistry $clientRegistry, OAuthDataProvider $OAuthDataProvider, TwitterOAuth $twitterOAuth): Response
     {
@@ -52,7 +52,7 @@ class LoginSocialController extends AbstractController
     }
 
     /**
-     * @Route("/{service<%patterns.admin_social%>}", name="admin_login_social_start")
+     * @Route("/{service<%patterns.admin_social%>}", name="admin_login_social_start", methods={"GET"})
      */
     public function connect(string $service, ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth): Response
     {

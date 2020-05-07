@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SocialController extends AbstractController
 {
     /**
-     * @Route("/deconnexion", name="app_administration_disconnect_service")
+     * @Route("/deconnexion", name="app_administration_disconnect_service", methods={"POST"})
      */
     public function disconnect(Social $social, SocialManager $socialManager): Response
     {
@@ -38,7 +38,7 @@ class SocialController extends AbstractController
     }
 
     /**
-     * @Route("/deconnexion/confirmation", name="app_administration_disconnect_service_confirm")
+     * @Route("/deconnexion/confirmation", name="app_administration_disconnect_service_confirm", methods={"GET"})
      */
     public function disconnectConfirm(string $service): Response
     {

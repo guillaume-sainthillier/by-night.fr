@@ -51,7 +51,7 @@ class ProfileController extends BaseController
     }
 
     /**
-     * @Route("/show", name="fos_user_profile_show")
+     * @Route("/show", name="fos_user_profile_show", methods={"GET"})
      */
     public function show(): Response
     {
@@ -59,7 +59,7 @@ class ProfileController extends BaseController
     }
 
     /**
-     * @Route("/delete", name="app_user_delete")
+     * @Route("/delete", name="app_user_delete", methods={"GET", "POST"})
      */
     public function delete(Request $request, UserManagerInterface $userManager, EventRepository $eventRepository, CommentRepository $commentRepository): Response
     {
@@ -129,7 +129,7 @@ class ProfileController extends BaseController
     }
 
     /**
-     * @Route("/edit", name="fos_user_profile_edit")
+     * @Route("/edit", name="fos_user_profile_edit", methods={"GET", "POST"})
      */
     public function edit(Request $request): Response
     {

@@ -33,7 +33,7 @@ class CityController extends AbstractController
     const MAX_RESULTS = 7;
 
     /**
-     * @Route("/villes", name="app_api_city")
+     * @Route("/villes", name="app_api_city", methods={"GET"})
      * @ReverseProxy(expires="1 year")
      * @Tag("autocomplete-city")
      */

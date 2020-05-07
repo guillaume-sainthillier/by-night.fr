@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SearchController extends AbstractController
 {
     /**
-     * @Route("/", name="app_search_query")
+     * @Route("/", name="app_search_query", methods={"GET"})
      */
     public function search(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm): Response
     {

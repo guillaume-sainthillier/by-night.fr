@@ -30,8 +30,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class EventController extends BaseController
 {
     /**
-     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}", name="app_event_details")
-     * @Route("/soiree/{slug<%patterns.slug%>}", name="app_event_details_old")
+     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}", name="app_event_details", methods={"GET"})
+     * @Route("/soiree/{slug<%patterns.slug%>}", name="app_event_details_old", methods={"GET"})
      * @ReverseProxy(expires="+1 month")
      */
     public function details(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null): Response

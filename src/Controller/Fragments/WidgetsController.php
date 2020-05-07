@@ -29,15 +29,11 @@ class WidgetsController extends BaseController
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_membres")
+     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_membres", methods={"GET"})
      * @ReverseProxy(expires="6 hours")
      */
     public function topMembres(UserRepository $userRepository, int $page = 1): Response
     {
-        if ($page <= 1) {
-            $page = 1;
-        }
-
         $count = $userRepository->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
@@ -54,7 +50,7 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/_private/tendances/{id<%patterns.id%>}", name="app_event_tendances")
+     * @Route("/_private/tendances/{id<%patterns.id%>}", name="app_event_tendances", methods={"GET"})
      * @ReverseProxy(expires="1 year")
      */
     public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, CalendrierRepository $calendrierRepository): Response

@@ -25,7 +25,7 @@ use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 class DefaultController extends AbstractController
 {
     /**
-     * @Route("/deconnexion", name="app_disconnect_service")
+     * @Route("/deconnexion", name="app_disconnect_service", methods={"POST"})
      */
     public function disconnect(Social $social, Request $request, GuardAuthenticatorHandler $guardAuthenticatorHandler, UserSocialAuthenticator $socialAuthenticator): Response
     {
@@ -41,7 +41,7 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/deconnexion/confirmation", name="app_disconnect_service_confirm")
+     * @Route("/deconnexion/confirmation", name="app_disconnect_service_confirm", methods={"GET"})
      */
     public function disconnectConfirm(string $service): Response
     {

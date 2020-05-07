@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class InfoController extends AbstractController
 {
     /**
-     * @Route("/", name="app_administration_info_index")
+     * @Route("/", name="app_administration_info_index", methods={"GET"})
      */
     public function list(SocialManager $socialManager): Response
     {
@@ -42,7 +42,7 @@ class InfoController extends AbstractController
     }
 
     /**
-     * @Route("/{id<%patterns.id%>}", name="app_administration_info_edit")
+     * @Route("/{id<%patterns.id%>}", name="app_administration_info_edit", methods={"GET"})
      */
     public function view(SiteInfo $info): Response
     {

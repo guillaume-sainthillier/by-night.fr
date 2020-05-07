@@ -35,10 +35,10 @@ class AgendaController extends BaseController
     const EVENT_PER_PAGE = 15;
 
     /**
-     * @Route("/agenda/{page<%patterns.page%>}", name="app_agenda_agenda")
-     * @Route("/agenda/sortir/{type}/{page<%patterns.page%>}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"})
-     * @Route("/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}", name="app_agenda_place")
-     * @Route("/agenda/tag/{tag}/{page<%patterns.page%>}", name="app_agenda_tags")
+     * @Route("/agenda/{page<%patterns.page%>}", name="app_agenda_agenda", methods={"GET"})
+     * @Route("/agenda/sortir/{type}/{page<%patterns.page%>}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"}, methods={"GET"})
+     * @Route("/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}", name="app_agenda_place", methods={"GET"})
+     * @Route("/agenda/tag/{tag}/{page<%patterns.page%>}", name="app_agenda_tags", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response

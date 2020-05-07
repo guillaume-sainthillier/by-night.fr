@@ -29,8 +29,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class DefaultController extends BaseController
 {
     /**
-     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}", name="app_user_details")
-     * @Route("/{username<%patterns.slug%>}", name="app_user_details_old")
+     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}", name="app_user_details", methods={"GET"})
+     * @Route("/{username<%patterns.slug%>}", name="app_user_details_old", methods={"GET"})
      */
     public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
@@ -51,8 +51,8 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}/stats/{type}", name="app_user_stats", requirements={"type": "semaine|mois|annee"})
-     * @Route("/{username<%patterns.slug%>}/stats/{type}", name="app_user_stats_old", requirements={"type": "semaine|mois|annee"})
+     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}/stats/{type}", name="app_user_stats", requirements={"type": "semaine|mois|annee"}, methods={"GET"})
+     * @Route("/{username<%patterns.slug%>}/stats/{type}", name="app_user_stats_old", requirements={"type": "semaine|mois|annee"}, methods={"GET"})
      */
     public function stats(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
