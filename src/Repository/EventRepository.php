@@ -191,12 +191,7 @@ class EventRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function getCountParticipations(User $user)
-    {
-        return $this->getCountAllParticipations($user);
-    }
-
-    protected function getCountAllParticipations(User $user, $isParticipation = true)
+    public function getCountFavorites(User $user)
     {
         return $this->_em
             ->createQueryBuilder()
@@ -204,15 +199,9 @@ class EventRepository extends ServiceEntityRepository
             ->from('App:Calendrier', 'c')
             ->leftJoin('c.user', 'u')
             ->where('c.user = :user')
-            ->andWhere(($isParticipation ? 'c.participe' : 'c.interet') . ' = :vrai')
-            ->setParameters([':user' => $user->getId(), 'vrai' => true])
+            ->setParameters([':user' => $user->getId()])
             ->getQuery()
             ->getSingleScalarResult();
-    }
-
-    public function getCountInterets(User $user)
-    {
-        return $this->getCountAllParticipations($user, false);
     }
 
     public function getCountTendancesParticipation(Event $event)

@@ -32,25 +32,14 @@ class EventController extends BaseController
     private const EVENT_PER_PAGE = 50;
 
     /**
-     * @var \App\Repository\CalendrierRepository
-     */
-    private CalendrierRepository $calendrierRepository;
-
-    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, CalendrierRepository $calendrierRepository)
-    {
-        parent::__construct($requestStack, $eventRepository);
-        $this->calendrierRepository = $calendrierRepository;
-    }
-
-    /**
      * @Route("/mes-soirees", name="app_event_list", methods={"GET"})
      */
-    public function index(Request $request, PaginatorInterface $paginator)
+    public function index(Request $request, PaginatorInterface $paginator, EventRepository $eventRepository)
     {
         $user = $this->getUser();
 
         $page = (int) $request->query->get('page', 1);
-        $query = $this->eventRepository->findAllByUser($user);
+        $query = $eventRepository->findAllByUser($user);
         $events = $paginator->paginate($query, $page, self::EVENT_PER_PAGE);
 
         return $this->render('EspacePerso/liste.html.twig', [
@@ -182,25 +171,26 @@ class EventController extends BaseController
     /**
      * @Route("/{id}/participer", name="app_user_like", defaults={"participer": true, "interet": false}, methods={"POST"})
      */
-    public function like(Request $request, Event $event)
+    public function like(Request $request, Event $event, EventRepository $eventRepository, CalendrierRepository $calendrierRepository)
     {
         $user = $this->getUser();
 
         $em = $this->getDoctrine()->getManager();
-        $calendrier = $this->calendrierRepository->findOneBy(['user' => $user, 'event' => $event]);
+        $calendrier = $calendrierRepository->findOneBy(['user' => $user, 'event' => $event]);
 
         if (null === $calendrier) {
             $calendrier = new Calendrier();
-            $calendrier->setUser($user)->setEvent($event);
+            $calendrier
+                ->setUser($user)
+                ->setEvent($event);
             $em->persist($calendrier);
         }
         $isLike = 'true' === $request->request->get('like', 'true');
         $calendrier->setParticipe($isLike);
         $em->flush();
 
-        $repo = $this->eventRepository;
-        $participations = $repo->getCountTendancesParticipation($event);
-        $interets = $repo->getCountTendancesInterets($event);
+        $participations = $eventRepository->getCountTendancesParticipation($event);
+        $interets = $eventRepository->getCountTendancesInterets($event);
 
         $event->setParticipations($participations)->setInterets($interets);
         $em->flush();

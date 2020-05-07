@@ -27,21 +27,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class WidgetsController extends BaseController
 {
     const WIDGET_ITEM_LIMIT = 7;
-    /**
-     * @var \App\Repository\UserRepository
-     */
-    private $userRepository;
-    /**
-     * @var \App\Repository\CalendrierRepository
-     */
-    private $calendrierRepository;
-
-    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, UserRepository $userRepository, CalendrierRepository $calendrierRepository)
-    {
-        parent::__construct($requestStack, $eventRepository);
-        $this->userRepository = $userRepository;
-        $this->calendrierRepository = $calendrierRepository;
-    }
 
     /**
      * @Route("/top/membres/{page}", name="app_agenda_top_membres", requirements={"page": "\d+"})
@@ -51,16 +36,13 @@ class WidgetsController extends BaseController
      *
      * @return Response
      */
-    public function topMembres($page = 1)
+    public function topMembres(UserRepository $userRepository, int $page = 1)
     {
         if ($page <= 1) {
             $page = 1;
         }
 
-        $em = $this->getDoctrine()->getManager();
-        $repo = $this->userRepository;
-
-        $count = $repo->findMembresCount();
+        $count = $userRepository->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_membres', [
@@ -68,7 +50,7 @@ class WidgetsController extends BaseController
         ]) : null;
 
         return $this->render('City/Hinclude/membres.html.twig', [
-            'membres' => $repo->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
+            'membres' => $userRepository->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
             'count' => $count,
@@ -79,19 +61,15 @@ class WidgetsController extends BaseController
      * @Route("/_private/tendances/{id}", name="app_event_tendances", requirements={"id": "\d+"})
      * @ReverseProxy(expires="1 year")
      */
-    public function tendances(Event $event, EventProfilePicture $eventProfilePicture)
+    public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, CalendrierRepository $calendrierRepository)
     {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $this->eventRepository;
-
         $participer = false;
         $interet = false;
 
         /** @var User $user */
         $user = $this->getUser();
         if ($user) {
-            $repoCalendrier = $this->calendrierRepository;
-            $calendrier = $repoCalendrier->findOneBy(['user' => $user, 'event' => $event]);
+            $calendrier = $calendrierRepository->findOneBy(['user' => $user, 'event' => $event]);
             if (null !== $calendrier) {
                 $participer = $calendrier->getParticipe();
                 $interet = $calendrier->getInteret();
@@ -115,7 +93,7 @@ class WidgetsController extends BaseController
 
         return $this->render('City/Hinclude/tendances.html.twig', [
             'event' => $event,
-            'tendances' => $repo->findAllTendances($event),
+            'tendances' => $eventRepository->findAllTendances($event),
             'count' => $event->getParticipations() + $event->getFbParticipations() + $event->getInterets() + $event->getFbInterets(),
             'participer' => $participer,
             'interet' => $interet,

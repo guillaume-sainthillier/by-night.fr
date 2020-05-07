@@ -15,26 +15,15 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
-use App\Repository\EventRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ReplyController extends BaseController
 {
-    /**
-     * @var \App\Repository\CommentRepository
-     */
-    private $commentRepository;
-
-    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, CommentRepository $commentRepository)
-    {
-        parent::__construct($requestStack, $eventRepository);
-        $this->commentRepository = $commentRepository;
-    }
+    const REPLIES_PER_PAGE = 5;
 
     /**
      * @Route("/{id}/reponses/{page}", name="app_comment_reponse_list", requirements={"id": "\d+", "page": "\d+"})
@@ -43,79 +32,49 @@ class ReplyController extends BaseController
      *
      * @return Response
      */
-    public function list(Comment $comment, $page = 1)
+    public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1)
     {
-        $limit = 5;
-
         return $this->render('Comment/Reply/list.html.twig', [
-            'comments' => $this->getReponses($comment, $page, $limit),
+            'comments' => $commentRepository->findAllReponses($comment, $page, self::REPLIES_PER_PAGE),
             'main_comment' => $comment,
-            'nb_comments' => $this->getNbReponses($comment),
+            'nb_comments' => $commentRepository->findNBReponses($comment),
             'page' => $page,
-            'offset' => $limit,
+            'offset' => self::REPLIES_PER_PAGE,
         ]);
-    }
-
-    protected function getReponses(Comment $comment, $page, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
-    }
-
-    /**
-     * @return CommentRepository
-     */
-    protected function getCommentRepo()
-    {
-        return $this->commentRepository;
-    }
-
-    protected function getNbReponses(Comment $comment)
-    {
-        return $this->getCommentRepo()->findNBReponses($comment);
     }
 
     /**
      * @Route("/{id}/repondre", name="app_comment_reponse_new", requirements={"id": "\d+"})
-     *
-     * @return JsonResponse|RedirectResponse|Response
+     * @IsGranted("ROLE_USER")
      */
-    public function new(Request $request, Comment $comment)
+    public function new(Request $request, Comment $comment, CommentRepository $commentRepository)
     {
+        $user = $this->getUser();
         $reponse = new Comment();
-        $form = $this->getCreateForm($reponse, $comment);
+        $reponse->setUser($user);
+        $reponse->setEvent($comment->getEvent());
 
-        if ('POST' === $request->getMethod()) {
-            $user = $this->getUser();
+        $form = $this->createForm(CommentType::class, $reponse, [
+            'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
+        ]);
 
-            if (!$user) {
-                $this->addFlash(
-                    'warning',
-                    'Vous devez vous connecter pour répondre à cet utilisateur'
-                );
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $reponse->setParent($comment);
+            $comment->addReponse($reponse);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($comment);
+            $em->flush();
 
-                return new RedirectResponse($this->generateUrl('fos_user_security_login'));
-            }
-            $reponse->setUser($user);
-            $reponse->setEvent($comment->getEvent());
-
-            $form->handleRequest($request);
-            if ($form->isValid()) {
-                $reponse->setParent($comment);
-                $comment->addReponse($reponse);
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($comment);
-                $em->flush();
-
-                return new JsonResponse([
-                    'success' => true,
-                    'comment' => $this->renderView('Comment/Reply/details.html.twig', [
-                        'comment' => $reponse,
-                        'success_confirmation' => true,
-                    ]),
-                    'nb_reponses' => $this->getNbReponses($comment),
-                ]);
-            }
-
+            return new JsonResponse([
+                'success' => true,
+                'comment' => $this->renderView('Comment/Reply/details.html.twig', [
+                    'comment' => $reponse,
+                    'success_confirmation' => true,
+                ]),
+                'nb_reponses' => $commentRepository->findNBReponses($comment),
+            ]);
+        } elseif ($form->isSubmitted()) {
             return new JsonResponse([
                 'success' => false,
                 'post' => $this->renderView('Comment/Reply/post.html.twig', [
@@ -129,31 +88,5 @@ class ReplyController extends BaseController
             'comment' => $comment,
             'form' => $form->createView(),
         ]);
-    }
-
-    protected function getCreateForm(Comment $reponse, Comment $comment)
-    {
-        return $this->createForm(CommentType::class, $reponse, [
-            'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
-            'method' => 'POST',
-        ]);
-    }
-
-    public function details(Comment $comment)
-    {
-        return $this->render('Comment/Reply/details.html.twig', [
-            'comment' => $comment,
-            'nb_reponses' => $this->getNbReponses($comment),
-        ]);
-    }
-
-    protected function getCommentaires(Event $event, $page, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllByEvent($event, $page, $limit);
-    }
-
-    protected function getNbComments(Event $event)
-    {
-        return $this->getCommentRepo()->findNBCommentaires($event);
     }
 }

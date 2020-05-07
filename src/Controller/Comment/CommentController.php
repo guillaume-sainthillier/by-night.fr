@@ -16,111 +16,71 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
-use App\Repository\EventRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommentController extends BaseController
 {
-    /**
-     * @var \App\Repository\CommentRepository
-     */
-    private $commentRepository;
-
-    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, CommentRepository $commentRepository)
-    {
-        parent::__construct($requestStack, $eventRepository);
-        $this->commentRepository = $commentRepository;
-    }
+    const COMMENTS_PER_PAGE = 10;
 
     /**
      * @Route("/form/{id}", name="app_comment_form", requirements={"id": "\d+"})
      */
-    public function form(Event $event)
+    public function form(Event $event, CommentRepository $commentRepository, int $page = 1)
     {
         $comment = new Comment();
 
         $form = null;
         if ($this->getUser()) {
-            $form = $this->getCreateForm($comment, $event)->createView();
+            $form = $this
+                ->createForm(CommentType::class, $comment, [
+                    'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
+                ])
+                ->createView();
         }
 
         return $this->render('Comment/list_and_form.html.twig', [
-            'nb_comments' => $this->getNbComments($event),
-            'comments' => $this->getCommentaires($event, 1, 10),
+            'nb_comments' => $commentRepository->findNBCommentaires($event),
+            'comments' => $commentRepository->findAllByEvent($event, $page, self::COMMENTS_PER_PAGE),
             'event' => $event,
-            'page' => 1,
-            'offset' => 10,
+            'page' => $page,
+            'offset' => self::COMMENTS_PER_PAGE,
             'form' => $form,
         ]);
-    }
-
-    protected function getCreateForm(Comment $comment, Event $event)
-    {
-        return $this->createForm(CommentType::class, $comment, [
-            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
-            'method' => 'POST',
-        ]);
-    }
-
-    protected function getNbComments(Event $event)
-    {
-        return $this->getCommentRepo()->findNBCommentaires($event);
-    }
-
-    /**
-     * @return CommentRepository
-     */
-    protected function getCommentRepo()
-    {
-        return $this->commentRepository;
-    }
-
-    protected function getCommentaires(Event $event, $page = 1, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllByEvent($event, $page, $limit);
     }
 
     /**
      * @Route("/{id}/{page}", name="app_comment_list", requirements={"id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function list(Event $event, $page = 1)
+    public function list(Event $event, CommentRepository $commentRepository, int $page = 1)
     {
-        $offset = 10;
-        $comment = new Comment();
-        $form = $this->getCreateForm($comment, $event);
-
         return $this->render('Comment/list.html.twig', [
-            'nb_comments' => $this->getNbComments($event),
-            'comments' => $this->getCommentaires($event, $page, $offset),
+            'nb_comments' => $commentRepository->findNBCommentaires($event),
+            'comments' => $commentRepository->findAllByEvent($event, $page, self::COMMENTS_PER_PAGE),
             'event' => $event,
             'page' => $page,
-            'offset' => $offset,
-            'form' => $form->createView(),
+            'offset' => self::COMMENTS_PER_PAGE,
         ]);
     }
 
     /**
      * @Route("/{id}/nouveau", name="app_comment_new", requirements={"id": "\d+"})
+     * @IsGranted("ROLE_USER")
      */
-    public function new(Request $request, Event $event)
+    public function newComment(Request $request, Event $event, CommentRepository $commentRepository)
     {
-        $comment = new Comment();
-        $form = $this->getCreateForm($comment, $event);
-
         $user = $this->getUser();
-        if (!$user) {
-            return new JsonResponse([
-                'success' => false,
-                'post' => $this->renderView('Comment/error.html.twig'),
-            ]);
-        }
-
+        $comment = new Comment();
         $comment->setUser($user);
         $comment->setEvent($event);
+
+        $form = $this->createForm(CommentType::class, $comment, [
+            'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
+        ]);
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -135,7 +95,7 @@ class CommentController extends BaseController
                     'nb_reponses' => 0,
                 ]),
                 'header' => $this->renderView('Comment/header.html.twig', [
-                    'nb_comments' => $this->getNbComments($event),
+                    'nb_comments' => $commentRepository->findNBCommentaires($event),
                 ]),
             ]);
         }
@@ -146,15 +106,5 @@ class CommentController extends BaseController
                 'form' => $form->createView(),
             ]),
         ]);
-    }
-
-    protected function getReponses(Comment $comment, $page = 1, $limit = 10)
-    {
-        return $this->getCommentRepo()->findAllReponses($comment, $page, $limit);
-    }
-
-    protected function getNbReponses(Comment $comment)
-    {
-        return $this->getCommentRepo()->findNBReponses($comment);
     }
 }

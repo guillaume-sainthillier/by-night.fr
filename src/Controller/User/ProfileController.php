@@ -40,15 +40,6 @@ class ProfileController extends BaseController
 
     private FactoryInterface $changePasswordFormFactory;
 
-    /**
-     * @var \App\Repository\EventRepository
-     */
-    private $eventRepository;
-    /**
-     * @var \App\Repository\CommentRepository
-     */
-    private $commentRepository;
-
     public function __construct(EventDispatcherInterface $eventDispatcher, FactoryInterface $profileFormFactory, UserManagerInterface $userManager, FactoryInterface $changePasswordFormFactory, EventRepository $eventRepository, CommentRepository $commentRepository)
     {
         parent::__construct($eventDispatcher, $profileFormFactory, $userManager);
@@ -57,9 +48,6 @@ class ProfileController extends BaseController
         $this->profileFormFactory = $profileFormFactory;
         $this->userManager = $userManager;
         $this->changePasswordFormFactory = $changePasswordFormFactory;
-
-        $this->eventRepository = $eventRepository;
-        $this->commentRepository = $commentRepository;
     }
 
     /**
@@ -75,7 +63,7 @@ class ProfileController extends BaseController
      *
      * @return RedirectResponse
      */
-    public function delete(Request $request, UserManagerInterface $userManager)
+    public function delete(Request $request, UserManagerInterface $userManager, EventRepository $eventRepository, CommentRepository $commentRepository)
     {
         $user = $this->getUser();
         if (!\is_object($user) || !$user instanceof UserInterface) {
@@ -89,7 +77,7 @@ class ProfileController extends BaseController
             $em = $this->getDoctrine()->getManager();
 
             $deleteEvents = $form->get('delete_events')->getData();
-            $events = $this->eventRepository->findBy([
+            $events = $eventRepository->findBy([
                 'user' => $user,
             ]);
 
@@ -113,7 +101,7 @@ class ProfileController extends BaseController
                 $em->remove($calendrier);
             }
 
-            $comments = $this->commentRepository->findAllByUser($user);
+            $comments = $commentRepository->findAllByUser($user);
             foreach ($comments as $comment) {
                 $em->remove($comment);
             }

@@ -16,6 +16,7 @@ use App\Controller\TBNController as BaseController;
 use App\Entity\Event;
 use App\Event\EventCheckUrlEvent;
 use App\Event\Events;
+use App\Repository\EventRepository;
 use App\Social\Twitter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -61,7 +62,7 @@ class WidgetsController extends BaseController
      * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_event_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null, int $page = 1)
+    public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1)
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_prochaines_soirees', ['page' => $page]);
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
@@ -70,10 +71,7 @@ class WidgetsController extends BaseController
         }
         $event = $eventCheck->getEvent();
 
-        $em = $this->getDoctrine()->getManager();
-        $repo = $this->eventRepository;
-
-        $count = $repo->findAllNextCount($event);
+        $count = $eventRepository->findAllNextCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -90,7 +88,7 @@ class WidgetsController extends BaseController
         return $this->render('City/Hinclude/evenements_details.html.twig', [
             'page' => $page,
             'place' => $event->getPlace(),
-            'events' => $repo->findAllNext($event, $page, self::WIDGET_ITEM_LIMIT),
+            'events' => $eventRepository->findAllNext($event, $page, self::WIDGET_ITEM_LIMIT),
             'current' => $current,
             'count' => $count,
             'hasNextLink' => $hasNextLink,
@@ -99,7 +97,7 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}) */
-    public function soireesSimilaires(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null, ?int $page = 1)
+    public function soireesSimilaires(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1)
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_soirees_similaires', ['page' => $page]);
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
@@ -107,10 +105,7 @@ class WidgetsController extends BaseController
             return $eventCheck->getResponse();
         }
         $event = $eventCheck->getEvent();
-
-        $repo = $this->eventRepository;
-
-        $count = $repo->findAllSimilairesCount($event);
+        $count = $eventRepository->findAllSimilairesCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -127,7 +122,7 @@ class WidgetsController extends BaseController
         return $this->render('City/Hinclude/evenements_details.html.twig', [
             'page' => $page,
             'place' => $event->getPlace(),
-            'events' => $repo->findAllSimilaires($event, $page, self::WIDGET_ITEM_LIMIT),
+            'events' => $eventRepository->findAllSimilaires($event, $page, self::WIDGET_ITEM_LIMIT),
             'current' => $current,
             'count' => $count,
             'hasNextLink' => $hasNextLink,
@@ -138,12 +133,10 @@ class WidgetsController extends BaseController
      * @Route("/top/soirees/{page}", name="app_agenda_top_soirees", requirements={"page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function topSoirees(Location $location, $page = 1)
+    public function topSoirees(Location $location, EventRepository $eventRepository, int $page = 1)
     {
-        $repo = $this->eventRepository;
-
         $current = $page * self::WIDGET_ITEM_LIMIT;
-        $count = $repo->findTopSoireeCount($location);
+        $count = $eventRepository->findTopSoireeCount($location);
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('app_agenda_top_soirees', [
@@ -156,7 +149,7 @@ class WidgetsController extends BaseController
 
         return $this->render('City/Hinclude/evenements.html.twig', [
             'location' => $location,
-            'events' => $repo->findTopSoiree($location, $page, self::WIDGET_ITEM_LIMIT),
+            'events' => $eventRepository->findTopSoiree($location, $page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
             'count' => $count,

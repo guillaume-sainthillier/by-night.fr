@@ -23,15 +23,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends AbstractController
 {
     const EVENT_PER_CATEGORY = 7;
-    /**
-     * @var \App\Repository\EventRepository
-     */
-    private $eventRepository;
-
-    public function __construct(EventRepository $eventRepository)
-    {
-        $this->eventRepository = $eventRepository;
-    }
 
     /**
      * @Route("/", name="app_main_index")
@@ -39,7 +30,7 @@ class DefaultController extends AbstractController
      *
      * @return Response
      */
-    public function index(Request $request, CityManager $cityManager)
+    public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository)
     {
         $datas = [
             'from' => new DateTime(),
@@ -51,7 +42,7 @@ class DefaultController extends AbstractController
             ];
         }
 
-        $stats = $this->eventRepository->getCountryEvents();
+        $stats = $eventRepository->getCountryEvents();
         $form = $this->createForm(CityAutocompleteType::class, $datas);
 
         $form->handleRequest($request);

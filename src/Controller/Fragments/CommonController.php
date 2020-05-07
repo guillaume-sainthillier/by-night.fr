@@ -24,25 +24,14 @@ class CommonController extends TBNController
     const LIFE_TIME_CACHE = 86_400;
 
     /**
-     * @var \App\Repository\CityRepository
-     */
-    private $cityRepository;
-
-    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, CityRepository $cityRepository)
-    {
-        parent::__construct($requestStack, $eventRepository);
-        $this->cityRepository = $cityRepository;
-    }
-
-    /**
      * @Route("/_private/header/{id}", name="app_private_header", requirements={"id": "\d+"})
      * @ReverseProxy(expires="+1 day")
      */
-    public function header(CityManager $cityManager, $id = null)
+    public function header(CityManager $cityManager, CityRepository $cityRepository, ?int $id = null)
     {
         $city = null;
         if ($id) {
-            $city = $this->cityRepository->find($id);
+            $city = $cityRepository->find($id);
         }
 
         $city = $city ?: $cityManager->getCity();
@@ -52,10 +41,10 @@ class CommonController extends TBNController
         ]);
     }
 
-    public function footer(Country $country = null)
+    public function footer(CityRepository $cityRepository, Country $country = null)
     {
         $params = [];
-        $repo = $this->cityRepository;
+        $repo = $cityRepository;
         $params['cities'] = $repo->findRandomNames($country);
 
         return $this->render('fragments/footer.html.twig', $params);

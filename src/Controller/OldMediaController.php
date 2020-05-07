@@ -24,32 +24,16 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 class OldMediaController extends AbstractController
 {
     /**
-     * @var \App\Repository\EventRepository
-     */
-    private $eventRepository;
-    /**
-     * @var \App\Repository\UserRepository
-     */
-    private $userRepository;
-
-    public function __construct(EventRepository $eventRepository, UserRepository $userRepository)
-    {
-        $this->eventRepository = $eventRepository;
-        $this->userRepository = $userRepository;
-    }
-
-    /**
      * @Route("/media/cache/{filter}/{path}", requirements={"path": ".+"})
      * @Route("/uploads/{path}", requirements={"path": ".+"})
      * @ReverseProxy(expires="1 year")
      *
      * @return Response
      */
-    public function index(string $path, StorageInterface $storage, AssetExtension $assetExtension)
+    public function index(string $path, StorageInterface $storage, AssetExtension $assetExtension, EventRepository $eventRepository, UserRepository $userRepository)
     {
         $infos = pathinfo($path);
 
-        $eventRepository = $this->eventRepository;
         /** @var Event $event */
         $event = $eventRepository
             ->createQueryBuilder('e')
@@ -69,7 +53,6 @@ class OldMediaController extends AbstractController
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
 
-        $userRepository = $this->userRepository;
         /** @var User $user */
         $user = $userRepository
             ->createQueryBuilder('u')

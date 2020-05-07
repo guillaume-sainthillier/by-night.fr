@@ -33,14 +33,6 @@ class AgendaController extends BaseController
 {
     const EVENT_PER_PAGE = 15;
 
-    private PlaceRepository $placeRepository;
-
-    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, PlaceRepository $placeRepository)
-    {
-        parent::__construct($requestStack, $eventRepository);
-        $this->placeRepository = $placeRepository;
-    }
-
     /**
      * @Route("/agenda/{page}", name="app_agenda_agenda", requirements={"page": "\d+"})
      * @Route("/agenda/sortir/{type}/{page}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition", "page": "\d+"})
@@ -48,7 +40,7 @@ class AgendaController extends BaseController
      * @Route("/agenda/tag/{tag}/{page}", name="app_agenda_tags", requirements={"page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, int $page = 1, string $type = null, string $tag = null, string $slug = null)
+    public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, string $type = null, string $tag = null, string $slug = null)
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
@@ -66,15 +58,12 @@ class AgendaController extends BaseController
             $routeParams['slug'] = $slug;
         }
 
-        //Récupération du repo des événements
-        $repo = $this->eventRepository;
-
         //Recherche des événements
         $search = new SearchEvent();
         $place = null;
 
         if (null !== $slug) {
-            $place = $this->placeRepository->findOneBy(['slug' => $slug]);
+            $place = $placeRepository->findOneBy(['slug' => $slug]);
             if (!$place) {
                 return $this->redirectToRoute('app_agenda_agenda', ['location' => $location->getSlug()]);
             }
@@ -86,7 +75,7 @@ class AgendaController extends BaseController
         $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
 
         //Récupération des lieux, types événements et villes
-        $types_manif = $this->getTypesEvenements($memoryCache, $repo, $location);
+        $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
 
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [

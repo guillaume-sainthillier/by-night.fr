@@ -14,6 +14,7 @@ use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Form\Type\SimpleEventSearchType;
+use App\Repository\EventRepository;
 use DateTime;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,15 +25,13 @@ class DefaultController extends BaseController
      * @Route("/", name="app_agenda_index")
      * @ReverseProxy(expires="tomorrow")
      */
-    public function index(Location $location, PaginatorInterface $paginator)
+    public function index(Location $location, PaginatorInterface $paginator, EventRepository $eventRepository)
     {
         $datas = [
             'from' => new DateTime(),
         ];
 
-        $em = $this->getDoctrine()->getManager();
-        $repo = $this->eventRepository;
-        $query = $repo->findUpcomingEvents($location);
+        $query = $eventRepository->findUpcomingEvents($location);
         $events = $paginator->paginate($query, 1, 7);
 
         $form = $this->createForm(SimpleEventSearchType::class, $datas);

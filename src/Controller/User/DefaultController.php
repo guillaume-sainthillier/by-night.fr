@@ -34,34 +34,10 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class DefaultController extends BaseController
 {
     /**
-     * @var \App\Repository\UserRepository
-     */
-    private $userRepository;
-
-    public function __construct(RequestStack $requestStack, EventRepository $eventRepository, UserRepository $userRepository)
-    {
-        parent::__construct($requestStack, $eventRepository);
-        $this->userRepository = $userRepository;
-    }
-
-    public function urlRedirect($term)
-    {
-        $params = [
-            'type' => 'membres',
-        ];
-
-        if ($term) {
-            $params['q'] = $term;
-        }
-
-        return new RedirectResponse($this->generateUrl('app_search_query', $params));
-    }
-
-    /**
      * @Route("/{slug}--{id}", name="app_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/{username}", name="app_user_details_old", requirements={"username": "[^/]+"})
      */
-    public function index(EventDispatcherInterface $eventDispatcher, ?int $id = null, ?string $slug = null, ?string $username = null)
+    public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null)
     {
         $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_details');
         $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
@@ -69,14 +45,13 @@ class DefaultController extends BaseController
             return $userCheck->getResponse();
         }
         $user = $userCheck->getUser();
-        $repo = $this->eventRepository;
 
         return $this->render('User/index.html.twig', [
             'user' => $user,
-            'next_events' => $repo->findAllNextEvents($user),
-            'previous_events' => $repo->findAllNextEvents($user, false),
-            'etablissements' => $repo->findAllPlaces($user),
-            'count_favoris' => $repo->getCountParticipations($user) + $repo->getCountInterets($user),
+            'next_events' => $eventRepository->findAllNextEvents($user),
+            'previous_events' => $eventRepository->findAllNextEvents($user, false),
+            'etablissements' => $eventRepository->findAllPlaces($user),
+            'count_favoris' => $eventRepository->getCountFavorites($user),
         ]);
     }
 
@@ -90,7 +65,7 @@ class DefaultController extends BaseController
      * @param null $username
      *
      */
-    public function stats(EventDispatcherInterface $eventDispatcher, string $type, ?int $id = null, ?string $slug = null, ?string $username = null)
+    public function stats(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null)
     {
         $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_stats', ['type' => $type]);
         $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
@@ -99,19 +74,18 @@ class DefaultController extends BaseController
         }
         $user = $userCheck->getUser();
 
-        $repo = $this->eventRepository;
         switch ($type) {
             case 'semaine':
-                $datas = $this->getDataOfWeek($repo, $user);
+                $datas = $this->getDataOfWeek($eventRepository, $user);
 
                 break;
             case 'mois':
-                $datas = $this->getDataOfMonth($repo, $user);
+                $datas = $this->getDataOfMonth($eventRepository, $user);
 
                 break;
             default:
             case 'annee':
-                $datas = $this->getDataOfYear($repo, $user);
+                $datas = $this->getDataOfYear($eventRepository, $user);
 
                 break;
         }

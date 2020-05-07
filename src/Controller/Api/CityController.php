@@ -30,15 +30,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class CityController extends AbstractController
 {
     const MAX_RESULTS = 7;
-    /**
-     * @var \App\Repository\CityRepository
-     */
-    private $cityRepository;
-
-    public function __construct(CityRepository $cityRepository)
-    {
-        $this->cityRepository = $cityRepository;
-    }
 
     /**
      * @Route("/villes", name="app_api_city")
@@ -54,7 +45,7 @@ class CityController extends AbstractController
             $results = [];
         } else {
             /** @var CityElasticaRepository $repo */
-            $repo = $this->cityRepository;
+            $repo = $repositoryManager->getRepository(City::class);
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }
