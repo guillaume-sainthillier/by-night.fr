@@ -1,6 +1,6 @@
 # By Night
 
-[![CircleCI](https://circleci.com/gh/guillaume-sainthillier/ByNight.svg?style=svg)](https://circleci.com/gh/guillaume-sainthillier/ByNight)
+![Build And Deploy](https://github.com/guillaume-sainthillier/by-night.fr/workflows/Build%20And%20Deploy%20Release/badge.svg)
 [![SymfonyInsight](https://insight.symfony.com/projects/a11fedf7-0560-449b-bbfa-d38fe90a99ee/mini.svg)](https://insight.symfony.com/projects/a11fedf7-0560-449b-bbfa-d38fe90a99ee)
 
 Plateforme de gestion d'événements en France.
