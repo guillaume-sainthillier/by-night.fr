@@ -12,6 +12,8 @@ namespace App\Controller\User;
 
 use App\Controller\TBNController as BaseController;
 use App\Entity\User;
+use App\Event\Events;
+use App\Event\UserCheckUrlEvent;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
 use DateTime;
@@ -24,6 +26,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route("/membres")
@@ -58,15 +61,14 @@ class DefaultController extends BaseController
      * @Route("/{slug}--{id}", name="app_user_details", requirements={"slug": "[^/]+", "id": "\d+"})
      * @Route("/{username}", name="app_user_details_old", requirements={"username": "[^/]+"})
      */
-    public function index($id = null, $slug = null, $username = null)
+    public function index(EventDispatcherInterface $eventDispatcher, ?int $id = null, ?string $slug = null, ?string $username = null)
     {
-        $result = $this->checkUserUrl($slug, $username, $id, 'app_user_details');
-        if ($result instanceof Response) {
-            return $result;
+        $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_details');
+        $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
+        if (null !== $userCheck->getResponse()) {
+            return $userCheck->getResponse();
         }
-        $user = $result;
-
-        $em = $this->getDoctrine()->getManager();
+        $user = $userCheck->getUser();
         $repo = $this->eventRepository;
 
         return $this->render('User/index.html.twig', [
@@ -79,29 +81,6 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @return User|RedirectResponse|null
-     */
-    protected function checkUserUrl($slug, $username, $id, $routeName, array $extraParams = [])
-    {
-        $em = $this->getDoctrine()->getManager();
-        $repoUser = $this->userRepository;
-
-        $user = !$id ? $repoUser->findOneBy(['username' => $username]) : $repoUser->find($id);
-
-        if (!$user || !$user->getSlug()) {
-            throw new NotFoundHttpException('User not found');
-        }
-
-        if ($user->getSlug() !== $slug) {
-            $routeParams = \array_merge(['id' => $user->getId(), 'slug' => $user->getSlug()], $extraParams);
-
-            return new RedirectResponse($this->generateUrl($routeName, $routeParams));
-        }
-
-        return $user;
-    }
-
-    /**
      * @Route("/{slug}--{id}/stats/{type}", name="app_user_stats", requirements={"slug": "[^/]+", "id": "\d+", "type": "semaine|mois|annee"})
      * @Route("/{username}/stats/{type}", name="app_user_stats_old", requirements={"username": "[^/]+", "type": "semaine|mois|annee"})
      *
@@ -110,28 +89,17 @@ class DefaultController extends BaseController
      * @param null $slug
      * @param null $username
      *
-     * @return object|JsonResponse|RedirectResponse|null
      */
-    public function stats(Request $request, $type, $id = null, $slug = null, $username = null)
+    public function stats(EventDispatcherInterface $eventDispatcher, string $type, ?int $id = null, ?string $slug = null, ?string $username = null)
     {
-        $result = $this->checkUserUrl($slug, $username, $id, 'app_user_stats', ['type' => $type]);
-        if ($result instanceof Response) {
-            return $result;
+        $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_stats', ['type' => $type]);
+        $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
+        if (null !== $userCheck->getResponse()) {
+            return $userCheck->getResponse();
         }
-        $user = $result;
+        $user = $userCheck->getUser();
 
-        $em = $this->getDoctrine()->getManager();
         $repo = $this->eventRepository;
-        $str_date = $repo->getLastUpdatedStatsUser($user);
-
-        $response = $this->cacheVerif($str_date);
-        // Vérifie que l'objet Response n'est pas modifié
-        // pour un objet Request donné
-        if (null !== $response && $response->isNotModified($request)) {
-            // Retourne immédiatement un objet 304 Response
-            return $response;
-        }
-
         switch ($type) {
             case 'semaine':
                 $datas = $this->getDataOfWeek($repo, $user);
@@ -148,21 +116,7 @@ class DefaultController extends BaseController
                 break;
         }
 
-        return $response->setData($datas);
-    }
-
-    protected function cacheVerif($str_date)
-    {
-        $response = new JsonResponse();
-
-        //2014-05-08 11:49:21
-        if (null !== $str_date && ($date = DateTime::createFromFormat('Y-m-d H:i:s', $str_date))) {
-            $response->setPublic();
-            //Afin d'être partagée avec tout le monde
-            $response->setLastModified($date);
-        }
-
-        return $response;
+        return new JsonResponse($datas);
     }
 
     protected function getDataOfWeek(EventRepository $repo, User $user)
@@ -246,8 +200,8 @@ class DefaultController extends BaseController
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {
-            $minYear = (int) date('Y');
-            $maxYear = (int) date('Y');
+            $minYear = (int)date('Y');
+            $maxYear = (int)date('Y');
         }
 
         foreach (range($minYear, $maxYear) as $year) {

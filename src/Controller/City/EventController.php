@@ -15,6 +15,8 @@ use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Comment;
 use App\Entity\Event;
+use App\Event\EventCheckUrlEvent;
+use App\Event\Events;
 use App\Form\Type\CommentType;
 use App\Picture\EventProfilePicture;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -23,6 +25,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EventController extends BaseController
 {
@@ -31,13 +34,14 @@ class EventController extends BaseController
      * @Route("/soiree/{slug}", name="app_event_details_old", requirements={"slug": "[^/]+"})
      * @ReverseProxy(expires="+1 month")
      */
-    public function details(Location $location, $slug, $id = null)
+    public function details(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null)
     {
-        $result = $this->checkEventUrl($location->getSlug(), $slug, $id);
-        if ($result instanceof Response) {
-            return $result;
+        $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');
+        $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
+        if (null !== $eventCheck->getResponse()) {
+            return $eventCheck->getResponse();
         }
-        $event = $result;
+        $event = $eventCheck->getEvent();
 
         return $this->render('City/Event/get.html.twig', [
             'location' => $location,

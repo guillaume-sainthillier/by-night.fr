@@ -134,19 +134,6 @@ class EventRepository extends ServiceEntityRepository
             ->getScalarResult();
     }
 
-    public function getLastUpdatedStatsUser(User $user)
-    {
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('MAX(c.updatedAt) as updatedAt')
-            ->from('App:Calendrier', 'c')
-            ->leftJoin('App:User', 'u', 'WITH', 'u = c.user')
-            ->where('c.user = :user')
-            ->setParameters([':user' => $user->getId()])
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
     public function getStatsUser(User $user, $groupByFunction)
     {
         $datas = $this->_em

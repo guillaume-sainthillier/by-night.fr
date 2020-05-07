@@ -14,9 +14,12 @@ use App\Annotation\ReverseProxy;
 use App\App\Location;
 use App\Controller\TBNController as BaseController;
 use App\Entity\Event;
+use App\Event\EventCheckUrlEvent;
+use App\Event\Events;
 use App\Social\Twitter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class WidgetsController extends BaseController
 {
@@ -58,16 +61,14 @@ class WidgetsController extends BaseController
      * @Route("/soiree/{slug}--{id}/prochaines-soirees/{page}", name="app_event_prochaines_soirees", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function nextEvents(Location $location, $slug, $id = null, $page = 1)
+    public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null, int $page = 1)
     {
-        $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_prochaines_soirees', [
-            'page' => $page,
-        ]);
-
-        if ($result instanceof Response) {
-            return $result;
+        $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_prochaines_soirees', ['page' => $page]);
+        $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
+        if (null !== $eventCheck->getResponse()) {
+            return $eventCheck->getResponse();
         }
-        $event = $result;
+        $event = $eventCheck->getEvent();
 
         $em = $this->getDoctrine()->getManager();
         $repo = $this->eventRepository;
@@ -98,18 +99,15 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/soiree/{slug}--{id}/autres-soirees/{page}", name="app_event_soirees_similaires", requirements={"slug": "[^/]+", "id": "\d+", "page": "\d+"}) */
-    public function soireesSimilaires(Location $location, $slug, $id = null, $page = 1)
+    public function soireesSimilaires(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null, ?int $page = 1)
     {
-        $result = $this->checkEventUrl($location->getSlug(), $slug, $id, 'app_event_soirees_similaires', [
-            'page' => $page,
-        ]);
-
-        if ($result instanceof Response) {
-            return $result;
+        $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_soirees_similaires', ['page' => $page]);
+        $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
+        if (null !== $eventCheck->getResponse()) {
+            return $eventCheck->getResponse();
         }
-        $event = $result;
+        $event = $eventCheck->getEvent();
 
-        $em = $this->getDoctrine()->getManager();
         $repo = $this->eventRepository;
 
         $count = $repo->findAllSimilairesCount($event);
@@ -142,7 +140,6 @@ class WidgetsController extends BaseController
      */
     public function topSoirees(Location $location, $page = 1)
     {
-        $em = $this->getDoctrine()->getManager();
         $repo = $this->eventRepository;
 
         $current = $page * self::WIDGET_ITEM_LIMIT;
