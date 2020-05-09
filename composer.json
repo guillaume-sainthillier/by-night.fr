@@ -42,8 +42,6 @@
         "friendsofsymfony/http-cache-bundle": "^2.6",
         "friendsofsymfony/user-bundle": "^2.1",
         "google/recaptcha": "^1.2",
-        "guzzlehttp/guzzle": "^6.3",
-        "guzzlehttp/psr7": "^1.5",
         "halaxa/json-machine": "^0.3.2",
         "jms/serializer-bundle": "^3.2",
         "knplabs/knp-paginator-bundle": "^4.1",
