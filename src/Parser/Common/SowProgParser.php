@@ -42,7 +42,7 @@ class SowProgParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $modifiedSince = $incremental ? 1_000 * ((time() - 86_400)) : 0;
-        $response = $this->client->request('GET', '/rest/v1_2/scheduledEvents/search?modifiedSince=' . $modifiedSince);
+        $response = $this->client->request('GET', '/rest/v1_2/scheduledEvents?modifiedSince=' . $modifiedSince);
         $events = $response->toArray();
 
         foreach ($events['eventDescription'] as $event) {
