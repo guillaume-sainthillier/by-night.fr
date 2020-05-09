@@ -95,7 +95,7 @@ class UserUpdater extends Updater
                     }
                 }
             } catch (HttpExceptionInterface $e) {
-                $infos = $response->getInfo();
+                $infos = $e->getResponse()->getInfo();
                 unset($infos['user_data']);
             }
         }
