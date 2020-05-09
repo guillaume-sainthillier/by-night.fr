@@ -82,14 +82,14 @@
                                 {% if event.dateFin == null or event.dateDebut == event.dateFin %}
                                     Le
                                     <time itemprop="startDate"
-                                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
+                                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|format_date('full') }}</time>
                                 {% else %}
                                     Du
                                     <time itemprop="startDate"
-                                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|localizeddate('full', 'none') }}</time>
+                                          datetime="{{ event.dateDebut|date('Y-m-d\\TH:i:sO') }}">{{ event.dateDebut|format_date('full') }}</time>
                                     au
                                     <time itemprop="endDate"
-                                          datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ event.dateFin|localizeddate('full', 'none') }}</time>
+                                          datetime="{{ event.dateFin|date('Y-m-d\\TH:i:sO') }}">{{ event.dateFin|format_date('full') }}</time>
                                 {% endif %}
                             </h2>
                         </div>

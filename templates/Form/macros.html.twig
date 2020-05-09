@@ -4,12 +4,12 @@
 
     {% if au == null or (au != null and dateDebut == dateFin) %}
         Le
-        <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|localizeddate('full', 'none') }}</time>
+        <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|format_date('full') }}</time>
     {% else %}
         Du
-        <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|localizeddate('full', 'none') }}</time>
+        <time itemprop="startDate" datetime="{{ du|date('Y-m-d\TH:i:sO') }}">{{ du|format_date('full') }}</time>
         au
-        <time itemprop="endDate" datetime="{{ au|date('Y-m-d\TH:i:sO') }}">{{ au|localizeddate('full', 'none') }}</time>
+        <time itemprop="endDate" datetime="{{ au|date('Y-m-d\TH:i:sO') }}">{{ au|format_date('full') }}</time>
     {% endif %}
 {% endmacro %}
 
