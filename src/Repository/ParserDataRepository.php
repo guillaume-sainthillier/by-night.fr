@@ -10,20 +10,20 @@
 
 namespace App\Repository;
 
-use App\Entity\Calendrier;
+use App\Entity\ParserData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Calendrier|null find($id, $lockMode = null, $lockVersion = null)
- * @method Calendrier|null findOneBy(array $criteria, array $orderBy = null)
- * @method Calendrier[]    findAll()
- * @method Calendrier[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ParserData|null find($id, $lockMode = null, $lockVersion = null)
+ * @method ParserData|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ParserData[]    findAll()
+ * @method ParserData[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CalendrierRepository extends ServiceEntityRepository
+class ParserDataRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Calendrier::class);
+        parent::__construct($registry, ParserData::class);
     }
 }

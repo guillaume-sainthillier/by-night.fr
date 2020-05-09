@@ -1,20 +1,20 @@
 {% if user.showSocials %}
-    {% set info = user.info %}
+    {% set oAuth = user.oAuth %}
 
-    {% if info and (info.facebookAccessToken or info.twitterNickname) %}
+    {% if oAuth and (oAuth.facebookAccessToken or oAuth.twitterNickname) %}
         <hr/>
     {% endif %}
 
-    {% if info.facebookAccessToken %}
-        <a class="social-facebook social" href="https://www.facebook.com/{{ info.facebookId }}"
-           title="{{ info.facebookRealname }} sur Facebook">
+    {% if oAuth.facebookAccessToken %}
+        <a class="social-facebook social" href="https://www.facebook.com/{{ oAuth.facebookId }}"
+           title="{{ oAuth.facebookRealname }} sur Facebook">
             <i class="fa fa-facebook"></i>
         </a>
     {% endif %}
 
-    {% if info.twitterNickname %}
-        <a class="social-twitter social" href="https://twitter.com/{{ info.twitterNickname }}"
-           title="{{ info.twitterRealname }} sur Twitter">
+    {% if oAuth.twitterNickname %}
+        <a class="social-twitter social" href="https://twitter.com/{{ oAuth.twitterNickname }}"
+           title="{{ oAuth.twitterRealname }} sur Twitter">
             <i class="fa fa-twitter"></i>
         </a>
     {% endif %}

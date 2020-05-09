@@ -11,22 +11,19 @@
 namespace App\EventListener;
 
 use App\Entity\Event;
-use App\Entity\Exploration;
+use App\Entity\ParserData;
 use App\Reject\Reject;
-use App\Repository\ExplorationRepository;
+use App\Repository\ParserDataRepository;
 use App\Utils\Firewall;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
-class EventExplorationListener
+class EventParserDataListener
 {
-    /**
-     * @var \App\Repository\ExplorationRepository
-     */
-    private $explorationRepository;
+    private ParserDataRepository $parserDataRepository;
 
-    public function __construct(ExplorationRepository $explorationRepository)
+    public function __construct(ParserDataRepository $parserDataRepository)
     {
-        $this->explorationRepository = $explorationRepository;
+        $this->parserDataRepository = $parserDataRepository;
     }
 
     public function preRemove(LifecycleEventArgs $args)
@@ -36,21 +33,20 @@ class EventExplorationListener
             return;
         }
         $entityManager = $args->getEntityManager();
-        $exploration = $this->explorationRepository->findOneBy([
+        $parserData = $this->parserDataRepository->findOneBy([
             'externalId' => $entity->getExternalId(),
         ]);
 
-        if (!$exploration) {
-            $exploration = (new Exploration())
-                ->setExternalId($entity->getExternalId());
+        if (!$parserData) {
+            $parserData = (new ParserData())->setExternalId($entity->getExternalId());
         }
 
-        $exploration
+        $parserData
             ->setFirewallVersion(Firewall::VERSION)
             ->setParserVersion($entity->getParserVersion())
             ->setLastUpdated($entity->getExternalUpdatedAt())
             ->setReason(Reject::EVENT_DELETED);
 
-        $entityManager->persist($exploration);
+        $entityManager->persist($parserData);
     }
 }

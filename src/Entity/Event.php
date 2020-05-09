@@ -32,9 +32,7 @@ use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * Event.
- *
- * @ORM\Table(name="Agenda", indexes={
+ * @ORM\Table(indexes={
  *     @ORM\Index(name="event_slug_idx", columns={"slug"}),
  *     @ORM\Index(name="event_date_debut_idx", columns={"date_debut"}),
  *     @ORM\Index(name="event_theme_manifestation_idx", columns={"theme_manifestation"}),
@@ -44,7 +42,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *     @ORM\Index(name="event_top_soiree_idx", columns={"date_fin", "participations"}),
  *     @ORM\Index(name="event_external_id_idx", columns={"external_id"})
  * })
- *
  * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("all")
@@ -281,9 +278,9 @@ class Event
     private ?string $fbPostSystemId = null;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      */
-    protected Collection $calendriers;
+    protected Collection $userEvents;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
@@ -391,7 +388,7 @@ class Event
     public function __construct()
     {
         $this->dateDebut = new DateTime();
-        $this->calendriers = new ArrayCollection();
+        $this->userEvents = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
         $this->brouillon = false;
         $this->archive = false;
@@ -1024,30 +1021,30 @@ class Event
     }
 
     /**
-     * @return Collection|Calendrier[]
+     * @return Collection|UserEvent[]
      */
-    public function getCalendriers(): Collection
+    public function getUserEvents(): Collection
     {
-        return $this->calendriers;
+        return $this->userEvents;
     }
 
-    public function addCalendrier(Calendrier $calendrier): self
+    public function addUserEvent(UserEvent $userEvent): self
     {
-        if (!$this->calendriers->contains($calendrier)) {
-            $this->calendriers[] = $calendrier;
-            $calendrier->setEvent($this);
+        if (!$this->userEvents->contains($userEvent)) {
+            $this->userEvents[] = $userEvent;
+            $userEvent->setEvent($this);
         }
 
         return $this;
     }
 
-    public function removeCalendrier(Calendrier $calendrier): self
+    public function removeUserEvent(UserEvent $userEvent): self
     {
-        if ($this->calendriers->contains($calendrier)) {
-            $this->calendriers->removeElement($calendrier);
+        if ($this->userEvents->contains($userEvent)) {
+            $this->userEvents->removeElement($userEvent);
             // set the owning side to null (unless already changed)
-            if ($calendrier->getEvent() === $this) {
-                $calendrier->setEvent(null);
+            if ($userEvent->getEvent() === $this) {
+                $userEvent->setEvent(null);
             }
         }
 

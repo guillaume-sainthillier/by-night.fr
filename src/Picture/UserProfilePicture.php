@@ -46,7 +46,7 @@ class UserProfilePicture
             );
         }
 
-        $info = $user->getInfo();
+        $info = $user->getOAuth();
         if (null !== $info) {
             if (null !== $info->getFacebookProfilePicture()) {
                 return $info->getFacebookProfilePicture();
@@ -70,7 +70,7 @@ class UserProfilePicture
             return $this->assetExtension->thumb($this->helper->asset($user, 'imageSystemFile'), $params);
         }
 
-        $info = $user->getInfo();
+        $info = $user->getOAuth();
         if (null !== $info) {
             if (null !== $info->getFacebookProfilePicture()) {
                 return $info->getFacebookProfilePicture();

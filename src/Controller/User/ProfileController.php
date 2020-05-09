@@ -10,7 +10,7 @@
 
 namespace App\Controller\User;
 
-use App\Entity\Calendrier;
+use App\Entity\UserEvent;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
 use FOS\UserBundle\Controller\ProfileController as BaseController;
@@ -30,13 +30,11 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ProfileController extends BaseController
 {
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
     private FactoryInterface $profileFormFactory;
 
-    /** @var UserManagerInterface */
-    private $userManager;
+    private UserManagerInterface $userManager;
 
     private FactoryInterface $changePasswordFormFactory;
 
@@ -87,16 +85,16 @@ class ProfileController extends BaseController
                 }
             }
 
-            $calendriers = $user->getCalendriers();
-            foreach ($calendriers as $calendrier) {
-                /** @var Calendrier $calendrier */
-                $event = $calendrier->getEvent();
-                if ($calendrier->getParticipe()) {
+            $userEvents = $user->getUserEvents();
+            foreach ($userEvents as $userEvent) {
+                /** @var UserEvent $userEvent */
+                $event = $userEvent->getEvent();
+                if ($userEvent->getParticipe()) {
                     $event->setParticipations($event->getParticipations() - 1);
                 } else {
                     $event->setInterets($event->getInterets() - 1);
                 }
-                $em->remove($calendrier);
+                $em->remove($userEvent);
             }
 
             $comments = $commentRepository->findAllByUser($user);

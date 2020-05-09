@@ -10,20 +10,20 @@
 
 namespace App\Repository;
 
-use App\Entity\HistoriqueMaj;
+use App\Entity\ParserHistory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method HistoriqueMaj|null find($id, $lockMode = null, $lockVersion = null)
- * @method HistoriqueMaj|null findOneBy(array $criteria, array $orderBy = null)
- * @method HistoriqueMaj[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ParserHistory|null find($id, $lockMode = null, $lockVersion = null)
+ * @method ParserHistory|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ParserHistory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class HistoriqueMajRepository extends ServiceEntityRepository
+class ParserHistoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, HistoriqueMaj::class);
+        parent::__construct($registry, ParserHistory::class);
     }
 
     public function findAll()

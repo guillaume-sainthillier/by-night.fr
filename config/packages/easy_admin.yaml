@@ -7,15 +7,15 @@ easy_admin:
             - { label: 'Events', entity: Event, params: { action: 'list' }, icon: 'calendar' }
             - { label: 'Places', entity: Place, params: { action: 'list' }, icon: 'map-marker-alt' }
             - { label: 'Comments', entity: Comment, params: { action: 'list' }, icon: 'comment' }
-            - { label: 'Calendriers', entity: Calendrier, params: { action: 'list' }, icon: 'calendar-alt' }
+            - { label: 'User Event', entity: UserEvent, params: { action: 'list' }, icon: 'calendar-alt' }
             - { label: 'Users' }
             - { label: 'Users', entity: User, params: { action: 'list' }, icon: 'users' }
-            - { label: 'User socials', entity: UserInfo, params: { action: 'list' }, icon: 'bullhorn' }
+            - { label: 'User socials', entity: UserOAuth, params: { action: 'list' }, icon: 'bullhorn' }
             - { label: 'Administration' }
             - { label: 'Countries', entity: Country, params: { action: 'list' }, icon: 'globe-europe' }
-            - { label: 'Site socials', entity: SiteInfo, params: { action: 'list' }, icon: 'bullhorn' }
-            - { label: 'Explorations', entity: Exploration, params: { action: 'list' }, icon: 'eye' }
-            - { label: 'Historique Maj', entity: HistoriqueMaj, params: { action: 'list' }, icon: 'history' }
+            - { label: 'Site socials', entity: AppOAuth, params: { action: 'list' }, icon: 'bullhorn' }
+            - { label: 'Explorations', entity: ParserData, params: { action: 'list' }, icon: 'eye' }
+            - { label: 'Historique Maj', entity: ParserHistory, params: { action: 'list' }, icon: 'history' }
 
     entities:
         Event:
@@ -125,8 +125,8 @@ easy_admin:
                     - { property: 'longitude' }
                     - { property: 'city', type: 'easyadmin_autocomplete' }
                     - { property: 'country' }
-        Calendrier:
-            class: App\Entity\Calendrier
+        UserEvent:
+            class: App\Entity\UserEvent
             list:
                 fields:
                     - { property: 'id', type_options: { disabled: true } }
@@ -161,20 +161,23 @@ easy_admin:
                     - { property: 'updatedAt' }
                     - { property: 'approuve' }
                     - { property: 'commentaire' }
-        Exploration:
-            class: App\Entity\Exploration
-        HistoriqueMaj:
-            class: App\Entity\HistoriqueMaj
-        SiteInfo:
-            class: App\Entity\SiteInfo
+
+        ParserData:
+            class: App\Entity\ParserData
+
+        ParserHistory:
+            class: App\Entity\ParserHistory
+
+        AppOAuth:
+            class: App\Entity\AppOAuth
             list:
                 fields:
                     - { property: 'id' }
                     - { property: 'facebookId' }
                     - { property: 'googleId' }
                     - { property: 'twitterId' }
-        UserInfo:
-            class: App\Entity\UserInfo
+        UserOAuth:
+            class: App\Entity\UserOAuth
             list:
                 fields:
                     - { property: 'id' }

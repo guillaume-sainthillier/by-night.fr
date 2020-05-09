@@ -10,7 +10,7 @@
 
 namespace App\EventListener;
 
-use App\Entity\Calendrier;
+use App\Entity\UserEvent;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
@@ -73,8 +73,8 @@ class EntityTagger
             $this->eventInvalidator->addCity($entity);
         } elseif ($entity instanceof Event) {
             $this->eventInvalidator->addEvent($entity);
-        } elseif ($entity instanceof Calendrier) {
-            $this->eventInvalidator->addCalendrier($entity);
+        } elseif ($entity instanceof UserEvent) {
+            $this->eventInvalidator->addUserEvent($entity);
         } elseif ($entity instanceof Place) {
             $this->eventInvalidator->addPlace($entity);
         }

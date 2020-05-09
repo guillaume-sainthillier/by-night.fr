@@ -16,12 +16,9 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Exploration.
- *
- * @ORM\Table(name="Exploration")
- * @ORM\Entity(repositoryClass="App\Repository\ExplorationRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\ParserDataRepository")
  */
-class Exploration
+class ParserData
 {
     use EntityIdentityTrait;
 

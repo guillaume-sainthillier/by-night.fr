@@ -168,7 +168,6 @@ class UserSocialAuthenticator extends SocialAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        dd($exception);
         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
 
         return new RedirectResponse(

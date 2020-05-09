@@ -26,7 +26,6 @@ use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * @ORM\Table(name="User")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
@@ -71,15 +70,15 @@ class User extends BaseUser
     private ?string $description = null;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\UserInfo", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\UserOAuth", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?UserInfo $info = null;
+    private ?UserOAuth $oAuth = null;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Calendrier", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="user")
      */
-    protected Collection $calendriers;
+    protected Collection $userEvents;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\City")
@@ -90,7 +89,7 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected bool $fromLogin;
+    protected ?bool $fromLogin;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
@@ -143,8 +142,8 @@ class User extends BaseUser
 
         $this->fromLogin = false;
         $this->showSocials = true;
-        $this->calendriers = new ArrayCollection();
-        $this->info = new UserInfo();
+        $this->userEvents = new ArrayCollection();
+        $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
     }
@@ -304,43 +303,43 @@ class User extends BaseUser
         return $this;
     }
 
-    public function getInfo(): ?UserInfo
+    public function getOAuth(): ?UserOAuth
     {
-        return $this->info;
+        return $this->oAuth;
     }
 
-    public function setInfo(?UserInfo $info): self
+    public function setOAuth(?UserOAuth $oAuth): self
     {
-        $this->info = $info;
+        $this->oAuth = $oAuth;
 
         return $this;
     }
 
     /**
-     * @return Collection|Calendrier[]
+     * @return UserEvent[]
      */
-    public function getCalendriers(): Collection
+    public function getUserEvents(): Collection
     {
-        return $this->calendriers;
+        return $this->userEvents;
     }
 
-    public function addCalendrier(Calendrier $calendrier): self
+    public function addUserEvent(UserEvent $userEvent): self
     {
-        if (!$this->calendriers->contains($calendrier)) {
-            $this->calendriers[] = $calendrier;
-            $calendrier->setUser($this);
+        if (!$this->userEvents->contains($userEvent)) {
+            $this->userEvents[] = $userEvent;
+            $userEvent->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeCalendrier(Calendrier $calendrier): self
+    public function removeUserEvent(UserEvent $userEvent): self
     {
-        if ($this->calendriers->contains($calendrier)) {
-            $this->calendriers->removeElement($calendrier);
+        if ($this->userEvents->contains($userEvent)) {
+            $this->userEvents->removeElement($userEvent);
             // set the owning side to null (unless already changed)
-            if ($calendrier->getUser() === $this) {
-                $calendrier->setUser(null);
+            if ($userEvent->getUser() === $this) {
+                $userEvent->setUser(null);
             }
         }
 

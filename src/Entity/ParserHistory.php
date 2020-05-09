@@ -15,13 +15,10 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * HistoriqueMaj.
- *
- * @ORM\Table(name="HistoriqueMaj")
- * @ORM\Entity(repositoryClass="App\Repository\HistoriqueMajRepository", readOnly=true)
+ * @ORM\Entity(repositoryClass="App\Repository\ParserHistoryRepository", readOnly=true)
  * @ORM\HasLifecycleCallbacks
  */
-class HistoriqueMaj
+class ParserHistory
 {
     use EntityIdentityTrait;
 

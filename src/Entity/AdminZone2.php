@@ -13,9 +13,6 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * AdminZone2.
- *
- * @ORM\Table
  * @ORM\Entity(repositoryClass="App\Repository\AdminZone2Repository", readOnly=true)
  */
 class AdminZone2 extends AdminZone

@@ -15,7 +15,7 @@ use App\Controller\TBNController as BaseController;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Picture\EventProfilePicture;
-use App\Repository\CalendrierRepository;
+use App\Repository\UserEventRepository;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
 use SocialLinks\Page;
@@ -52,7 +52,7 @@ class WidgetsController extends BaseController
      * @Route("/_private/tendances/{id<%patterns.id%>}", name="app_event_tendances", methods={"GET"})
      * @ReverseProxy(expires="1 year")
      */
-    public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, CalendrierRepository $calendrierRepository): Response
+    public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
     {
         $participer = false;
         $interet = false;
@@ -60,10 +60,10 @@ class WidgetsController extends BaseController
         /** @var User $user */
         $user = $this->getUser();
         if ($user) {
-            $calendrier = $calendrierRepository->findOneBy(['user' => $user, 'event' => $event]);
-            if (null !== $calendrier) {
-                $participer = $calendrier->getParticipe();
-                $interet = $calendrier->getInteret();
+            $userEvent = $userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
+            if (null !== $userEvent) {
+                $participer = $userEvent->getParticipe();
+                $interet = $userEvent->getInteret();
             }
         }
 

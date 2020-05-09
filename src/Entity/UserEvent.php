@@ -13,16 +13,13 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Calendrier.
- *
- * @ORM\Entity(repositoryClass="App\Repository\CalendrierRepository")
- * @ORM\Table(name="Calendrier",
- *     uniqueConstraints={
+ * @ORM\Entity(repositoryClass="App\Repository\UserEventRepository")
+ * @ORM\Table(uniqueConstraints={
  *         @ORM\UniqueConstraint(name="user_event_unique", columns={"user_id", "event_id"})
  *     }
  * )
  */
-class Calendrier
+class UserEvent
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
@@ -38,13 +35,13 @@ class Calendrier
     private ?bool $interet = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="calendriers")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userEvents")
      * @ORM\JoinColumn(nullable=false)
      */
     private ?User $user = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="calendriers")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="userEvents")
      * @ORM\JoinColumn(nullable=false)
      */
     private ?Event $event = null;

@@ -20,9 +20,9 @@ use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
- * Info.
+ * OAuth.
  *
- * @ORM\Table(name="admin_zone", indexes={
+ * @ORM\Table(indexes={
  *     @ORM\Index(name="admin_zone_type_name_idx", columns={"type", "name"}),
  *     @ORM\Index(name="admin_zone_type_population_idx", columns={"type", "population"})
  * })

@@ -27,7 +27,7 @@ class SocialController extends AbstractController
      */
     public function disconnect(Social $social, SocialManager $socialManager): Response
     {
-        $siteInfo = $socialManager->getSiteInfo();
+        $siteInfo = $socialManager->getAppOAuth();
         $social->disconnectSite($siteInfo);
 
         $em = $this->getDoctrine()->getManager();

@@ -10,12 +10,12 @@
 
 namespace App\Social;
 
-use App\Entity\SiteInfo;
+use App\Entity\AppOAuth;
 use Facebook\FacebookClient;
 
 class FacebookAdmin extends Facebook
 {
-    private SiteInfo $siteInfo;
+    private AppOAuth $siteInfo;
     private bool $_isInitialized;
 
     protected function init()
@@ -24,7 +24,7 @@ class FacebookAdmin extends Facebook
 
         if (!$this->_isInitialized) {
             $this->_isInitialized = true;
-            $this->siteInfo = $this->socialManager->getSiteInfo();
+            $this->siteInfo = $this->socialManager->getAppOAuth();
 
             if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
                 $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());

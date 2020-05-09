@@ -82,7 +82,7 @@
             <div class="card-body">
                 {% for service in ['facebook', 'google', 'twitter'] %}
                     <div class="bloc_config">
-                        {% include "Social/social.html.twig" with { 'info': app.user.info, 'service': service } %}
+                        {% include "Social/social.html.twig" with { 'oAuth': app.user.oAuth, 'service': service } %}
                     </div>
                 {% endfor %}
             </div>

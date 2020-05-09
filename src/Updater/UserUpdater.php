@@ -59,7 +59,7 @@ class UserUpdater extends Updater
 
     private function extractFbIds(array $users)
     {
-        return array_filter(array_unique(array_map(fn (User $user) => $user->getInfo()->getFacebookId(), $users)));
+        return array_filter(array_unique(array_map(fn (User $user) => $user->getOAuth()->getFacebookId(), $users)));
     }
 
     /**
@@ -70,11 +70,11 @@ class UserUpdater extends Updater
         $responses = [];
 
         foreach ($users as $user) {
-            if (empty($downloadUrls[$user->getInfo()->getFacebookId()])) {
+            if (empty($downloadUrls[$user->getOAuth()->getFacebookId()])) {
                 continue;
             }
 
-            $uri = $downloadUrls[$user->getInfo()->getFacebookId()];
+            $uri = $downloadUrls[$user->getOAuth()->getFacebookId()];
             $responses[] = $this->client->request('GET', $uri, [
                 'user_data' => $user,
             ]);
@@ -90,7 +90,7 @@ class UserUpdater extends Updater
 
                     if ($this->userHandler->hasToUploadNewImage($content, $user)) {
                         $contentType = $response->getHeaders()['content-type'][0];
-                        dump($response->getInfo('url'), $response->getInfo('user_data')->getInfo()->getFacebookId(), $contentType);
+                        dump($response->getInfo('url'), $response->getInfo('user_data')->getOAuth()->getFacebookId(), $contentType);
                         $this->userHandler->uploadFile($user, $content, $contentType);
                     }
                 }

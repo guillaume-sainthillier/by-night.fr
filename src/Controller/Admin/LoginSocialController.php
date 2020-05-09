@@ -39,7 +39,7 @@ class LoginSocialController extends AbstractController
         }
 
         $datas = $OAuthDataProvider->getDatasFromToken($service, $accessToken);
-        $siteInfo = $socialManager->getSiteInfo();
+        $siteInfo = $socialManager->getAppOAuth();
         $social->connectSite($siteInfo, $datas);
         $this->getDoctrine()->getManager()->flush();
 

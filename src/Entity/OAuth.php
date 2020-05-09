@@ -13,15 +13,15 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="Info", indexes={
+ * @ORM\Table(indexes={
  *     @ORM\Index(name="recherche_info_idx", columns={"facebook_id", "twitter_id", "google_id"})
  * })
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"user": "UserInfo", "site": "SiteInfo"})
- * @ORM\Entity(repositoryClass="App\Repository\InfoRepository")
+ * @ORM\DiscriminatorMap({"user": "UserOAuth", "site": "AppOAuth"})
+ * @ORM\Entity(repositoryClass="App\Repository\OAuthRepository")
  */
-abstract class Info
+abstract class OAuth
 {
     use EntityIdentityTrait;
 

@@ -17,8 +17,8 @@ namespace App\Social;
  */
 
 use App\App\SocialManager;
-use App\Entity\Info;
-use App\Entity\SiteInfo;
+use App\Entity\OAuth;
+use App\Entity\AppOAuth;
 use App\Entity\User;
 use App\Exception\SocialException;
 use App\Picture\EventProfilePicture;
@@ -83,12 +83,12 @@ abstract class Social
 
     abstract protected function getRoleName(): string;
 
-    public function connectSite(SiteInfo $info, array $datas)
+    public function connectSite(AppOAuth $info, array $datas)
     {
         $this->connectInfo($info, $datas);
     }
 
-    public function disconnectSite(SiteInfo $info)
+    public function disconnectSite(AppOAuth $info)
     {
         $this->disconnectInfo($info);
     }
@@ -96,16 +96,16 @@ abstract class Social
     public function connectUser(User $user, array $datas)
     {
         $user->addRole($this->getRoleName());
-        $this->connectInfo($user->getInfo(), $datas);
+        $this->connectInfo($user->getOAuth(), $datas);
     }
 
     public function disconnectUser(User $user)
     {
         $user->removeRole($this->getRoleName());
-        $this->disconnectInfo($user->getInfo());
+        $this->disconnectInfo($user->getOAuth());
     }
 
-    protected function connectInfo(Info $info, array $datas)
+    protected function connectInfo(OAuth $info, array $datas)
     {
         $propertyPrefix = $this->getInfoPropertyPrefix();
         $propertyAccess = PropertyAccess::createPropertyAccessor();
@@ -120,7 +120,7 @@ abstract class Social
         }
     }
 
-    protected function disconnectInfo(Info $info)
+    protected function disconnectInfo(OAuth $info)
     {
         $propertyPrefix = $this->getInfoPropertyPrefix();
         $propertyAccess = PropertyAccess::createPropertyAccessor();

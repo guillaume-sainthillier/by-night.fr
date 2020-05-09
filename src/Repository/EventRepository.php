@@ -141,7 +141,7 @@ class EventRepository extends ServiceEntityRepository
             ->select(sprintf('%s(a.dateFin) as group', $groupByFunction))
             ->addSelect('count(a.id) as events')
             ->from($this->_entityName, 'a')
-            ->join('a.calendriers', 'c')
+            ->join('a.userEvents', 'c')
             ->join('c.user', 'u')
             ->where('u.id = :user')
             ->setParameters([':user' => $user->getId()])
@@ -162,7 +162,7 @@ class EventRepository extends ServiceEntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u) as nbEtablissements, p.nom')
-            ->from('App:Calendrier', 'c')
+            ->from('App:UserEvent', 'c')
             ->leftJoin('c.user', 'u')
             ->leftJoin('c.event', 'a')
             ->join('a.place', 'p')
@@ -180,7 +180,7 @@ class EventRepository extends ServiceEntityRepository
     {
         return $this
             ->createQueryBuilder('a')
-            ->join('a.calendriers', 'cal')
+            ->join('a.userEvents', 'cal')
             ->where('cal.user = :user')
             ->andWhere('a.dateFin ' . ($isNext ? '>=' : '<') . ' :date_debut')
             ->orderBy('a.dateFin', $isNext ? 'ASC' : 'DESC')
@@ -196,7 +196,7 @@ class EventRepository extends ServiceEntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u)')
-            ->from('App:Calendrier', 'c')
+            ->from('App:UserEvent', 'c')
             ->leftJoin('c.user', 'u')
             ->where('c.user = :user')
             ->setParameters([':user' => $user->getId()])
@@ -214,7 +214,7 @@ class EventRepository extends ServiceEntityRepository
         return $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u)')
-            ->from('App:Calendrier', 'c')
+            ->from('App:UserEvent', 'c')
             ->leftJoin('c.user', 'u')
             ->where('c.event = :event')
             ->andWhere(($isParticipation ? 'c.participe' : 'c.interet') . ' = :vrai')
@@ -236,8 +236,8 @@ class EventRepository extends ServiceEntityRepository
             ->addSelect('c')
             ->addSelect('COUNT(u.id) AS nb_events')
             ->from('App:User', 'u')
-            ->join('u.calendriers', 'c')
-            ->leftJoin('u.calendriers', 'c2')
+            ->join('u.userEvents', 'c')
+            ->leftJoin('u.userEvents', 'c2')
             ->where('c.event = :event')
             ->orderBy('nb_events', 'DESC')
             ->groupBy('u.id')

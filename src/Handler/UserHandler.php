@@ -31,7 +31,7 @@ class UserHandler
 
     public function hasToUploadNewImage(?string $newContent, User $user)
     {
-        if ($user->getImage()->getName() || !$user->getInfo()) {
+        if ($user->getImage()->getName() || !$user->getOAuth()) {
             return false;
         }
 
@@ -54,12 +54,12 @@ class UserHandler
 
     public function uploadFile(User $user, $content, $contentType)
     {
-        if (null === $user->getInfo()) {
+        if (null === $user->getOAuth()) {
             return;
         }
 
         if (!$content) {
-            $user->getInfo()->setFacebookProfilePicture(null);
+            $user->getOAuth()->setFacebookProfilePicture(null);
         } else {
             switch ($contentType) {
                 case 'image/gif':

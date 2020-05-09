@@ -119,7 +119,7 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: EventContraintValidator }
 
-    App\EventListener\EventExplorationListener:
+    App\EventListener\EventParserDataListener:
         tags:
             - { name: doctrine.event_listener, event: preRemove }
 

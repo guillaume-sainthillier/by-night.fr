@@ -11,11 +11,11 @@
 namespace App\Controller\EspacePerso;
 
 use App\Controller\TBNController as BaseController;
-use App\Entity\Calendrier;
+use App\Entity\UserEvent;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\EventType;
-use App\Repository\CalendrierRepository;
+use App\Repository\UserEventRepository;
 use App\Repository\EventRepository;
 use App\Validator\Constraints\EventConstraintValidator;
 use DateTime;
@@ -56,10 +56,10 @@ class EventController extends BaseController
             ->setUser($user)
             ->setParticipations(1);
 
-        $calendrier = (new Calendrier())
+        $userEvent = (new UserEvent())
             ->setUser($user)
             ->setParticipe(true);
-        $event->addCalendrier($calendrier);
+        $event->addUserEvent($userEvent);
 
         $form = $this->createForm(EventType::class, $event);
         $validator->setUpdatabilityCkeck(false);
@@ -168,22 +168,22 @@ class EventController extends BaseController
     /**
      * @Route("/{id<%patterns.id%>}/participer", name="app_user_like", methods={"POST"})
      */
-    public function like(Request $request, Event $event, EventRepository $eventRepository, CalendrierRepository $calendrierRepository): Response
+    public function like(Request $request, Event $event, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
     {
         $user = $this->getUser();
 
         $em = $this->getDoctrine()->getManager();
-        $calendrier = $calendrierRepository->findOneBy(['user' => $user, 'event' => $event]);
+        $userEvent = $userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
 
-        if (null === $calendrier) {
-            $calendrier = new Calendrier();
-            $calendrier
+        if (null === $userEvent) {
+            $userEvent = new UserEvent();
+            $userEvent
                 ->setUser($user)
                 ->setEvent($event);
-            $em->persist($calendrier);
+            $em->persist($userEvent);
         }
         $isLike = 'true' === $request->request->get('like', 'true');
-        $calendrier->setParticipe($isLike);
+        $userEvent->setParticipe($isLike);
         $em->flush();
 
         $participations = $eventRepository->getCountTendancesParticipation($event);

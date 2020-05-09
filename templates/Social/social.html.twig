@@ -1,4 +1,4 @@
-{% set isGranted = attribute(info, service ~ 'AccessToken') != null %}
+{% set isGranted = attribute(oAuth, service ~ 'AccessToken') != null %}
 
 <div class="switch bloc_config">
     <label>
@@ -11,9 +11,9 @@
             Connecté sous
             <span class="username">
                 {% if service == 'twitter' %}
-                    @{{ attribute(info, service ~ "NickName") }}
+                    @{{ attribute(oAuth, service ~ "NickName") }}
                 {% else %}
-                    {{ attribute(info, service ~ "Realname") }}
+                    {{ attribute(oAuth, service ~ "Realname") }}
                 {% endif %}
             </span>
         </span>

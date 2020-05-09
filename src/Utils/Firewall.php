@@ -11,9 +11,9 @@
 namespace App\Utils;
 
 use App\Entity\Event;
-use App\Entity\Exploration;
+use App\Entity\ParserData;
 use App\Reject\Reject;
-use App\Repository\ExplorationRepository;
+use App\Repository\ParserDataRepository;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -21,51 +21,50 @@ class Firewall
 {
     const VERSION = '1.1';
 
-    private array $explorations;
+    /** @var ParserData[] */
+    private array $parserDatas;
 
     private Comparator $comparator;
 
     private EntityManagerInterface $em;
-    /**
-     * @var \App\Repository\ExplorationRepository
-     */
-    private $explorationRepository;
 
-    public function __construct(EntityManagerInterface $em, Comparator $comparator, ExplorationRepository $explorationRepository)
+    private ParserDataRepository $parserDataRepository;
+
+    public function __construct(EntityManagerInterface $em, Comparator $comparator, ParserDataRepository $parserDataRepository)
     {
         $this->em = $em;
         $this->comparator = $comparator;
-        $this->explorations = [];
-        $this->explorationRepository = $explorationRepository;
+        $this->parserDatas = [];
+        $this->parserDataRepository = $parserDataRepository;
     }
 
-    public function loadExplorations(array $ids)
+    public function loadParserDatas(array $ids)
     {
-        $explorations = $this->explorationRepository->findBy([
+        $parserDatas = $this->parserDataRepository->findBy([
             'externalId' => $ids,
         ]);
 
-        foreach ($explorations as $exploration) {
-            $this->addExploration($exploration);
+        foreach ($parserDatas as $parserData) {
+            $this->addParserData($parserData);
         }
     }
 
-    public function addExploration(Exploration $exploration)
+    public function addParserData(ParserData $parserData)
     {
         $reject = new Reject();
-        $reject->setReason($exploration->getReason());
+        $reject->setReason($parserData->getReason());
 
-        $this->explorations[$exploration->getExternalId()] = $exploration->setReject($reject);
+        $this->parserDatas[$parserData->getExternalId()] = $parserData->setReject($reject);
     }
 
-    public function hasPlaceToBeUpdated(Exploration $exploration, Event $event)
+    public function hasPlaceToBeUpdated(ParserData $parserData, Event $event)
     {
-        return $this->hasExplorationToBeUpdated($exploration, $event);
+        return $this->hasExplorationToBeUpdated($parserData, $event);
     }
 
-    private function hasExplorationToBeUpdated(Exploration $exploration, Event $event)
+    private function hasExplorationToBeUpdated(ParserData $parserData, Event $event)
     {
-        return self::VERSION !== $exploration->getFirewallVersion() || $event->getParserVersion() !== $exploration->getFirewallVersion();
+        return self::VERSION !== $parserData->getFirewallVersion() || $event->getParserVersion() !== $parserData->getFirewallVersion();
     }
 
     public function isValid(Event $event)
@@ -107,9 +106,9 @@ class Firewall
 
         //Observation de l'événement
         if ($event->getExternalId()) {
-            $exploration = $this->getExploration($event->getExternalId());
-            if (null === $exploration) {
-                $exploration = (new Exploration())
+            $parserData = $this->getExploration($event->getExternalId());
+            if (null === $parserData) {
+                $parserData = (new ParserData())
                     ->setExternalId($event->getExternalId())
                     ->setLastUpdated($event->getExternalUpdatedAt())
                     ->setReject($event->getReject())
@@ -117,14 +116,14 @@ class Firewall
                     ->setFirewallVersion(self::VERSION)
                     ->setParserVersion($event->getParserVersion());
 
-                $this->addExploration($exploration);
+                $this->addParserData($parserData);
             } else {
                 //Pas besoin de paniquer l'EM si les dates sont équivalentes
-                if ($exploration->getLastUpdated() !== $event->getExternalUpdatedAt()) {
-                    $exploration->setLastUpdated($event->getExternalUpdatedAt());
+                if ($parserData->getLastUpdated() !== $event->getExternalUpdatedAt()) {
+                    $parserData->setLastUpdated($event->getExternalUpdatedAt());
                 }
 
-                $exploration
+                $parserData
                     ->setReject($event->getReject())
                     ->setReason($event->getReject()->getReason());
             }
@@ -158,15 +157,15 @@ class Firewall
     /**
      * @param $externalId
      *
-     * @return Exploration|null
+     * @return ParserData|null
      */
     public function getExploration($externalId)
     {
-        if (!isset($this->explorations[$externalId])) {
+        if (!isset($this->parserDatas[$externalId])) {
             return null;
         }
 
-        return $this->explorations[$externalId];
+        return $this->parserDatas[$externalId];
     }
 
     private function filterEventPlace(Event $event)
@@ -183,17 +182,17 @@ class Firewall
 
         //Observation du lieu
         if ($event->getPlaceExternalId()) {
-            $exploration = $this->getExploration($event->getPlaceExternalId());
-            if (null === $exploration) {
-                $exploration = (new Exploration())
+            $parserData = $this->getExploration($event->getPlaceExternalId());
+            if (null === $parserData) {
+                $parserData = (new ParserData())
                     ->setExternalId($event->getPlaceExternalId())
                     ->setReject($event->getPlaceReject())
                     ->setReason($event->getPlaceReject()->getReason())
                     ->setFirewallVersion(self::VERSION)
                     ->setParserVersion($event->getParserVersion());
-                $this->addExploration($exploration);
+                $this->addParserData($parserData);
             } else {
-                $exploration
+                $parserData
                     ->setReject($event->getPlaceReject())
                     ->setReason($event->getPlaceReject()->getReason());
             }
@@ -218,29 +217,29 @@ class Firewall
         }
     }
 
-    public function filterEventExploration(Exploration $exploration, Event $event)
+    public function filterEventExploration(ParserData $parserData, Event $event)
     {
-        $reject = $exploration->getReject();
+        $reject = $parserData->getReject();
 
         //Aucune action sur un événement supprimé sur la plateforme par son créateur
         if (null !== $reject->isEventDeleted()) {
             return;
         }
 
-        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($exploration, $event);
-        $hasToBeUpdated = $this->hasEventToBeUpdated($exploration, $event);
+        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($parserData, $event);
+        $hasToBeUpdated = $this->hasEventToBeUpdated($parserData, $event);
 
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-        //L'événement a changé -> valide
+            //L'événement a changé -> valide
         } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
 
         //L'exploration est ancienne -> maj de la version
         if ($hasFirewallVersionChanged) {
-            $exploration
+            $parserData
                 ->setFirewallVersion(self::VERSION)
                 ->setParserVersion($event->getParserVersion());
 
@@ -251,29 +250,29 @@ class Firewall
         }
     }
 
-    public function hasEventToBeUpdated(Exploration $exploration, Event $event)
+    public function hasEventToBeUpdated(ParserData $parserData, Event $event)
     {
-        $explorationDate = $exploration->getLastUpdated();
+        $parserDataDate = $parserData->getLastUpdated();
         $eventDateModification = $event->getExternalUpdatedAt();
 
-        if (!$explorationDate || !$eventDateModification) {
+        if (!$parserDataDate || !$eventDateModification) {
             return true;
         }
 
-        return $eventDateModification > $explorationDate;
+        return $eventDateModification > $parserDataDate;
     }
 
     /**
-     * @return Exploration[]
+     * @return ParserData[]
      */
-    public function getExplorations()
+    public function getParserDatas(): array
     {
-        return $this->explorations;
+        return $this->parserDatas;
     }
 
-    public function flushExplorations()
+    public function flushParserDatas(): void
     {
-        unset($this->explorations);
-        $this->explorations = [];
+        unset($this->parserDatas);
+        $this->parserDatas = [];
     }
 }

@@ -10,20 +10,20 @@
 
 namespace App\Repository;
 
-use App\Entity\SiteInfo;
+use App\Entity\AppOAuth;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method SiteInfo|null find($id, $lockMode = null, $lockVersion = null)
- * @method SiteInfo|null findOneBy(array $criteria, array $orderBy = null)
- * @method SiteInfo[]    findAll()
- * @method SiteInfo[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method AppOAuth|null find($id, $lockMode = null, $lockVersion = null)
+ * @method AppOAuth|null findOneBy(array $criteria, array $orderBy = null)
+ * @method AppOAuth[]    findAll()
+ * @method AppOAuth[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SiteInfoRepository extends ServiceEntityRepository
+class AppOAuthRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, SiteInfo::class);
+        parent::__construct($registry, AppOAuth::class);
     }
 }

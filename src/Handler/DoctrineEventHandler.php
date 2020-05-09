@@ -12,7 +12,7 @@ namespace App\Handler;
 
 use App\Entity\City;
 use App\Entity\Event;
-use App\Entity\Exploration;
+use App\Entity\ParserData;
 use App\Entity\Place;
 use App\Reject\Reject;
 use App\Repository\CityRepository;
@@ -41,7 +41,7 @@ class DoctrineEventHandler
 
     private EchantillonHandler $echantillonHandler;
 
-    private ExplorationHandler $explorationHandler;
+    private ParserHistoryHandler $parserHistoryHandler;
 
     public function __construct(EntityManagerInterface $em, EventHandler $handler, Firewall $firewall, EchantillonHandler $echantillonHandler, CityRepository $cityRepository, ZipCityRepository $zipCityRepository, CountryRepository $countryRepository)
     {
@@ -51,7 +51,7 @@ class DoctrineEventHandler
         $this->handler = $handler;
         $this->firewall = $firewall;
         $this->echantillonHandler = $echantillonHandler;
-        $this->explorationHandler = new ExplorationHandler();
+        $this->parserHistoryHandler = new ParserHistoryHandler();
         $this->countryRepository = $countryRepository;
     }
 
@@ -75,13 +75,13 @@ class DoctrineEventHandler
         }
 
         //On récupère toutes les explorations existantes pour ces événements
-        $this->loadExplorations($events);
+        $this->loadParserDatas($events);
 
         //Grace à ça, on peut déjà filtrer une bonne partie des événements
         $this->doFilterAndClean($events);
 
         //On met ensuite à jour le statut de ces explorations en base
-        $this->flushExplorations();
+        $this->flushParserDatas();
 
         $allowedEvents = $this->getAllowedEvents($events);
         $notAllowedEvents = $this->getNotAllowedEvents($events);
@@ -94,22 +94,22 @@ class DoctrineEventHandler
             }
         }
 
-        if ($this->explorationHandler->isStarted()) {
+        if ($this->parserHistoryHandler->isStarted()) {
             $nbNotAllowedEvents = \count($notAllowedEvents);
             for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
-                $this->explorationHandler->addBlackList();
+                $this->parserHistoryHandler->addBlackList();
             }
         }
 
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
     }
 
-    private function loadExplorations(array $events)
+    private function loadParserDatas(array $events)
     {
-        $ids = $this->getExplorationsIds($events);
+        $ids = $this->getParserDataIds($events);
 
         if (\count($ids) > 0) {
-            $this->firewall->loadExplorations($ids);
+            $this->firewall->loadParserDatas($ids);
         }
     }
 
@@ -118,7 +118,7 @@ class DoctrineEventHandler
      *
      * @return int[]
      */
-    private function getExplorationsIds(array $events)
+    private function getParserDataIds(array $events): array
     {
         $ids = [];
         foreach ($events as $event) {
@@ -274,25 +274,25 @@ class DoctrineEventHandler
         }
     }
 
-    private function flushExplorations()
+    private function flushParserDatas()
     {
-        $explorations = $this->firewall->getExplorations();
+        $explorations = $this->firewall->getParserDatas();
 
         $batchSize = 500;
         $nbBatches = \ceil(\count($explorations) / $batchSize);
 
         for ($i = 0; $i < $nbBatches; ++$i) {
             $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
-            /** @var Exploration $exploration */
+            /** @var ParserData $exploration */
             foreach ($currentExplorations as $exploration) {
                 $exploration->setReason($exploration->getReject()->getReason());
-                $this->explorationHandler->addExploration();
+                $this->parserHistoryHandler->addExploration();
                 $this->em->persist($exploration);
             }
             $this->em->flush();
         }
-        $this->em->clear(Exploration::class);
-        $this->firewall->flushExplorations();
+        $this->em->clear(ParserData::class);
+        $this->firewall->flushParserDatas();
     }
 
     /**
@@ -347,7 +347,7 @@ class DoctrineEventHandler
                     $url = $event->getUrl();
                     $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
                     if (!$this->firewall->isValid($event)) {
-                        $this->explorationHandler->addBlackList();
+                        $this->parserHistoryHandler->addBlackList();
                     } else {
                         //Image URL has changed or never downloaded
                         if ($event->getUrl() && (!$event->getImageSystem()->getName() || $event->getUrl() !== $url)) {
@@ -357,9 +357,9 @@ class DoctrineEventHandler
                         $this->em->persist($event);
                         $this->echantillonHandler->addNewEvent($event);
                         if (null !== $event->getId()) {
-                            $this->explorationHandler->addUpdate();
+                            $this->parserHistoryHandler->addUpdate();
                         } else {
-                            $this->explorationHandler->addInsert();
+                            $this->parserHistoryHandler->addInsert();
                         }
                     }
                     Monitor::advanceProgressBar();
@@ -452,23 +452,23 @@ class DoctrineEventHandler
      */
     public function handleManyCLI(array $events, bool $flush = true)
     {
-        $this->explorationHandler->start();
+        $this->parserHistoryHandler->start();
         $events = $this->handleMany($events, $flush);
 
-        $historique = $this->explorationHandler->stop();
-        $this->em->persist($historique);
+        $parserHistory = $this->parserHistoryHandler->stop();
+        $this->em->persist($parserHistory);
         $this->em->flush();
 
         Monitor::writeln('');
         Monitor::displayStats();
         Monitor::displayTable([
-            'NEWS' => $this->explorationHandler->getNbInserts(),
-            'UPDATES' => $this->explorationHandler->getNbUpdates(),
-            'BLACKLISTS' => $this->explorationHandler->getNbBlackLists(),
-            'EXPLORATIONS' => $this->explorationHandler->getNbExplorations(),
+            'NEWS' => $this->parserHistoryHandler->getNbInserts(),
+            'UPDATES' => $this->parserHistoryHandler->getNbUpdates(),
+            'BLACKLISTS' => $this->parserHistoryHandler->getNbBlackLists(),
+            'EXPLORATIONS' => $this->parserHistoryHandler->getNbExplorations(),
         ]);
 
-        $this->explorationHandler->reset();
+        $this->parserHistoryHandler->reset();
 
         return $events;
     }

@@ -11,7 +11,7 @@
 namespace App\Controller\Admin;
 
 use App\App\SocialManager;
-use App\Entity\SiteInfo;
+use App\Entity\AppOAuth;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,10 +26,10 @@ class InfoController extends AbstractController
      */
     public function list(SocialManager $socialManager): Response
     {
-        $info = $socialManager->getSiteInfo();
+        $info = $socialManager->getAppOAuth();
 
         if (null === $info) {
-            $info = new SiteInfo();
+            $info = new AppOAuth();
             $em = $this->getDoctrine()->getManager();
             $em->persist($info);
             $em->flush();
@@ -43,10 +43,10 @@ class InfoController extends AbstractController
     /**
      * @Route("/{id<%patterns.id%>}", name="app_administration_info_edit", methods={"GET"})
      */
-    public function view(SiteInfo $info): Response
+    public function view(AppOAuth $appOAuth): Response
     {
         return $this->render('Admin/Social/view.html.twig', [
-            'info' => $info,
+            'oAuth' => $appOAuth,
         ]);
     }
 }

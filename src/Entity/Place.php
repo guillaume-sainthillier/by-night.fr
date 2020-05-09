@@ -20,9 +20,7 @@ use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Place.
- *
- * @ORM\Table(name="Place", indexes={
+ * @ORM\Table(indexes={
  *     @ORM\Index(name="place_nom_idx", columns={"nom"}),
  *     @ORM\Index(name="place_slug_idx", columns={"slug"}),
  *     @ORM\Index(name="place_external_id_idx", columns={"external_id"})

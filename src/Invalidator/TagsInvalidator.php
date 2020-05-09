@@ -11,7 +11,7 @@
 namespace App\Invalidator;
 
 use App\App\Location;
-use App\Entity\Calendrier;
+use App\Entity\UserEvent;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
@@ -64,9 +64,9 @@ class TagsInvalidator
         return \sprintf('user-%d', $user->getId());
     }
 
-    public function addCalendrier(Calendrier $calendrier)
+    public function addUserEvent(UserEvent $userEvent)
     {
-        $this->tags[] = self::getTendanceTag($calendrier->getEvent());
+        $this->tags[] = self::getTendanceTag($userEvent->getEvent());
     }
 
     public static function getTendanceTag(Event $event)

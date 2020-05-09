@@ -10,7 +10,7 @@
 
 namespace App\App;
 
-use App\Entity\SiteInfo;
+use App\Entity\AppOAuth;
 use Doctrine\ORM\EntityManagerInterface;
 
 class SocialManager
@@ -20,7 +20,7 @@ class SocialManager
     private string $twitterIdPage;
 
     /**
-     * @var SiteInfo
+     * @var AppOAuth
      */
     private $siteInfo;
 
@@ -30,7 +30,7 @@ class SocialManager
      */
     private $siteInfoRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage, \App\Repository\SiteInfoRepository $siteInfoRepository)
+    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage, \App\Repository\AppOAuthRepository $siteInfoRepository)
     {
         $this->entityManager = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
@@ -39,7 +39,7 @@ class SocialManager
         $this->siteInfoRepository = $siteInfoRepository;
     }
 
-    public function getSiteInfo(): SiteInfo
+    public function getAppOAuth(): AppOAuth
     {
         if (false === $this->siteInfo) {
             $this->siteInfo = $this->siteInfoRepository

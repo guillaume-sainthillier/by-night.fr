@@ -10,14 +10,14 @@
 
 namespace App\Handler;
 
-use App\Entity\HistoriqueMaj;
+use App\Entity\ParserHistory;
 use DateTime;
 
-class ExplorationHandler
+class ParserHistoryHandler
 {
-    private ?array $stats = null;
+    private array $stats;
 
-    private $historique;
+    private ?ParserHistory $parserHistory = null;
 
     public function __construct()
     {
@@ -27,8 +27,6 @@ class ExplorationHandler
             'nbUpdates' => 0,
             'nbExplorations' => 0,
         ];
-
-        $this->historique = null;
     }
 
     public function addExploration()
@@ -36,7 +34,7 @@ class ExplorationHandler
         return $this->add('nbExplorations');
     }
 
-    private function add($key)
+    private function add($key): self
     {
         if ($this->isStarted()) {
             ++$this->stats[$key];
@@ -45,81 +43,67 @@ class ExplorationHandler
         return $this;
     }
 
-    public function isStarted()
+    public function isStarted(): bool
     {
-        return null !== $this->historique;
+        return null !== $this->parserHistory;
     }
 
-    public function addUpdate()
+    public function addUpdate(): self
     {
         return $this->add('nbUpdates');
     }
 
-    public function addInsert()
+    public function addInsert(): self
     {
         return $this->add('nbInserts');
     }
 
-    public function addBlackList()
+    public function addBlackList(): self
     {
         return $this->add('nbBlacklists');
     }
 
-    /**
-     * @return HistoriqueMaj
-     */
-    public function stop()
+    public function stop(): ParserHistory
     {
-        $this->getHistorique()
+        $this->parserHistory
             ->setDateFin(new DateTime())
             ->setExplorations($this->getNbExplorations() + $this->getNbBlackLists())
             ->setNouvellesSoirees($this->getNbInserts())
             ->setUpdateSoirees($this->getNbUpdates())
             ->setFromData('?');
 
-        return $this->historique;
+        return $this->parserHistory;
     }
 
-    /**
-     * @return HistoriqueMaj
-     */
-    public function getHistorique()
-    {
-        return $this->historique;
-    }
-
-    public function getNbExplorations()
+    public function getNbExplorations(): int
     {
         return $this->stats['nbExplorations'];
     }
 
-    public function getNbBlackLists()
+    public function getNbBlackLists(): int
     {
         return $this->stats['nbBlacklists'];
     }
 
-    public function getNbInserts()
+    public function getNbInserts(): int
     {
         return $this->stats['nbInserts'];
     }
 
-    public function getNbUpdates()
+    public function getNbUpdates(): int
     {
         return $this->stats['nbUpdates'];
     }
 
     public function start()
     {
-        $this->historique = (new HistoriqueMaj())
-            ->setDateDebut(new DateTime());
+        $this->parserHistory = (new ParserHistory())->setDateDebut(new DateTime());
     }
 
     public function reset()
     {
         //Call GC
-        $this->historique = null;
-        $this->stats = null;
-        unset($this->historique, $this->stats);
+        unset($this->parserHistory, $this->stats);
 
         $this->stats = [
             'nbBlacklists' => 0,

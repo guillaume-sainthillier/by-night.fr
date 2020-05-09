@@ -15,7 +15,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Table(name="zip_city", indexes={
+ * @ORM\Table(indexes={
  *     @ORM\Index(name="zip_city_postal_code_name_idx", columns={"country_id", "postal_code", "name"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\ZipCityRepository", readOnly=true)
