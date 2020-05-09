@@ -13,10 +13,9 @@ namespace App\Parser\Common;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use ForceUTF8\Encoding;
-use GuzzleHttp\Client;
-use function GuzzleHttp\Psr7\copy_to_string;
 use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
+use Symfony\Component\HttpClient\HttpClient;
 use XMLReader;
 
 abstract class AbstractAwinParser extends AbstractParser
@@ -68,13 +67,16 @@ abstract class AbstractAwinParser extends AbstractParser
         return $array;
     }
 
-    private function downloadFile(string $url)
+    private function downloadFile(string $url): string
     {
-        $client = new Client();
+        $client = HttpClient::create();
         $response = $client->request('GET', $url);
 
         $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
-        file_put_contents($filePath, copy_to_string($response->getBody()));
+        $fileHandler = fopen($filePath, 'w');
+        foreach ($client->stream($response) as $chunk) {
+            fwrite($fileHandler, $chunk->getContent());
+        }
 
         return $filePath;
     }

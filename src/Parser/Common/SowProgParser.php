@@ -13,23 +13,23 @@ namespace App\Parser\Common;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTime;
-use GuzzleHttp\Client;
-use function GuzzleHttp\Psr7\copy_to_string;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 
 class SowProgParser extends AbstractParser
 {
-    private Client $client;
+    private HttpClientInterface $client;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer, string $sowprogUsername, string $sowprogPassword)
     {
         parent::__construct($logger, $eventProducer);
 
-        $this->client = new Client([
+        $this->client = HttpClient::create([
             'base_uri' => 'https://agenda.sowprog.com',
-            'auth' => [$sowprogUsername, $sowprogPassword],
+            'auth_basic' => [$sowprogUsername, $sowprogPassword],
             'headers' => [
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ],
         ]);
     }
@@ -42,8 +42,8 @@ class SowProgParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $modifiedSince = $incremental ? 1_000 * ((time() - 86_400)) : 0;
-        $response = $this->client->get('/rest/v1_2/scheduledEvents/search?modifiedSince=' . $modifiedSince);
-        $events = json_decode(copy_to_string($response->getBody()), true, 512, \JSON_THROW_ON_ERROR);
+        $response = $this->client->request('GET', '/rest/v1_2/scheduledEvents/search?modifiedSince=' . $modifiedSince);
+        $events = $response->toArray();
 
         foreach ($events['eventDescription'] as $event) {
             foreach ($event['eventSchedule']['eventScheduleDate'] as $schedule) {

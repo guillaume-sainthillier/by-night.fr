@@ -12,10 +12,10 @@ namespace App\Parser\Common;
 
 use App\Producer\EventProducer;
 use DateTime;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class FnacSpectaclesAwinParser extends AbstractAwinParser
 {
@@ -85,8 +85,8 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             'placeCity' => $datas['venue_address'],
             'placeStreet' => \in_array($datas['custom_6'], ['.', '-', ''], true) ? null : $datas['custom_6'],
             'placeCountryName' => $datas['custom_3'],
-            'latitude' => (float) $datas['latitude'],
-            'longitude' => (float) $datas['longitude'],
+            'latitude' => (float)$datas['latitude'],
+            'longitude' => (float)$datas['longitude'],
         ];
     }
 
@@ -94,15 +94,19 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
     {
         return $this->cache->get('fnac.urls.' . md5($url), function () use ($url) {
             $imageUrl = str_replace('grand/', '600/', $url);
-            $client = new Client();
+            $client = HttpClient::create();
 
             try {
-                $client->request('HEAD', $imageUrl);
+                $response = $client->request('HEAD', $imageUrl);
 
-                return $imageUrl;
-            } catch (RequestException $exception) {
-                return $url;
+                if ($response->getStatusCode() === 200) {
+                    return $imageUrl;
+                }
+            } catch (TransportExceptionInterface $exception) {
+
             }
+
+            return $url;
         });
     }
 

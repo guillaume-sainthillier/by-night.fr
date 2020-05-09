@@ -10,19 +10,21 @@
 
 namespace App\Consumer;
 
-use Exception;
-use GuzzleHttp\Client;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
     private Packages $packages;
 
-    private Client $client;
+    private HttpClientInterface $client;
 
     private string $cfZone;
 
@@ -33,7 +35,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
         $this->packages = $packages;
         $this->cfZone = $cfZone;
 
-        $this->client = new Client([
+        $this->client = HttpClient::create([
             'base_uri' => 'https://api.cloudflare.com',
             'headers' => [
                 'X-Auth-Email' => $cfUserEmail,
@@ -53,11 +55,20 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
         }
 
         try {
-            $this->client->post(
+            $response = $this->client->request(
+                'POST',
                 sprintf('/client/v4/zones/%s/purge_cache', $this->cfZone),
                 ['json' => ['files' => $urls]]
             );
-        } catch (Exception $e) {
+
+            $datas = $response->toArray();
+            $success = $datas['success'];
+            if (true === $success) {
+                return ConsumerInterface::MSG_ACK;
+            }
+
+            $this->logger->error('CDN PURGE ERROR', $datas);
+        } catch (TransportExceptionInterface|HttpExceptionInterface $e) {
             $this->logger->error($e->getMessage(), [
                 'urls' => $urls,
                 'exception' => $e,

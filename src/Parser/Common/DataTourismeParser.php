@@ -13,10 +13,9 @@ namespace App\Parser\Common;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTime;
-use GuzzleHttp\Client;
-use function GuzzleHttp\Psr7\copy_to_string;
 use JsonMachine\JsonMachine;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Contracts\Cache\CacheInterface;
 
@@ -126,11 +125,11 @@ class DataTourismeParser extends AbstractParser
         $longitude = null;
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'])) {
-            $latitude = (float) $datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
+            $latitude = (float)$datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
         }
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'])) {
-            $longitude = (float) $datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
+            $longitude = (float)$datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
         }
 
         $emails = [];
@@ -263,7 +262,7 @@ class DataTourismeParser extends AbstractParser
         }
 
         $key = str_replace(':', '', $resource['@id']);
-        $resource = array_merge($resource, $this->cache->get($key, fn () => $resource));
+        $resource = array_merge($resource, $this->cache->get($key, fn() => $resource));
 
         foreach ($resource as $key => $value) {
             if (\is_array($value)) {
@@ -274,13 +273,17 @@ class DataTourismeParser extends AbstractParser
         return $resource;
     }
 
+
     private function getFeed(string $url): string
     {
-        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.jsonld', md5($url));
-
-        $client = new Client();
+        $client = HttpClient::create();
         $response = $client->request('GET', $url);
-        file_put_contents($filePath, copy_to_string($response->getBody()));
+
+        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.jsonld', md5($url));
+        $fileHandler = fopen($filePath, 'w');
+        foreach ($client->stream($response) as $chunk) {
+            fwrite($fileHandler, $chunk->getContent());
+        }
 
         return $filePath;
     }
