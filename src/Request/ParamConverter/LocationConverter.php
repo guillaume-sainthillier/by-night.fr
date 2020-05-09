@@ -27,14 +27,8 @@ class LocationConverter implements ParamConverterInterface
     private EntityManagerInterface $em;
 
     private CityManager $cityManager;
-    /**
-     * @var \App\Repository\CityRepository
-     */
-    private $cityRepository;
-    /**
-     * @var \App\Repository\CountryRepository
-     */
-    private $countryRepository;
+    private CityRepository $cityRepository;
+    private CountryRepository $countryRepository;
 
     public function __construct(EntityManagerInterface $em, CityManager $cityManager, CityRepository $cityRepository, CountryRepository $countryRepository)
     {

@@ -51,8 +51,8 @@ class DefaultController extends BaseController
     }
 
     /**
-     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}/stats/{type}", name="app_user_stats", requirements={"type": "semaine|mois|annee"}, methods={"GET"})
-     * @Route("/{username<%patterns.slug%>}/stats/{type}", name="app_user_stats_old", requirements={"type": "semaine|mois|annee"}, methods={"GET"})
+     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}/stats/{type}", name="app_user_stats", requirements={"type"="semaine|mois|annee"}, methods={"GET"})
+     * @Route("/{username<%patterns.slug%>}/stats/{type}", name="app_user_stats_old", requirements={"type"="semaine|mois|annee"}, methods={"GET"})
      */
     public function stats(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {

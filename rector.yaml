@@ -5,13 +5,19 @@ parameters:
         - 'src'
     sets:
         - 'code-quality'
-        - 'doctrine-repository-as-service'
         - 'symfony'
-        #- 'symfony-code-quality'
+        - 'symfony40'
+        - 'symfony41'
+        - 'symfony42'
+        - 'symfony43'
+        - 'symfony44'
         - 'php71'
         - 'php72'
         - 'php73'
         - 'php74'
+
+    exclude_rectors:
+        - 'Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector'
 
 services:
     Rector\Symfony\Rector\Controller\AddFlashRector: null

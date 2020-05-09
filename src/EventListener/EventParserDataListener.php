@@ -37,7 +37,7 @@ class EventParserDataListener
             'externalId' => $entity->getExternalId(),
         ]);
 
-        if (!$parserData) {
+        if ($parserData === null) {
             $parserData = (new ParserData())->setExternalId($entity->getExternalId());
         }
 

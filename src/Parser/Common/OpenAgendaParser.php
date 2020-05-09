@@ -10,6 +10,8 @@
 
 namespace App\Parser\Common;
 
+use RuntimeException;
+use Parsedown;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use App\Repository\CountryRepository;
@@ -89,7 +91,7 @@ class OpenAgendaParser extends AbstractParser
 
                 $datas = $response->toArray();
                 if (true !== $datas['success']) {
-                    $exception = new \RuntimeException('Unable to fetch agenda ids from uids');
+                    $exception = new RuntimeException('Unable to fetch agenda ids from uids');
                     $this->logException($exception, $datas);
                     continue;
                 }
@@ -132,7 +134,7 @@ class OpenAgendaParser extends AbstractParser
         if (empty($location['countryCode'])) {
             try {
                 $country = $this->countryRepository->getFromRegionOrDepartment($location['region'] ?? null, $location['department'] ?? null);
-                $countryCode = $country ? $country->getId() : null;
+                $countryCode = $country !== null ? $country->getId() : null;
             } catch (NonUniqueResultException $exception) {
                 return null;
             }
@@ -155,7 +157,7 @@ class OpenAgendaParser extends AbstractParser
             $horaires = \sprintf('A %s', $dateDebut->format("H\hi"));
         }
 
-        $mdParser = new \Parsedown();
+        $mdParser = new Parsedown();
         $description = $mdParser->text($event['freeText']['fr']);
 
         $type_manifestation = null;

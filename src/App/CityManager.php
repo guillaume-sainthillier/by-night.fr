@@ -66,7 +66,7 @@ class CityManager
      */
     public function getCookieCity()
     {
-        if (false === $this->initCooky) {
+        if (!$this->initCooky) {
             $this->computeCityFromCookie();
             $this->initCooky = true;
         }

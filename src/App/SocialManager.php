@@ -10,6 +10,7 @@
 
 namespace App\App;
 
+use App\Repository\AppOAuthRepository;
 use App\Entity\AppOAuth;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -19,31 +20,25 @@ class SocialManager
 
     private string $twitterIdPage;
 
-    /**
-     * @var AppOAuth
-     */
-    private $siteInfo;
+    private bool $_siteInfoInitialized = false;
+    private ?AppOAuth $siteInfo = null;
 
     private EntityManagerInterface $entityManager;
-    /**
-     * @var App\Repository\SiteInfoRepository
-     */
-    private $siteInfoRepository;
+    private AppOAuthRepository $siteInfoRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage, \App\Repository\AppOAuthRepository $siteInfoRepository)
+    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage, AppOAuthRepository $siteInfoRepository)
     {
         $this->entityManager = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
         $this->twitterIdPage = $twitterIdPage;
-        $this->siteInfo = false;
         $this->siteInfoRepository = $siteInfoRepository;
     }
 
     public function getAppOAuth(): AppOAuth
     {
-        if (false === $this->siteInfo) {
-            $this->siteInfo = $this->siteInfoRepository
-                ->findOneBy([]);
+        if (false === $this->_siteInfoInitialized) {
+            $this->_siteInfoInitialized = true;
+            $this->siteInfo = $this->siteInfoRepository->findOneBy([]);
         }
 
         return $this->siteInfo;

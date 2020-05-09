@@ -89,7 +89,7 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected ?bool $fromLogin;
+    protected ?bool $fromLogin = null;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)

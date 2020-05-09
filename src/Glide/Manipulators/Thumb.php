@@ -23,7 +23,7 @@ class Thumb extends BaseManipulator
     /**
      * Maximum image size in pixels.
      */
-    private ?int $maxImageSize;
+    private ?int $maxImageSize = null;
 
     public function __construct(?int $maxImageSize = null)
     {

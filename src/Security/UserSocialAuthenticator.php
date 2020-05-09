@@ -32,20 +32,15 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserSocialAuthenticator extends SocialAuthenticator
 {
-    /** @var Security */
-    private $security;
+    private Security $security;
 
-    /** @var ClientRegistry */
-    private $clientRegistry;
+    private ClientRegistry $clientRegistry;
 
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /** @var UrlGeneratorInterface */
-    private $router;
+    private UrlGeneratorInterface $router;
 
-    /** @var SocialProvider */
-    private $socialProvider;
+    private SocialProvider $socialProvider;
 
     private UserRepository $userRepository;
     private OAuthDataProvider $oAuthDataProvider;
@@ -85,7 +80,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 ->findOneBySocial($datas['email'], $social->getInfoPropertyPrefix(), $datas['id']);
         }
 
-        if (!$existingUser) {
+        if ($existingUser === null) {
             $existingUser = new User();
             $existingUser
                 ->setUsername($datas['realname'] ?: $datas['email'] ?: $datas['id'])
@@ -141,7 +136,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
         $service = $request->attributes->get('service');
 
         //Still use Oauth 1.0...
-        if (\in_array($service, [SocialProvider::TWITTER], true)) {
+        if ($service === SocialProvider::TWITTER) {
             return [
                 'service' => $service,
                 'token' => $this->fetchTwitterAccessToken(),

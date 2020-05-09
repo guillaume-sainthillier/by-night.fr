@@ -28,21 +28,21 @@ class Monitor
 
     public static function createProgressBar($nbSteps)
     {
-        if (self::$output) {
+        if (self::$output !== null) {
             static::$progressBar = new ProgressBar(self::$output, $nbSteps);
         }
     }
 
     public static function advanceProgressBar($step = 1)
     {
-        if (static::$progressBar) {
+        if (static::$progressBar !== null) {
             static::$progressBar->advance($step);
         }
     }
 
     public static function finishProgressBar()
     {
-        if (static::$progressBar) {
+        if (static::$progressBar !== null) {
             static::$progressBar->finish();
         }
     }
@@ -54,7 +54,7 @@ class Monitor
 
     public static function writeln($message = null)
     {
-        if (self::$output) {
+        if (self::$output !== null) {
             self::$output->writeln($message);
         }
     }

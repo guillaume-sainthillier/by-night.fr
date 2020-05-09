@@ -10,6 +10,7 @@
 
 namespace App\Controller\Security;
 
+use Exception;
 use App\Entity\User;
 use App\OAuth\TwitterOAuth;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
@@ -28,7 +29,7 @@ class LoginSocialController extends AbstractController
      */
     public function connectCheck(): Response
     {
-        throw new \Exception('This code should not be reach!');
+        throw new Exception('This code should not be reach!');
     }
 
     /**

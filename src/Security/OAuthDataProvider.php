@@ -21,11 +21,9 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class OAuthDataProvider
 {
-    /** @var ClientRegistry */
-    private $clientRegistry;
+    private ClientRegistry $clientRegistry;
 
-    /** @var TwitterOAuth */
-    private $twitterOAuth;
+    private TwitterOAuth $twitterOAuth;
 
     public function __construct(ClientRegistry $clientRegistry, TwitterOAuth $twitterOAuth)
     {

@@ -34,22 +34,10 @@ class SitemapSuscriber implements EventSubscriberInterface
     private ?UrlContainerInterface $urlContainer = null;
 
     private DateTime $now;
-    /**
-     * @var \App\Repository\CityRepository
-     */
-    private $cityRepository;
-    /**
-     * @var \App\Repository\PlaceRepository
-     */
-    private $placeRepository;
-    /**
-     * @var \App\Repository\EventRepository
-     */
-    private $eventRepository;
-    /**
-     * @var \App\Repository\UserRepository
-     */
-    private $userRepository;
+    private CityRepository $cityRepository;
+    private PlaceRepository $placeRepository;
+    private EventRepository $eventRepository;
+    private UserRepository $userRepository;
 
     public function __construct(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager, CityRepository $cityRepository, PlaceRepository $placeRepository, EventRepository $eventRepository, UserRepository $userRepository)
     {

@@ -32,10 +32,7 @@ class CountryImporter
     private EntityManagerInterface $em;
 
     private string $dataDir;
-    /**
-     * @var \App\Repository\CountryRepository
-     */
-    private $countryRepository;
+    private CountryRepository $countryRepository;
 
     public function __construct(EntityManagerInterface $em, string $dataDir, CountryRepository $countryRepository)
     {

@@ -36,14 +36,8 @@ class EchantillonHandler
      * @var Event[]
      */
     private array $events;
-    /**
-     * @var \App\Repository\PlaceRepository
-     */
-    private $placeRepository;
-    /**
-     * @var \App\Repository\EventRepository
-     */
-    private $eventRepository;
+    private PlaceRepository $placeRepository;
+    private EventRepository $eventRepository;
 
     public function __construct(EntityManagerInterface $em, PlaceRepository $placeRepository, EventRepository $eventRepository)
     {

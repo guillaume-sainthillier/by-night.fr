@@ -92,7 +92,7 @@ class TwitterOAuth
         $client = new BaseClient($this->clientId, $this->clientSecret, $token->getToken(), $token->getTokenSecret());
         $content = $client->get('account/verify_credentials', ['include_email' => true]);
 
-        return new TwitterUser(json_decode(json_encode($content), true));
+        return new TwitterUser(json_decode(json_encode($content, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR));
     }
 
     private function getCurrentSession(): SessionInterface

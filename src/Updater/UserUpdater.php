@@ -25,10 +25,7 @@ class UserUpdater extends Updater
     private const PAGINATION_SIZE = 50;
 
     protected UserHandler $userHandler;
-    /**
-     * @var \App\Repository\UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, UserHandler $userHandler, UserRepository $userRepository)
     {
