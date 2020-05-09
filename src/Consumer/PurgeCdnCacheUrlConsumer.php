@@ -68,14 +68,14 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
             }
 
             $this->logger->error('CDN PURGE ERROR', [
-                'extra' => $datas
+                'extra' => $datas,
             ]);
-        } catch (TransportExceptionInterface|HttpExceptionInterface $e) {
+        } catch (TransportExceptionInterface | HttpExceptionInterface $e) {
             $this->logger->error($e->getMessage(), [
                 'exception' => $e,
                 'extra' => [
                     'urls' => $urls,
-                ]
+                ],
             ]);
 
             return ConsumerInterface::MSG_REJECT;

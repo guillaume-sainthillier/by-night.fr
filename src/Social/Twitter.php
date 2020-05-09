@@ -54,7 +54,7 @@ class Twitter extends Social
                 'exception' => $e,
                 'extra' => [
                     'params' => $params,
-                ]
+                ],
             ]);
         }
 

@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of By Night.
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace DoctrineMigrations;
 
 use Doctrine\DBAL\Schema\Schema;
@@ -12,15 +20,15 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20200509214558 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return '';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE event RENAME INDEX idx_2b41cd41a76ed395 TO IDX_3BAE0AA7A76ED395');
         $this->addSql('ALTER TABLE event RENAME INDEX idx_2b41cd41da6a219 TO IDX_3BAE0AA7DA6A219');
@@ -46,10 +54,10 @@ final class Version20200509214558 extends AbstractMigration
         $this->addSql('ALTER TABLE parser_data RENAME INDEX uniq_2a9385649f75d7b0 TO UNIQ_FE9A4A9C9F75D7B0');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE comment RENAME INDEX idx_9474526c727aca70 TO IDX_5BC96BF0727ACA70');
         $this->addSql('ALTER TABLE comment RENAME INDEX idx_9474526c71f7e88b TO IDX_5BC96BF071F7E88B');

@@ -10,11 +10,11 @@
 
 namespace App\EventListener;
 
-use App\Entity\UserEvent;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
+use App\Entity\UserEvent;
 use App\Invalidator\TagsInvalidator;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 

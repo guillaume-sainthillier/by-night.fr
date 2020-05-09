@@ -64,7 +64,7 @@ class EventHandler
             $contentType = $response->getHeaders()['content-type'][0];
             $content = $response->getContent();
             $this->uploadFile($event, $url, $content, $contentType);
-        } catch (TransportExceptionInterface|HttpExceptionInterface $e) {
+        } catch (TransportExceptionInterface | HttpExceptionInterface $e) {
             if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
                 return;
             }
@@ -75,8 +75,8 @@ class EventHandler
                     'event' => [
                         'id' => $event->getId(),
                         'url' => $url,
-                    ]
-                ]
+                    ],
+                ],
             ]);
         } catch (UnsupportedFileException $e) {
             $this->logger->error($e->getMessage(), [
@@ -85,8 +85,8 @@ class EventHandler
                     'event' => [
                         'id' => $event->getId(),
                         'url' => $url,
-                    ]
-                ]
+                    ],
+                ],
             ]);
         }
     }
@@ -112,7 +112,7 @@ class EventHandler
         }
 
         $tempFilename = ($event->getId() ?: uniqid()) . '.' . $ext;
-        $filename = pathinfo($url, PATHINFO_BASENAME) ?: $tempFilename;
+        $filename = pathinfo($url, \PATHINFO_BASENAME) ?: $tempFilename;
         $tempPath = $this->tempPath . \DIRECTORY_SEPARATOR . $tempFilename;
         $octets = \file_put_contents($tempPath, $content);
 
@@ -130,18 +130,18 @@ class EventHandler
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Event $event)
     {
-        $place = Monitor::bench('Handle Place', fn() => $this->handlePlace($persistedPlaces, $event->getPlace()));
+        $place = Monitor::bench('Handle Place', fn () => $this->handlePlace($persistedPlaces, $event->getPlace()));
         $event->setPlace($place);
 
-        return Monitor::bench('Handle Event', fn() => $this->handleEvent($persistedEvents, $event));
+        return Monitor::bench('Handle Event', fn () => $this->handleEvent($persistedEvents, $event));
     }
 
     public function handlePlace(array $persistedPlaces, Place $notPersistedPlace)
     {
-        $bestPlace = Monitor::bench('getBestPlace', fn() => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
+        $bestPlace = Monitor::bench('getBestPlace', fn () => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
 
         //On fusionne la place existant avec celle découverte (même si NULL)
-        return Monitor::bench('mergePlace', fn() => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
+        return Monitor::bench('mergePlace', fn () => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
     }
 
     public function handleEvent(array $persistedEvents, Event $notPersistedEvent)
@@ -149,6 +149,6 @@ class EventHandler
         $bestEvent = \count($persistedEvents) > 0 ? current($persistedEvents) : null;
 
         //On fusionne l'event existant avec celui découvert (même si NULL)
-        return Monitor::bench('mergeEvent', fn() => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
+        return Monitor::bench('mergeEvent', fn () => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
     }
 }

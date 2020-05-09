@@ -85,8 +85,8 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             'placeCity' => $datas['venue_address'],
             'placeStreet' => \in_array($datas['custom_6'], ['.', '-', ''], true) ? null : $datas['custom_6'],
             'placeCountryName' => $datas['custom_3'],
-            'latitude' => (float)$datas['latitude'],
-            'longitude' => (float)$datas['longitude'],
+            'latitude' => (float) $datas['latitude'],
+            'longitude' => (float) $datas['longitude'],
         ];
     }
 
@@ -99,11 +99,10 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
             try {
                 $response = $client->request('HEAD', $imageUrl);
 
-                if ($response->getStatusCode() === 200) {
+                if (200 === $response->getStatusCode()) {
                     return $imageUrl;
                 }
             } catch (TransportExceptionInterface $exception) {
-
             }
 
             return $url;

@@ -15,8 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserEventRepository")
  * @ORM\Table(uniqueConstraints={
- *         @ORM\UniqueConstraint(name="user_event_unique", columns={"user_id", "event_id"})
- *     }
+ *     @ORM\UniqueConstraint(name="user_event_unique", columns={"user_id", "event_id"})
+ * }
  * )
  */
 class UserEvent

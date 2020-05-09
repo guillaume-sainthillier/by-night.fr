@@ -54,7 +54,7 @@ class OpenAgendaParser extends AbstractParser
             'rows' => '-1',
             'select' => 'uid',
             'lang' => 'fr',
-            'timezone' => 'UTC'
+            'timezone' => 'UTC',
         ];
 
         if ($incremental) {
@@ -65,7 +65,7 @@ class OpenAgendaParser extends AbstractParser
         $url = 'https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/exports/json';
 
         $response = $this->client->request('GET', $url, ['query' => $query]);
-        $eventIds = array_map(fn(array $data) => (int)$data['uid'], $response->toArray());
+        $eventIds = array_map(fn (array $data) => (int) $data['uid'], $response->toArray());
         $eventIds = array_filter($eventIds);
         $eventChunks = array_chunk($eventIds, self::EVENT_BATCH_SIZE);
 
@@ -76,8 +76,8 @@ class OpenAgendaParser extends AbstractParser
             $responses[] = $this->client->request('GET', $url, [
                 'query' => [
                     'key' => $this->openAgendaKey,
-                    'uids' => $eventChunk
-                ]
+                    'uids' => $eventChunk,
+                ],
             ]);
         }
 
@@ -88,7 +88,7 @@ class OpenAgendaParser extends AbstractParser
                 }
 
                 $datas = $response->toArray();
-                if ($datas['success'] !== true) {
+                if (true !== $datas['success']) {
                     $exception = new \RuntimeException('Unable to fetch agenda ids from uids');
                     $this->logException($exception, $datas);
                     continue;
@@ -96,7 +96,7 @@ class OpenAgendaParser extends AbstractParser
 
                 //Parse events
                 $this->publishEvents($datas['data']);
-            } catch (TransportExceptionInterface|HttpExceptionInterface $exception) {
+            } catch (TransportExceptionInterface | HttpExceptionInterface $exception) {
                 $this->logException($exception);
             }
         }
@@ -177,8 +177,8 @@ class OpenAgendaParser extends AbstractParser
             'date_debut' => $dateDebut,
             'date_fin' => $dateFin,
             'horaires' => $horaires,
-            'latitude' => (float)$location['latitude'],
-            'longitude' => (float)$location['longitude'],
+            'latitude' => (float) $location['latitude'],
+            'longitude' => (float) $location['longitude'],
             'adresse' => $location['address'] ?? null,
             'placeName' => $location['placename'] ?? null,
             'placePostalCode' => $location['postalCode'] ?? null,

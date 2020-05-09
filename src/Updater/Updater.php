@@ -13,8 +13,6 @@ namespace App\Updater;
 use App\Social\FacebookAdmin;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use function GuzzleHttp\Psr7\copy_to_string;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;

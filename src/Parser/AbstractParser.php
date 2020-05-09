@@ -51,7 +51,7 @@ abstract class AbstractParser implements ParserInterface
     {
         $this->logger->error($exception->getMessage(), [
             'exception' => $exception,
-            'extra' => $context
+            'extra' => $context,
         ]);
     }
 

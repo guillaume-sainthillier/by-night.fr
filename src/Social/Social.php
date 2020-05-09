@@ -17,8 +17,8 @@ namespace App\Social;
  */
 
 use App\App\SocialManager;
-use App\Entity\OAuth;
 use App\Entity\AppOAuth;
+use App\Entity\OAuth;
 use App\Entity\User;
 use App\Exception\SocialException;
 use App\Picture\EventProfilePicture;

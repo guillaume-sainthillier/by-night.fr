@@ -11,11 +11,11 @@
 namespace App\Invalidator;
 
 use App\App\Location;
-use App\Entity\UserEvent;
 use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Entity\User;
+use App\Entity\UserEvent;
 use Exception;
 use FOS\HttpCacheBundle\CacheManager;
 use Psr\Log\LoggerInterface;

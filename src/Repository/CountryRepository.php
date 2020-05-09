@@ -60,7 +60,6 @@ class CountryRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-
     public function findByName($country)
     {
         return $this

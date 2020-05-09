@@ -11,12 +11,12 @@
 namespace App\Controller\EspacePerso;
 
 use App\Controller\TBNController as BaseController;
-use App\Entity\UserEvent;
 use App\Entity\Comment;
 use App\Entity\Event;
+use App\Entity\UserEvent;
 use App\Form\Type\EventType;
-use App\Repository\UserEventRepository;
 use App\Repository\EventRepository;
+use App\Repository\UserEventRepository;
 use App\Validator\Constraints\EventConstraintValidator;
 use DateTime;
 use Knp\Component\Pager\PaginatorInterface;
