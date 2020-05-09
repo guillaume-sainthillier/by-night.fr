@@ -39,8 +39,8 @@ class LoginSocialController extends AbstractController
         }
 
         $datas = $OAuthDataProvider->getDatasFromToken($service, $accessToken);
-        $siteInfo = $socialManager->getAppOAuth();
-        $social->connectSite($siteInfo, $datas);
+        $appOAuth = $socialManager->getAppOAuth();
+        $social->connectSite($appOAuth, $datas);
         $this->getDoctrine()->getManager()->flush();
 
         return $this->render('security/connect_success.html.twig', [

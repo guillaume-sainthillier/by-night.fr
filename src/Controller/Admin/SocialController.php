@@ -27,11 +27,11 @@ class SocialController extends AbstractController
      */
     public function disconnect(Social $social, SocialManager $socialManager): Response
     {
-        $siteInfo = $socialManager->getAppOAuth();
-        $social->disconnectSite($siteInfo);
+        $appOAuth = $socialManager->getAppOAuth();
+        $social->disconnectSite($appOAuth);
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($siteInfo);
+        $em->persist($appOAuth);
         $em->flush();
 
         return new JsonResponse(['success' => true]);

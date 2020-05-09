@@ -15,7 +15,7 @@ use Facebook\FacebookClient;
 
 class FacebookAdmin extends Facebook
 {
-    private AppOAuth $siteInfo;
+    private AppOAuth $appOAuth;
     private bool $_isInitialized;
 
     protected function init()
@@ -24,10 +24,10 @@ class FacebookAdmin extends Facebook
 
         if (!$this->_isInitialized) {
             $this->_isInitialized = true;
-            $this->siteInfo = $this->socialManager->getAppOAuth();
+            $this->appOAuth = $this->socialManager->getAppOAuth();
 
-            if ($this->siteInfo && $this->siteInfo->getFacebookAccessToken()) {
-                $this->client->setDefaultAccessToken($this->siteInfo->getFacebookAccessToken());
+            if ($this->appOAuth && $this->appOAuth->getFacebookAccessToken()) {
+                $this->client->setDefaultAccessToken($this->appOAuth->getFacebookAccessToken());
             }
         }
     }
@@ -35,7 +35,7 @@ class FacebookAdmin extends Facebook
     public function getPageFromId($id_page, $params = [])
     {
         $this->init();
-        $accessToken = $this->siteInfo ? $this->siteInfo->getFacebookAccessToken() : null;
+        $accessToken = $this->appOAuth ? $this->appOAuth->getFacebookAccessToken() : null;
         $request = $this->client->sendRequest('GET',
             '/' . $id_page,
             $params,

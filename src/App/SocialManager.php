@@ -21,27 +21,27 @@ class SocialManager
     private string $twitterIdPage;
 
     private bool $_siteInfoInitialized = false;
-    private ?AppOAuth $siteInfo = null;
+    private ?AppOAuth $appOAuth = null;
 
     private EntityManagerInterface $entityManager;
-    private AppOAuthRepository $siteInfoRepository;
+    private AppOAuthRepository $appOAuthRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage, AppOAuthRepository $siteInfoRepository)
+    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage, AppOAuthRepository $appOAuthRepository)
     {
         $this->entityManager = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
         $this->twitterIdPage = $twitterIdPage;
-        $this->siteInfoRepository = $siteInfoRepository;
+        $this->appOAuthRepository = $appOAuthRepository;
     }
 
     public function getAppOAuth(): AppOAuth
     {
         if (false === $this->_siteInfoInitialized) {
             $this->_siteInfoInitialized = true;
-            $this->siteInfo = $this->siteInfoRepository->findOneBy([]);
+            $this->appOAuth = $this->appOAuthRepository->findOneBy([]);
         }
 
-        return $this->siteInfo;
+        return $this->appOAuth;
     }
 
     public function getFacebookIdPage(): string
