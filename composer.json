@@ -36,6 +36,7 @@
         "abraham/twitteroauth": "^1.1",
         "beberlei/doctrineextensions": "^1.2",
         "easycorp/easyadmin-bundle": "^2.1",
+        "erusev/parsedown": "^1.7",
         "facebook/graph-sdk": "^5.7",
         "friendsofsymfony/elastica-bundle": "^5.0",
         "friendsofsymfony/http-cache-bundle": "^2.6",

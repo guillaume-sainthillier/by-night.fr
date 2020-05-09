@@ -10,8 +10,11 @@
 
 namespace App\Repository;
 
+use App\Entity\AdminZone1;
+use App\Entity\AdminZone2;
 use App\Entity\Country;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -26,6 +29,37 @@ class CountryRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Country::class);
     }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function getFromRegionOrDepartment(?string $region, ?string $department): ?Country
+    {
+        $qb = $this
+            ->createQueryBuilder('c')
+            ->leftJoin(AdminZone1::class, 'admin_zone1', 'WITH', 'admin_zone1.country = c')
+            ->leftJoin(AdminZone2::class, 'admin_zone2', 'WITH', 'admin_zone2.country = c');
+
+        if ($region) {
+            $qb
+                ->orWhere('LOWER(admin_zone1.name) LIKE :region')
+                ->setParameter('region', '%' . mb_strtolower($region) . '%');
+        }
+
+        if ($department) {
+            $qb
+                ->orWhere('LOWER(admin_zone2.name) LIKE :department')
+                ->setParameter('department', '%' . mb_strtolower($department) . '%');
+        }
+
+        return $qb
+            ->groupBy('c')
+            ->getQuery()
+            ->enableResultCache()
+            ->useQueryCache(true)
+            ->getOneOrNullResult();
+    }
+
 
     public function findByName($country)
     {

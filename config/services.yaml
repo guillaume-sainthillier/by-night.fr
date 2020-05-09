@@ -39,6 +39,7 @@ services:
             $cfUserEmail: "%env(CF_USER_EMAIL)%"
             $cfUserKey: "%env(CF_USER_KEY)%"
             $cfZone: "%env(CF_ZONE)%"
+            $openAgendaKey: "%env(OPEN_AGENDA_KEY)%"
             $sowprogUsername: "%env(SOWPROG_USER)%"
             $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
             $awinApiKey: "%env(AWIN_API_KEY)%"

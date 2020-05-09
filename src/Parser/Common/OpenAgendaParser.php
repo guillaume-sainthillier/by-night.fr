@@ -12,48 +12,33 @@ namespace App\Parser\Common;
 
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use App\Repository\CountryRepository;
 use DateTime;
 use DateTimeInterface;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Promise\FulfilledPromise;
-use GuzzleHttp\Promise\PromiseInterface;
-use function GuzzleHttp\Psr7\copy_to_string;
-use Psr\Http\Message\ResponseInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class OpenAgendaParser extends AbstractParser
 {
-    // Next step : 'https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/records'
-    private const AGENDA_IDS = [
-        93_184_572, // https://openagenda.com/fetedelascience2019_hautsdefrance?lang=fr
-        49_405_812, // https://openagenda.com/saison-culturelle-en-france?lang=fr
-        7_430_297, // https://openagenda.com/agenda-culturel-grand-est?lang=fr
-        1_108_324, // https://openagenda.com/un-air-de-bordeaux?lang=fr
-        92_445_297, // https://openagenda.com/fetedelascience2019_occitanie?lang=fr
-        13_613_180, // https://openagenda.com/grand-chatellerault?lang=fr
-        87_948_516, // https://openagenda.com/agenda-different-seine-maritime?lang=fr
-        93_184_572, // https://openagenda.com/fetedelascience2019_hautsdefrance?lang=fr
-        41_148_947, // https://openagenda.com/terres-de-montaigu?lang=fr
-        22_126_321, // https://openagenda.com/tootsweet?lang=fr
-        43_896_350, // https://openagenda.com/iledefrance?lang=fr
-        88_167_337, // https://openagenda.com/mediatheque-bibliotheques-st-denis-reunion?lang=fr
-        69_653_526, // https://openagenda.com/france-numerique?lang=fr
-        89_904_399, // https://openagenda.com/metropole-europeenne-de-lille?lang=fr
-    ];
+    private const EVENT_BATCH_SIZE = 50;
 
-    private const EVENT_BATCH_SIZE = 300;
-
-    private Client $client;
+    private HttpClientInterface $client;
+    private CountryRepository $countryRepository;
 
     private array $cache;
+    private string $openAgendaKey;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
+    public function __construct(string $openAgendaKey, LoggerInterface $logger, EventProducer $eventProducer, CountryRepository $countryRepository)
     {
         parent::__construct($logger, $eventProducer);
 
-        $this->client = new Client();
+        $this->countryRepository = $countryRepository;
+        $this->openAgendaKey = $openAgendaKey;
+        $this->client = HttpClient::create();
         $this->cache = [];
     }
 
@@ -64,79 +49,104 @@ class OpenAgendaParser extends AbstractParser
 
     public function parse(bool $incremental): void
     {
-        foreach (self::AGENDA_IDS as $id) {
-            $this->makeRequest($id)->wait();
+        //Fetch event uids from public.opendatasoft.com
+        $query = [
+            'rows' => '-1',
+            'select' => 'uid',
+            'lang' => 'fr',
+            'timezone' => 'UTC'
+        ];
+
+        if ($incremental) {
+            $query['where'] = sprintf("updated_at >= '%s'", (new DateTime('yesterday'))->format('Y-m-d'));
+        } else {
+            $query['where'] = sprintf("date_end >= '%s'", date('Y-m-d'));
+        }
+        $url = 'https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/exports/json';
+
+        $response = $this->client->request('GET', $url, ['query' => $query]);
+        $eventIds = array_map(fn(array $data) => (int)$data['uid'], $response->toArray());
+        $eventIds = array_filter($eventIds);
+        $eventChunks = array_chunk($eventIds, self::EVENT_BATCH_SIZE);
+
+        //Then fetch agenda uids from api.openagenda.com
+        $responses = [];
+        foreach ($eventChunks as $eventChunk) {
+            $url = 'https://api.openagenda.com/v1/events';
+            $responses[] = $this->client->request('GET', $url, [
+                'query' => [
+                    'key' => $this->openAgendaKey,
+                    'uids' => $eventChunk
+                ]
+            ]);
+        }
+
+        foreach ($this->client->stream($responses) as $response => $chunk) {
+            try {
+                if (!$chunk->isLast()) {
+                    continue;
+                }
+
+                $datas = $response->toArray();
+                if ($datas['success'] !== true) {
+                    $exception = new \RuntimeException('Unable to fetch agenda ids from uids');
+                    $this->logException($exception, $datas);
+                    continue;
+                }
+
+                //Parse events
+                $this->publishEvents($datas['data']);
+            } catch (TransportExceptionInterface|HttpExceptionInterface $exception) {
+                $this->logException($exception);
+            }
         }
     }
 
-    private function makeRequest(int $agendaId, int $page = 0): PromiseInterface
+    private function publishEvents(array $events): void
     {
-        //Send first request to get events size
-        return $this->sendRequest($agendaId, $page)
-            ->then(function (array $result) use ($agendaId, $page) {
-                if (!isset($result['events'])) {
-                    $exception = new RuntimeException(sprintf("Unable to find events for agenda '%s'", $agendaId));
-                    $this->logException($exception, ['agendaId' => $agendaId, 'page' => $page]);
-
-                    return new FulfilledPromise(null);
-                }
-                $this->publishEvents($result['events']);
-
-                $nbPages = ceil($result['total'] / self::EVENT_BATCH_SIZE);
-                if ($nbPages > 1) {
-                    //Send next requests
-                    $requests = function ($nbPages) use ($agendaId) {
-                        for ($page = 1; $page <= $nbPages - 1; ++$page) {
-                            yield fn () => $this
-                                ->sendRequest($agendaId, $page)
-                                ->then(function (array $results) {
-                                    $this->publishEvents($results['events']);
-                                });
-                        }
-                    };
-
-                    $pool = new Pool($this->client, $requests($nbPages), [
-                        'concurrency' => 5,
-                    ]);
-
-                    return $pool->promise();
-                }
-
-                return new FulfilledPromise(null);
-            });
-    }
-
-    private function sendRequest(int $agendaId, int $page): PromiseInterface
-    {
-        //https://openagenda.zendesk.com/hc/fr/articles/203034982-L-export-JSON-d-un-agenda
-        $uri = sprintf('https://openagenda.com/agendas/%s/events.json?oaq[lang]=fr&limit=%d&offset=%d', $agendaId, self::EVENT_BATCH_SIZE, $page * self::EVENT_BATCH_SIZE);
-
-        return $this->client
-            ->getAsync($uri)
-            ->then(fn (ResponseInterface $result) => json_decode(copy_to_string($result->getBody()), true, 512, \JSON_THROW_ON_ERROR));
-    }
-
-    private function publishEvents(array $events): int
-    {
-        $nbParsed = 0;
         foreach ($events as $event) {
-            if (!empty($this->cache['visited'][$event['uid']])) {
+            $event = $this->getInfoEvent($event);
+            if (null === $event) {
                 continue;
             }
-
-            $this->cache['visited'][$event['uid']] = true;
-            $event = $this->getInfoEvent($event);
             $this->publish($event);
-            ++$nbParsed;
         }
-
-        return $nbParsed;
     }
 
-    private function getInfoEvent(array $event): array
+    private function getInfoEvent(array $event): ?array
     {
-        $dateDebut = DateTime::createFromFormat('Y-m-d H:i', $event['firstDate'] . ' ' . $event['firstTimeStart']);
-        $dateFin = DateTime::createFromFormat('Y-m-d H:i', $event['lastDate'] . ' ' . $event['lastTimeEnd']);
+        if (empty($event['freeText']['fr'])) {
+            return null;
+        }
+
+        if (empty($event['locations'])) {
+            return null;
+        }
+
+        $location = current($event['locations']);
+        if (empty($location['dates'])) {
+            return null;
+        }
+
+        $countryCode = null;
+        if (empty($location['countryCode'])) {
+            try {
+                $country = $this->countryRepository->getFromRegionOrDepartment($location['region'] ?? null, $location['department'] ?? null);
+                $countryCode = $country ? $country->getId() : null;
+            } catch (NonUniqueResultException $exception) {
+                return null;
+            }
+        }
+
+        if (null === $countryCode) {
+            return null;
+        }
+
+        $dates = $location['dates'];
+        $startDateAsArray = current($dates);
+        $endDateAsArray = end($dates);
+        $dateDebut = DateTime::createFromFormat('Y-m-d H:i:s', $startDateAsArray['date'] . ' ' . $startDateAsArray['timeStart']);
+        $dateFin = DateTime::createFromFormat('Y-m-d H:i:s', $endDateAsArray['date'] . ' ' . $endDateAsArray['timeEnd']);
 
         $horaires = null;
         if ($dateDebut instanceof DateTimeInterface && $dateFin instanceof DateTimeInterface && $dateDebut->getTimestamp() !== $dateFin->getTimestamp()) {
@@ -145,40 +155,38 @@ class OpenAgendaParser extends AbstractParser
             $horaires = \sprintf('A %s', $dateDebut->format("H\hi"));
         }
 
-        $description = null;
-        if (isset($event['html']['fr'])) {
-            $description = $event['html']['fr'];
-        } elseif (isset($event['longDescription']['fr'])) {
-            $description = nl2br($event['longDescription']['fr']);
-        } elseif (isset($event['description']['fr'])) {
-            $description = nl2br($event['description']['fr']);
+        $mdParser = new \Parsedown();
+        $description = $mdParser->text($event['freeText']['fr']);
+
+        $type_manifestation = null;
+        if (!empty($event['tags']['fr'])) {
+            $type_manifestation = $event['tags']['fr'];
         }
 
-        $type_manifestation = [];
-        foreach ($event['tags'] as $tag) {
-            $type_manifestation[] = $tag['label'];
+        if ($event['image'] && 0 === strpos($event['image'], '//')) {
+            $event['image'] = 'https:' . $event['image'];
         }
 
         return [
             'nom' => $event['title']['fr'],
             'descriptif' => $description,
-            'source' => $event['canonicalUrl'],
+            'source' => $event['link'],
             'external_id' => 'OA-' . $event['uid'],
-            'url' => $event['originalImage'],
+            'url' => $event['image'],
             'external_updated_at' => new DateTime($event['updatedAt']),
             'date_debut' => $dateDebut,
             'date_fin' => $dateFin,
             'horaires' => $horaires,
-            'latitude' => $event['latitude'],
-            'longitude' => $event['longitude'],
-            'adresse' => $event['address'],
-            'placeStreet' => str_replace($event['postalCode'] . ' ' . $event['city'], '', $event['address']),
-            'placeName' => $event['locationName'],
-            'placePostalCode' => $event['postalCode'],
-            'placeCity' => $event['city'],
-            'placeCountryName' => $event['location']['countryCode'],
-            'placeExternalId' => $event['locationUid'],
-            'type_manifestation' => implode(', ', $type_manifestation) ?: null,
+            'latitude' => (float)$location['latitude'],
+            'longitude' => (float)$location['longitude'],
+            'adresse' => $location['address'] ?? null,
+            'placeName' => $location['placename'] ?? null,
+            'placePostalCode' => $location['postalCode'] ?? null,
+            'placeCity' => $location['city'] ?? null,
+            'placeCountryName' => $countryCode,
+            'placeExternalId' => 'OA-' . $location['uid'],
+            'type_manifestation' => $type_manifestation,
+            'reservation_internet' => $location['ticketLink'] ?? null,
         ];
     }
 }
