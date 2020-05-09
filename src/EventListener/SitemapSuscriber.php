@@ -29,8 +29,6 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private UrlGeneratorInterface $urlGenerator;
 
-    private EntityManagerInterface $entityManager;
-
     private ?UrlContainerInterface $urlContainer = null;
 
     private DateTime $now;
@@ -39,10 +37,9 @@ class SitemapSuscriber implements EventSubscriberInterface
     private EventRepository $eventRepository;
     private UserRepository $userRepository;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, EntityManagerInterface $entityManager, CityRepository $cityRepository, PlaceRepository $placeRepository, EventRepository $eventRepository, UserRepository $userRepository)
+    public function __construct(UrlGeneratorInterface $urlGenerator, CityRepository $cityRepository, PlaceRepository $placeRepository, EventRepository $eventRepository, UserRepository $userRepository)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->entityManager = $entityManager;
         $this->now = new DateTime();
         $this->cityRepository = $cityRepository;
         $this->placeRepository = $placeRepository;

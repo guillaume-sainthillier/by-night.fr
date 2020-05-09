@@ -26,13 +26,10 @@ class Firewall
 
     private Comparator $comparator;
 
-    private EntityManagerInterface $em;
-
     private ParserDataRepository $parserDataRepository;
 
-    public function __construct(EntityManagerInterface $em, Comparator $comparator, ParserDataRepository $parserDataRepository)
+    public function __construct(Comparator $comparator, ParserDataRepository $parserDataRepository)
     {
-        $this->em = $em;
         $this->comparator = $comparator;
         $this->parserDatas = [];
         $this->parserDataRepository = $parserDataRepository;

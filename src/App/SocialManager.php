@@ -23,12 +23,10 @@ class SocialManager
     private bool $_siteInfoInitialized = false;
     private ?AppOAuth $appOAuth = null;
 
-    private EntityManagerInterface $entityManager;
     private AppOAuthRepository $appOAuthRepository;
 
-    public function __construct(EntityManagerInterface $entityManager, $facebookIdPage, $twitterIdPage, AppOAuthRepository $appOAuthRepository)
+    public function __construct($facebookIdPage, $twitterIdPage, AppOAuthRepository $appOAuthRepository)
     {
-        $this->entityManager = $entityManager;
         $this->facebookIdPage = $facebookIdPage;
         $this->twitterIdPage = $twitterIdPage;
         $this->appOAuthRepository = $appOAuthRepository;

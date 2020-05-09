@@ -31,7 +31,6 @@ class OpenAgendaParser extends AbstractParser
     private HttpClientInterface $client;
     private CountryRepository $countryRepository;
 
-    private array $cache;
     private string $openAgendaKey;
 
     public function __construct(string $openAgendaKey, LoggerInterface $logger, EventProducer $eventProducer, CountryRepository $countryRepository)
@@ -41,7 +40,6 @@ class OpenAgendaParser extends AbstractParser
         $this->countryRepository = $countryRepository;
         $this->openAgendaKey = $openAgendaKey;
         $this->client = HttpClient::create();
-        $this->cache = [];
     }
 
     public static function getParserName(): string

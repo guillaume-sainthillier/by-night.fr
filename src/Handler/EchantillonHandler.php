@@ -21,7 +21,6 @@ class EchantillonHandler
 {
     public $newPlaces;
     public $fbPlaces;
-    private EntityManagerInterface $em;
     /**
      * @var Place[][]
      */
@@ -39,9 +38,8 @@ class EchantillonHandler
     private PlaceRepository $placeRepository;
     private EventRepository $eventRepository;
 
-    public function __construct(EntityManagerInterface $em, PlaceRepository $placeRepository, EventRepository $eventRepository)
+    public function __construct(PlaceRepository $placeRepository, EventRepository $eventRepository)
     {
-        $this->em = $em;
         $this->init();
         $this->placeRepository = $placeRepository;
         $this->eventRepository = $eventRepository;

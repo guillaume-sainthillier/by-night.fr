@@ -24,15 +24,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LocationConverter implements ParamConverterInterface
 {
-    private EntityManagerInterface $em;
-
     private CityManager $cityManager;
     private CityRepository $cityRepository;
     private CountryRepository $countryRepository;
 
-    public function __construct(EntityManagerInterface $em, CityManager $cityManager, CityRepository $cityRepository, CountryRepository $countryRepository)
+    public function __construct(CityManager $cityManager, CityRepository $cityRepository, CountryRepository $countryRepository)
     {
-        $this->em = $em;
         $this->cityManager = $cityManager;
         $this->cityRepository = $cityRepository;
         $this->countryRepository = $countryRepository;
