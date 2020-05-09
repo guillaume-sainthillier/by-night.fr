@@ -47,8 +47,8 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
             $this->doctrineEventHandler->handleOne($event);
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage(), [
-                'datas' => $datas,
                 'exception' => $e,
+                'extra' => $datas,
             ]);
 
             return ConsumerInterface::MSG_REJECT;

@@ -51,8 +51,10 @@ class Twitter extends Social
             return $this->client->get('search/tweets', $params);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
-                'params' => $params,
                 'exception' => $e,
+                'extra' => [
+                    'params' => $params,
+                ]
             ]);
         }
 

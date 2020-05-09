@@ -49,7 +49,10 @@ abstract class AbstractParser implements ParserInterface
 
     protected function logException(Throwable $exception, array $context = [])
     {
-        $this->logger->error($exception->getMessage(), $context + ['exception' => $exception]);
+        $this->logger->error($exception->getMessage(), [
+            'exception' => $exception,
+            'extra' => $context
+        ]);
     }
 
     public static function getParserVersion(): string

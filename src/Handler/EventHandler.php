@@ -58,8 +58,8 @@ class EventHandler
 
     public function handleDownload(Event $event)
     {
+        $url = $event->getUrl();
         try {
-            $url = $event->getUrl();
             $response = $this->client->request('GET', $url);
             $contentType = $response->getHeaders()['content-type'][0];
             $content = $response->getContent();
@@ -69,17 +69,25 @@ class EventHandler
                 return;
             }
 
-            $this->logger->error($e->getMessage(), ['event' => [
-                'id' => $event->getId(),
-                'url' => $event->getUrl(),
+            $this->logger->error($e->getMessage(), [
                 'exception' => $e,
-            ]]);
+                'extra' => [
+                    'event' => [
+                        'id' => $event->getId(),
+                        'url' => $url,
+                    ]
+                ]
+            ]);
         } catch (UnsupportedFileException $e) {
-            $this->logger->error($e->getMessage(), ['event' => [
-                'id' => $event->getId(),
-                'url' => $event->getUrl(),
+            $this->logger->error($e->getMessage(), [
                 'exception' => $e,
-            ]]);
+                'extra' => [
+                    'event' => [
+                        'id' => $event->getId(),
+                        'url' => $url,
+                    ]
+                ]
+            ]);
         }
     }
 
