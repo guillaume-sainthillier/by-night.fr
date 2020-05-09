@@ -87,7 +87,6 @@ class UserUpdater extends Updater
 
                     if ($this->userHandler->hasToUploadNewImage($content, $user)) {
                         $contentType = $response->getHeaders()['content-type'][0];
-                        dump($response->getInfo('url'), $response->getInfo('user_data')->getOAuth()->getFacebookId(), $contentType);
                         $this->userHandler->uploadFile($user, $content, $contentType);
                     }
                 }
