@@ -10,25 +10,17 @@
 
 namespace App\Social;
 
+use Abraham\TwitterOAuth\TwitterOAuth;
 use App\App\Location;
 use Exception;
-use TwitterOAuth\Auth\SingleUserAuth;
-use TwitterOAuth\Serializer\ArraySerializer;
 
 class Twitter extends Social
 {
-    private SingleUserAuth $client;
+    private ?TwitterOAuth $client;
 
     public function constructClient()
     {
-        $config = [
-            'consumer_key' => $this->id,
-            'consumer_secret' => $this->secret,
-            'oauth_token' => '',
-            'oauth_token_secret' => '',
-        ];
-
-        $this->client = new SingleUserAuth($config, new ArraySerializer());
+        $this->client = new TwitterOAuth($this->id, $this->secret);
     }
 
     public function getTimeline(Location $location, $max_id, $limit)
@@ -48,7 +40,7 @@ class Twitter extends Social
         }
 
         try {
-            return $this->client->get('search/tweets', $params);
+            return json_decode(json_encode($this->client->get('search/tweets', $params)), true);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'exception' => $e,

@@ -6,9 +6,6 @@ parameters:
     google_map_key: '%env(GOOGLE_MAP_KEY_WEB)%'
     twitter_id_page: 'By__Night'
     disable_polled_feeds: '%kernel.debug%'
-    class.guzzle.response: Guzzle\Http\Message\Response
-    class.guzzle.client: Guzzle\Http\Client
-    class.guzzle.oauthplugin: Guzzle\Plugin\Oauth\OauthPlugin
     twitter.baseurl: https://api.twitter.com/1.1
     patterns.path: '.+'
     patterns.page: '[1-9](\d*)'
@@ -34,7 +31,6 @@ services:
             $tempPath: "%kernel.project_dir%/var/storage/temp"
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
-            $enableFeeds: "%env(APP_ENABLE_TWITTER_FEED)%"
             $debug: "%kernel.debug%"
             $cfUserEmail: "%env(CF_USER_EMAIL)%"
             $cfUserKey: "%env(CF_USER_KEY)%"

@@ -54,7 +54,6 @@
         "neitanod/forceutf8": "^2.0",
         "php-amqplib/rabbitmq-bundle": "^1.14",
         "presta/sitemap-bundle": "^2.1",
-        "ricardoper/twitteroauth": "2.*",
         "sensio/framework-extra-bundle": "^5.2",
         "sentry/sentry-symfony": "^3.0",
         "social-links/social-links": "^1.13",
