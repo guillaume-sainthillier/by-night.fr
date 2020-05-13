@@ -20,6 +20,7 @@ use App\Utils\Merger;
 use App\Utils\Monitor;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\Mime\MimeTypes;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -61,9 +62,8 @@ class EventHandler
         $url = $event->getUrl();
         try {
             $response = $this->client->request('GET', $url);
-            $contentType = $response->getHeaders()['content-type'][0];
             $content = $response->getContent();
-            $this->uploadFile($event, $url, $content, $contentType);
+            $this->uploadFile($event, $content);
         } catch (TransportExceptionInterface | HttpExceptionInterface $e) {
             if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
                 return;
@@ -94,8 +94,19 @@ class EventHandler
     /**
      * @throws UnsupportedFileException
      */
-    private function uploadFile(Event $event, string $url, string $content, string $contentType)
+    private function uploadFile(Event $event, string $content)
     {
+        $tempFileBasename = ($event->getId() ?: uniqid());
+        $tempFilePath = $this->tempPath . \DIRECTORY_SEPARATOR . $tempFileBasename;
+        $octets = \file_put_contents($tempFilePath, $content);
+        if ($octets === 0) {
+            unlink($tempFilePath);
+            $event->setImageSystemFile(null);
+            return;
+        }
+
+        $mimeTypes = new MimeTypes();
+        $contentType = $mimeTypes->guessMimeType($tempFilePath);
         switch ($contentType) {
             case 'image/gif':
                 $ext = 'gif';
@@ -111,18 +122,9 @@ class EventHandler
                 throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType));
         }
 
-        $tempFilename = ($event->getId() ?: uniqid()) . '.' . $ext;
-        $filename = pathinfo($url, \PATHINFO_BASENAME) ?: $tempFilename;
-        $tempPath = $this->tempPath . \DIRECTORY_SEPARATOR . $tempFilename;
-        $octets = \file_put_contents($tempPath, $content);
-
-        if ($octets > 0) {
-            $file = new DeletableFile($tempPath, $filename, $contentType, null, true);
-            $event->setImageSystemFile($file);
-        } else {
-            unlink($tempPath);
-            $event->setImageSystemFile(null);
-        }
+        $originalName = pathinfo($event->getUrl(), \PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
+        $file = new DeletableFile($tempFilePath, $originalName, $contentType, null, true);
+        $event->setImageSystemFile($file);
     }
 
     /**
@@ -130,18 +132,18 @@ class EventHandler
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Event $event)
     {
-        $place = Monitor::bench('Handle Place', fn () => $this->handlePlace($persistedPlaces, $event->getPlace()));
+        $place = Monitor::bench('Handle Place', fn() => $this->handlePlace($persistedPlaces, $event->getPlace()));
         $event->setPlace($place);
 
-        return Monitor::bench('Handle Event', fn () => $this->handleEvent($persistedEvents, $event));
+        return Monitor::bench('Handle Event', fn() => $this->handleEvent($persistedEvents, $event));
     }
 
     public function handlePlace(array $persistedPlaces, Place $notPersistedPlace)
     {
-        $bestPlace = Monitor::bench('getBestPlace', fn () => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
+        $bestPlace = Monitor::bench('getBestPlace', fn() => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
 
         //On fusionne la place existant avec celle découverte (même si NULL)
-        return Monitor::bench('mergePlace', fn () => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
+        return Monitor::bench('mergePlace', fn() => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
     }
 
     public function handleEvent(array $persistedEvents, Event $notPersistedEvent)
@@ -149,6 +151,6 @@ class EventHandler
         $bestEvent = \count($persistedEvents) > 0 ? current($persistedEvents) : null;
 
         //On fusionne l'event existant avec celui découvert (même si NULL)
-        return Monitor::bench('mergeEvent', fn () => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
+        return Monitor::bench('mergeEvent', fn() => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
     }
 }

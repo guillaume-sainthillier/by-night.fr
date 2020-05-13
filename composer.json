@@ -74,6 +74,7 @@
         "symfony/http-foundation": "4.4.*",
         "symfony/inflector": "4.4.*",
         "symfony/intl": "4.4.*",
+        "symfony/mime": "4.4.*",
         "symfony/monolog-bridge": "4.4.*",
         "symfony/monolog-bundle": "^3.1",
         "symfony/orm-pack": "*",
