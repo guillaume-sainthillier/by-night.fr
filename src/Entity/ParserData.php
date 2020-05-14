@@ -54,7 +54,7 @@ class ParserData
         return $this->reject;
     }
 
-    public function setReject(Reject $reject)
+    public function setReject(Reject $reject): self
     {
         $this->reject = $reject;
 

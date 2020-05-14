@@ -15,7 +15,6 @@ use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
 use DateTimeInterface;
-use Doctrine\ORM\EntityManagerInterface;
 
 class Firewall
 {
@@ -208,7 +207,7 @@ class Firewall
         }
 
         $reject = $event->getPlace()->getReject();
-        if (null === $reject->isValid()) {
+        if (false === $reject->isValid()) {
             $event->getPlaceReject()->addReason($reject->getReason());
             $event->getReject()->addReason($reject->getReason());
         }
@@ -219,7 +218,7 @@ class Firewall
         $reject = $parserData->getReject();
 
         //Aucune action sur un événement supprimé sur la plateforme par son créateur
-        if (null !== $reject->isEventDeleted()) {
+        if (false !== $reject->isEventDeleted()) {
             return;
         }
 
@@ -240,8 +239,7 @@ class Firewall
                 ->setFirewallVersion(self::VERSION)
                 ->setParserVersion($event->getParserVersion());
 
-            //L'événement n'était pas valide -> valide
-            if (null === $reject->hasNoNeedToUpdate()) {
+            if(false === $reject->hasNoNeedToUpdate()) {
                 $reject->setValid();
             }
         }
