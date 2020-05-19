@@ -47,6 +47,9 @@ easy_admin:
                     - { property: 'typeManifestation' }
                     - { property: 'categorieManifestation' }
                     - { property: 'themeManifestation' }
+                    - { property: 'phoneContacts', type: 'collection' }
+                    - { property: 'mailContacts', type: 'collection' }
+                    - { property: 'websiteContacts', type: 'collection' }
                     - { property: 'reservationTelephone' }
                     - { property: 'reservationEmail' }
                     - { property: 'reservationInternet' }

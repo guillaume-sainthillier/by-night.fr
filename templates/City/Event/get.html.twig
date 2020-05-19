@@ -195,35 +195,29 @@
                         {{ descriptionSoiree|raw }}
                     </div>
                     <div class="col-sm-4 my-3 my-md-0 event-details">
-                        {% for telephone in event.reservationTelephone|split(',')|filter(v => v|trim|length > 0) %}
+                        {% for phoneContact in event.phoneContacts %}
                             <div class="detail-item">
                                 <i class="fa fa-phone"></i>
                                 <p class="one-line">
-                                    <a href="tel:{{ telephone|trim }}">{{ telephone|trim }}</a>
+                                    <a href="tel:{{ phoneContact }}">{{ phoneContact }}</a>
                                 </p>
                             </div>
                         {% endfor %}
-                        {% for liens in event.reservationInternet|split(' ') %}
-                            {% for lien in liens|split(',')|filter(v => v|trim|length > 0) %}
-                                <div class="detail-item">
-                                    <i class="fa fa-globe"></i>
-                                    <p class="one-line">
-                                        <a title="Aller sur le site internet de la réservation"
-                                           rel="nofollow"
-                                           href="{{ lien|ensure_protocol }}">{{ lien }}</a>
-                                    </p>
-                                </div>
-                            {% endfor %}
+                        {% for websiteContact in event.websiteContacts %}
+                            <div class="detail-item">
+                                <i class="fa fa-globe"></i>
+                                <p class="one-line">
+                                    <a rel="nofollow" href="{{ websiteContact|ensure_protocol }}">{{ websiteContact }}</a>
+                                </p>
+                            </div>
                         {% endfor %}
-                        {% for emails in event.reservationEmail|split(' ') %}
-                            {% for email in emails|split(',')|filter(v => v|trim|length > 0) %}
-                                <div class="detail-item">
-                                    <i class="fa fa-envelope-o"></i>
-                                    <p class="one-line">
-                                        <a href="mailto:{{ email }}">{{ email }}</a>
-                                    </p>
-                                </div>
-                            {% endfor %}
+                        {% for mailContact in event.mailContacts %}
+                            <div class="detail-item">
+                                <i class="fa fa-envelope-o"></i>
+                                <p class="one-line">
+                                    <a href="mailto:{{ mailContact }}">{{ mailContact }}</a>
+                                </p>
+                            </div>
                         {% endfor %}
                         {% if event.facebookEventId %}
                             <div class="detail-item">

@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTime;
@@ -30,9 +31,9 @@ class DataTourismeParser extends AbstractParser
 
     private CacheInterface $cache;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, CacheInterface $dataTourismeCache, string $tempPath, string $dataTourismeAppKey)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, CacheInterface $dataTourismeCache, string $tempPath, string $dataTourismeAppKey)
     {
-        parent::__construct($logger, $eventProducer);
+        parent::__construct($logger, $eventProducer, $reservationsHandler);
 
         $this->tempPath = $tempPath;
         $this->dataTourismeAppKey = $dataTourismeAppKey;
@@ -125,11 +126,11 @@ class DataTourismeParser extends AbstractParser
         $longitude = null;
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'])) {
-            $latitude = (float) $datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
+            $latitude = (float)$datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
         }
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'])) {
-            $longitude = (float) $datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
+            $longitude = (float)$datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
         }
 
         $emails = [];
@@ -201,9 +202,9 @@ class DataTourismeParser extends AbstractParser
             'latitude' => $latitude,
             'longitude' => $longitude,
             'url' => $url,
-            'reservation_internet' => implode(' ', $websites) ?: null,
-            'reservation_email' => implode(' ', $emails) ?: null,
-            'reservation_telephone' => implode(' ', $phones) ?: null,
+            'websiteContacts' => $websites ?: null,
+            'mailContacts' => $emails ?: null,
+            'phoneContacts' => $phones ?: null,
         ];
 
         if (\is_array($event['placeStreet'])) {
@@ -262,7 +263,7 @@ class DataTourismeParser extends AbstractParser
         }
 
         $key = str_replace(':', '', $resource['@id']);
-        $resource = array_merge($resource, $this->cache->get($key, fn () => $resource));
+        $resource = array_merge($resource, $this->cache->get($key, fn() => $resource));
 
         foreach ($resource as $key => $value) {
             if (\is_array($value)) {
@@ -310,7 +311,7 @@ class DataTourismeParser extends AbstractParser
             //'schema:ScreeningEvent' => 'ScreeningEvent',
             'schema:SocialEvent' => 'Communautaire',
             'schema:SportsEvent' => 'Sport',
-            'schema:TheaterEvent' => 'Spectacle',
+            'schema:TheaterEvent' => 'Théâtre',
             'schema:VisualArtsEvent' => 'Art',
             'ChildrensEvent' => 'Famille',
             'CulturalEvent' => 'Culture',
@@ -325,5 +326,10 @@ class DataTourismeParser extends AbstractParser
         ];
 
         return $mapping[$type] ?? null;
+    }
+
+    public static function getParserVersion(): string
+    {
+        return '1.1';
     }
 }

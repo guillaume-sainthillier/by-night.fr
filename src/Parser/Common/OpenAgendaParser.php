@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use App\Handler\ReservationsHandler;
 use RuntimeException;
 use Parsedown;
 use App\Parser\AbstractParser;
@@ -33,9 +34,9 @@ class OpenAgendaParser extends AbstractParser
 
     private string $openAgendaKey;
 
-    public function __construct(string $openAgendaKey, LoggerInterface $logger, EventProducer $eventProducer, CountryRepository $countryRepository)
+    public function __construct(string $openAgendaKey, LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, CountryRepository $countryRepository)
     {
-        parent::__construct($logger, $eventProducer);
+        parent::__construct($logger, $eventProducer, $reservationsHandler);
 
         $this->countryRepository = $countryRepository;
         $this->openAgendaKey = $openAgendaKey;
@@ -167,6 +168,8 @@ class OpenAgendaParser extends AbstractParser
             $event['image'] = 'https:' . $event['image'];
         }
 
+        $infos = $this->reservationsHandler->parseReservations($location['ticketLink'] ?? null);
+
         return [
             'nom' => $event['title']['fr'],
             'descriptif' => $description,
@@ -186,7 +189,9 @@ class OpenAgendaParser extends AbstractParser
             'placeCountryName' => $countryCode,
             'placeExternalId' => 'OA-' . $location['uid'],
             'type_manifestation' => $type_manifestation,
-            'reservation_internet' => $location['ticketLink'] ?? null,
+            'websiteContacts' => $infos['urls'],
+            'phoneContacts' => $infos['phones'],
+            'mailContacts' => $infos['emails'],
         ];
     }
 }

@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use ForceUTF8\Encoding;
@@ -24,9 +25,9 @@ abstract class AbstractAwinParser extends AbstractParser
 
     private string $tempPath;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, string $tempPath, string $awinApiKey)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $tempPath, string $awinApiKey)
     {
-        parent::__construct($logger, $eventProducer);
+        parent::__construct($logger, $eventProducer, $reservationsHandler);
         $this->tempPath = $tempPath;
         $this->awinApiKey = $awinApiKey;
     }

@@ -31,9 +31,9 @@ class Cleaner
 
         $event->setNom($this->clean($event->getNom()) ?: null)
             ->setDescriptif($this->clean($event->getDescriptif()) ?: null)
-            ->setReservationEmail(\mb_substr($event->getReservationEmail(), 0, 255) ?: null)
-            ->setReservationTelephone(\mb_substr($event->getReservationTelephone(), 0, 255) ?: null)
-            ->setReservationInternet(\mb_substr($event->getReservationInternet(), 0, 512) ?: null)
+            ->setPhoneContacts($event->getPhoneContacts() ?: null)
+            ->setWebsiteContacts($event->getWebsiteContacts() ?: null)
+            ->setMailContacts($event->getMailContacts() ?: null)
             ->setAdresse(\mb_substr($event->getAdresse(), 0, 255) ?: null)
             ->setCategorieManifestation(\mb_substr($event->getCategorieManifestation(), 0, 128) ?: null)
             ->setThemeManifestation(\mb_substr($event->getThemeManifestation(), 0, 128) ?: null)

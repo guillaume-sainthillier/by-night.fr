@@ -14,6 +14,9 @@ use OldSound\RabbitMqBundle\RabbitMq\Producer;
 
 class EventProducer extends Producer
 {
+    /**
+     * @throws \JsonException
+     */
     public function scheduleEvent(array $event): void
     {
         $this->publish(json_encode($event, \JSON_THROW_ON_ERROR));

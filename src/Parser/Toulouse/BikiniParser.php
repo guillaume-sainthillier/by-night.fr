@@ -55,7 +55,7 @@ class BikiniParser extends AbstractParser
             'type_manifestation' => 'Concert, Musique',
             'categorie_manifestation' => $event['style'],
             'source' => $event['url'],
-            'reservation_internet' => $event['ticketUrl'],
+            'websiteContacts' => [$event['ticketUrl']],
             'url' => $event['image'],
             'modification_derniere_minute' => 'postponed' === $event['status'] ? 'REPORTE' : null,
             'placeName' => $event['place']['name'],

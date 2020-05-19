@@ -54,7 +54,7 @@ class ToulouseParser extends AbstractParser
         \fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
 
         while ($cursor = \fgetcsv($fic, 0, ';', '"', '"')) {
-            $tab = \array_map(fn ($e) => Encoding::toUTF8($e), $cursor);
+            $tab = \array_map(fn($e) => Encoding::toUTF8($e), $cursor);
 
             if (!$tab[1] && !$tab[2]) {
                 continue;
@@ -75,17 +75,17 @@ class ToulouseParser extends AbstractParser
                 'modification_derniere_minute' => $tab[9],
                 'placeName' => $tab[10],
                 'placeStreet' => $tab[12],
-                'latitude' => (float) $tab[20] ?: null,
-                'longitude' => (float) $tab[21] ?: null,
+                'latitude' => (float)$tab[20] ?: null,
+                'longitude' => (float)$tab[21] ?: null,
                 'placePostalCode' => $tab[14],
                 'placeCity' => $tab[15],
                 'placeCountryName' => 'France',
                 'type_manifestation' => $tab[16],
                 'categorie_manifestation' => $tab[17],
                 'theme_manifestation' => $tab[18],
-                'reservation_telephone' => $tab[22],
-                'reservation_email' => $tab[23],
-                'reservation_internet' => $tab[24],
+                'phoneContacts' => [$tab[22]] ?: null,
+                'mailContacts' => [$tab[23]] ?: null,
+                'websiteContacts' => [$tab[24]] ?: null,
                 'tarif' => $tab[26],
                 'source' => 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/information/',
             ];

@@ -52,6 +52,11 @@ class EventRepository extends ServiceEntityRepository
             ->leftJoin('c.parent', 'c2');
     }
 
+    public function createSimpleQueryBuilder($alias, $indexBy = null)
+    {
+        return parent::createQueryBuilder($alias, $indexBy);
+    }
+
     public function findSiteMap(int $page, int $resultsPerPage)
     {
         return $this->createQueryBuilder('a')

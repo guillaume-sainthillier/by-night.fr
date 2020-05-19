@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
 use DateTime;
 use Psr\Log\LoggerInterface;
@@ -23,9 +24,9 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
     private CacheInterface $cache;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, string $tempPath, string $awinApiKey, CacheInterface $memoryCache)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $tempPath, string $awinApiKey, CacheInterface $memoryCache)
     {
-        parent::__construct($logger, $eventProducer, $tempPath, $awinApiKey);
+        parent::__construct($logger, $eventProducer, $reservationsHandler, $tempPath, $awinApiKey);
         $this->cache = $memoryCache;
     }
 

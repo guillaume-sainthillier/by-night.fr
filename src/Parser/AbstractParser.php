@@ -10,6 +10,7 @@
 
 namespace App\Parser;
 
+use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
 use JsonException;
 use Psr\Log\LoggerInterface;
@@ -21,12 +22,15 @@ abstract class AbstractParser implements ParserInterface
 
     private LoggerInterface $logger;
 
+    protected ReservationsHandler $reservationsHandler;
+
     private int $parsedEvents;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler)
     {
         $this->logger = $logger;
         $this->eventProducer = $eventProducer;
+        $this->reservationsHandler = $reservationsHandler;
         $this->parsedEvents = 0;
     }
 

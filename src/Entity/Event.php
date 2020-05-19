@@ -163,6 +163,21 @@ class Event
     private ?string $themeManifestation = null;
 
     /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $phoneContacts = null;
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $mailContacts = null;
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private ?array $websiteContacts = null;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private ?string $reservationTelephone = null;
@@ -240,7 +255,7 @@ class Event
     private ?string $url = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=true)
      */
     private ?User $user = null;
@@ -321,7 +336,7 @@ class Event
     private ?string $source = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"list_event"})
      * @Expose
@@ -1198,6 +1213,42 @@ class Event
     public function setImageSystemHash(?string $imageSystemHash): self
     {
         $this->imageSystemHash = $imageSystemHash;
+
+        return $this;
+    }
+
+    public function getPhoneContacts(): ?array
+    {
+        return $this->phoneContacts;
+    }
+
+    public function setPhoneContacts(?array $phoneContacts): self
+    {
+        $this->phoneContacts = $phoneContacts;
+
+        return $this;
+    }
+
+    public function getMailContacts(): ?array
+    {
+        return $this->mailContacts;
+    }
+
+    public function setMailContacts(?array $mailContacts): self
+    {
+        $this->mailContacts = $mailContacts;
+
+        return $this;
+    }
+
+    public function getWebsiteContacts(): ?array
+    {
+        return $this->websiteContacts;
+    }
+
+    public function setWebsiteContacts(?array $websiteContacts): self
+    {
+        $this->websiteContacts = $websiteContacts;
 
         return $this;
     }

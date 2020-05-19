@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTime;
@@ -21,9 +22,9 @@ class SowProgParser extends AbstractParser
 {
     private HttpClientInterface $client;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, string $sowprogUsername, string $sowprogPassword)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $sowprogUsername, string $sowprogPassword)
     {
-        parent::__construct($logger, $eventProducer);
+        parent::__construct($logger, $eventProducer, $reservationsHandler);
 
         $this->client = HttpClient::create([
             'base_uri' => 'https://agenda.sowprog.com',
@@ -92,13 +93,13 @@ class SowProgParser extends AbstractParser
         }
 
         if (!empty($event['eventPrice'])) {
-            $prices = array_map(fn (array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $event['eventPrice']);
+            $prices = array_map(fn(array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $event['eventPrice']);
             $tab_infos['tarif'] = implode(' - ', $prices);
         }
 
         if (!empty($event['ticketStore'])) {
-            $tickets = array_map(fn (array $ticket) => $ticket['url'], $event['ticketStore']);
-            $tab_infos['reservation_internet'] = implode(' ', $tickets);
+            $tickets = array_map(fn(array $ticket) => $ticket['url'], $event['ticketStore']);
+            $tab_infos['websiteContacts'] = $tickets;
         }
 
         if ($event['location']) {
@@ -109,8 +110,8 @@ class SowProgParser extends AbstractParser
 
             if ($location['contact']) {
                 $contact = $event['location']['contact'];
-                $tab_infos['latitude'] = (float) $contact['lattitude'];
-                $tab_infos['longitude'] = (float) $contact['longitude'];
+                $tab_infos['latitude'] = (float)$contact['lattitude'];
+                $tab_infos['longitude'] = (float)$contact['longitude'];
 
                 $tab_infos['placeStreet'] = trim(sprintf('%s %s', $contact['addressLine1'], $contact['addressLine2']));
                 $tab_infos['placePostalCode'] = $contact['zipCode'];
