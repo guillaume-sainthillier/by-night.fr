@@ -24,7 +24,7 @@ class UtilTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->utils = static::$container->get(Util::class);
+        $this->utils = self::$container->get(Util::class);
     }
 
     /**

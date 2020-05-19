@@ -27,7 +27,7 @@ class FirewallTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->firewall = static::$container->get(Firewall::class);
+        $this->firewall = self::$container->get(Firewall::class);
     }
 
     public function testExplorations()

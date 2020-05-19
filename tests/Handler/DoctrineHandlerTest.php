@@ -26,7 +26,7 @@ class DoctrineHandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->doctrineHandler = static::$container->get(DoctrineEventHandler::class);
+        $this->doctrineHandler = self::$container->get(DoctrineEventHandler::class);
     }
 
     private function makeAsserts(Place $place, ?string $countryCode, ?string $cityName, ?string $postalCode, int $rejectReason)
@@ -68,97 +68,95 @@ class DoctrineHandlerTest extends ContainerTestCase
         $this->makeAsserts($place, $countryCode, $cityName, $postalCode, $rejectReason);
     }
 
-    public function guessEventLocationProvider()
+    public function guessEventLocationProvider(): iterable
     {
-        return [
-            // Pas de pays
-            [
-                (new Place())->setCodePostal('99999')->setVille('LoremIpsum'),
-                null,
-                null,
-                null,
-                Reject::NO_COUNTRY_PROVIDED | Reject::VALID,
-            ],
-            // Mauvais CP + mauvaise ville + mauvais pays
-            [
-                (new Place())->setCodePostal('99999')->setVille('LoremIpsum')->setCountryName('LoremIpsum'),
-                null,
-                null,
-                null,
-                Reject::BAD_COUNTRY | Reject::VALID,
-            ],
-            // Mauvais CP + mauvaise ville + mauvais pays
-            [
-                (new Place())->setCountryName('LoremIpsum'),
-                null,
-                null,
-                null,
-                Reject::BAD_COUNTRY | Reject::VALID,
-            ],
-            // Mauvais CP + mauvaise ville + bon pays
-            [
-                (new Place())->setCodePostal('99999')->setVille('LoremIpsum')->setCountryName('France'),
-                'FR',
-                null,
-                null,
-                Reject::VALID,
-            ],
-            // Mauvais CP + bonne ville + bon pays
-            [
-                (new Place())->setCodePostal('99999')->setVille('St Germain En Laye')->setCountryName('France'),
-                'FR',
-                'Saint-Germain-en-Laye',
-                null,
-                Reject::VALID,
-            ],
-            // Mauvais CP + ville doublon + bon pays
-            [
-                (new Place())->setCodePostal('31000')->setVille('Roques')->setCountryName('France'),
-                'FR',
-                'Toulouse',
-                '31000',
-                Reject::VALID,
-            ],
-            // CP doublon + pas de ville + bon pays
-            [
-                (new Place())->setCodePostal('31470')->setCountryName('France'),
-                'FR',
-                null,
-                null,
-                Reject::VALID,
-            ],
-            // Pas de CP + ville doublon + bon pays
-            [
-                (new Place())->setVille('Roques')->setCountryName('France'),
-                'FR',
-                null,
-                null,
-                Reject::VALID,
-            ],
-            // Pas de CP + bonne ville + bon pays
-            [
-                (new Place())->setVille('toulouse')->setCountryName('France'),
-                'FR',
-                'Toulouse',
-                null,
-                Reject::VALID,
-            ],
-            // Monaco
-            [
-                (new Place())->setNom('Centre Hospitalier Princesse Grace')->setRue('1 Avenue Pasteur')->setCodePostal('98000')->setVille('Monaco')->setCountryName('Monaco'),
-                'MC',
-                'Monaco',
-                '98000',
-                Reject::VALID,
-            ],
-            // Bonnes coordonnées + mauvais pays
-            [
-                (new Place())->setNom('10, Av Princesse Grace')->setLongitude(7.4314023071828)->setLatitude(43.743460394373),
-                null,
-                null,
-                null,
-                Reject::NO_COUNTRY_PROVIDED | Reject::VALID,
-            ],
+        // Pas de pays
+        yield [
+            (new Place())->setCodePostal('99999')->setVille('LoremIpsum'),
+            null,
+            null,
+            null,
+            Reject::NO_COUNTRY_PROVIDED | Reject::VALID,
+        ];
+        // Mauvais CP + mauvaise ville + mauvais pays
+        yield [
+            (new Place())->setCodePostal('99999')->setVille('LoremIpsum')->setCountryName('LoremIpsum'),
+            null,
+            null,
+            null,
+            Reject::BAD_COUNTRY | Reject::VALID,
+        ];
+        // Mauvais CP + mauvaise ville + mauvais pays
+        yield [
+            (new Place())->setCountryName('LoremIpsum'),
+            null,
+            null,
+            null,
+            Reject::BAD_COUNTRY | Reject::VALID,
+        ];
+        // Mauvais CP + mauvaise ville + bon pays
+        yield [
+            (new Place())->setCodePostal('99999')->setVille('LoremIpsum')->setCountryName('France'),
+            'FR',
+            null,
+            null,
+            Reject::VALID,
+        ];
+        // Mauvais CP + bonne ville + bon pays
+        yield [
+            (new Place())->setCodePostal('99999')->setVille('St Germain En Laye')->setCountryName('France'),
+            'FR',
+            'Saint-Germain-en-Laye',
+            null,
+            Reject::VALID,
+        ];
+        // Mauvais CP + ville doublon + bon pays
+        yield [
+            (new Place())->setCodePostal('31000')->setVille('Roques')->setCountryName('France'),
+            'FR',
+            'Toulouse',
+            '31000',
+            Reject::VALID,
+        ];
+        // CP doublon + pas de ville + bon pays
+        yield [
+            (new Place())->setCodePostal('31470')->setCountryName('France'),
+            'FR',
+            null,
+            null,
+            Reject::VALID,
+        ];
+        // Pas de CP + ville doublon + bon pays
+        yield [
+            (new Place())->setVille('Roques')->setCountryName('France'),
+            'FR',
+            null,
+            null,
+            Reject::VALID,
+        ];
+        // Pas de CP + bonne ville + bon pays
+        yield [
+            (new Place())->setVille('toulouse')->setCountryName('France'),
+            'FR',
+            'Toulouse',
+            null,
+            Reject::VALID,
+        ];
+        // Monaco
+        yield [
+            (new Place())->setNom('Centre Hospitalier Princesse Grace')->setRue('1 Avenue Pasteur')->setCodePostal('98000')->setVille('Monaco')->setCountryName('Monaco'),
+            'MC',
+            'Monaco',
+            '98000',
+            Reject::VALID,
+        ];
+        // Bonnes coordonnées + mauvais pays
+        yield [
+            (new Place())->setNom('10, Av Princesse Grace')->setLongitude(7.4314023071828)->setLatitude(43.743460394373),
+            null,
+            null,
+            null,
+            Reject::NO_COUNTRY_PROVIDED | Reject::VALID,
         ];
     }
 }

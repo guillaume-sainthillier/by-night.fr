@@ -28,7 +28,7 @@ class ComparatorTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->comparator = static::$container->get(Comparator::class);
+        $this->comparator = self::$container->get(Comparator::class);
     }
 
     /**

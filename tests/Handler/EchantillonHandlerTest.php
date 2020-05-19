@@ -29,7 +29,7 @@ class EchantillonHandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->echantillonHandler = static::$container->get(EchantillonHandler::class);
+        $this->echantillonHandler = self::$container->get(EchantillonHandler::class);
 
         $this->echantillonHandler->clearPlaces();
         $this->echantillonHandler->clearEvents();
@@ -50,13 +50,11 @@ class EchantillonHandlerTest extends ContainerTestCase
         $this->assertCount(0, $persistedPlaces);
     }
 
-    public function userEventEchantillonsProvider()
+    public function userEventEchantillonsProvider(): iterable
     {
-        return [
-            [(new Event())->setUser(new User())],
-            [(new Event())->setId(2917)->setUser(new User())],
-            [(new Event())->setId(2917)->setExternalId('FB-1537604069794319')->setUser(new User())],
-        ];
+        yield [(new Event())->setUser(new User())];
+        yield [(new Event())->setId(2917)->setUser(new User())];
+        yield [(new Event())->setId(2917)->setExternalId('FB-1537604069794319')->setUser(new User())];
     }
 
     /**
@@ -70,13 +68,11 @@ class EchantillonHandlerTest extends ContainerTestCase
         $this->echantillonHandler->prefetchEventEchantillons([$event]);
     }
 
-    public function eventEchantillonProvider()
+    public function eventEchantillonProvider(): iterable
     {
-        return [
-            [(new Event())],
-            [(new Event())->setPlace(new Place())],
-            [(new Event())->setPlace((new Place())->setId(1))],
-        ];
+        yield [(new Event())];
+        yield [(new Event())->setPlace(new Place())];
+        yield [(new Event())->setPlace((new Place())->setId(1))];
     }
 
     public function testAddNewEvent()

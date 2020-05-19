@@ -759,6 +759,9 @@
     "symplify/package-builder": {
         "version": "v7.3.1"
     },
+    "symplify/parameter-name-guard": {
+        "version": "v7.3.16"
+    },
     "symplify/set-config-resolver": {
         "version": "v7.3.1"
     },
