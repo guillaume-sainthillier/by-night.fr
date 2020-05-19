@@ -9,10 +9,10 @@
     {{ form_row(form.adresse) }}
 
     <div class="ml-2 ml-sm-5 mb-5">
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeStreet) }) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placePostalCode) }) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeCity) }) %}
-        {% include "EspacePerso/_inline-block.html.twig" with({'elem' : (form.placeCountry) }) %}
+         {{ form_row(form.placeStreet) }}
+         {{ form_row(form.placePostalCode) }}
+         {{ form_row(form.placeCity) }}
+         {{ form_row(form.placeCountry) }}
     </div>
 
     <div id="map"></div>

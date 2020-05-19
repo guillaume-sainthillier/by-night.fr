@@ -8,12 +8,10 @@
     {{ form_row(form.dateDebut) }}
     {{ form_row(form.dateFin) }}
     {{ form_row(form.shortcut, {'label': 'Dates'}) }}
-
-    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.horaires}) %}
-
-    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.categorieManifestation}) %}
-    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.themeManifestation}) %}
-    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.tarif}) %}
+    {{ form_row(form.horaires) }}
+    {{ form_row(form.categorieManifestation) }}
+    {{ form_row(form.themeManifestation) }}
+    {{ form_row(form.tarif) }}
 {% endblock %}
 
 {% block footer '' %}

@@ -5,9 +5,10 @@
 {% block widget_class 'active' %}
 
 {% block body %}
-    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationInternet}) %}
-    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationTelephone}) %}
-    {% include "EspacePerso/_inline-block.html.twig" with({'elem' : form.reservationEmail}) %}
+     {{ form_row(form.reservationInternet) }}
+     {{ form_row(form.reservationTelephone) }}
+     {{ form_row(form.reservationEmail) }}
+
     {% if form.comment is defined %}
         {{ form_row(form.comment) }}
     {% endif %}
