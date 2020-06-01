@@ -46,7 +46,7 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
             $event = $this->eventFactory->fromArray($datas);
             $this->doctrineEventHandler->handleOne($event);
         } catch (Exception $e) {
-            $this->logger->critical($e->getMessage(), [
+            $this->logger->error($e->getMessage(), [
                 'exception' => $e,
                 'extra' => $datas,
             ]);
@@ -68,8 +68,8 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
             try {
                 $events[] = $this->eventFactory->fromArray($datas);
             } catch (Exception $e) {
-                $this->logger->critical($e->getMessage(), [
-                    'datas' => $datas,
+                $this->logger->error($e->getMessage(), [
+                    'extra' => $datas,
                     'exception' => $e,
                 ]);
             }
