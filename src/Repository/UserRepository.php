@@ -42,7 +42,7 @@ class UserRepository extends ServiceEntityRepository
             ->join('u.oAuth', 'i')
             ->where('u.updatedAt >= :from')
             ->andWhere('i.facebook_id IS NOT NULL')
-            ->andWhere('u.path IS NULL')
+            ->andWhere('u.image.name IS NULL')
             ->setParameter('from', $from->format('Y-m-d'))
             ->getQuery()
             ->getSingleScalarResult();
@@ -55,7 +55,7 @@ class UserRepository extends ServiceEntityRepository
             ->join('u.oAuth', 'i')
             ->where('u.updatedAt >= :from')
             ->andWhere('i.facebook_id IS NOT NULL')
-            ->andWhere('u.path IS NULL')
+            ->andWhere('u.image.name IS NULL')
             ->setParameter('from', $from->format('Y-m-d'))
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
