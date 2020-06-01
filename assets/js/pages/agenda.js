@@ -101,7 +101,7 @@ $(function () {
                 btn.parent().remove();
                 currentContainer.insertAfter(container);
                 App.dispatchPageLoadedEvent(currentContainer[0]);
-                init_soirees(currentContainer);
+                init_pagination(currentContainer);
             });
         });
     }
