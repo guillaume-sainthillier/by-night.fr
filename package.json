@@ -41,7 +41,6 @@
         "@symfony/webpack-encore": "^0.30.2",
         "core-js": "^3.0.0",
         "es6-promise": "^4.2.6",
-        "husky": "^4.2.5",
         "imports-loader": "^0.8.0",
         "lint-staged": ">=10.2.7",
         "node-sass": "^4.14.1",
@@ -63,9 +62,7 @@
         }
     },
     "lint-staged": {
-        "*.{js,css,md}": "prettier --write",
-        "*.php": [
-            "php-cs-fixer fix --config=.php_cs.dist"
-        ]
+        "*.{js,scss,md}": "prettier --write",
+        "*.php": "php-cs-fixer fix --config=.php_cs.dist"
     }
 }
