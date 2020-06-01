@@ -3,3 +3,16 @@
   margin-bottom: 0;
   margin-top: 0;
 }
+
+.btn-icon {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+
+  & > span {
+    display: inline-block;
+    padding: $btn-padding-y $btn-padding-x;
+    margin-right: $btn-padding-x;
+    background: rgba(0, 0, 0, 0.1);
+  }
+}

@@ -25,17 +25,10 @@ export default class CommentApp {
 
     init() {
         const self = this;
-        $(function() {
-            self.init_list_comments();
-        });
-    }
-
-    init_list_comments() {
-        const self = this;
-        $(self.options.css_main_block_comments).each(function() //On parcours les div comments (1 par page normalement)
+        $(self.options.css_main_block_comments).each(function () //On parcours les div comments (1 par page normalement)
         {
             var div_comments = $(this);
-            App.initComponents(div_comments); //On bind les liens connexion/inscription
+            App.dispatchPageLoadedEvent(div_comments[0]); //On bind les liens connexion/inscription
             self.init_new_comment(div_comments); //On bind le formulaire d'envoi d'un nouveau commentaire
             self.init_load_new_reponse(div_comments); //On bind le lien de réponse des commentaires
             self.init_list_reponses(div_comments); //On bind le bouton de liste des réponses
@@ -49,11 +42,11 @@ export default class CommentApp {
         commentaires
             .find(self.options.css_load_more_comments)
             .unbind('click')
-            .click(function() {
+            .click(function () {
                 var load_more = $(this);
 
                 load_more.find('.btn-block').prepend("<i class='fa fa-2x " + self.options.css_spinner + "'></i>");
-                load_more.load(load_more.data('url'), function() {
+                load_more.load(load_more.data('url'), function () {
                     var block_list_commentaire = load_more.find(self.options.css_block_commentaires);
                     self.init_load_new_reponse(load_more); //On bind le lien de réponse des commentaires
                     self.init_list_reponses(load_more); //On bind le bouton de liste des réponses
@@ -72,7 +65,7 @@ export default class CommentApp {
 
     init_maj_nb_reponses(commentaires) {
         const self = this;
-        commentaires.find(self.options.css_nb_reponses).each(function() {
+        commentaires.find(self.options.css_nb_reponses).each(function () {
             self.maj_nb_reponses($(this).closest(self.options.css_main_block_reponse), $(this).html());
         });
     }
@@ -82,7 +75,7 @@ export default class CommentApp {
         commentaire
             .find(self.options.css_btn_list)
             .unbind('click')
-            .click(function() {
+            .click(function () {
                 var main_block_reponse = $(this).closest(self.options.css_main_block_reponse);
 
                 var block_reponse = main_block_reponse.find(self.options.css_block_reponses);
@@ -95,9 +88,9 @@ export default class CommentApp {
 
                     icon_list.removeClass(self.options.css_up).addClass(self.options.css_spinner);
 
-                    block_reponse.load($(this).data('url'), function() {
+                    block_reponse.load($(this).data('url'), function () {
                         self.init_load_more_comments(block_reponse);
-                        $(this).show(self.options.animation_duration, function() {
+                        $(this).show(self.options.animation_duration, function () {
                             $(this).addClass(self.options.css_has_showed_reponses);
                         });
 
@@ -110,12 +103,12 @@ export default class CommentApp {
                 else {
                     if (!block_reponse.hasClass(self.options.css_has_showed_reponses)) {
                         //Les réponses ne sont pas affichées, on les affiche donc
-                        block_reponse.show(self.options.animation_duration, function() {
+                        block_reponse.show(self.options.animation_duration, function () {
                             $(this).addClass(self.options.css_has_showed_reponses);
                             icon_list.removeClass(self.options.css_up).addClass(self.options.css_down);
                         });
                     } else {
-                        block_reponse.hide(self.options.animation_duration, function() {
+                        block_reponse.hide(self.options.animation_duration, function () {
                             $(this).removeClass(self.options.css_has_showed_reponses);
                             icon_list.removeClass(self.options.css_down).addClass(self.options.css_up);
                         });
@@ -129,7 +122,7 @@ export default class CommentApp {
         commentaires
             .find(self.options.css_link_repondre)
             .unbind('click')
-            .click(function() //Pour tous les liens répondre
+            .click(function () //Pour tous les liens répondre
             {
                 var link = $(this);
 
@@ -137,10 +130,10 @@ export default class CommentApp {
                 var block_post_reponse = link
                     .closest(self.options.css_main_block_reponse)
                     .find(self.options.css_block_post_reponse); // On cherche le block du post
-                block_post_reponse.hide().load(link.data('url'), function() {
-                    App.initComponents(block_post_reponse); //On bind les liens connexion/inscription
+                block_post_reponse.hide().load(link.data('url'), function () {
+                    App.dispatchPageLoadedEvent(block_post_reponse[0]); //On bind les liens connexion/inscription
                     self.init_new_reponse(block_post_reponse); //On bind le formulaire d'envoi d'une nouvelle réponse
-                    $(this).show(self.options.animation_duration, function() {
+                    $(this).show(self.options.animation_duration, function () {
                         link.text(link.data('text'));
                     });
                 });
@@ -159,13 +152,13 @@ export default class CommentApp {
         $(block_post_reponse)
             .find('form')
             .unbind('submit')
-            .submit(function() {
-                App.loadingButtons($(this));
+            .submit(function () {
+                App.loadingButtons(this);
                 var form = $(this);
                 var main_block_reponses = block_post_reponse.closest(self.options.css_main_block_reponse);
 
                 $.post($(this).attr('action'), $(this).serialize())
-                    .done(function(retour) {
+                    .done(function (retour) {
                         var block_reponses = main_block_reponses.find(self.options.css_block_reponses);
                         if (retour.success) {
                             //La réponse est envoyée
@@ -180,11 +173,11 @@ export default class CommentApp {
                         } //L'envoie de la réponse a échoué
                         else {
                             block_post_reponse.html(retour.post);
-                            App.initComponents(block_post_reponse); //On bind les liens connexion/inscription
+                            App.dispatchPageLoadedEvent(block_post_reponse[0]); //On bind les liens connexion/inscription
                             self.init_new_reponse(block_post_reponse); //On bind le formulaire d'envoi d'une nouvelle réponse
                         }
                     })
-                    .always(function() //Dans tous les cas
+                    .always(function () //Dans tous les cas
                     {
                         App.resetButtons(form);
                     });
@@ -197,15 +190,15 @@ export default class CommentApp {
         const self = this;
         $(commentaire)
             .find('form')
-            .each(function() {
+            .each(function () {
                 var form = $(this);
                 $(this)
                     .unbind('submit')
-                    .submit(function() {
+                    .submit(function () {
                         App.loadingButtons(commentaire); //On bloque le bouton submit le temps du chargement
 
                         $.post($(this).attr('action'), $(this).serialize())
-                            .done(function(retour) {
+                            .done(function (retour) {
                                 //On poste le commentaire
 
                                 var main_block_commentaire = form.closest(self.options.css_main_block_comments);
@@ -233,14 +226,14 @@ export default class CommentApp {
                                 } //l'envoi du commentaire a échoué
                                 else {
                                     block_poster_commentaire.replaceWith(retour.post);
-                                    var block_poster_commentaire = main_block_commentaire.find(
+                                    block_poster_commentaire = main_block_commentaire.find(
                                         self.options.css_block_poster_commentaire
                                     );
-                                    App.initComponents(block_poster_commentaire);
+                                    App.dispatchPageLoadedEvent(block_poster_commentaire);
                                     self.init_new_comment(block_poster_commentaire);
                                 }
                             })
-                            .always(function() {
+                            .always(function () {
                                 App.resetButtons(commentaire);
                             });
 

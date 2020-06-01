@@ -5,34 +5,31 @@ import 'bootstrap-select/js/bootstrap-select.js';
 import 'bootstrap-select/js/i18n/defaults-fr_FR.js';
 import 'moment/locale/fr';
 import 'daterangepicker';
+import {debounce} from 'lodash';
 
 import Widgets from '../components/Widgets';
 
-$(function() {
+$(function () {
     init_custom_tab();
     init_criteres();
     load_infinite_scroll();
-    init_soirees();
+    init_pagination();
 
     var countLoads = 0;
     var isLoading = false;
     var widgets = new Widgets();
     widgets.init();
 
-    function init_soirees() {
-        init_pagination();
-    }
-
     function load_infinite_scroll() {
         var marginScroll = 250;
         var countStep = 2;
+        var paginate = $('#paginate');
 
-        $(window).scrolled(200, function() {
+        $(window).scroll(debounce(function () {
             if (countLoads < countStep || isLoading) {
                 return;
             }
 
-            var paginate = $('#paginate');
             if (
                 paginate.length > 0 &&
                 $(window).scrollTop() + $(window).height() > paginate.offset().top - marginScroll
@@ -40,12 +37,12 @@ $(function() {
                 isLoading = true;
                 paginate.trigger('click');
             }
-        });
+        }, 200, {leading: true}));
     }
 
     function init_custom_tab() {
         var tabs = $('#custom-tab');
-        tabs.find('a.nav-link').click(function() {
+        tabs.find('a.nav-link').click(function () {
             var oldActive = $(this)
                 .closest('.nav')
                 .find('a.nav-link.active');
@@ -61,7 +58,7 @@ $(function() {
             var target = $(tab).attr('href');
             $(target).addClass('active');
             $(tab).addClass('active');
-            $('html, body').animate({ scrollTop: 0 }, 'fast');
+            $('html, body').animate({scrollTop: 0}, 'fast');
         }
 
         function desactivate(tab) {
@@ -73,7 +70,7 @@ $(function() {
         var lastScrollTop = 0;
         var toTop = $('#toTop');
         var bottomNavigation = $('#bottom-navigation');
-        $(window).scroll(function() {
+        $(window).scroll(function () {
             var st = $(this).scrollTop();
             if (st > lastScrollTop) {
                 toTop.removeClass('hidden');
@@ -87,7 +84,7 @@ $(function() {
     }
 
     function init_pagination() {
-        $('#paginate').click(function(e) {
+        $('#paginate').click(function (e) {
             e.preventDefault();
 
             isLoading = true;
@@ -98,12 +95,12 @@ $(function() {
 
             var btn = $(this);
             var container = btn.parent().prev();
-            $.get($(btn).attr('href'), function(html) {
+            $.get($(btn).attr('href'), function (html) {
                 isLoading = true;
                 var currentContainer = $('<div>').html(html);
                 btn.parent().remove();
                 currentContainer.insertAfter(container);
-                App.initComponents(currentContainer);
+                App.dispatchPageLoadedEvent(currentContainer[0]);
                 init_soirees(currentContainer);
             });
         });
@@ -127,13 +124,13 @@ $(function() {
 
         //Bon bloc indigeste :)
         var block = $(options.selector_btn_criteres)
-            .click(function() {
+            .click(function () {
                 if (block.hasClass(options.css_hidden)) {
                     $(this)
                         .find(options.selector_icon)
                         .removeClass(options.css_icon_class_open)
                         .addClass(options.css_icon_class_close);
-                    block.show(options.duration, function() {
+                    block.show(options.duration, function () {
                         $(this).removeClass(options.css_hidden);
                     });
                 } else {
@@ -141,7 +138,7 @@ $(function() {
                         .find(options.selector_icon)
                         .removeClass(options.css_icon_class_close)
                         .addClass(options.css_icon_class_open);
-                    block.hide(options.duration, function() {
+                    block.hide(options.duration, function () {
                         $(this).addClass(options.css_hidden);
                     });
                 }

@@ -5,9 +5,9 @@
 {% block widget_class 'active' %}
 
 {% block body %}
-     {{ form_row(form.reservationInternet) }}
-     {{ form_row(form.reservationTelephone) }}
-     {{ form_row(form.reservationEmail) }}
+     {{ form_row(form.websiteContacts) }}
+     {{ form_row(form.phoneContacts) }}
+     {{ form_row(form.mailContacts) }}
 
     {% if form.comment is defined %}
         {{ form_row(form.comment) }}

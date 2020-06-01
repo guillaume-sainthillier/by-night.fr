@@ -19,16 +19,18 @@ class FormTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public static function getExtendedTypes(): iterable
+    public function configureOptions(OptionsResolver $resolver)
     {
-        return [FormType::class];
+        $resolver->setDefaults([
+            'translation_domain' => false
+        ]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public static function getExtendedTypes(): iterable
     {
-        $resolver->setDefaults(['translation_domain' => false]);
+        yield FormType::class;
     }
 }

@@ -1,11 +1,12 @@
 @import "variables";
-@import "../../node_modules/bootstrap-material-design/scss/bootstrap-material-design";
+@import "~bootstrap-material-design/scss/core";
 @import "components/alert";
 @import "components/badge";
 @import "components/breadcrumb";
 @import "components/buttons";
 @import "components/card";
 @import "components/charts";
+@import "components/collections";
 @import "components/comment";
 @import "components/criteres";
 @import "components/datepicker";

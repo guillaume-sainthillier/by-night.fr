@@ -19,7 +19,7 @@ class DateTypeExtension extends AbstractTypeExtension
 {
     public static function getExtendedTypes(): iterable
     {
-        return [DateType::class];
+        yield DateType::class;
     }
 
     public function configureOptions(OptionsResolver $resolver)

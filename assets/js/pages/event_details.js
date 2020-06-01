@@ -1,14 +1,15 @@
 import Widgets from '../components/Widgets';
 import CommentApp from '../components/CommentApp';
 
-$(function() {
+$(function () {
     new Widgets().init();
     new CommentApp().init();
 
     var gMap = $('#googleMap').attr('data-toggled', '0');
     $('#loadMap')
         .unbind('click')
-        .click(function(e) {
+        .click(function (e) {
+            e.preventDefault();
             if (!gMap.find('iframe').length) {
                 $('<iframe>')
                     .attr({
@@ -19,7 +20,7 @@ $(function() {
                         src: $(this).data('map'),
                         allowfullscreen: true,
                     })
-                    .css({ width: '100%', border: '0' })
+                    .css({width: '100%', border: '0'})
                     .appendTo(gMap);
             }
 
@@ -30,8 +31,5 @@ $(function() {
             else {
                 gMap.attr('data-toggled', '1').show('fast');
             }
-
-            e.preventDefault();
-            return false;
         });
 });

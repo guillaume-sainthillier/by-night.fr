@@ -18,6 +18,7 @@ use App\Repository\CountryRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -135,28 +136,46 @@ class EventType extends AbstractType
                 'label' => 'Pays',
                 'placeholder' => '?',
                 'class' => Country::class,
-                'query_builder' => fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
+                'query_builder' => fn(CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
                 'choice_label' => 'name',
             ])
-            ->add('reservationInternet', UrlType::class, [
-                'label' => 'Réservation par internet',
+            ->add('websiteContacts', CollectionType::class, [
+                'entry_type' => UrlType::class,
                 'required' => false,
-                'attr' => [
-                    'placeholder' => "L'URL où trouver un billet",
+                'add_entry_label' => 'Ajouter un site',
+                'label' => 'Sites de réservation',
+                'entry_options' => [
+                    'label' => 'Site',
+                    'block_prefix' => 'app_collection_entry_main_text',
+                    'attr' => [
+                        'placeholder' => 'https://monsupersite.fr',
+                    ]
                 ],
             ])
-            ->add('reservationTelephone', TextType::class, [
-                'label' => 'Réservation téléphonique',
+            ->add('phoneContacts', CollectionType::class, [
+                'entry_type' => TextType::class,
                 'required' => false,
-                'attr' => [
-                    'placeholder' => 'Le numéro à appeler pour acheter un billet',
+                'add_entry_label' => 'Ajouter un numéro',
+                'label' => 'Numéros de téléphone',
+                'entry_options' => [
+                    'label' => 'Téléphone',
+                    'block_prefix' => 'app_collection_entry_main_text',
+                    'attr' => [
+                        'placeholder' => '06 01 02 03 04',
+                    ]
                 ],
             ])
-            ->add('reservationEmail', EmailType::class, [
-                'label' => 'Réservation par mail',
+            ->add('mailContacts', CollectionType::class, [
+                'entry_type' => EmailType::class,
                 'required' => false,
-                'attr' => [
-                    'placeholder' => 'Le mail pour vous contacter',
+                'add_entry_label' => 'Ajouter un email',
+                'label' => 'Emails de contact',
+                'entry_options' => [
+                    'label' => 'Email',
+                    'block_prefix' => 'app_collection_entry_main_text',
+                    'attr' => [
+                        'placeholder' => 'vousêtes@incroyable.fr',
+                    ]
                 ],
             ])
             ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
@@ -175,13 +194,13 @@ class EventType extends AbstractType
         }
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
-            fn ($latitude) => (float) $latitude ?: null,
-            fn ($latitude) => (float) $latitude ?: null
+            fn($latitude) => (float)$latitude ?: null,
+            fn($latitude) => (float)$latitude ?: null
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
-            fn ($latitude) => (float) $latitude ?: null,
-            fn ($latitude) => (float) $latitude ?: null
+            fn($latitude) => (float)$latitude ?: null,
+            fn($latitude) => (float)$latitude ?: null
         ));
     }
 

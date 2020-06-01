@@ -43,14 +43,6 @@ class ImageTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public static function getExtendedTypes(): iterable
-    {
-        return [VichImageType::class];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $object = $form->getParent()->getData();
@@ -84,5 +76,13 @@ class ImageTypeExtension extends AbstractTypeExtension
     {
         $resolver->setRequired(['thumb_params']);
         $resolver->setAllowedTypes('thumb_params', 'array');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes(): iterable
+    {
+        yield VichImageType::class;
     }
 }

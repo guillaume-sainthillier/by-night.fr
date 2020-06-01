@@ -1,5 +1,4 @@
-import 'bootstrap-select/dist/css/bootstrap-select.css';
-import 'daterangepicker/daterangepicker.css';
+import '../../scss/pages/espace_perso_event.scss';
 
 import 'typeahead.js/dist/bloodhound';
 import 'typeahead.js/dist/typeahead.bundle';
@@ -10,4 +9,7 @@ import 'bootstrap-select/dist/js/bootstrap-select.min.js';
 import 'bootstrap-select/js/i18n/defaults-fr_FR.js';
 
 import UserEventHandler from '../components/UserEventHandler';
-new UserEventHandler().init();
+
+window.onPageLoaded = function () {
+    new UserEventHandler().init();
+}

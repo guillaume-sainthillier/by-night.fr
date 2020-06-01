@@ -6,15 +6,13 @@ import 'summernote/dist/lang/summernote-fr-FR';
 export default class UserEventHandler {
     init() {
         const self = this;
-        $(function() {
-            self.initWYSIWYG();
-            self.initGMap();
+        self.initWYSIWYG();
+        self.initGMap();
 
-            $('.form-delete form').submit(function() {
-                return confirm(
-                    "Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?"
-                );
-            });
+        $('.form-delete form').submit(function () {
+            return confirm(
+                "Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?"
+            );
         });
     }
 
@@ -64,7 +62,7 @@ export default class UserEventHandler {
         var $field = $('#event_adresse');
         // Proxy inputs typeahead events to addressPicker
         addressPicker.bindDefaultTypeaheadEvent($field);
-        $(addressPicker).on('addresspicker:selected', function(event, result) {
+        $(addressPicker).on('addresspicker:selected', function (event, result) {
             self.assignGMapInfo(event, result);
         });
 
@@ -85,7 +83,7 @@ export default class UserEventHandler {
 
         // Proxy inputs typeahead events to addressPicker
         placePicker.bindDefaultTypeaheadEvent($field);
-        $(placePicker).on('addresspicker:selected', function(event, result) {
+        $(placePicker).on('addresspicker:selected', function (event, result) {
             self.assignGMapInfo(event, result);
 
             if (typeof result.placeResult.formatted_address !== 'undefined' && result.placeResult.formatted_address) {
@@ -103,7 +101,7 @@ export default class UserEventHandler {
                 displayKey: 'description',
                 source: placePicker.ttAdapter(),
             })
-            .on('typeahead:selected', function(e, data) {
+            .on('typeahead:selected', function (e, data) {
                 $(this)
                     .typeahead('val', data.terms[0].value)
                     .blur();

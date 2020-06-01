@@ -59,7 +59,7 @@
     {%- if help is not empty -%}
         {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
     {%- endif -%}
-    <{{ element|default('div') }} class="form-group bmd-form-group">
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group bmd-form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
     {{- form_label(form) -}}
     {{- form_widget(form, widget_attr) -}}
     {{- form_help(form) -}}
@@ -91,3 +91,38 @@
 {%- block hidden_date_row -%}
     {{ form_widget(form) }}
 {%- endblock hidden_date_row -%}
+
+{# Adds "add" buttons #}
+{% block app_collection_widget -%}
+    {% if disabled %}
+        {{ form_widget(form, {'attr': {'class': 'form-collection'}}) }}
+    {% else %}
+        <div class="collection-wrapper">
+            {{ form_widget(form, {'attr': {'class': 'form-collection'}}) }}
+
+            <button type="button" class="add-collection btn btn-outline-secondary">
+                <i class="fa fa-plus"></i>
+                {{ add_entry_label|default('Ajouter une ligne') }}
+            </button>
+        </div>
+    {% endif %}
+{%- endblock %}
+
+{%- block app_collection_entry_main_text_row -%}
+    {{ form_row(form, {'row_attr': {'class': 'collection-group'}}) }}
+{%- endblock -%}
+
+{%- block app_collection_entry_main_text_widget -%}
+    {% if disabled %}
+        {{- block('form_widget') -}}
+    {% else %}
+        <div class="collection-item {{ group_class|default('') }}">
+            {{- block('form_widget') -}}
+            <button class="btn btn-danger btn-sm remove-collection"
+                    type="button"
+                    data-group=".collection-group">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    {% endif %}
+{%- endblock -%}

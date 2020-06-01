@@ -10,7 +10,6 @@ export default class UserEventsList {
             $('.brouillon').change(function() {
                 var self = $(this);
 
-                console.log(self.prop('checked'));
                 self.attr('disabled', true);
                 $.post(self.data('href'), {
                     brouillon: !self.prop('checked'),
@@ -21,8 +20,7 @@ export default class UserEventsList {
 
             $('.annuler').change(function() {
                 var self = $(this);
-
-                console.log(self.prop('checked'));
+;
                 self.attr('disabled', true);
                 $.post(self.data('href'), {
                     annuler: self.prop('checked'),

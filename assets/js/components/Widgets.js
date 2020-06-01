@@ -39,7 +39,7 @@ export default class Widgets {
                         btn.remove();
                         containerBody.append(content);
                         self.initMoreWidgets(container);
-                        App.initComponents(container);
+                        App.dispatchPageLoadedEvent(container[0]);
                         if (scrollAreaLastItem.next().length > 0) {
                             self.scrollTo(scrollAreaLastItem.next(), scrollArea, function() {});
                         }
