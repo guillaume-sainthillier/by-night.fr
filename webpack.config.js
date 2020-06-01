@@ -58,9 +58,10 @@ Encore
     .enableVersioning(Encore.isProduction())
 
     // enables @babel/preset-env polyfills
-    .configureBabelPresetEnv(config => {
-        config.useBuiltIns = 'usage';
-        config.corejs = 3;
+    .configureBabel(() => {}, {
+        useBuiltIns: 'usage',
+        corejs: 3,
+        includeNodeModules: ['bootstrap'],
     })
     .enableSassLoader()
     //.enableIntegrityHashes(Encore.isProduction())
@@ -100,7 +101,8 @@ Encore
                 ],
                 { nodir: true }
             ),
-            whitelistPatterns: () => [/^custom-/],
+            whitelistPatterns: [/^custom-/],
+            whitelistPatternsChildren: [/^bmd-form-group/],
         })
     )
     .addAliases({
