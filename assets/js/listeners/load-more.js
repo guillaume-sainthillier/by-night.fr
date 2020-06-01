@@ -15,4 +15,4 @@ export default (di, container) => {
             App.dispatchPageLoadedEvent(currentContainer[0]);
         });
     });
-}
+};

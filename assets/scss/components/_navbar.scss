@@ -1,101 +1,105 @@
 .navbar {
-  z-index: 1000; //Conflit with z-index 500 on summernote
-  box-shadow: none;
-  white-space: nowrap;
+    z-index: 1000; //Conflit with z-index 500 on summernote
+    box-shadow: none;
+    white-space: nowrap;
 
-  &.navbar-shadow {
-	box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
-  }
+    &.navbar-shadow {
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
+    }
 
-  .nav-link strong {
-	font-weight: normal;
-  }
+    .nav-link strong {
+        font-weight: normal;
+    }
 
-  .navbar-brand {
-	height: 46px;
-	margin-right: 0.75rem;
-	padding-left: $navbar-brand-padding-y;
-	padding-right: $navbar-brand-padding-y;
-  }
+    .navbar-brand {
+        height: 46px;
+        margin-right: 0.75rem;
+        padding-left: $navbar-brand-padding-y;
+        padding-right: $navbar-brand-padding-y;
+    }
 
-  .nav-item.nav-avatar > a {
-	min-width: 60px;
-  }
+    .nav-item.nav-avatar > a {
+        min-width: 60px;
+    }
 
-  a.dropdown-item {
-	min-width: 11rem;
+    a.dropdown-item {
+        min-width: 11rem;
 
-	.fa {
-	  width: 1rem;
-	  text-align: center;
-	  margin-right: 0.5rem;
-	}
-  }
+        .fa {
+            width: 1rem;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+    }
 
-  .search-form {
-	width: 100%;
-	max-width: 720px;
-	position: relative;
-	background: rgba(241, 243, 244, 0.24);
-	border: 1px solid transparent;
-	height: 48px;
-	line-height: 46px;
-	transition: background 100ms ease-in, width 100ms ease-out;
+    .search-form {
+        width: 100%;
+        max-width: 720px;
+        position: relative;
+        background: rgba(241, 243, 244, 0.24);
+        border: 1px solid transparent;
+        height: 48px;
+        line-height: 46px;
+        transition: background 100ms ease-in, width 100ms ease-out;
 
-	&, input, input::placeholder {
-	  color: $navbar-dark-color;
-	}
+        &,
+        input,
+        input::placeholder {
+            color: $navbar-dark-color;
+        }
 
-	.bmd-form-group {
-	  width: 100%;
-	}
+        .bmd-form-group {
+            width: 100%;
+        }
 
-	input {
-	  height: 100%;
-	  width: 100%;
-	  padding-left: 3rem;
-	  color: $navbar-dark-color;
-	  background-color: transparent;
-	  border-color: transparent;
-	  border-style: solid;
-	  border-width: 0 1px;
-	  outline: none;
-	}
+        input {
+            height: 100%;
+            width: 100%;
+            padding-left: 3rem;
+            color: $navbar-dark-color;
+            background-color: transparent;
+            border-color: transparent;
+            border-style: solid;
+            border-width: 0 1px;
+            outline: none;
+        }
 
-	.btn {
-	  font-size: 1.25rem;
-	  position: absolute;
-	  left: 0.5rem;
-	  top: 50%;
-	  margin-top: -1rem;
-	  z-index: 1;
-	}
+        .btn {
+            font-size: 1.25rem;
+            position: absolute;
+            left: 0.5rem;
+            top: 50%;
+            margin-top: -1rem;
+            z-index: 1;
+        }
 
-	&.focus {
-	  background: white;
-	  border: 1px solid transparent;
+        &.focus {
+            background: white;
+            border: 1px solid transparent;
 
-	  &, input, input::placeholder {
-		color: #5f6368;
-	  }
-	}
-  }
+            &,
+            input,
+            input::placeholder {
+                color: #5f6368;
+            }
+        }
+    }
 }
 
 #search-menu-backdrop {
-  background: rgba(50, 50, 50, 0.5);
-  bottom: 0;
-  left: 0;
-  opacity: 0;
-  position: fixed;
-  right: 0;
-  top: 0;
-  transition: opacity .3s cubic-bezier(0.4, 0.0, 0.2, 1), z-index 0s .3s;
-  z-index: -1;
+    background: rgba(50, 50, 50, 0.5);
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s 0.3s;
+    z-index: -1;
 
-  &.open {
-	opacity: 1;
-	transition: opacity .3s cubic-bezier(0.4, 0.0, 0.2, 1);
-	z-index: 999;
-  }
+    &.open {
+        opacity: 1;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 999;
+    }
 }

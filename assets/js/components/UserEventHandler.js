@@ -102,9 +102,7 @@ export default class UserEventHandler {
                 source: placePicker.ttAdapter(),
             })
             .on('typeahead:selected', function (e, data) {
-                $(this)
-                    .typeahead('val', data.terms[0].value)
-                    .blur();
+                $(this).typeahead('val', data.terms[0].value).blur();
             });
     }
 

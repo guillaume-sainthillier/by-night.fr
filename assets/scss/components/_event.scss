@@ -1,40 +1,40 @@
-@import "../variables";
+@import '../variables';
 
 .event {
-  .image-container {
-	position: relative;
+    .image-container {
+        position: relative;
 
-	.badge {
-	  padding: 0.5em 1em;
-	  position: absolute;
-	  top: 10px;
-	}
-  }
+        .badge {
+            padding: 0.5em 1em;
+            position: absolute;
+            top: 10px;
+        }
+    }
 
-  .detail-item {
-	margin-bottom: 0.125rem;
-  }
+    .detail-item {
+        margin-bottom: 0.125rem;
+    }
 
-  .card-body {
-	padding: 0.5rem 0.75rem;
-  }
+    .card-body {
+        padding: 0.5rem 0.75rem;
+    }
 
-  @include media-breakpoint-down(md) {
-	.card-body {
-	  padding: 0.75rem;
-	}
-  }
+    @include media-breakpoint-down(md) {
+        .card-body {
+            padding: 0.75rem;
+        }
+    }
 
-  .image-gallery {
-	border-bottom: 1px solid $card-border-color;
-	text-align: center;
-  }
+    .image-gallery {
+        border-bottom: 1px solid $card-border-color;
+        text-align: center;
+    }
 }
 
 @include media-breakpoint-up(sm) {
-  .event {
-	.image-gallery {
-	  border-bottom: none;
-	}
-  }
+    .event {
+        .image-gallery {
+            border-bottom: none;
+        }
+    }
 }

@@ -5,14 +5,11 @@ export default class ModalManager {
         this._di = di;
     }
 
-    createLoading() {
-    }
+    createLoading() {}
 
-    showLoading() {
-    }
+    showLoading() {}
 
-    hideLoading() {
-    }
+    hideLoading() {}
 
     hideModals() {
         Swal.close();

@@ -5,7 +5,7 @@ import 'bootstrap-select/js/bootstrap-select.js';
 import 'bootstrap-select/js/i18n/defaults-fr_FR.js';
 import 'moment/locale/fr';
 import 'daterangepicker';
-import {debounce} from 'lodash';
+import { debounce } from 'lodash';
 
 import Widgets from '../components/Widgets';
 
@@ -25,27 +25,31 @@ $(function () {
         var countStep = 2;
         var paginate = $('#paginate');
 
-        $(window).scroll(debounce(function () {
-            if (countLoads < countStep || isLoading) {
-                return;
-            }
+        $(window).scroll(
+            debounce(
+                function () {
+                    if (countLoads < countStep || isLoading) {
+                        return;
+                    }
 
-            if (
-                paginate.length > 0 &&
-                $(window).scrollTop() + $(window).height() > paginate.offset().top - marginScroll
-            ) {
-                isLoading = true;
-                paginate.trigger('click');
-            }
-        }, 200, {leading: true}));
+                    if (
+                        paginate.length > 0 &&
+                        $(window).scrollTop() + $(window).height() > paginate.offset().top - marginScroll
+                    ) {
+                        isLoading = true;
+                        paginate.trigger('click');
+                    }
+                },
+                200,
+                { leading: true }
+            )
+        );
     }
 
     function init_custom_tab() {
         var tabs = $('#custom-tab');
         tabs.find('a.nav-link').click(function () {
-            var oldActive = $(this)
-                .closest('.nav')
-                .find('a.nav-link.active');
+            var oldActive = $(this).closest('.nav').find('a.nav-link.active');
             if (oldActive[0] !== this) {
                 desactivate(oldActive);
                 activate(this);
@@ -58,7 +62,7 @@ $(function () {
             var target = $(tab).attr('href');
             $(target).addClass('active');
             $(tab).addClass('active');
-            $('html, body').animate({scrollTop: 0}, 'fast');
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
         }
 
         function desactivate(tab) {

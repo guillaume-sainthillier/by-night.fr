@@ -1,31 +1,31 @@
 $.fn.extend($.fn.modal.Constructor.prototype, {
-    loading: function() {
+    loading: function () {
         this.setTitle('By Night');
         this.setBody('<h3 class="text-center"><i class="fa fa-spinner text-primary fa-spin fa-3x"></i></h3>');
         this.hideButtons();
     },
-    hideButtons: function(selecteur) {
+    hideButtons: function (selecteur) {
         var element = $(this._element);
         element.find('.modal-footer :not(' + (selecteur || '.btn_retour') + ')').addClass('hidden');
     },
-    setTitle: function(titre) {
+    setTitle: function (titre) {
         var element = $(this._element);
         element.find('.modal-title').html(titre);
     },
-    setBody: function(body) {
+    setBody: function (body) {
         var element = $(this._element);
         element.find('.modal-body').html(body);
     },
-    getBody: function() {
+    getBody: function () {
         var element = $(this._element);
         return element.find('.modal-body');
     },
-    setErreur: function(msg) {
+    setErreur: function (msg) {
         this.setTitle('Une erreur est survenue');
         this.setBody(msg);
         this.hideButtons();
     },
-    setLittleErreur: function(msg) {
+    setLittleErreur: function (msg) {
         var element = $(this._element);
 
         element.find('.alert_little').remove();
@@ -39,14 +39,14 @@ $.fn.extend($.fn.modal.Constructor.prototype, {
 });
 
 $.ajaxSetup({
-    error: function(error, textStatus, errorThrown) {
+    error: function (error, textStatus, errorThrown) {
         if (textStatus === 404 || textStatus === 500) {
             try {
                 var message = error.statusText;
                 var erreurs = JSON.parse(error.responseText);
 
                 message = '';
-                $.each(erreurs, function(k, erreur) {
+                $.each(erreurs, function (k, erreur) {
                     message = erreur.message + '<br />';
                 });
             } catch (e) {}
@@ -56,4 +56,3 @@ $.ajaxSetup({
         }
     },
 });
-

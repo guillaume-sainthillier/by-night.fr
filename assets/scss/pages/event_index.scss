@@ -1,67 +1,65 @@
-@import "flaticon";
+@import 'flaticon';
 
 .full_wrapper {
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-color: #c3c3c3;
-  min-height: 560px;
-  max-height: 640px;
-  height: calc(100vh - 62px);
-  width: 100%;
-  position: relative;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: #c3c3c3;
+    min-height: 560px;
+    max-height: 640px;
+    height: calc(100vh - 62px);
+    width: 100%;
+    position: relative;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  h1 {
-	color: white;
-	text-shadow: 1px 1px 0 rgba(0, 0, 0, .45);
-  }
+    h1 {
+        color: white;
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.45);
+    }
 
-  .footer_wrapper {
-	padding: 0 0.25rem;
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	background: rgba(255, 255, 255, .8);
-	color: #205081;
-	text-align: center;
+    .footer_wrapper {
+        padding: 0 0.25rem;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        color: #205081;
+        text-align: center;
 
-	h2 {
-	  margin: 0;
-	}
-  }
+        h2 {
+            margin: 0;
+        }
+    }
 
-  .fade-black-transp {
-	width: 100%;
-	height: 359px;
-	background: url(../../images/transp_fade.png);
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 0;
-  }
+    .fade-black-transp {
+        width: 100%;
+        height: 359px;
+        background: url(../../images/transp_fade.png);
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+    }
 
-  .wrapper {
-	padding: 1.25rem 1rem;
-	width: 100%;
-	margin-bottom: 100px;
-	position: relative;
+    .wrapper {
+        padding: 1.25rem 1rem;
+        width: 100%;
+        margin-bottom: 100px;
+        position: relative;
 
-	.search_container {
-	  z-index: 2;
-	  max-width: 360px;
-	  margin: 1rem auto 0 auto;
+        .search_container {
+            z-index: 2;
+            max-width: 360px;
+            margin: 1rem auto 0 auto;
 
-	  @include media-breakpoint-down(md) {
-		.form-control {
-		  margin-bottom: 10px;
-		}
-	  }
-	}
-  }
+            @include media-breakpoint-down(md) {
+                .form-control {
+                    margin-bottom: 10px;
+                }
+            }
+        }
+    }
 }
-
-

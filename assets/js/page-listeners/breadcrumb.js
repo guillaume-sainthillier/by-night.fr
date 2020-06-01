@@ -4,9 +4,6 @@ export default () => {
 
     btnCollapse.click(function () {
         bread.toggleClass('collapsed');
-        $(this)
-            .find('.fa')
-            .toggleClass('fa-chevron-down')
-            .toggleClass('fa-chevron-right');
+        $(this).find('.fa').toggleClass('fa-chevron-down').toggleClass('fa-chevron-right');
     });
 };

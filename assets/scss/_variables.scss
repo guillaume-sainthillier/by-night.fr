@@ -1,28 +1,28 @@
-@import "../../node_modules/bootstrap-material-design/scss/variables/_colors";
-@import "../../node_modules/bootstrap/scss/functions";
+@import '../../node_modules/bootstrap-material-design/scss/variables/_colors';
+@import '../../node_modules/bootstrap/scss/functions';
 
-$color-primary: #36A9E1;
+$color-primary: #36a9e1;
 $color-success: #bdea74;
 $color-info: #67c2ef;
 $color-warning: #fabb3d;
 $color-danger: #ff5454;
 
-$bgColor: #F0F0F0;
+$bgColor: #f0f0f0;
 
 $primary: $indigo-500;
 //$secondary: $color-warning;
 $warning: $color-warning;
 
-$linkColor: #0091FF;
+$linkColor: #0091ff;
 
 $theme-colors: (
-		primary: $primary,
-		success: $green,
-		info: $color-warning,
-		warning: $deep-orange,
-		danger: $red,
-		light: $grey-100,
-		dark: $grey-800
+    primary: $primary,
+    success: $green,
+    info: $color-warning,
+    warning: $deep-orange,
+    danger: $red,
+    light: $grey-100,
+    dark: $grey-800,
 );
 
 //RFS
@@ -31,10 +31,10 @@ $h1-font-size: $font-size-base * 3;
 $enable-responsive-font-sizes: true;
 
 //Navbar
-$navbar-dark-color: rgba($white, .84);
+$navbar-dark-color: rgba($white, 0.84);
 $navbar-dark-hover-color: $white;
 $navbar-dark-active-color: $white;
-$bmd-nav-tabs-active-border-color: theme-color("primary");
+$bmd-nav-tabs-active-border-color: theme-color('primary');
 
 //Breadcrumb
 $breadcrumb-bg: white;
@@ -43,6 +43,5 @@ $breadcrumb-margin-bottom: 0;
 //Buttons
 $bmd-btn-margin-bottom: 0;
 
-@import "../../node_modules/bootstrap-material-design/scss/_variables";
-@import "../../node_modules/bootstrap/scss/mixins";
-
+@import '../../node_modules/bootstrap-material-design/scss/_variables';
+@import '../../node_modules/bootstrap/scss/mixins';

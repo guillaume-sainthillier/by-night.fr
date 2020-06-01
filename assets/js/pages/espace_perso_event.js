@@ -12,4 +12,4 @@ import UserEventHandler from '../components/UserEventHandler';
 
 window.onPageLoaded = function () {
     new UserEventHandler().init();
-}
+};

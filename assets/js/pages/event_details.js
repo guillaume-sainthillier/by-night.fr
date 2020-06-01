@@ -20,7 +20,7 @@ $(function () {
                         src: $(this).data('map'),
                         allowfullscreen: true,
                     })
-                    .css({width: '100%', border: '0'})
+                    .css({ width: '100%', border: '0' })
                     .appendTo(gMap);
             }
 

@@ -1,168 +1,185 @@
 @mixin reset-padding {
-  padding-left: 0;
-  padding-right: 0;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 html body {
+    // Écrans > 1200px
+    @include media-breakpoint-up(xl) {
+        .nav > li > a {
+            font-size: 16px;
+        }
 
-  // Écrans > 1200px
-  @include media-breakpoint-up(xl) {
-	.nav > li > a {
-	  font-size: 16px;
-	}
+        .navbar .navbar-brand img {
+            margin-top: 5px;
+        }
+    }
 
-	.navbar .navbar-brand img {
-	  margin-top: 5px;
-	}
-  }
+    //Ecrans moyens >992 & < 1200
+    @include media-breakpoint-between(lg, xl) {
+        .navbar .navbar-brand {
+            img {
+                margin-top: -5px;
+            }
+        }
+    }
 
-  //Ecrans moyens >992 & < 1200
-  @include media-breakpoint-between(lg, xl) {
-	.navbar .navbar-brand {
-	  img {
-		margin-top: -5px;
-	  }
-	}
-  }
+    // Petits écrans < 1200px & > 768px
+    @include media-breakpoint-between(sm, lg) {
+        h1.titrebloc {
+            font-size: 50px;
+        }
 
-  // Petits écrans < 1200px & > 768px
-  @include media-breakpoint-between(sm, lg) {
+        .navbar {
+            .navbar-brand {
+                height: 60px;
+                padding: 1rem 10px;
+            }
 
-	h1.titrebloc {
-	  font-size: 50px;
-	}
+            .navbar-form {
+                margin-top: 16px;
+            }
 
-	.navbar {
-	  .navbar-brand {
-		height: 60px;
-		padding: 1rem 10px;
-	  }
+            .navbar-brand,
+            .nav > li > a {
+                line-height: 30px;
+            }
+        }
 
-	  .navbar-form {
-		margin-top: 16px;
-	  }
+        #widgets {
+            &,
+            & > div {
+                @include reset-padding();
+            }
+        }
+    }
 
-	  .navbar-brand, .nav > li > a {
-		line-height: 30px;
-	  }
-	}
+    // Tablette < 991px & >768px
+    @include media-breakpoint-between(sm, md) {
+        h1.titrebloc {
+            font-size: 45px;
+        }
 
-	#widgets {
-	  &, & > div {
-		@include reset-padding();
-	  }
-	}
-  }
+        .navbar {
+            .navbar-form {
+                button {
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                }
+            }
 
-  // Tablette < 991px & >768px
-  @include media-breakpoint-between(sm, md) {
-	h1.titrebloc {
-	  font-size: 45px;
-	}
+            .nav > li > a {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        }
 
-	.navbar {
-	  .navbar-form {
-		button {
-		  padding-left: 1rem;
-		  padding-right: 1rem;
-		}
-	  }
+        .navbar .navbar-brand {
+            img {
+                margin-top: -5px;
+            }
+        }
+    }
 
-	  .nav > li > a {
-		padding-left: 10px;
-		padding-right: 10px;
-	  }
-	}
+    // Mobile < 768px
+    @include media-breakpoint-down(md) {
+        .page-header {
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
 
-	.navbar .navbar-brand {
-	  img {
-		margin-top: -5px;
-	  }
-	}
-  }
+        .navbar .navbar-brand {
+            img {
+                margin-top: 0;
+            }
+        }
 
-  // Mobile < 768px
-  @include media-breakpoint-down(md) {
-	.page-header {
-	  margin-top: 20px;
-	  margin-bottom: 30px;
-	}
+        h1.titrebloc {
+            font-size: 40px;
+        }
 
-	.navbar .navbar-brand {
-	  img {
-		margin-top: 0;
-	  }
-	}
+        h3 {
+            font-size: 20px;
+        }
 
-	h1.titrebloc {
-	  font-size: 40px;
-	}
+        #bread #fil-ariane li {
+            padding: 0;
+        }
 
-	h3 {
-	  font-size: 20px;
-	}
+        //Body
+        padding-top: 50px;
+    }
 
-	#bread #fil-ariane li {
-	  padding: 0;
-	}
+    // Petit mobile uniquement ( < 481px )
+    @include media-breakpoint-down(sm) {
+        .col-xs-offset-1,
+        .col-xs-offset-2,
+        .col-xs-offset-3,
+        .col-xs-offset-4,
+        .col-xs-offset-5,
+        .col-xs-offset-6,
+        .col-xs-offset-7,
+        .col-xs-offset-8,
+        .col-xs-offset-9,
+        .col-xs-offset-10,
+        .col-xs-offset-11,
+        .col-xs-offset-12 {
+            margin-left: 0;
+        }
 
-	//Body
-	padding-top: 50px;
-  }
+        .col-xs-1,
+        .col-xs-2,
+        .col-xs-3,
+        .col-xs-4,
+        .col-xs-5,
+        .col-xs-6,
+        .col-xs-7,
+        .col-xs-8,
+        .col-xs-9,
+        .col-xs-10,
+        .col-xs-11,
+        .col-xs-12 {
+            &:not(.preserve) {
+                width: 100%;
+            }
+        }
 
-  // Petit mobile uniquement ( < 481px )
-  @include media-breakpoint-down(sm) {
-	.col-xs-offset-1, .col-xs-offset-2, .col-xs-offset-3, .col-xs-offset-4,
-	.col-xs-offset-5, .col-xs-offset-6, .col-xs-offset-7, .col-xs-offset-8,
-	.col-xs-offset-9, .col-xs-offset-10, .col-xs-offset-11, .col-xs-offset-12 {
-	  margin-left: 0;
-	}
+        h1.titrebloc {
+            font-size: 30px;
+        }
 
-	.col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4,
-	.col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8,
-	.col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
-	  &:not(.preserve) {
-		width: 100%;
-	  }
-	}
+        h2 {
+            font-size: 25px;
+        }
 
-	h1.titrebloc {
-	  font-size: 30px;
-	}
+        h3 {
+            font-size: 18px;
+        }
 
-	h2 {
-	  font-size: 25px;
-	}
+        #widgets {
+            h3.modal-title {
+                font-size: 19px;
+            }
 
-	h3 {
-	  font-size: 18px;
-	}
+            h4.modal-title {
+                font-size: 16px;
+            }
+        }
 
-	#widgets {
-	  h3.modal-title {
-		font-size: 19px;
-	  }
+        .number {
+            font-size: 1.1em;
 
-	  h4.modal-title {
-		font-size: 16px;
-	  }
-	}
+            &.number-xbig {
+                font-size: 1.5em;
+            }
+        }
 
-	.number {
-	  font-size: 1.1em;
+        .sm-margin-top {
+            margin-top: 10px;
+        }
 
-	  &.number-xbig {
-		font-size: 1.5em;
-	  }
-	}
-
-	.sm-margin-top {
-	  margin-top: 10px;
-	}
-
-	.sm-margin-bottom {
-	  margin-bottom: 10px;
-	}
-  }
+        .sm-margin-bottom {
+            margin-bottom: 10px;
+        }
+    }
 }
-

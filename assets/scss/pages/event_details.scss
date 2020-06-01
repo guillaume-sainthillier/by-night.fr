@@ -1,51 +1,51 @@
 #page-event {
-  margin-top: 1rem;
+    margin-top: 1rem;
 
-  #event {
-	a.image-gallery {
-	  display: block;
-	  height: 100%;
-	  border-right: 1px solid $card-border-color;
-	}
+    #event {
+        a.image-gallery {
+            display: block;
+            height: 100%;
+            border-right: 1px solid $card-border-color;
+        }
 
-	.event-details {
-	  h2 {
-		font-size: 1.25rem;
-	  }
-	}
+        .event-details {
+            h2 {
+                font-size: 1.25rem;
+            }
+        }
 
-	.detail-item {
-	  margin-bottom: 1rem;
+        .detail-item {
+            margin-bottom: 1rem;
 
-	  .tags a {
-		max-width: 100%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	  }
-	}
-  }
+            .tags a {
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
 }
 
 .detail-item {
-  position: relative;
-  margin-left: 1.5rem;
+    position: relative;
+    margin-left: 1.5rem;
 
-  &:last-child {
-	margin-bottom: 0;
-  }
+    &:last-child {
+        margin-bottom: 0;
+    }
 
-  p {
-	margin-bottom: 0;
-  }
+    p {
+        margin-bottom: 0;
+    }
 
-  .fa {
-	position: absolute;
-	width: 1rem;
-	height: 1rem;
-	text-align: center;
-	left: 0;
-	top: 0;
-	margin-top: 0.125rem;
-	margin-left: -1.25rem;
-  }
+    .fa {
+        position: absolute;
+        width: 1rem;
+        height: 1rem;
+        text-align: center;
+        left: 0;
+        top: 0;
+        margin-top: 0.125rem;
+        margin-left: -1.25rem;
+    }
 }

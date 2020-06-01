@@ -49,4 +49,4 @@ export default (di, container) => {
             toInput.val(end.isValid() ? end.format('YYYY-MM-DD') : '');
         }
     });
-}
+};

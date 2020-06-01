@@ -1,15 +1,15 @@
 #page-user {
-  @include media-breakpoint-up(sm) {
-	.align-nav {
-	  margin-top: 0.75rem;
-	  margin-bottom: 1.75rem;
-	}
-  }
+    @include media-breakpoint-up(sm) {
+        .align-nav {
+            margin-top: 0.75rem;
+            margin-bottom: 1.75rem;
+        }
+    }
 
-  .fiche_profil {
-	h2 {
-	  overflow-x: auto;
-	  overflow-y: hidden;
-	}
-  }
+    .fiche_profil {
+        h2 {
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+    }
 }

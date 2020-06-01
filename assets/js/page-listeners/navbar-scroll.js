@@ -1,4 +1,4 @@
-import {debounce} from 'lodash';
+import { debounce } from 'lodash';
 
 export default () => {
     const navbar = $('.navbar');
@@ -6,15 +6,21 @@ export default () => {
     const href = $(toggler).data('target');
     const elem = $(href);
 
-    $(window).scroll(debounce(function () {
-        if (!toggler.hasClass('collapsed')) {
-            $(elem).collapse('hide');
-        }
+    $(window).scroll(
+        debounce(
+            function () {
+                if (!toggler.hasClass('collapsed')) {
+                    $(elem).collapse('hide');
+                }
 
-        if ($(window).scrollTop() > 0) {
-            $(navbar).addClass('navbar-shadow');
-        } else {
-            $(navbar).removeClass('navbar-shadow');
-        }
-    }, 200, {leading: true}));
-}
+                if ($(window).scrollTop() > 0) {
+                    $(navbar).addClass('navbar-shadow');
+                } else {
+                    $(navbar).removeClass('navbar-shadow');
+                }
+            },
+            200,
+            { leading: true }
+        )
+    );
+};

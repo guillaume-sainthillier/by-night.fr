@@ -12,4 +12,4 @@ export default () => {
             searchForm.removeClass('focus');
             searchBackdrop.removeClass('open');
         });
-}
+};

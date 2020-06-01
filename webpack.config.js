@@ -38,7 +38,7 @@ Encore
     ])
 
     .splitEntryChunks()
-    .configureSplitChunks(function(splitChunks) {
+    .configureSplitChunks(function (splitChunks) {
         //https://github.com/webpack/webpack/blob/master/examples/many-pages/README.md
         splitChunks.maxInitialRequests = 20; // for HTTP2
         splitChunks.maxAsyncRequests = 20;

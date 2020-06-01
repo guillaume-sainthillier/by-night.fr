@@ -1,19 +1,19 @@
 .table {
-  tbody tr td {
-	vertical-align: middle;
+    tbody tr td {
+        vertical-align: middle;
 
-	.btn {
-	  margin-top: 0;
-	  margin-bottom: 0;
+        .btn {
+            margin-top: 0;
+            margin-bottom: 0;
 
-	  &.btn-xs {
-		padding: 5px 10px;
-	  }
-	}
-  }
+            &.btn-xs {
+                padding: 5px 10px;
+            }
+        }
+    }
 
-  td.actions {
-	overflow: hidden;
-	white-space: nowrap;
-  }
+    td.actions {
+        overflow: hidden;
+        white-space: nowrap;
+    }
 }

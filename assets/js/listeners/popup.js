@@ -22,4 +22,4 @@ export default (di, container) => {
         window.open($(this).attr('href'), 'sharer', windowFeatures);
         return false;
     });
-}
+};

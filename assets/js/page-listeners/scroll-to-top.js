@@ -1,4 +1,4 @@
-import {debounce} from "lodash";
+import { debounce } from 'lodash';
 
 export default () => {
     const settings = {
@@ -19,17 +19,23 @@ export default () => {
 
     toTop.click(function (e) {
         e.preventDefault();
-        $('html, body').animate({scrollTop: 0}, settings.scrollSpeed, settings.easingType);
+        $('html, body').animate({ scrollTop: 0 }, settings.scrollSpeed, settings.easingType);
     });
 
-    $(window).scroll(debounce(function () {
-        const sd = $(this).scrollTop();
-        if (sd > settings.min && toTopHidden) {
-            toTop.fadeIn(settings.inDelay);
-            toTopHidden = false;
-        } else if (sd <= settings.min && !toTopHidden) {
-            toTop.fadeOut(settings.outDelay);
-            toTopHidden = true;
-        }
-    }, 200, {leading: true}));
-}
+    $(window).scroll(
+        debounce(
+            function () {
+                const sd = $(this).scrollTop();
+                if (sd > settings.min && toTopHidden) {
+                    toTop.fadeIn(settings.inDelay);
+                    toTopHidden = false;
+                } else if (sd <= settings.min && !toTopHidden) {
+                    toTop.fadeOut(settings.outDelay);
+                    toTopHidden = true;
+                }
+            },
+            200,
+            { leading: true }
+        )
+    );
+};

@@ -36,4 +36,4 @@ export default (di, container) => {
                     handleLogin($dialog);
                 });
         });
-}
+};

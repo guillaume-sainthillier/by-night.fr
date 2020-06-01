@@ -7,7 +7,7 @@ global.Raphael = Raphael;
 export default class UserDetails {
     init() {
         const self = this;
-        $(function() {
+        $(function () {
             self.initCharts();
         });
     }
@@ -23,14 +23,14 @@ export default class UserDetails {
     initActivite() {
         const self = this;
         self.chartActivite('annee', ['#67C2EF']);
-        $('#chartMois').on('shown.bs.tab', function() {
+        $('#chartMois').on('shown.bs.tab', function () {
             if (!$(this).hasClass('loaded')) {
                 $(this).addClass('loaded');
                 self.chartActivite('mois', ['#BDEA74']);
             }
         });
 
-        $('#chartSemaine').on('shown.bs.tab', function() {
+        $('#chartSemaine').on('shown.bs.tab', function () {
             if (!$(this).hasClass('loaded')) {
                 $(this).addClass('loaded');
                 self.chartActivite('semaine', ['#fabb3d']);
@@ -41,7 +41,7 @@ export default class UserDetails {
     initLieux() {
         var morris_data = [];
 
-        $.each(window.datas, function(i, etablissement) {
+        $.each(window.datas, function (i, etablissement) {
             morris_data.push({ label: etablissement.nom || '', value: etablissement.nbEtablissements });
         });
 
@@ -57,13 +57,13 @@ export default class UserDetails {
     }
 
     prepare(dataArray) {
-        return dataArray.map(function(item, index) {
+        return dataArray.map(function (item, index) {
             return { y: item, myIndex: index };
         });
     }
 
     prepareActivite(datas) {
-        return datas.data.map(function(events, index) {
+        return datas.data.map(function (events, index) {
             return { period: datas.categories[index], events: events, full_period: datas.full_categories[index] };
         });
     }
@@ -72,7 +72,7 @@ export default class UserDetails {
         const self = this;
         var element = 'chart-' + type;
         var chart = $('#' + element);
-        $.get(chart.data('url')).done(function(datas) {
+        $.get(chart.data('url')).done(function (datas) {
             chart.children().remove();
             Morris.Area({
                 element: element,
@@ -85,11 +85,9 @@ export default class UserDetails {
                 hideHover: 'auto',
                 parseTime: false,
                 resize: true,
-                hoverCallback: function(index, options, content, row) {
+                hoverCallback: function (index, options, content, row) {
                     var customContent = $('<div>' + content + '</div>');
-                    $(customContent)
-                        .find('.morris-hover-row-label')
-                        .html(row.full_period);
+                    $(customContent).find('.morris-hover-row-label').html(row.full_period);
                     return $(customContent).html();
                 },
                 gridTextFamily: 'Roboto',

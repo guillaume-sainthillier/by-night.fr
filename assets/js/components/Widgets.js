@@ -1,7 +1,7 @@
 export default class Widgets {
     init(selecteur) {
         const self = this;
-        $(function() {
+        $(function () {
             self.initMoreWidgets($('.widget', selecteur || document));
         });
     }
@@ -9,7 +9,7 @@ export default class Widgets {
     //Deps: ['scrollable']
     initMoreWidgets(elems) {
         const self = this;
-        elems.each(function() {
+        elems.each(function () {
             var container = $(this);
             var containerActions = container.find('.more-container');
             var moreContentLink = container.find('a.more-content');
@@ -29,19 +29,19 @@ export default class Widgets {
                 containerActions.html(newMoreContentLink);
                 moreContentLink.remove();
 
-                newMoreContentLink.unbind('click').click(function(e) {
+                newMoreContentLink.unbind('click').click(function (e) {
                     var btn = $(this);
                     btn.addClass('disabled').prepend(
                         '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '
                     );
                     var scrollAreaLastItem = containerBody.find('.scroll-item').last();
-                    $.get(btn.attr('href')).done(function(content) {
+                    $.get(btn.attr('href')).done(function (content) {
                         btn.remove();
                         containerBody.append(content);
                         self.initMoreWidgets(container);
                         App.dispatchPageLoadedEvent(container[0]);
                         if (scrollAreaLastItem.next().length > 0) {
-                            self.scrollTo(scrollAreaLastItem.next(), scrollArea, function() {});
+                            self.scrollTo(scrollAreaLastItem.next(), scrollArea, function () {});
                         }
                     });
 

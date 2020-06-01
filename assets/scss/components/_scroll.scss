@@ -1,30 +1,30 @@
 .scroll-area {
-  display: flex;
+    display: flex;
 
-  &.scroll-area-horizontal {
-	flex-direction: row;
-	flex-wrap: nowrap;
-	overflow-x: scroll;
-	-webkit-overflow-scrolling: touch;
-	padding-bottom: 0.5rem;
+    &.scroll-area-horizontal {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 0.5rem;
 
-	.scroll-item {
-	  flex: 0 0 auto;
-	}
+        .scroll-item {
+            flex: 0 0 auto;
+        }
 
-	.card {
-	  max-width: 280px;
-	  margin-right: 1rem;
-	  margin-bottom: 0;
-	}
-  }
+        .card {
+            max-width: 280px;
+            margin-right: 1rem;
+            margin-bottom: 0;
+        }
+    }
 
-  &.scroll-area-vertical {
-	flex-direction: column;
-	overflow-y: scroll;
+    &.scroll-area-vertical {
+        flex-direction: column;
+        overflow-y: scroll;
 
-	@include media-breakpoint-up(md) {
-	  max-height: 500px;
-	}
-  }
+        @include media-breakpoint-up(md) {
+            max-height: 500px;
+        }
+    }
 }

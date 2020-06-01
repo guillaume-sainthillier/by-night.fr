@@ -37,4 +37,4 @@ export default (di, container) => {
                     handleRegister($dialog);
                 });
         });
-}
+};

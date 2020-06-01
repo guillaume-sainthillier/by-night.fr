@@ -16,4 +16,4 @@ export default (di, container) => {
                 return false;
             });
     });
-}
+};

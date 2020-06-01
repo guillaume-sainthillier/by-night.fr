@@ -1,39 +1,39 @@
 .form-group .bootstrap-select.form-control {
-  height: $input-height;
-  .btn {
-	padding-left: 0;
-	padding-right: 0;
-  }
+    height: $input-height;
+    .btn {
+        padding-left: 0;
+        padding-right: 0;
+    }
 }
 
 .dropdown.bootstrap-select {
-  .dropdown-item {
-	max-width: 100%;
-  }
+    .dropdown-item {
+        max-width: 100%;
+    }
 
-  > .dropdown-toggle {
-	&.bs-placeholder {
-	  &.btn-primary {
-		&,
-		&:hover,
-		&:focus,
-		&:active {
-		  color: $primary;
-		}
-	  }
-	}
-  }
+    > .dropdown-toggle {
+        &.bs-placeholder {
+            &.btn-primary {
+                &,
+                &:hover,
+                &:focus,
+                &:active {
+                    color: $primary;
+                }
+            }
+        }
+    }
 
-  .dropdown-menu {
-	.dropdown-item {
-	  &.active,
-	  &:active {
-		color: $primary;
-	  }
-	}
-  }
+    .dropdown-menu {
+        .dropdown-item {
+            &.active,
+            &:active {
+                color: $primary;
+            }
+        }
+    }
 
-  &.show > .btn-primary.dropdown-toggle {
-	color: $primary;
-  }
+    &.show > .btn-primary.dropdown-toggle {
+        color: $primary;
+    }
 }
