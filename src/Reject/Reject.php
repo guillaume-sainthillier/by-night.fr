@@ -91,87 +91,87 @@ class Reject
         return self::VALID === $this->reason;
     }
 
-    public function isEventDeleted():bool
+    public function isEventDeleted(): bool
     {
         return $this->hasReason(self::EVENT_DELETED);
     }
 
-    private function hasReason(int $reason):bool
+    private function hasReason(int $reason): bool
     {
         return $reason === ($reason & $this->reason);
     }
 
-    public function isBadUser():bool
+    public function isBadUser(): bool
     {
         return $this->hasReason(self::BAD_USER);
     }
 
-    public function hasNoPlaceLocationProvided():bool
+    public function hasNoPlaceLocationProvided(): bool
     {
         return $this->hasReason(self::NO_PLACE_LOCATION_PROVIDED);
     }
 
-    public function hasNoPlaceProvided():bool
+    public function hasNoPlaceProvided(): bool
     {
         return $this->hasReason(self::NO_PLACE_PROVIDED);
     }
 
-    public function isBadPlaceCityPostalCode():bool
+    public function isBadPlaceCityPostalCode(): bool
     {
         return $this->hasReason(self::BAD_PLACE_CITY_POSTAL_CODE);
     }
 
-    public function isBadPlaceCityName():bool
+    public function isBadPlaceCityName(): bool
     {
         return $this->hasReason(self::BAD_PLACE_CITY_NAME);
     }
 
-    public function isBadPlaceLocation():bool
+    public function isBadPlaceLocation(): bool
     {
         return $this->hasReason(self::BAD_PLACE_LOCATION);
     }
 
-    public function isBadPlaceName():bool
+    public function isBadPlaceName(): bool
     {
         return $this->hasReason(self::BAD_PLACE_NAME);
     }
 
-    public function hasNoNeedToUpdate():bool
+    public function hasNoNeedToUpdate(): bool
     {
         return $this->hasReason(self::NO_NEED_TO_UPDATE);
     }
 
-    public function isBadEventDescription():bool
+    public function isBadEventDescription(): bool
     {
         return $this->hasReason(self::BAD_EVENT_DESCRIPTION);
     }
 
-    public function isBadEventName():bool
+    public function isBadEventName(): bool
     {
         return $this->hasReason(self::BAD_EVENT_NAME);
     }
 
-    public function isBadEventDate():bool
+    public function isBadEventDate(): bool
     {
         return $this->hasReason(self::BAD_EVENT_DATE);
     }
 
-    public function isBadEventDateInterval():bool
+    public function isBadEventDateInterval(): bool
     {
         return $this->hasReason(self::BAD_EVENT_DATE_INTERVAL);
     }
 
-    public function isSpamEventDescription():bool
+    public function isSpamEventDescription(): bool
     {
         return $this->hasReason(self::SPAM_EVENT_DESCRIPTION);
     }
 
-    public function hasNoCountryProvided():bool
+    public function hasNoCountryProvided(): bool
     {
         return $this->hasReason(self::NO_COUNTRY_PROVIDED);
     }
 
-    public function isBadCountryName():bool
+    public function isBadCountryName(): bool
     {
         return $this->hasReason(self::BAD_COUNTRY);
     }

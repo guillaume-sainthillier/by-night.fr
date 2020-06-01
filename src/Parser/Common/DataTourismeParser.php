@@ -126,11 +126,11 @@ class DataTourismeParser extends AbstractParser
         $longitude = null;
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'])) {
-            $latitude = (float)$datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
+            $latitude = (float) $datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
         }
 
         if (isset($datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'])) {
-            $longitude = (float)$datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
+            $longitude = (float) $datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
         }
 
         $emails = [];
@@ -263,7 +263,7 @@ class DataTourismeParser extends AbstractParser
         }
 
         $key = str_replace(':', '', $resource['@id']);
-        $resource = array_merge($resource, $this->cache->get($key, fn() => $resource));
+        $resource = array_merge($resource, $this->cache->get($key, fn () => $resource));
 
         foreach ($resource as $key => $value) {
             if (\is_array($value)) {

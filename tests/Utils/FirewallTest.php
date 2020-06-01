@@ -57,7 +57,7 @@ class FirewallTest extends ContainerTestCase
         $exploration = (new ParserData())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion('old version');
         $event = (new Event())->setExternalUpdatedAt($now);
         $this->firewall->filterEventExploration($exploration, $event);
-        $this->assertEquals(Reject::NO_NEED_TO_UPDATE| Reject::VALID, $exploration->getReject()->getReason());
+        $this->assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $exploration->getReject()->getReason());
         $this->assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
         //L'événement doit être valide car la version du firewall a changé et qu'il n'était pas valide avant

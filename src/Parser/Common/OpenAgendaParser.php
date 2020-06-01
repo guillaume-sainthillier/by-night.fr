@@ -11,15 +11,15 @@
 namespace App\Parser\Common;
 
 use App\Handler\ReservationsHandler;
-use RuntimeException;
-use Parsedown;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use App\Repository\CountryRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\NonUniqueResultException;
+use Parsedown;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -133,7 +133,7 @@ class OpenAgendaParser extends AbstractParser
         if (empty($location['countryCode'])) {
             try {
                 $country = $this->countryRepository->getFromRegionOrDepartment($location['region'] ?? null, $location['department'] ?? null);
-                $countryCode = $country !== null ? $country->getId() : null;
+                $countryCode = null !== $country ? $country->getId() : null;
             } catch (NonUniqueResultException $exception) {
                 return null;
             }

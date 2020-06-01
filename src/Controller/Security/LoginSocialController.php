@@ -10,9 +10,9 @@
 
 namespace App\Controller\Security;
 
-use Exception;
 use App\Entity\User;
 use App\OAuth\TwitterOAuth;
+use Exception;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

@@ -239,7 +239,7 @@ class Firewall
                 ->setFirewallVersion(self::VERSION)
                 ->setParserVersion($event->getParserVersion());
 
-            if(false === $reject->hasNoNeedToUpdate()) {
+            if (false === $reject->hasNoNeedToUpdate()) {
                 $reject->setValid();
             }
         }

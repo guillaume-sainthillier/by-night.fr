@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Tests\Handler;
 
 use App\Handler\ReservationsHandler;
@@ -13,7 +21,7 @@ class ReservationsHandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->reservationsHandler = new ReservationsHandler;
+        $this->reservationsHandler = new ReservationsHandler();
         //$this->reservationsHandler = self::$container->get(ReservationsHandler::class);
     }
 
@@ -33,7 +41,7 @@ class ReservationsHandlerTest extends ContainerTestCase
             [
                 'urls' => null,
                 'phones' => ['02 40 60 02 80', '02 40 60 88 28'],
-                'emails' => null
+                'emails' => null,
             ],
         ];
 
@@ -42,7 +50,7 @@ class ReservationsHandlerTest extends ContainerTestCase
             [
                 'urls' => null,
                 'phones' => ['02 40 60 02 80'],
-                'emails' => null
+                'emails' => null,
             ],
         ];
 
@@ -52,7 +60,7 @@ class ReservationsHandlerTest extends ContainerTestCase
             [
                 'urls' => ['www.fnac.com', 'www.sallenougaro.com'],
                 'phones' => null,
-                'emails' => null
+                'emails' => null,
             ],
         ];
 
@@ -61,7 +69,7 @@ class ReservationsHandlerTest extends ContainerTestCase
             [
                 'urls' => ['http://www.labaule-cheval.com', 'https://www.labaule-guerande.com/annule-longines-fei-jumping-nations-cup-de-france-la-baule-jumpinginternational2020.html'],
                 'phones' => ['02 40 60 02 80', '02 40 60 88 28'],
-                'emails' => ['organisation@labaule-cheval.com']
+                'emails' => ['organisation@labaule-cheval.com'],
             ],
         ];
 
@@ -70,8 +78,8 @@ class ReservationsHandlerTest extends ContainerTestCase
             [
                 'urls' => ['http://www.labaule-cheval.com', 'https://www.labaule-guerande.com/annule-longines-fei-jumping-nations-cup-de-france-la-baule-jumpinginternational2020.html'],
                 'phones' => ['02 40 60 02 80'],
-                'emails' => ['organisation@labaule-cheval.com']
-            ]
+                'emails' => ['organisation@labaule-cheval.com'],
+            ],
         ];
     }
 }

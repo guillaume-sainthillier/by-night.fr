@@ -93,12 +93,12 @@ class SowProgParser extends AbstractParser
         }
 
         if (!empty($event['eventPrice'])) {
-            $prices = array_map(fn(array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $event['eventPrice']);
+            $prices = array_map(fn (array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $event['eventPrice']);
             $tab_infos['tarif'] = implode(' - ', $prices);
         }
 
         if (!empty($event['ticketStore'])) {
-            $tickets = array_map(fn(array $ticket) => $ticket['url'], $event['ticketStore']);
+            $tickets = array_map(fn (array $ticket) => $ticket['url'], $event['ticketStore']);
             $tab_infos['websiteContacts'] = $tickets;
         }
 
@@ -110,8 +110,8 @@ class SowProgParser extends AbstractParser
 
             if ($location['contact']) {
                 $contact = $event['location']['contact'];
-                $tab_infos['latitude'] = (float)$contact['lattitude'];
-                $tab_infos['longitude'] = (float)$contact['longitude'];
+                $tab_infos['latitude'] = (float) $contact['lattitude'];
+                $tab_infos['longitude'] = (float) $contact['longitude'];
 
                 $tab_infos['placeStreet'] = trim(sprintf('%s %s', $contact['addressLine1'], $contact['addressLine2']));
                 $tab_infos['placePostalCode'] = $contact['zipCode'];

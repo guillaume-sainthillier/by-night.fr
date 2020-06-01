@@ -136,7 +136,7 @@ class EventType extends AbstractType
                 'label' => 'Pays',
                 'placeholder' => '?',
                 'class' => Country::class,
-                'query_builder' => fn(CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
+                'query_builder' => fn (CountryRepository $er) => $er->createQueryBuilder('c')->orderBy('c.name', 'ASC'),
                 'choice_label' => 'name',
             ])
             ->add('websiteContacts', CollectionType::class, [
@@ -149,7 +149,7 @@ class EventType extends AbstractType
                     'block_prefix' => 'app_collection_entry_main_text',
                     'attr' => [
                         'placeholder' => 'https://monsupersite.fr',
-                    ]
+                    ],
                 ],
             ])
             ->add('phoneContacts', CollectionType::class, [
@@ -162,7 +162,7 @@ class EventType extends AbstractType
                     'block_prefix' => 'app_collection_entry_main_text',
                     'attr' => [
                         'placeholder' => '06 01 02 03 04',
-                    ]
+                    ],
                 ],
             ])
             ->add('mailContacts', CollectionType::class, [
@@ -175,7 +175,7 @@ class EventType extends AbstractType
                     'block_prefix' => 'app_collection_entry_main_text',
                     'attr' => [
                         'placeholder' => 'vousêtes@incroyable.fr',
-                    ]
+                    ],
                 ],
             ])
             ->addEventListener(FormEvents::SUBMIT, [$this, 'onSubmit']);
@@ -194,13 +194,13 @@ class EventType extends AbstractType
         }
 
         $builder->get('latitude')->addModelTransformer(new CallbackTransformer(
-            fn($latitude) => (float)$latitude ?: null,
-            fn($latitude) => (float)$latitude ?: null
+            fn ($latitude) => (float) $latitude ?: null,
+            fn ($latitude) => (float) $latitude ?: null
         ));
 
         $builder->get('longitude')->addModelTransformer(new CallbackTransformer(
-            fn($latitude) => (float)$latitude ?: null,
-            fn($latitude) => (float)$latitude ?: null
+            fn ($latitude) => (float) $latitude ?: null,
+            fn ($latitude) => (float) $latitude ?: null
         ));
     }
 

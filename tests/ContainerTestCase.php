@@ -11,7 +11,6 @@
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Dotenv\Dotenv;
 
 abstract class ContainerTestCase extends KernelTestCase
 {

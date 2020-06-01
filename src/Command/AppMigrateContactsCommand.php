@@ -56,10 +56,10 @@ class AppMigrateContactsCommand extends Command
             ');
 
         $nbPages = 1;
-        for ($page = 1; $page <= $nbPages; $page++) {
+        for ($page = 1; $page <= $nbPages; ++$page) {
             $paginator = $this->paginator->paginate($qb, $page, 5000);
 
-            if ($page === 1) {
+            if (1 === $page) {
                 $nbPages = ceil($paginator->getTotalItemCount() / $paginator->getItemNumberPerPage());
                 Monitor::createProgressBar($nbPages);
             }
@@ -73,7 +73,7 @@ class AppMigrateContactsCommand extends Command
                 );
 
                 foreach ($infos as $key => $values) {
-                    if (is_array($values)) {
+                    if (\is_array($values)) {
                         $infos[$key] = array_values(array_filter($values));
                     }
                 }

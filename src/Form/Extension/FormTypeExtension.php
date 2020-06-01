@@ -22,7 +22,7 @@ class FormTypeExtension extends AbstractTypeExtension
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'translation_domain' => false
+            'translation_domain' => false,
         ]);
     }
 

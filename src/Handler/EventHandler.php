@@ -99,9 +99,10 @@ class EventHandler
         $tempFileBasename = ($event->getId() ?: uniqid());
         $tempFilePath = $this->tempPath . \DIRECTORY_SEPARATOR . $tempFileBasename;
         $octets = \file_put_contents($tempFilePath, $content);
-        if ($octets === 0) {
+        if (0 === $octets) {
             unlink($tempFilePath);
             $event->setImageSystemFile(null);
+
             return;
         }
 
@@ -132,18 +133,18 @@ class EventHandler
      */
     public function handle(array $persistedEvents, array $persistedPlaces, Event $event)
     {
-        $place = Monitor::bench('Handle Place', fn() => $this->handlePlace($persistedPlaces, $event->getPlace()));
+        $place = Monitor::bench('Handle Place', fn () => $this->handlePlace($persistedPlaces, $event->getPlace()));
         $event->setPlace($place);
 
-        return Monitor::bench('Handle Event', fn() => $this->handleEvent($persistedEvents, $event));
+        return Monitor::bench('Handle Event', fn () => $this->handleEvent($persistedEvents, $event));
     }
 
     public function handlePlace(array $persistedPlaces, Place $notPersistedPlace)
     {
-        $bestPlace = Monitor::bench('getBestPlace', fn() => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
+        $bestPlace = Monitor::bench('getBestPlace', fn () => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
 
         //On fusionne la place existant avec celle découverte (même si NULL)
-        return Monitor::bench('mergePlace', fn() => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
+        return Monitor::bench('mergePlace', fn () => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
     }
 
     public function handleEvent(array $persistedEvents, Event $notPersistedEvent)
@@ -151,6 +152,6 @@ class EventHandler
         $bestEvent = \count($persistedEvents) > 0 ? current($persistedEvents) : null;
 
         //On fusionne l'event existant avec celui découvert (même si NULL)
-        return Monitor::bench('mergeEvent', fn() => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
+        return Monitor::bench('mergeEvent', fn () => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
     }
 }

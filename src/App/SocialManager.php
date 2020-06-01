@@ -10,9 +10,8 @@
 
 namespace App\App;
 
-use App\Repository\AppOAuthRepository;
 use App\Entity\AppOAuth;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\AppOAuthRepository;
 
 class SocialManager
 {

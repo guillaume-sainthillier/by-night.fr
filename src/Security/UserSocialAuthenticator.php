@@ -80,7 +80,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 ->findOneBySocial($datas['email'], $social->getInfoPropertyPrefix(), $datas['id']);
         }
 
-        if ($existingUser === null) {
+        if (null === $existingUser) {
             $existingUser = new User();
             $existingUser
                 ->setUsername($datas['realname'] ?: $datas['email'] ?: $datas['id'])
@@ -136,7 +136,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
         $service = $request->attributes->get('service');
 
         //Still use Oauth 1.0...
-        if ($service === SocialProvider::TWITTER) {
+        if (SocialProvider::TWITTER === $service) {
             return [
                 'service' => $service,
                 'token' => $this->fetchTwitterAccessToken(),

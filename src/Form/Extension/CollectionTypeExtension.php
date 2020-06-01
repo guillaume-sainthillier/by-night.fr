@@ -1,11 +1,11 @@
 <?php
 
 /*
- * This file is part of DocImmo.
- * Copyright (c) Cimalis - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
- * Written by Guillaume Sainthillier <guillaume@silarhi.fr>
+ * This file is part of By Night.
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace App\Form\Extension;

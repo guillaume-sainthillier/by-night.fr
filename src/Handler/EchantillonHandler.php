@@ -14,7 +14,6 @@ use App\Entity\Event;
 use App\Entity\Place;
 use App\Repository\EventRepository;
 use App\Repository\PlaceRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
 
 class EchantillonHandler
