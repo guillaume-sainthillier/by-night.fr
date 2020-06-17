@@ -95,7 +95,7 @@ easy_admin:
                     - { property: 'firstname' }
                     - { property: 'lastname' }
                     - { property: 'description' }
-                    - { property: 'info' }
+                    - { property: 'oAuth' }
                     - { property: 'from_login' }
                     - { property: 'show_socials' }
                     - { property: 'website' }
