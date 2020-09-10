@@ -146,45 +146,6 @@
     "halaxa/json-machine": {
         "version": "0.3.2"
     },
-    "hoa/compiler": {
-        "version": "3.17.08.08"
-    },
-    "hoa/consistency": {
-        "version": "1.17.05.02"
-    },
-    "hoa/event": {
-        "version": "1.17.01.13"
-    },
-    "hoa/exception": {
-        "version": "1.17.01.16"
-    },
-    "hoa/file": {
-        "version": "1.17.07.11"
-    },
-    "hoa/iterator": {
-        "version": "2.17.01.10"
-    },
-    "hoa/math": {
-        "version": "1.17.05.16"
-    },
-    "hoa/protocol": {
-        "version": "1.17.01.14"
-    },
-    "hoa/regex": {
-        "version": "1.17.01.13"
-    },
-    "hoa/stream": {
-        "version": "1.17.02.21"
-    },
-    "hoa/ustring": {
-        "version": "4.17.01.16"
-    },
-    "hoa/visitor": {
-        "version": "2.17.01.16"
-    },
-    "hoa/zformat": {
-        "version": "1.17.01.10"
-    },
     "http-interop/http-factory-guzzle": {
         "version": "1.0.0"
     },
@@ -193,9 +154,6 @@
     },
     "jean85/pretty-package-versions": {
         "version": "1.2"
-    },
-    "jetbrains/phpstorm-stubs": {
-        "version": "v2019.3"
     },
     "jms/metadata": {
         "version": "1.6.0"
@@ -264,6 +222,9 @@
     "league/glide-symfony": {
         "version": "1.0.3"
     },
+    "league/mime-type-detection": {
+        "version": "1.4.0"
+    },
     "league/oauth2-client": {
         "version": "2.4.1"
     },
@@ -272,6 +233,12 @@
     },
     "league/oauth2-google": {
         "version": "3.0.2"
+    },
+    "migrify/migrify-kernel": {
+        "version": "0.3.36"
+    },
+    "migrify/php-config-printer": {
+        "version": "0.3.36"
     },
     "monolog/monolog": {
         "version": "1.23.0"
@@ -612,6 +579,9 @@
     "symfony/polyfill-mbstring": {
         "version": "v1.6.0"
     },
+    "symfony/polyfill-php70": {
+        "version": "v1.18.1"
+    },
     "symfony/polyfill-php72": {
         "version": "v1.10.0"
     },
@@ -762,11 +732,11 @@
     "symplify/console-color-diff": {
         "version": "v7.3.10"
     },
+    "symplify/easy-testing": {
+        "version": "8.2.27"
+    },
     "symplify/package-builder": {
         "version": "v7.3.1"
-    },
-    "symplify/parameter-name-guard": {
-        "version": "v7.3.16"
     },
     "symplify/set-config-resolver": {
         "version": "v7.3.1"
