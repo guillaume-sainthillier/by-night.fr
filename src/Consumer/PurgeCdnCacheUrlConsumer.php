@@ -54,7 +54,6 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
                 ],
             ]);
 
-            dd($result);
             if (true === $success) {
                 return ConsumerInterface::MSG_ACK;
             }
