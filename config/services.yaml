@@ -22,8 +22,6 @@ services:
         autowire: true
         autoconfigure: true
         bind:
-            $changePasswordFormFactory: "@fos_user.change_password.form.factory"
-            $profileFormFactory: "@fos_user.profile.form.factory"
             $memoryCache: "@redis.app_cache_pool"
             $secret: "%kernel.secret%"
             $webDir: "%kernel.project_dir%/public"
