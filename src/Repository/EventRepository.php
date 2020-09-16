@@ -32,6 +32,23 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
+    /**
+     * User in types.event.persistence.provider.query_builder_method (fos_elastica.yaml)
+     */
+    public function createIsActiveQueryBuilder()
+    {
+        $from = new DateTime();
+        $from->modify(Event::INDEX_FROM);
+
+        $qb = $this->createElasticaQueryBuilder('a');
+
+        return $qb
+            ->where('a.dateFin >= :from')
+            ->setParameters([
+                'from' => $from->format('Y-m-d'),
+            ]);
+    }
+
     public function createElasticaQueryBuilder($alias, $indexBy = null)
     {
         return $this
