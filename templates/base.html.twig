@@ -16,7 +16,7 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta http-equiv="Content-Language" content="fr">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% spaceless %}{% block full_title %}{% spaceless %}{%- block title -%}{%- endblock -%}{% endspaceless %} - {% block nom_site 'By Night' %}{% endblock %}{% endspaceless %}</title>
+    <title>{% apply spaceless %}{% block full_title %}{% apply spaceless %}{%- block title -%}{%- endblock -%}{% endapply %} - {% block nom_site 'By Night' %}{% endblock %}{% endapply %}</title>
     <meta name="title" content="{{ block('og_titre') }}">
     <meta name="keywords" content="{% block meta_full_keywords %}{% block meta_keywords %}{% endblock %}aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endblock %}">
     <meta name="description" content="{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}">
