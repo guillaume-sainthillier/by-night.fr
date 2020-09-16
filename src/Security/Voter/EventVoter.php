@@ -15,11 +15,18 @@ use App\Entity\User;
 use LogicException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Security;
 
 class EventVoter extends Voter
 {
     const EDIT = 'edit';
     const DELETE = 'delete';
+
+    private Security $security;
+
+    public function __construct(Security $security) {
+        $this->security = $security;
+    }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
@@ -29,7 +36,7 @@ class EventVoter extends Voter
             return false;
         }
 
-        if ($user->hasRole('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }
 
