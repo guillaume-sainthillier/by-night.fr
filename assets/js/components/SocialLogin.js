@@ -1,3 +1,5 @@
+import {popup} from "../utils/utils";
+
 export default class SocialLogin {
     init() {
         const self = this;
@@ -53,7 +55,7 @@ export default class SocialLogin {
 
     //Deps: ['app/App']
     launchSocialConnect(ck) {
-        App.popup($(ck).data('href-connect'), ck);
+        popup($(ck).data('href-connect'), ck);
     }
 
     launchSocialDisconnect(ck) {
