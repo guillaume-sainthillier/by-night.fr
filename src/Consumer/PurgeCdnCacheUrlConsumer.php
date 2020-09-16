@@ -43,7 +43,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
         }
 
         try {
-            $result = $this->client->createInvalidation([
+            $this->client->createInvalidation([
                 'DistributionId' => $this->cloudFrontDistributionID,
                 'InvalidationBatch' => [
                     'CallerReference' => uniqid(),
@@ -54,24 +54,16 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
                 ],
             ]);
 
-            if (true === $success) {
-                return ConsumerInterface::MSG_ACK;
-            }
-
-            $this->logger->error('CDN PURGE ERROR', [
-                'extra' => $datas,
-            ]);
-        } catch (TransportExceptionInterface | HttpExceptionInterface $e) {
+            return ConsumerInterface::MSG_ACK;
+        } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'exception' => $e,
                 'extra' => [
-                    'urls' => $urls,
+                    'paths' => $paths,
                 ],
             ]);
 
             return ConsumerInterface::MSG_REJECT;
         }
-
-        return ConsumerInterface::MSG_ACK;
     }
 }
