@@ -11,20 +11,25 @@
 namespace App\Validator\Constraints;
 
 use App\Captcha\CaptchaWrapper;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class ReCaptchaResponseValidator extends ConstraintValidator
 {
+    private RequestStack $requestStack;
     private CaptchaWrapper $captcha;
 
-    public function __construct(CaptchaWrapper $captcha)
+    public function __construct(RequestStack $requestStack, CaptchaWrapper $captcha)
     {
+        $this->requestStack = $requestStack;
         $this->captcha = $captcha;
     }
 
     public function validate($value, Constraint $constraint)
     {
+        $value = null === $value ? $this->requestStack->getCurrentRequest()->request->get('g-recaptcha-response') : $value;
+
         $isValid = $this->captcha->verify($value);
         if (!$isValid) {
             $this->context->buildViolation($constraint->message)->addViolation();

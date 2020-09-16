@@ -1,7 +1,0 @@
-{% set partial = app.request.xmlHttpRequest %}
-
-{% if partial %}
-    {% include "bundles/FOSUserBundle/Registration/_register_partial.html.twig" %}
-{% else %}
-    {% include "bundles/FOSUserBundle/Registration/_register_full.html.twig" %}
-{% endif %}

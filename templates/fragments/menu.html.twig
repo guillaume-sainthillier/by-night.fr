@@ -53,7 +53,7 @@
                             {{ macros.userThumb(app.user, 30, 30) }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('fos_user_profile_edit') }}">
+                            <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">
                                 <i class="fa fa-cogs"></i>
                                 Mon compte
                             </a>
@@ -62,7 +62,7 @@
                                 Profil public
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ path('fos_user_security_logout') }}">
+                            <a class="dropdown-item" href="{{ path('app_logout') }}">
                                 <i class="fa fa-power-off"></i>
                                 Déconnexion
                             </a>
@@ -70,12 +70,12 @@
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link register" title="Inscrivez-vous sur By Night" href="{{ path('fos_user_registration_register') }}">
+                        <a class="nav-link register" title="Inscrivez-vous sur By Night" href="{{ path('app_register') }}">
                             Rejoignez-nous
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link connexion" title="Connectez-vous sur By Night" href="{{ path('fos_user_security_login') }}">
+                        <a class="nav-link connexion" title="Connectez-vous sur By Night" href="{{ path('app_login') }}">
                             Connexion
                         </a>
                     </li>

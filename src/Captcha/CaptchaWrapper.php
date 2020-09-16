@@ -26,11 +26,9 @@ class CaptchaWrapper
     }
 
     /**
-     * @param string $value
-     *
      * @return bool
      */
-    public function verify($value)
+    public function verify(?string $value): bool
     {
         $request = $this->requestStack->getMasterRequest();
 

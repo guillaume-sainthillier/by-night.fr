@@ -1,9 +1,0 @@
-{% trans_default_domain 'FOSUserBundle' %}
-
-<p class="lead">Réinitialisez maintenant votre mot de passe :</p>
-{{ form_start(form, { 'action': path('fos_user_resetting_reset', {'token': token}) }) }}
-    {{ form_widget(form) }}
-    <div class="text-center">
-        <button class="btn btn-raised btn-primary" type="submit">{{ 'resetting.reset.submit'|trans }}</button>
-    </div>
-{{ form_end(form) }}

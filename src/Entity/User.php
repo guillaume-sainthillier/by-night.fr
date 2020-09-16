@@ -14,13 +14,13 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -30,8 +30,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ExclusionPolicy("all")
  * @Vich\Uploadable
  * @ORM\HasLifecycleCallbacks
+ * @UniqueEntity(fields={"email"}, message="Un utilisateur existe déjà pour cet email")
+ * @UniqueEntity(fields={"username"}, message="Un utilisateur existe déjà pour ce nom")
  */
-class User extends BaseUser
+class User implements UserInterface, \Serializable
 {
     use EntityTimestampableTrait;
 
@@ -42,7 +44,43 @@ class User extends BaseUser
      * @Serializer\Groups({"list_event", "list_user"})
      * @Expose
      */
-    protected $id;
+    private ?int $id;
+
+    /**
+     * @ORM\Column(type="string", length=180, unique=true)
+     */
+    private ?string $email;
+
+    /**
+     * @ORM\Column(type="string", length=180, unique=true)
+     */
+    private ?string $username;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private bool $enabled = true;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private ?\DateTime $lastLogin;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private ?\DateTime $passwordRequestedAt;
+
+    /**
+     * @ORM\Column(type="array")
+     */
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     * @ORM\Column(type="string")
+     */
+    private ?string $password;
 
     /**
      * @Gedmo\Slug(fields={"username"})
@@ -73,12 +111,12 @@ class User extends BaseUser
      * @ORM\OneToOne(targetEntity="App\Entity\UserOAuth", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?UserOAuth $oAuth = null;
+    private ?UserOAuth $oAuth;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="user")
      */
-    protected Collection $userEvents;
+    private Collection $userEvents;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\City")
@@ -89,12 +127,12 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    protected ?bool $fromLogin = null;
+    private bool $fromLogin = false;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private ?bool $showSocials = null;
+    private bool $showSocials = true;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -136,16 +174,42 @@ class User extends BaseUser
      */
     private ?string $imageSystemHash = null;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isVerified = false;
+
     public function __construct()
     {
-        parent::__construct();
-
-        $this->fromLogin = false;
-        $this->showSocials = true;
+        $this->lastLogin = new \DateTime();
         $this->userEvents = new ArrayCollection();
         $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
+    }
+
+    public function addRole(string $role): self
+    {
+        $role = strtoupper($role);
+        if ($role === 'ROLE_USER') {
+            return $this;
+        }
+
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+
+        return $this;
+    }
+
+    public function removeRole($role): self
+    {
+        if (false !== $key = array_search(strtoupper($role), $this->roles, true)) {
+            unset($this->roles[$key]);
+            $this->roles = array_values($this->roles);
+        }
+
+        return $this;
     }
 
     /**
@@ -206,12 +270,92 @@ class User extends BaseUser
 
     public function getUsername()
     {
-        return \ucfirst(parent::getUsername());
+        return \ucfirst($this->username);
     }
 
     public function __toString()
     {
         return \sprintf('%s (#%s)', $this->username, $this->id);
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getSalt()
+    {
+        // not needed when using the "bcrypt" algorithm in security.yaml
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($serialized)
+    {
+        $data = unserialize($serialized);
+
+        list(
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+            ) = $data;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getPassword(): string
+    {
+        return (string)$this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 
     public function getId(): ?int
@@ -272,7 +416,7 @@ class User extends BaseUser
         return $this->fromLogin;
     }
 
-    public function setFromLogin(?bool $fromLogin): self
+    public function setFromLogin(bool $fromLogin): self
     {
         $this->fromLogin = $fromLogin;
 
@@ -284,7 +428,7 @@ class User extends BaseUser
         return $this->showSocials;
     }
 
-    public function setShowSocials(?bool $showSocials): self
+    public function setShowSocials(bool $showSocials): self
     {
         $this->showSocials = $showSocials;
 
@@ -402,6 +546,73 @@ class User extends BaseUser
     public function setImageSystemHash(?string $imageSystemHash): self
     {
         $this->imageSystemHash = $imageSystemHash;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getLastLogin(): ?\DateTimeInterface
+    {
+        return $this->lastLogin;
+    }
+
+    public function setLastLogin(?\DateTimeInterface $lastLogin): self
+    {
+        $this->lastLogin = $lastLogin;
+
+        return $this;
+    }
+
+    public function getPasswordRequestedAt(): ?\DateTimeInterface
+    {
+        return $this->passwordRequestedAt;
+    }
+
+    public function setPasswordRequestedAt(?\DateTimeInterface $passwordRequestedAt): self
+    {
+        $this->passwordRequestedAt = $passwordRequestedAt;
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

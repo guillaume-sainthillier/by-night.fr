@@ -10,19 +10,43 @@
 
 namespace App\Form\Type;
 
-use FOS\UserBundle\Form\Type\RegistrationFormType as BaseType;
+use App\Entity\User;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RegistrationFormType extends BaseType
+class RegistrationFormType extends AbstractType
 {
     /**
      * Builds the embedded form representing the user.
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        parent::buildForm($builder, $options);
-
         $builder
+            ->add('email', EmailType::class)
+            ->add('username', null)
+            ->add('plainPassword', RepeatedType::class, array(
+                'mapped' => false,
+                'type' => PasswordType::class,
+                'options' => array(
+                    'attr' => array(
+                        'autocomplete' => 'new-password',
+                    ),
+                ),
+                'first_options' => array('label' => 'Mot de passe'),
+                'second_options' => array('label' => 'Répéter le mot de passe'),
+                'invalid_message' => 'Les mots de passe doivent correspondre',
+            ))
             ->add('recaptcha', ReCaptchaType::class);
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => User::class
+        ]);
     }
 }

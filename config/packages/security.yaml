@@ -1,14 +1,21 @@
 security:
     encoders:
-        FOS\UserBundle\Model\UserInterface: sha512
+        App\Entity\User:
+            algorithm: auto
+            migrate_from:
+                - sha512
 
     role_hierarchy:
         ROLE_ADMIN:       ROLE_USER
         ROLE_SUPER_ADMIN: ROLE_USER
 
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        fos_userbundle:
-            id: fos_user.user_provider.username_email
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
 
     firewalls:
         dev:
@@ -16,26 +23,16 @@ security:
             security: false
 
         main:
-            anonymous: true
+            anonymous: lazy
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
             pattern: ^/
 
             guard:
                 authenticators:
                     - App\Security\UserSocialAuthenticator
-            form_login:
-                provider: fos_userbundle
-                #csrf_token_generator: security.csrf.token_manager
-                use_referer: true
-                default_target_path: app_main_index
-                login_path: fos_user_security_login
-                check_path: fos_user_security_check
-                success_handler: App\Handler\AuthenticationHandler
-                failure_handler: App\Handler\AuthenticationHandler
-
-            remember_me:
-                secret:   '%kernel.secret%'
-                lifetime: 604800 # 1 week in seconds
-                path:     /
+                    - App\Security\UserFormAuthenticator
+                entry_point: App\Security\UserFormAuthenticator
 
             logout:
                 delete_cookies: ['PHPSESSID']
@@ -49,4 +46,5 @@ security:
         - { path: ^/login-social, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/inscription, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/verifier-email, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/_private, roles: IS_AUTHENTICATED_ANONYMOUSLY, ips: [127.0.0.1, ::1, 192.168.0.1/24] }

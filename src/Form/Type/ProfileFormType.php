@@ -10,40 +10,28 @@
 
 namespace App\Form\Type;
 
-use FOS\UserBundle\Form\Type\ProfileFormType as BaseType;
+use App\Entity\User;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
-class ProfileFormType extends BaseType
+class ProfileFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        parent::buildForm($builder, $options);
-
-        $builder->remove('current_password');
-    }
-
-    public function getName()
-    {
-        return 'app_user_profile';
-    }
-
-    /**
-     * Builds the embedded form representing the user.
-     */
-    protected function buildUserForm(FormBuilderInterface $builder, array $options)
-    {
         $builder
             ->add('username', TextType::class, [
-                'label' => 'profile.show.username',
-                'translation_domain' => 'FOSUserBundle',
+                'label' => 'Nom d\'utilisateur',
             ])
-            ->add('email', EmailType::class, ['label' => 'profile.show.email', 'translation_domain' => 'FOSUserBundle'])
+            ->add('email', EmailType::class, [
+                'label' => 'Adresse email'
+            ])
             ->add('firstname', TextType::class, ['required' => false, 'label' => 'Prénom'])
             ->add('lastname', TextType::class, ['required' => false, 'label' => 'Nom'])
             ->add('description', TextareaType::class, [
@@ -67,5 +55,12 @@ class ProfileFormType extends BaseType
                 'label' => 'Photo de profil',
                 'thumb_params' => ['w' => 200, 'h' => 200, 'fit' => 'fill'],
             ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => User::class
+        ]);
     }
 }

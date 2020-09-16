@@ -10,23 +10,34 @@
 
 namespace App\Form\Type;
 
+use App\Form\EventListener\ReCaptchaListener;
 use App\Validator\Constraints\ReCaptchaResponse;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ReCaptchaType extends AbstractType
 {
     private string $siteKey;
+    private ReCaptchaListener $reCaptchaListener;
 
-    public function __construct(string $siteKey)
+    public function __construct(string $siteKey, ReCaptchaListener $reCaptchaListener)
     {
         $this->siteKey = $siteKey;
+        $this->reCaptchaListener = $reCaptchaListener;
+    }
+
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder->addEventSubscriber($this->reCaptchaListener);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
+            'block_prefix' => 'recaptcha',
+            'block_name' => 'g-recaptcha-response',
             'mapped' => false,
             'compound' => false,
             'attr' => [
@@ -35,13 +46,8 @@ class ReCaptchaType extends AbstractType
             ],
             'constraints' => [
                 new ReCaptchaResponse(),
-                new NotBlank(),
+                new NotBlank()
             ],
         ]);
-    }
-
-    public function getBlockPrefix()
-    {
-        return 'recaptcha';
     }
 }

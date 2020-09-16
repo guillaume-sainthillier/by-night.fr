@@ -96,14 +96,6 @@ services:
         arguments:
             $dataDir: "%kernel.project_dir%/var/datas"
 
-    App\Form\Type\ProfileFormType:
-        arguments:
-            $class: "%fos_user.model.user.class%"
-
-    App\Form\Type\RegistrationFormType:
-        arguments:
-            $class: "%fos_user.model.user.class%"
-
     App\Form\Type\ReCaptchaType:
         arguments:
             $siteKey: '6LflWQoUAAAAAGDlgrKTOPxxMXwpb932_Q_tuvKX'
@@ -124,11 +116,6 @@ services:
             - { name: doctrine.event_listener, event: postUpdate }
             - { name: doctrine.event_listener, event: preRemove }
             - { name: doctrine.event_listener, event: postFlush }
-
-    App\EventListener\ReCaptchaListener:
-        arguments:
-            $formName: "fos_user_registration_form"
-            $field: "recaptcha"
 
     App\Captcha\CaptchaWrapper:
         arguments:

@@ -1,0 +1,16 @@
+{% extends 'reset-password/layout.html.twig' %}
+
+{% block breadcrumb_reset %}
+    {% do menu.addItem("Étape 3/3", url('app_reset_password')) %}
+{% endblock %}
+
+{% block body %}
+    <p class="lead">Réinitialisez maintenant votre mot de passe :</p>
+
+    {{ form_start(resetForm) }}
+    {{ form_row(resetForm.plainPassword) }}
+    <div class="text-center">
+        <button class="btn btn-raised btn-primary" type="submit">Réinitialiser le mot de passe</button>
+    </div>
+    {{ form_end(resetForm) }}
+{% endblock %}

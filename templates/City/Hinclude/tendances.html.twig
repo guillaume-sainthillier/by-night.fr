@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<button type="button" href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('fos_user_security_login') : "#" }}"
+<button type="button" href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('app_login') : "#" }}"
    class="btn bmd-btn-fab bmd-btn-fab-sm participer btn-like-event {{ participer ? 'btn-primary' : '' }} {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion' : '' }}"
    data-href="{{ path('app_user_like', {'id' : event.id}) }}">
     <i class="fa fa-heart"></i>

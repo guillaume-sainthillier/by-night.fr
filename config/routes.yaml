@@ -43,37 +43,7 @@ app.search:
 app.private:
     resource: "../src/Controller/Fragments"
 
-#Login
-fos_user_security:
-    resource: "@FOSUserBundle/Resources/config/routing/security.xml"
-
-#Profile
-fos_user_profile:
-    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
-    prefix: /profile
-
-#Profile override
-app_user_profile:
-    resource: "../src/Controller/User/ProfileController.php"
-    prefix: /profile
-    type:     annotation
-
-#Inscription
-fos_user_register:
-    resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
-    prefix: /inscription
-
-#Changement de password
-fos_user_resetting:
-    resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
-    prefix: /resetting
-
-#Demande de changement de password
-fos_user_change_password:
-    resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
-    prefix: /profil
-
-#La ville est définie à partir d'ici
+#La ville est définie à partir d'ici
 app.city:
     resource: "../src/Controller/City"
     prefix:   /{location}

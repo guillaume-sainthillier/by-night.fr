@@ -33,15 +33,10 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class UserSocialAuthenticator extends SocialAuthenticator
 {
     private Security $security;
-
     private ClientRegistry $clientRegistry;
-
     private EntityManagerInterface $em;
-
     private UrlGeneratorInterface $router;
-
     private SocialProvider $socialProvider;
-
     private UserRepository $userRepository;
     private OAuthDataProvider $oAuthDataProvider;
     private TwitterOAuth $twitterOAuth;
@@ -86,7 +81,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 ->setUsername($datas['realname'] ?: $datas['email'] ?: $datas['id'])
                 ->setPassword('notused')
                 ->setFromLogin(false)
-                ->setEnabled(true)
+                ->setIsVerified(true)
                 ->setEmail($datas['email']);
 
             //Avoir duplicate exception
@@ -166,7 +161,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
 
         return new RedirectResponse(
-            $this->router->generate('fos_user_security_login'),
+            $this->router->generate('app_login'),
             Response::HTTP_TEMPORARY_REDIRECT
         );
     }
@@ -178,7 +173,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
     public function start(Request $request, AuthenticationException $authException = null)
     {
         return new RedirectResponse(
-            $this->router->generate('fos_user_security_login'),
+            $this->router->generate('app_login'),
             Response::HTTP_TEMPORARY_REDIRECT
         );
     }

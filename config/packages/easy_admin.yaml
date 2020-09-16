@@ -87,6 +87,7 @@ easy_admin:
             form:
                 fields:
                     - { type: 'group', columns: 8, label: 'Informations' }
+                    - { property: 'lastLogin' }
                     - { property: 'id', type_options: { disabled: true } }
                     - { property: 'slug' }
                     - { property: 'username' }
@@ -95,11 +96,12 @@ easy_admin:
                     - { property: 'firstname' }
                     - { property: 'lastname' }
                     - { property: 'description' }
-                    - { property: 'oAuth' }
-                    - { property: 'from_login' }
-                    - { property: 'show_socials' }
+                    - { property: 'oAuth', type: 'easyadmin_autocomplete' }
                     - { property: 'website' }
-                    - { property: 'lastLogin' }
+                    - { property: 'from_login', type: 'checkbox' }
+                    - { property: 'show_socials', type: 'checkbox' }
+                    - { property: 'enabled', type: 'checkbox' }
+                    - { property: 'verified', type: 'checkbox' }
                     - { type: 'group', columns: 4, label: 'Médias' }
                     - { property: 'image.name' }
                     - { property: 'imageSystem.name' }

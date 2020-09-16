@@ -80,7 +80,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
         }
 
         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
-        $url = $this->router->generate('fos_user_security_login');
+        $url = $this->router->generate('app_login');
 
         return new RedirectResponse($url);
     }
