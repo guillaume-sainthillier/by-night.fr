@@ -33,8 +33,8 @@ easy_admin:
                     - { type: 'group', columns: 8, label: 'Informations' }
                     - { property: 'id', type_options: { disabled: true } }
                     - { property: 'user', type: 'easyadmin_autocomplete' }
-                    - { property: 'createdAt' }
-                    - { property: 'updatedAt' }
+                    - { property: 'createdAt', type_options: { widget: 'single_text' } }
+                    - { property: 'updatedAt', type_options: { widget: 'single_text' } }
                     - { property: 'externalId' }
                     - { property: 'slug' }
                     - { property: 'nom' }
@@ -42,7 +42,7 @@ easy_admin:
                     - { property: 'dateFin' }
                     - { property: 'horaires' }
                     - { property: 'descriptif' }
-                    - { property: 'externalUpdatedAt' }
+                    - { property: 'externalUpdatedAt', type_options: { widget: 'single_text' } }
                     - { property: 'modificationDerniereMinute' }
                     - { property: 'typeManifestation' }
                     - { property: 'categorieManifestation' }
@@ -87,7 +87,7 @@ easy_admin:
             form:
                 fields:
                     - { type: 'group', columns: 8, label: 'Informations' }
-                    - { property: 'lastLogin' }
+                    - { property: 'lastLogin', type_options: { widget: 'single_text' } }
                     - { property: 'id', type_options: { disabled: true } }
                     - { property: 'slug' }
                     - { property: 'username' }
@@ -143,7 +143,7 @@ easy_admin:
             form:
                 fields:
                     - { property: 'id', type_options: { disabled: true } }
-                    - { property: 'updatedAt' }
+                    - { property: 'updatedAt', type_options: { widget: 'single_text' } }
                     - { property: 'event', type: 'easyadmin_autocomplete' }
                     - { property: 'user', type: 'easyadmin_autocomplete' }
                     - { property: 'participe' }
@@ -162,8 +162,8 @@ easy_admin:
                     - { property: 'id', type_options: { disabled: true } }
                     - { property: 'event', type: 'easyadmin_autocomplete' }
                     - { property: 'user', type: 'easyadmin_autocomplete' }
-                    - { property: 'createdAt' }
-                    - { property: 'updatedAt' }
+                    - { property: 'createdAt', type_options: { widget: 'single_text' } }
+                    - { property: 'updatedAt', type_options: { widget: 'single_text' } }
                     - { property: 'approuve' }
                     - { property: 'commentaire' }
 
