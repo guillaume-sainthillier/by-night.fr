@@ -38,7 +38,7 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
 
             try {
                 $this->deleteThumbnails($path);
-                $result[(int) $message->delivery_info['delivery_tag']] = ConsumerInterface::MSG_ACK;
+                $result[$message->getDeliveryTag()] = ConsumerInterface::MSG_ACK;
             } catch (Exception $e) {
                 $this->logger->error($e->getMessage(), [
                     'exception' => $e,
@@ -46,7 +46,7 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
                         'path' => $path,
                     ],
                 ]);
-                $result[(int) $message->delivery_info['delivery_tag']] = ConsumerInterface::MSG_REJECT;
+                $result[$message->getDeliveryTag()] = ConsumerInterface::MSG_REJECT;
             }
         }
 
