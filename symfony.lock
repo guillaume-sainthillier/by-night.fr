@@ -768,9 +768,6 @@
     "webimpress/safe-writer": {
         "version": "2.0.0"
     },
-    "webmozart/assert": {
-        "version": "1.9.1"
-    },
     "whiteoctober/breadcrumbs-bundle": {
         "version": "1.2.3"
     },

@@ -33,7 +33,7 @@ class SocialManager
 
     public function getAppOAuth(): AppOAuth
     {
-        if (false === $this->_siteInfoInitialized) {
+        if (!$this->_siteInfoInitialized) {
             $this->_siteInfoInitialized = true;
             $this->appOAuth = $this->appOAuthRepository->findOneBy([]);
         }

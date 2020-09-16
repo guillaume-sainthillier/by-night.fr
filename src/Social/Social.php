@@ -33,9 +33,6 @@ abstract class Social
 {
     protected string $id;
 
-    /**
-     * @var array
-     */
     protected array $config;
 
     protected string $secret;

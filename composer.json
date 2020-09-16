@@ -98,7 +98,7 @@
         "whiteoctober/breadcrumbs-bundle": "^1.4"
     },
     "require-dev": {
-        "rector/rector": "^0.8",
+        "rector/rector": "^0.7.21",
         "symfony/debug-pack": "*",
         "symfony/maker-bundle": "^1.11",
         "symfony/profiler-pack": "*",

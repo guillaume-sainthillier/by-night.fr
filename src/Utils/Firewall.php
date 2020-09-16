@@ -207,7 +207,7 @@ class Firewall
         }
 
         $reject = $event->getPlace()->getReject();
-        if (false === $reject->isValid()) {
+        if (!$reject->isValid()) {
             $event->getPlaceReject()->addReason($reject->getReason());
             $event->getReject()->addReason($reject->getReason());
         }
@@ -218,7 +218,7 @@ class Firewall
         $reject = $parserData->getReject();
 
         //Aucune action sur un événement supprimé sur la plateforme par son créateur
-        if (false !== $reject->isEventDeleted()) {
+        if ($reject->isEventDeleted()) {
             return;
         }
 
@@ -239,7 +239,7 @@ class Firewall
                 ->setFirewallVersion(self::VERSION)
                 ->setParserVersion($event->getParserVersion());
 
-            if (false === $reject->hasNoNeedToUpdate()) {
+            if (!$reject->hasNoNeedToUpdate()) {
                 $reject->setValid();
             }
         }

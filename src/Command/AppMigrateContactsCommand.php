@@ -57,7 +57,7 @@ class AppMigrateContactsCommand extends Command
 
         $nbPages = 1;
         for ($page = 1; $page <= $nbPages; ++$page) {
-            $paginator = $this->paginator->paginate($qb, $page, 5000);
+            $paginator = $this->paginator->paginate($qb, $page, 5_000);
 
             if (1 === $page) {
                 $nbPages = ceil($paginator->getTotalItemCount() / $paginator->getItemNumberPerPage());

@@ -10,12 +10,13 @@
 
 namespace App\Producer;
 
+use JsonException;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 
 class EventProducer extends Producer
 {
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function scheduleEvent(array $event): void
     {

@@ -16,7 +16,7 @@ use Exception;
 
 class Twitter extends Social
 {
-    private ?TwitterOAuth $client;
+    private ?TwitterOAuth $client = null;
 
     public function constructClient()
     {
@@ -40,7 +40,7 @@ class Twitter extends Social
         }
 
         try {
-            return json_decode(json_encode($this->client->get('search/tweets', $params)), true);
+            return json_decode(json_encode($this->client->get('search/tweets', $params), \JSON_THROW_ON_ERROR), true, 512, \JSON_THROW_ON_ERROR);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'exception' => $e,

@@ -39,13 +39,13 @@ class ReservationsHandler
             $originalText = $text;
 
             //First, we try with plain text
-            list($urls, $phones, $emails, $text) = $this->getParts('', $text, $urls, $phones, $emails);
+            [$urls, $phones, $emails, $text] = $this->getParts('', $text, $urls, $phones, $emails);
 
             //Then, we try to split with ','
-            list($urls, $phones, $emails, $text) = $this->getParts(',', $text, $urls, $phones, $emails);
+            [$urls, $phones, $emails, $text] = $this->getParts(',', $text, $urls, $phones, $emails);
 
             //Then try to split with ' '
-            list($urls, $phones, $emails, $text) = $this->getParts(' ', $text, $urls, $phones, $emails);
+            [$urls, $phones, $emails, $text] = $this->getParts(' ', $text, $urls, $phones, $emails);
 
             //None of try has worked, we can skip
             if ($originalText === $text) {
@@ -77,17 +77,15 @@ class ReservationsHandler
 
     private function getParts(string $delimiter, string $text, array $urls = [], array $phones = [], array $emails = []): array
     {
-        list($text, $urls) = $this->getPart($delimiter, $this->urlRegex, $text, $urls);
-        list($text, $emails) = $this->getPart($delimiter, $this->emailRegex, $text, $emails);
-        list($text, $phones) = $this->getPart($delimiter, $this->phoneRegex, $text, $phones);
+        [$text, $urls] = $this->getPart($delimiter, $this->urlRegex, $text, $urls);
+        [$text, $emails] = $this->getPart($delimiter, $this->emailRegex, $text, $emails);
+        [$text, $phones] = $this->getPart($delimiter, $this->phoneRegex, $text, $phones);
 
         return [$urls, $phones, $emails, $text];
     }
 
     private function getFirstMatches(array $matches): array
     {
-        return array_map(function (array $match) {
-            return $match[0];
-        }, $matches);
+        return array_map(fn (array $match) => $match[0], $matches);
     }
 }

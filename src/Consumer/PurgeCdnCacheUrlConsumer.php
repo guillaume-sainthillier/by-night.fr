@@ -51,7 +51,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
                         'Items' => $paths,
                         'Quantity' => 1,
                     ],
-                ]
+                ],
             ]);
 
             dd($result);

@@ -38,7 +38,7 @@ class EventElasticaRepository extends Repository
         ]));
 
         $location = null;
-        if ($search->getLieux() !== []) {
+        if ([] !== $search->getLieux()) {
             $mainQuery->addMust(
                 new Terms('place.id', $search->getLieux())
             );
@@ -132,7 +132,7 @@ class EventElasticaRepository extends Repository
             $mainQuery->addMust($query);
         }
 
-        if ($search->getTypeManifestation() !== []) {
+        if ([] !== $search->getTypeManifestation()) {
             $communeTypeManifestationQuery = new Match();
             $communeTypeManifestationQuery->setField('type_manifestation', \implode(' ', $search->getTypeManifestation()));
             $mainQuery->addMust($communeTypeManifestationQuery);
