@@ -1,0 +1,50 @@
+app.default:
+    resource: '../../src/Controller/'
+    type:     annotation
+
+app.social:
+    resource: '../../src/Controller/Social/'
+    prefix:   /social
+    type:     annotation
+
+app.security:
+    resource: '../../src/Controller/Security/'
+    type:     annotation
+
+app.espace_perso:
+    resource: '../../src/Controller/EspacePerso/'
+    prefix:   /espace-perso
+    type:     annotation
+
+app.comments:
+    resource: '../../src/Controller/Comment/'
+    prefix:   /commentaire
+    type:     annotation
+
+app.legacy:
+    resource: '../../src/Controller/Legacy/'
+    type:     annotation
+
+app.admin:
+    resource: '../../src/Controller/Admin/'
+    prefix:   /_administration
+    type:     annotation
+
+app.search:
+    resource: '../../src/Controller/Search/'
+    prefix:   /recherche
+    type:     annotation
+
+app.private:
+    resource: '../../src/Controller/Fragments/'
+    type:     annotation
+
+#La ville est définie à partir d'ici
+app.city:
+    resource: '../../src/Controller/City'
+    prefix:   /{location}
+    type:     annotation
+
+kernel:
+    resource: '../../src/Kernel.php'
+    type: annotation
