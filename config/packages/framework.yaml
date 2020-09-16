@@ -4,9 +4,6 @@ framework:
     #csrf_protection: ~
     #http_method_override: true
 
-    templating:
-        engines: ['twig']
-
     session:
         handler_id: 'session.handler.native_file'
         cookie_secure: auto
