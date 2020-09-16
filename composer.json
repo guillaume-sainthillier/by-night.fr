@@ -34,6 +34,7 @@
         "ext-xmlreader": "*",
         "ext-zip": "*",
         "abraham/twitteroauth": "^1.1",
+        "aws/aws-sdk-php": "^3.154",
         "beberlei/doctrineextensions": "^1.2",
         "easycorp/easyadmin-bundle": "^2.1",
         "erusev/parsedown": "^1.7",

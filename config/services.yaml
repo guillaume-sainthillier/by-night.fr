@@ -32,9 +32,7 @@ services:
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
             $debug: "%kernel.debug%"
-            $cfUserEmail: "%env(CF_USER_EMAIL)%"
-            $cfUserKey: "%env(CF_USER_KEY)%"
-            $cfZone: "%env(CF_ZONE)%"
+            $cloudFrontDistributionID: "%env(AWS_CLOUDFRONT_DISTRIBUTION_ID)%"
             $openAgendaKey: "%env(OPEN_AGENDA_KEY)%"
             $sowprogUsername: "%env(SOWPROG_USER)%"
             $sowprogPassword: "%env(SOWPROG_PASSWORD)%"
@@ -139,6 +137,14 @@ services:
     Aws\S3\S3Client:
         arguments:
             -   version: "2006-03-01"
+                region: "%env(AWS_S3_REGION)%"
+                credentials:
+                    key: "%env(AWS_S3_KEY)%"
+                    secret: "%env(AWS_S3_SECRET)%"
+
+    Aws\CloudFront\CloudFrontClient:
+        arguments:
+            -   version: "2018-06-18"
                 region: "%env(AWS_S3_REGION)%"
                 credentials:
                     key: "%env(AWS_S3_KEY)%"

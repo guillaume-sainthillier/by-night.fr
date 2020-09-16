@@ -10,59 +10,51 @@
 
 namespace App\Consumer;
 
+use Aws\CloudFront\CloudFrontClient;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Asset\Packages;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumerInterface
 {
-    private Packages $packages;
+    private CloudFrontClient $client;
 
-    private HttpClientInterface $client;
+    private string $cloudFrontDistributionID;
 
-    private string $cfZone;
-
-    public function __construct(LoggerInterface $logger, Packages $packages, string $cfUserEmail, string $cfUserKey, string $cfZone)
+    public function __construct(LoggerInterface $logger, CloudFrontClient $client, string $cloudFrontDistributionID)
     {
         parent::__construct($logger);
 
-        $this->packages = $packages;
-        $this->cfZone = $cfZone;
-
-        $this->client = HttpClient::create([
-            'base_uri' => 'https://api.cloudflare.com',
-            'headers' => [
-                'X-Auth-Email' => $cfUserEmail,
-                'X-Auth-Key' => $cfUserKey,
-            ],
-        ]);
+        $this->client = $client;
+        $this->cloudFrontDistributionID = $cloudFrontDistributionID;
     }
 
     public function batchExecute(array $messages)
     {
-        $urls = [];
+        $paths = [];
 
         /** @var AMQPMessage $message */
         foreach ($messages as $i => $message) {
             $path = $message->getBody();
-            $urls[] = $this->packages->getUrl($path, 'aws');
+            $paths[] = $path;
         }
 
         try {
-            $response = $this->client->request(
-                'POST',
-                sprintf('/client/v4/zones/%s/purge_cache', $this->cfZone),
-                ['json' => ['files' => $urls]]
-            );
+            $result = $this->client->createInvalidation([
+                'DistributionId' => $this->cloudFrontDistributionID,
+                'InvalidationBatch' => [
+                    'CallerReference' => uniqid(),
+                    'Paths' => [
+                        'Items' => $paths,
+                        'Quantity' => 1,
+                    ],
+                ]
+            ]);
 
-            $datas = $response->toArray();
-            $success = $datas['success'];
+            dd($result);
             if (true === $success) {
                 return ConsumerInterface::MSG_ACK;
             }
