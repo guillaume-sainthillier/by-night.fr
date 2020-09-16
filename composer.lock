@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ad1595e0c82537521840ae4453a0caba",
+    "content-hash": "65154606b22ea7d4ad0c44b463235180",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -12475,16 +12475,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.9.1",
+            "version": "v4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "88e519766fc58bd46b8265561fb79b54e2e00b28"
+                "reference": "aaee038b912e567780949787d5fe1977be11a778"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/88e519766fc58bd46b8265561fb79b54e2e00b28",
-                "reference": "88e519766fc58bd46b8265561fb79b54e2e00b28",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/aaee038b912e567780949787d5fe1977be11a778",
+                "reference": "aaee038b912e567780949787d5fe1977be11a778",
                 "shasum": ""
             },
             "require": {
@@ -12523,7 +12523,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2020-08-30T16:15:20+00:00"
+            "time": "2020-08-18T19:48:01+00:00"
         },
         {
             "name": "ondram/ci-detector",
@@ -12804,16 +12804,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "v0.7.65",
+            "version": "v0.8.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "ac4e73b72f42273e019a91fb98b32b0c87ab08dc"
+                "reference": "869441eb983ee95a093bb7ea1f4cbdb78a858dae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/ac4e73b72f42273e019a91fb98b32b0c87ab08dc",
-                "reference": "ac4e73b72f42273e019a91fb98b32b0c87ab08dc",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/869441eb983ee95a093bb7ea1f4cbdb78a858dae",
+                "reference": "869441eb983ee95a093bb7ea1f4cbdb78a858dae",
                 "shasum": ""
             },
             "require": {
@@ -12821,13 +12821,13 @@
                 "doctrine/annotations": "^1.10.4",
                 "doctrine/inflector": "^1.4|^2.0",
                 "ext-json": "*",
-                "jean85/pretty-package-versions": "^1.2",
-                "migrify/php-config-printer": "^0.3.30",
+                "migrify/php-config-printer": "^0.3.31",
                 "nette/robot-loader": "^3.2",
                 "nette/utils": "^3.1",
-                "nikic/php-parser": "^4.9",
+                "nikic/php-parser": "4.9.0",
+                "ocramius/package-versions": "^1.9",
                 "ondram/ci-detector": "^3.4",
-                "php": "^7.2.4",
+                "php": "^7.2.4|^8.0",
                 "phpstan/phpdoc-parser": "^0.4.9",
                 "phpstan/phpstan": "^0.12.38",
                 "phpstan/phpstan-phpunit": "^0.12.10",
@@ -12838,14 +12838,15 @@
                 "symfony/dependency-injection": "^4.4.8|^5.0.6",
                 "symfony/finder": "^4.4.8|^5.0.6",
                 "symfony/process": "^4.4.8|^5.0.6",
-                "symplify/auto-bind-parameter": "^8.2.9",
-                "symplify/autowire-array-parameter": "^8.2.9",
-                "symplify/console-color-diff": "^8.2.9",
-                "symplify/easy-testing": "^8.2.9",
-                "symplify/package-builder": "^8.2.9",
-                "symplify/set-config-resolver": "^8.2.9",
-                "symplify/smart-file-system": "^8.2.9",
-                "tracy/tracy": "^2.7"
+                "symplify/auto-bind-parameter": "^8.3",
+                "symplify/autowire-array-parameter": "^8.2.27",
+                "symplify/console-color-diff": "^8.3",
+                "symplify/easy-testing": "^8.3",
+                "symplify/package-builder": "^8.3",
+                "symplify/set-config-resolver": "^8.3",
+                "symplify/smart-file-system": "^8.3",
+                "tracy/tracy": "^2.7",
+                "webmozart/assert": "^1.8"
             },
             "replace": {
                 "rector/rector-prefixed": "self.version"
@@ -12853,19 +12854,19 @@
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^2.16",
                 "johnkary/phpunit-speedtrap": "^3.2",
-                "migrify/config-transformer": "^0.3.30",
-                "migrify/easy-ci": "^0.3.30",
+                "migrify/config-transformer": "^0.3.31",
+                "migrify/easy-ci": "^0.3.31",
                 "nette/application": "^3.0",
                 "nette/forms": "^3.0",
-                "ocramius/package-versions": "^1.4|^1.5",
-                "phpunit/phpunit": "^8.5|^9.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "^8.5|^9.2",
                 "psr/event-dispatcher": "^1.0",
                 "slam/phpstan-extensions": "^5.0",
-                "symplify/changelog-linker": "^8.2.9",
-                "symplify/easy-coding-standard": "^8.2.9",
-                "symplify/easy-testing": "^8.2.9",
-                "symplify/monorepo-builder": "^8.2.9",
-                "symplify/phpstan-extensions": "^8.2.9",
+                "symplify/changelog-linker": "^8.3",
+                "symplify/easy-coding-standard": "^8.3",
+                "symplify/easy-testing": "^8.3",
+                "symplify/monorepo-builder": "^8.3",
+                "symplify/phpstan-extensions": "^8.3",
                 "thecodingmachine/phpstan-strict-rules": "^0.12"
             },
             "bin": [
@@ -12902,9 +12903,7 @@
                     "Rector\\DynamicTypeAnalysis\\": "packages/dynamic-type-analysis/src",
                     "Rector\\DoctrineAnnotationGenerated\\": "packages/doctrine-annotation-generated/src",
                     "Rector\\FileSystemRector\\": "packages/file-system-rector/src",
-                    "Rector\\FrameworkMigration\\": "rules/framework-migration/src",
                     "Rector\\FamilyTree\\": "packages/family-tree/src",
-                    "Rector\\Guzzle\\": "rules/guzzle/src",
                     "Rector\\JMS\\": "rules/jms/src",
                     "Rector\\Laravel\\": "rules/laravel/src",
                     "Rector\\Legacy\\": "rules/legacy/src",
@@ -12916,6 +12915,7 @@
                     "Rector\\NodeCollector\\": "packages/node-collector/src",
                     "Rector\\Decouple\\": "rules/decouple/src",
                     "Rector\\NodeNameResolver\\": "packages/node-name-resolver/src",
+                    "Rector\\NodeNestingScope\\": "packages/node-nesting-scope/src",
                     "Rector\\NodeTypeResolver\\": "packages/node-type-resolver/src",
                     "Rector\\PhpAttribute\\": "packages/php-attribute/src",
                     "Rector\\PHPStanStaticTypeMapper\\": "packages/phpstan-static-type-mapper/src",
@@ -12931,7 +12931,6 @@
                     "Rector\\Php55\\": "rules/php55/src",
                     "Rector\\Php56\\": "rules/php56/src",
                     "Rector\\Php70\\": "rules/php70/src",
-                    "Rector\\Php\\": "rules/php/src",
                     "Rector\\Php71\\": "rules/php71/src",
                     "Rector\\Php72\\": "rules/php72/src",
                     "Rector\\Php73\\": "rules/php73/src",
@@ -12943,12 +12942,12 @@
                     "Rector\\Polyfill\\": "rules/polyfill/src",
                     "Rector\\Privatization\\": "rules/privatization/src",
                     "Rector\\RectorGenerator\\": "packages/rector-generator/src",
-                    "Rector\\Set\\": "packages/set/src",
                     "Rector\\RemovingStatic\\": "rules/removing-static/src",
                     "Rector\\Renaming\\": "rules/renaming/src",
                     "Rector\\Restoration\\": "rules/restoration/src",
+                    "Rector\\Set\\": "packages/set/src",
                     "Rector\\SOLID\\": "rules/solid/src",
-                    "Rector\\NodeNestingScope\\": "packages/node-nesting-scope/src",
+                    "Rector\\Transform\\": "rules/transform/src",
                     "Rector\\Sensio\\": "rules/sensio/src",
                     "Rector\\StaticTypeMapper\\": "packages/static-type-mapper/src",
                     "Rector\\StrictCodeQuality\\": "rules/strict-code-quality/src",
@@ -12966,10 +12965,11 @@
                     "Rector\\NetteKdyby\\": "rules/nette-kdyby/src",
                     "Rector\\NetteUtilsCodeQuality\\": "rules/nette-utils-code-quality/src",
                     "Rector\\NetteCodeQuality\\": "rules/nette-code-quality/src",
-                    "Rector\\Decomplex\\": "rules/decomplex/src",
-                    "Rector\\Downgrade\\": "rules/downgrade/src",
-                    "Rector\\SymfonyPhpConfig\\": "rules/symfony-php-config/src",
-                    "Rector\\Injection\\": "rules/injection/src"
+                    "Rector\\DowngradePhp71\\": "rules/downgrade-php71/src",
+                    "Rector\\DowngradePhp72\\": "rules/downgrade-php72/src",
+                    "Rector\\DowngradePhp74\\": "rules/downgrade-php74/src",
+                    "Rector\\DowngradePhp80\\": "rules/downgrade-php80/src",
+                    "Rector\\SymfonyPhpConfig\\": "rules/symfony-php-config/src"
                 },
                 "files": [
                     "rules/symfony-php-config/functions/functions.php"
@@ -13005,7 +13005,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-08-20T13:37:13+00:00"
+            "time": "2020-09-15T12:30:36+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -13992,6 +13992,55 @@
                 "profiler"
             ],
             "time": "2020-05-17T09:50:45+00:00"
+        },
+        {
+            "name": "webmozart/assert",
+            "version": "1.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webmozart/assert.git",
+                "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.3.3 || ^7.0 || ^8.0",
+                "symfony/polyfill-ctype": "^1.8"
+            },
+            "conflict": {
+                "phpstan/phpstan": "<0.12.20",
+                "vimeo/psalm": "<3.9.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.36 || ^7.5.13"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Webmozart\\Assert\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                }
+            ],
+            "description": "Assertions to validate method input/output with nice error messages.",
+            "keywords": [
+                "assert",
+                "check",
+                "validate"
+            ],
+            "time": "2020-07-08T17:02:28+00:00"
         }
     ],
     "aliases": [],

@@ -25,9 +25,6 @@ class CaptchaWrapper
         $this->reCaptcha = $reCaptcha;
     }
 
-    /**
-     * @return bool
-     */
     public function verify(?string $value): bool
     {
         $request = $this->requestStack->getMasterRequest();

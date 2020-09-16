@@ -24,7 +24,8 @@ class EventVoter extends Voter
 
     private Security $security;
 
-    public function __construct(Security $security) {
+    public function __construct(Security $security)
+    {
         $this->security = $security;
     }
 

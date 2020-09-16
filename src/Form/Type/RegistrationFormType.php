@@ -28,25 +28,25 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('email', EmailType::class)
             ->add('username', null)
-            ->add('plainPassword', RepeatedType::class, array(
+            ->add('plainPassword', RepeatedType::class, [
                 'mapped' => false,
                 'type' => PasswordType::class,
-                'options' => array(
-                    'attr' => array(
+                'options' => [
+                    'attr' => [
                         'autocomplete' => 'new-password',
-                    ),
-                ),
-                'first_options' => array('label' => 'Mot de passe'),
-                'second_options' => array('label' => 'Répéter le mot de passe'),
+                    ],
+                ],
+                'first_options' => ['label' => 'Mot de passe'],
+                'second_options' => ['label' => 'Répéter le mot de passe'],
                 'invalid_message' => 'Les mots de passe doivent correspondre',
-            ))
+            ])
             ->add('recaptcha', ReCaptchaType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => User::class
+            'data_class' => User::class,
         ]);
     }
 }

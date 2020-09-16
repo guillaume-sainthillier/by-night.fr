@@ -14,7 +14,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters = $containerConfigurator->parameters();
 
     $parameters->set('auto_import_names', true);
-    $parameters->set('symfony_container_xml_path', __DIR__ . '/var/cache/dev/srcApp_KernelDevDebugContainer.xml');
+    $parameters->set('symfony_container_xml_path', __DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml');
     $parameters->set('paths', [
         __DIR__ . '/src',
     ]);
@@ -31,6 +31,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         SetList::SYMFONY_42,
         SetList::SYMFONY_43,
         SetList::SYMFONY_44,
+        SetList::SYMFONY_50,
+        SetList::SYMFONY_50_TYPES,
     ]);
 
     $parameters->set('exclude_rectors', [

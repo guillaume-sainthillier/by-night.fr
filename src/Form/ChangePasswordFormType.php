@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -26,7 +34,7 @@ class ChangePasswordFormType extends AbstractType
                             'min' => 6,
                             'minMessage' => 'Your password should be at least {{ limit }} characters',
                             // max length allowed by Symfony for security reasons
-                            'max' => 4096,
+                            'max' => 4_096,
                         ]),
                     ],
                     'label' => 'New password',

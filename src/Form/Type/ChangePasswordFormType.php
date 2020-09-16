@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace App\Form\Type;
 
@@ -16,44 +23,44 @@ class ChangePasswordFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $constraintsOptions = array(
+        $constraintsOptions = [
             'message' => 'Le mot de passe actuel est incorrect.',
-        );
+        ];
 
         if (!empty($options['validation_groups'])) {
-            $constraintsOptions['groups'] = array(reset($options['validation_groups']));
+            $constraintsOptions['groups'] = [reset($options['validation_groups'])];
         }
 
-        $builder->add('currentPassword', PasswordType::class, array(
+        $builder->add('currentPassword', PasswordType::class, [
             'label' => 'Mot de passe actuel',
             'mapped' => false,
-            'constraints' => array(
+            'constraints' => [
                 new NotBlank(),
                 new UserPassword($constraintsOptions),
-            ),
-            'attr' => array(
+            ],
+            'attr' => [
                 'autocomplete' => 'current-password',
-            ),
-        ));
+            ],
+        ]);
 
-        $builder->add('plainPassword', RepeatedType::class, array(
+        $builder->add('plainPassword', RepeatedType::class, [
             'type' => PasswordType::class,
             'mapped' => false,
-            'options' => array(
-                'attr' => array(
+            'options' => [
+                'attr' => [
                     'autocomplete' => 'new-password',
-                ),
-            ),
-            'first_options' => array('label' => 'Mot de passe'),
-            'second_options' => array('label' => 'Répeter le mot de passe'),
+                ],
+            ],
+            'first_options' => ['label' => 'Mot de passe'],
+            'second_options' => ['label' => 'Répeter le mot de passe'],
             'invalid_message' => 'Les mots de passe ne correspondent pas.',
-        ));
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => User::class,
-        ));
+        ]);
     }
 }

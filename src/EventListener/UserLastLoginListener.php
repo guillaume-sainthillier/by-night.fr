@@ -11,6 +11,7 @@
 namespace App\EventListener;
 
 use App\Entity\User;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
@@ -42,7 +43,7 @@ class UserLastLoginListener implements EventSubscriberInterface
             return;
         }
 
-        $user->setLastLogin(new \DateTime());
+        $user->setLastLogin(new DateTime());
         $this->entityManager->flush();
     }
 }

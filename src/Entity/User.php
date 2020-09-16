@@ -10,7 +10,9 @@
 
 namespace App\Entity;
 
+use DateTime;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -18,6 +20,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
+use Serializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -33,7 +36,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @UniqueEntity(fields={"email"}, message="Un utilisateur existe déjà pour cet email")
  * @UniqueEntity(fields={"username"}, message="Un utilisateur existe déjà pour ce nom")
  */
-class User implements UserInterface, \Serializable
+class User implements UserInterface, Serializable
 {
     use EntityTimestampableTrait;
 
@@ -44,17 +47,17 @@ class User implements UserInterface, \Serializable
      * @Serializer\Groups({"list_event", "list_user"})
      * @Expose
      */
-    private ?int $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    private ?string $email;
+    private ?string $email = null;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
-    private ?string $username;
+    private ?string $username = null;
 
     /**
      * @ORM\Column(type="boolean")
@@ -64,12 +67,12 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private ?\DateTime $lastLogin;
+    private ?DateTime $lastLogin;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private ?\DateTime $passwordRequestedAt;
+    private ?DateTime $passwordRequestedAt = null;
 
     /**
      * @ORM\Column(type="array")
@@ -80,7 +83,7 @@ class User implements UserInterface, \Serializable
      * @var string The hashed password
      * @ORM\Column(type="string")
      */
-    private ?string $password;
+    private ?string $password = null;
 
     /**
      * @Gedmo\Slug(fields={"username"})
@@ -177,11 +180,11 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isVerified = false;
+    private bool $isVerified = false;
 
     public function __construct()
     {
-        $this->lastLogin = new \DateTime();
+        $this->lastLogin = new DateTime();
         $this->userEvents = new ArrayCollection();
         $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
@@ -191,11 +194,11 @@ class User implements UserInterface, \Serializable
     public function addRole(string $role): self
     {
         $role = strtoupper($role);
-        if ($role === 'ROLE_USER') {
+        if ('ROLE_USER' === $role) {
             return $this;
         }
 
-        if (!in_array($role, $this->roles, true)) {
+        if (!\in_array($role, $this->roles, true)) {
             $this->roles[] = $role;
         }
 
@@ -299,13 +302,13 @@ class User implements UserInterface, \Serializable
      */
     public function serialize()
     {
-        return serialize(array(
+        return serialize([
             $this->password,
             $this->username,
             $this->enabled,
             $this->id,
             $this->email,
-        ));
+        ]);
     }
 
     /**
@@ -320,8 +323,7 @@ class User implements UserInterface, \Serializable
             $this->username,
             $this->enabled,
             $this->id,
-            $this->email,
-            ) = $data;
+            $this->email) = $data;
     }
 
     /**
@@ -348,7 +350,7 @@ class User implements UserInterface, \Serializable
      */
     public function getPassword(): string
     {
-        return (string)$this->password;
+        return (string) $this->password;
     }
 
     public function setPassword(string $password): self
@@ -581,24 +583,24 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getLastLogin(): ?\DateTimeInterface
+    public function getLastLogin(): ?DateTimeInterface
     {
         return $this->lastLogin;
     }
 
-    public function setLastLogin(?\DateTimeInterface $lastLogin): self
+    public function setLastLogin(?DateTimeInterface $lastLogin): self
     {
         $this->lastLogin = $lastLogin;
 
         return $this;
     }
 
-    public function getPasswordRequestedAt(): ?\DateTimeInterface
+    public function getPasswordRequestedAt(): ?DateTimeInterface
     {
         return $this->passwordRequestedAt;
     }
 
-    public function setPasswordRequestedAt(?\DateTimeInterface $passwordRequestedAt): self
+    public function setPasswordRequestedAt(?DateTimeInterface $passwordRequestedAt): self
     {
         $this->passwordRequestedAt = $passwordRequestedAt;
 

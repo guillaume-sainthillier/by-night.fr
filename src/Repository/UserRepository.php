@@ -11,7 +11,6 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use App\Entity\User2;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

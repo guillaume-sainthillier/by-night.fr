@@ -75,7 +75,7 @@ class ImageTypeExtension extends AbstractTypeExtension
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'translation_domain' => 'messages'
+            'translation_domain' => 'messages',
         ]);
         $resolver->setRequired(['thumb_params']);
         $resolver->setAllowedTypes('thumb_params', 'array');

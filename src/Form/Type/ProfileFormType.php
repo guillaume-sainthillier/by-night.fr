@@ -30,7 +30,7 @@ class ProfileFormType extends AbstractType
                 'label' => 'Nom d\'utilisateur',
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Adresse email'
+                'label' => 'Adresse email',
             ])
             ->add('firstname', TextType::class, ['required' => false, 'label' => 'Prénom'])
             ->add('lastname', TextType::class, ['required' => false, 'label' => 'Nom'])
@@ -60,7 +60,7 @@ class ProfileFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => User::class
+            'data_class' => User::class,
         ]);
     }
 }

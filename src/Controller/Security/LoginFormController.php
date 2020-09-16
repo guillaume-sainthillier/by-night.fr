@@ -1,7 +1,16 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Controller\Security;
 
+use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +30,7 @@ class LoginFormController extends AbstractController
 
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
-            'error' => $error
+            'error' => $error,
         ]);
     }
 
@@ -30,6 +39,6 @@ class LoginFormController extends AbstractController
      */
     public function logout()
     {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        throw new LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 }

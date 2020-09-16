@@ -28,7 +28,7 @@ class ReCaptchaResponseValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint)
     {
-        $value = null === $value ? $this->requestStack->getCurrentRequest()->request->get('g-recaptcha-response') : $value;
+        $value ??= $this->requestStack->getCurrentRequest()->request->get('g-recaptcha-response');
 
         $isValid = $this->captcha->verify($value);
         if (!$isValid) {

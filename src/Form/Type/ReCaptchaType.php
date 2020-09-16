@@ -46,7 +46,7 @@ class ReCaptchaType extends AbstractType
             ],
             'constraints' => [
                 new ReCaptchaResponse(),
-                new NotBlank()
+                new NotBlank(),
             ],
         ]);
     }
