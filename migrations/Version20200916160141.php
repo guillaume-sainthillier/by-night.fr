@@ -31,7 +31,7 @@ final class Version20200916160141 extends AbstractMigration
         $this->addSql('DROP INDEX UNIQ_8D93D649A0D96FBF ON user');
         $this->addSql('DROP INDEX UNIQ_8D93D649C05FB297 ON user');
         $this->addSql('DROP INDEX UNIQ_8D93D64992FC23A8 ON user');
-        $this->addSql('ALTER TABLE user DROP username_canonical, DROP email_canonical, DROP salt, DROP confirmation_token');
+        $this->addSql('ALTER TABLE user DROP username_canonical, DROP email_canonical, DROP confirmation_token');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON user (email)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649F85E0677 ON user (username)');
     }
@@ -41,7 +41,7 @@ final class Version20200916160141 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP INDEX UNIQ_8D93D649E7927C74 ON user');
         $this->addSql('DROP INDEX UNIQ_8D93D649F85E0677 ON user');
-        $this->addSql('ALTER TABLE user ADD username_canonical VARCHAR(180) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`, ADD email_canonical VARCHAR(180) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`, ADD salt VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, ADD confirmation_token VARCHAR(180) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`');
+        $this->addSql('ALTER TABLE user ADD username_canonical VARCHAR(180) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`, ADD email_canonical VARCHAR(180) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`, ADD confirmation_token VARCHAR(180) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649A0D96FBF ON user (email_canonical)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649C05FB297 ON user (confirmation_token)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D64992FC23A8 ON user (username_canonical)');

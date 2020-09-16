@@ -55,6 +55,11 @@ class User implements UserInterface, Serializable
     private ?string $email = null;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $salt = null;
+
+    /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
     private ?string $username = null;
@@ -286,7 +291,7 @@ class User implements UserInterface, Serializable
      */
     public function getSalt()
     {
-        // not needed when using the "bcrypt" algorithm in security.yaml
+        return $this->salt;
     }
 
     /**
@@ -308,6 +313,7 @@ class User implements UserInterface, Serializable
             $this->enabled,
             $this->id,
             $this->email,
+            $this->salt,
         ]);
     }
 
@@ -323,7 +329,9 @@ class User implements UserInterface, Serializable
             $this->username,
             $this->enabled,
             $this->id,
-            $this->email) = $data;
+            $this->email,
+            $this->salt,
+        ) = $data;
     }
 
     /**
