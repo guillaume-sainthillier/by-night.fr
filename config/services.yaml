@@ -114,10 +114,6 @@ services:
             - { name: doctrine.event_listener, event: preRemove }
             - { name: doctrine.event_listener, event: postFlush }
 
-    App\Captcha\CaptchaWrapper:
-        arguments:
-            $secret: "%env(GOOGLE_RECAPTCHA_API_SECRET)%"
-
     Aws\S3\S3Client:
         arguments:
             -   version: "2006-03-01"

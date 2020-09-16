@@ -17,12 +17,12 @@ class CaptchaWrapper
 {
     private RequestStack $requestStack;
 
-    private string $secret;
+    private ReCaptcha $reCaptcha;
 
-    public function __construct(RequestStack $requestStack, $secret)
+    public function __construct(RequestStack $requestStack, ReCaptcha $reCaptcha)
     {
         $this->requestStack = $requestStack;
-        $this->secret = $secret;
+        $this->reCaptcha = $reCaptcha;
     }
 
     /**
@@ -31,9 +31,7 @@ class CaptchaWrapper
     public function verify(?string $value): bool
     {
         $request = $this->requestStack->getMasterRequest();
-
-        $reCaptcha = new ReCaptcha($this->secret);
-        $response = $reCaptcha->verify(
+        $response = $this->reCaptcha->verify(
             $value,
             $request->getClientIp()
         );
