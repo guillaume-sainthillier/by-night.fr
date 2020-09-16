@@ -37,6 +37,7 @@
         "aws/aws-sdk-php": "^3.154",
         "beberlei/doctrineextensions": "^1.2",
         "easycorp/easyadmin-bundle": "^2.1",
+        "emag-tech-labs/rabbitmq-bundle": "^2.2",
         "erusev/parsedown": "^1.7",
         "facebook/graph-sdk": "^5.7",
         "friendsofsymfony/elastica-bundle": "^5.0",
@@ -51,8 +52,8 @@
         "league/glide-symfony": "^1.0",
         "league/oauth2-facebook": "^2.0",
         "league/oauth2-google": "^3.0",
+        "mhujer/breadcrumbs-bundle": "^1.4",
         "neitanod/forceutf8": "^2.0",
-        "php-amqplib/rabbitmq-bundle": "^1.14",
         "presta/sitemap-bundle": "^2.1",
         "sensio/framework-extra-bundle": "^5.2",
         "sentry/sentry-symfony": "^3.0",
@@ -95,8 +96,7 @@
         "twig/extra-bundle": "^3.0",
         "twig/intl-extra": "^3.0",
         "twistor/flysystem-http": "^0.2.0",
-        "vich/uploader-bundle": "^1.9",
-        "mhujer/breadcrumbs-bundle": "^1.4"
+        "vich/uploader-bundle": "^1.9"
     },
     "require-dev": {
         "rector/rector": "^0.7.21",
