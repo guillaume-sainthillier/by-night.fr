@@ -137,6 +137,9 @@ class Firewall
             'Buy && sell tickets at', 'Please join', 'Invite Friends', 'Buy Tickets',
             'Find Local Concerts', 'reverbnation.com', 'pastaparty.com', 'evrd.us',
             'farishams.com', 'ty-segall.com',
+            'Online-Streaming', 'DvdRip', 'Online HD Movies', 'FULL Movie Online Free', 'DvdRip-USA',
+            '4K.Downloads', 'Super.4K.Videos', 'Free Trial Access',
+            'join the Illuminati', 'anti-breeze financial institution', 'call on +', 'Call Or Whats App On',
             'fritzkalkbrenner.com', 'campusfm.fr', 'polyamour.info', 'parislanuit.fr',
             'Please find the agenda', 'Fore More Details like our Page & Massage us',
         ];
