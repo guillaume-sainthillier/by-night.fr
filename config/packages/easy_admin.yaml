@@ -84,6 +84,7 @@ easy_admin:
                     - { property: 'username' }
                     - { property: 'email' }
                     - { property: 'lastLogin' }
+                    - { property: 'enabled' }
             form:
                 fields:
                     - { type: 'group', columns: 8, label: 'Informations' }
