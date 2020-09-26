@@ -31,7 +31,7 @@ services:
             - 5672:5672
             - 15672:15672
         volumes:
-            - /var/lib/rabbitmq
+            - rabbitmq:/var/lib/rabbitmq
 
     blackfire:
         image: blackfire/blackfire
@@ -63,3 +63,4 @@ services:
 
 volumes:
     esdata:
+    rabbitmq:
