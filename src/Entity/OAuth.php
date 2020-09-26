@@ -23,7 +23,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class OAuth
 {
-    use EntityIdentityTrait;
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected ?int $id = null;
 
     /**
      * @ORM\Column(length=255, nullable=true)
@@ -134,6 +139,14 @@ abstract class OAuth
      * @ORM\Column(length=255, nullable=true)
      */
     private ?string $twitter_profile_picture = null;
+
+    /**
+     * Returns the primary key identifier.
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function __toString()
     {

@@ -39,9 +39,8 @@ app.private:
     resource: '../../src/Controller/Fragments/'
     type:     annotation
 
-easy_admin_bundle:
-    resource: '@EasyAdminBundle/Controller/EasyAdminController.php'
-    prefix: /_administration
+kernel:
+    resource: '../../src/Kernel.php'
     type: annotation
 
 #La ville est définie à partir d'ici
@@ -50,6 +49,3 @@ app.city:
     prefix:   /{location}
     type:     annotation
 
-kernel:
-    resource: '../../src/Kernel.php'
-    type: annotation
