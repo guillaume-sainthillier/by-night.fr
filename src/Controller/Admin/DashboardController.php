@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of By Night.
+ * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace App\Controller\Admin;
 
 use App\Entity\AppOAuth;
@@ -44,7 +52,6 @@ class DashboardController extends AbstractDashboardController
 
         return $this->redirect($routeBuilder->setController(EventCrudController::class)->generateUrl());
     }
-
 
     public function configureDashboard(): Dashboard
     {
@@ -100,7 +107,7 @@ class DashboardController extends AbstractDashboardController
                 'w' => 21,
                 'h' => 21,
                 'fit' => 'crop',
-                'dpr' => 2
+                'dpr' => 2,
             ]));
     }
 }

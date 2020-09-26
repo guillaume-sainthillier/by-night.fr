@@ -10,7 +10,6 @@
 
 namespace App\Form\Extension;
 
-use IntlDateFormatter;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\OptionsResolver\Options;

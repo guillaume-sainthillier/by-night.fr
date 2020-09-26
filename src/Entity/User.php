@@ -330,8 +330,7 @@ class User implements UserInterface, Serializable
             $this->enabled,
             $this->id,
             $this->email,
-            $this->salt,
-        ) = $data;
+            $this->salt) = $data;
     }
 
     /**

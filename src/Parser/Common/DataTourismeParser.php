@@ -101,8 +101,8 @@ class DataTourismeParser extends AbstractParser
         $categoriesManifestation = array_filter(array_unique($categoriesManifestation));
 
         $country = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][hasAddressCity][0][isPartOfDepartment][0][isPartOfRegion][0][isPartOfCountry][0][rdfs:label][fr][0]');
-        $latitude = (float)$this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:latitude]');
-        $longitude = (float)$this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:longitude]');
+        $latitude = (float) $this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:latitude]');
+        $longitude = (float) $this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:longitude]');
 
         $emails = [];
         $phones = [];
@@ -111,15 +111,15 @@ class DataTourismeParser extends AbstractParser
         foreach (['hasBookingContact', 'hasContact'] as $key) {
             foreach ($datas[$key] as $currentDatas) {
                 if (!empty($currentDatas['schema:email'])) {
-                    $emails = [...$emails, ... (array)$currentDatas['schema:email']];
+                    $emails = [...$emails, ...(array) $currentDatas['schema:email']];
                 }
 
                 if (!empty($currentDatas['schema:telephone'])) {
-                    $phones = [...$phones, ... (array)$currentDatas['schema:telephone']];
+                    $phones = [...$phones, ...(array) $currentDatas['schema:telephone']];
                 }
 
                 if (!empty($currentDatas['foaf:homepage'])) {
-                    $websites = [...$websites, ... (array)$currentDatas['foaf:homepage']];
+                    $websites = [...$websites, ...(array) $currentDatas['foaf:homepage']];
                 }
             }
         }
@@ -208,7 +208,7 @@ class DataTourismeParser extends AbstractParser
 
     private function getExternalIdFromUrl(string $url)
     {
-        $path = ltrim(parse_url($url, PHP_URL_PATH), '/');
+        $path = ltrim(parse_url($url, \PHP_URL_PATH), '/');
 
         if (!preg_match(self::UUID_REGEX, $path)) {
             throw new \RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
@@ -241,7 +241,7 @@ class DataTourismeParser extends AbstractParser
         //Extract zip
         $zip = new \ZipArchive();
         $res = $zip->open($filePath);
-        if ($res !== TRUE) {
+        if (true !== $res) {
             throw new \RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
         }
 
@@ -255,12 +255,13 @@ class DataTourismeParser extends AbstractParser
 
     private function getDataValue(array $datas, $paths, $defaultValue = null)
     {
-        foreach ((array)$paths as $path) {
+        foreach ((array) $paths as $path) {
             try {
                 return $this->propertyAccessor->getValue($datas, $path);
-            } catch (AccessException|UnexpectedTypeException $e) {
+            } catch (AccessException | UnexpectedTypeException $e) {
             }
         }
+
         return $defaultValue;
     }
 
