@@ -35,6 +35,9 @@ sub vcl_recv {
         } else {
             set req.http.X-Forwarded-For = client.ip;
         }
+    } else {
+        //https://varnish-cache.org/docs/6.4/whats-new/upgrading-6.2.html
+        set req.hash_always_miss = true;
     }
 
     # Normalize the header, remove the port (in case you're testing this on various TCP ports)
@@ -87,7 +90,7 @@ sub vcl_recv {
     }
 
     # Suppression de tous les cookies sur les pages publiques
-    if( ! req.url ~ "^/(login|inscription|mot-de-passe-perdu|logout|profile|commentaire|espace-perso|social|_administration|_private|_profiler|_wdt)" ) {
+    if( ! req.url ~ "^/(login|login-social|inscription|mot-de-passe-perdu|logout|profile|commentaire|espace-perso|social|_administration|_private)" ) {
         unset req.http.Cookie;
         set req.http.X-Cookie-State = "Deleted";
     }
@@ -162,7 +165,7 @@ sub vcl_hit {
     if (!std.healthy(req.backend_hint) && (obj.ttl + obj.grace > 0s)) {
         return (deliver);
     } else {
-        return (miss);
+        return (restart);
     }
 
     # We have no fresh fish. Lets look at the stale ones.
@@ -173,7 +176,7 @@ sub vcl_hit {
             return (deliver);
         } else {
             # No candidate for grace. Fetch a fresh object.
-            return (miss);
+            return (restart);
         }
     } else {
         # backend is sick - use full grace
@@ -182,12 +185,12 @@ sub vcl_hit {
             return (deliver);
         } else {
             # no graced object.
-        return (miss);
+        return (restart);
         }
     }
 
     # fetch & deliver once we get the result
-    return (miss); # Dead code, keep as a safeguard
+    return (restart); # Dead code, keep as a safeguard
 }
 
 # Handle the HTTP request coming from our backend

@@ -33,7 +33,7 @@ services:
             - local
 
     varnish:
-        image: varnish:6.0
+        image: varnish:6.4
         command: [ "varnishd", "-F", "-f", "/etc/varnish/default.vcl", "-t" , "0" ]
         ports:
             - 8031:80
