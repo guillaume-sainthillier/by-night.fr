@@ -129,10 +129,21 @@ services:
                     key: "%env(AWS_S3_KEY)%"
                     secret: "%env(AWS_S3_SECRET)%"
 
-    Sentry\Monolog\Handler:
+    # Store session in redis
+    Redis:
+        class: Redis
         calls:
-            -   method: setLevel
-                arguments: ['error']
+            - connect:
+                  - '%env(REDIS_HOST)%'
+                  - '%env(int:REDIS_PORT)%'
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+        arguments:
+            - '@Redis'
+            - { prefix: 'by-night' }
+
+    Monolog\Processor\PsrLogMessageProcessor:
+        tags: { name: monolog.processor, handler: sentry }
 
     League\Glide\Server:
         # call the static method
@@ -141,6 +152,7 @@ services:
             - source: '@s3.storage.reader'
               cache: '@thumbs.storage'
               driver: 'imagick'
+
     app.asset_thumb:
         class: League\Glide\Server
         # call the static method
