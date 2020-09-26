@@ -11,6 +11,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\UserOAuth;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 
 class UserOAuthCrudController extends OAuthCrudController
@@ -18,6 +20,13 @@ class UserOAuthCrudController extends OAuthCrudController
     public static function getEntityFqcn(): string
     {
         return UserOAuth::class;
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return parent::configureActions($actions)
+            ->disable(Action::NEW)
+            ;
     }
 
     public function configureCrud(Crud $crud): Crud

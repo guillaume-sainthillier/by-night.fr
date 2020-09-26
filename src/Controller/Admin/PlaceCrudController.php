@@ -63,7 +63,7 @@ class PlaceCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $externalId, $ville, $codePostal, $facebookId, $junk, $rue, $latitude, $longitude, $nom, $slug, $path, $url, $createdAt, $updatedAt, $city, $country];
         } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$panel1, $id, $externalId, $slug, $nom, $facebookId, $junk, $panel2, $rue, $codePostal, $ville, $latitude, $longitude, $city, $country];
+            return [$panel1, $externalId, $nom, $facebookId, $junk, $panel2, $rue, $codePostal, $ville, $latitude, $longitude, $city, $country];
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$panel1, $id, $externalId, $slug, $nom, $facebookId, $junk, $panel2, $rue, $codePostal, $ville, $latitude, $longitude, $city, $country];
         }

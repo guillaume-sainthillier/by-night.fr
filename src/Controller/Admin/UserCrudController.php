@@ -11,6 +11,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
@@ -27,6 +29,13 @@ class UserCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return User::class;
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return parent::configureActions($actions)
+            ->disable(Action::NEW)
+            ;
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -80,8 +89,6 @@ class UserCrudController extends AbstractCrudController
             return [$id, $username, $email, $lastLogin, $enabled];
         } elseif (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $email, $salt, $username, $enabled, $lastLogin, $passwordRequestedAt, $roles, $password, $slug, $firstname, $lastname, $description, $fromLogin, $showSocials, $website, $imageHash, $imageSystemHash, $isVerified, $createdAt, $updatedAt, $imageName, $imageOriginalName, $imageMimeType, $imageSize, $imageDimensions, $imageSystemName, $imageSystemOriginalName, $imageSystemMimeType, $imageSystemSize, $imageSystemDimensions, $oAuth, $userEvents, $city];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$panel1, $lastLogin, $id, $slug, $username, $roles, $email, $firstname, $lastname, $description, $oAuth, $website, $fromLogin, $showSocials, $enabled, $isVerified, $panel2, $imageName, $imageSystemName];
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$panel1, $lastLogin, $id, $slug, $username, $roles, $email, $firstname, $lastname, $description, $oAuth, $website, $fromLogin, $showSocials, $enabled, $isVerified, $panel2, $imageName, $imageSystemName];
         }

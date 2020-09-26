@@ -11,6 +11,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\ParserHistory;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -23,6 +25,14 @@ class ParserHistoryCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return ParserHistory::class;
+    }
+
+
+    public function configureActions(Actions $actions): Actions
+    {
+        return parent::configureActions($actions)
+            ->disable(Action::NEW)
+            ;
     }
 
     public function configureCrud(Crud $crud): Crud

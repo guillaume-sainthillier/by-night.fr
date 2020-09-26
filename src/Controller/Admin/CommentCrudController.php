@@ -51,7 +51,7 @@ class CommentCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $commentaire, $approuve, $createdAt, $updatedAt, $user, $event, $parent, $reponses];
         } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$id, $event, $user, $createdAt, $updatedAt, $approuve, $commentaire];
+            return [$event, $user, $approuve, $commentaire];
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$id, $event, $user, $createdAt, $updatedAt, $approuve, $commentaire];
         }
