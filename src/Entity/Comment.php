@@ -33,7 +33,7 @@ class Comment
     /**
      * @ORM\Column(type="boolean")
      */
-    protected bool $approuve;
+    protected bool $approuve = true;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
@@ -62,7 +62,6 @@ class Comment
     public function __construct()
     {
         $this->reponses = new ArrayCollection();
-        $this->approuve = true;
     }
 
     public function __toString()
