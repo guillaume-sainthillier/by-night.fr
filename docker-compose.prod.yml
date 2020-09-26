@@ -12,8 +12,6 @@ services:
             - ./docker/prod/assets/nginx.conf:/etc/nginx/nginx.conf:ro
 
     varnish:
-        image: varnish:6.0
         volumes:
             - ./docker/prod/varnish/default.vcl:/etc/varnish/default.vcl
             - ./docker/prod/varnish/fos:/etc/varnish/fos
-            - /var/lib/varnish
