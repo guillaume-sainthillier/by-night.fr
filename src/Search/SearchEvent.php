@@ -20,24 +20,21 @@ class SearchEvent
     /**
      * @Assert\NotBlank
      */
-    private ?DateTimeInterface $from = null;
+    private ?DateTimeInterface $from;
 
-    /**
-     * @Assert\Date
-     */
     private ?DateTimeInterface $to = null;
 
     /**
      * @Assert\NotBlank
      * @Assert\GreaterThan(0)
      */
-    private ?int $range = null;
+    private ?int $range = 25;
 
     private ?string $tag = null;
 
-    protected array $type_manifestation;
+    protected array $type_manifestation = [];
 
-    protected array $lieux;
+    protected array $lieux = [];
 
     private ?string $term = null;
 
@@ -45,10 +42,7 @@ class SearchEvent
 
     public function __construct()
     {
-        $this->range = 25;
         $this->from = new DateTime();
-        $this->lieux = [];
-        $this->type_manifestation = [];
     }
 
     public function getTerms()

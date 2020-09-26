@@ -20,10 +20,10 @@ use Vich\UploaderBundle\Event\Events;
 
 class ImageListener implements EventSubscriberInterface
 {
-    private array $paths;
+    private array $paths = [];
 
     /** @var DeletableFile[] */
-    private array $files;
+    private array $files = [];
 
     private PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer;
 
@@ -31,8 +31,6 @@ class ImageListener implements EventSubscriberInterface
 
     public function __construct(PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer, RemoveImageThumbnailsProducer $removeImageThumbnailsProducer)
     {
-        $this->paths = [];
-        $this->files = [];
         $this->purgeCdnCacheUrlProducer = $purgeCdnCacheUrlProducer;
         $this->removeImageThumbnailsProducer = $removeImageThumbnailsProducer;
     }

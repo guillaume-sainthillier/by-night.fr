@@ -24,14 +24,13 @@ abstract class AbstractParser implements ParserInterface
 
     protected ReservationsHandler $reservationsHandler;
 
-    private int $parsedEvents;
+    private int $parsedEvents = 0;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler)
     {
         $this->logger = $logger;
         $this->eventProducer = $eventProducer;
         $this->reservationsHandler = $reservationsHandler;
-        $this->parsedEvents = 0;
     }
 
     public function publish(array $item): void

@@ -20,12 +20,11 @@ class EventConstraintValidator extends ConstraintValidator
 {
     private RouterInterface $router;
 
-    private bool $checkIfUpdate;
+    private bool $checkIfUpdate = false;
 
     public function __construct(RouterInterface $router)
     {
         $this->router = $router;
-        $this->checkIfUpdate = true;
     }
 
     public function setUpdatabilityCkeck($checkIfUpdate)
