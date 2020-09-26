@@ -834,9 +834,6 @@
     "symfonycasts/verify-email-bundle": {
         "version": "v1.0.0"
     },
-    "symplify/auto-bind-parameter": {
-        "version": "8.3.4"
-    },
     "symplify/autowire-array-parameter": {
         "version": "8.3.4"
     },
