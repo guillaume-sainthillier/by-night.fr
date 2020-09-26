@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65154606b22ea7d4ad0c44b463235180",
+    "content-hash": "5f4a9abecea01b7d1c7512fc422fafce",
     "packages": [
         {
             "name": "abraham/twitteroauth",
@@ -2921,51 +2921,6 @@
             ],
             "abandoned": true,
             "time": "2014-10-12T19:18:40+00:00"
-        },
-        {
-            "name": "halaxa/json-machine",
-            "version": "0.3.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/halaxa/json-machine.git",
-                "reference": "6333030d3f5f3673738db30425264ca5d901aac8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/halaxa/json-machine/zipball/6333030d3f5f3673738db30425264ca5d901aac8",
-                "reference": "6333030d3f5f3673738db30425264ca5d901aac8",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "php": ">=5.6"
-            },
-            "require-dev": {
-                "guzzlehttp/guzzle": "^6",
-                "phpunit/phpunit": "^5.7",
-                "symfony/http-client": "^5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "JsonMachine\\": "src/"
-                },
-                "files": [
-                    "src/functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Filip Halaxa",
-                    "email": "filip@halaxa.cz"
-                }
-            ],
-            "description": "Efficient, easy-to-use and fast JSON pull parser",
-            "time": "2019-12-20T18:30:23+00:00"
         },
         {
             "name": "http-interop/http-factory-guzzle",

@@ -178,9 +178,6 @@
     "guzzlehttp/streams": {
         "version": "3.0.0"
     },
-    "halaxa/json-machine": {
-        "version": "0.3.3"
-    },
     "http-interop/http-factory-guzzle": {
         "version": "1.0.0"
     },

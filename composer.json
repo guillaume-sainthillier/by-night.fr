@@ -43,7 +43,6 @@
         "friendsofsymfony/elastica-bundle": "^5.0",
         "friendsofsymfony/http-cache-bundle": "^2.6",
         "google/recaptcha": "^1.2",
-        "halaxa/json-machine": "^0.3.2",
         "jms/serializer-bundle": "^3.2",
         "knplabs/knp-paginator-bundle": "^5.2",
         "knpuniversity/oauth2-client-bundle": "^2.1",

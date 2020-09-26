@@ -5,5 +5,3 @@ framework:
         pools:
             redis.app_cache_pool:
                 adapter: cache.app
-            redis.datatourisme_cache_pool:
-                adapter: cache.adapter.array

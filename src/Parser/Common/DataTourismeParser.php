@@ -14,14 +14,18 @@ use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTime;
-use JsonMachine\JsonMachine;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class DataTourismeParser extends AbstractParser
 {
+    private const UUID_REGEX = '#^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$#';
     private const INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
     private const UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
 
@@ -29,15 +33,18 @@ class DataTourismeParser extends AbstractParser
 
     private string $dataTourismeAppKey;
 
-    private CacheInterface $cache;
+    private PropertyAccessorInterface $propertyAccessor;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, CacheInterface $dataTourismeCache, string $tempPath, string $dataTourismeAppKey)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $tempPath, string $dataTourismeAppKey)
     {
         parent::__construct($logger, $eventProducer, $reservationsHandler);
 
         $this->tempPath = $tempPath;
         $this->dataTourismeAppKey = $dataTourismeAppKey;
-        $this->cache = $dataTourismeCache;
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
+            ->enableExceptionOnInvalidIndex()
+            ->enableExceptionOnInvalidPropertyPath()
+            ->getPropertyAccessor();
     }
 
     public static function getParserName(): string
@@ -48,14 +55,24 @@ class DataTourismeParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         $url = $incremental ? self::INCREMENTAL_WEBSERVICE_FEED : self::UPCOMING_WEBSERVICE_FEED;
-        $file = $this->getFeed(sprintf($url, $this->dataTourismeAppKey));
-        $jsonStream = JsonMachine::fromFile($file, '/@graph');
-        foreach ($jsonStream as $datas) {
+        $directory = $this->getFeed(sprintf($url, $this->dataTourismeAppKey));
+
+        $finder = new Finder();
+        $files = $finder
+            ->files()
+            ->name('*.json')
+            ->in($directory)
+            ->depth('> 0');
+
+        $fs = new Filesystem();
+        foreach ($files as $file) {
+            $datas = json_decode(file_get_contents($file->getPathname()), true);
             $events = array_filter($this->getInfoEvents($datas));
 
             foreach ($events as $event) {
                 $this->publish($event);
             }
+            $fs->remove($file->getPathname());
         }
     }
 
@@ -65,40 +82,11 @@ class DataTourismeParser extends AbstractParser
             return [];
         }
 
-        $datas['owl:topObjectProperty'] = $this->getResourceById($datas['owl:topObjectProperty'] ?? []);
-        $datas['lastUpdate'] = $this->getResourceById($datas['lastUpdate']);
-        $datas['lastUpdate'] = $this->getResourceById($datas['lastUpdate']);
-        $datas['hasMainRepresentation'] = $this->getResourceById($datas['hasMainRepresentation'] ?? [], true);
-        $datas['hasBeenCreatedBy'] = $this->getResourceById($datas['hasBeenCreatedBy'] ?? [], true);
-        $datas['hasBeenPublishedBy'] = $this->getResourceById($datas['hasBeenPublishedBy'] ?? [], true);
-        $datas['hasBookingContact'] = $this->getResourceById($datas['hasBookingContact'] ?? [], true);
-        $datas['schema:offers'] = $this->getResourceById($datas['schema:offers'] ?? []);
-        if (isset($datas['schema:offers']['schema:priceSpecification'])) {
-            $datas['schema:offers']['schema:priceSpecification'] = $this->getResourceById($datas['schema:offers']['schema:priceSpecification']);
-        }
-
-        $datas['hasContact'] = $this->getResourceById($datas['hasContact'] ?? [], true);
-        $datas['isLocatedAt'] = $this->getResourceById($datas['isLocatedAt']);
-        if (isset($datas['isLocatedAt'][0]) && \is_array($datas['isLocatedAt'][0])) {
-            $datas['isLocatedAt'] = $datas['isLocatedAt'][0];
-        }
-
-        if (isset($datas['isLocatedAt']['schema:address'][0]) && \is_array($datas['isLocatedAt']['schema:address'][0])) {
-            $datas['isLocatedAt']['schema:address'] = $datas['isLocatedAt']['schema:address'][0];
-        }
-
-        if (isset($datas['isLocatedAt']['schema:address']['hasAddressCity'][0]) && \is_array($datas['isLocatedAt']['schema:address']['hasAddressCity'][0])) {
-            $datas['isLocatedAt']['schema:address']['hasAddressCity'] = $datas['isLocatedAt']['schema:address']['hasAddressCity'][0];
-        }
-
-        if (isset($datas['isLocatedAt']['schema:address']['schema:addressLocality'][0]) && \is_array($datas['isLocatedAt']['schema:address']['schema:addressLocality'][0])) {
-            $datas['isLocatedAt']['schema:address']['schema:addressLocality'] = $datas['isLocatedAt']['schema:address']['schema:addressLocality'][0];
-        }
-
-        $datas['takesPlaceAt'] = $this->getResourceById($datas['takesPlaceAt'], true);
+        $datas['hasTheme'] ??= [];
+        $datas['hasBookingContact'] ??= [];
+        $datas['hasContact'] ??= [];
 
         $events = [];
-        $propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()->disableExceptionOnInvalidIndex()->getPropertyAccessor();
 
         $typesManifestation = [];
         foreach ($datas['@type'] as $type) {
@@ -107,31 +95,14 @@ class DataTourismeParser extends AbstractParser
         $typesManifestation = array_filter(array_unique($typesManifestation));
 
         $categoriesManifestation = [];
-        $datas['hasTheme'] ??= [];
-        $datas['hasTheme'] = isset($datas['hasTheme'][0]) ? $datas['hasTheme'] : [$datas['hasTheme']];
         foreach ($datas['hasTheme'] as $theme) {
-            if (!isset($theme['rdfs:label']['@value']) || \in_array($theme['rdfs:label']['@value'], $typesManifestation, true)) {
-                continue;
-            }
-            $categoriesManifestation[] = $theme['rdfs:label']['@value'];
+            $categoriesManifestation[] = $this->getDataValue($theme, '[rdfs:label][fr][0]');
         }
         $categoriesManifestation = array_filter(array_unique($categoriesManifestation));
 
-        $country = 'France';
-        if (isset($datas['isLocatedAt']['schema:address']['hasAddressCity']['isPartOfDepartment']['isPartOfRegion']['isPartOfCountry']['rdfs:label']['@value'])) {
-            $country = $datas['isLocatedAt']['schema:address']['hasAddressCity']['isPartOfDepartment']['isPartOfRegion']['isPartOfCountry']['rdfs:label']['@value'];
-        }
-
-        $latitude = null;
-        $longitude = null;
-
-        if (isset($datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'])) {
-            $latitude = (float) $datas['isLocatedAt']['schema:geo']['schema:latitude']['@value'];
-        }
-
-        if (isset($datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'])) {
-            $longitude = (float) $datas['isLocatedAt']['schema:geo']['schema:longitude']['@value'];
-        }
+        $country = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][hasAddressCity][0][isPartOfDepartment][0][isPartOfRegion][0][isPartOfCountry][0][rdfs:label][fr][0]');
+        $latitude = (float)$this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:latitude]');
+        $longitude = (float)$this->getDataValue($datas, '[isLocatedAt][0][schema:geo][schema:longitude]');
 
         $emails = [];
         $phones = [];
@@ -139,16 +110,16 @@ class DataTourismeParser extends AbstractParser
 
         foreach (['hasBookingContact', 'hasContact'] as $key) {
             foreach ($datas[$key] as $currentDatas) {
-                if (isset($currentDatas['schema:email'])) {
-                    $emails = [...$emails, ...\is_array($currentDatas['schema:email']) ? $currentDatas['schema:email'] : [$currentDatas['schema:email']]];
+                if (!empty($currentDatas['schema:email'])) {
+                    $emails = [...$emails, ... (array)$currentDatas['schema:email']];
                 }
 
-                if (isset($currentDatas['schema:telephone'])) {
-                    $phones = [...$phones, ...\is_array($currentDatas['schema:telephone']) ? $currentDatas['schema:telephone'] : [$currentDatas['schema:telephone']]];
+                if (!empty($currentDatas['schema:telephone'])) {
+                    $phones = [...$phones, ... (array)$currentDatas['schema:telephone']];
                 }
 
-                if (isset($currentDatas['foaf:homepage'])) {
-                    $websites = [...$websites, ...\is_array($currentDatas['foaf:homepage']) ? $currentDatas['foaf:homepage'] : [$currentDatas['foaf:homepage']]];
+                if (!empty($currentDatas['foaf:homepage'])) {
+                    $websites = [...$websites, ... (array)$currentDatas['foaf:homepage']];
                 }
             }
         }
@@ -157,47 +128,36 @@ class DataTourismeParser extends AbstractParser
         $phones = array_filter(array_unique($phones));
         $emails = array_filter(array_unique($emails));
 
-        $updatedAt = new DateTime($datas['lastUpdate']['@value']);
-        $updatedAt->setTime(0, 0, 0);
+        $lastUpdate = new DateTime($datas['lastUpdate']);
+        $lastUpdate->setTime(0, 0, 0);
 
-        if (\is_array($datas['isLocatedAt']['schema:address']['schema:addressLocality'])) {
-            $datas['isLocatedAt']['schema:address']['schema:addressLocality'] = current($datas['isLocatedAt']['schema:address']['schema:addressLocality']);
-        }
-
-        if (isset($datas['rdfs:label'][0]) && \is_array($datas['rdfs:label'][0])) {
-            $datas['rdfs:label'] = $datas['rdfs:label'][0];
-        }
-
-        if (isset($datas['owl:topObjectProperty']['dc:description'][0]) && \is_array($datas['owl:topObjectProperty']['dc:description'][0])) {
-            $datas['owl:topObjectProperty']['dc:description'] = $datas['owl:topObjectProperty']['dc:description'][0];
-        }
-
-        $description = null;
-        if (isset($datas['owl:topObjectProperty']['owl:topDataProperty']['@value'])) {
-            $description = $datas['owl:topObjectProperty']['owl:topDataProperty']['@value'];
-        } elseif (isset($datas['owl:topObjectProperty']['dc:description']['@value'])) {
-            $description = $datas['owl:topObjectProperty']['dc:description']['@value'];
+        if (isset($datas['lastUpdateDatatourisme'])) {
+            $lastUpdateDatatourisme = new DateTime($datas['lastUpdateDatatourisme']);
         } else {
-            $description = $datas['rdfs:label']['@value'];
+            $lastUpdateDatatourisme = null;
         }
+        $updatedAt = max($lastUpdate, $lastUpdateDatatourisme);
 
-        $url = $propertyAccessor->getValue($datas, '[hasMainRepresentation][ebucore:hasRelatedResource][ebucore:locator][@value]');
-        if (!$url) {
-            $url = $propertyAccessor->getValue($datas, '[hasMainRepresentation][0][ebucore:hasRelatedResource][ebucore:locator][@value]');
-        }
+        $description = $this->getDataValue($datas, [
+            '[hasDescription][0][dc:description][fr][0]',
+            '[rdfs:comment][fr][0]',
+            '[rdfs:label][fr][0]',
+        ]);
+
+        $url = $this->getDataValue($datas, '[hasMainRepresentation][0][ebucore:hasRelatedResource][0][ebucore:locator][0]');
 
         $event = [
             'external_updated_at' => $updatedAt,
-            'nom' => $datas['rdfs:label']['@value'],
+            'nom' => $this->getDataValue($datas, '[rdfs:label][fr][0]'),
             'descriptif' => $description,
             'type_manifestation' => implode(', ', $typesManifestation) ?: null,
             'categorie_manifestation' => implode(', ', $categoriesManifestation) ?: null,
             'source' => $datas['@id'],
-            'placeName' => $datas['isLocatedAt']['schema:address']['schema:addressLocality'],
-            'placeCity' => $datas['isLocatedAt']['schema:address']['schema:addressLocality'],
-            'placeStreet' => $propertyAccessor->getValue($datas, '[isLocatedAt][schema:address][schema:streetAddress]'),
-            'placePostalCode' => $datas['isLocatedAt']['schema:address']['schema:postalCode'],
-            'placeExternalId' => 'DT-' . $datas['isLocatedAt']['@id'],
+            'placeName' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:addressLocality]'),
+            'placeCity' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:addressLocality]'),
+            'placeStreet' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:streetAddress][0]'),
+            'placePostalCode' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:postalCode]'),
+            'placeExternalId' => 'DT-' . $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')),
             'placeCountryName' => $country,
             'latitude' => $latitude,
             'longitude' => $longitude,
@@ -207,21 +167,17 @@ class DataTourismeParser extends AbstractParser
             'phoneContacts' => $phones ?: null,
         ];
 
-        if (\is_array($event['placeStreet'])) {
-            $event['placeStreet'] = end($event['placeStreet']);
-        }
-
         //Multiple date handling
         foreach ($datas['takesPlaceAt'] as $date) {
-            if (!isset($date['endDate'])) {
+            if (empty($date['endDate'])) {
                 continue;
             }
-            $from = new DateTime($date['startDate']['@value']);
-            $to = new DateTime($date['endDate']['@value']);
+            $from = new DateTime($date['startDate']);
+            $to = new DateTime($date['endDate']);
             $horaires = null;
 
-            $startTime = $propertyAccessor->getValue($date, '[startTime][@value]');
-            $endTime = $propertyAccessor->getValue($date, '[endTime][@value]');
+            $startTime = $date['startTime'] ?? null;
+            $endTime = $date['endTime'] ?? null;
 
             if ($startTime && $endTime) {
                 $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $startTime);
@@ -233,7 +189,7 @@ class DataTourismeParser extends AbstractParser
             }
 
             $event += [
-                'external_id' => 'DT-' . $datas['dc:identifier'] . '-' . $date['@id'],
+                'external_id' => 'DT-' . $datas['dc:identifier'] . '-' . $this->getExternalIdFromUrl($date['@id']),
                 'date_debut' => $from,
                 'date_fin' => $to,
                 'horaires' => $horaires,
@@ -244,48 +200,62 @@ class DataTourismeParser extends AbstractParser
         return $events;
     }
 
-    private function getResourceById(array $resource, bool $alwaysReturnList = false): array
+    private function getExternalIdFromUrl(string $url)
     {
-        if ($alwaysReturnList && !isset($resource[0])) {
-            return $this->getResourceById([$resource]);
+        $path = ltrim(parse_url($url, PHP_URL_PATH), '/');
+
+        if (!preg_match(self::UUID_REGEX, $path)) {
+            throw new \RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
         }
 
-        if (isset($resource[0]) && \is_array($resource[0])) {
-            foreach ($resource as $key => $value) {
-                $resource[$key] = $this->getResourceById($value);
-            }
-
-            return $resource;
-        }
-
-        if (!isset($resource['@id'])) {
-            return $resource;
-        }
-
-        $key = str_replace(':', '', $resource['@id']);
-        $resource = array_merge($resource, $this->cache->get($key, fn () => $resource));
-
-        foreach ($resource as $key => $value) {
-            if (\is_array($value)) {
-                $resource[$key] = $this->getResourceById($value);
-            }
-        }
-
-        return $resource;
+        return $path;
     }
 
     private function getFeed(string $url): string
     {
+        //Remove previous extracts
+        $fs = new Filesystem();
+
+        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
+        $extractDirectory = $this->tempPath . \DIRECTORY_SEPARATOR . md5($url);
+
+        if ($fs->exists($extractDirectory)) {
+            $fs->remove($extractDirectory);
+        }
+
+        //Download fresh version
         $client = HttpClient::create();
         $response = $client->request('GET', $url);
 
-        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.jsonld', md5($url));
         $fileHandler = fopen($filePath, 'w');
         foreach ($client->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());
         }
 
-        return $filePath;
+        //Extract zip
+        $zip = new \ZipArchive();
+        $res = $zip->open($filePath);
+        if ($res !== TRUE) {
+            throw new \RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
+        }
+
+        $zip->extractTo($extractDirectory);
+        $zip->close();
+
+        $fs->remove($filePath);
+
+        return $extractDirectory;
+    }
+
+    private function getDataValue(array $datas, $paths, $defaultValue = null)
+    {
+        foreach ((array)$paths as $path) {
+            try {
+                return $this->propertyAccessor->getValue($datas, $path);
+            } catch (AccessException $e) {
+            }
+        }
+        return $defaultValue;
     }
 
     private function getFrenchType(string $type): ?string
@@ -330,6 +300,6 @@ class DataTourismeParser extends AbstractParser
 
     public static function getParserVersion(): string
     {
-        return '1.1';
+        return '1.2';
     }
 }
