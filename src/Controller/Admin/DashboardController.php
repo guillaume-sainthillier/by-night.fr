@@ -99,6 +99,7 @@ class DashboardController extends AbstractDashboardController
             ->setAvatarUrl($this->userProfilePicture->getProfilePicture($user, [
                 'w' => 21,
                 'h' => 21,
+                'fit' => 'crop',
                 'dpr' => 2
             ]));
     }
