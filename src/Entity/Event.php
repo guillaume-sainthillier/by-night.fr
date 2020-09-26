@@ -265,7 +265,7 @@ class Event
      * @Groups({"list_event"})
      * @Expose
      */
-    private ?bool $brouillon = null;
+    private bool $brouillon = false;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
@@ -349,7 +349,7 @@ class Event
     /**
      * @ORM\Column(type="boolean")
      */
-    private ?bool $archive = null;
+    private bool $archive = false;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -405,8 +405,6 @@ class Event
         $this->dateDebut = new DateTime();
         $this->userEvents = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
-        $this->brouillon = false;
-        $this->archive = false;
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
     }

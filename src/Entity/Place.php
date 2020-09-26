@@ -78,10 +78,12 @@ class Place
      * @Expose
      */
     private ?Country $country = null;
+
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
     private ?bool $junk = null;
+
     private ?string $countryName = null;
     private ?Reject $reject = null;
     private ?Location $location = null;

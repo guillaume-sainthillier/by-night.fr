@@ -27,12 +27,12 @@ class UserEvent
     /**
      * @ORM\Column(type="boolean")
      */
-    private ?bool $participe = null;
+    private bool $participe = false;
 
     /**
      * @ORM\Column(type="boolean")
      */
-    private ?bool $interet = null;
+    private bool $interet = false;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userEvents")
@@ -45,15 +45,6 @@ class UserEvent
      * @ORM\JoinColumn(nullable=false)
      */
     private ?Event $event = null;
-
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        $this->participe = false;
-        $this->interet = false;
-    }
 
     public function __toString()
     {
