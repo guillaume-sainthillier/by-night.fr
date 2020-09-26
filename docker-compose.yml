@@ -17,8 +17,8 @@ services:
         volumes:
             - ./docker/dev/varnish/default.vcl:/etc/varnish/default.vcl:ro
             - ./docker/dev/varnish/fos:/etc/varnish/fos:ro
+        tmpfs:
             - /usr/local/var/varnish
-
     redis:
         image: redis:alpine
         ports:
