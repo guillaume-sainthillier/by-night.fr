@@ -19,9 +19,9 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
+use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Symfony\Contracts\Cache\CacheInterface;
 
 class DataTourismeParser extends AbstractParser
 {
@@ -153,8 +153,14 @@ class DataTourismeParser extends AbstractParser
             'type_manifestation' => implode(', ', $typesManifestation) ?: null,
             'categorie_manifestation' => implode(', ', $categoriesManifestation) ?: null,
             'source' => $datas['@id'],
-            'placeName' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:addressLocality]'),
-            'placeCity' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:addressLocality]'),
+            'placeName' => $this->getDataValue($datas, [
+                '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
+                '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
+            ]),
+            'placeCity' => $this->getDataValue($datas, [
+                '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
+                '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
+            ]),
             'placeStreet' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:streetAddress][0]'),
             'placePostalCode' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:postalCode]'),
             'placeExternalId' => 'DT-' . $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')),
@@ -252,7 +258,7 @@ class DataTourismeParser extends AbstractParser
         foreach ((array)$paths as $path) {
             try {
                 return $this->propertyAccessor->getValue($datas, $path);
-            } catch (AccessException $e) {
+            } catch (AccessException|UnexpectedTypeException $e) {
             }
         }
         return $defaultValue;
