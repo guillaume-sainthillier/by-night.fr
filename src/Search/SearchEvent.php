@@ -19,7 +19,6 @@ class SearchEvent
 {
     /**
      * @Assert\NotBlank
-     * @Assert\Date
      */
     private ?DateTimeInterface $from = null;
 
