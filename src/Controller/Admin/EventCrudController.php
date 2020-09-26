@@ -2,8 +2,10 @@
 
 namespace App\Controller\Admin;
 
+use App\Admin\Filter\UserWithEventFilter;
 use App\Entity\Event;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -11,13 +13,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 
 class EventCrudController extends AbstractCrudController
 {
@@ -32,6 +34,13 @@ class EventCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('Event')
             ->setEntityLabelInPlural('Events')
             ->setSearchFields(['id', 'externalId', 'slug', 'nom', 'descriptif', 'adresse', 'typeManifestation', 'categorieManifestation', 'themeManifestation', 'phoneContacts', 'mailContacts', 'websiteContacts', 'fromData', 'name', 'url', 'facebookEventId', 'facebookOwnerId', 'source', 'placeName', 'placeStreet', 'placeCity', 'placePostalCode', 'placeExternalId', 'placeFacebookId', 'image.name', 'imageSystem.name']);
+    }
+
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add(EntityFilter::new('user'))
+            ->add(UserWithEventFilter::new('WithUser'));
     }
 
     public function configureFields(string $pageName): iterable
@@ -104,7 +113,7 @@ class EventCrudController extends AbstractCrudController
         $commentaires = AssociationField::new('commentaires')->autocomplete();
 
         if (Crud::PAGE_INDEX === $pageName) {
-            return [$id, $createdAt, $updatedAt, $fromData, $nom, $place];
+            return [$id, $createdAt, $updatedAt, $fromData, $nom, $place, $user];
         } elseif (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $externalId, $slug, $nom, $descriptif, $externalUpdatedAt, $dateDebut, $dateFin, $horaires, $modificationDerniereMinute, $latitude, $longitude, $adresse, $typeManifestation, $categorieManifestation, $themeManifestation, $phoneContacts, $mailContacts, $websiteContacts, $tarif, $fromData, $parserVersion, $imageHash, $imageSystemHash, $name, $url, $brouillon, $tweetPostId, $facebookEventId, $tweetPostSystemId, $fbPostId, $fbPostSystemId, $facebookOwnerId, $fbParticipations, $fbInterets, $participations, $interets, $source, $archive, $placeName, $placeStreet, $placeCity, $placePostalCode, $placeExternalId, $placeFacebookId, $createdAt, $updatedAt, $imageName, $imageOriginalName, $imageMimeType, $imageSize, $imageDimensions, $imageSystemName, $imageSystemOriginalName, $imageSystemMimeType, $imageSystemSize, $imageSystemDimensions, $user, $userEvents, $commentaires, $place, $placeCountry];
         } elseif (Crud::PAGE_NEW === $pageName) {
