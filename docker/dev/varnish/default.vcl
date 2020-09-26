@@ -19,6 +19,7 @@ acl invalidators {
     "localhost";
     "127.0.0.1";
     "::1";
+    "172.19.0.0"/16;
 }
 
 # Called at the beginning of a request, after the complete request has been received and parsed.

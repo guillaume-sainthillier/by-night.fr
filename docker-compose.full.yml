@@ -1,0 +1,51 @@
+version: '3.4'
+
+services:
+    assets:
+        volumes:
+            - assets:/assets/build:ro
+            - bundles:/assets/bundles:ro
+        depends_on:
+            - app
+
+    app:
+        environment:
+            - BLACKFIRE_CLIENT_ID
+            - BLACKFIRE_CLIENT_TOKEN
+        depends_on:
+            - elasticsearch
+            - rabbitmq
+            - redis
+        ports:
+            - 8030:80
+        networks:
+            - local
+
+    worker:
+        container_name: worker
+        command: [ "worker" ]
+        depends_on:
+            - elasticsearch
+            - rabbitmq
+            - redis
+            - app
+        networks:
+            - local
+
+    varnish:
+        image: varnish:6.0
+        command: [ "varnishd", "-F", "-f", "/etc/varnish/default.vcl", "-t" , "0" ]
+        ports:
+            - 8031:80
+        tmpfs:
+            - /usr/local/var/varnish
+        depends_on:
+            - app
+        networks:
+            - local
+
+volumes:
+    assets:
+    bundles:
+    sitemap:
+    storage:

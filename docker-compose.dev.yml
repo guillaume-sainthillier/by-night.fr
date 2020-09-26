@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+    app:
+        build: ./docker/dev
+        volumes:
+            - nfsmount:/app
+
+    worker:
+        build: ./docker/dev
+        volumes:
+            - nfsmount:/app
+
+    varnish:
+        volumes:
+            - ./docker/dev/varnish/default.vcl:/etc/varnish/default.vcl:ro
+            - ./docker/dev/varnish/fos:/etc/varnish/fos:ro
+
+volumes:
+    nfsmount:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+            device: ":/System/Volumes/Data/${PWD}"

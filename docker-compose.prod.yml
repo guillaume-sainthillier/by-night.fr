@@ -3,13 +3,22 @@ version: '3.4'
 services:
     app:
         build: .
+        env_file: .env.local
+        volumes:
+            - storage:/app/var/storage
+            - assets:/app/public/build
+            - bundles:/app/public/bundles
+            - sitemap:/app/public/sitemap
 
     worker:
         build: .
+        env_file: .env.local
 
     assets:
         volumes:
             - ./docker/prod/assets/nginx.conf:/etc/nginx/nginx.conf:ro
+            - assets:/assets/build:ro
+            - bundles:/assets/bundles:ro
 
     varnish:
         volumes:
