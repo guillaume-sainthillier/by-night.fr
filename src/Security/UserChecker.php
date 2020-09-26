@@ -24,7 +24,7 @@ class UserChecker implements UserCheckerInterface
         }
 
         if (!$user->getEnabled()) {
-            $exception = new DisabledException('Your user account no longer exists.');
+            $exception = new DisabledException('Votre compte a été désactivé par un administrateur.');
             $exception->setUser($user);
             throw $exception;
         }
