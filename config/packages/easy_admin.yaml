@@ -101,7 +101,7 @@ easy_admin:
                     - { property: 'from_login', type: 'checkbox' }
                     - { property: 'show_socials', type: 'checkbox' }
                     - { property: 'enabled', type: 'checkbox' }
-                    - { property: 'verified', type: 'checkbox' }
+                    - { property: 'isVerified', type: 'checkbox' }
                     - { type: 'group', columns: 4, label: 'Médias' }
                     - { property: 'image.name' }
                     - { property: 'imageSystem.name' }
