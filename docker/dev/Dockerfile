@@ -23,7 +23,6 @@ RUN apk add --no-cache \
     echo "Europe/Paris" > /etc/timezone && \
     #Composer
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    composer global require hirak/prestissimo --no-plugins --no-scripts && \
     npm install -g yarn && \
     # Reduce layer size
     rm -rf /var/cache/apk/* /tmp/*

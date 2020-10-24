@@ -17,8 +17,17 @@
     "composer/ca-bundle": {
         "version": "1.2.8"
     },
+    "composer/composer": {
+        "version": "2.0.0"
+    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99"
+    },
+    "composer/semver": {
+        "version": "3.2.2"
+    },
+    "composer/spdx-licenses": {
+        "version": "1.5.4"
     },
     "composer/xdebug-handler": {
         "version": "1.4.3"
@@ -206,6 +215,9 @@
             "config/packages/jms_serializer.yaml",
             "config/packages/prod/jms_serializer.yaml"
         ]
+    },
+    "justinrainbow/json-schema": {
+        "version": "5.2.10"
     },
     "knplabs/knp-components": {
         "version": "v2.4.2"
@@ -402,6 +414,12 @@
     },
     "sebastian/diff": {
         "version": "4.0.2"
+    },
+    "seld/jsonlint": {
+        "version": "1.8.2"
+    },
+    "seld/phar-utils": {
+        "version": "1.1.1"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
@@ -840,6 +858,9 @@
     "symplify/autowire-array-parameter": {
         "version": "8.3.4"
     },
+    "symplify/composer-json-manipulator": {
+        "version": "8.3.45"
+    },
     "symplify/console-color-diff": {
         "version": "8.3.4"
     },
@@ -854,6 +875,9 @@
     },
     "symplify/smart-file-system": {
         "version": "8.3.4"
+    },
+    "symplify/symplify-kernel": {
+        "version": "8.3.45"
     },
     "tracy/tracy": {
         "version": "v2.7.5"

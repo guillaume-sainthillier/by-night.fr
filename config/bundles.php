@@ -29,4 +29,5 @@ return [
     WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle::class => ['all' => true],
     OldSound\RabbitMqBundle\OldSoundRabbitMqBundle::class => ['all' => true],
     Symplify\ConsoleColorDiff\ConsoleColorDiffBundle::class => ['dev' => true, 'test' => true],
+    Symplify\ComposerJsonManipulator\ComposerJsonManipulatorBundle::class => ['dev' => true, 'test' => true],
 ];
