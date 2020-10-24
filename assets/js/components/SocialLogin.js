@@ -1,4 +1,4 @@
-import {popup} from "../utils/utils";
+import { popup } from '../utils/utils';
 
 export default class SocialLogin {
     init() {
