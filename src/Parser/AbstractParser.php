@@ -33,6 +33,11 @@ abstract class AbstractParser implements ParserInterface
         $this->reservationsHandler = $reservationsHandler;
     }
 
+    public function getName(): string
+    {
+        return sprintf('%s v%s', static::getParserName(), static::getParserVersion());
+    }
+
     public function publish(array $item): void
     {
         $item['from_data'] = static::getParserName();

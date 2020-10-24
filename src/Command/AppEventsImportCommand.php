@@ -57,7 +57,7 @@ class AppEventsImportCommand extends Command
 
         Monitor::writeln(\sprintf(
             'Lancement de <info>%s</info>',
-            $parser::getParserName()
+            $parser->getName()
         ));
 
         $parser->parse(!$input->getOption('full'));
