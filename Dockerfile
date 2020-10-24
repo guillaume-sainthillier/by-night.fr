@@ -85,7 +85,7 @@ COPY docker/prod/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 RUN mkdir -p /run/php var/cache var/storage/temp var/datas public/build && \
-    APP_ENV=prod composer install --optimize-autoloader --classmap-authoritative --no-interaction --no-ansi --no-dev && \
+    APP_ENV=prod composer install --prefer-dist --optimize-autoloader --classmap-authoritative --no-interaction --no-ansi --no-dev && \
     APP_ENV=prod bin/console cache:clear --no-warmup && \
     APP_ENV=prod bin/console cache:warmup && \
     echo "<?php return [];" > .env.local.php && \
