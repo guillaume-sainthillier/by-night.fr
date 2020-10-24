@@ -56,9 +56,9 @@ class ParserDataCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
         } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$id, $externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
+            return [$externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
         } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$id, $externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
+            return [$externalId, $lastUpdated, $reason, $firewallVersion, $parserVersion];
         }
     }
 }

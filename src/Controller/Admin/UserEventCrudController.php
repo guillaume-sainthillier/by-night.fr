@@ -50,7 +50,7 @@ class UserEventCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_NEW === $pageName) {
             return [$event, $user, $participe, $interet];
         } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$id, $updatedAt, $event, $user, $participe, $interet];
+            return [$updatedAt, $event, $user, $participe, $interet];
         }
     }
 }

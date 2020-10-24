@@ -90,7 +90,7 @@ class UserCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_DETAIL === $pageName) {
             return [$id, $email, $salt, $username, $enabled, $lastLogin, $passwordRequestedAt, $roles, $password, $slug, $firstname, $lastname, $description, $fromLogin, $showSocials, $website, $imageHash, $imageSystemHash, $isVerified, $createdAt, $updatedAt, $imageName, $imageOriginalName, $imageMimeType, $imageSize, $imageDimensions, $imageSystemName, $imageSystemOriginalName, $imageSystemMimeType, $imageSystemSize, $imageSystemDimensions, $oAuth, $userEvents, $city];
         } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$panel1, $lastLogin, $id, $slug, $username, $roles, $email, $firstname, $lastname, $description, $oAuth, $website, $fromLogin, $showSocials, $enabled, $isVerified, $panel2, $imageName, $imageSystemName];
+            return [$panel1, $lastLogin, $slug, $username, $roles, $email, $firstname, $lastname, $description, $oAuth, $website, $fromLogin, $showSocials, $enabled, $isVerified, $panel2, $imageName, $imageSystemName];
         }
     }
 }
