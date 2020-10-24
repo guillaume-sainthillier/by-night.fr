@@ -139,6 +139,8 @@ class Firewall
             'farishams.com', 'ty-segall.com',
             'Online-Streaming', 'DvdRip', 'Online HD Movies', 'FULL Movie Online Free', 'DvdRip-USA',
             '4K.Downloads', 'Super.4K.Videos', 'Free Trial Access',
+            'Streaming Vf', 'vostfr', 'Film Streaming', 'Film Françaais',
+            'Films VF', 'Film gratuit en streaming', 'HD-TV', 'DVD-Rip', 'VOSTFRdotCC!',
             'join the Illuminati', 'anti-breeze financial institution', 'call on +', 'Call Or Whats App On',
             'fritzkalkbrenner.com', 'campusfm.fr', 'polyamour.info', 'parislanuit.fr',
             'Please find the agenda', 'Fore More Details like our Page & Massage us',
