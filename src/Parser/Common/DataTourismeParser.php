@@ -10,13 +10,12 @@
 
 namespace App\Parser\Common;
 
-use RuntimeException;
-use ZipArchive;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTime;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpClient\HttpClient;
@@ -24,6 +23,7 @@ use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use ZipArchive;
 
 class DataTourismeParser extends AbstractParser
 {
@@ -68,7 +68,7 @@ class DataTourismeParser extends AbstractParser
 
         $fs = new Filesystem();
         foreach ($files as $file) {
-            $datas = json_decode(file_get_contents($file->getPathname()), true, 512, JSON_THROW_ON_ERROR);
+            $datas = json_decode(file_get_contents($file->getPathname()), true, 512, \JSON_THROW_ON_ERROR);
             $events = array_filter($this->getInfoEvents($datas));
 
             foreach ($events as $event) {

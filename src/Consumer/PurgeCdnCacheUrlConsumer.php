@@ -10,8 +10,8 @@
 
 namespace App\Consumer;
 
-use Exception;
 use Aws\CloudFront\CloudFrontClient;
+use Exception;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;

@@ -27,7 +27,6 @@ class ParserHistoryCrudController extends AbstractCrudController
         return ParserHistory::class;
     }
 
-
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)

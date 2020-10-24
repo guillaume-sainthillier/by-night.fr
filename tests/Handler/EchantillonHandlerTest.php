@@ -10,7 +10,6 @@
 
 namespace App\Tests\Handler;
 
-use RuntimeException;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Event;
@@ -18,6 +17,7 @@ use App\Entity\Place;
 use App\Entity\User;
 use App\Handler\EchantillonHandler;
 use App\Tests\ContainerTestCase;
+use RuntimeException;
 
 class EchantillonHandlerTest extends ContainerTestCase
 {

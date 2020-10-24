@@ -28,7 +28,7 @@ class WidgetsController extends BaseController
     const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id"="\d+"}, methods={"GET"})
+     * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"}, methods={"GET"})
      * @ReverseProxy(expires="1 hour")
      */
     public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, int $max_id = null): Response

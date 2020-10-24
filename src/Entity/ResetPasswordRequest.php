@@ -25,7 +25,6 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
     use ResetPasswordRequestTrait;
 
     /**
-     * @var User
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
      */
@@ -36,6 +35,7 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
         $this->user = $user;
         $this->initialize($expiresAt, $selector, $hashedToken);
     }
+
     public function getUser(): User
     {
         return $this->user;

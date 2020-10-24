@@ -10,11 +10,11 @@
 
 namespace App\Tests\Utils;
 
-use DateTime;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Tests\ContainerTestCase;
 use App\Utils\Merger;
+use DateTime;
 
 class MergerTest extends ContainerTestCase
 {

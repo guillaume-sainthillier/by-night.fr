@@ -25,7 +25,7 @@ class DateTypeExtension extends AbstractTypeExtension
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $format = fn(Options $options) => 'single_text' === $options['widget'] ? DateType::HTML5_FORMAT : IntlDateFormatter::SHORT;
+        $format = fn (Options $options) => 'single_text' === $options['widget'] ? DateType::HTML5_FORMAT : IntlDateFormatter::SHORT;
 
         $resolver->setDefaults([
             'attr' => ['class' => 'widget_datepicker', 'autocomplete' => 'off'],

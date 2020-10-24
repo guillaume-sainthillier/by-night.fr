@@ -10,12 +10,12 @@
 
 namespace App\Tests\Utils;
 
-use DateTimeImmutable;
 use App\Entity\Event;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Tests\ContainerTestCase;
 use App\Utils\Firewall;
+use DateTimeImmutable;
 
 class FirewallTest extends ContainerTestCase
 {
