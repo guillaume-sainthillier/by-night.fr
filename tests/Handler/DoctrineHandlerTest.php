@@ -17,10 +17,7 @@ use App\Tests\ContainerTestCase;
 
 class DoctrineHandlerTest extends ContainerTestCase
 {
-    /**
-     * @var DoctrineEventHandler
-     */
-    protected $doctrineHandler;
+    protected ?DoctrineEventHandler $doctrineHandler = null;
 
     protected function setUp(): void
     {

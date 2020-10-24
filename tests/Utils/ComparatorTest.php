@@ -19,10 +19,7 @@ use App\Utils\Comparator;
 
 class ComparatorTest extends ContainerTestCase
 {
-    /**
-     * @var Comparator
-     */
-    protected $comparator;
+    protected ?Comparator $comparator = null;
 
     protected function setUp(): void
     {

@@ -10,6 +10,7 @@
 
 namespace App\Tests\Handler;
 
+use RuntimeException;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Event;
@@ -20,10 +21,7 @@ use App\Tests\ContainerTestCase;
 
 class EchantillonHandlerTest extends ContainerTestCase
 {
-    /**
-     * @var EchantillonHandler
-     */
-    private $echantillonHandler;
+    private ?EchantillonHandler $echantillonHandler = null;
 
     protected function setUp(): void
     {
@@ -53,8 +51,8 @@ class EchantillonHandlerTest extends ContainerTestCase
     public function userEventEchantillonsProvider(): iterable
     {
         yield [(new Event())->setUser(new User())];
-        yield [(new Event())->setId(2917)->setUser(new User())];
-        yield [(new Event())->setId(2917)->setExternalId('FB-1537604069794319')->setUser(new User())];
+        yield [(new Event())->setId(2_917)->setUser(new User())];
+        yield [(new Event())->setId(2_917)->setExternalId('FB-1537604069794319')->setUser(new User())];
     }
 
     /**
@@ -64,7 +62,7 @@ class EchantillonHandlerTest extends ContainerTestCase
     {
         $this->echantillonHandler->prefetchPlaceEchantillons([$event]);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->echantillonHandler->prefetchEventEchantillons([$event]);
     }
 
@@ -78,7 +76,7 @@ class EchantillonHandlerTest extends ContainerTestCase
     public function testAddNewEvent()
     {
         $france = (new Country())->setId('FR');
-        $saintLys = (new City())->setId(2978661)->setCountry($france);
+        $saintLys = (new City())->setId(2_978_661)->setCountry($france);
 
         $parsedEvent1 = (new Event())->setExternalId('XXX')->setPlace((new Place())->setCity($saintLys));
         $events = [$parsedEvent1];
@@ -115,7 +113,7 @@ class EchantillonHandlerTest extends ContainerTestCase
     public function testPlacesEchantillons()
     {
         $france = (new Country())->setId('FR');
-        $saintLys = (new City())->setId(2978661)->setCountry($france);
+        $saintLys = (new City())->setId(2_978_661)->setCountry($france);
 
         $eventWithCity = (new Event())->setPlace((new Place())->setCity($saintLys));
         $eventWithExternalId = (new Event())->setPlace((new Place())->setCity($saintLys)->setExternalId('FB-108032189219838'));

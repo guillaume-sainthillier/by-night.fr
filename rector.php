@@ -8,15 +8,24 @@ use Rector\Core\Configuration\Option;
 use Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector;
 use Rector\Php71\Rector\List_\ListToArrayDestructRector;
 use Rector\Set\ValueObject\SetList;
+use Rector\SOLID\Rector\ClassMethod\UseInterfaceOverImplementationInConstructorRector;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters = $containerConfigurator->parameters();
 
-    $parameters->set('auto_import_names', true);
-    $parameters->set('symfony_container_xml_path', __DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml');
-    $parameters->set('paths', [
+    $parameters->set(Option::AUTO_IMPORT_NAMES, true);
+    $parameters->set(Option::SYMFONY_CONTAINER_XML_PATH_PARAMETER, __DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml');
+
+    $parameters->set(Option::AUTOLOAD_PATHS, [
+        __DIR__ . '/vendor/autoload.php',
+        __DIR__ . '/bin/.phpunit/phpunit/vendor/autoload.php',
+    ]);
+
+
+    $parameters->set(Option::PATHS, [
         __DIR__ . '/src',
+        __DIR__ . '/tests',
     ]);
 
     $parameters->set(Option::SETS, [
@@ -35,11 +44,22 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         SetList::SYMFONY_50_TYPES,
     ]);
 
-    $parameters->set('exclude_rectors', [
+    //"Syntax error, unexpected T_MATCH:136".
+    $parameters->set(Option::EXCLUDE_PATHS, [
+        __DIR__ . '/src/SearchRepository/EventElasticaRepository.php',
+    ]);
+
+    $parameters->set(Option::EXCLUDE_RECTORS, [
         CallableThisArrayToAnonymousFunctionRector::class,
         ArrayThisCallToThisMethodCallRector::class,
         RemoveExtraParametersRector::class,
         ListToArrayDestructRector::class,
+    ]);
+
+    $parameters->set('skip', [
+        UseInterfaceOverImplementationInConstructorRector::class => [
+            __DIR__ . '/src/Entity',
+        ]
     ]);
 
     $parameters->set(Option::ENABLE_CACHE, true);

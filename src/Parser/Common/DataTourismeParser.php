@@ -10,6 +10,8 @@
 
 namespace App\Parser\Common;
 
+use RuntimeException;
+use ZipArchive;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
@@ -66,7 +68,7 @@ class DataTourismeParser extends AbstractParser
 
         $fs = new Filesystem();
         foreach ($files as $file) {
-            $datas = json_decode(file_get_contents($file->getPathname()), true);
+            $datas = json_decode(file_get_contents($file->getPathname()), true, 512, JSON_THROW_ON_ERROR);
             $events = array_filter($this->getInfoEvents($datas));
 
             foreach ($events as $event) {
@@ -211,7 +213,7 @@ class DataTourismeParser extends AbstractParser
         $path = ltrim(parse_url($url, \PHP_URL_PATH), '/');
 
         if (!preg_match(self::UUID_REGEX, $path)) {
-            throw new \RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
+            throw new RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
         }
 
         return $path;
@@ -239,10 +241,10 @@ class DataTourismeParser extends AbstractParser
         }
 
         //Extract zip
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         $res = $zip->open($filePath);
         if (true !== $res) {
-            throw new \RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
+            throw new RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
         }
 
         $zip->extractTo($extractDirectory);

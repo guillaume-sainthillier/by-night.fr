@@ -10,6 +10,7 @@
 
 namespace App\Tests\Utils;
 
+use DateTime;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Tests\ContainerTestCase;
@@ -17,10 +18,7 @@ use App\Utils\Merger;
 
 class MergerTest extends ContainerTestCase
 {
-    /**
-     * @var Merger
-     */
-    protected $merger;
+    protected ?Merger $merger = null;
 
     protected function setUp(): void
     {
@@ -56,8 +54,8 @@ class MergerTest extends ContainerTestCase
         $this->assertEquals($persistedEvent->getNom(), 'My Event V2'); //Newest field
         $this->assertEquals($persistedEvent->getDescriptif(), 'Event description V2'); //Newest field
 
-        $databaseDate = new \DateTime('now');
-        $parsedDate = new \DateTime('now');
+        $databaseDate = new DateTime('now');
+        $parsedDate = new DateTime('now');
 
         $persistedEvent = (new Event())->setDateDebut($databaseDate);
         $parsedEvent = (new Event())->setDateDebut($parsedDate);
@@ -65,8 +63,8 @@ class MergerTest extends ContainerTestCase
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
         $this->assertEquals($persistedEvent->getDateDebut(), $databaseDate); //DateTime have not changed (prevents ORM panic)
 
-        $databaseDate = new \DateTime('now');
-        $parsedDate = new \DateTime('tomorrow');
+        $databaseDate = new DateTime('now');
+        $parsedDate = new DateTime('tomorrow');
 
         $persistedEvent = (new Event())->setDateDebut($databaseDate);
         $parsedEvent = (new Event())->setDateDebut($parsedDate);

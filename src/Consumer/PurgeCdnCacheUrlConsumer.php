@@ -10,6 +10,7 @@
 
 namespace App\Consumer;
 
+use Exception;
 use Aws\CloudFront\CloudFrontClient;
 use OldSound\RabbitMqBundle\RabbitMq\BatchConsumerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -53,7 +54,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
             ]);
 
             return ConsumerInterface::MSG_ACK;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'exception' => $e,
                 'extra' => [

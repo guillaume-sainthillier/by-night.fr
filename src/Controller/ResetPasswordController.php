@@ -148,7 +148,7 @@ class ResetPasswordController extends AbstractController
         $this->setCanCheckEmailInSession();
 
         // Do not reveal whether a user account was found or not.
-        if (!$user) {
+        if ($user === null) {
             return $this->redirectToRoute('app_check_email');
         }
 

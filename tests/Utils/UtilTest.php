@@ -15,10 +15,7 @@ use App\Utils\Util;
 
 class UtilTest extends ContainerTestCase
 {
-    /**
-     * @var Util
-     */
-    protected $utils;
+    protected ?Util $utils = null;
 
     protected function setUp(): void
     {
