@@ -41,4 +41,6 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         RemoveExtraParametersRector::class,
         ListToArrayDestructRector::class,
     ]);
+
+    $parameters->set(Option::ENABLE_CACHE, true);
 };
