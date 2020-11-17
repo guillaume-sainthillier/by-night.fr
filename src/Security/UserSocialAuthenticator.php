@@ -87,13 +87,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
             //Avoir duplicate exception
             $initialUsername = $existingUser->getUsername();
             for ($i = 1;; ++$i) {
-                $username = $existingUser->getUsername();
-                $encoding = mb_detect_encoding($username);
-                $usernameCanonical = $encoding
-                    ? mb_convert_case($username, \MB_CASE_LOWER, $encoding)
-                    : mb_convert_case($username, \MB_CASE_LOWER);
-                $existingUser->setUsernameCanonical($usernameCanonical);
-                $persistedUser = $this->userRepository->findOneBy(['usernameCanonical' => $usernameCanonical]);
+                $persistedUser = $this->userRepository->findOneBy(['usernameCanonical' => $existingUser->getUsername()]);
                 if (null === $persistedUser) {
                     break;
                 }
