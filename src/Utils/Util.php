@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2020 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -44,7 +44,7 @@ class Util
             "you're", "you've", 'your', 'yours', 'yourself', 'yourselves',
         ];
 
-        $parts = \array_map(fn($stopWord) => preg_quote($stopWord, '/'), $stopWords);
+        $parts = \array_map(fn ($stopWord) => preg_quote($stopWord, '/'), $stopWords);
         $this->stopWordsRegex = "/\b(" . \implode('|', $parts) . ")\b/imu";
     }
 
@@ -63,7 +63,7 @@ class Util
         if (\is_string($delimiters) && isset($delimiters[0])) { //Strlen > 0
             return trim(\preg_replace('/\s+(' . \preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
         } elseif (\is_array($delimiters) && \count($delimiters) > 0) {
-            return trim(\preg_replace_callback('/\s+([' . \implode('', $delimiters) . '])\s+/u', fn($matches) => $matches[1], $string));
+            return trim(\preg_replace_callback('/\s+([' . \implode('', $delimiters) . '])\s+/u', fn ($matches) => $matches[1], $string));
         }
 
         return trim($string);
@@ -88,6 +88,7 @@ class Util
         if (null === $string) {
             return null;
         }
+
         return u($string)->title(true)->trim();
     }
 
@@ -96,6 +97,7 @@ class Util
         if (null === $string) {
             return null;
         }
+
         return u($string)->lower()->trim();
     }
 
