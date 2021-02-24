@@ -1,10 +1,12 @@
+services:
+    Sentry\Monolog\Handler:
+        arguments:
+            $hub: '@Sentry\State\HubInterface'
+            $level: !php/const Monolog\Logger::ERROR
+            $bubble: false
+
 sentry:
     dsn: '%env(SENTRY_DSN)%'
-    register_error_listener: false
-    monolog:
-        error_handler:
-            enabled: true
-            level: error
     options:
         environment: '%kernel.environment%'
         release: '%env(APP_VERSION)%' #your app version

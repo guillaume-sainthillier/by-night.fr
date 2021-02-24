@@ -316,6 +316,18 @@
     "nikic/php-parser": {
         "version": "v4.9.1"
     },
+    "nyholm/psr7": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "7c0a9352a57376f04f5444e74565102c3a23d0c7"
+        },
+        "files": [
+            "config/packages/nyholm_psr7.yaml"
+        ]
+    },
     "ocramius/package-versions": {
         "version": "1.2.0"
     },
@@ -324,6 +336,9 @@
     },
     "pagerfanta/pagerfanta": {
         "version": "v2.4.1"
+    },
+    "paragonie/constant_time_encoding": {
+        "version": "v2.4.0"
     },
     "paragonie/random_compat": {
         "version": "v9.99.99"
@@ -700,6 +715,18 @@
     },
     "symfony/proxy-manager-bridge": {
         "version": "v5.2.1"
+    },
+    "symfony/psr-http-message-bridge": {
+        "version": "2.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "2.1",
+            "ref": "df8ec1e90aec60d301ec59a22093fc3febedb795"
+        },
+        "files": [
+            "config/packages/psr_http_message_bridge.yaml"
+        ]
     },
     "symfony/routing": {
         "version": "5.1",
