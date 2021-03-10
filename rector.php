@@ -8,7 +8,6 @@ use Rector\Core\Configuration\Option;
 use Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector;
 use Rector\Php71\Rector\List_\ListToArrayDestructRector;
 use Rector\Set\ValueObject\SetList;
-use Rector\SOLID\Rector\ClassMethod\UseInterfaceOverImplementationInConstructorRector;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 return static function (ContainerConfigurator $containerConfigurator): void {
@@ -42,24 +41,16 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         SetList::SYMFONY_44,
         SetList::SYMFONY_50,
         SetList::SYMFONY_50_TYPES,
+        SetList::SYMFONY_52,
     ]);
 
     //"Syntax error, unexpected T_MATCH:136".
-    $parameters->set(Option::EXCLUDE_PATHS, [
+    $parameters->set(Option::SKIP, [
         __DIR__ . '/src/SearchRepository/EventElasticaRepository.php',
-    ]);
-
-    $parameters->set(Option::EXCLUDE_RECTORS, [
         CallableThisArrayToAnonymousFunctionRector::class,
         ArrayThisCallToThisMethodCallRector::class,
         RemoveExtraParametersRector::class,
         ListToArrayDestructRector::class,
-    ]);
-
-    $parameters->set('skip', [
-        UseInterfaceOverImplementationInConstructorRector::class => [
-            __DIR__ . '/src/Entity',
-        ]
     ]);
 
     $parameters->set(Option::ENABLE_CACHE, true);
