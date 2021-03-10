@@ -67,6 +67,7 @@ class App {
                 dsn: parameters.dsn,
                 release: parameters.release,
                 environment: parameters.environment,
+                autoSessionTracking: false,
             });
 
             Sentry.configureScope((scope) => {
