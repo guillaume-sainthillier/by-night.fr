@@ -56,6 +56,9 @@
     "doctrine/dbal": {
         "version": "2.10.4"
     },
+    "doctrine/deprecations": {
+        "version": "v0.5.3"
+    },
     "doctrine/doctrine-bundle": {
         "version": "2.0",
         "recipe": {
@@ -136,12 +139,6 @@
     "erusev/parsedown": {
         "version": "1.7.4"
     },
-    "ezimuel/guzzlestreams": {
-        "version": "3.0.1"
-    },
-    "ezimuel/ringphp": {
-        "version": "1.1.2"
-    },
     "facebook/graph-sdk": {
         "version": "5.7.0"
     },
@@ -189,6 +186,12 @@
     },
     "guzzlehttp/psr7": {
         "version": "1.6.1"
+    },
+    "guzzlehttp/ringphp": {
+        "version": "1.1.1"
+    },
+    "guzzlehttp/streams": {
+        "version": "3.0.0"
     },
     "http-interop/http-factory-guzzle": {
         "version": "1.0.0"
@@ -905,6 +908,9 @@
     },
     "symplify/rule-doc-generator": {
         "version": "v9.2.6"
+    },
+    "symplify/rule-doc-generator-contracts": {
+        "version": "v9.3.1"
     },
     "symplify/set-config-resolver": {
         "version": "8.3.4"
