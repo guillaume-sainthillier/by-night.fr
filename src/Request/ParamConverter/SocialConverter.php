@@ -34,7 +34,7 @@ class SocialConverter implements ParamConverterInterface
             throw new InvalidArgumentException('Route attribute is missing');
         }
 
-        $options = \array_merge([
+        $options = array_merge([
             'default_facebook_name' => SocialProvider::FACEBOOK,
         ], $configuration->getOptions());
 

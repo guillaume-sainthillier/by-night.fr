@@ -14,39 +14,39 @@ use LogicException;
 
 class Reject
 {
-    const VALID = 1;
+    public const VALID = 1;
 
-    const BAD_EVENT_NAME = 2;
+    public const BAD_EVENT_NAME = 2;
 
-    const BAD_EVENT_DATE = 4;
+    public const BAD_EVENT_DATE = 4;
 
-    const BAD_EVENT_DATE_INTERVAL = 8;
+    public const BAD_EVENT_DATE_INTERVAL = 8;
 
-    const SPAM_EVENT_DESCRIPTION = 16;
+    public const SPAM_EVENT_DESCRIPTION = 16;
 
-    const BAD_EVENT_DESCRIPTION = 32;
+    public const BAD_EVENT_DESCRIPTION = 32;
 
-    const NO_NEED_TO_UPDATE = 64;
+    public const NO_NEED_TO_UPDATE = 64;
 
-    const NO_PLACE_PROVIDED = 128;
+    public const NO_PLACE_PROVIDED = 128;
 
-    const NO_PLACE_LOCATION_PROVIDED = 256;
+    public const NO_PLACE_LOCATION_PROVIDED = 256;
 
-    const BAD_PLACE_NAME = 512;
+    public const BAD_PLACE_NAME = 512;
 
-    const BAD_PLACE_LOCATION = 1_024;
+    public const BAD_PLACE_LOCATION = 1_024;
 
-    const BAD_PLACE_CITY_NAME = 2_048;
+    public const BAD_PLACE_CITY_NAME = 2_048;
 
-    const BAD_PLACE_CITY_POSTAL_CODE = 4_096;
+    public const BAD_PLACE_CITY_POSTAL_CODE = 4_096;
 
-    const BAD_USER = 8_192;
+    public const BAD_USER = 8_192;
 
-    const EVENT_DELETED = 16_384;
+    public const EVENT_DELETED = 16_384;
 
-    const NO_COUNTRY_PROVIDED = 131_072;
+    public const NO_COUNTRY_PROVIDED = 131_072;
 
-    const BAD_COUNTRY = 262_144;
+    public const BAD_COUNTRY = 262_144;
 
     protected int $reason = self::VALID;
 

@@ -40,8 +40,8 @@ class ToulouseParser extends AbstractParser
      */
     private function downloadCSV()
     {
-        $data = \file_get_contents(self::DOWNLOAD_URL);
-        $path_file = \sprintf('%s/data_manifestations/agenda.csv', \sys_get_temp_dir());
+        $data = file_get_contents(self::DOWNLOAD_URL);
+        $path_file = sprintf('%s/data_manifestations/agenda.csv', sys_get_temp_dir());
         $fs = new Filesystem();
         $fs->dumpFile($path_file, $data);
 
@@ -50,11 +50,11 @@ class ToulouseParser extends AbstractParser
 
     private function parseCSV(string $fichier): void
     {
-        $fic = \fopen($fichier, 'r');
-        \fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
+        $fic = fopen($fichier, 'r');
+        fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
 
-        while ($cursor = \fgetcsv($fic, 0, ';', '"', '"')) {
-            $tab = \array_map(fn ($e) => Encoding::toUTF8($e), $cursor);
+        while ($cursor = fgetcsv($fic, 0, ';', '"', '"')) {
+            $tab = array_map(fn ($e) => Encoding::toUTF8($e), $cursor);
 
             if (!$tab[1] && !$tab[2]) {
                 continue;

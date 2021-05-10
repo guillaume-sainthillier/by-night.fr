@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class WidgetsController extends BaseController
 {
-    const WIDGET_ITEM_LIMIT = 7;
+    public const WIDGET_ITEM_LIMIT = 7;
 
     /**
      * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_membres", methods={"GET"})

@@ -20,7 +20,7 @@ use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
 class EventArchivator
 {
-    const ITEMS_PER_TRANSACTION = 5_000;
+    public const ITEMS_PER_TRANSACTION = 5_000;
 
     private ObjectPersisterInterface $objectPersister;
 
@@ -45,7 +45,7 @@ class EventArchivator
         $qb = $repo->findNonIndexablesBuilder();
         $nbObjects = $this->countObjects($qb);
 
-        $nbTransactions = \ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
+        $nbTransactions = ceil($nbObjects / self::ITEMS_PER_TRANSACTION);
         Monitor::createProgressBar($nbTransactions);
         for ($i = 0; $i < $nbTransactions; ++$i) {
             $events = $qb

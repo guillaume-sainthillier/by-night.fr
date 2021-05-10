@@ -51,7 +51,7 @@ class UserUrlCheckSubscriber implements EventSubscriberInterface
                 || (null !== $e->getUserSlug() && $user->getSlug() !== $e->getUserSlug())
                 || (null !== $e->getUserUsername() && $user->getUsername() !== $e->getUserUsername())
             )) {
-            $routeParams = \array_merge([
+            $routeParams = array_merge([
                 'id' => $user->getId(),
                 'slug' => $user->getSlug(),
             ], $e->getRouteParams());

@@ -44,26 +44,26 @@ class Util
             "you're", "you've", 'your', 'yours', 'yourself', 'yourselves',
         ];
 
-        $parts = \array_map(fn ($stopWord) => preg_quote($stopWord, '/'), $stopWords);
-        $this->stopWordsRegex = "/\b(" . \implode('|', $parts) . ")\b/imu";
+        $parts = array_map(fn ($stopWord) => preg_quote($stopWord, '/'), $stopWords);
+        $this->stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
     }
 
     public function replaceNonNumericChars($string)
     {
-        return trim(\preg_replace('/[^\d.-]/u', '', $string));
+        return trim(preg_replace('/[^\d.-]/u', '', $string));
     }
 
     public function replaceNonAlphanumericChars($string)
     {
-        return trim(\preg_replace('/[^A-Za-z0-9 ]/u', '', $string));
+        return trim(preg_replace('/[^A-Za-z0-9 ]/u', '', $string));
     }
 
     public function deleteSpaceBetween($string, $delimiters = '-')
     {
         if (\is_string($delimiters) && isset($delimiters[0])) { //Strlen > 0
-            return trim(\preg_replace('/\s+(' . \preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
+            return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
         } elseif (\is_array($delimiters) && \count($delimiters) > 0) {
-            return trim(\preg_replace_callback('/\s+([' . \implode('', $delimiters) . '])\s+/u', fn ($matches) => $matches[1], $string));
+            return trim(preg_replace_callback('/\s+([' . implode('', $delimiters) . '])\s+/u', fn ($matches) => $matches[1], $string));
         }
 
         return trim($string);
@@ -71,7 +71,7 @@ class Util
 
     public function deleteStopWords($string)
     {
-        return trim(\preg_replace($this->stopWordsRegex, ' ', $string));
+        return trim(preg_replace($this->stopWordsRegex, ' ', $string));
     }
 
     public function deleteMultipleSpaces(?string $string)
@@ -111,6 +111,6 @@ class Util
             'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'þ' => 'b', 'ÿ' => 'y',
         ];
 
-        return trim(\strtr($string, $unwanted_array));
+        return trim(strtr($string, $unwanted_array));
     }
 }

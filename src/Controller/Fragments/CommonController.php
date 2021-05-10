@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommonController extends TBNController
 {
-    const LIFE_TIME_CACHE = 86_400;
+    public const LIFE_TIME_CACHE = 86_400;
 
     /**
      * @Route("/_private/header/{id<%patterns.id%>}", name="app_private_header", methods={"GET"})

@@ -28,7 +28,7 @@ class TweetExtension extends Extension
         $hashified = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
         $mentionified = '/(^|[\n\s])@([^\s"\t\n\r<:]*)/is';
 
-        return \preg_replace(
+        return preg_replace(
             [
                 $linkified,
                 $hashified,

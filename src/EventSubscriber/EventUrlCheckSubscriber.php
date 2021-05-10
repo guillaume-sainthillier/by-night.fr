@@ -51,7 +51,7 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
                 || $event->getSlug() !== $e->getEventSlug()
                 || $event->getLocationSlug() !== $e->getLocationSlug()
             )) {
-            $routeParams = \array_merge([
+            $routeParams = array_merge([
                 'id' => $event->getId(),
                 'slug' => $event->getSlug(),
                 'location' => $event->getLocationSlug(),

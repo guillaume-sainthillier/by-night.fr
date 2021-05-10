@@ -31,7 +31,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class AgendaController extends BaseController
 {
-    const EVENT_PER_PAGE = 15;
+    public const EVENT_PER_PAGE = 15;
 
     /**
      * @Route("/agenda/{page<%patterns.page%>}", name="app_agenda_agenda", methods={"GET"})
@@ -169,15 +169,15 @@ class AgendaController extends BaseController
             $type_manifestation = [];
 
             foreach ($events_type_manifestation as $event_type_manifestation) {
-                $types_manifestation = \explode(',', $event_type_manifestation);
+                $types_manifestation = explode(',', $event_type_manifestation);
                 foreach ($types_manifestation as $type) {
-                    $type = \array_map('trim', \explode('//', $type))[0];
+                    $type = array_map('trim', explode('//', $type))[0];
                     if (!\in_array($type, $type_manifestation, true) && '' !== $type) {
                         $type_manifestation[$type] = $type;
                     }
                 }
             }
-            \ksort($type_manifestation);
+            ksort($type_manifestation);
             $item->expiresAfter(24 * 60 * 60);
 
             return $type_manifestation;

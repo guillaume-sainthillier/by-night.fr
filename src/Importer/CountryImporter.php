@@ -58,11 +58,11 @@ class CountryImporter
                 ->setCapital($capital)
                 ->setLocale($locale);
 
-            Monitor::writeln(\sprintf('Création du pays <info>%s (%s)</info>', $id, $country->getName()));
+            Monitor::writeln(sprintf('Création du pays <info>%s (%s)</info>', $id, $country->getName()));
             $this->em->persist($country);
             $this->em->flush();
         } else {
-            Monitor::writeln(\sprintf('Mise à jour du pays <info>%s (%s)</info>', $id, $country->getName()));
+            Monitor::writeln(sprintf('Mise à jour du pays <info>%s (%s)</info>', $id, $country->getName()));
         }
 
         $this->createAdminZones($country);
@@ -79,13 +79,13 @@ class CountryImporter
             $country->getId()
         );
 
-        $fd = \fopen($filepath, 'r');
+        $fd = fopen($filepath, 'r');
         if (false === $fd) {
             return;
         }
 
         $i = 0;
-        while (false !== ($data = \fgetcsv($fd, 3_000, "\t"))) {
+        while (false !== ($data = fgetcsv($fd, 3_000, "\t"))) {
             if (!\in_array($data[7], ['ADM1', 'ADM2']) && 'P' !== $data[6]) {
                 continue;
             }
@@ -125,7 +125,7 @@ class CountryImporter
             }
         }
         $this->em->flush();
-        \fclose($fd);
+        fclose($fd);
     }
 
     private function downloadAndExtractGeoname($zipUrl, $filename, $countryId)
@@ -162,7 +162,7 @@ class CountryImporter
         );
 
         if (!$fs->exists($filepath)) {
-            throw new IOException(\sprintf('File %s does not exists', $filepath));
+            throw new IOException(sprintf('File %s does not exists', $filepath));
         }
 
         return $filepath;
@@ -174,7 +174,7 @@ class CountryImporter
             return $code;
         }
 
-        $code = \ltrim($code, '0');
+        $code = ltrim($code, '0');
 
         if ('' === $code) {
             return null;
@@ -188,7 +188,7 @@ class CountryImporter
         switch ($entity->getCountry()->getId()) {
             case 'FR':
                 if ($entity instanceof AdminZone2) {
-                    $entity->setName(\str_replace([
+                    $entity->setName(str_replace([
                             "Département d'",
                             "Département de l'",
                             'Département de la ',
@@ -220,13 +220,13 @@ class CountryImporter
             ->setParameter('country', $country->getId())
             ->execute();
 
-        $fd = \fopen($filepath, 'r');
+        $fd = fopen($filepath, 'r');
         if (false === $fd) {
             return;
         }
 
         $i = 0;
-        while (false !== ($data = \fgetcsv($fd, 1_000, "\t"))) {
+        while (false !== ($data = fgetcsv($fd, 1_000, "\t"))) {
             if (!$data[4] || !$data[6]) {
                 continue;
             }
@@ -256,7 +256,7 @@ class CountryImporter
             }
         }
         $this->em->flush();
-        \fclose($fd);
+        fclose($fd);
     }
 
     /**
@@ -387,7 +387,7 @@ class CountryImporter
                         AND zc.country_id = c.country_id
                     )
                     SET zc.parent_id = c.id
-                    WHERE zc.parent_id IS NULL 
+                    WHERE zc.parent_id IS NULL
                     AND zc.country_id = :country
                 ', ['country' => $country->getId()]);
                 $this->manualAssociation([
@@ -426,13 +426,13 @@ class CountryImporter
                     'mont-de-lenclus' => 'orroir',
                 ], $country);
                 $this->em->getConnection()->executeUpdate("
-                    UPDATE zip_city zc 
-                    SET zc.parent_id = ( 
-                      SELECT id 
-                      FROM admin_zone c 
+                    UPDATE zip_city zc
+                    SET zc.parent_id = (
+                      SELECT id
+                      FROM admin_zone c
                       WHERE c.slug = 'brussels'
-                    ) 
-                    WHERE zc.parent_id IS NULL 
+                    )
+                    WHERE zc.parent_id IS NULL
                     AND admin1_code = 'BRU'
                     AND admin2_code = 'BRU'
                     AND zc.country_id = 'BE'
@@ -495,19 +495,19 @@ class CountryImporter
     private function manualAssociation(array $associations, Country $country)
     {
         foreach ($associations as $zipSlug => $citySlug) {
-            if (\is_numeric($zipSlug)) {
+            if (is_numeric($zipSlug)) {
                 $zipSlug = $citySlug;
             }
 
             $this->em->getConnection()->executeUpdate('
-                UPDATE zip_city zc 
-                SET zc.parent_id = ( 
-                  SELECT id 
-                  FROM admin_zone c 
-                  WHERE c.slug = :city_slug 
+                UPDATE zip_city zc
+                SET zc.parent_id = (
+                  SELECT id
+                  FROM admin_zone c
+                  WHERE c.slug = :city_slug
                     AND c.country_id = zc.country_id
-                ) 
-                WHERE zc.parent_id IS NULL 
+                )
+                WHERE zc.parent_id IS NULL
                 AND zc.slug LIKE :zip_slug
                 AND zc.country_id = :country
             ', [

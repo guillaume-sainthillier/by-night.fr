@@ -14,12 +14,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SocialProvider
 {
-    const FACEBOOK = 'facebook';
-    const FACEBOOK_ADMIN = 'facebook_admin';
-    const TWITTER = 'twitter';
-    const TWITTER_ADMIN = 'twitter_admin';
-    const GOOGLE = 'google';
-    const GOOGLE_ADMIN = 'google_admin';
+    public const FACEBOOK = 'facebook';
+    public const FACEBOOK_ADMIN = 'facebook_admin';
+    public const TWITTER = 'twitter';
+    public const TWITTER_ADMIN = 'twitter_admin';
+    public const GOOGLE = 'google';
+    public const GOOGLE_ADMIN = 'google_admin';
 
     private array $socials;
 
@@ -46,7 +46,7 @@ class SocialProvider
         }
 
         if (!isset($this->socials[$name])) {
-            throw new NotFoundHttpException(\sprintf('Unable to find social service with id "%s"', $name));
+            throw new NotFoundHttpException(sprintf('Unable to find social service with id "%s"', $name));
         }
 
         return $this->socials[$name];

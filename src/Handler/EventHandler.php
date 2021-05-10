@@ -98,7 +98,7 @@ class EventHandler
     {
         $tempFileBasename = ($event->getId() ?: uniqid());
         $tempFilePath = $this->tempPath . \DIRECTORY_SEPARATOR . $tempFileBasename;
-        $octets = \file_put_contents($tempFilePath, $content);
+        $octets = file_put_contents($tempFilePath, $content);
         if (0 === $octets) {
             unlink($tempFilePath);
             $event->setImageSystemFile(null);

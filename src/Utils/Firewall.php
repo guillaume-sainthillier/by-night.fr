@@ -18,7 +18,7 @@ use DateTimeInterface;
 
 class Firewall
 {
-    const VERSION = '1.1';
+    public const VERSION = '1.1';
 
     /** @var ParserData[] */
     private array $parserDatas;
@@ -128,7 +128,7 @@ class Firewall
 
     public function checkMinLengthValidity($str, $min)
     {
-        return isset(\trim($str)[$min]);
+        return isset(trim($str)[$min]);
     }
 
     private function isSPAMContent($content)
@@ -148,7 +148,7 @@ class Firewall
         ];
 
         foreach ($black_list as $black_word) {
-            if (\mb_strstr($content, $black_word)) {
+            if (mb_strstr($content, $black_word)) {
                 return true;
             }
         }
@@ -203,7 +203,7 @@ class Firewall
 
     private function checkLengthValidity($str, $length)
     {
-        return \mb_strlen($this->comparator->sanitize($str)) === $length;
+        return mb_strlen($this->comparator->sanitize($str)) === $length;
     }
 
     public function filterEventLocation(Event $event)

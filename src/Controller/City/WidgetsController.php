@@ -24,8 +24,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class WidgetsController extends BaseController
 {
-    const TWEET_LIMIT = 25;
-    const WIDGET_ITEM_LIMIT = 7;
+    public const TWEET_LIMIT = 25;
+    public const WIDGET_ITEM_LIMIT = 7;
 
     /**
      * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"}, methods={"GET"})
@@ -37,7 +37,7 @@ class WidgetsController extends BaseController
 
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
-            \parse_str($results['search_metadata']['next_results'], $infos);
+            parse_str($results['search_metadata']['next_results'], $infos);
 
             if (isset($infos['?max_id'])) {
                 $nextLink = $this->generateUrl('app_agenda_tweeter_feed', [

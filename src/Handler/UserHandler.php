@@ -78,7 +78,7 @@ class UserHandler
 
             $filename = $user->getId() . '.' . $ext;
             $tempPath = $this->tempPath . \DIRECTORY_SEPARATOR . $filename;
-            $octets = \file_put_contents($tempPath, $content);
+            $octets = file_put_contents($tempPath, $content);
 
             if ($octets > 0) {
                 $file = new DeletableFile($tempPath, $filename, null, null, true);

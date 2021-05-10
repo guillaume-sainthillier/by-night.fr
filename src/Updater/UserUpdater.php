@@ -40,7 +40,7 @@ class UserUpdater extends Updater
         $repo = $this->userRepository;
         $count = $repo->getUserFbIdsCount($from);
 
-        $nbBatchs = \ceil($count / self::PAGINATION_SIZE);
+        $nbBatchs = ceil($count / self::PAGINATION_SIZE);
         Monitor::createProgressBar($nbBatchs);
 
         for ($i = 1; $i <= $nbBatchs; ++$i) {

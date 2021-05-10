@@ -23,11 +23,11 @@ use FOS\ElasticaBundle\Repository;
 
 class EventElasticaRepository extends Repository
 {
-    const EXPO_TERMS = 'exposition, salon';
-    const CONCERT_TERMS = 'concert, musique, artiste';
-    const FAMILY_TERMS = 'famille, enfants';
-    const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
-    const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
+    public const EXPO_TERMS = 'exposition, salon';
+    public const CONCERT_TERMS = 'concert, musique, artiste';
+    public const FAMILY_TERMS = 'famille, enfants';
+    public const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
+    public const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
     public function findWithSearch(SearchEvent $search, bool $sortByScore = false)
     {
@@ -134,7 +134,7 @@ class EventElasticaRepository extends Repository
 
         if ([] !== $search->getTypeManifestation()) {
             $communeTypeManifestationQuery = new Match();
-            $communeTypeManifestationQuery->setField('type_manifestation', \implode(' ', $search->getTypeManifestation()));
+            $communeTypeManifestationQuery->setField('type_manifestation', implode(' ', $search->getTypeManifestation()));
             $mainQuery->addMust($communeTypeManifestationQuery);
         }
 

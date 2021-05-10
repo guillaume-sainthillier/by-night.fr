@@ -29,7 +29,7 @@ class SearchController extends AbstractController
      */
     public function search(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm): Response
     {
-        $q = \trim($request->get('q', null));
+        $q = trim($request->get('q', null));
         $type = $request->get('type', null);
         $page = (int) ($request->get('page', 1));
         $maxItems = 20;

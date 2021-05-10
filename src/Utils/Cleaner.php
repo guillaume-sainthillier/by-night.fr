@@ -34,16 +34,16 @@ class Cleaner
             ->setPhoneContacts($event->getPhoneContacts() ?: null)
             ->setWebsiteContacts($event->getWebsiteContacts() ?: null)
             ->setMailContacts($event->getMailContacts() ?: null)
-            ->setAdresse(\mb_substr($event->getAdresse(), 0, 255) ?: null)
-            ->setCategorieManifestation(\mb_substr($event->getCategorieManifestation(), 0, 128) ?: null)
-            ->setThemeManifestation(\mb_substr($event->getThemeManifestation(), 0, 128) ?: null)
-            ->setTypeManifestation(\mb_substr($event->getTypeManifestation(), 0, 128) ?: null)
-            ->setHoraires(\mb_substr($event->getHoraires(), 0, 255) ?: null);
+            ->setAdresse(mb_substr($event->getAdresse(), 0, 255) ?: null)
+            ->setCategorieManifestation(mb_substr($event->getCategorieManifestation(), 0, 128) ?: null)
+            ->setThemeManifestation(mb_substr($event->getThemeManifestation(), 0, 128) ?: null)
+            ->setTypeManifestation(mb_substr($event->getTypeManifestation(), 0, 128) ?: null)
+            ->setHoraires(mb_substr($event->getHoraires(), 0, 255) ?: null);
     }
 
     private function clean($string)
     {
-        return \trim($string);
+        return trim($string);
     }
 
     public function cleanPlace(Place $place)
@@ -67,7 +67,7 @@ class Cleaner
         $step2 = $this->util->deleteMultipleSpaces($step1);
         $step3 = $this->util->deleteSpaceBetween($step2, $delimiters);
 
-        return \trim($step3);
+        return trim($step3);
     }
 
     private function cleanPostalString($string)

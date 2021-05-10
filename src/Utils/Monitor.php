@@ -65,7 +65,7 @@ class Monitor
             return;
         }
         $datas = $datas[0] ?? [$datas];
-        $headers = \array_keys($datas[0]);
+        $headers = array_keys($datas[0]);
 
         (new Table(self::$output))
             ->setHeaders($headers)
@@ -86,7 +86,7 @@ class Monitor
             ]);
 
         $stats = self::getStats();
-        \ksort($stats, \SORT_STRING);
+        ksort($stats, \SORT_STRING);
         foreach ($stats as $key => $stat) {
             $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['avg_memory']]);
         }
@@ -116,15 +116,15 @@ class Monitor
                 'total' => 0,
             ];
         }
-        $somme = \array_sum($stat['time']);
-        $sommeMemory = \array_sum($stat['memory']);
+        $somme = array_sum($stat['time']);
+        $sommeMemory = array_sum($stat['memory']);
 
         return [
             'nb' => $nbItems,
             'total' => self::formatDuration($somme),
             'avg' => $nbItems > 1 ? self::formatDuration($somme / $nbItems) : null,
-            'min' => $nbItems > 1 ? self::formatDuration(\min($stat['time'])) : null,
-            'max' => $nbItems > 1 ? self::formatDuration(\max($stat['time'])) : null,
+            'min' => $nbItems > 1 ? self::formatDuration(min($stat['time'])) : null,
+            'max' => $nbItems > 1 ? self::formatDuration(max($stat['time'])) : null,
             'avg_memory' => $nbItems > 1 ? self::formatMemory($sommeMemory / $nbItems) : null,
         ];
     }

@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
-    const EVENT_PER_CATEGORY = 7;
+    public const EVENT_PER_CATEGORY = 7;
 
     /**
      * @Route("/", name="app_main_index", methods={"GET", "POST"})

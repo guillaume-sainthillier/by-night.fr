@@ -50,12 +50,12 @@ class AppEventsImportCommand extends Command
     {
         $parserName = $input->getArgument('parser');
         if (empty($this->parsers[$parserName])) {
-            throw new LogicException(\sprintf('Le parser "%s" est introuvable', $parserName));
+            throw new LogicException(sprintf('Le parser "%s" est introuvable', $parserName));
         }
 
         $parser = $this->parsers[$parserName];
 
-        Monitor::writeln(\sprintf(
+        Monitor::writeln(sprintf(
             'Lancement de <info>%s</info>',
             $parser->getName()
         ));
@@ -63,7 +63,7 @@ class AppEventsImportCommand extends Command
         $parser->parse(!$input->getOption('full'));
         $nbEvents = $parser->getParsedEvents();
 
-        Monitor::writeln(\sprintf(
+        Monitor::writeln(sprintf(
             '<info>%d</info> événements parsés',
             $nbEvents
         ));

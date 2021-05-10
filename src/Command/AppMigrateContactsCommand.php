@@ -50,8 +50,8 @@ class AppMigrateContactsCommand extends Command
         $qb = $this->eventRepository
             ->createSimpleQueryBuilder('e')
             ->where('
-                e.reservationInternet IS NOT NULL 
-                OR e.reservationTelephone IS NOT NULL 
+                e.reservationInternet IS NOT NULL
+                OR e.reservationTelephone IS NOT NULL
                 OR e.reservationEmail IS NOT NULL
             ');
 

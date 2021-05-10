@@ -80,7 +80,7 @@ class CityRepository extends ServiceEntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        \shuffle($results);
+        shuffle($results);
 
         return \array_slice($results, 0, $limit);
     }
@@ -88,13 +88,13 @@ class CityRepository extends ServiceEntityRepository
     public function findByName($city, $country = null)
     {
         $cities = [];
-        $city = \preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-        $city = \str_replace('’', "'", $city);
+        $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
+        $city = str_replace('’', "'", $city);
         $cities[] = $city;
-        $cities[] = \str_replace(' ', '-', $city);
-        $cities[] = \str_replace('-', ' ', $city);
-        $cities[] = \str_replace("'", '', $city);
-        $cities = \array_unique($cities);
+        $cities[] = str_replace(' ', '-', $city);
+        $cities[] = str_replace('-', ' ', $city);
+        $cities[] = str_replace("'", '', $city);
+        $cities = array_unique($cities);
 
         $qb = parent::createQueryBuilder('c')
             ->where('c.name IN (:cities)')

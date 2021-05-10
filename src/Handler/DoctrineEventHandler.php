@@ -25,7 +25,7 @@ use Exception;
 
 class DoctrineEventHandler
 {
-    const BATCH_SIZE = 50;
+    public const BATCH_SIZE = 50;
 
     private EntityManagerInterface $em;
 
@@ -131,7 +131,7 @@ class DoctrineEventHandler
             }
         }
 
-        return \array_keys($ids);
+        return array_keys($ids);
     }
 
     /**
@@ -279,7 +279,7 @@ class DoctrineEventHandler
         $explorations = $this->firewall->getParserDatas();
 
         $batchSize = 500;
-        $nbBatches = \ceil(\count($explorations) / $batchSize);
+        $nbBatches = ceil(\count($explorations) / $batchSize);
 
         for ($i = 0; $i < $nbBatches; ++$i) {
             $currentExplorations = \array_slice($explorations, $i * $batchSize, $batchSize);
@@ -302,7 +302,7 @@ class DoctrineEventHandler
      */
     private function getAllowedEvents(array $events)
     {
-        return \array_filter($events, fn (Event $event) => $this->firewall->isValid($event));
+        return array_filter($events, fn (Event $event) => $this->firewall->isValid($event));
     }
 
     /**
@@ -312,7 +312,7 @@ class DoctrineEventHandler
      */
     private function getNotAllowedEvents(array $events)
     {
-        return \array_filter($events, fn ($event) => !$this->firewall->isValid($event));
+        return array_filter($events, fn ($event) => !$this->firewall->isValid($event));
     }
 
     /**
@@ -402,7 +402,7 @@ class DoctrineEventHandler
         }
 
         foreach ($chunks as $i => $chunk) {
-            $chunks[$i] = \array_chunk($chunk, self::BATCH_SIZE, true);
+            $chunks[$i] = array_chunk($chunk, self::BATCH_SIZE, true);
         }
 
         return $chunks;
@@ -415,7 +415,7 @@ class DoctrineEventHandler
     {
         $flat = [];
         foreach ($chunks as $chunk) {
-            $flat = \array_merge($flat, $chunk);
+            $flat = array_merge($flat, $chunk);
         }
 
         return $flat;
@@ -426,7 +426,7 @@ class DoctrineEventHandler
         try {
             $this->em->flush();
         } catch (Exception $e) {
-            Monitor::writeln(\sprintf(
+            Monitor::writeln(sprintf(
                 '<error>%s</error>',
                 $e->getMessage()
             ));

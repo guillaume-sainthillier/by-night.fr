@@ -29,7 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CityController extends AbstractController
 {
-    const MAX_RESULTS = 7;
+    public const MAX_RESULTS = 7;
 
     /**
      * @Route("/villes", name="app_api_city", methods={"GET"})
@@ -38,7 +38,7 @@ class CityController extends AbstractController
      */
     public function cityAutocomplete(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager): Response
     {
-        $term = \trim($request->get('q'));
+        $term = trim($request->get('q'));
         if ('' === $term) {
             $results = [];
         } else {

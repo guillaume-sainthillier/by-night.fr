@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ReplyController extends BaseController
 {
-    const REPLIES_PER_PAGE = 5;
+    public const REPLIES_PER_PAGE = 5;
 
     /**
      * @Route("/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}", name="app_comment_reponse_list", methods={"GET"})

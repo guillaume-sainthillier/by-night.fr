@@ -16,21 +16,21 @@ use stdClass;
 
 class Merger
 {
-    const MERGE_LEFT = 'do_merge_left';
+    public const MERGE_LEFT = 'do_merge_left';
 
-    const MERGE_RIGHT = 'do_merge_right';
+    public const MERGE_RIGHT = 'do_merge_right';
 
-    const MERGE_MAX = 'do_merge_max';
+    public const MERGE_MAX = 'do_merge_max';
 
-    const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
+    public const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
 
-    const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
+    public const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
 
-    const FORCE_MERGE_LEFT = 'do_force_merge_left';
+    public const FORCE_MERGE_LEFT = 'do_force_merge_left';
 
-    const FORCE_MERGE_RIGHT = 'do_force_merge_right';
+    public const FORCE_MERGE_RIGHT = 'do_force_merge_right';
 
-    const DEFAULT_MERGE = self::MERGE_RIGHT;
+    public const DEFAULT_MERGE = self::MERGE_RIGHT;
 
     private Comparator $comparator;
 
@@ -87,7 +87,7 @@ class Merger
         }
 
         foreach ($fields as $type => $field) {
-            if (\is_numeric($type)) {
+            if (is_numeric($type)) {
                 $type = self::DEFAULT_MERGE;
             } else {
                 $oldField = $field;
@@ -110,7 +110,7 @@ class Merger
 
     private function skakeToCamel($str)
     {
-        return \str_replace(' ', '', \ucwords(\str_replace('_', ' ', $str)));
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));
     }
 
     private function getBestContent($valueA, $valueB, $mergeType)
@@ -137,7 +137,7 @@ class Merger
 
                 return $this->getBestContent($valueA, $valueB, self::MERGE_RIGHT_IF_DIFFERENT);
             case self::MERGE_MAX:
-                return \max($valueA, $valueB);
+                return max($valueA, $valueB);
         }
 
         if (\is_bool($valueA)) {

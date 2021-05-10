@@ -278,12 +278,12 @@ class User implements UserInterface, Serializable
 
     public function getUsername()
     {
-        return \ucfirst($this->username);
+        return ucfirst($this->username);
     }
 
     public function __toString()
     {
-        return \sprintf('%s (#%s)', $this->username, $this->id);
+        return sprintf('%s (#%s)', $this->username, $this->id);
     }
 
     /**
@@ -511,24 +511,24 @@ class User implements UserInterface, Serializable
         return $this;
     }
 
-    public function getImage(): \Vich\UploaderBundle\Entity\File
+    public function getImage(): EmbeddedFile
     {
         return $this->image;
     }
 
-    public function setImage(\Vich\UploaderBundle\Entity\File $image): self
+    public function setImage(EmbeddedFile $image): self
     {
         $this->image = $image;
 
         return $this;
     }
 
-    public function getImageSystem(): \Vich\UploaderBundle\Entity\File
+    public function getImageSystem(): EmbeddedFile
     {
         return $this->imageSystem;
     }
 
-    public function setImageSystem(\Vich\UploaderBundle\Entity\File $imageSystem): self
+    public function setImageSystem(EmbeddedFile $imageSystem): self
     {
         $this->imageSystem = $imageSystem;
 

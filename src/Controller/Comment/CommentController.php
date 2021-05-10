@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommentController extends BaseController
 {
-    const COMMENTS_PER_PAGE = 10;
+    public const COMMENTS_PER_PAGE = 10;
 
     /**
      * @Route("/form/{id<%patterns.id%>}", name="app_comment_form", methods={"GET"})

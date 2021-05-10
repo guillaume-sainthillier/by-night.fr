@@ -76,7 +76,7 @@ class LocationConverter implements ParamConverterInterface
         }
 
         if (!$entity) {
-            throw new NotFoundHttpException(\sprintf("La location '%s' est introuvable", $locationSlug));
+            throw new NotFoundHttpException(sprintf("La location '%s' est introuvable", $locationSlug));
         }
 
         $request->attributes->set($configuration->getName(), $location);

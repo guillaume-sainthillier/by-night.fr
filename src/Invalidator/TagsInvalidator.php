@@ -51,7 +51,7 @@ class TagsInvalidator
 
     public static function getCityTag(City $city)
     {
-        return \sprintf('city-%d', $city->getId());
+        return sprintf('city-%d', $city->getId());
     }
 
     public function addUser(User $user)
@@ -61,7 +61,7 @@ class TagsInvalidator
 
     public static function getUserTag(User $user)
     {
-        return \sprintf('user-%d', $user->getId());
+        return sprintf('user-%d', $user->getId());
     }
 
     public function addUserEvent(UserEvent $userEvent)
@@ -71,7 +71,7 @@ class TagsInvalidator
 
     public static function getTendanceTag(Event $event)
     {
-        return \sprintf('tendances-%d', $event->getId());
+        return sprintf('tendances-%d', $event->getId());
     }
 
     public function addEvent(Event $event)
@@ -87,12 +87,12 @@ class TagsInvalidator
 
     public static function getEventTag(Event $event)
     {
-        return \sprintf('event-%d', $event->getId());
+        return sprintf('event-%d', $event->getId());
     }
 
     public static function getLocationTag(Location $location)
     {
-        return \sprintf('location-%s', $location->getId());
+        return sprintf('location-%s', $location->getId());
     }
 
     public function addPlace(Place $place)
@@ -106,7 +106,7 @@ class TagsInvalidator
 
     public static function getPlaceTag(Place $place)
     {
-        return \sprintf('place-%d', $place->getId());
+        return sprintf('place-%d', $place->getId());
     }
 
     public function flush()
@@ -118,7 +118,7 @@ class TagsInvalidator
             return;
         }
 
-        $tags = \array_filter(\array_unique($this->tags));
+        $tags = array_filter(array_unique($this->tags));
 
         if (0 === \count($tags)) {
             return;

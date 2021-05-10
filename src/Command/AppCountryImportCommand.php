@@ -74,7 +74,7 @@ class AppCountryImportCommand extends Command
 
     private function askParam(string $name, InputInterface $input, OutputInterface $output): string
     {
-        $question = new Question(\sprintf("Valeur de l'argument %s : ", $name));
+        $question = new Question(sprintf("Valeur de l'argument %s : ", $name));
         $question->setValidator(function ($value) {
             if (empty($value)) {
                 throw new Exception('Cette valeur ne peut pas être vide');

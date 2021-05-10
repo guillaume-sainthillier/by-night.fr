@@ -50,9 +50,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Event
 {
-    const INDEX_FROM = '-6 months';
-
     use EntityTimestampableTrait;
+    public const INDEX_FROM = '-6 months';
 
     /**
      * @ORM\Id
@@ -542,7 +541,7 @@ class Event
     {
         $tags = $this->categorieManifestation . ',' . $this->typeManifestation . ',' . $this->themeManifestation;
 
-        return \array_unique(\array_map('trim', \array_map('ucfirst', \array_filter(\preg_split('#[,/]#', $tags)))));
+        return array_unique(array_map('trim', array_map('ucfirst', array_filter(preg_split('#[,/]#', $tags)))));
     }
 
     public function getPlaceCountryName(): ?string
@@ -1167,24 +1166,24 @@ class Event
         return $this;
     }
 
-    public function getImage(): \Vich\UploaderBundle\Entity\File
+    public function getImage(): EmbeddedFile
     {
         return $this->image;
     }
 
-    public function setImage(\Vich\UploaderBundle\Entity\File $image): self
+    public function setImage(EmbeddedFile $image): self
     {
         $this->image = $image;
 
         return $this;
     }
 
-    public function getImageSystem(): \Vich\UploaderBundle\Entity\File
+    public function getImageSystem(): EmbeddedFile
     {
         return $this->imageSystem;
     }
 
-    public function setImageSystem(\Vich\UploaderBundle\Entity\File $imageSystem): self
+    public function setImageSystem(EmbeddedFile $imageSystem): self
     {
         $this->imageSystem = $imageSystem;
 

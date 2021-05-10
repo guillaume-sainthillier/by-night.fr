@@ -65,7 +65,7 @@ class CountryRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('c')
             ->andWhere('LOWER(c.name) = :country OR LOWER(c.displayName) = :country OR c.id = :country')
-            ->setParameter('country', \mb_strtolower($country))
+            ->setParameter('country', mb_strtolower($country))
             ->getQuery()
             ->enableResultCache()
             ->useQueryCache(true)

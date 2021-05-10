@@ -106,15 +106,15 @@ class Comparator
         }
 
         if (null !== $cityA) {
-            $a = \str_ireplace($cityA->getName(), '', $a);
+            $a = str_ireplace($cityA->getName(), '', $a);
         } elseif (null !== $zipCityA) {
-            $a = \str_ireplace($zipCityA->getName(), '', $a);
+            $a = str_ireplace($zipCityA->getName(), '', $a);
         }
 
         if (null !== $cityB) {
-            $b = \str_ireplace($cityB->getName(), '', $b);
+            $b = str_ireplace($cityB->getName(), '', $b);
         } elseif (null !== $zipCityB) {
-            $b = \str_ireplace($zipCityB->getName(), '', $b);
+            $b = str_ireplace($zipCityB->getName(), '', $b);
         }
 
         $a = $this->sanitize($a);
@@ -133,7 +133,7 @@ class Comparator
             $string = $this->util->deleteStopWords($string);
             $string = $this->util->deleteMultipleSpaces($string);
 
-            return \trim($string);
+            return trim($string);
         });
     }
 
@@ -147,7 +147,7 @@ class Comparator
             }
 
             if (isset($a[250]) || isset($b[250])) {
-                \similar_text($a, $b, $pourcentage);
+                similar_text($a, $b, $pourcentage);
             } else {
                 try {
                     $pourcentage = $this->getDiffPourcentage($a, $b);
@@ -161,7 +161,7 @@ class Comparator
 
     private function getDiffPourcentage($a, $b)
     {
-        return (1 - \levenshtein($a, $b) / \max(\mb_strlen($a), \mb_strlen($b))) * 100;
+        return (1 - levenshtein($a, $b) / max(mb_strlen($a), mb_strlen($b))) * 100;
     }
 
     private function getMatchingScoreRue($a, $b)
@@ -182,17 +182,17 @@ class Comparator
         $step2 = $this->util->replaceAccents($step1);
         $step3 = $this->util->deleteMultipleSpaces($step2);
 
-        return \trim($step3);
+        return trim($step3);
     }
 
     public function sanitizeNumber($string)
     {
-        return \preg_replace('/\D/', '', $string);
+        return preg_replace('/\D/', '', $string);
     }
 
     public function sanitizeVille($string)
     {
-        $string = \preg_replace("#(^|[\s-]+)st([\s-]+)#i", 'saint', $string);
+        $string = preg_replace("#(^|[\s-]+)st([\s-]+)#i", 'saint', $string);
         $string = str_replace(' ', '', $string);
 
         return $this->sanitize($string);

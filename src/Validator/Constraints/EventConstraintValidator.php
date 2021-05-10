@@ -116,11 +116,11 @@ class EventConstraintValidator extends ConstraintValidator
                 'id' => $event->getId(),
                 'location' => $event->getLocationSlug(),
             ]);
-            $message = \str_replace([
+            $message = str_replace([
                 '[link]',
                 '[/link]',
             ], [
-                \sprintf('<a href="%s">', $link),
+                sprintf('<a href="%s">', $link),
                 '</a>',
             ], $constraint->badUser);
             $this->context->buildViolation($message)->addViolation();

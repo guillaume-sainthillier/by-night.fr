@@ -206,7 +206,7 @@ class EventRepository extends ServiceEntityRepository
             ->where('cal.user = :user')
             ->andWhere('a.dateFin ' . ($isNext ? '>=' : '<') . ' :date_debut')
             ->orderBy('a.dateFin', $isNext ? 'ASC' : 'DESC')
-            ->setParameters([':user' => $user->getId(), 'date_debut' => \date('Y-m-d')])
+            ->setParameters([':user' => $user->getId(), 'date_debut' => date('Y-m-d')])
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -451,6 +451,6 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
 
-        return \array_map('current', $results);
+        return array_map('current', $results);
     }
 }
