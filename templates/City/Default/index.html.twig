@@ -1,4 +1,3 @@
-{% set ads = true %}
 {% extends "layouts/full.html.twig" %}
 {% do fos_httpcache_tag(tags('location', location)) %}
 
@@ -87,7 +86,6 @@
     </section>
     <section class="py-4">
         <div class="container">
-            {% include 'ad.html.twig' %}
             <div class="row">
                 {% set contents = [{
                     'title': 'Concert',
@@ -179,8 +177,6 @@
                     Toutes les sorties <span class="hidden-xs hidden-sm">{{ location.atName }}</span>
                 </a>
             </div>
-
-            {% include 'ad2.html.twig' %}
         </div>
     </section>
 {% endblock %}

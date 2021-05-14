@@ -1,4 +1,3 @@
-{% set ads = true %}
 {% extends "layouts/with-widget.html.twig" %}
 {% do fos_httpcache_tag(tags('location', location)) %}
 
@@ -97,7 +96,6 @@
 
     <div id="agenda" class="widget active" role="tabpanel" aria-labelledby="agenda-tab">
         {% include "City/Agenda/block_criteres.html.twig" %}
-        {% include "ad.html.twig" with({'marginTop': 0}) %}
 
         {% if events.totalItemCount == 0 %}
             <div class="alert alert-info">
@@ -117,8 +115,6 @@
     <!-- Twitter -->
     {% include "City/Widget/twitter.html.twig" %}
     <!-- ./Twitter -->
-
-    {% include "ad3.html.twig" %}
 
     {% if social_manager.facebookIdPage %}
         <!-- Facebook -->

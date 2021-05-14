@@ -1,6 +1,5 @@
 {% if events.totalItemCount > 0 %}
     {% include "City/Event/block_preview_event.html.twig" with({'events': events, 'page': page}) %}
-    {% include "ad2.html.twig" %}
     {% if events.paginationData.next is defined %}
         <div class="text-center my-4">
             <a id="paginate"
