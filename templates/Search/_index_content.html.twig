@@ -14,7 +14,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="search" class="bmd-label-floating">Je cherche</label>
+                                    <label for="search">Je cherche</label>
                                     <input name="q"
                                            id="search"
                                            class="form-control"
@@ -25,7 +25,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="type" class="bmd-label-floating">Parmi</label>
+                                    <label for="type">Parmi</label>
                                     <select id="type" name="type" class="form-control">
                                         {% for value, label in options %}
                                             <option value="{{ value }}" {{ value == currentType ? 'selected' : '' }}>{{ label }}</option>

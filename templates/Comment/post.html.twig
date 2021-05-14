@@ -6,7 +6,7 @@
 
         <div>
             {{ macros.userLazyThumb(app.user, 50, 50) }}
-            <strong class="ml-2">{{ app.user.username }}</strong>
+            <strong class="ms-2">{{ app.user.username }}</strong>
         </div>
         {% block form_commentaire %}
             {{ form_row(form.commentaire) }}

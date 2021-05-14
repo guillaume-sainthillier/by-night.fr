@@ -3,7 +3,7 @@ export default (di, container) => {
         App.dispatchPageLoadedEvent($dialog[0]); //$dialog is a jQuery object so we pass the pure dom object
         $dialog
             .find('form')
-            .unbind('submit')
+            .off('submit')
             .submit(function () {
                 var href = $(this).attr('action');
                 var datas = $(this).serialize();
@@ -24,7 +24,7 @@ export default (di, container) => {
     };
 
     $('.connexion', container)
-        .unbind('click')
+        .off('click')
         .click(function (e) {
             e.preventDefault();
 

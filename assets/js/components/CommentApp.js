@@ -41,7 +41,7 @@ export default class CommentApp {
         const self = this;
         commentaires
             .find(self.options.css_load_more_comments)
-            .unbind('click')
+            .off('click')
             .click(function () {
                 var load_more = $(this);
 
@@ -74,7 +74,7 @@ export default class CommentApp {
         const self = this;
         commentaire
             .find(self.options.css_btn_list)
-            .unbind('click')
+            .off('click')
             .click(function () {
                 var main_block_reponse = $(this).closest(self.options.css_main_block_reponse);
 
@@ -121,7 +121,7 @@ export default class CommentApp {
         const self = this;
         commentaires
             .find(self.options.css_link_repondre)
-            .unbind('click')
+            .off('click')
             .click(function () //Pour tous les liens répondre
             {
                 var link = $(this);
@@ -151,7 +151,7 @@ export default class CommentApp {
         const self = this;
         $(block_post_reponse)
             .find('form')
-            .unbind('submit')
+            .off('submit')
             .submit(function () {
                 App.loadingButtons(this);
                 var form = $(this);
@@ -193,7 +193,7 @@ export default class CommentApp {
             .each(function () {
                 var form = $(this);
                 $(this)
-                    .unbind('submit')
+                    .off('submit')
                     .submit(function () {
                         App.loadingButtons(commentaire); //On bloque le bouton submit le temps du chargement
 

@@ -1,19 +1,19 @@
 <div class="row no-gutters text-center mt-4">
     <div class="col-4">
         <a class="social-facebook social big-social p-1" title="Inscrivez-vous avec Facebook"
-           href="{{ path('login_social_start', {service: 'facebook'}) }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
+           href="{{ path('login_social_start', {service: 'facebook'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-facebook"></i>
         </a>
     </div>
     <div class="col-4">
         <a class="social-twitter social big-social p-1" title="Inscrivez-vous avec Twitter"
-           href="{{ path('login_social_start', {service: 'twitter'}) }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
+           href="{{ path('login_social_start', {service: 'twitter'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-twitter"></i>
         </a>
     </div>
     <div class="col-4">
         <a class="social-google social big-social p-1" title="Inscrivez-vous avec Google"
-           href="{{ path('login_social_start', {service: 'google'}) }}" data-toggle="tooltip" data-placement="bottom" rel="nofollow">
+           href="{{ path('login_social_start', {service: 'google'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
             <i class="fa fa-google"></i>
         </a>
     </div>
@@ -28,10 +28,10 @@
         </div>
     {% endif %}
 
-    {{ form_row(form.username, { 'help': '2 caractères au minimum, sans espace', 'label_attr': {'class': 'bmd-label-floating'} }) }}
-    {{ form_row(form.email, { 'help': 'Veuillez saisir une adresse mail valide', 'label_attr': {'class': 'bmd-label-floating'} }) }}
-    {{ form_row(form.plainPassword.first, { 'help': 'Soyez malin et adoptez un mot de passe sûr', 'label_attr': {'class': 'bmd-label-floating'} }) }}
-    {{ form_row(form.plainPassword.second, { 'help': 'Saisissez à nouveau votre mot de passe', 'label_attr': {'class': 'bmd-label-floating'} }) }}
+    {{ form_row(form.username, { 'help': '2 caractères au minimum, sans espace'}) }}
+    {{ form_row(form.email, { 'help': 'Veuillez saisir une adresse mail valide'}) }}
+    {{ form_row(form.plainPassword.first, { 'help': 'Soyez malin et adoptez un mot de passe sûr'}) }}
+    {{ form_row(form.plainPassword.second, { 'help': 'Saisissez à nouveau votre mot de passe'}) }}
     {{ form_row(form.recaptcha) }}
 
     <script>

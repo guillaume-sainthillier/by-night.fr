@@ -8,11 +8,11 @@
         <a href="{{ path('app_main_index') }}" title="By Night : les concerts, spectacles, sorties partout en France" class="navbar-brand">
             {{ macros.thumb('build/images/by-night.png', 36, 36, {'alt': 'By Night'}) }}
         </a>
-        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbar-main" aria-controls="navbar-main" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-target="#navbar-main" aria-controls="navbar-main" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-collapse collapse" id="navbar-main">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav me-auto">
                 {% if city %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_agenda_index', {'location': city.slug}) }}" title="{{ city.fullName }}"><strong>{{ city.name }}</strong></a>
@@ -32,7 +32,7 @@
             </ul>
 
             <form action="{{ path('app_search_query') }}" method="GET" class="search-form" role="search">
-                <button type="submit" class="btn btn-light bmd-btn-icon">
+                <button type="submit" class="btn btn-sm btn-ghost btn-icon-circle">
                     <i class="fa fa-search"></i>
                 </button>
                 <input type="search" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
@@ -40,7 +40,7 @@
             <ul class="navbar-nav">
                 {% if is_granted("ROLE_ADMIN") %}
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Admin</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Admin</a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <a class="dropdown-item" href="{{ path('admin') }}">Administration</a>
                             <a class="dropdown-item" href="{{ path('app_administration_info_index') }}">Réseaux Sociaux</a>
@@ -49,7 +49,7 @@
                 {% endif %}
                 {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                     <li class="nav-item dropdown nav-avatar">
-                        <a href="#" title="{{ app.user.username }}" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                        <a href="#" title="{{ app.user.username }}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             {{ macros.userThumb(app.user, 30, 30) }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">

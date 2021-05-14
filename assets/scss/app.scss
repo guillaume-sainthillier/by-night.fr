@@ -1,5 +1,5 @@
 @import 'variables';
-@import '~bootstrap-material-design/scss/core';
+@import '~bootstrap/scss/bootstrap';
 @import 'components/alert';
 @import 'components/badge';
 @import 'components/breadcrumb';
@@ -100,9 +100,8 @@ h1 {
     z-index: 100;
 
     @include media-breakpoint-down(md) {
-        width: $bmd-btn-fab-size-sm;
-        height: $bmd-btn-fab-size-sm;
-        min-width: $bmd-btn-fab-size-sm;
+        width: 4rem;
+        height: 4rem;
     }
 }
 

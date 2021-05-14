@@ -5,9 +5,9 @@ $(function () {
     new Widgets().init();
     new CommentApp().init();
 
-    var gMap = $('#googleMap').attr('data-toggled', '0');
+    var gMap = $('#googleMap').attr('data-bs-toggled', '0');
     $('#loadMap')
-        .unbind('click')
+        .off('click')
         .click(function (e) {
             e.preventDefault();
             if (!gMap.find('iframe').length) {
@@ -24,12 +24,12 @@ $(function () {
                     .appendTo(gMap);
             }
 
-            if (gMap.attr('data-toggled') === '1') {
+            if (gMap.attr('data-bs-toggled') === '1') {
                 //Masquer
-                gMap.attr('data-toggled', '0').hide('fast');
+                gMap.attr('data-bs-toggled', '0').hide('fast');
             } //Afficher
             else {
-                gMap.attr('data-toggled', '1').show('fast');
+                gMap.attr('data-bs-toggled', '1').show('fast');
             }
         });
 });

@@ -1,7 +1,7 @@
 {{ fos_httpcache_tag(tags('tendances', event)) }}
 
 <div class="btn-group">
-    <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" data-toggle="dropdown">
+    <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
         <i class="fa fa-share-alt"></i>
     </button>
     <div class="dropdown-menu dropdown-menu-left">
@@ -22,4 +22,4 @@
     <i class="fa fa-heart"></i>
 </button>
 
-<small class="ml-3 text-muted {{ count == 0 ? 'd-none' : '' }}">{{ count }} intérêt{{ count > 1 ? "s" : "" }}</small>
+<small class="ms-3 text-muted {{ count == 0 ? 'd-none' : '' }}">{{ count }} intérêt{{ count > 1 ? "s" : "" }}</small>

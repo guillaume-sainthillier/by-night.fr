@@ -50,7 +50,7 @@
     </div>
 {% endblock %}
 
-{# Adds bmd-form-group #}
+{# Adds mb-3 #}
 {% block form_row -%}
     {%- if compound is defined and compound -%}
         {%- set element = 'fieldset' -%}
@@ -59,34 +59,12 @@
     {%- if help is not empty -%}
         {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
     {%- endif -%}
-    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group bmd-form-group')|trim})} %}{{ block('attributes') }}{% endwith %}>
+    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' mb-3')|trim})} %}{{ block('attributes') }}{% endwith %}>
     {{- form_label(form) -}}
     {{- form_widget(form, widget_attr) -}}
     {{- form_help(form) -}}
     </{{ element|default('div') }}>
 {%- endblock form_row %}
-
-{# Adds bmd-help #}
-{% block form_help -%}
-    {%- if help is not empty -%}
-        {%- set help_attr = help_attr|merge({class: (help_attr.class|default('') ~ ' bmd-help')|trim}) -%}
-        <small id="{{ id }}_help"{% with { attr: help_attr } %}{{ block('attributes') }}{% endwith %}>
-            {%- if translation_domain is same as(false) -%}
-                {%- if help_html is same as(false) -%}
-                    {{- help -}}
-                {%- else -%}
-                    {{- help|raw -}}
-                {%- endif -%}
-            {%- else -%}
-                {%- if help_html is same as(false) -%}
-                    {{- help|trans(help_translation_parameters, translation_domain) -}}
-                {%- else -%}
-                    {{- help|trans(help_translation_parameters, translation_domain)|raw -}}
-                {%- endif -%}
-            {%- endif -%}
-        </small>
-    {%- endif -%}
-{%- endblock form_help %}
 
 {%- block hidden_date_row -%}
     {{ form_widget(form) }}

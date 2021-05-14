@@ -29,7 +29,7 @@ export default class Widgets {
                 containerActions.html(newMoreContentLink);
                 moreContentLink.remove();
 
-                newMoreContentLink.unbind('click').click(function (e) {
+                newMoreContentLink.off('click').click(function (e) {
                     var btn = $(this);
                     btn.addClass('disabled').prepend(
                         '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> '

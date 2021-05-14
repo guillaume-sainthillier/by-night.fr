@@ -7,7 +7,7 @@
 
     <p class="lead">Changez votre mot de passe avec votre adresse mail</p>
     {{ form_start(requestForm) }}
-    {{ form_row(requestForm.email, {'label_attr': {'class': 'bmd-label-static'}}) }}
+    {{ form_row(requestForm.email) }}
         <div class="text-center">
             <button class="btn btn-raised btn-primary" type="submit">Réinitialiser le mot de passe</button>
         </div>

@@ -1,21 +1,19 @@
 {%- block modal -%}
-    <form action="{% block form_action %}#{% endblock %}" method="POST">
+    <form action="{% block form_action'#' %}" method="POST">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title">{% block titre %}By Night{% endblock %}</h3>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <h3 class="modal-title">{% block titre 'By Night' %}</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     {% block body %}{% endblock %}
                 </div>
                 <div class="modal-footer">
                     {% block footer %}{% endblock %}
-                    <button type="button" class="btn btn-secondary btn_retour" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-outline-secondary btn_retour" data-bs-dismiss="modal">Fermer</button>
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
+            </div>
+        </div>
     </form>
 {%- endblock -%}

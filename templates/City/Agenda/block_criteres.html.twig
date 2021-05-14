@@ -12,7 +12,7 @@
                 {{ form_widget(form.to) }}
                 {{ form_errors(form.from) }}
                 {{ form_errors(form.to) }}
-                {{ form_row(form.shortcut, {'label': 'Quand ?', 'label_attr': {'class': 'bmd-label-floating'}}) }}
+                {{ form_row(form.shortcut, {'label': 'Quand ?'}) }}
             </div>
             <div class="col-md-6">
                 {{ form_row(form.type_manifestation) }}
@@ -25,7 +25,7 @@
         {% endif %}
         <div class="d-flex flex-wrap w-100">
             <button type="submit" class="btn btn-primary btn-raised">Rechercher</button>
-            <button type="button" class="ml-auto btn_criteres btn btn-sm btn-secondary mt-2 mt-sm-0">
+            <button type="button" class="ms-auto btn_criteres btn btn-sm btn-outline-secondary mt-2 mt-sm-0">
                 <i class="fa {{ options.iconClass }}"></i>
                 Recherche avancée
             </button>

@@ -88,7 +88,6 @@ Encore
                     path.join(__dirname, 'assets/**/*.js'),
                     path.join(__dirname, 'src/**/*.php'),
                     path.join(__dirname, 'node_modules/bootstrap/js/src/**/*.js'),
-                    path.join(__dirname, 'node_modules/bootstrap-material-design/js/*.js'),
                     path.join(__dirname, 'node_modules/bootstrap-select/js/bootstrap-select.js'),
                     path.join(__dirname, 'node_modules/daterangepicker/daterangepicker.js'),
                     path.join(__dirname, 'node_modules/jquery-cookiebar/jquery.cookiebar.js'),
@@ -102,7 +101,6 @@ Encore
                 { nodir: true }
             ),
             whitelistPatterns: [/^custom-/],
-            whitelistPatternsChildren: [/^bmd-form-group/],
         })
     )
     .addAliases({

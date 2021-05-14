@@ -4,5 +4,5 @@
 }
 
 .daterangepicker .ranges li.active {
-    background-color: lighten($primary, 10) !important;
+    background-color: tint-color($primary, 10%) !important;
 }

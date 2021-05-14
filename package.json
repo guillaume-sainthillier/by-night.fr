@@ -10,9 +10,10 @@
     "baseFont": "assets/fonts",
     "baseDist": "public/prod",
     "dependencies": {
+        "@popperjs/core": "^2.9.2",
         "@sentry/browser": "^6.3.6",
         "bloodhound-js": "^1.2.3",
-        "bootstrap": "^4.6.0",
+        "bootstrap": "^5.0.0",
         "bootstrap-material-design": "^4.1.3",
         "bootstrap-select": "^1.13.18",
         "daterangepicker": "^3.1.0",
@@ -38,7 +39,7 @@
         "moment": "2.24.0"
     },
     "devDependencies": {
-        "@symfony/webpack-encore": "^1.2.0",
+        "@symfony/webpack-encore": "^1.3.0",
         "core-js": "^3.12.1",
         "es6-promise": "^4.2.6",
         "file-loader": "^6.0.0",
@@ -49,7 +50,7 @@
         "node-sass-tilde-importer": "^1.0.2",
         "prettier": "^2.3.0",
         "regenerator-runtime": "^0.13.7",
-        "sass-loader": "^11.0.1",
+        "sass-loader": "^11.1.0",
         "webpack-notifier": "^1.13.0"
     },
     "scripts": {
