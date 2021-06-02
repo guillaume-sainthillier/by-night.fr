@@ -2,12 +2,18 @@
     background-color: white;
     border-bottom: 1px solid #0000001a;
 
+    .btn {
+        border-radius: 0;
+    }
+
     .btn .fa {
         width: 14px;
     }
 }
 
 .breadcrumb {
+    padding: 0.75rem 0;
+
     &.collapsed {
         white-space: nowrap;
         overflow: hidden;
@@ -45,16 +51,19 @@
 }
 
 @include media-breakpoint-down(md) {
-    #bread > .container {
-        padding: 0;
-    }
-
     .breadcrumb-item {
         font-size: $font-size-sm;
     }
 }
 
 @include media-breakpoint-down(sm) {
+    #bread {
+        .container {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+
     .breadcrumb.collapsed .breadcrumb-item {
         overflow: hidden;
         text-overflow: ellipsis;

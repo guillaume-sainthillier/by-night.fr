@@ -85,7 +85,7 @@
                     {% if distinctTags|length %}
                         <li> Thèmes :
                             {% for tag in distinctTags %}
-                                <a class="badge badge-info" title="{{ tag }} à {{ event.place.city.name }}"
+                                <a class="badge bg-info" title="{{ tag }} à {{ event.place.city.name }}"
                                    href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
                                     <strong>{{ tag }}</strong>
                                 </a>

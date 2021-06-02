@@ -4,17 +4,17 @@
     {% set nbEvents = user.nb_events %}
     {% set user = user[0] %}
     {{ fos_httpcache_tag(tags('user', user)) }}
-    <a class="scroll-item list-group-item ripple" href="{{ path('app_user_details', {'id': user.id, 'slug': user.slug} ) }}" title="Accédez au profil de {{ user.username }}">
+    <a class="scroll-item list-group-item list-group-item-action d-flex w-100 align-items-center" href="{{ path('app_user_details', {'id': user.id, 'slug': user.slug} ) }}" title="Accédez au profil de {{ user.username }}">
         <span class="list-group-item-image">
             {{ macros.userLazyThumb(user, 50, 50) }}
         </span>
 
-        <div class="bmd-list-group-col">
-            <p class="mb-1 list-group-item-heading">
+        <div>
+            <p class="mb-0">
                 {{ user.username|capitalize }}
             </p>
             {% if nbEvents > 0 %}
-                <p class="mb-0 list-group-item-text">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' :'' }}</p>
+                <small class="text-muted">{{ nbEvents }} événement{{ nbEvents > 1 ? 's' :'' }}</small>
             {% endif %}
         </div>
     </a>

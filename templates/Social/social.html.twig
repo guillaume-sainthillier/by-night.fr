@@ -1,21 +1,24 @@
 {% set isGranted = attribute(oAuth, service ~ 'AccessToken') != null %}
 
 <div class="switch bloc_config">
-    <label>
-        <input type="checkbox"
-            {{ isGranted ? "checked": "" }}
-           data-href-disconnect="{% block url_disconnect path('app_disconnect_service_confirm', { 'service': service}) %}"
-           data-href-connect="{% block url_connect path('login_social_start', {service: service}) %}" >
-        {{ service|capitalize }}
-        <span class="when_on {{ isGranted ? "show" : "hidden" }} text-primary">
-            Connecté sous
-            <span class="username">
-                {% if service == 'twitter' %}
-                    @{{ attribute(oAuth, service ~ "NickName") }}
-                {% else %}
-                    {{ attribute(oAuth, service ~ "Realname") }}
-                {% endif %}
-            </span>
+    <div class="form-check form-switch">
+        <input class="form-check-input"
+               type="checkbox"
+                {{ isGranted ? "checked" : "" }}
+               data-href-disconnect="{% block url_disconnect path('app_disconnect_service_confirm', { 'service': service}) %}"
+               data-href-connect="{% block url_connect path('login_social_start', {service: service}) %}">
+        <label class="form-check-label">
+            {{ service|capitalize }}
+        </label>
+    </div>
+    <span class="when_on {{ isGranted ? "show" : "hidden" }} text-muted">
+        Connecté sous
+        <span class="username">
+            {% if service == 'twitter' %}
+                @{{ attribute(oAuth, service ~ "NickName") }}
+            {% else %}
+                {{ attribute(oAuth, service ~ "Realname") }}
+            {% endif %}
         </span>
-    </label>
+    </span>
 </div>

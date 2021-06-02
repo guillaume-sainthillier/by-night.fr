@@ -80,7 +80,13 @@ Encore
             localesToKeep: ['fr'],
         })
     )
-    .addPlugin(
+    .addAliases({
+        jquery: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
+        $: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
+    });
+
+if (Encore.isProduction()) {
+    Encore.addPlugin(
         new PurgecssPlugin({
             paths: glob.sync(
                 [
@@ -102,10 +108,7 @@ Encore
             ),
             whitelistPatterns: [/^custom-/],
         })
-    )
-    .addAliases({
-        jquery: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
-        $: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
-    });
+    );
+}
 
 module.exports = Encore.getWebpackConfig();

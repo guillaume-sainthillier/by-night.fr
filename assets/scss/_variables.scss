@@ -10,8 +10,14 @@ $primary: #3f51b5;
 $info: #fabb3d;
 $warning: $color-warning;
 
-$linkColor: #0091ff;
 $white: #fff;
+
+$link-footer-color: #0091ff;
+
+//Reboot
+$link-color: #222;
+$link-hover-color: $primary;
+$link-decoration: none;
 
 //RFS
 $font-size-base: 1rem;
@@ -25,3 +31,9 @@ $navbar-dark-active-color: $white;
 //Breadcrumb
 $breadcrumb-bg: white;
 $breadcrumb-margin-bottom: 0;
+
+//Card
+$card-cap-bg: white;
+
+//Shadow
+$box-shadow: 0 0.5px 0 0 #ffffff inset, 0 1px 2px 0 #b3b3b3;

@@ -13,7 +13,7 @@
                     <form method="GET" class="no-margin-form" action="{{ path('app_search_query') }}">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="search">Je cherche</label>
                                     <input name="q"
                                            id="search"
@@ -24,7 +24,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label for="type">Parmi</label>
                                     <select id="type" name="type" class="form-control">
                                         {% for value, label in options %}
@@ -51,7 +51,7 @@
         {% if events.totalItemCount > 0 and (not type or type == 'evenements') %}
             {% if type != 'evenements' %}
                 {% set s = events.totalItemCount > 1 ? 's': null %}
-                <h3>Événement{{ s }} <span class="badge badge-info number number-sm">{{ events.totalItemCount }}</span></h3>
+                <h3>Événement{{ s }} <span class="badge bg-info number number-sm">{{ events.totalItemCount }}</span></h3>
             {% endif %}
             {% include "Search/content_events.html.twig" %}
         {% endif %}
@@ -59,7 +59,7 @@
         {% if users.totalItemCount > 0 and (not type or type == 'membres') %}
             {% if type != 'membres' %}
                 {% set s = users.totalItemCount > 1 ? 's': null %}
-                <h3>Membre{{ s }} <span class="badge badge-info number number-sm">{{ users.totalItemCount }}</span></h3>
+                <h3>Membre{{ s }} <span class="badge bg-info number number-sm">{{ users.totalItemCount }}</span></h3>
             {% endif %}
             {% include "Search/content_users.html.twig" %}
         {% endif %}

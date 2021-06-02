@@ -58,7 +58,7 @@
                                 <a class="btn btn-outline-secondary" href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
                                     <i class="fa fa-eye"></i>
                                 </a>
-                                <a class="btn btn-primary" href="{{ path('app_event_edit', {'id': event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
+                                <a class="btn btn-outline-primary" href="{{ path('app_event_edit', {'id': event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
                                     <i class="fa fa-pencil"></i>
                                 </a>
                                 <form class="d-inline-block form-delete" method="post" action="{{ path('app_event_delete', {'id': event.id}) }}">
@@ -77,7 +77,8 @@
         {{ knp_pagination_render(events) }}
     {% else %}
         <div class="alert alert-info">
-            <i class="fa fa-info-circle"></i> Aucun événement créé, publiez dès maintenant le vôtre !
+            <i class="fa fa-info-circle"></i>
+            Aucun événement créé, publiez dès maintenant le vôtre !
         </div>
     {% endif %}
 {%- endblock %}

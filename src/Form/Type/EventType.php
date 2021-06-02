@@ -145,7 +145,7 @@ class EventType extends AbstractType
                 'add_entry_label' => 'Ajouter un site',
                 'label' => 'Sites de réservation',
                 'entry_options' => [
-                    'label' => 'Site',
+                    'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
                     'attr' => [
                         'placeholder' => 'https://monsupersite.fr',
@@ -158,7 +158,7 @@ class EventType extends AbstractType
                 'add_entry_label' => 'Ajouter un numéro',
                 'label' => 'Numéros de téléphone',
                 'entry_options' => [
-                    'label' => 'Téléphone',
+                    'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
                     'attr' => [
                         'placeholder' => '06 01 02 03 04',
@@ -171,7 +171,7 @@ class EventType extends AbstractType
                 'add_entry_label' => 'Ajouter un email',
                 'label' => 'Emails de contact',
                 'entry_options' => [
-                    'label' => 'Email',
+                    'label' => false,
                     'block_prefix' => 'app_collection_entry_main_text',
                     'attr' => [
                         'placeholder' => 'vousêtes@incroyable.fr',

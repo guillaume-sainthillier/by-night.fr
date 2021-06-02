@@ -1,4 +1,4 @@
-<div class="row no-gutters text-center mt-4">
+<div class="row g-0 text-center mt-4">
     <div class="col-4">
         <a class="social-facebook social big-social p-1" title="Inscrivez-vous avec Facebook"
            href="{{ path('login_social_start', {service: 'facebook'}) }}" data-bs-toggle="tooltip" data-placement="bottom" rel="nofollow">
@@ -34,7 +34,7 @@
     {{ form_row(form.plainPassword.second, { 'help': 'Saisissez à nouveau votre mot de passe'}) }}
     {{ form_row(form.recaptcha) }}
 
-    <script>
+    <script type="text/javascript">
         if (document.getElementById('google-recaptcha')) {
             onCaptchaReady();
         }
@@ -65,9 +65,11 @@
     </script>
 
     {% if not partial %}
-        <button id="_register" class="btn btn-primary {{ partial ? '' : 'btn-raised' }}" type="submit">
-            Créer mon profil
-        </button>
+        <div class="text-center">
+            <button class="btn btn-lg btn-primary" type="submit">
+                Créer mon profil
+            </button>
+        </div>
     {% endif %}
 
     {{ form_rest(form) }}

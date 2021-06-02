@@ -24,7 +24,7 @@ class CheckboxTypeExtension extends AbstractTypeExtension
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'group_class' => 'checkbox',
+            'label_attr' => ['class' => 'checkbox-custom'],
         ]);
     }
 }

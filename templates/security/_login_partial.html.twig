@@ -7,7 +7,7 @@
 {%- endblock %}
 
 {% block footer -%}
-    <button class="btn btn-primary {{ partial ? '' : 'btn-raised' }}" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
+    <button class="btn {{ partial ? 'btn-outline-primary' : 'btn-primary' }}" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
         Connexion
     </button>
 {%- endblock %}

@@ -1,5 +1,5 @@
 {% use 'form_div_layout.html.twig' with checkbox_widget as base_checkbox_widget %}
-{% use "bootstrap_4_layout.html.twig" %}
+{% use "bootstrap_5_layout.html.twig" %}
 
 {% block recaptcha_widget %}
     <div {{ block('widget_attributes') }}></div>
@@ -7,7 +7,7 @@
 
 {% block vich_image_widget %}
     {% if download_uri is defined and download_uri %}
-        <a class="image-gallery ripple" href="{{ download_uri }}">
+        <a class="image-gallery" href="{{ download_uri }}">
             {% if image_thumb_uri is not null %}
                 <img class="img-fluid blur-up lazyload"
                      {% if image_thumb_params.w is defined %}width="{{ image_thumb_params.w }}"{% endif %}
@@ -29,16 +29,6 @@
     {% endif %}
 {% endblock %}
 
-{% block checkbox_row %}
-    {{ form_errors(form) }}
-    <div class="checkbox">
-        <label>
-            {{ block('base_checkbox_widget') }}
-            {{ translation_domain is same as(false) ? label : label|trans(label_translation_parameters, translation_domain) }}
-        </label>
-    </div>
-{% endblock %}
-
 {# Images #}
 {% block file_widget %}
     <div class="custom-file">
@@ -49,22 +39,6 @@
         </label>
     </div>
 {% endblock %}
-
-{# Adds mb-3 #}
-{% block form_row -%}
-    {%- if compound is defined and compound -%}
-        {%- set element = 'fieldset' -%}
-    {%- endif -%}
-    {%- set widget_attr = {} -%}
-    {%- if help is not empty -%}
-        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
-    {%- endif -%}
-    <{{ element|default('div') }}{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' mb-3')|trim})} %}{{ block('attributes') }}{% endwith %}>
-    {{- form_label(form) -}}
-    {{- form_widget(form, widget_attr) -}}
-    {{- form_help(form) -}}
-    </{{ element|default('div') }}>
-{%- endblock form_row %}
 
 {%- block hidden_date_row -%}
     {{ form_widget(form) }}
@@ -94,9 +68,9 @@
     {% if disabled %}
         {{- block('form_widget') -}}
     {% else %}
-        <div class="collection-item {{ group_class|default('') }}">
+        <div class="collection-item {{ group_class|default('mb-3') }}">
             {{- block('form_widget') -}}
-            <button class="btn btn-danger btn-sm remove-collection"
+            <button class="btn btn-outline-danger btn-sm remove-collection"
                     type="button"
                     data-group=".collection-group">
                 <i class="fa fa-times"></i>

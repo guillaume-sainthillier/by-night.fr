@@ -104,7 +104,7 @@
             </div>
         {% else %}
             <h3 class="info">
-                <span class="badge badge-info">{{ events.totalItemCount }} événement{{ events.totalItemCount > 1 ? 's' : '' }}</span>
+                <span class="badge bg-info">{{ events.totalItemCount }} événement{{ events.totalItemCount > 1 ? 's' : '' }}</span>
             </h3>
             {% include "City/Agenda/index_content.html.twig" with({'partial': false}) %}
         {% endif %}

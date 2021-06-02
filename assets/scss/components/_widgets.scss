@@ -239,12 +239,15 @@
     }
 }
 
-.list-group-item {
-    flex-flow: row nowrap;
+.widget .list-group-item {
     overflow: hidden;
     border-bottom: 1px solid $card-border-color;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
 
-    & :first-child {
+    &:first-child {
+        border-top: none;
         margin-right: 0;
     }
 

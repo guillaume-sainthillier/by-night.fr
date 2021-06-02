@@ -56,7 +56,7 @@
         </div>
     {% else %}
         <div class="card" id="event">
-            <div class="row no-gutters">
+            <div class="row g-0">
                 {% if event.modificationDerniereMinute %}
                     <div class="col-12">
                         <div class="alert alert-warning mb-0">
@@ -66,7 +66,7 @@
                     </div>
                 {% endif %}
                 <div class="col-lg-8">
-                    <a class="image-gallery ripple" href="{{ original }}" title="{{ nomSoiree }}">
+                    <a class="image-gallery" href="{{ original }}" title="{{ nomSoiree }}">
                         {{ macros.eventThumb(event, 800, 400, {'class': 'img', 'itemprop': 'image'}) }}
                     </a>
                 </div>
@@ -231,7 +231,7 @@
                             <i class="fa fa-tags"></i>
                             <p class="tags">
                                 {% if event.place.country %}
-                                    <a class="badge badge-info"
+                                    <a class="badge bg-info"
                                        title="Sortir {{ event.place.country.atDisplayName }}"
                                        href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">Événements {{ event.place.country.atDisplayName }}</strong>
@@ -239,14 +239,14 @@
                                 {% endif %}
 
                                 {% if event.place.location.isCity and event.placeName != event.place.location.name %}
-                                    <a class="badge badge-info"
+                                    <a class="badge bg-info"
                                        title="Sortir {{ event.place.location.atName }}"
                                        href="{{ path('app_agenda_agenda', {'location': event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">Événements {{ event.place.location.atName }}</strong>
                                     </a>
                                 {% endif %}
                                 {% if event.placeName %}
-                                    <a class="badge badge-info"
+                                    <a class="badge bg-info"
                                        title="Sortir à {{ event.placeName }}"
                                        href="{{ path('app_agenda_place', {'slug': event.place.slug, 'location': event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">Événements à {{ event.placeName }}</strong>
@@ -254,7 +254,7 @@
                                 {% endif %}
 
                                 {% for tag in distinctTags %}
-                                    <a class="badge badge-info"
+                                    <a class="badge bg-info"
                                        title="{{ tag }} {{ event.place.location.atName }}"
                                        href="{{ path('app_agenda_tags', {'tag' : tag|trim, 'location': event.place.locationSlug}) }}">
                                         <strong class="font-weight-normal">{{ tag }} {{ event.place.location.atName }}</strong>
