@@ -1,6 +1,8 @@
 .card {
     margin-bottom: 1rem;
     font-size: 1rem;
+    border: none;
+    box-shadow: $box-shadow;
 
     .card {
         box-shadow: none;
