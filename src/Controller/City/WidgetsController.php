@@ -12,8 +12,7 @@ namespace App\Controller\City;
 
 use App\Annotation\ReverseProxy;
 use App\App\Location;
-use App\Controller\TBNController as BaseController;
-use App\Entity\Event;
+use App\Controller\AbstractController as BaseController;
 use App\Event\EventCheckUrlEvent;
 use App\Event\Events;
 use App\Repository\EventRepository;
@@ -28,7 +27,7 @@ class WidgetsController extends BaseController
     public const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/tweeter-feed/{max_id}", name="app_agenda_tweeter_feed", requirements={"max_id": "\d+"}, methods={"GET"})
+     * @Route("/tweeter-feed/{max_id}", name="app_widget_tweeter", requirements={"max_id": "\d+"}, methods={"GET"})
      * @ReverseProxy(expires="1 hour")
      */
     public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, int $max_id = null): Response
@@ -40,7 +39,7 @@ class WidgetsController extends BaseController
             parse_str($results['search_metadata']['next_results'], $infos);
 
             if (isset($infos['?max_id'])) {
-                $nextLink = $this->generateUrl('app_agenda_tweeter_feed', [
+                $nextLink = $this->generateUrl('app_widget_tweeter', [
                     'location' => $location->getSlug(),
                     'max_id' => $infos['?max_id'],
                 ]);
@@ -51,7 +50,7 @@ class WidgetsController extends BaseController
             $results['statuses'] = [];
         }
 
-        return $this->render('City/Hinclude/tweets.html.twig', [
+        return $this->render('city/hinclude/tweets.html.twig', [
             'tweets' => $results['statuses'],
             'hasNextLink' => $nextLink,
             'location' => $location,
@@ -59,12 +58,12 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}", name="app_event_prochaines_soirees", methods={"GET"})
+     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}", name="app_widget_next_events", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1): Response
     {
-        $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_prochaines_soirees', ['page' => $page]);
+        $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_widget_next_events', ['page' => $page]);
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
         if (null !== $eventCheck->getResponse()) {
             return $eventCheck->getResponse();
@@ -75,7 +74,7 @@ class WidgetsController extends BaseController
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('app_event_prochaines_soirees', [
+            $hasNextLink = $this->generateUrl('app_widget_next_events', [
                 'slug' => $event->getSlug(),
                 'id' => $event->getId(),
                 'location' => $location->getSlug(),
@@ -85,7 +84,7 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        return $this->render('City/Hinclude/evenements_details.html.twig', [
+        return $this->render('city/hinclude/details-events.html.twig', [
             'page' => $page,
             'place' => $event->getPlace(),
             'events' => $eventRepository->findAllNext($event, $page, self::WIDGET_ITEM_LIMIT),
@@ -96,12 +95,12 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}", name="app_event_soirees_similaires", methods={"GET"})
+     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}", name="app_widget_similar_events", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function soireesSimilaires(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response
+    public function similarEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response
     {
-        $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_soirees_similaires', ['page' => $page]);
+        $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_widget_similar_events', ['page' => $page]);
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
         if (null !== $eventCheck->getResponse()) {
             return $eventCheck->getResponse();
@@ -111,7 +110,7 @@ class WidgetsController extends BaseController
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('app_event_soirees_similaires', [
+            $hasNextLink = $this->generateUrl('app_widget_similar_events', [
                 'location' => $location->getSlug(),
                 'slug' => $event->getSlug(),
                 'id' => $event->getId(),
@@ -121,7 +120,7 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        return $this->render('City/Hinclude/evenements_details.html.twig', [
+        return $this->render('city/hinclude/details-events.html.twig', [
             'page' => $page,
             'place' => $event->getPlace(),
             'events' => $eventRepository->findAllSimilaires($event, $page, self::WIDGET_ITEM_LIMIT),
@@ -132,16 +131,16 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/top/soirees/{page<%patterns.page%>}", name="app_agenda_top_soirees", methods={"GET"})
+     * @Route("/top/soirees/{page<%patterns.page%>}", name="app_widget_top_events", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
-    public function topSoirees(Location $location, EventRepository $eventRepository, int $page = 1): Response
+    public function topEvents(Location $location, EventRepository $eventRepository, int $page = 1): Response
     {
         $current = $page * self::WIDGET_ITEM_LIMIT;
         $count = $eventRepository->findTopSoireeCount($location);
 
         if ($current < $count) {
-            $hasNextLink = $this->generateUrl('app_agenda_top_soirees', [
+            $hasNextLink = $this->generateUrl('app_widget_top_events', [
                 'page' => $page + 1,
                 'location' => $location->getSlug(),
             ]);
@@ -149,7 +148,7 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        return $this->render('City/Hinclude/evenements.html.twig', [
+        return $this->render('city/hinclude/events.html.twig', [
             'location' => $location,
             'events' => $eventRepository->findTopSoiree($location, $page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,

@@ -12,7 +12,7 @@ namespace App\Controller\City;
 
 use App\Annotation\ReverseProxy;
 use App\App\Location;
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Form\Type\SimpleEventSearchType;
 use App\Repository\EventRepository;
 use DateTime;
@@ -37,7 +37,7 @@ class DefaultController extends BaseController
 
         $form = $this->createForm(SimpleEventSearchType::class, $datas);
 
-        return $this->render('City/Default/index.html.twig', [
+        return $this->render('city/index.html.twig', [
             'location' => $location,
             'events' => $events,
             'form' => $form->createView(),

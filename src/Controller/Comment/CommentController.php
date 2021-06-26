@@ -11,7 +11,7 @@
 namespace App\Controller\Comment;
 
 use App\Annotation\ReverseProxy;
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
@@ -42,7 +42,7 @@ class CommentController extends BaseController
                 ->createView();
         }
 
-        return $this->render('Comment/list_and_form.html.twig', [
+        return $this->render('comment/list-and-form.html.twig', [
             'nb_comments' => $commentRepository->findNBCommentaires($event),
             'comments' => $commentRepository->findAllByEvent($event, $page, self::COMMENTS_PER_PAGE),
             'event' => $event,
@@ -58,7 +58,7 @@ class CommentController extends BaseController
      */
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
-        return $this->render('Comment/list.html.twig', [
+        return $this->render('comment/list.html.twig', [
             'nb_comments' => $commentRepository->findNBCommentaires($event),
             'comments' => $commentRepository->findAllByEvent($event, $page, self::COMMENTS_PER_PAGE),
             'event' => $event,

@@ -1,0 +1,147 @@
+{% import 'Form/macros.html.twig' as macros %}
+{% extends 'layouts/default.html.twig' %}
+
+{% do fos_httpcache_tag(tags('user', user)) %}
+{% set username = user.username|capitalize %}
+
+{% block page_id 'page-user' %}
+{% block title username %}
+{% block titre username %}
+
+{% block head_js %}
+    <script type="text/javascript">
+        window.datas = {{ etablissements|json_encode()|raw }};
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {% do menu.addItem("Membres", url('app_search_query', {'type' : 'membres'})) %}
+    {% do menu.addItem(username, url('app_user_details', {'id' : user.id, 'slug': user.slug })) %}
+{% endblock %}
+
+{% block meta_description -%}
+    {{ username }} a {{ count_favoris }} événement{{ count_favoris > 1 ? "s" : "" }} en favoris depuis le {{ user.createdAt.format('d/m/Y') }}.
+{%- endblock %}
+
+{% block body -%}
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card fiche_profil">
+                <div class="card-body text-center">
+                    {{ macros.userLazyThumb(user, 200, 200, {'class': 'mx-auto mb-2'}) }}
+                    <h2>{{ username }}</h2>
+                    {% if user.description %}
+                        <hr />
+                        <p class="text-muted">
+                            {{ user.description }}
+                        </p>
+                    {% endif %}
+                    <hr />
+                    <div>
+                        <span class="text-primary h5 mb-0">{{ count_favoris }}</span>
+                        <span class="d-block">favori{{ count_favoris > 1 ? "s" : "" }}</span>
+                    </div>
+                    <hr />
+                    <div>
+                        Membre depuis le
+                        <span class="text-primary h5 mb-0">{{ user.createdAt.format('d/m/Y') }}</span>
+                    </div>
+
+                    {% include 'social/user.html.twig' %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <ul class="nav nav-pills mb-1">
+                <li class="nav-item"><a class="nav-link disabled" data-bs-toggle="tab">Événements</a></li>
+                <li class="nav-item"><a class="nav-link active" href="#a-venir" data-bs-toggle="tab">A venir</a></li>
+                <li class="nav-item"><a class="nav-link" href="#passes" data-bs-toggle="tab">Passés</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="a-venir">
+                    {% if not next_events|length %}
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i>
+                            Aucun événement de prévu pour {{ username }} !
+                        </div>
+                    {% else %}
+                        {% include 'city/event/block-preview-event.html.twig' with({'events' : next_events}) %}
+                    {% endif %}
+                </div>
+                <div class="tab-pane" id="passes">
+                    {% if not previous_events|length %}
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i>
+                            Aucun événement passé pour {{ username }} !
+                        </div>
+                    {% else %}
+                        {% include 'city/event/block-preview-event.html.twig' with({'events' : previous_events}) %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 mb-4">
+                    <h3>Lieux favoris</h3>
+                    <div class="card">
+                        <div id="hero-donut" class="chart"></div>
+                    </div>
+                </div>
+                <div class="col-sm-8 mb-4">
+                    <ul class="nav nav-pills mb-1" id="chartsActivite">
+                        <li class="nav-item"><a class="nav-link disabled" data-bs-toggle="tab">Activité</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="#annee" id="chartAnnee" data-bs-toggle="tab">Année</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#mois" id="chartMois" data-bs-toggle="tab">Mois</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#semaine" id="chartSemaine" data-bs-toggle="tab">Semaine</a></li>
+                    </ul>
+                    <div class="card">
+                        <div class="card-body p-1">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="annee">
+                                    <div id="chart-annee"
+                                         class="chart"
+                                         data-url="{{ path("app_user_stats", {'type': 'annee', 'id' : user.id, 'slug': user.slug }) }}">
+                                        <div class="text-center">
+                                            <div class="spinner-border spinner-border-lg text-info" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="mois">
+                                    <div id="chart-mois"
+                                         class="chart"
+                                         data-url="{{ path("app_user_stats", {'type': 'mois', 'id' : user.id, 'slug': user.slug }) }}">
+                                        <div class="text-center">
+                                            <div class="spinner-border spinner-border-lg text-success" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="semaine">
+                                    <div id="chart-semaine"
+                                         class="chart"
+                                         data-url="{{ path("app_user_stats", {'type': 'semaine', 'id' : user.id, 'slug': user.slug }) }}">
+                                        <div class="text-center">
+                                            <div class="spinner-border spinner-border-lg text-info" role="status">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endblock %}
+
+{% block css -%}
+    {{ encore_entry_link_tags('user') }}
+{%- endblock %}
+
+{% block js -%}
+    {{ encore_entry_script_tags('user') }}
+{%- endblock %}

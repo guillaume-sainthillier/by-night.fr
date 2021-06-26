@@ -12,7 +12,7 @@ namespace App\Controller\City;
 
 use App\Annotation\ReverseProxy;
 use App\App\Location;
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
 use App\Event\EventCheckUrlEvent;
 use App\Event\Events;
@@ -31,7 +31,7 @@ class EventController extends BaseController
      * @Route("/soiree/{slug<%patterns.slug%>}", name="app_event_details_old", methods={"GET"})
      * @ReverseProxy(expires="+1 month")
      */
-    public function details(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null): Response
+    public function index(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');
         $eventDispatcher->dispatch($eventCheck, Events::CHECK_EVENT_URL);
@@ -40,7 +40,7 @@ class EventController extends BaseController
         }
         $event = $eventCheck->getEvent();
 
-        return $this->render('City/Event/get.html.twig', [
+        return $this->render('city/event/index.html.twig', [
             'location' => $location,
             'event' => $event,
         ]);
@@ -66,7 +66,7 @@ class EventController extends BaseController
             'image' => $eventProfile,
         ]);
 
-        return $this->render('City/Hinclude/shares.html.twig', [
+        return $this->render('city/hinclude/shares.html.twig', [
             'shares' => [
                 'facebook' => $page->facebook,
                 'twitter' => $page->twitter,

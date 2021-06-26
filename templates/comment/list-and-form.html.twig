@@ -1,0 +1,12 @@
+<div class="comments">
+    <h4 class="heading">
+        {{ nb_comments }} Commentaire{{ nb_comments > 1 ? "s" : "" }}
+        {% if nb_comments == 0 %}
+            <small class="text-muted">Soyez le premier à réagir</small>
+        {% endif %}
+    </h4>
+    {% include 'comment/post.html.twig' %}
+    {% if nb_comments > 0 %}
+        {% include 'comment/list.html.twig' %}
+    {% endif %}
+</div>

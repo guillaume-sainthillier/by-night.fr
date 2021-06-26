@@ -11,7 +11,7 @@
 namespace App\Controller\Fragments;
 
 use App\Annotation\ReverseProxy;
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Picture\EventProfilePicture;
@@ -28,19 +28,19 @@ class WidgetsController extends BaseController
     public const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_membres", methods={"GET"})
+     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_members", methods={"GET"})
      * @ReverseProxy(expires="6 hours")
      */
-    public function topMembres(UserRepository $userRepository, int $page = 1): Response
+    public function topMembers(UserRepository $userRepository, int $page = 1): Response
     {
         $count = $userRepository->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
-        $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_membres', [
+        $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_members', [
             'page' => $page + 1,
         ]) : null;
 
-        return $this->render('City/Hinclude/membres.html.twig', [
+        return $this->render('city/hinclude/members.html.twig', [
             'membres' => $userRepository->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
@@ -49,10 +49,10 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/_private/tendances/{id<%patterns.id%>}", name="app_event_tendances", methods={"GET"})
+     * @Route("/_private/tendances/{id<%patterns.id%>}", name="app_event_trends", methods={"GET"})
      * @ReverseProxy(expires="1 year")
      */
-    public function tendances(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
+    public function trends(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
     {
         $participer = false;
         $interet = false;
@@ -82,7 +82,7 @@ class WidgetsController extends BaseController
             'image' => $eventProfile,
         ]);
 
-        return $this->render('City/Hinclude/tendances.html.twig', [
+        return $this->render('city/hinclude/trends.html.twig', [
             'event' => $event,
             'tendances' => $eventRepository->findAllTendances($event),
             'count' => $event->getParticipations() + $event->getFbParticipations() + $event->getInterets() + $event->getFbInterets(),

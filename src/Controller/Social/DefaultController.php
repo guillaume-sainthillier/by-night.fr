@@ -45,7 +45,7 @@ class DefaultController extends AbstractController
      */
     public function disconnectConfirm(string $service): Response
     {
-        return $this->render('Social/confirm.html.twig', [
+        return $this->render('social/confirm.html.twig', [
             'service' => $service,
             'url' => $this->generateUrl('app_disconnect_service', ['service' => $service]),
         ]);

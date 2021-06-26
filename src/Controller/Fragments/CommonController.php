@@ -12,13 +12,13 @@ namespace App\Controller\Fragments;
 
 use App\Annotation\ReverseProxy;
 use App\App\CityManager;
-use App\Controller\TBNController;
+use App\Controller\AbstractController;
 use App\Entity\Country;
 use App\Repository\CityRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class CommonController extends TBNController
+class CommonController extends AbstractController
 {
     public const LIFE_TIME_CACHE = 86_400;
 

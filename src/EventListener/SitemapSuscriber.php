@@ -206,7 +206,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             'app_about',
             'app_plus',
             'app_main_cookie',
-            'app_mentions_legales',
+            'app_legal_mentions',
         ];
 
         foreach ($staticRoutes as $route) {

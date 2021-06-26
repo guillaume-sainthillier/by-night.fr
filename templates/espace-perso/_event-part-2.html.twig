@@ -1,0 +1,17 @@
+{% extends 'city/widget/template.html.twig' %}
+
+{% block titre 'Informations' %}
+{% block icone 'fa-calendar' %}
+{% block widget_class 'active' %}
+
+{% block body %}
+    {{ form_row(form.dateDebut) }}
+    {{ form_row(form.dateFin) }}
+    {{ form_row(form.shortcut, {'label': 'Dates'}) }}
+    {{ form_row(form.horaires) }}
+    {{ form_row(form.categorieManifestation) }}
+    {{ form_row(form.themeManifestation) }}
+    {{ form_row(form.tarif) }}
+{% endblock %}
+
+{% block footer '' %}

@@ -45,7 +45,7 @@ class InfoController extends AbstractController
      */
     public function view(AppOAuth $appOAuth): Response
     {
-        return $this->render('Admin/Social/view.html.twig', [
+        return $this->render('admin/social/view.html.twig', [
             'oAuth' => $appOAuth,
         ]);
     }

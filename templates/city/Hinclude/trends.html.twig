@@ -1,0 +1,25 @@
+{{ fos_httpcache_tag(tags('tendances', event)) }}
+
+<div class="btn-group">
+    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        <i class="fa fa-share-alt"></i>
+    </button>
+    <div class="dropdown-menu dropdown-menu-start">
+        {% for name, social in shares %}
+            <a href="{{ social.shareUrl }}" class="dropdown-item popup {{ name }}">
+                <span>
+                    <i class="fa fa-{{ name }}"></i>
+                    Partager avec {{ name|upper }}
+                </span>
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+<button type="button" href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('app_login') : "#" }}"
+   class="btn btn-light participer btn-like-event {{ participer ? 'btn-primary'  }} {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion'  }}"
+   data-href="{{ path('app_user_like', {'id' : event.id}) }}">
+    <i class="fa fa-heart"></i>
+</button>
+
+<small class="ms-3 text-muted {{ count == 0 ? 'd-none'  }}">{{ count }} intérêt{{ count > 1 ? "s" : "" }}</small>

@@ -12,7 +12,7 @@ namespace App\Controller\City;
 
 use App\Annotation\ReverseProxy;
 use App\App\Location;
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Form\Type\SearchType;
@@ -102,7 +102,7 @@ class AgendaController extends BaseController
             return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getPageCount())]));
         }
 
-        return $this->render('City/Agenda/index.html.twig', [
+        return $this->render('city/agenda/index.html.twig', [
             'location' => $location,
             'placeName' => (null !== $place) ? $place->getNom() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,

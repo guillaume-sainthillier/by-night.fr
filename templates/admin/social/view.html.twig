@@ -1,0 +1,24 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block titre_admin 'Réseaux Sociaux' %}
+{% block title_admin 'Paramétrage des Réseaux Sociaux' %}
+
+{% block breadcrumb_admin -%}
+    {% do menu.addItem('Réseaux Sociaux', url('app_administration_info_edit', {'id': info.id})) %}
+{%- endblock %}
+
+{% block body_admin -%}
+    {% for service in ['facebook', 'twitter'] %}
+        <div class="bloc_config">
+            {% include 'social/social_info.html.twig' with { 'oAuth': oAuth, 'service': service } %}
+        </div>
+    {% endfor %}
+{%- endblock %}
+
+{% block css -%}
+    {{ encore_entry_link_tags('admin_infos') }}
+{%- endblock %}
+
+{% block js -%}
+    {{ encore_entry_script_tags('admin_infos') }}
+{%- endblock %}

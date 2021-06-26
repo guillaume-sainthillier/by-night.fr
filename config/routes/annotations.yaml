@@ -21,18 +21,9 @@ app.comments:
     prefix:   /commentaire
     type:     annotation
 
-app.legacy:
-    resource: '../../src/Controller/Legacy/'
-    type:     annotation
-
 app.admin:
     resource: '../../src/Controller/Admin/'
     prefix:   /_administration
-    type:     annotation
-
-app.search:
-    resource: '../../src/Controller/Search/'
-    prefix:   /recherche
     type:     annotation
 
 app.private:
@@ -48,4 +39,3 @@ app.city:
     resource: '../../src/Controller/City'
     prefix:   /{location}
     type:     annotation
-

@@ -1,0 +1,17 @@
+{% extends 'layouts/simple-stretch.html.twig' %}
+
+{% block title 'Inscription' %}
+
+{% block titre -%}
+    Rejoignez la communauté By Night
+{%- endblock %}
+
+{% block breadcrumb -%}
+    {% do menu.addItem("Inscription", url('app_register')) %}
+{%- endblock %}
+
+{% block meta_description 'Devenez membre de By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}
+
+{% block body %}
+    {% include 'registration/register-content.html.twig' with({'partial': false}) %}
+{% endblock %}

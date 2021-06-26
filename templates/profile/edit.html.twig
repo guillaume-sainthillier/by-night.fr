@@ -1,4 +1,4 @@
-{% extends "layouts/default.html.twig" %}
+{% extends 'layouts/default.html.twig' %}
 
 {% set user = app.user %}
 
@@ -19,7 +19,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#socials" aria-controls="socials">
-                <i class="fa fa-facebook"></i>
+                <i class="fab fa-facebook-f"></i>
                 <span class="d-none d-sm-block d-md-inline-block">Réseaux sociaux</span>
             </a>
         </li>
@@ -90,7 +90,7 @@
                 <div class="card-body">
                     {% for service in ['facebook', 'google', 'twitter'] %}
                         <div class="bloc_config">
-                            {% include "Social/social.html.twig" with { 'oAuth': app.user.oAuth, 'service': service } %}
+                            {% include 'social/social.html.twig' with { 'oAuth': app.user.oAuth, 'service': service } %}
                         </div>
                     {% endfor %}
                 </div>
@@ -135,5 +135,5 @@
 {%- endblock %}
 
 {% block modals %}
-    {% include "profile/_modal_delete.html.twig" %}
+    {% include 'profile/_modal_delete.html.twig' %}
 {% endblock %}

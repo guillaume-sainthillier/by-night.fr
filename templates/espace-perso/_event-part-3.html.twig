@@ -1,0 +1,21 @@
+{% extends 'city/widget/template.html.twig' %}
+
+{% block titre 'Lieux' %}
+{% block icone 'fa-map-marker' %}
+{% block widget_class 'active' %}
+
+{% block body %}
+    {{ form_row(form.placeName) }}
+    {{ form_row(form.adresse) }}
+
+    <div class="ms-2 ms-sm-5 mb-5">
+         {{ form_row(form.placeStreet) }}
+         {{ form_row(form.placePostalCode) }}
+         {{ form_row(form.placeCity) }}
+         {{ form_row(form.placeCountry) }}
+    </div>
+
+    <div id="map"></div>
+{% endblock %}
+
+{% block footer '' %}

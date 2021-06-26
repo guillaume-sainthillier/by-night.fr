@@ -1,0 +1,12 @@
+{% if events.totalItemCount > 0 %}
+    {% include 'city/event/block-preview-event.html.twig' with({'events': events, 'page': page}) %}
+    {% if events.paginationData.next is defined %}
+        <div class="text-center my-4">
+            <a id="paginate"
+               class="btn btn-outline-primary"
+               href="{{ path(app.request.get('_route'), routeParams) }}">
+               Plus d'événements
+            </a>
+        </div>
+    {% endif %}
+{% endif %}

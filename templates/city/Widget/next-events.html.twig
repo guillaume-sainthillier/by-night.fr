@@ -1,0 +1,11 @@
+{% extends 'city/widget/template-scrollable-horizontal.html.twig' %}
+
+{% block titre %}{{ event.placeName }} <small class="text-muted">Les prochaines sorties</small>{% endblock %}
+{% block icone %}fa-home{% endblock %}
+{% block body %}
+    {{ render_esi(path('app_widget_next_events', {
+        'slug': event.slug,
+        'id': event.id,
+        'location': event.locationSlug
+    } )) }}
+{% endblock %}

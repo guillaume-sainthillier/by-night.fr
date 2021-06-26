@@ -1,0 +1,53 @@
+{% extends 'espace-perso/layout.html.twig' %}
+
+{% block titre 'Créer un nouvel événement' %}
+{% block title 'Nouvel événement' %}
+
+{% block breadcrumb_espace -%}
+    {% do menu.addItem("Nouveau", url('app_event_new')) %}
+{%- endblock %}
+
+{% block body -%}
+    <div class="mb-4 mon_evenement">
+        {% block body_form %}
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+            <div class="row">
+                <div class="col-md-6">
+                    {% include 'espace-perso/_event-part-1.html.twig' %}
+                    {% include 'espace-perso/_event-part-4.html.twig' %}
+                </div>
+                <div class="col-md-6">
+                    {% include 'espace-perso/_event-part-2.html.twig' %}
+                    {% include 'espace-perso/_event-part-3.html.twig' %}
+                </div>
+            </div>
+            <hr />
+            <div class="mt-2">
+                <a class="btn btn-outline-secondary" href="{{ path('app_event_list') }}" title="Retourner à mes soirées">
+                    <i class="fa fa-chevron-left"></i>
+                    Retour
+                </a>
+                <button type="submit" class="ms-2 btn btn-primary btn-raised">
+                    <i class="fa fa-save"></i>
+                    Sauvegarder
+                </button>
+            </div>
+
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+        {% endblock %}
+    </div>
+{%- endblock %}
+
+{% block css -%}
+    {{ encore_entry_link_tags('espace_perso_event') }}
+{%- endblock %}
+
+{% block head_js -%}
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key={{ googleMapKey }}&language=fr&libraries=places"></script>
+{%- endblock %}
+
+{% block js -%}
+    {{ encore_entry_script_tags('espace_perso_event') }}
+{%- endblock %}

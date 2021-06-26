@@ -10,7 +10,7 @@
 
 namespace App\Controller\User;
 
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Entity\User;
 use App\Event\Events;
 use App\Event\UserCheckUrlEvent;
@@ -41,7 +41,7 @@ class DefaultController extends BaseController
         }
         $user = $userCheck->getUser();
 
-        return $this->render('User/index.html.twig', [
+        return $this->render('user/index.html.twig', [
             'user' => $user,
             'next_events' => $eventRepository->findAllNextEvents($user),
             'previous_events' => $eventRepository->findAllNextEvents($user, false),

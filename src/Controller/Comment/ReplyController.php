@@ -10,7 +10,7 @@
 
 namespace App\Controller\Comment;
 
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
@@ -29,7 +29,7 @@ class ReplyController extends BaseController
      */
     public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response
     {
-        return $this->render('Comment/Reply/list.html.twig', [
+        return $this->render('comment/reply/list.html.twig', [
             'comments' => $commentRepository->findAllReponses($comment, $page, self::REPLIES_PER_PAGE),
             'main_comment' => $comment,
             'nb_comments' => $commentRepository->findNBReponses($comment),
@@ -79,7 +79,7 @@ class ReplyController extends BaseController
             ]);
         }
 
-        return $this->render('Comment/Reply/post.html.twig', [
+        return $this->render('comment/reply/post.html.twig', [
             'comment' => $comment,
             'form' => $form->createView(),
         ]);

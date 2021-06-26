@@ -1,0 +1,15 @@
+{% extends 'city/widget/template-scrollable.html.twig' %}
+
+{% block titre %}À la une cette semaine{% endblock %}
+{% block widget_class %}{% endblock %}
+{% block widget_body_class 'p-0' %}
+{% block widget_attr %}id="une"{% endblock %}
+{% block icone %}fa-star{% endblock %}
+
+{% block body %}
+    <div class="list-group scroll-area-content">
+        {{ render_esi(controller('App\\Controller\\City\\WidgetsController::topEvents', {
+            'location': location.slug
+        })) }}
+    </div>
+{% endblock %}

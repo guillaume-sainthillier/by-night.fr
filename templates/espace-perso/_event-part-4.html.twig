@@ -1,0 +1,17 @@
+{% extends 'city/widget/template.html.twig' %}
+
+{% block titre 'Communiquez' %}
+{% block icone 'fa-bullhorn' %}
+{% block widget_class 'active' %}
+
+{% block body %}
+     {{ form_row(form.websiteContacts) }}
+     {{ form_row(form.phoneContacts) }}
+     {{ form_row(form.mailContacts) }}
+
+    {% if form.comment is defined %}
+        {{ form_row(form.comment) }}
+    {% endif %}
+{% endblock %}
+
+{% block footer '' %}

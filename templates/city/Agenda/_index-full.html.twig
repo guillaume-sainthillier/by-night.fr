@@ -1,0 +1,139 @@
+{% extends 'layouts/with-widget.html.twig' %}
+{% do fos_httpcache_tag(tags('location', location)) %}
+
+{%- block title -%}
+{% if placeName is not null %}Sortir à {{ placeName|capitalize -}}{% if place %}, {{ place.ville -}}{% endif %}
+{% elseif tag is not null %}{{- tag|capitalize -}}
+{% elseif type == 'exposition' %}Expositions
+{% elseif type == 'concert' %}Concerts
+{% elseif type == 'famille' %}Sorties familles
+{% elseif type == 'spectacle' %}Spectacles
+{% elseif type == 'etudiant' %}Soirées étudiantes
+{% else %}Événements{% endif %}
+{% if placeName is null %} {{ location.atName }}{% endif %}
+{% if page > 1 %} (Page {{ page }}){% endif %}
+{%- endblock -%}
+
+{%- block titre -%}
+    {% if placeName is not null %}Sortir à {{ placeName|capitalize -}}, {{ place.ville -}}
+    {% elseif tag is not null %}{{- tag|capitalize -}}
+    {% elseif type == 'exposition' %}Expositions
+    {% elseif type == 'concert' %}Concerts
+    {% elseif type == 'famille' %}Sorties familles
+    {% elseif type == 'spectacle' %}Spectacles
+    {% elseif type == 'etudiant' %}Soirées étudiantes
+    {% else %}Événements{% endif %}
+    {% if placeName is null %} {{ location.atName }}{% endif %}
+{%- endblock -%}
+
+{% block breadcrumb %}
+    {% if location.isCountry %}
+        {% do menu.addItem(location.country.displayName, url('app_agenda_index', {'location': location.country.slug})) %}
+    {% else %}
+        {% do menu.addItem(location.city.country.displayName, url('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.city.slug})) %}
+    {% endif %}
+    {% do menu.addItem('Agenda', url('app_agenda_agenda', {'location': location.slug})) %}
+
+    {% if placeName is not null %}
+        {% do menu.addItem(placeName|capitalize, url('app_agenda_place', {'slug' : placeSlug, 'location': location.slug})) %}
+    {% elseif tag is not null %}
+        {% do menu.addItem(tag|capitalize, url('app_agenda_tags', {'tag' : tag, 'location': location.slug})) %}
+    {% elseif type is not null %}
+        {% do menu.addItem(type|capitalize, url('app_agenda_sortir', {'type' : type, 'location': location.slug})) %}
+    {% endif %}
+    {% if page > 1 %}
+        {% do menu.addItem("Page " ~ page, url('app_agenda_agenda', {'page': page, 'location': location.slug})) %}
+    {% endif %}
+{% endblock %}
+
+{% block og_titre block('titre')|striptags %}
+
+{% block meta_description -%}
+    {{ block('titre')|striptags }}.
+    {% if location.isCountry %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir {{ location.country.atDisplayName }}.{% endif %}
+    {% if location.isCity %} L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir à {{ location.city.name }}.{% endif %}
+{%- endblock %}
+
+{% block metas %}
+    {% if events.paginationData.previous is defined %}
+        <link rel="prev" href="{{ url(app.request.get('_route'), routeParams|merge({'page': events.paginationData.previous})) }}" />
+    {% endif %}
+    {% if events.paginationData.next is defined %}
+        <link rel="next" href="{{ url(app.request.get('_route'), routeParams|merge({'page': events.paginationData.next})) }}" />
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div id="bottom-navigation" class="visible">
+        <ul id="custom-tab" class="nav nav-tabs nav-fill justify-content-center bg-primary" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" href="#agenda">
+                    <i class="fa fa-calendar"></i>
+                    <span>Agenda</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#une">
+                    <i class="fa fa-star"></i>
+                    <span>A la une</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#membres">
+                    <i class="fa fa-users"></i>
+                    <span>Membres</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#actus">
+                    <i class="fab fa-twitter"></i>
+                    <span>Actus</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="agenda" class="widget active" role="tabpanel" aria-labelledby="agenda-tab">
+        {% include 'city/agenda/_block-filters.html.twig' %}
+
+        {% if events.totalItemCount == 0 %}
+            <div class="alert alert-info">
+                <i class="fa fa-info-circle"></i>
+                Mince, on a trouvé aucun événement pour vos critères. Avez-vous essayé avec la recherche avancée ?
+            </div>
+        {% else %}
+            <h3 class="info">
+                <span class="badge bg-info">{{ events.totalItemCount }} événement{{ events.totalItemCount > 1 ? 's'  }}</span>
+            </h3>
+            {% include 'city/agenda/_index-content.html.twig' with({'partial': false}) %}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block widgets -%}
+    <!-- Twitter -->
+    {% include 'city/widget/twitter.html.twig' %}
+    <!-- ./Twitter -->
+
+    {% if social_manager.facebookIdPage %}
+        <!-- Facebook -->
+        {% include 'city/widget/facebook.html.twig' %}
+        <!-- ./Facebook -->
+    {% endif %}
+    <!-- Top Evénements -->
+    {% include 'city/widget/top-events.html.twig' %}
+    <!-- ./Top Evénements -->
+
+    <!-- Top Membres -->
+    {% include 'city/widget/top-members.html.twig' %}
+    <!-- ./Top Membres -->
+{%- endblock %}
+
+{% block css %}
+    {{ encore_entry_link_tags('agenda') }}
+{% endblock %}
+
+{% block js %}
+    {{ encore_entry_script_tags('agenda') }}
+{% endblock %}

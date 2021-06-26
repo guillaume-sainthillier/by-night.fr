@@ -1,0 +1,17 @@
+{% extends 'layouts/modal-form.html.twig' %}
+
+{% block titre -%}
+    Me déconnecter de {{ service|capitalize }}
+{%- endblock %}
+
+{% block form_action url %}
+
+{% block body -%}
+    <p class="lead">
+        Voulez-vous vraiment vous déconnecter de {{ service|capitalize }} ?
+    </p>
+{%- endblock %}
+
+{% block footer -%}
+    <input type="submit" class="btn btn-raised btn-primary" data-loading-text="Veuillez patienter..." value="Continuer" id="disconnect_social"/>
+{%- endblock %}

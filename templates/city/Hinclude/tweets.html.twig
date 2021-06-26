@@ -1,0 +1,88 @@
+{% if tweets|length %}
+    <ul id="tweet-list" class="tweet-list">
+        {% set displayedTweets = [] %}
+        {% for tweet in tweets %}
+            {% set originalTweet = tweet.retweeted_status is defined ? tweet.retweeted_status : tweet %}
+            {% set isRetweet = tweet.retweeted_status is defined %}
+            {% set dateTweet = tweet.created_at|datetime %}
+            {% set dateTweetInfos =  dateTweet|stats_diff_date %}
+            {% set userURL = 'https://twitter.com/' ~ tweet.user.screen_name %}
+            {% set tweetURL = 'https://twitter.com/' ~ tweet.user.screen_name ~ '/status/' ~ tweet.id %}
+            {% if originalTweet.id not in displayedTweets %}
+                {% set displayedTweets = displayedTweets|merge([originalTweet.id]) %}
+                <li id="tweet-{{ tweet.id }}" class="timeline-TweetList-tweet">
+                    <div class="timeline-Tweet {{ isRetweet ? 'timeline-Tweet--isRetweet'  }}">
+                        {% if isRetweet %}
+                            <div class="timeline-Tweet-retweetCredit">
+                                <div class="timeline-Tweet-retweetCreditIcon">
+                                    <i class="fa fa-retweet"></i>
+                                </div>
+                                {{ tweet.user.name }} a retweeté
+                            </div>
+                        {% endif %}
+                        <div class="timeline-Tweet-author">
+                            <div class="TweetAuthor">
+                                <a class="TweetAuthor-link" href="{{ userURL }}">
+                                <span class="TweetAuthor-avatar">
+                                    <img class="Avatar" src="{{ originalTweet.user.profile_image_url_https }}" alt="Avatar de @{{ originalTweet.user.screen_name }}">
+                                </span>
+                                    <span class="TweetAuthor-name"
+                                          title="{{ originalTweet.user.name }}">{{ originalTweet.user.name }}</span>
+                                    <span class="TweetAuthor-screenName"
+                                          title="@{{ originalTweet.user.screen_name }}">@{{ originalTweet.user.screen_name }}</span>
+                                </a>
+                            </div>
+                        </div>
+                        <p class="timeline-Tweet-text" dir="ltr">
+                            {{ originalTweet.text|tweet|raw }}
+                        </p>
+                        <div class="timeline-Tweet-metadata">
+                            <a href="{{ tweetURL }}" class="timeline-Tweet-timestamp">
+                                <time class="dt-updated" datetime="{{ dateTweet|date('c') }}"
+                                      title="Heure d'envoi : {{ dateTweet|format_datetime('long', 'long') }}"
+                                      aria-label="Publié {{ dateTweetInfos.full|lower }}">
+                                    {{ dateTweet|format_datetime('long', 'medium') }}
+                                </time>
+                            </a>
+                        </div>
+                        <ul class="timeline-Tweet-actions" data-scribe="component:actions" role="menu"
+                            aria-label="Actions du Tweet">
+                            <li class="timeline-Tweet-action">
+                                <a class="TweetAction TweetAction--reply web-intent"
+                                   href="https://twitter.com/intent/tweet?in_reply_to={{ tweet.id }}">
+                                    <div class="Icon Icon--reply TweetAction-icon" aria-label="Répondre"
+                                         title="Répondre" role="img">
+                                        <i class="fa fa-reply"></i>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="timeline-Tweet-action">
+                                <a class="TweetAction TweetAction--share web-intent"
+                                   href="https://twitter.com/intent/retweet?tweet_id={{ tweet.id }}">
+                                    <div class="Icon Icon--share TweetAction-icon" aria-label="Retweeter"
+                                         title="Retweeter" role="img">
+                                        <i class="fa fa-retweet"></i>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="timeline-Tweet-action">
+                                <a class="TweetAction TweetAction--heart web-intent"
+                                   href="https://twitter.com/intent/like?tweet_id={{ tweet.id }}">
+                                    <div class="Icon Icon--heart TweetAction-icon" aria-label="J'aime" title="J'aime"
+                                         role="img">
+                                        <i class="fa fa-heart-o"></i>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% if hasNextLink %}
+        <a class="more-content btn btn-outline-primary btn-block" rel="nofollow" href="{{ hasNextLink }}">Plus</a>
+    {% endif %}
+{% else %}
+    <p class="px-4 mb-0">Aucun tweet par ici !</p>
+{% endif %}

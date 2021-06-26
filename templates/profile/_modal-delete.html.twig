@@ -1,0 +1,21 @@
+{% extends 'layouts/modal.html.twig' %}
+
+{% block titre 'Confirmation de suppression' %}
+
+{% block body -%}
+    <div class="alert alert-warning">
+        <i class="fa fa-warning"></i>
+        Vous êtes sur le point de supprimer votre compte.
+        <strong> Cette action est irréversible !</strong>
+    </div>
+
+    {{ form_row(formDelete.delete_events, {'label': 'Supprimer mes événements'}) }}
+    {{ form_rest(formDelete) }}
+{%- endblock %}
+
+{% block footer -%}
+    <input class="btn btn-raised btn-danger" type="submit" value="Confirmer"/>
+{%- endblock %}
+
+{% block modal_id 'modalDelete' %}
+{% block form_action path('app_user_delete') %}

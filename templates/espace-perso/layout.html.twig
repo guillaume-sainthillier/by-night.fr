@@ -1,0 +1,6 @@
+{% extends 'layouts/default.html.twig' %}
+
+{% block breadcrumb %}
+    {% do menu.addItem("Mes événements", url('app_event_list')) %}
+    {% block breadcrumb_espace %}{% endblock %}
+{% endblock %}

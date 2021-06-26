@@ -1,0 +1,8 @@
+{% for key, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ key == "error" ? "danger" : key }}">
+            <i class="fa {{ key == 'info' ? 'fa-info-circle' : (key == 'error' ? 'fa-warning' : key == 'fa-success' ? 'fa-check' : key) }}"></i>
+            {{ message|trans|raw }}
+        </div>
+    {% endfor %}
+{% endfor %}

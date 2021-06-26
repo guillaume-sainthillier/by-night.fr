@@ -10,7 +10,7 @@
 
 namespace App\Controller\EspacePerso;
 
-use App\Controller\TBNController as BaseController;
+use App\Controller\AbstractController as BaseController;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\UserEvent;
@@ -41,7 +41,7 @@ class EventController extends BaseController
         $query = $eventRepository->findAllByUser($user);
         $events = $paginator->paginate($query, $page, self::EVENT_PER_PAGE);
 
-        return $this->render('EspacePerso/liste.html.twig', [
+        return $this->render('espace-perso/index.html.twig', [
             'events' => $events,
         ]);
     }
@@ -84,7 +84,7 @@ class EventController extends BaseController
             return $this->redirect($this->generateUrl('app_event_list'));
         }
 
-        return $this->render('EspacePerso/new.html.twig', [
+        return $this->render('espace-perso/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -109,7 +109,7 @@ class EventController extends BaseController
             return $this->redirect($this->generateUrl('app_event_list'));
         }
 
-        return $this->render('EspacePerso/edit.html.twig', [
+        return $this->render('espace-perso/edit.html.twig', [
             'form' => $form->createView(),
             'event' => $event,
         ]);
