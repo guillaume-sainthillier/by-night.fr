@@ -28,6 +28,9 @@ class AssetExtension extends Extension
         $this->secret = $secret;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getFunctions()
     {
         return [
@@ -36,7 +39,7 @@ class AssetExtension extends Extension
         ];
     }
 
-    public function thumb(?string $path, array $parameters = [], $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
+    public function thumb(?string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
         $parameters['fm'] = 'pjpg';
         if ('png' === substr($path, -3)) {
@@ -49,7 +52,7 @@ class AssetExtension extends Extension
         return $this->router->generate('thumb_url', $parameters, $referenceType);
     }
 
-    public function thumbAsset(string $path, array $parameters = [], $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
+    public function thumbAsset(string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
         $parameters['fm'] = 'pjpg';
         if ('png' === substr($path, -3)) {

@@ -37,6 +37,9 @@ abstract class AbstractAwinParser extends AbstractParser
 
     abstract protected function getInfoEvents(array $datas): array;
 
+    /**
+     * {@inheritDoc}
+     */
     public function parse(bool $incremental): void
     {
         $path = $this->downloadFile(str_replace('%key%', $this->awinApiKey, $this->getAwinUrl()));

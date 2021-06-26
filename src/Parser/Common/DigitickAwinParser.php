@@ -16,11 +16,17 @@ class DigitickAwinParser extends AbstractAwinParser
 {
     private const DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/22739/columns/aw_deep_link,product_name,aw_product_id,merchant_product_id,merchant_image_url,description,merchant_category,search_price,Tickets%3Aevent_date,Tickets%3Avenue_name,Tickets%3Avenue_address,Tickets%3Aevent_name,Tickets%3Alongitude,Tickets%3Alatitude,is_for_sale/format/xml-tree/compression/gzip/';
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getAwinUrl(): string
     {
         return self::DATAFEED_URL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getInfoEvents(array $datas): array
     {
         if ('0' === $datas['is_for_sale']) {
@@ -84,6 +90,9 @@ class DigitickAwinParser extends AbstractAwinParser
         return preg_replace($find, $replace, $text);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getParserName(): string
     {
         return 'SeeTickets (ex Digitick)';

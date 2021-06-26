@@ -8,14 +8,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class CityListener implements EventSubscriberInterface
+class CitySubscriber implements EventSubscriberInterface
 {
     /**
      * {@inheritdoc}

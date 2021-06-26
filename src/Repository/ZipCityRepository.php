@@ -31,12 +31,10 @@ class ZipCityRepository extends ServiceEntityRepository
      * @param string      $postalCode
      * @param string|null $city
      * @param string      $country
-     *
-     * @return ZipCity|null
      */
-    public function findByPostalCodeAndCity($postalCode, $city, $country = null)
+    public function findOneByPostalCodeAndCity($postalCode, $city, $country = null): ?ZipCity
     {
-        $cities = $this->findByPostalCodeOrCity($postalCode, $city, $country);
+        $cities = $this->findAllByPostalCodeOrCity($postalCode, $city, $country);
         if (1 === \count($cities)) {
             return $cities[0];
         }
@@ -45,20 +43,16 @@ class ZipCityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string|null $postalCode
-     * @param string|null $city
-     * @param string      $country
-     *
      * @return ZipCity[]
      */
-    private function findByPostalCodeOrCity($postalCode = null, $city = null, $country = null)
+    private function findAllByPostalCodeOrCity(?string $postalCode, ?string $city, ?string $countryId): array
     {
         $query = $this
             ->createQueryBuilder('zc');
 
-        if ($country) {
+        if ($countryId) {
             $query->where('zc.country = :country')
-                ->setParameter('country', $country);
+                ->setParameter('country', $countryId);
         }
 
         if ($postalCode) {
@@ -93,24 +87,23 @@ class ZipCityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string|null $city
-     * @param string      $country
+     * @param string $countryId
      *
      * @return ZipCity[]
      */
-    public function findByCity($city, $country = null)
+    public function findAllByCity(?string $city, ?string $countryId = null): array
     {
-        return $this->findByPostalCodeOrCity(null, $city, $country);
+        return $this->findAllByPostalCodeOrCity(null, $city, $countryId);
     }
 
     /**
      * @param string $postalCode
-     * @param string $country
+     * @param string $countryId
      *
      * @return ZipCity[]
      */
-    public function findByPostalCode($postalCode, $country = null)
+    public function findAllByPostalCode(?string $postalCode, ?string $countryId = null): array
     {
-        return $this->findByPostalCodeOrCity($postalCode, null, $country);
+        return $this->findAllByPostalCodeOrCity($postalCode, null, $countryId);
     }
 }

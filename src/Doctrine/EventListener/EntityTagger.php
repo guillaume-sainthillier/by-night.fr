@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\Doctrine\EventListener;
 
 use App\Entity\City;
 use App\Entity\Event;

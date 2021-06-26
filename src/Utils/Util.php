@@ -49,17 +49,17 @@ class Util
         $this->stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
     }
 
-    public function replaceNonNumericChars($string): string
+    public function replaceNonNumericChars(?string $string): string
     {
         return trim(preg_replace('/[^\d.-]/u', '', $string));
     }
 
-    public function replaceNonAlphanumericChars($string): string
+    public function replaceNonAlphanumericChars(?string $string): string
     {
         return trim(preg_replace('/[^A-Za-z0-9 ]/u', '', $string));
     }
 
-    public function deleteSpaceBetween($string, $delimiters = '-'): string
+    public function deleteSpaceBetween(?string $string, $delimiters = '-'): string
     {
         if (\is_string($delimiters) && isset($delimiters[0])) { //Strlen > 0
             return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
@@ -70,45 +70,42 @@ class Util
         return trim($string);
     }
 
-    public function deleteStopWords($string): string
+    public function deleteStopWords(?string $string): string
     {
         return trim(preg_replace($this->stopWordsRegex, ' ', $string));
     }
 
-    /**
-     * @return UnicodeString|null
-     */
-    public function deleteMultipleSpaces(?string $string): ?self
+    public function deleteMultipleSpaces(?string $string): ?string
     {
         if (null === $string) {
             return null;
         }
 
-        return u($string)->collapseWhitespace()->trim();
+        return u($string)->collapseWhitespace()->trim()->toString();
     }
 
     /**
      * @return UnicodeString|null
      */
-    public function utf8TitleCase(?string $string): ?self
+    public function utf8TitleCase(?string $string): ?string
     {
         if (null === $string) {
             return null;
         }
 
-        return u($string)->title(true)->trim();
+        return u($string)->title(true)->trim()->toString();
     }
 
     /**
      * @return UnicodeString|null
      */
-    public function utf8LowerCase(?string $string): ?self
+    public function utf8LowerCase(?string $string): ?string
     {
         if (null === $string) {
             return null;
         }
 
-        return u($string)->lower()->trim();
+        return u($string)->lower()->trim()->toString();
     }
 
     public function replaceAccents(?string $string): string

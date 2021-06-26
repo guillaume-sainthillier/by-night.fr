@@ -24,7 +24,7 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 class ProfileFormType extends AbstractType
 {
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -61,7 +61,7 @@ class ProfileFormType extends AbstractType
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {

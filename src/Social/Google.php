@@ -13,17 +13,23 @@ namespace App\Social;
 class Google extends Social
 {
     /**
-     * @return void
+     * {@inheritDoc}
      */
-    public function constructClient()
+    public function constructClient(): void
     {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getInfoPropertyPrefix(): ?string
     {
         return 'google';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getRoleName(): string
     {
         return 'ROLE_GOOGLE';

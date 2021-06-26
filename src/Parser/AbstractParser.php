@@ -33,11 +33,17 @@ abstract class AbstractParser implements ParserInterface
         $this->reservationsHandler = $reservationsHandler;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getName(): string
     {
         return sprintf('%s v%s', static::getParserName(), static::getParserVersion());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function publish(array $item): void
     {
         $item['from_data'] = static::getParserName();
@@ -50,6 +56,9 @@ abstract class AbstractParser implements ParserInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getParsedEvents(): int
     {
         return $this->parsedEvents;
@@ -63,6 +72,9 @@ abstract class AbstractParser implements ParserInterface
         ]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getParserVersion(): string
     {
         return '1.0';

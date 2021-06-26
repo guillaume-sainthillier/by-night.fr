@@ -10,7 +10,6 @@
 
 namespace App\Form\Extension;
 
-use Generator;
 use IntlDateFormatter;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -20,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class DateTypeExtension extends AbstractTypeExtension
 {
     /**
-     * @psalm-return Generator<int, DateType::class, mixed, void>
+     * {@inheritDoc}
      */
     public static function getExtendedTypes(): iterable
     {
@@ -28,7 +27,7 @@ class DateTypeExtension extends AbstractTypeExtension
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {

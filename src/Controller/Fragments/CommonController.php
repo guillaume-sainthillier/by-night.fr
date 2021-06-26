@@ -44,7 +44,7 @@ class CommonController extends AbstractController
     {
         $params = [];
         $repo = $cityRepository;
-        $params['cities'] = $repo->findRandomNames($country);
+        $params['cities'] = $repo->findAllRandomNames($country);
 
         return $this->render('fragments/footer.html.twig', $params);
     }

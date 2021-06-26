@@ -53,10 +53,7 @@ class UserHandler
         return md5_file($imagePath) !== md5($newContent);
     }
 
-    /**
-     * @return void
-     */
-    public function uploadFile(User $user, string $content, string $contentType)
+    public function uploadFile(User $user, string $content, string $contentType): void
     {
         if (null === $user->getOAuth()) {
             return;

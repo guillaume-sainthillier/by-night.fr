@@ -20,14 +20,14 @@ class Twitter extends Social
     private ?TwitterOAuth $client = null;
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
-    public function constructClient()
+    public function constructClient(): void
     {
         $this->client = new TwitterOAuth($this->id, $this->secret);
     }
 
-    public function getTimeline(Location $location, ?int $max_id, int $limit)
+    public function getTimeline(Location $location, ?int $max_id, int $limit): array
     {
         $this->init();
 
@@ -57,16 +57,25 @@ class Twitter extends Social
         return [];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getInfoProperties(): array
     {
         return ['id', 'accessToken', 'refreshToken', 'expires', 'realname', 'nickname', 'email', 'profilePicture'];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getInfoPropertyPrefix(): ?string
     {
         return 'twitter';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getRoleName(): string
     {
         return 'ROLE_TWITTER';

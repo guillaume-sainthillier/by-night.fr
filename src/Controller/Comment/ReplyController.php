@@ -30,9 +30,9 @@ class ReplyController extends BaseController
     public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response
     {
         return $this->render('comment/reply/list.html.twig', [
-            'comments' => $commentRepository->findAllReponses($comment, $page, self::REPLIES_PER_PAGE),
+            'comments' => $commentRepository->findAllAnswers($comment, $page, self::REPLIES_PER_PAGE),
             'main_comment' => $comment,
-            'nb_comments' => $commentRepository->findNBReponses($comment),
+            'nb_comments' => $commentRepository->getAnswersCount($comment),
             'page' => $page,
             'offset' => self::REPLIES_PER_PAGE,
         ]);
@@ -67,7 +67,7 @@ class ReplyController extends BaseController
                     'comment' => $reponse,
                     'success_confirmation' => true,
                 ]),
-                'nb_reponses' => $commentRepository->findNBReponses($comment),
+                'nb_reponses' => $commentRepository->getAnswersCount($comment),
             ]);
         } elseif ($form->isSubmitted()) {
             return new JsonResponse([

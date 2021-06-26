@@ -31,7 +31,7 @@ class DateExtension extends Extension
         return new DateTime($string);
     }
 
-    public function diffDate(DateTimeInterface $date)
+    public function diffDate(DateTimeInterface $date): string
     {
         return $this->statsDiffDate($date)['full'];
     }

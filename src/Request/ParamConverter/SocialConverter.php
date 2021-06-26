@@ -49,6 +49,9 @@ class SocialConverter implements ParamConverterInterface
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function supports(ParamConverter $configuration)
     {
         return Social::class === $configuration->getClass();

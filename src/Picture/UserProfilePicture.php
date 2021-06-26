@@ -30,7 +30,7 @@ class UserProfilePicture
         $this->packages = $packages;
     }
 
-    public function getOriginalProfilePicture(User $user): ?string
+    public function getOriginalProfilePicture(User $user): string
     {
         if ($user->getImage()->getName()) {
             return $this->packages->getUrl(
@@ -60,7 +60,7 @@ class UserProfilePicture
         return $this->packages->getUrl('build/images/empty_user.png');
     }
 
-    public function getProfilePicture(User $user, array $params = [])
+    public function getProfilePicture(User $user, array $params = []): string
     {
         if ($user->getImage()->getName()) {
             return $this->assetExtension->thumb($this->helper->asset($user, 'imageFile'), $params);
@@ -84,7 +84,7 @@ class UserProfilePicture
         return $this->getDefaultProfilePicture($params);
     }
 
-    public function getDefaultProfilePicture(array $params = [])
+    public function getDefaultProfilePicture(array $params = []): string
     {
         return $this->assetExtension->thumbAsset(
             $this->packages->getUrl('build/images/empty_user.png', 'local'),

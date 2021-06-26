@@ -70,7 +70,7 @@ class Cleaner
         return trim($step3);
     }
 
-    private function cleanPostalString(?string $string)
+    private function cleanPostalString(?string $string): string
     {
         return $this->cleanString($string, ['-']);
     }

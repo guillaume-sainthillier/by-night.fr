@@ -145,7 +145,7 @@ class DateRangeBuilder
     /**
      * @return false|string
      */
-    private function formatDate(DateTimeInterface $date)
+    private function formatDate(DateTimeInterface $date): string
     {
         $formatter = IntlDateFormatter::create(
             null,

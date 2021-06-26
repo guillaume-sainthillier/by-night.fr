@@ -36,5 +36,5 @@ abstract class Updater
         $this->client = HttpClient::create();
     }
 
-    abstract public function update(DateTimeInterface $from);
+    abstract public function update(DateTimeInterface $from): void;
 }

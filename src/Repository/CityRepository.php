@@ -14,6 +14,7 @@ use App\Entity\City;
 use App\Entity\Country;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -29,7 +30,7 @@ class CityRepository extends ServiceEntityRepository
         parent::__construct($registry, City::class);
     }
 
-    public function createQueryBuilder($alias, $indexBy = null)
+    public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
     {
         return parent::createQueryBuilder($alias, $indexBy)
             ->addSelect('p')
@@ -38,7 +39,7 @@ class CityRepository extends ServiceEntityRepository
             ->join($alias . '.country', 'country');
     }
 
-    public function findSiteMap(): iterable
+    public function findAllSitemap(): iterable
     {
         return parent::createQueryBuilder('c')
             ->select('c.slug')
@@ -49,7 +50,7 @@ class CityRepository extends ServiceEntityRepository
             ->toIterable();
     }
 
-    public function findTagSiteMap(): iterable
+    public function findAllSitemapTags(): iterable
     {
         return parent::createQueryBuilder('c')
             ->select('c.slug, e.typeManifestation, e.categorieManifestation, e.themeManifestation')
@@ -63,9 +64,9 @@ class CityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @psalm-return list<mixed>
+     * @return string[]
      */
-    public function findRandomNames(Country $country = null, $limit = 5): array
+    public function findAllRandomNames(Country $country = null, $limit = 5): array
     {
         $qb = parent::createQueryBuilder('c')
             ->select('c.name, c.slug, c2.name AS country')
@@ -88,7 +89,7 @@ class CityRepository extends ServiceEntityRepository
         return \array_slice($results, 0, $limit);
     }
 
-    public function findByName(?string $city, ?string $country = null)
+    public function findAllByName(?string $city, ?string $country = null): array
     {
         $cities = [];
         $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
@@ -121,7 +122,7 @@ class CityRepository extends ServiceEntityRepository
     /**
      * @param scalar|null $slug
      */
-    public function findBySlug($slug)
+    public function findOneBySlug($slug): ?City
     {
         return parent::createQueryBuilder('c')
             ->where('c.slug = :slug')

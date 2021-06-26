@@ -10,7 +10,6 @@
 
 namespace App\Form\Extension;
 
-use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -23,7 +22,7 @@ use Vich\UploaderBundle\Form\Type\VichFileType;
 class CollectionEntryExtension extends AbstractTypeExtension
 {
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
@@ -31,7 +30,7 @@ class CollectionEntryExtension extends AbstractTypeExtension
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -41,7 +40,7 @@ class CollectionEntryExtension extends AbstractTypeExtension
     }
 
     /**
-     * @psalm-return Generator<int, string, mixed, void>
+     * {@inheritDoc}
      */
     public static function getExtendedTypes(): iterable
     {

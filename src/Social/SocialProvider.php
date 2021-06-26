@@ -37,9 +37,8 @@ class SocialProvider
 
     /**
      * @param $name
-     * @param string $default_facebook_name
      */
-    public function getSocial($name, $default_facebook_name = self::FACEBOOK): Social
+    public function getSocial(string $name, string $default_facebook_name = self::FACEBOOK): Social
     {
         if (self::FACEBOOK === $name) {
             $name = $default_facebook_name;

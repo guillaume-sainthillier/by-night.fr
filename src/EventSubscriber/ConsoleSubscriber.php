@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use App\Utils\Monitor;
 use Symfony\Component\Console\ConsoleEvents;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-class ConsoleListener implements EventSubscriberInterface
+class ConsoleSubscriber implements EventSubscriberInterface
 {
     private int $monitor;
 
@@ -29,6 +29,9 @@ class ConsoleListener implements EventSubscriberInterface
         $this->monitor = $monitor;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function getSubscribedEvents()
     {
         return [

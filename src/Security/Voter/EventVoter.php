@@ -29,7 +29,10 @@ class EventVoter extends Voter
         $this->security = $security;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    /**
+     * {@inheritDoc}
+     */
+    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
     {
         $user = $token->getUser();
 
@@ -56,12 +59,15 @@ class EventVoter extends Voter
         return $event->getUser() === $user;
     }
 
-    private function canDelete(Event $event, User $user)
+    private function canDelete(Event $event, User $user): bool
     {
         return $this->canEdit($event, $user);
     }
 
-    protected function supports($attribute, $subject)
+    /**
+     * {@inheritDoc}
+     */
+    protected function supports(string $attribute, $subject)
     {
         return $subject instanceof Event;
     }

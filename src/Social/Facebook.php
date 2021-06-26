@@ -17,9 +17,9 @@ class Facebook extends Social
     protected Client $client;
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
-    protected function constructClient()
+    protected function constructClient(): void
     {
         $this->client = new Client([
             'app_id' => $this->id,
@@ -27,11 +27,17 @@ class Facebook extends Social
         ]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getInfoPropertyPrefix(): ?string
     {
         return 'facebook';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getRoleName(): string
     {
         return 'ROLE_FACEBOOK';

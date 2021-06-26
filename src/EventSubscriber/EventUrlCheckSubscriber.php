@@ -33,6 +33,16 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
         $this->eventRepository = $eventRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            Events::CHECK_EVENT_URL => 'onEventCheck',
+        ];
+    }
+
     public function onEventCheck(EventCheckUrlEvent $e): void
     {
         //Old route handle
@@ -69,12 +79,5 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
 
         //All is ok :-)
         $e->setEvent($event);
-    }
-
-    public static function getSubscribedEvents()
-    {
-        return [
-            Events::CHECK_EVENT_URL => 'onEventCheck',
-        ];
     }
 }

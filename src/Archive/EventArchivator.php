@@ -71,7 +71,7 @@ class EventArchivator
     /**
      * @throws NonUniqueResultException
      */
-    private function countObjects(QueryBuilder $queryBuilder)
+    private function countObjects(QueryBuilder $queryBuilder): int
     {
         /* Clone the query builder before altering its field selection and DQL,
          * lest we leave the query builder in a bad state for fetchSlice().
@@ -79,7 +79,7 @@ class EventArchivator
         $qb = clone $queryBuilder;
         $rootAliases = $queryBuilder->getRootAliases();
 
-        return $qb
+        return (int) $qb
             ->select($qb->expr()->count($rootAliases[0]))
             // Remove ordering for efficiency; it doesn't affect the count
             ->resetDQLPart('orderBy')

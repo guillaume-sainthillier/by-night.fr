@@ -8,14 +8,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Form\EventListener;
+namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class ReCaptchaListener implements EventSubscriberInterface
+class ReCaptchaSubscriber implements EventSubscriberInterface
 {
     private RequestStack  $requestStack;
 

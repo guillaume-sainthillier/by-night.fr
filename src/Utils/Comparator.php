@@ -24,10 +24,7 @@ class Comparator
         $this->util = $util;
     }
 
-    /**
-     * @return Place|null
-     */
-    public function getBestPlace(array $places, Place $testedPlace = null, $minScore = 90)
+    public function getBestPlace(array $places, Place $testedPlace = null, $minScore = 90): ?Place
     {
         if (null === $testedPlace) {
             return null;
@@ -99,7 +96,7 @@ class Comparator
         return 0;
     }
 
-    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, ?string $b = null, City $cityB = null, ZipCity $zipCityB = null)
+    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, ?string $b = null, City $cityB = null, ZipCity $zipCityB = null): int
     {
         if ($a && $a === $b) {
             return 100;
@@ -123,7 +120,7 @@ class Comparator
         return $this->getMatchingScore($a, $b);
     }
 
-    public function sanitize(string $string)
+    public function sanitize(string $string): string
     {
         return Monitor::bench('Sanitize', function () use ($string) {
             $string = $this->util->deleteStopWords($string);
@@ -137,7 +134,7 @@ class Comparator
         });
     }
 
-    private function getMatchingScore($a, $b)
+    private function getMatchingScore($a, $b): int
     {
         $pourcentage = 0;
         // = strlen > 0
@@ -162,12 +159,12 @@ class Comparator
     /**
      * @return float|int
      */
-    private function getDiffPourcentage($a, $b)
+    private function getDiffPourcentage($a, $b): int
     {
-        return (1 - levenshtein($a, $b) / max(mb_strlen($a), mb_strlen($b))) * 100;
+        return (int) ((1 - levenshtein($a, $b) / max(mb_strlen($a), mb_strlen($b))) * 100);
     }
 
-    private function getMatchingScoreRue(?string $a, ?string $b)
+    private function getMatchingScoreRue(?string $a, ?string $b): int
     {
         if ($a && $a === $b) {
             return 100;
@@ -179,7 +176,7 @@ class Comparator
         return $this->getMatchingScore($trimedA, $trimedB);
     }
 
-    public function sanitizeRue($string): string
+    public function sanitizeRue(?string $string): string
     {
         $step1 = $this->util->utf8LowerCase($string);
         $step2 = $this->util->replaceAccents($step1);
@@ -193,7 +190,7 @@ class Comparator
         return preg_replace('/\D/', '', $string);
     }
 
-    public function sanitizeVille($string)
+    public function sanitizeVille(?string $string): string
     {
         $string = preg_replace("#(^|[\s-]+)st([\s-]+)#i", 'saint', $string);
         $string = str_replace(' ', '', $string);

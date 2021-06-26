@@ -52,6 +52,6 @@ class AppImagesUpdateCommand extends Command
         Monitor::writeln('Mise à jour des images <info>utilisateur</info>');
         $this->userUpdater->update($from);
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

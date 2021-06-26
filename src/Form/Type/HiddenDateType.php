@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class HiddenDateType extends DateType
 {
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
@@ -28,7 +28,7 @@ class HiddenDateType extends DateType
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {

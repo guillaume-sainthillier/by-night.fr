@@ -10,7 +10,7 @@
 
 namespace App\Form\Type;
 
-use App\Form\EventListener\ReCaptchaListener;
+use App\EventSubscriber\ReCaptchaSubscriber;
 use App\Validator\Constraints\ReCaptchaResponse;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,24 +20,24 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class ReCaptchaType extends AbstractType
 {
     private string $siteKey;
-    private ReCaptchaListener $reCaptchaListener;
+    private ReCaptchaSubscriber $reCaptchaSubscriber;
 
-    public function __construct(string $siteKey, ReCaptchaListener $reCaptchaListener)
+    public function __construct(string $siteKey, ReCaptchaSubscriber $reCaptchaSubscriber)
     {
         $this->siteKey = $siteKey;
-        $this->reCaptchaListener = $reCaptchaListener;
+        $this->reCaptchaSubscriber = $reCaptchaSubscriber;
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->addEventSubscriber($this->reCaptchaListener);
+        $builder->addEventSubscriber($this->reCaptchaSubscriber);
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {

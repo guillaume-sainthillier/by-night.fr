@@ -8,13 +8,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use FOS\ElasticaBundle\Event\IndexPopulateEvent;
 use FOS\ElasticaBundle\Index\IndexManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class PopulateListener implements EventSubscriberInterface
+class PopulateSubscriber implements EventSubscriberInterface
 {
     private IndexManager $indexManager;
 
@@ -23,6 +23,9 @@ class PopulateListener implements EventSubscriberInterface
         $this->indexManager = $indexManager;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function getSubscribedEvents()
     {
         return [

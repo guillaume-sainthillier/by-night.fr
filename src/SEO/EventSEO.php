@@ -72,14 +72,14 @@ class EventSEO
     /**
      * @return false|string
      */
-    private function formatDate(DateTimeInterface $date, int $dateFormat, int $timeFormat)
+    private function formatDate(DateTimeInterface $date, int $dateFormat, int $timeFormat): string
     {
         $formatter = IntlDateFormatter::create(null, $dateFormat, $timeFormat);
 
         return $formatter->format($date->getTimestamp());
     }
 
-    public function getEventFullTitle(Event $event)
+    public function getEventFullTitle(Event $event): ?string
     {
         $title = $this->getEventShortTitle($event);
 

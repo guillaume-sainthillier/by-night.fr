@@ -30,11 +30,17 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         $this->cache = $memoryCache;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getAwinUrl(): string
     {
         return self::DATAFEED_URL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getInfoEvents(array $datas): array
     {
         if ('0' === $datas['is_for_sale'] || '' === trim($datas['custom_2'])) {
@@ -110,6 +116,9 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getParserName(): string
     {
         return 'Fnac Spectacles';

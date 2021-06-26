@@ -59,10 +59,7 @@ class EventHandler
         }
     }
 
-    /**
-     * @return void
-     */
-    public function handleDownload(Event $event)
+    public function handleDownload(Event $event): void
     {
         $url = $event->getUrl();
         try {
@@ -98,10 +95,8 @@ class EventHandler
 
     /**
      * @throws UnsupportedFileException
-     *
-     * @return void
      */
-    private function uploadFile(Event $event, string $content)
+    private function uploadFile(Event $event, string $content): void
     {
         $tempFileBasename = ($event->getId() ?: uniqid());
         $tempFilePath = $this->tempPath . DIRECTORY_SEPARATOR . $tempFileBasename;
@@ -135,10 +130,7 @@ class EventHandler
         $event->setImageSystemFile($file);
     }
 
-    /**
-     * @return Event
-     */
-    public function handle(array $persistedEvents, array $persistedPlaces, Event $event)
+    public function handle(array $persistedEvents, array $persistedPlaces, Event $event): Event
     {
         $place = Monitor::bench('Handle Place', fn () => $this->handlePlace($persistedPlaces, $event->getPlace()));
         $event->setPlace($place);
@@ -146,7 +138,7 @@ class EventHandler
         return Monitor::bench('Handle Event', fn () => $this->handleEvent($persistedEvents, $event));
     }
 
-    public function handlePlace(array $persistedPlaces, Place $notPersistedPlace)
+    public function handlePlace(array $persistedPlaces, Place $notPersistedPlace): Place
     {
         $bestPlace = Monitor::bench('getBestPlace', fn () => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
 
@@ -154,7 +146,7 @@ class EventHandler
         return Monitor::bench('mergePlace', fn () => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
     }
 
-    public function handleEvent(array $persistedEvents, Event $notPersistedEvent)
+    public function handleEvent(array $persistedEvents, Event $notPersistedEvent): Event
     {
         $bestEvent = \count($persistedEvents) > 0 ? current($persistedEvents) : null;
 

@@ -18,14 +18,12 @@ class CityElasticaRepository extends Repository
 {
     /**
      * @param string $q
-     *
-     * @return PaginatorAdapterInterface
      */
-    public function findWithSearch($q)
+    public function findWithSearch(?string $q): PaginatorAdapterInterface
     {
         $query = new MultiMatch();
         $query
-            ->setQuery($q)
+            ->setQuery($q ?? '')
             ->setFields([
                 'name',
                 'parent.name',

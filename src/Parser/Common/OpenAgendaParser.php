@@ -43,11 +43,17 @@ class OpenAgendaParser extends AbstractParser
         $this->client = HttpClient::create();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getParserName(): string
     {
         return 'Open Agenda';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function parse(bool $incremental): void
     {
         //Fetch event uids from public.opendatasoft.com

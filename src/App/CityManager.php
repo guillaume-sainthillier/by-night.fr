@@ -74,7 +74,7 @@ class CityManager
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
         if ($currentRequest->cookies->has('app_city')) {
-            $this->cookieCity = $this->cityRepository->findBySlug($currentRequest->cookies->get('app_city'));
+            $this->cookieCity = $this->cityRepository->findOneBySlug($currentRequest->cookies->get('app_city'));
         } else {
             $this->cookieCity = null;
         }

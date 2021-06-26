@@ -43,7 +43,7 @@ class SearchType extends AbstractType
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
@@ -52,7 +52,7 @@ class SearchType extends AbstractType
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -80,7 +80,7 @@ class SearchType extends AbstractType
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {

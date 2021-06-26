@@ -71,7 +71,7 @@ class WidgetsController extends BaseController
         }
         $event = $eventCheck->getEvent();
 
-        $count = $eventRepository->findAllNextCount($event);
+        $count = $eventRepository->getAllNextCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -108,7 +108,7 @@ class WidgetsController extends BaseController
             return $eventCheck->getResponse();
         }
         $event = $eventCheck->getEvent();
-        $count = $eventRepository->findAllSimilarsCount($event);
+        $count = $eventRepository->getAllSimilarsCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -139,7 +139,7 @@ class WidgetsController extends BaseController
     public function topEvents(Location $location, EventRepository $eventRepository, int $page = 1): Response
     {
         $current = $page * self::WIDGET_ITEM_LIMIT;
-        $count = $eventRepository->findTopEventCount($location);
+        $count = $eventRepository->getTopEventCount($location);
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('app_widget_top_events', [

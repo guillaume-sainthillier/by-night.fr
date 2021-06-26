@@ -35,11 +35,17 @@ class SowProgParser extends AbstractParser
         ]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getParserName(): string
     {
         return 'Sow Prog';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function parse(bool $incremental): void
     {
         $modifiedSince = $incremental ? 1_000 * ((time() - 86_400)) : 0;

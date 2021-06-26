@@ -35,6 +35,9 @@ class LocationConverter implements ParamConverterInterface
         $this->countryRepository = $countryRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function apply(Request $request, ParamConverter $configuration): void
     {
         $locationSlug = $request->attributes->get('location', '');
@@ -62,7 +65,7 @@ class LocationConverter implements ParamConverterInterface
         $location = new Location();
         $entity = null;
         if (0 !== strpos((string) $locationSlug, 'c--')) {
-            $entity = $this->cityRepository->findBySlug($locationSlug);
+            $entity = $this->cityRepository->findOneBySlug($locationSlug);
         } else {
             $entity = $this->countryRepository->findOneBy(['slug' => $locationSlug]);
         }
@@ -80,6 +83,9 @@ class LocationConverter implements ParamConverterInterface
         $request->attributes->set($configuration->getName(), $location);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function supports(ParamConverter $configuration)
     {
         return Location::class === $configuration->getClass();

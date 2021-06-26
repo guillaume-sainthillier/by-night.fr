@@ -52,11 +52,17 @@ class DataTourismeParser extends AbstractParser
             ->getPropertyAccessor();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getParserName(): string
     {
         return 'Data Tourisme';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function parse(bool $incremental): void
     {
         $url = $incremental ? self::INCREMENTAL_WEBSERVICE_FEED : self::UPCOMING_WEBSERVICE_FEED;
@@ -313,6 +319,9 @@ class DataTourismeParser extends AbstractParser
         return $mapping[$type] ?? null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getParserVersion(): string
     {
         return '1.2';

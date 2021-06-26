@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use App\Annotation\ReverseProxy;
 use DateTime;
@@ -17,7 +17,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class ReverseProxyListener implements EventSubscriberInterface
+class ReverseProxySubscriber implements EventSubscriberInterface
 {
     private bool $debug;
 
@@ -36,10 +36,7 @@ class ReverseProxyListener implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @return void
-     */
-    public function onKernelResponse(ResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event): void
     {
         if ($this->debug) {
             return;

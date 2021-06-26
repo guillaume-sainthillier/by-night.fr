@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use App\Entity\User;
 use DateTime;
@@ -17,7 +17,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
 
-class UserLastLoginListener implements EventSubscriberInterface
+class UserLastLoginSubscriber implements EventSubscriberInterface
 {
     private EntityManagerInterface $entityManager;
 
@@ -36,10 +36,7 @@ class UserLastLoginListener implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @return void
-     */
-    public function onInteractiveLogin(InteractiveLoginEvent $event)
+    public function onInteractiveLogin(InteractiveLoginEvent $event): void
     {
         $user = $event->getAuthenticationToken()->getUser();
         if (!$user instanceof User) {

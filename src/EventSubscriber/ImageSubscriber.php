@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use App\File\DeletableFile;
 use App\Producer\PurgeCdnCacheUrlProducer;
@@ -19,7 +19,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
-class ImageListener implements EventSubscriberInterface
+class ImageSubscriber implements EventSubscriberInterface
 {
     private array $paths = [];
 
@@ -36,6 +36,9 @@ class ImageListener implements EventSubscriberInterface
         $this->removeImageThumbnailsProducer = $removeImageThumbnailsProducer;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -47,11 +50,7 @@ class ImageListener implements EventSubscriberInterface
     }
 
     // Remove manual uploads from container
-
-    /**
-     * @return void
-     */
-    public function onImageUpload(Event $event)
+    public function onImageUpload(Event $event): void
     {
         //file become an instance of File just after upload, we have to track it before the change
         $file = $event->getMapping()->getFile($event->getObject());

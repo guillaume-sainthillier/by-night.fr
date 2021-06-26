@@ -20,9 +20,9 @@ class FacebookAdmin extends Facebook
     private bool $_isInitialized = false;
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
-    protected function init()
+    protected function init(): void
     {
         parent::init();
 

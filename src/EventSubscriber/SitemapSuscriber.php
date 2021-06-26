@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\EventSubscriber;
 
 use App\Entity\User;
 use App\Repository\CityRepository;
@@ -79,7 +79,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerTagRoutes($section): void
     {
-        $events = $this->cityRepository->findTagSiteMap();
+        $events = $this->cityRepository->findAllSitemapTags();
 
         $cache = [];
         $lastSlug = null;
@@ -118,7 +118,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerAgendaRoutes($section): void
     {
-        $cities = $this->cityRepository->findSiteMap();
+        $cities = $this->cityRepository->findAllSitemap();
 
         foreach ($cities as $city) {
             $city = current($city);
@@ -134,7 +134,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerPlacesRoutes($section): void
     {
-        $places = $this->placeRepository->findSiteMap();
+        $places = $this->placeRepository->findAllSitemap();
 
         foreach ($places as $place) {
             $place = current($place);
@@ -154,7 +154,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerEventRoutes($section): void
     {
-        $nbEvents = $this->eventRepository->findSiteMapCount();
+        $nbEvents = $this->eventRepository->getSiteMapCount();
         $nbPages = ceil($nbEvents / self::ITEMS_PER_PAGE);
 
         for ($i = 0; $i < $nbPages; ++$i) {
@@ -180,7 +180,7 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private function registerUserRoutes($section): void
     {
-        $users = $this->userRepository->findSiteMap();
+        $users = $this->userRepository->findAllSitemap();
         foreach ($users as $user) {
             /** @var User $user */
             $user = $user[0];

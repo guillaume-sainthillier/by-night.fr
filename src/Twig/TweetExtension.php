@@ -22,7 +22,7 @@ class TweetExtension extends Extension
         ];
     }
 
-    public function tweet($tweet): ?string
+    public function tweet(?string $tweet): ?string
     {
         $linkified = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
         $hashified = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';

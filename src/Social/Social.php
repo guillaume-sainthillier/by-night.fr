@@ -133,10 +133,7 @@ abstract class Social
         return ['id', 'accessToken', 'refreshToken', 'expires', 'realname', 'email', 'profilePicture'];
     }
 
-    /**
-     * @return void
-     */
-    protected function init()
+    protected function init(): void
     {
         if (!$this->isInitialized) {
             $this->isInitialized = true;
@@ -144,5 +141,5 @@ abstract class Social
         }
     }
 
-    abstract protected function constructClient();
+    abstract protected function constructClient(): void;
 }

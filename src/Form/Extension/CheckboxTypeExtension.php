@@ -16,13 +16,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CheckboxTypeExtension extends AbstractTypeExtension
 {
+    /**
+     * {@inheritDoc}
+     */
     public static function getExtendedTypes(): iterable
     {
         return [CheckboxType::class];
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {

@@ -32,7 +32,7 @@ class WidgetsController extends BaseController
      */
     public function topUsers(UserRepository $userRepository, int $page = 1): Response
     {
-        $count = $userRepository->findMembresCount();
+        $count = $userRepository->getCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_users', [
@@ -40,7 +40,7 @@ class WidgetsController extends BaseController
         ]) : null;
 
         return $this->render('location/hinclude/top-users.html.twig', [
-            'users' => $userRepository->findTopUsers($page, self::WIDGET_ITEM_LIMIT),
+            'users' => $userRepository->findAllTopUsers($page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
             'count' => $count,

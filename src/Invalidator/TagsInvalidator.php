@@ -109,10 +109,7 @@ class TagsInvalidator
         return sprintf('place-%d', $place->getId());
     }
 
-    /**
-     * @return void
-     */
-    public function flush()
+    public function flush(): void
     {
         if ($this->debug) {
             unset($this->tags); //Call GC

@@ -70,6 +70,6 @@ class AppEventsImportCommand extends Command
             $nbEvents
         ));
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

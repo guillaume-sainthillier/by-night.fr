@@ -27,14 +27,14 @@ class Monitor
 
     private static array $stats = [];
 
-    public static function createProgressBar($nbSteps): void
+    public static function createProgressBar(int $nbSteps): void
     {
         if (null !== self::$output) {
             static::$progressBar = new ProgressBar(self::$output, $nbSteps);
         }
     }
 
-    public static function advanceProgressBar($step = 1): void
+    public static function advanceProgressBar(int $step = 1): void
     {
         if (null !== static::$progressBar) {
             static::$progressBar->advance($step);
@@ -60,10 +60,7 @@ class Monitor
         }
     }
 
-    /**
-     * @return void
-     */
-    public static function displayTable(array $datas)
+    public static function displayTable(array $datas): void
     {
         if (!self::$enableMonitoring) {
             return;
@@ -77,10 +74,7 @@ class Monitor
             ->render();
     }
 
-    /**
-     * @return void
-     */
-    public static function displayStats()
+    public static function displayStats(): void
     {
         if (!self::$enableMonitoring) {
             return;

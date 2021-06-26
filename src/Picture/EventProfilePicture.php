@@ -36,7 +36,7 @@ class EventProfilePicture
         $this->packages = $packages;
     }
 
-    public function getOriginalPicture(Event $event): ?string
+    public function getOriginalPicture(Event $event): string
     {
         if ($event->getImage()->getName()) {
             return $this->packages->getUrl(
@@ -83,7 +83,7 @@ class EventProfilePicture
         return $this->packages->getUrl('build/images/empty_event.png');
     }
 
-    public function getPicture(Event $event, array $params = [])
+    public function getPicture(Event $event, array $params = []): string
     {
         if ($event->getImage()->getName()) {
             return $this->assetExtension->thumb($this->helper->asset($event, 'imageFile'), $params);

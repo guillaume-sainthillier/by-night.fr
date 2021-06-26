@@ -31,11 +31,7 @@ class Thumb extends BaseManipulator
     }
 
     /**
-     * Perform background image manipulation.
-     *
-     * @param Image $image the source image
-     *
-     * @return Image the manipulated image
+     * {@inheritDoc}
      */
     public function run(Image $image)
     {

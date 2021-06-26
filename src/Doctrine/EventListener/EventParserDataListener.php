@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\EventListener;
+namespace App\Doctrine\EventListener;
 
 use App\Entity\Event;
 use App\Entity\ParserData;
@@ -26,10 +26,7 @@ class EventParserDataListener
         $this->parserDataRepository = $parserDataRepository;
     }
 
-    /**
-     * @return void
-     */
-    public function preRemove(LifecycleEventArgs $args)
+    public function preRemove(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         if (!$entity instanceof Event || null === $entity->getExternalId()) {

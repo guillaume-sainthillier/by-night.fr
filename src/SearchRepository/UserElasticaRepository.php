@@ -22,7 +22,7 @@ class UserElasticaRepository extends Repository
         $query = new BoolQuery();
 
         $match = new MultiMatch();
-        $match->setQuery($q)
+        $match->setQuery($q ?? '')
             ->setFields(['username', 'firstname', 'lastname'])
             ->setMinimumShouldMatch('80%');
 

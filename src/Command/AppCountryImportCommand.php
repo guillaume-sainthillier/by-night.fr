@@ -102,6 +102,6 @@ class AppCountryImportCommand extends Command
             $input->getArgument('locale')
         );
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

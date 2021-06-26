@@ -19,11 +19,17 @@ class ToulouseParser extends AbstractParser
 {
     private const DOWNLOAD_URL = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true';
 
+    /**
+     * {@inheritDoc}
+     */
     public static function getParserName(): string
     {
         return 'Toulouse';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function parse(bool $incremental): void
     {
         $fichier = $this->downloadCSV();

@@ -53,7 +53,7 @@ class Firewall
         $this->parserDatas[$parserData->getExternalId()] = $parserData->setReject($reject);
     }
 
-    public function hasPlaceToBeUpdated(ParserData $parserData, Event $event)
+    public function hasPlaceToBeUpdated(ParserData $parserData, Event $event): bool
     {
         return $this->hasExplorationToBeUpdated($parserData, $event);
     }
@@ -201,7 +201,7 @@ class Firewall
         }
     }
 
-    private function checkLengthValidity($str, int $length): bool
+    private function checkLengthValidity(?string $str, int $length): bool
     {
         return mb_strlen($this->comparator->sanitize($str)) === $length;
     }
@@ -222,10 +222,7 @@ class Firewall
         }
     }
 
-    /**
-     * @return void
-     */
-    public function filterEventExploration(ParserData $parserData, Event $event)
+    public function filterEventExploration(ParserData $parserData, Event $event): void
     {
         $reject = $parserData->getReject();
 

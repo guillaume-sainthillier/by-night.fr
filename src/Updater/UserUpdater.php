@@ -36,9 +36,9 @@ class UserUpdater extends Updater
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
-    public function update(DateTimeInterface $from)
+    public function update(DateTimeInterface $from): void
     {
         $repo = $this->userRepository;
         $count = $repo->getUserFbIdsCount($from);

@@ -160,7 +160,7 @@ class EchantillonHandler
     /**
      * @return Place[]
      */
-    public function getPlaceEchantillons(Event $event)
+    public function getPlaceEchantillons(Event $event): array
     {
         if (null !== $event->getPlace()) {
             $place = $this->searchPlaceByExternalId($event->getPlace()->getExternalId());

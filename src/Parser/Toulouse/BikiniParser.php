@@ -23,6 +23,9 @@ class BikiniParser extends AbstractParser
         return 'Bikini';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function parse(bool $incremental): void
     {
         //Récupère les différents liens à parser depuis le flux RSS

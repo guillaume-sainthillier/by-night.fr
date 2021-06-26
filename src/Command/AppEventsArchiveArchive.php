@@ -48,6 +48,6 @@ class AppEventsArchiveArchive extends Command
     {
         $this->eventArchivator->archive();
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

@@ -43,7 +43,7 @@ class CommentController extends BaseController
         }
 
         return $this->render('comment/list-and-form.html.twig', [
-            'nb_comments' => $commentRepository->findNBCommentaires($event),
+            'nb_comments' => $commentRepository->getCommentsCount($event),
             'comments' => $commentRepository->findAllByEvent($event, $page, self::COMMENTS_PER_PAGE),
             'event' => $event,
             'page' => $page,
@@ -59,7 +59,7 @@ class CommentController extends BaseController
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         return $this->render('comment/list.html.twig', [
-            'nb_comments' => $commentRepository->findNBCommentaires($event),
+            'nb_comments' => $commentRepository->getCommentsCount($event),
             'comments' => $commentRepository->findAllByEvent($event, $page, self::COMMENTS_PER_PAGE),
             'event' => $event,
             'page' => $page,
@@ -96,7 +96,7 @@ class CommentController extends BaseController
                     'nb_reponses' => 0,
                 ]),
                 'header' => $this->renderView('Comment/header.html.twig', [
-                    'nb_comments' => $commentRepository->findNBCommentaires($event),
+                    'nb_comments' => $commentRepository->getCommentsCount($event),
                 ]),
             ]);
         }

@@ -54,10 +54,7 @@ class DoctrineEventHandler
         $this->countryRepository = $countryRepository;
     }
 
-    /**
-     * @return Event
-     */
-    public function handleOne(Event $event, bool $flush = true)
+    public function handleOne(Event $event, bool $flush = true): Event
     {
         return $this->handleMany([$event], $flush)[0];
     }
@@ -67,7 +64,7 @@ class DoctrineEventHandler
      *
      * @return Event[]
      */
-    public function handleMany(array $events, bool $flush = true)
+    public function handleMany(array $events, bool $flush = true): array
     {
         if (0 === \count($events)) {
             return [];
@@ -193,10 +190,7 @@ class DoctrineEventHandler
         }
     }
 
-    /**
-     * @return void
-     */
-    public function guessEventLocation(Place $place)
+    public function guessEventLocation(Place $place): void
     {
         //Pas besoin de trouver un lieu déjà blacklisté
         if (false === $place->getReject()->isValid()) {
@@ -206,14 +200,11 @@ class DoctrineEventHandler
         $this->guessEventCity($place);
     }
 
-    /**
-     * @return void
-     */
-    private function guessEventCity(Place $place)
+    private function guessEventCity(Place $place): void
     {
         //Recherche du pays en premier lieu
         if ($place->getCountryName() && (!$place->getCountry() || $place->getCountry()->getName() !== $place->getCountryName())) {
-            $country = $this->countryRepository->findByName($place->getCountryName());
+            $country = $this->countryRepository->findOneByName($place->getCountryName());
             $place->setCountry($country);
         }
 
@@ -238,12 +229,12 @@ class DoctrineEventHandler
 
         //Ville + CP
         if ($place->getVille() && $place->getCodePostal()) {
-            $zipCity = $this->repoZipCity->findByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
+            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($place->getCodePostal(), $place->getVille(), $place->getCountry()->getId());
         }
 
         //Ville
         if (!$zipCity && $place->getVille()) {
-            $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
+            $zipCities = $this->repoZipCity->findAllByCity($place->getVille(), $place->getCountry()->getId());
             if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
@@ -251,7 +242,7 @@ class DoctrineEventHandler
 
         //CP
         if (!$zipCity && $place->getCodePostal()) {
-            $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
+            $zipCities = $this->repoZipCity->findAllByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
             if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
@@ -263,7 +254,7 @@ class DoctrineEventHandler
 
         //City
         if (!$city && $place->getVille()) {
-            $cities = $this->repoCity->findByName($place->getVille(), $place->getCountry()->getId());
+            $cities = $this->repoCity->findAllByName($place->getVille(), $place->getCountry()->getId());
             if (1 === \count($cities)) {
                 $city = $cities[0];
             }
@@ -307,7 +298,7 @@ class DoctrineEventHandler
      *
      * @return Event[]
      */
-    private function getAllowedEvents(array $events)
+    private function getAllowedEvents(array $events): array
     {
         return array_filter($events, fn (Event $event) => $this->firewall->isValid($event));
     }
@@ -317,7 +308,7 @@ class DoctrineEventHandler
      *
      * @return Event[]
      */
-    private function getNotAllowedEvents(array $events)
+    private function getNotAllowedEvents(array $events): array
     {
         return array_filter($events, fn ($event) => !$this->firewall->isValid($event));
     }
@@ -327,7 +318,7 @@ class DoctrineEventHandler
      *
      * @return Event[]
      */
-    private function mergeWithDatabase(array $events, bool $flush)
+    private function mergeWithDatabase(array $events, bool $flush): array
     {
         if (0 === \count($events)) {
             return [];
@@ -390,10 +381,8 @@ class DoctrineEventHandler
 
     /**
      * @param Event[] $events
-     *
-     * @return array
      */
-    private function getChunks(array $events)
+    private function getChunks(array $events): array
     {
         $chunks = [];
         foreach ($events as $i => $event) {
@@ -418,7 +407,7 @@ class DoctrineEventHandler
     /**
      * @return Event[]
      */
-    private function unChunk(array $chunks)
+    private function unChunk(array $chunks): array
     {
         $flat = [];
         foreach ($chunks as $chunk) {
@@ -457,7 +446,7 @@ class DoctrineEventHandler
      *
      * @return Event[]
      */
-    public function handleManyCLI(array $events, bool $flush = true)
+    public function handleManyCLI(array $events, bool $flush = true): array
     {
         $this->parserHistoryHandler->start();
         $events = $this->handleMany($events, $flush);

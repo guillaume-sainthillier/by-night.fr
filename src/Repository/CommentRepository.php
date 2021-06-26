@@ -29,65 +29,69 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    public function findAllByEvent(Event $event, int $page = 1, int $limit = 10)
+    /**
+     * @return Comment[]
+     */
+    public function findAllByEvent(Event $event, int $page = 1, int $limit = 10): array
     {
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('a')
-            ->from('App:Comment', 'a')
-            ->where('a.event = :event AND a.parent IS NULL AND a.approuve = true')
+        return $this
+            ->createQueryBuilder('c')
+            ->where('c.event = :event AND c.parent IS NULL AND c.approuve = true')
             ->setParameters([':event' => $event])
-            ->orderBy('a.createdAt', 'DESC')
+            ->orderBy('c.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
     }
 
-    public function findAllByUser(User $user)
+    /**
+     * @return Comment[]
+     */
+    public function findAllByUser(User $user): array
     {
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('c')
-            ->from('App:Comment', 'c')
+        return $this
+            ->createQueryBuilder('c')
             ->where('c.user = :user')
             ->setParameters([':user' => $user->getId()])
             ->getQuery()
             ->execute();
     }
 
-    public function findAllReponses(Comment $comment, int $page = 1, int $limit = 10)
+    /**
+     * @return Comment[]
+     */
+    public function findAllAnswers(Comment $comment, int $page = 1, int $limit = 10): array
     {
-        return $this->_em
-            ->createQueryBuilder()
-            ->select('a')
-            ->from('App:Comment', 'a')
-            ->where('a.parent = :parent AND a.approuve = true')
+        return $this
+            ->createQueryBuilder('c')
+            ->where('c.parent = :parent AND c.approuve = true')
             ->setParameters([':parent' => $comment])
-            ->orderBy('a.createdAt', 'DESC')
+            ->orderBy('c.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
             ->execute();
     }
 
-    public function findNBCommentaires(Event $event)
+    public function getCommentsCount(Event $event): int
     {
-        return $this->_em->createQueryBuilder()
-            ->select('COUNT(a)')
-            ->from('App:Comment', 'a')
-            ->where('a.event = :event AND a.parent IS NULL AND a.approuve = true')
+        return $this
+            ->createQueryBuilder('c')
+            ->select('COUNT(c)')
+            ->where('c.event = :event AND c.parent IS NULL AND c.approuve = true')
             ->setParameters([':event' => $event])
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    public function findNBReponses(Comment $parent)
+    public function getAnswersCount(Comment $parent): int
     {
-        return $this->_em->createQueryBuilder()
+        return (int) $this
+            ->createQueryBuilder('c')
             ->select('COUNT(a)')
             ->from('App:Comment', 'a')
-            ->where('a.parent = :parent AND a.approuve = true')
+            ->where('c.parent = :parent AND c.approuve = true')
             ->setParameters([':parent' => $parent])
             ->getQuery()
             ->getSingleScalarResult();

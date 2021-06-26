@@ -91,6 +91,6 @@ class AppMigrateContactsCommand extends Command
 
         Monitor::finishProgressBar();
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

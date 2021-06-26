@@ -77,7 +77,8 @@ class EventRepository extends ServiceEntityRepository
 
     public function findSiteMap(int $page, int $resultsPerPage): iterable
     {
-        return $this->createQueryBuilder('a')
+        return $this
+            ->createQueryBuilder('a')
             ->addSelect('c3')
             ->join('p.country', 'c3')
             ->select('a.slug, a.id, a.updatedAt, a.dateFin, c.slug AS city_slug, c3.slug AS country_slug')
@@ -87,9 +88,10 @@ class EventRepository extends ServiceEntityRepository
             ->toIterable();
     }
 
-    public function findSiteMapCount(): int
+    public function getSiteMapCount(): int
     {
-        return (int) $this->createQueryBuilder('a')
+        return (int) $this
+            ->createQueryBuilder('a')
             ->addSelect('c3')
             ->join('p.country', 'c3')
             ->select('COUNT(a) as nb')
@@ -314,7 +316,7 @@ class EventRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    public function findAllSimilarsCount(Event $event): int
+    public function getAllSimilarsCount(Event $event): int
     {
         return (int) $this
             ->getFindAllSimilarsBuilder($event)
@@ -338,7 +340,7 @@ class EventRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function findAllNextCount(Event $event): int
+    public function getAllNextCount(Event $event): int
     {
         $from = new DateTime();
 
@@ -353,7 +355,7 @@ class EventRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function findTopEventCount(Location $location): int
+    public function getTopEventCount(Location $location): int
     {
         return (int) $this
             ->getTopEventBuilder($location)
