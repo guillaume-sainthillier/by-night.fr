@@ -287,10 +287,7 @@ class EventRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    /**
-     * @return QueryBuilder
-     */
-    private function getFindAllSimilairesBuilder(Event $event): self
+    private function getFindAllSimilairesBuilder(Event $event): QueryBuilder
     {
         $qb = $this
             ->createQueryBuilder('a')
@@ -361,10 +358,7 @@ class EventRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    /**
-     * @return QueryBuilder
-     */
-    private function getTopSoireeBuilder(Location $location): self
+    private function getTopSoireeBuilder(Location $location): QueryBuilder
     {
         $du = new DateTime();
         $au = new DateTime('sunday this week');
