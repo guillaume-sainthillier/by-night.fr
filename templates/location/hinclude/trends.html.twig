@@ -1,4 +1,4 @@
-{{ fos_httpcache_tag(tags('tendances', event)) }}
+{{ fos_httpcache_tag(tags('trends', event)) }}
 
 <div class="btn-group">
     <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -16,10 +16,10 @@
     </div>
 </div>
 
-<button type="button" href="{{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? path('app_login') : "#" }}"
-   class="btn btn-light participer btn-like-event {{ participer ? 'btn-primary'  }} {{ not is_granted("IS_AUTHENTICATED_REMEMBERED") ? ' connexion'  }}"
+<button type="button" href="{{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? path('app_login') : '#' }}"
+   class="btn btn-light participer btn-like-event {{ participer ? 'btn-primary' }} {{ not is_granted('IS_AUTHENTICATED_REMEMBERED') ? ' connexion' }}"
    data-href="{{ path('app_user_like', {'id' : event.id}) }}">
     <i class="fa fa-heart"></i>
 </button>
 
-<small class="ms-3 text-muted {{ count == 0 ? 'd-none'  }}">{{ count }} intérêt{{ count > 1 ? "s" : "" }}</small>
+<small class="ms-3 text-muted {{ count == 0 ? 'd-none' }}">{{ count }} intérêt{{ count > 1 ? 's' }}</small>

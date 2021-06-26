@@ -35,8 +35,8 @@ class TagsExtension extends Extension
                 return TagsInvalidator::getPlaceTag($object);
             case 'user':
                 return TagsInvalidator::getUserTag($object);
-            case 'tendances':
-                return TagsInvalidator::getTendanceTag($object);
+            case 'trends':
+                return TagsInvalidator::getTrendTag($object);
             case 'menu':
                 return TagsInvalidator::getMenuTag();
         }

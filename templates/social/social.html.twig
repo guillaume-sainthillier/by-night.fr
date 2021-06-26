@@ -4,7 +4,7 @@
     <div class="form-check form-switch">
         <input class="form-check-input"
                type="checkbox"
-                {{ isGranted ? "checked" : "" }}
+                {{ isGranted ? "checked" }}
                data-href-disconnect="{% block url_disconnect path('app_disconnect_service_confirm', { 'service': service}) %}"
                data-href-connect="{% block url_connect path('login_social_start', {service: service}) %}">
         <label class="form-check-label">

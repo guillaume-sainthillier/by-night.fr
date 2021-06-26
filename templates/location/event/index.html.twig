@@ -27,7 +27,7 @@
     {% do menu.addItem(nomSoiree, url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug})) %}
 {% endblock %}
     
-{% block meta_keywords %}{% if distinctTags|length %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
+{% block meta_keywords %}{% if distinctTags|length > 0 %}{{ distinctTags|join(',') }},{% endif %}{{ parent() }}{% endblock %}
 {% block meta_description event_seo.eventDescription(event) %}
 
 {% block metas %}

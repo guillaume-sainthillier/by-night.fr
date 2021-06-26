@@ -36,7 +36,7 @@ class EventRepository extends ServiceEntityRepository
     /**
      * User in types.event.persistence.provider.query_builder_method (fos_elastica.yaml)
      */
-    public function createIsActiveQueryBuilder()
+    public function createIsActiveQueryBuilder(): QueryBuilder
     {
         $from = new DateTime();
         $from->modify(Event::INDEX_FROM);
@@ -58,7 +58,7 @@ class EventRepository extends ServiceEntityRepository
             ->join('p.country', 'c3');
     }
 
-    public function createQueryBuilder($alias, $indexBy = null)
+    public function createQueryBuilder($alias, $indexBy = null): QueryBuilder
     {
         $qb = parent::createQueryBuilder($alias, $indexBy);
 
@@ -97,12 +97,13 @@ class EventRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function updateNonIndexables()
+    public function updateNonIndexables(): void
     {
         $from = new DateTime();
         $from->modify(Event::INDEX_FROM);
 
-        return $this->_em
+        $this
+            ->_em
             ->createQuery('UPDATE App:Event a
             SET a.archive = true
             WHERE a.dateFin < :from
@@ -113,7 +114,7 @@ class EventRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function findNonIndexablesBuilder()
+    public function findNonIndexablesBuilder(): QueryBuilder
     {
         $from = new DateTime();
 
@@ -185,7 +186,7 @@ class EventRepository extends ServiceEntityRepository
         return $ordered;
     }
 
-    public function findAllPlaces(User $user, $limit = 5)
+    public function findAllPlaces(User $user, $limit = 5): array
     {
         return $this->_em
             ->createQueryBuilder()
@@ -204,7 +205,7 @@ class EventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findAllNextEvents(User $user, bool $isNext = true, $page = 1, $limit = 3)
+    public function findAllNextEvents(User $user, bool $isNext = true, $page = 1, $limit = 3): array
     {
         return $this
             ->createQueryBuilder('a')
@@ -219,9 +220,10 @@ class EventRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function getCountFavorites(User $user)
+    public function getCountFavorites(User $user): int
     {
-        return $this->_em
+        return (int) $this
+            ->_em
             ->createQueryBuilder()
             ->select('COUNT(u)')
             ->from('App:UserEvent', 'c')
@@ -232,14 +234,19 @@ class EventRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function getCountTendancesParticipation(Event $event)
+    public function getParticipationTrendsCount(Event $event): int
     {
-        return $this->getCountTendances($event);
+        return $this->getTrendsCount($event);
     }
 
-    protected function getCountTendances(Event $event, bool $isParticipation = true)
+    public function getInteretTrendsCount(Event $event): int
     {
-        return $this->_em
+        return $this->getTrendsCount($event, false);
+    }
+
+    protected function getTrendsCount(Event $event, bool $isParticipation = true): int
+    {
+        return (int) $this->_em
             ->createQueryBuilder()
             ->select('COUNT(u)')
             ->from('App:UserEvent', 'c')
@@ -251,14 +258,10 @@ class EventRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function getCountTendancesInterets(Event $event)
+    public function findAllTrends(Event $event, $page = 1, $limit = 7)
     {
-        return $this->getCountTendances($event, false);
-    }
-
-    public function findAllTendances(Event $event, $page = 1, $limit = 7)
-    {
-        return $this->_em
+        return $this
+            ->_em
             ->createQueryBuilder()
             ->select('u')
             ->addSelect('c')
@@ -276,10 +279,10 @@ class EventRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function findAllSimilaires(Event $event, ?int $page = 1, int $limit = 7)
+    public function findAllSimilars(Event $event, ?int $page = 1, int $limit = 7)
     {
         return $this
-            ->getFindAllSimilairesBuilder($event)
+            ->getFindAllSimilarsBuilder($event)
             ->orderBy('a.nom', 'ASC')
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
@@ -287,7 +290,7 @@ class EventRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    private function getFindAllSimilairesBuilder(Event $event): QueryBuilder
+    private function getFindAllSimilarsBuilder(Event $event): QueryBuilder
     {
         $qb = $this
             ->createQueryBuilder('a')
@@ -311,16 +314,16 @@ class EventRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    public function findAllSimilairesCount(Event $event)
+    public function findAllSimilarsCount(Event $event): int
     {
-        return $this
-            ->getFindAllSimilairesBuilder($event)
+        return (int) $this
+            ->getFindAllSimilarsBuilder($event)
             ->select('count(a.id)')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    public function findAllNext(Event $event, int $page = 1, int $limit = 7)
+    public function findAllNext(Event $event, int $page = 1, int $limit = 7): array
     {
         $from = new DateTime();
 
@@ -335,11 +338,12 @@ class EventRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function findAllNextCount(Event $event)
+    public function findAllNextCount(Event $event): int
     {
         $from = new DateTime();
 
-        return $this->_em
+        return (int) $this
+            ->_em
             ->createQueryBuilder()
             ->select('count(a.id)')
             ->from('App:Event', 'a')
@@ -349,16 +353,16 @@ class EventRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function findTopSoireeCount(Location $location)
+    public function findTopEventCount(Location $location): int
     {
-        return $this
-            ->getTopSoireeBuilder($location)
+        return (int) $this
+            ->getTopEventBuilder($location)
             ->select('count(a.id)')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    private function getTopSoireeBuilder(Location $location): QueryBuilder
+    private function getTopEventBuilder(Location $location): QueryBuilder
     {
         $du = new DateTime();
         $au = new DateTime('sunday this week');
@@ -382,10 +386,10 @@ class EventRepository extends ServiceEntityRepository
             ->setParameter('to', $au->format('Y-m-d'));
     }
 
-    public function findTopSoiree(Location $location, int $page = 1, int $limit = 7)
+    public function findTopEvents(Location $location, int $page = 1, int $limit = 7): array
     {
         return $this
-            ->getTopSoireeBuilder($location)
+            ->getTopEventBuilder($location)
             ->orderBy('a.dateFin', 'ASC')
             ->addOrderBy('a.participations', 'DESC')
             ->setFirstResult(($page - 1) * $limit)
@@ -426,7 +430,7 @@ class EventRepository extends ServiceEntityRepository
     /**
      * @return string[]
      */
-    public function getTypesEvenements(Location $location): array
+    public function getEventTypes(Location $location): array
     {
         $from = new DateTime();
         $from->modify(Event::INDEX_FROM);

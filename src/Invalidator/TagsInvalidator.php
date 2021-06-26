@@ -66,10 +66,10 @@ class TagsInvalidator
 
     public function addUserEvent(UserEvent $userEvent): void
     {
-        $this->tags[] = self::getTendanceTag($userEvent->getEvent());
+        $this->tags[] = self::getTrendTag($userEvent->getEvent());
     }
 
-    public static function getTendanceTag(Event $event): string
+    public static function getTrendTag(Event $event): string
     {
         return sprintf('tendances-%d', $event->getId());
     }

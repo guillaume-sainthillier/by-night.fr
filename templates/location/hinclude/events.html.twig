@@ -1,29 +1,4 @@
-{{ fos_httpcache_tag('widget-event') }}
-{% for event in events %}
-    {{ fos_httpcache_tag(tags('event', event)) }}
-    {{ fos_httpcache_tag(tags('place', event.place)) }}
-    <a class="scroll-item list-group-item list-group-item-action d-flex w-100 align-items-center" title="{{ event.nom }} à {{ event.placeName }}" href="{{ path('app_event_details', {'slug' : event.slug, 'id': event.id, 'location': event.locationSlug}) }}">
-        <div class="list-group-item-image text-info" title="{{ event.dateFin|format_date('full') }}">
-            {% if event.dateFin != event.dateDebut %}
-                <small class="mb-1">{{ event.dateDebut|date('d') }} {{ (event.dateDebut|format_date('long')|split(' ')[1])[:3]|capitalize }}</small>
-            {% endif %}
-            <small>{{ event.dateFin|date('d') }} {{ (event.dateFin|format_date('long')|split(' ')[1])[:3]|capitalize }}</small>
-        </div>
-        <div>
-            <p class="mb-0 text-truncate">{{ event.nom }}</p>
-            <small class="text-muted" title="{{ event.placeName }} à {{ event.placeCity }}">
-                <strong>
-                    {{ event.placeName }}
-                </strong>
-            </small>
-        </div>
-    </a>
-{% else %}
-    <div class="scroll-item p-3">
-        <p>Aucun événement disponible. Vous avez une idée à proposer ? </p>
-        <a href="{{ path('app_event_new') }}" class="btn btn-outline-primary">Créer un événement</a>
-    </div>
-{% endfor %}
+{% include '_partials/event/list-widget.html.twig' %}
 {% if hasNextLink %}
     <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}
         / {{ count }})</a>

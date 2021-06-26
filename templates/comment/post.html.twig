@@ -1,6 +1,6 @@
 {% import 'form/macros.html.twig' as macros %}
 <div class="block_poster_commentaire mb-3">
-    {% if is_granted("ROLE_USER") %}
+    {% if is_granted('ROLE_USER') %}
         {{ form_start(form) }}
         {{ form_errors(form.commentaire) }}
 

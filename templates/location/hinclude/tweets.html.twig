@@ -1,4 +1,4 @@
-{% if tweets|length %}
+{% if tweets|length > 0 %}
     <ul id="tweet-list" class="tweet-list">
         {% set displayedTweets = [] %}
         {% for tweet in tweets %}
@@ -11,7 +11,7 @@
             {% if originalTweet.id not in displayedTweets %}
                 {% set displayedTweets = displayedTweets|merge([originalTweet.id]) %}
                 <li id="tweet-{{ tweet.id }}" class="timeline-TweetList-tweet">
-                    <div class="timeline-Tweet {{ isRetweet ? 'timeline-Tweet--isRetweet'  }}">
+                    <div class="timeline-Tweet {{ isRetweet ? 'timeline-Tweet--isRetweet' }}">
                         {% if isRetweet %}
                             <div class="timeline-Tweet-retweetCredit">
                                 <div class="timeline-Tweet-retweetCreditIcon">

@@ -108,7 +108,7 @@ class WidgetsController extends BaseController
             return $eventCheck->getResponse();
         }
         $event = $eventCheck->getEvent();
-        $count = $eventRepository->findAllSimilairesCount($event);
+        $count = $eventRepository->findAllSimilarsCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
         if ($current < $count) {
@@ -125,7 +125,7 @@ class WidgetsController extends BaseController
         return $this->render('location/hinclude/details-events.html.twig', [
             'page' => $page,
             'place' => $event->getPlace(),
-            'events' => $eventRepository->findAllSimilaires($event, $page, self::WIDGET_ITEM_LIMIT),
+            'events' => $eventRepository->findAllSimilars($event, $page, self::WIDGET_ITEM_LIMIT),
             'current' => $current,
             'count' => $count,
             'hasNextLink' => $hasNextLink,
@@ -139,7 +139,7 @@ class WidgetsController extends BaseController
     public function topEvents(Location $location, EventRepository $eventRepository, int $page = 1): Response
     {
         $current = $page * self::WIDGET_ITEM_LIMIT;
-        $count = $eventRepository->findTopSoireeCount($location);
+        $count = $eventRepository->findTopEventCount($location);
 
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('app_widget_top_events', [
@@ -152,7 +152,7 @@ class WidgetsController extends BaseController
 
         return $this->render('location/hinclude/events.html.twig', [
             'location' => $location,
-            'events' => $eventRepository->findTopSoiree($location, $page, self::WIDGET_ITEM_LIMIT),
+            'events' => $eventRepository->findTopEvents($location, $page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
             'count' => $count,

@@ -28,7 +28,7 @@
                                     <label for="type">Parmi</label>
                                     <select id="type" name="type" class="form-control">
                                         {% for value, label in options %}
-                                            <option value="{{ value }}" {{ value == currentType ? 'selected'  }}>{{ label }}</option>
+                                            <option value="{{ value }}" {{ value == currentType ? 'selected' }}>{{ label }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>

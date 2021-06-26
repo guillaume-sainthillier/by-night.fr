@@ -104,7 +104,7 @@
             </div>
         {% else %}
             <h3 class="info">
-                <span class="badge bg-info">{{ events.totalItemCount }} événement{{ events.totalItemCount > 1 ? 's'  }}</span>
+                <span class="badge bg-info">{{ events.totalItemCount }} événement{{ events.totalItemCount > 1 ? 's' }}</span>
             </h3>
             {% include 'location/agenda/_index-content.html.twig' with({'partial': false}) %}
         {% endif %}
@@ -136,4 +136,5 @@
 
 {% block js %}
     {{ encore_entry_script_tags('agenda') }}
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 {% endblock %}

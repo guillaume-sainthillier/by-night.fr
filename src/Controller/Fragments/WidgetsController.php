@@ -27,19 +27,19 @@ class WidgetsController extends BaseController
     public const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_members", methods={"GET"})
+     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_users", methods={"GET"})
      * @ReverseProxy(expires="6 hours")
      */
-    public function topMembers(UserRepository $userRepository, int $page = 1): Response
+    public function topUsers(UserRepository $userRepository, int $page = 1): Response
     {
         $count = $userRepository->findMembresCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
 
-        $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_members', [
+        $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_users', [
             'page' => $page + 1,
         ]) : null;
 
-        return $this->render('location/hinclude/members.html.twig', [
+        return $this->render('location/hinclude/top-users.html.twig', [
             'users' => $userRepository->findTopUsers($page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
@@ -82,7 +82,7 @@ class WidgetsController extends BaseController
 
         return $this->render('location/hinclude/trends.html.twig', [
             'event' => $event,
-            'tendances' => $eventRepository->findAllTendances($event),
+            'tendances' => $eventRepository->findAllTrends($event),
             'count' => $event->getParticipations() + $event->getFbParticipations() + $event->getInterets() + $event->getFbInterets(),
             'participer' => $participer,
             'interet' => $interet,

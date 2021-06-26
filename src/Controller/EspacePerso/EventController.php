@@ -186,8 +186,8 @@ class EventController extends BaseController
         $userEvent->setParticipe($isLike);
         $em->flush();
 
-        $participations = $eventRepository->getCountTendancesParticipation($event);
-        $interets = $eventRepository->getCountTendancesInterets($event);
+        $participations = $eventRepository->getParticipationTrendsCount($event);
+        $interets = $eventRepository->getInteretTrendsCount($event);
 
         $event->setParticipations($participations)->setInterets($interets);
         $em->flush();

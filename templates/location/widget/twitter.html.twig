@@ -10,6 +10,5 @@
 {% block widget_body_class 'card-twitter px-0' %}
 
 {% block body %}
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     {{ render_esi(path('app_widget_tweeter', {'location': location.slug})) }}
 {% endblock %}

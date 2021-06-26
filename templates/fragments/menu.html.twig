@@ -1,6 +1,6 @@
 {% import 'form/macros.html.twig' as macros %}
 {{ fos_httpcache_tag(tags('menu')) }}
-{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
     {{ fos_httpcache_tag(tags('user', app.user)) }}
 {% endif %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
@@ -24,7 +24,7 @@
                 <li class="nav-item">
                     <a class="nav-link" title="Créez votre événement en 1 clic !" href="{{ path('app_event_new') }}">Créer un événement</a>
                 </li>
-                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") -%}
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') -%}
                     <li class="nav-item">
                         <a class="nav-link" title="Voir mes soirées" href="{{ path('app_event_list') }}">Mes événements</a>
                     </li>
@@ -38,7 +38,7 @@
                 <input type="search" placeholder="Que cherchez-vous ?" name="q" value="{{ app.request.get('q')|trim }}" autocomplete="off">
             </form>
             <ul class="navbar-nav">
-                {% if is_granted("ROLE_ADMIN") %}
+                {% if is_granted('ROLE_ADMIN') %}
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Admin</a>
                         <div class="dropdown-menu dropdown-menu-end">
@@ -47,7 +47,7 @@
                         </div>
                     </li>
                 {% endif %}
-                {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <li class="nav-item dropdown nav-avatar">
                         <a href="#" title="{{ app.user.username }}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             {{ macros.userThumb(app.user, 30, 30) }}
