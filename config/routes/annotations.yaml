@@ -34,8 +34,8 @@ kernel:
     resource: '../../src/Kernel.php'
     type: annotation
 
-#La ville est définie à partir d'ici
-app.city:
-    resource: '../../src/Controller/City'
+#La location est définie à partir d'ici
+app.location:
+    resource: '../../src/Controller/Location'
     prefix:   /{location}
     type:     annotation

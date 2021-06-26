@@ -44,7 +44,7 @@ class ReplyController extends BaseController
      */
     public function new(Request $request, Comment $comment, CommentRepository $commentRepository): Response
     {
-        $user = $this->getUser();
+        $user = $this->getAppUser();
         $reponse = new Comment();
         $reponse->setUser($user);
         $reponse->setEvent($comment->getEvent());

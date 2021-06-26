@@ -102,7 +102,7 @@ class SitemapSuscriber implements EventSubscriberInterface
                 $cache[$tag] = true;
                 $this->addUrl(
                     $section,
-                    'app_agenda_tags',
+                    'app_agenda_by_tags',
                     [
                         'location' => $event['slug'],
                         'tag' => $tag,
@@ -123,12 +123,12 @@ class SitemapSuscriber implements EventSubscriberInterface
         foreach ($cities as $city) {
             $city = current($city);
             $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_agenda', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'concert', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'etudiant', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'famille', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'spectacle', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
-            $this->addUrl($section, 'app_agenda_sortir', ['type' => 'exposition', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_index', ['location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'concert', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'etudiant', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'famille', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'spectacle', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
+            $this->addUrl($section, 'app_agenda_by_type', ['type' => 'exposition', 'location' => $city['slug']], null, UrlConcrete::CHANGEFREQ_DAILY, 0.8);
         }
     }
 
@@ -140,7 +140,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $place = current($place);
             $this->addUrl(
                 $section,
-                'app_agenda_place',
+                'app_agenda_by_place',
                 [
                     'slug' => $place['slug'],
                     'location' => $place['city_slug'],
@@ -186,7 +186,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $user = $user[0];
             $this->addUrl(
                 $section,
-                'app_user_details',
+                'app_user_index',
                 [
                     'id' => $user->getId(),
                     'slug' => $user->getSlug(),
@@ -201,8 +201,8 @@ class SitemapSuscriber implements EventSubscriberInterface
     private function registerStaticRoutes($section)
     {
         $staticRoutes = [
-            'app_search_query',
-            'app_main_index',
+            'app_search_index',
+            'app_index',
             'app_about',
             'app_plus',
             'app_main_cookie',

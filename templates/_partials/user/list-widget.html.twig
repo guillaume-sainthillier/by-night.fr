@@ -1,10 +1,10 @@
-{% import 'Form/macros.html.twig' as macros %}
+{% import 'form/macros.html.twig' as macros %}
 {{ fos_httpcache_tag('block-user') }}
-{% for user in membres %}
+{% for user in users %}
     {% set nbEvents = user.nb_events %}
     {% set user = user[0] %}
     {{ fos_httpcache_tag(tags('user', user)) }}
-    <a class="scroll-item list-group-item list-group-item-action d-flex w-100 align-items-center" href="{{ path('app_user_details', {'id': user.id, 'slug': user.slug} ) }}" title="Accédez au profil de {{ user.username }}">
+    <a class="scroll-item list-group-item list-group-item-action d-flex w-100 align-items-center" href="{{ path('app_user_index', {'id': user.id, 'slug': user.slug} ) }}" title="Accédez au profil de {{ user.username }}">
         <span class="list-group-item-image">
             {{ macros.userLazyThumb(user, 50, 50) }}
         </span>
@@ -19,7 +19,3 @@
         </div>
     </a>
 {% endfor %}
-{% if hasNextLink is defined and hasNextLink %}
-    <a class="more-content btn btn-outline-primary btn-block" href="{{ hasNextLink }}">Plus ({{ current }}
-        / {{ count }})</a>
-{% endif %}

@@ -10,7 +10,7 @@
         <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
             <div class="card">
                 <div class="card-body">
-                    <form method="GET" class="no-margin-form" action="{{ path('app_search_query') }}">
+                    <form method="GET" class="no-margin-form" action="{{ path('app_search_index') }}">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -53,7 +53,7 @@
                 {% set s = events.totalItemCount > 1 ? 's': null %}
                 <h3>Événement{{ s }} <span class="badge bg-info number number-sm">{{ events.totalItemCount }}</span></h3>
             {% endif %}
-            {% include 'search/content_events.html.twig' %}
+            {% include 'search/content-events.html.twig' %}
         {% endif %}
 
         {% if users.totalItemCount > 0 and (not type or type == 'membres') %}
@@ -61,7 +61,7 @@
                 {% set s = users.totalItemCount > 1 ? 's': null %}
                 <h3>Membre{{ s }} <span class="badge bg-info number number-sm">{{ users.totalItemCount }}</span></h3>
             {% endif %}
-            {% include 'search/content_users.html.twig' %}
+            {% include 'search/content-users.html.twig' %}
         {% endif %}
     {% endif %}
 {%- endblock -%}

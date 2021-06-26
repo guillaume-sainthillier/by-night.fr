@@ -1,4 +1,4 @@
-{% import 'Form/macros.html.twig' as macros %}
+{% import 'form/macros.html.twig' as macros %}
 <div class="commentaires">
     {% for comment in comments %}
         <div class="row comment">
@@ -7,7 +7,7 @@
             </div>
             <div class="col">
                 <div class="infos">
-                    <a href="{{ path('app_user_details', {'id': comment.user.id, 'slug': comment.user.slug}) }}">{{ comment.user.username }}</a>
+                    <a href="{{ path('app_user_index', {'id': comment.user.id, 'slug': comment.user.slug}) }}">{{ comment.user.username }}</a>
                     <small class="text-muted" title="{{ comment.createdAt|format_datetime('medium', 'medium')|capitalize }}">
                         {{ comment.createdAt|diff_date }}
                     </small>

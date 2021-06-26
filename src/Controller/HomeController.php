@@ -22,10 +22,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    public const EVENT_PER_CATEGORY = 7;
-
     /**
-     * @Route("/", name="app_main_index", methods={"GET", "POST"})
+     * @Route("/", name="app_index", methods={"GET", "POST"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository): Response
@@ -33,6 +31,7 @@ class HomeController extends AbstractController
         $datas = [
             'from' => new DateTime(),
         ];
+
         if (null !== ($city = $cityManager->getCity())) {
             $datas += [
                 'name' => $city->getFullName(),
@@ -57,7 +56,7 @@ class HomeController extends AbstractController
                 $params['to'] = $datas['to']->format('Y-m-d');
             }
 
-            return $this->redirectToRoute('app_agenda_agenda', $params + [
+            return $this->redirectToRoute('app_agenda_index', $params + [
                     'location' => $city,
                 ]);
         }

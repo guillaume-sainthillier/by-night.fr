@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Controller\City;
+namespace App\Controller\Location;
 
 use App\Annotation\ReverseProxy;
 use App\App\Location;
@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends BaseController
 {
     /**
-     * @Route("/", name="app_agenda_index", methods={"GET"})
+     * @Route("/", name="app_location_index", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function index(Location $location, PaginatorInterface $paginator, EventRepository $eventRepository): Response
@@ -37,7 +37,7 @@ class DefaultController extends BaseController
 
         $form = $this->createForm(SimpleEventSearchType::class, $datas);
 
-        return $this->render('city/index.html.twig', [
+        return $this->render('location/index.html.twig', [
             'location' => $location,
             'events' => $events,
             'form' => $form->createView(),

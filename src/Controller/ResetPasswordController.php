@@ -130,7 +130,7 @@ class ResetPasswordController extends AbstractController
 
             $this->addFlash('success', 'Votre mot de passe a bien été mis à jour');
 
-            return $this->redirectToRoute('app_main_index');
+            return $this->redirectToRoute('app_index');
         }
 
         return $this->render('reset-password/reset.html.twig', [

@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Controller\City;
+namespace App\Controller\Location;
 
 use App\Annotation\ReverseProxy;
 use App\App\Location;
@@ -40,7 +40,7 @@ class EventController extends BaseController
         }
         $event = $eventCheck->getEvent();
 
-        return $this->render('city/event/index.html.twig', [
+        return $this->render('location/event/index.html.twig', [
             'location' => $location,
             'event' => $event,
         ]);
@@ -66,7 +66,7 @@ class EventController extends BaseController
             'image' => $eventProfile,
         ]);
 
-        return $this->render('city/hinclude/shares.html.twig', [
+        return $this->render('location/hinclude/shares.html.twig', [
             'shares' => [
                 'facebook' => $page->facebook,
                 'twitter' => $page->twitter,

@@ -42,7 +42,7 @@
                             <div class="card-body">
                                 <h2 class="card-title">{{ stat.displayName }}</h2>
                                 <h6 class="card-subtitle mb-2 text-muted">{{ stat.events }}</span> événement{{ stat.events > 1 ? 's' }} à venir</h6>
-                                <a class="btn btn-outline-primary" href="{{ path('app_agenda_agenda', {'location': stat.slug}) }}" title="L'agenda des événements {{ stat.atDisplayName }}">
+                                <a class="btn btn-outline-primary" href="{{ path('app_agenda_index', {'location': stat.slug}) }}" title="L'agenda des événements {{ stat.atDisplayName }}">
                                     Sortir {{ stat.atDisplayName }}
                                 </a>
                             </div>

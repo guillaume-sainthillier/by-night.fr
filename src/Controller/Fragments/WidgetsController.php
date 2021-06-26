@@ -13,7 +13,6 @@ namespace App\Controller\Fragments;
 use App\Annotation\ReverseProxy;
 use App\Controller\AbstractController as BaseController;
 use App\Entity\Event;
-use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
@@ -40,8 +39,8 @@ class WidgetsController extends BaseController
             'page' => $page + 1,
         ]) : null;
 
-        return $this->render('city/hinclude/members.html.twig', [
-            'membres' => $userRepository->findTopMembres($page, self::WIDGET_ITEM_LIMIT),
+        return $this->render('location/hinclude/members.html.twig', [
+            'users' => $userRepository->findTopUsers($page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,
             'current' => $current,
             'count' => $count,
@@ -57,7 +56,6 @@ class WidgetsController extends BaseController
         $participer = false;
         $interet = false;
 
-        /** @var User $user */
         $user = $this->getUser();
         if ($user) {
             $userEvent = $userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
@@ -82,7 +80,7 @@ class WidgetsController extends BaseController
             'image' => $eventProfile,
         ]);
 
-        return $this->render('city/hinclude/trends.html.twig', [
+        return $this->render('location/hinclude/trends.html.twig', [
             'event' => $event,
             'tendances' => $eventRepository->findAllTendances($event),
             'count' => $event->getParticipations() + $event->getFbParticipations() + $event->getInterets() + $event->getFbInterets(),

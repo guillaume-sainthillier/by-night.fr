@@ -1,8 +1,8 @@
-{% extends 'city/widget/template.html.twig' %}
+{% extends 'location/widget/template.html.twig' %}
 
 {% block widget_body_class 'membres' %}
 {% block titre 'Tendances' %}
-{% block icone 'fa-line-chart' %}
+{% block icon 'fa-line-chart' %}
 
 {% block body %}
     {{ render_esi(path('app_event_trends', {

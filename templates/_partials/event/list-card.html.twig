@@ -1,4 +1,4 @@
-{% import "Form/macros.html.twig" as macros %}
+{% import "form/macros.html.twig" as macros %}
 {% if microdata is not defined %}
     {% set microdata = true %}
 {% endif %}
@@ -117,7 +117,7 @@
                             <i class="fa fa-user"></i>
                             Par
                             <a class="one-line"
-                               href="{{ path('app_user_details', {'id': event.user.id, 'slug': event.user.slug} ) }}"
+                               href="{{ path('app_user_index', {'id': event.user.id, 'slug': event.user.slug} ) }}"
                                title="Accédez au profil de {{ event.user.username }}">
                                 {{ event.user.username }}
                             </a>

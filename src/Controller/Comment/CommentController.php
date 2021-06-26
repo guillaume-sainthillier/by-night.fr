@@ -34,7 +34,7 @@ class CommentController extends BaseController
         $comment = new Comment();
 
         $form = null;
-        if ($this->getUser()) {
+        if ($this->isGranted('ROLE_USER')) {
             $form = $this
                 ->createForm(CommentType::class, $comment, [
                     'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
@@ -73,7 +73,7 @@ class CommentController extends BaseController
      */
     public function newComment(Request $request, Event $event, CommentRepository $commentRepository): Response
     {
-        $user = $this->getUser();
+        $user = $this->getAppUser();
         $comment = new Comment();
         $comment->setUser($user);
         $comment->setEvent($event);

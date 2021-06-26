@@ -24,7 +24,7 @@ class TagsExtension extends Extension
         ];
     }
 
-    public function getTags($type, $object = null)
+    public function getTags(string $type, $object = null): string
     {
         switch ($type) {
             case 'location':

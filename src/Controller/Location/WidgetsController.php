@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Controller\City;
+namespace App\Controller\Location;
 
 use App\Annotation\ReverseProxy;
 use App\App\Location;
@@ -50,7 +50,7 @@ class WidgetsController extends BaseController
             $results['statuses'] = [];
         }
 
-        return $this->render('city/hinclude/tweets.html.twig', [
+        return $this->render('location/hinclude/tweets.html.twig', [
             'tweets' => $results['statuses'],
             'hasNextLink' => $nextLink,
             'location' => $location,
@@ -84,7 +84,7 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        return $this->render('city/hinclude/details-events.html.twig', [
+        return $this->render('location/hinclude/details-events.html.twig', [
             'page' => $page,
             'place' => $event->getPlace(),
             'events' => $eventRepository->findAllNext($event, $page, self::WIDGET_ITEM_LIMIT),
@@ -120,7 +120,7 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        return $this->render('city/hinclude/details-events.html.twig', [
+        return $this->render('location/hinclude/details-events.html.twig', [
             'page' => $page,
             'place' => $event->getPlace(),
             'events' => $eventRepository->findAllSimilaires($event, $page, self::WIDGET_ITEM_LIMIT),
@@ -148,7 +148,7 @@ class WidgetsController extends BaseController
             $hasNextLink = null;
         }
 
-        return $this->render('city/hinclude/events.html.twig', [
+        return $this->render('location/hinclude/events.html.twig', [
             'location' => $location,
             'events' => $eventRepository->findTopSoiree($location, $page, self::WIDGET_ITEM_LIMIT),
             'hasNextLink' => $hasNextLink,

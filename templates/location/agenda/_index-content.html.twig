@@ -1,5 +1,5 @@
 {% if events.totalItemCount > 0 %}
-    {% include 'city/event/block-preview-event.html.twig' with({'events': events, 'page': page}) %}
+    {% include '_partials/event/list-card.html.twig' with({'events': events, 'page': page}) %}
     {% if events.paginationData.next is defined %}
         <div class="text-center my-4">
             <a id="paginate"

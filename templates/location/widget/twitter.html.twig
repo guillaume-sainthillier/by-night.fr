@@ -1,11 +1,11 @@
-{% extends 'city/widget/template-scrollable.html.twig' %}
+{% extends 'location/widget/template-scrollable.html.twig' %}
 
 {% block titre -%}
     {% if location.isCity %}Les actus à {{ location.city.name }}{% endif %}
     {% if location.isCountry %}Les actus {{ location.country.atDisplayName }}{% endif %}
 {%- endblock %}
 {% block widget_attr %}id="actus"{% endblock %}
-{% block icone 'fa-twitter' %}
+{% block icon 'fab fa-twitter' %}
 {% block widget_class '' %}
 {% block widget_body_class 'card-twitter px-0' %}
 

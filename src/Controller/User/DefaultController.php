@@ -29,12 +29,12 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class DefaultController extends BaseController
 {
     /**
-     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}", name="app_user_details", methods={"GET"})
-     * @Route("/{username<%patterns.slug%>}", name="app_user_details_old", methods={"GET"})
+     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}", name="app_user_index", methods={"GET"})
+     * @Route("/{username<%patterns.slug%>}", name="app_user_index_old", methods={"GET"})
      */
     public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
-        $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_details');
+        $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_index');
         $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
         if (null !== $userCheck->getResponse()) {
             return $userCheck->getResponse();

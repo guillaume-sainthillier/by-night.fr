@@ -28,22 +28,22 @@
 
 {% block breadcrumb %}
     {% if location.isCountry %}
-        {% do menu.addItem(location.country.displayName, url('app_agenda_index', {'location': location.country.slug})) %}
+        {% do menu.addItem(location.country.displayName, url('app_location_index', {'location': location.country.slug})) %}
     {% else %}
-        {% do menu.addItem(location.city.country.displayName, url('app_agenda_index', {'location': location.city.country.slug})) %}
+        {% do menu.addItem(location.city.country.displayName, url('app_location_index', {'location': location.city.country.slug})) %}
         {% do menu.addItem('Sortir ' ~ location.atName, url('app_agenda_index', {'location': location.city.slug})) %}
     {% endif %}
-    {% do menu.addItem('Agenda', url('app_agenda_agenda', {'location': location.slug})) %}
+    {% do menu.addItem('Agenda', url('app_agenda_index', {'location': location.slug})) %}
 
     {% if placeName is not null %}
-        {% do menu.addItem(placeName|capitalize, url('app_agenda_place', {'slug' : placeSlug, 'location': location.slug})) %}
+        {% do menu.addItem(placeName|capitalize, url('app_agenda_by_place', {'slug' : placeSlug, 'location': location.slug})) %}
     {% elseif tag is not null %}
-        {% do menu.addItem(tag|capitalize, url('app_agenda_tags', {'tag' : tag, 'location': location.slug})) %}
+        {% do menu.addItem(tag|capitalize, url('app_agenda_by_tags', {'tag' : tag, 'location': location.slug})) %}
     {% elseif type is not null %}
-        {% do menu.addItem(type|capitalize, url('app_agenda_sortir', {'type' : type, 'location': location.slug})) %}
+        {% do menu.addItem(type|capitalize, url('app_agenda_by_type', {'type' : type, 'location': location.slug})) %}
     {% endif %}
     {% if page > 1 %}
-        {% do menu.addItem("Page " ~ page, url('app_agenda_agenda', {'page': page, 'location': location.slug})) %}
+        {% do menu.addItem("Page " ~ page, url('app_agenda_index', {'page': page, 'location': location.slug})) %}
     {% endif %}
 {% endblock %}
 
@@ -95,7 +95,7 @@
     </div>
 
     <div id="agenda" class="widget active" role="tabpanel" aria-labelledby="agenda-tab">
-        {% include 'city/agenda/_block-filters.html.twig' %}
+        {% include 'location/agenda/_block-filters.html.twig' %}
 
         {% if events.totalItemCount == 0 %}
             <div class="alert alert-info">
@@ -106,27 +106,27 @@
             <h3 class="info">
                 <span class="badge bg-info">{{ events.totalItemCount }} événement{{ events.totalItemCount > 1 ? 's'  }}</span>
             </h3>
-            {% include 'city/agenda/_index-content.html.twig' with({'partial': false}) %}
+            {% include 'location/agenda/_index-content.html.twig' with({'partial': false}) %}
         {% endif %}
     </div>
 {% endblock %}
 
 {% block widgets -%}
     <!-- Twitter -->
-    {% include 'city/widget/twitter.html.twig' %}
+    {% include 'location/widget/twitter.html.twig' %}
     <!-- ./Twitter -->
 
     {% if social_manager.facebookIdPage %}
         <!-- Facebook -->
-        {% include 'city/widget/facebook.html.twig' %}
+        {% include 'location/widget/facebook.html.twig' %}
         <!-- ./Facebook -->
     {% endif %}
     <!-- Top Evénements -->
-    {% include 'city/widget/top-events.html.twig' %}
+    {% include 'location/widget/top-events.html.twig' %}
     <!-- ./Top Evénements -->
 
     <!-- Top Membres -->
-    {% include 'city/widget/top-members.html.twig' %}
+    {% include 'location/widget/top-members.html.twig' %}
     <!-- ./Top Membres -->
 {%- endblock %}
 

@@ -36,7 +36,7 @@ class CityController extends AbstractController
      * @ReverseProxy(expires="1 year")
      * @Tag("autocomplete-city")
      */
-    public function cityAutocomplete(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager): Response
+    public function city(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager): Response
     {
         $term = trim($request->get('q'));
         if ('' === $term) {

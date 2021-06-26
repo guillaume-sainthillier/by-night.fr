@@ -1,4 +1,4 @@
-{% import 'Form/macros.html.twig' as macros %}
+{% import 'form/macros.html.twig' as macros %}
 {% extends 'layouts/default.html.twig' %}
 
 {% do fos_httpcache_tag(tags('user', user)) %}
@@ -15,8 +15,8 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {% do menu.addItem("Membres", url('app_search_query', {'type' : 'membres'})) %}
-    {% do menu.addItem(username, url('app_user_details', {'id' : user.id, 'slug': user.slug })) %}
+    {% do menu.addItem("Membres", url('app_search_index', {'type' : 'membres'})) %}
+    {% do menu.addItem(username, url('app_user_index', {'id' : user.id, 'slug': user.slug })) %}
 {% endblock %}
 
 {% block meta_description -%}
@@ -65,7 +65,7 @@
                             Aucun événement de prévu pour {{ username }} !
                         </div>
                     {% else %}
-                        {% include 'city/event/block-preview-event.html.twig' with({'events' : next_events}) %}
+                        {% include '_partials/event/list-card.html.twig' with({'events' : next_events}) %}
                     {% endif %}
                 </div>
                 <div class="tab-pane" id="passes">
@@ -75,7 +75,7 @@
                             Aucun événement passé pour {{ username }} !
                         </div>
                     {% else %}
-                        {% include 'city/event/block-preview-event.html.twig' with({'events' : previous_events}) %}
+                        {% include '_partials/event/list-card.html.twig' with({'events' : previous_events}) %}
                     {% endif %}
                 </div>
             </div>

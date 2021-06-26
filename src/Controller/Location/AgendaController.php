@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Controller\City;
+namespace App\Controller\Location;
 
 use App\Annotation\ReverseProxy;
 use App\App\Location;
@@ -34,10 +34,10 @@ class AgendaController extends BaseController
     public const EVENT_PER_PAGE = 15;
 
     /**
-     * @Route("/agenda/{page<%patterns.page%>}", name="app_agenda_agenda", methods={"GET"})
-     * @Route("/agenda/sortir/{type}/{page<%patterns.page%>}", name="app_agenda_sortir", requirements={"type": "concert|spectacle|etudiant|famille|exposition"}, methods={"GET"})
-     * @Route("/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}", name="app_agenda_place", methods={"GET"})
-     * @Route("/agenda/tag/{tag}/{page<%patterns.page%>}", name="app_agenda_tags", methods={"GET"})
+     * @Route("/agenda/{page<%patterns.page%>}", name="app_agenda_index", methods={"GET"})
+     * @Route("/agenda/sortir/{type}/{page<%patterns.page%>}", name="app_agenda_by_type", requirements={"type": "concert|spectacle|etudiant|famille|exposition"}, methods={"GET"})
+     * @Route("/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}", name="app_agenda_by_place", methods={"GET"})
+     * @Route("/agenda/tag/{tag}/{page<%patterns.page%>}", name="app_agenda_by_tags", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
     public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
@@ -65,11 +65,11 @@ class AgendaController extends BaseController
         if (null !== $slug) {
             $place = $placeRepository->findOneBy(['slug' => $slug]);
             if (null === $place) {
-                return $this->redirectToRoute('app_agenda_agenda', ['location' => $location->getSlug()]);
+                return $this->redirectToRoute('app_agenda_index', ['location' => $location->getSlug()]);
             }
 
             if ($location->getSlug() !== $place->getLocationSlug()) {
-                return $this->redirectToRoute('app_agenda_place', ['location' => $place->getLocationSlug(), 'slug' => $place->getSlug()]);
+                return $this->redirectToRoute('app_agenda_by_place', ['location' => $place->getLocationSlug(), 'slug' => $place->getSlug()]);
             }
         }
         $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
@@ -102,7 +102,7 @@ class AgendaController extends BaseController
             return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getPageCount())]));
         }
 
-        return $this->render('city/agenda/index.html.twig', [
+        return $this->render('location/agenda/index.html.twig', [
             'location' => $location,
             'placeName' => (null !== $place) ? $place->getNom() : null,
             'placeSlug' => (null !== $place) ? $place->getSlug() : null,
@@ -126,13 +126,13 @@ class AgendaController extends BaseController
         if (null !== $place) {
             $term = null;
             $search->setLieux([$place->getId()]);
-            $formAction = $this->generateUrl('app_agenda_place', ['slug' => $place->getSlug(), 'location' => $location->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_by_place', ['slug' => $place->getSlug(), 'location' => $location->getSlug()]);
         } elseif (null !== $tag) {
             $term = null;
             $search->setTag($tag);
-            $formAction = $this->generateUrl('app_agenda_tags', ['tag' => $tag, 'location' => $location->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_by_tags', ['tag' => $tag, 'location' => $location->getSlug()]);
         } elseif (null !== $type) {
-            $formAction = $this->generateUrl('app_agenda_sortir', ['type' => $type, 'location' => $location->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_by_type', ['type' => $type, 'location' => $location->getSlug()]);
             switch ($type) {
                 case 'exposition':
                     $term = EventElasticaRepository::EXPO_TERMS;
@@ -151,7 +151,7 @@ class AgendaController extends BaseController
                     break;
             }
         } else {
-            $formAction = $this->generateUrl('app_agenda_agenda', ['location' => $location->getSlug()]);
+            $formAction = $this->generateUrl('app_agenda_index', ['location' => $location->getSlug()]);
         }
 
         $search->setLocation($location);

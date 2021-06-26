@@ -90,7 +90,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function findTopMembres($page = 1, $limit = 7)
+    public function findTopUsers($page = 1, $limit = 7)
     {
         return $this->createQueryBuilder('u')
             ->select('u')

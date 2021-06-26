@@ -1,0 +1,5 @@
+{% include '_partials/user/list-widget.html.twig' %}
+{% if hasNextLink is defined and hasNextLink %}
+    <a class="more-content btn btn-sm btn-outline-primary btn-block" href="{{ hasNextLink }}">
+        Plus ({{ current }} / {{ count }})</a>
+{% endif %}

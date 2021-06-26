@@ -58,7 +58,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
             if ($user->getCity()) {
                 $url = $this->router->generate('app_agenda_index', ['location' => $user->getCity()->getSlug()]);
             } else {
-                $url = $this->router->generate('app_main_index');
+                $url = $this->router->generate('app_index');
             }
         }
 

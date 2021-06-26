@@ -78,7 +78,7 @@ class ProfileController extends AbstractController
 
             $this->addFlash('info', 'Votre compte a bien été supprimé. A bientôt sur By Night !');
 
-            return $this->redirectToRoute('app_main_index');
+            return $this->redirectToRoute('app_index');
         }
         $errors = $form->getErrors(true);
         foreach ($errors as $error) {
