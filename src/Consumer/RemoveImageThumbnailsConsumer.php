@@ -28,6 +28,9 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
         $this->glide = $glide;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function batchExecute(array $messages)
     {
         $result = [];

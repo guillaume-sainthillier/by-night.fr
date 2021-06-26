@@ -56,5 +56,7 @@ class AdminZoneCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$slug, $name, $latitude, $longitude, $population, $admin1Code, $admin2Code, $country, $parent];
         }
+
+        throw new \RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

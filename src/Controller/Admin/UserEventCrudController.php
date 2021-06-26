@@ -52,5 +52,6 @@ class UserEventCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$updatedAt, $event, $user, $participe, $interet];
         }
+        throw new \RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

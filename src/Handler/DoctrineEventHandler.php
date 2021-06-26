@@ -164,7 +164,7 @@ class DoctrineEventHandler
                     $reject = $exploration->getReject();
 
                     //Celle-ci a déjà conduit à l'élimination de l'événement
-                    if (null === $reject->isValid()) {
+                    if (false === $reject->isValid()) {
                         $event->getReject()->setReason($reject->getReason());
 
                         continue;
@@ -199,7 +199,7 @@ class DoctrineEventHandler
     public function guessEventLocation(Place $place)
     {
         //Pas besoin de trouver un lieu déjà blacklisté
-        if (null === $place->getReject()->isValid()) {
+        if (false === $place->getReject()->isValid()) {
             return;
         }
 

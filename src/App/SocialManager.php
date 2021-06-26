@@ -12,7 +12,6 @@ namespace App\App;
 
 use App\Entity\AppOAuth;
 use App\Repository\AppOAuthRepository;
-use RuntimeException;
 
 class SocialManager
 {
@@ -30,15 +29,21 @@ class SocialManager
         $this->appOAuthRepository = $appOAuthRepository;
     }
 
-    public function getAppOAuth(): AppOAuth
+    public function hasAppOAuth(): bool
     {
         if (!$this->_siteInfoInitialized) {
             $this->_siteInfoInitialized = true;
             $this->appOAuth = $this->appOAuthRepository->findOneBy([]);
         }
 
-        if (null === $this->appOAuth) {
-            throw new RuntimeException('No social app login');
+        return null !== $this->appOAuth;
+    }
+
+    public function getAppOAuth(): AppOAuth
+    {
+        if (!$this->_siteInfoInitialized) {
+            $this->_siteInfoInitialized = true;
+            $this->appOAuth = $this->appOAuthRepository->findOneBy([]);
         }
 
         return $this->appOAuth;

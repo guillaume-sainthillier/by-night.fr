@@ -27,7 +27,7 @@ class SocialConverter implements ParamConverterInterface
     }
 
     /**
-     * @return void
+     * {@inheritDoc}
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
@@ -45,6 +45,8 @@ class SocialConverter implements ParamConverterInterface
         $request->attributes->set($configuration->getName(), $entity);
 
         $configuration->setClass(null);
+
+        return true;
     }
 
     public function supports(ParamConverter $configuration)

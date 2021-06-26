@@ -12,6 +12,7 @@ namespace App\Request\ParamConverter;
 
 use App\App\CityManager;
 use App\App\Location;
+use App\Entity\City;
 use App\Entity\Country;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
@@ -36,7 +37,7 @@ class LocationConverter implements ParamConverterInterface
 
     public function apply(Request $request, ParamConverter $configuration): void
     {
-        $locationSlug = $request->attributes->get('location');
+        $locationSlug = $request->attributes->get('location', '');
 
         if (null === $locationSlug && !$configuration->isOptional()) {
             throw new InvalidArgumentException('Route attribute is missing');
@@ -46,13 +47,6 @@ class LocationConverter implements ParamConverterInterface
 
         if (\is_object($locationSlug)) {
             return;
-        }
-
-        $location = new Location();
-        $entity = null;
-        if (0 !== strpos('c--', (string) $locationSlug)) {
-            $entity = $this->cityRepository
-                ->findBySlug($locationSlug);
         }
 
         if ('unknown' === $locationSlug) {
@@ -65,17 +59,21 @@ class LocationConverter implements ParamConverterInterface
             return;
         }
 
-        if ($entity) {
+        $location = new Location();
+        $entity = null;
+        if (0 !== strpos((string) $locationSlug, 'c--')) {
+            $entity = $this->cityRepository->findBySlug($locationSlug);
+        } else {
+            $entity = $this->countryRepository->findOneBy(['slug' => $locationSlug]);
+        }
+
+        if ($entity instanceof City) {
             $location->setCity($entity);
             $this->cityManager->setCurrentCity($entity);
             $request->attributes->set('_current_city', $locationSlug);
-        } else {
-            $entity = $this->countryRepository
-                ->findOneBy(['slug' => $locationSlug]);
+        } elseif ($entity instanceof Country) {
             $location->setCountry($entity);
-        }
-
-        if (!$entity) {
+        } else {
             throw new NotFoundHttpException(sprintf("La location '%s' est introuvable", $locationSlug));
         }
 

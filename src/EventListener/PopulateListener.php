@@ -35,7 +35,7 @@ class PopulateListener implements EventSubscriberInterface
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $settings = $index->getSettings();
-        $settings->setRefreshInterval(-1);
+        $settings->setRefreshInterval('-1');
     }
 
     public function postIndexPopulate(IndexPopulateEvent $event): void

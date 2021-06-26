@@ -10,8 +10,6 @@
 
 namespace App\Reject;
 
-use LogicException;
-
 class Reject
 {
     public const VALID = 1;
@@ -57,9 +55,6 @@ class Reject
 
     public function setReason(int $reason): self
     {
-        if (null === $reason) {
-            throw new LogicException('Reason must be integer');
-        }
         $this->reason = $reason;
 
         return $this;

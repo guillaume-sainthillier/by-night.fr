@@ -17,7 +17,7 @@ use Facebook\GraphNodes\GraphPage;
 class FacebookAdmin extends Facebook
 {
     private AppOAuth $appOAuth;
-    private bool $_isInitialized;
+    private bool $_isInitialized = false;
 
     /**
      * @return void
@@ -30,7 +30,7 @@ class FacebookAdmin extends Facebook
             $this->_isInitialized = true;
             $this->appOAuth = $this->socialManager->getAppOAuth();
 
-            if ($this->appOAuth && $this->appOAuth->getFacebookAccessToken()) {
+            if ($this->appOAuth->getFacebookAccessToken()) {
                 $this->client->setDefaultAccessToken($this->appOAuth->getFacebookAccessToken());
             }
         }

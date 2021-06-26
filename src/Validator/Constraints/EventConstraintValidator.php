@@ -33,9 +33,6 @@ class EventConstraintValidator extends ConstraintValidator
     }
 
     /**
-     * @param Event           $value
-     * @param EventConstraint $constraint
-     *
      * @return void
      */
     public function validate($value, Constraint $constraint)

@@ -31,6 +31,9 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
         $this->cloudFrontDistributionID = $cloudFrontDistributionID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function batchExecute(array $messages)
     {
         $paths = [];

@@ -34,6 +34,9 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
         $this->doctrineEventHandler = $doctrineEventHandler;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function execute(AMQPMessage $msg)
     {
         $datas = json_decode($msg->getBody(), true, 512, JSON_THROW_ON_ERROR);
@@ -53,6 +56,9 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
         return ConsumerInterface::MSG_ACK;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function batchExecute(array $messages)
     {
         /** @var AMQPMessage $message */

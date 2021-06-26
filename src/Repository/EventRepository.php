@@ -424,9 +424,9 @@ class EventRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Event[]
+     * @return string[]
      */
-    public function getTypesEvenements(Location $location)
+    public function getTypesEvenements(Location $location): array
     {
         $from = new DateTime();
         $from->modify(Event::INDEX_FROM);

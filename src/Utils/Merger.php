@@ -12,7 +12,6 @@ namespace App\Utils;
 
 use App\Entity\Event;
 use App\Entity\Place;
-use stdClass;
 
 class Merger
 {
@@ -39,7 +38,7 @@ class Merger
         $this->comparator = $comparator;
     }
 
-    public function mergeEvent(Event $a = null, Event $b = null): stdClass
+    public function mergeEvent(Event $a = null, Event $b = null): object
     {
         return $this->merge($a, $b, [
             'nom',
@@ -69,11 +68,8 @@ class Merger
 
     /**
      * Merge les champs de b dans a s'ils sont jugés plus pertinents.
-     *
-     * @param stdClass $a
-     * @param stdClass $b
      */
-    private function merge($a = null, $b = null, array $fields = []): ?stdClass
+    private function merge(?object $a, ?object $b, array $fields = []): ?object
     {
         //Un ou les deux est nul, pas la peine de merger
         if (null === $a || null === $b) {
@@ -151,7 +147,7 @@ class Merger
         return isset($compareA[0]) ? ($valueA ?: null) : ($valueB ?: null);
     }
 
-    public function mergePlace(Place $a = null, Place $b = null): stdClass
+    public function mergePlace(Place $a = null, Place $b = null): object
     {
         return $this->merge($a, $b, [
             'nom' => self::MERGE_LEFT,

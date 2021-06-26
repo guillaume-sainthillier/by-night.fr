@@ -67,5 +67,6 @@ class PlaceCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$panel1, $externalId, $slug, $nom, $facebookId, $junk, $panel2, $rue, $codePostal, $ville, $latitude, $longitude, $city, $country];
         }
+        throw new \RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

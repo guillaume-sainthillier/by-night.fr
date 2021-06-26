@@ -55,5 +55,6 @@ class CommentCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$event, $user, $createdAt, $updatedAt, $approuve, $commentaire];
         }
+        throw new \RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

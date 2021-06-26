@@ -127,6 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     private ?UserOAuth $oAuth;
 
     /**
+     * @var UserEvent[]|Collection
      * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="user")
      */
     private Collection $userEvents;

@@ -26,13 +26,13 @@ class InfoController extends AbstractController
      */
     public function list(SocialManager $socialManager): Response
     {
-        $info = $socialManager->getAppOAuth();
-
-        if (null === $info) {
+        if (false === $socialManager->hasAppOAuth()) {
             $info = new AppOAuth();
             $em = $this->getDoctrine()->getManager();
             $em->persist($info);
             $em->flush();
+        } else {
+            $info = $socialManager->getAppOAuth();
         }
 
         return $this->redirectToRoute('app_administration_info_edit', [
