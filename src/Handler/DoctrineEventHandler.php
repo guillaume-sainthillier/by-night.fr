@@ -244,7 +244,7 @@ class DoctrineEventHandler
         //Ville
         if (!$zipCity && $place->getVille()) {
             $zipCities = $this->repoZipCity->findByCity($place->getVille(), $place->getCountry()->getId());
-            if (1 === (is_countable($zipCities) ? \count($zipCities) : 0)) {
+            if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
         }
@@ -252,7 +252,7 @@ class DoctrineEventHandler
         //CP
         if (!$zipCity && $place->getCodePostal()) {
             $zipCities = $this->repoZipCity->findByPostalCode($place->getCodePostal(), $place->getCountry()->getId());
-            if (1 === (is_countable($zipCities) ? \count($zipCities) : 0)) {
+            if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
         }
@@ -264,7 +264,7 @@ class DoctrineEventHandler
         //City
         if (!$city && $place->getVille()) {
             $cities = $this->repoCity->findByName($place->getVille(), $place->getCountry()->getId());
-            if (1 === (is_countable($cities) ? \count($cities) : 0)) {
+            if (1 === \count($cities)) {
                 $city = $cities[0];
             }
         }

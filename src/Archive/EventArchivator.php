@@ -55,7 +55,7 @@ class EventArchivator
                 ->getQuery()
                 ->getResult();
 
-            if (0 === (is_countable($events) ? \count($events) : 0)) {
+            if (0 === \count($events)) {
                 continue;
             }
 

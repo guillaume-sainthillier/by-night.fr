@@ -30,7 +30,6 @@ class AddEventConsumer extends AbstractConsumer implements ConsumerInterface, Ba
     {
         parent::__construct($logger);
 
-        $this->entityManager = $entityManager;
         $this->eventFactory = $eventFactory;
         $this->doctrineEventHandler = $doctrineEventHandler;
     }

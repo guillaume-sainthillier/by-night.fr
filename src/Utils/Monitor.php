@@ -118,7 +118,7 @@ class Monitor
      */
     private static function getTime($stat): array
     {
-        $nbItems = is_countable($stat['time']) ? \count($stat['time']) : 0;
+        $nbItems = \count($stat['time']);
 
         if (0 === $nbItems) {
             return [

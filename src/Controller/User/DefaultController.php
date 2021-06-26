@@ -164,7 +164,7 @@ class DefaultController extends BaseController
             'full_categories' => [],
         ];
 
-        if ((is_countable($datas) ? \count($datas) : 0) > 0) {
+        if (\count($datas) > 0) {
             $minYear = min(array_keys($datas));
             $maxYear = max(array_keys($datas));
         } else {
