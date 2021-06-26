@@ -14,6 +14,9 @@ use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use DateTime;
+use const DIRECTORY_SEPARATOR;
+use const JSON_THROW_ON_ERROR;
+use const PHP_URL_PATH;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -68,7 +71,7 @@ class DataTourismeParser extends AbstractParser
 
         $fs = new Filesystem();
         foreach ($files as $file) {
-            $datas = json_decode(file_get_contents($file->getPathname()), true, 512, \JSON_THROW_ON_ERROR);
+            $datas = json_decode(file_get_contents($file->getPathname()), true, 512, JSON_THROW_ON_ERROR);
             $events = array_filter($this->getInfoEvents($datas));
 
             foreach ($events as $event) {
@@ -131,7 +134,7 @@ class DataTourismeParser extends AbstractParser
         $emails = array_filter(array_unique($emails));
 
         $lastUpdate = new DateTime($datas['lastUpdate']);
-        $lastUpdate->setTime(0, 0, 0);
+        $lastUpdate->setTime(0, 0);
 
         if (isset($datas['lastUpdateDatatourisme'])) {
             $lastUpdateDatatourisme = new DateTime($datas['lastUpdateDatatourisme']);
@@ -208,9 +211,9 @@ class DataTourismeParser extends AbstractParser
         return $events;
     }
 
-    private function getExternalIdFromUrl(string $url)
+    private function getExternalIdFromUrl(string $url): string
     {
-        $path = ltrim(parse_url($url, \PHP_URL_PATH), '/');
+        $path = ltrim(parse_url($url, PHP_URL_PATH), '/');
 
         if (!preg_match(self::UUID_REGEX, $path)) {
             throw new RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
@@ -224,8 +227,8 @@ class DataTourismeParser extends AbstractParser
         //Remove previous extracts
         $fs = new Filesystem();
 
-        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
-        $extractDirectory = $this->tempPath . \DIRECTORY_SEPARATOR . md5($url);
+        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
+        $extractDirectory = $this->tempPath . DIRECTORY_SEPARATOR . md5($url);
 
         if ($fs->exists($extractDirectory)) {
             $fs->remove($extractDirectory);
@@ -255,6 +258,9 @@ class DataTourismeParser extends AbstractParser
         return $extractDirectory;
     }
 
+    /**
+     * @param string|string[] $paths
+     */
     private function getDataValue(array $datas, $paths, $defaultValue = null)
     {
         foreach ((array) $paths as $path) {

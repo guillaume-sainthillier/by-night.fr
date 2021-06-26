@@ -43,7 +43,7 @@ class LoginSocialController extends AbstractController
         $social->connectSite($appOAuth, $datas);
         $this->getDoctrine()->getManager()->flush();
 
-        return $this->render('connect-success.html.twig', [
+        return $this->render('security/connect-success.html.twig', [
             'userInformation' => [
                 'name' => $datas['realname'],
                 'email' => $datas['email'],

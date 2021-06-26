@@ -24,10 +24,8 @@ class AdminZone2 extends AdminZone
 
     /**
      * Get parent.
-     *
-     * @return AdminZone1
      */
-    public function getParent()
+    public function getParent(): ?AdminZone1
     {
         return $this->parent;
     }

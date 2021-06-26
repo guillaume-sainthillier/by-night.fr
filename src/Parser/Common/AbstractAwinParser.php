@@ -13,6 +13,7 @@ namespace App\Parser\Common;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
+use const DIRECTORY_SEPARATOR;
 use ForceUTF8\Encoding;
 use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
@@ -73,7 +74,7 @@ abstract class AbstractAwinParser extends AbstractParser
         $client = HttpClient::create();
         $response = $client->request('GET', $url);
 
-        $filePath = $this->tempPath . \DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
+        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.gz', md5($url));
         $fileHandler = fopen($filePath, 'w');
         foreach ($client->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());

@@ -56,7 +56,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         ];
     }
 
-    public function registerRoutes(SitemapPopulateEvent $event)
+    public function registerRoutes(SitemapPopulateEvent $event): void
     {
         $this->urlContainer = $event->getUrlContainer();
         $section = $event->getSection();
@@ -77,7 +77,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function registerTagRoutes($section)
+    private function registerTagRoutes($section): void
     {
         $events = $this->cityRepository->findTagSiteMap();
 
@@ -116,7 +116,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function registerAgendaRoutes($section)
+    private function registerAgendaRoutes($section): void
     {
         $cities = $this->cityRepository->findSiteMap();
 
@@ -132,7 +132,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function registerPlacesRoutes($section)
+    private function registerPlacesRoutes($section): void
     {
         $places = $this->placeRepository->findSiteMap();
 
@@ -152,7 +152,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function registerEventRoutes($section)
+    private function registerEventRoutes($section): void
     {
         $nbEvents = $this->eventRepository->findSiteMapCount();
         $nbPages = ceil($nbEvents / self::ITEMS_PER_PAGE);
@@ -178,7 +178,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function registerUserRoutes($section)
+    private function registerUserRoutes($section): void
     {
         $users = $this->userRepository->findSiteMap();
         foreach ($users as $user) {
@@ -198,7 +198,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function registerStaticRoutes($section)
+    private function registerStaticRoutes($section): void
     {
         $staticRoutes = [
             'app_search_index',
@@ -214,7 +214,7 @@ class SitemapSuscriber implements EventSubscriberInterface
         }
     }
 
-    private function addUrl($section, $name, array $params = [], DateTime $lastMod = null, string $changefreq = null, float $priority = 0.6)
+    private function addUrl($section, string $name, array $params = [], DateTime $lastMod = null, string $changefreq = null, float $priority = 0.6): void
     {
         $url = $this->urlGenerator->generate($name, $params, UrlGeneratorInterface::ABSOLUTE_URL);
 

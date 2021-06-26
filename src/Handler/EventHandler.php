@@ -18,6 +18,8 @@ use App\Utils\Cleaner;
 use App\Utils\Comparator;
 use App\Utils\Merger;
 use App\Utils\Monitor;
+use const DIRECTORY_SEPARATOR;
+use const PATHINFO_BASENAME;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Mime\MimeTypes;
@@ -49,7 +51,7 @@ class EventHandler
         $this->tempPath = $tempPath;
     }
 
-    public function cleanEvent(Event $event)
+    public function cleanEvent(Event $event): void
     {
         $this->cleaner->cleanEvent($event);
         if (null !== $event->getPlace()) {
@@ -57,6 +59,9 @@ class EventHandler
         }
     }
 
+    /**
+     * @return void
+     */
     public function handleDownload(Event $event)
     {
         $url = $event->getUrl();
@@ -93,11 +98,13 @@ class EventHandler
 
     /**
      * @throws UnsupportedFileException
+     *
+     * @return void
      */
     private function uploadFile(Event $event, string $content)
     {
         $tempFileBasename = ($event->getId() ?: uniqid());
-        $tempFilePath = $this->tempPath . \DIRECTORY_SEPARATOR . $tempFileBasename;
+        $tempFilePath = $this->tempPath . DIRECTORY_SEPARATOR . $tempFileBasename;
         $octets = file_put_contents($tempFilePath, $content);
         if (0 === $octets) {
             unlink($tempFilePath);
@@ -123,7 +130,7 @@ class EventHandler
                 throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType));
         }
 
-        $originalName = pathinfo($event->getUrl(), \PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
+        $originalName = pathinfo($event->getUrl(), PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
         $file = new DeletableFile($tempFilePath, $originalName, $contentType, null, true);
         $event->setImageSystemFile($file);
     }

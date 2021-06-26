@@ -31,6 +31,8 @@ class AppImagesUpdateCommand extends Command
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function configure()
     {

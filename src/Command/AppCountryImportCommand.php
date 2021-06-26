@@ -34,6 +34,8 @@ class AppCountryImportCommand extends Command
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function configure()
     {
@@ -48,6 +50,8 @@ class AppCountryImportCommand extends Command
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {

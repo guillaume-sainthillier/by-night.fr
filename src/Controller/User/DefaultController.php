@@ -113,7 +113,12 @@ class DefaultController extends BaseController
         return $this->fillDatas($final_datas, $datas);
     }
 
-    private function fillDatas(array $final_datas, array $datas)
+    /**
+     * @return array[]
+     *
+     * @psalm-return array<array>
+     */
+    private function fillDatas(array $final_datas, array $datas): array
     {
         foreach (array_keys($final_datas['categories']) as $key) {
             $final_datas['data'][$key] = $datas[$key] ?? 0;

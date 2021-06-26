@@ -33,7 +33,7 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
         $result = [];
 
         /** @var AMQPMessage $message */
-        foreach ($messages as $i => $message) {
+        foreach ($messages as $message) {
             $path = $message->getBody();
 
             try {
@@ -53,7 +53,7 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
         return $result;
     }
 
-    private function deleteThumbnails(string $path)
+    private function deleteThumbnails(string $path): void
     {
         $this->glide->deleteCache($path);
     }

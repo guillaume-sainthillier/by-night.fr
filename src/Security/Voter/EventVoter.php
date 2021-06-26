@@ -51,7 +51,7 @@ class EventVoter extends Voter
         throw new LogicException('This code should not be reached!');
     }
 
-    private function canEdit(Event $event, User $user)
+    private function canEdit(Event $event, User $user): bool
     {
         return $event->getUser() === $user;
     }

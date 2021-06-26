@@ -31,14 +31,14 @@ class PopulateListener implements EventSubscriberInterface
         ];
     }
 
-    public function preIndexPopulate(IndexPopulateEvent $event)
+    public function preIndexPopulate(IndexPopulateEvent $event): void
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $settings = $index->getSettings();
         $settings->setRefreshInterval(-1);
     }
 
-    public function postIndexPopulate(IndexPopulateEvent $event)
+    public function postIndexPopulate(IndexPopulateEvent $event): void
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $settings = $index->getSettings();

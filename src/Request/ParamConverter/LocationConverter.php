@@ -34,7 +34,7 @@ class LocationConverter implements ParamConverterInterface
         $this->countryRepository = $countryRepository;
     }
 
-    public function apply(Request $request, ParamConverter $configuration)
+    public function apply(Request $request, ParamConverter $configuration): void
     {
         $locationSlug = $request->attributes->get('location');
 

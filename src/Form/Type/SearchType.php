@@ -32,7 +32,7 @@ class SearchType extends AbstractType
         $this->dateRangeBuilder = $dateRangeBuilder;
     }
 
-    public function onPreSubmit(FormEvent $event)
+    public function onPreSubmit(FormEvent $event): void
     {
         $data = $event->getData();
         if (empty($data['range'])) {
@@ -42,12 +42,18 @@ class SearchType extends AbstractType
         $event->setData($data);
     }
 
+    /**
+     * @return void
+     */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         parent::finishView($view, $form, $options);
         $this->dateRangeBuilder->finishView($view, $form);
     }
 
+    /**
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $this->dateRangeBuilder->addShortcutDateFields($builder, 'from', 'to');
@@ -73,6 +79,9 @@ class SearchType extends AbstractType
             );
     }
 
+    /**
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

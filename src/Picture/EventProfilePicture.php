@@ -36,7 +36,7 @@ class EventProfilePicture
         $this->packages = $packages;
     }
 
-    public function getOriginalPicture(Event $event)
+    public function getOriginalPicture(Event $event): ?string
     {
         if ($event->getImage()->getName()) {
             return $this->packages->getUrl(

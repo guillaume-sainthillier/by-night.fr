@@ -116,6 +116,9 @@ class UserFormAuthenticator extends AbstractFormLoginAuthenticator implements Pa
         return new RedirectResponse($this->urlGenerator->generate('app_event_list'));
     }
 
+    /**
+     * @return JsonResponse|RedirectResponse
+     */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         if ($request->isXmlHttpRequest()) {

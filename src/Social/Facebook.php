@@ -16,6 +16,9 @@ class Facebook extends Social
 {
     protected Client $client;
 
+    /**
+     * @return void
+     */
     protected function constructClient()
     {
         $this->client = new Client([

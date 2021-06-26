@@ -12,6 +12,7 @@ namespace App\Handler;
 
 use App\Entity\User;
 use App\File\DeletableFile;
+use const DIRECTORY_SEPARATOR;
 use RuntimeException;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
@@ -29,7 +30,7 @@ class UserHandler
         $this->webDir = $webDir;
     }
 
-    public function hasToUploadNewImage(?string $newContent, User $user)
+    public function hasToUploadNewImage(?string $newContent, User $user): bool
     {
         if ($user->getImage()->getName() || !$user->getOAuth()) {
             return false;
@@ -44,7 +45,7 @@ class UserHandler
             return true;
         }
 
-        $imagePath = $this->webDir . \DIRECTORY_SEPARATOR . ltrim($image, \DIRECTORY_SEPARATOR);
+        $imagePath = $this->webDir . DIRECTORY_SEPARATOR . ltrim($image, DIRECTORY_SEPARATOR);
         if (!file_exists($imagePath)) {
             return true;
         }
@@ -52,7 +53,10 @@ class UserHandler
         return md5_file($imagePath) !== md5($newContent);
     }
 
-    public function uploadFile(User $user, $content, $contentType)
+    /**
+     * @return void
+     */
+    public function uploadFile(User $user, string $content, string $contentType)
     {
         if (null === $user->getOAuth()) {
             return;
@@ -77,7 +81,7 @@ class UserHandler
             }
 
             $filename = $user->getId() . '.' . $ext;
-            $tempPath = $this->tempPath . \DIRECTORY_SEPARATOR . $filename;
+            $tempPath = $this->tempPath . DIRECTORY_SEPARATOR . $filename;
             $octets = file_put_contents($tempPath, $content);
 
             if ($octets > 0) {

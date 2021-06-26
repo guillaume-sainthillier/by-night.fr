@@ -68,8 +68,8 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         }
 
         //Prevents Reject::BAD_EVENT_DATE_INTERVAL
-        $toDate->setTime(0, 0, 0);
-        $fromDate->setTime(0, 0, 0);
+        $toDate->setTime(0, 0);
+        $fromDate->setTime(0, 0);
 
         return [
             'external_id' => 'FS-' . $datas['merchant_product_id'],

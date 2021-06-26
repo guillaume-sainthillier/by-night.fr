@@ -27,18 +27,22 @@ class EventConstraintValidator extends ConstraintValidator
         $this->router = $router;
     }
 
-    public function setUpdatabilityCkeck($checkIfUpdate)
+    public function setUpdatabilityCkeck(bool $checkIfUpdate): void
     {
         $this->checkIfUpdate = $checkIfUpdate;
     }
 
     /**
-     * @param Event           $event
+     * @param Event           $value
      * @param EventConstraint $constraint
+     *
+     * @return void
      */
-    public function validate($event, Constraint $constraint)
+    public function validate($value, Constraint $constraint)
     {
-        $reject = $event->getReject();
+        \assert($value instanceof Event);
+        \assert($constraint instanceof EventConstraint);
+        $reject = $value->getReject();
 
         if ($reject && !$this->checkIfUpdate) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
@@ -112,9 +116,9 @@ class EventConstraintValidator extends ConstraintValidator
 
         if ($reject->isBadUser()) {
             $link = $this->router->generate('app_event_details', [
-                'slug' => $event->getSlug(),
-                'id' => $event->getId(),
-                'location' => $event->getLocationSlug(),
+                'slug' => $value->getSlug(),
+                'id' => $value->getId(),
+                'location' => $value->getLocationSlug(),
             ]);
             $message = str_replace([
                 '[link]',

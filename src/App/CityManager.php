@@ -70,7 +70,7 @@ class CityManager
         return $this->cookieCity;
     }
 
-    private function computeCityFromCookie()
+    private function computeCityFromCookie(): void
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
         if ($currentRequest->cookies->has('app_city')) {

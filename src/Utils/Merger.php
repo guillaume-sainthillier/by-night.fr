@@ -39,7 +39,7 @@ class Merger
         $this->comparator = $comparator;
     }
 
-    public function mergeEvent(Event $a = null, Event $b = null)
+    public function mergeEvent(Event $a = null, Event $b = null): stdClass
     {
         return $this->merge($a, $b, [
             'nom',
@@ -72,10 +72,8 @@ class Merger
      *
      * @param stdClass $a
      * @param stdClass $b
-     *
-     * @return stdClass
      */
-    private function merge($a = null, $b = null, array $fields = [])
+    private function merge($a = null, $b = null, array $fields = []): ?stdClass
     {
         //Un ou les deux est nul, pas la peine de merger
         if (null === $a || null === $b) {
@@ -108,12 +106,12 @@ class Merger
         return $a;
     }
 
-    private function skakeToCamel($str)
+    private function skakeToCamel($str): string
     {
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $str)));
     }
 
-    private function getBestContent($valueA, $valueB, $mergeType)
+    private function getBestContent($valueA, $valueB, string $mergeType)
     {
         if (\is_callable($mergeType)) {
             return \call_user_func($mergeType, $valueA, $valueB);
@@ -153,7 +151,7 @@ class Merger
         return isset($compareA[0]) ? ($valueA ?: null) : ($valueB ?: null);
     }
 
-    public function mergePlace(Place $a = null, Place $b = null)
+    public function mergePlace(Place $a = null, Place $b = null): stdClass
     {
         return $this->merge($a, $b, [
             'nom' => self::MERGE_LEFT,

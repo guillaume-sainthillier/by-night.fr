@@ -26,8 +26,13 @@ class ReCaptchaResponseValidator extends ConstraintValidator
         $this->captcha = $captcha;
     }
 
+    /**
+     * @return void
+     */
     public function validate($value, Constraint $constraint)
     {
+        \assert($constraint instanceof ReCaptchaResponse);
+
         $value ??= $this->requestStack->getCurrentRequest()->request->get('g-recaptcha-response');
 
         $isValid = $this->captcha->verify($value);

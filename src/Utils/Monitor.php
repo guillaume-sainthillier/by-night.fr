@@ -10,6 +10,7 @@
 
 namespace App\Utils;
 
+use const SORT_STRING;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
@@ -26,39 +27,42 @@ class Monitor
 
     private static array $stats = [];
 
-    public static function createProgressBar($nbSteps)
+    public static function createProgressBar($nbSteps): void
     {
         if (null !== self::$output) {
             static::$progressBar = new ProgressBar(self::$output, $nbSteps);
         }
     }
 
-    public static function advanceProgressBar($step = 1)
+    public static function advanceProgressBar($step = 1): void
     {
         if (null !== static::$progressBar) {
             static::$progressBar->advance($step);
         }
     }
 
-    public static function finishProgressBar()
+    public static function finishProgressBar(): void
     {
         if (null !== static::$progressBar) {
             static::$progressBar->finish();
         }
     }
 
-    public static function enableMonitoring($enable)
+    public static function enableMonitoring(bool $enable): void
     {
         self::$enableMonitoring = $enable;
     }
 
-    public static function writeln($message = null)
+    public static function writeln(?string $message = null): void
     {
         if (null !== self::$output) {
             self::$output->writeln($message);
         }
     }
 
+    /**
+     * @return void
+     */
     public static function displayTable(array $datas)
     {
         if (!self::$enableMonitoring) {
@@ -73,6 +77,9 @@ class Monitor
             ->render();
     }
 
+    /**
+     * @return void
+     */
     public static function displayStats()
     {
         if (!self::$enableMonitoring) {
@@ -86,7 +93,7 @@ class Monitor
             ]);
 
         $stats = self::getStats();
-        ksort($stats, \SORT_STRING);
+        ksort($stats, SORT_STRING);
         foreach ($stats as $key => $stat) {
             $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['avg_memory']]);
         }
@@ -94,7 +101,7 @@ class Monitor
         self::$stats = [];
     }
 
-    public static function getStats()
+    public static function getStats(): array
     {
         $stats = [];
         foreach (self::$stats as $key => $stat) {
@@ -104,7 +111,12 @@ class Monitor
         return $stats;
     }
 
-    private static function getTime($stat)
+    /**
+     * @return (int|mixed|null)[]
+     *
+     * @psalm-return array{nb: int, total: 0|mixed, avg: 0|mixed|null, min?: mixed|null, max?: mixed|null, avg_memory: 0|mixed|null}
+     */
+    private static function getTime($stat): array
     {
         $nbItems = is_countable($stat['time']) ? \count($stat['time']) : 0;
 
@@ -129,17 +141,17 @@ class Monitor
         ];
     }
 
-    public static function formatDuration($microseconds)
+    public static function formatDuration($microseconds): string
     {
         return sprintf('%01.2f ms', $microseconds);
     }
 
-    public static function formatMemory($bytes)
+    public static function formatMemory($bytes): string
     {
         return round($bytes / 1_000 / 1_000, 2) . ' MB';
     }
 
-    public static function bench($message, callable $function)
+    public static function bench(string $message, callable $function)
     {
         $stopwatch = self::start($message);
         $retour = \call_user_func($function);
@@ -148,7 +160,7 @@ class Monitor
         return $retour;
     }
 
-    public static function start($message): ?Stopwatch
+    public static function start(?string $message): ?Stopwatch
     {
         $stopwatch = null;
         if (self::$enableMonitoring) {
@@ -166,7 +178,7 @@ class Monitor
         return $stopwatch;
     }
 
-    public static function stop($message, ?Stopwatch $stopwatch)
+    public static function stop(?string $message, ?Stopwatch $stopwatch): void
     {
         if (self::$enableMonitoring) {
             $event = $stopwatch->stop($message);

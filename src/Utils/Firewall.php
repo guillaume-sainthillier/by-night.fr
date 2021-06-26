@@ -34,7 +34,7 @@ class Firewall
         $this->parserDataRepository = $parserDataRepository;
     }
 
-    public function loadParserDatas(array $ids)
+    public function loadParserDatas(array $ids): void
     {
         $parserDatas = $this->parserDataRepository->findBy([
             'externalId' => $ids,
@@ -45,7 +45,7 @@ class Firewall
         }
     }
 
-    public function addParserData(ParserData $parserData)
+    public function addParserData(ParserData $parserData): void
     {
         $reject = new Reject();
         $reject->setReason($parserData->getReason());
@@ -58,23 +58,23 @@ class Firewall
         return $this->hasExplorationToBeUpdated($parserData, $event);
     }
 
-    private function hasExplorationToBeUpdated(ParserData $parserData, Event $event)
+    private function hasExplorationToBeUpdated(ParserData $parserData, Event $event): bool
     {
         return self::VERSION !== $parserData->getFirewallVersion() || $event->getParserVersion() !== $parserData->getFirewallVersion();
     }
 
-    public function isValid(Event $event)
+    public function isValid(Event $event): bool
     {
         return $event->getReject()->isValid() && $event->getPlaceReject()->isValid();
     }
 
-    public function filterEvent(Event $event)
+    public function filterEvent(Event $event): void
     {
         $this->filterEventInfos($event);
         $this->filterEventPlace($event);
     }
 
-    private function filterEventInfos(Event $event)
+    private function filterEventInfos(Event $event): void
     {
         //Le nom de l'événement doit comporter au moins 3 caractères
         if (!$event->isAffiliate() && !$this->checkMinLengthValidity($event->getNom(), 3)) {
@@ -126,12 +126,12 @@ class Firewall
         }
     }
 
-    public function checkMinLengthValidity($str, $min)
+    public function checkMinLengthValidity(?string $str, int $min): bool
     {
         return isset(trim($str)[$min]);
     }
 
-    private function isSPAMContent($content)
+    private function isSPAMContent(?string $content): bool
     {
         $black_list = [
             'Buy && sell tickets at', 'Please join', 'Invite Friends', 'Buy Tickets',
@@ -161,7 +161,7 @@ class Firewall
      *
      * @return ParserData|null
      */
-    public function getExploration($externalId)
+    public function getExploration(?string $externalId)
     {
         if (!isset($this->parserDatas[$externalId])) {
             return null;
@@ -170,7 +170,7 @@ class Firewall
         return $this->parserDatas[$externalId];
     }
 
-    private function filterEventPlace(Event $event)
+    private function filterEventPlace(Event $event): void
     {
         //Le nom du lieu doit comporter au moins 2 caractères
         if (!$this->checkMinLengthValidity($event->getPlaceName(), 2)) {
@@ -201,11 +201,14 @@ class Firewall
         }
     }
 
-    private function checkLengthValidity($str, $length)
+    private function checkLengthValidity($str, int $length): bool
     {
         return mb_strlen($this->comparator->sanitize($str)) === $length;
     }
 
+    /**
+     * @return void
+     */
     public function filterEventLocation(Event $event)
     {
         if (!$event->getPlace() || !$event->getPlace()->getReject()) {
@@ -219,6 +222,9 @@ class Firewall
         }
     }
 
+    /**
+     * @return void
+     */
     public function filterEventExploration(ParserData $parserData, Event $event)
     {
         $reject = $parserData->getReject();
@@ -251,7 +257,7 @@ class Firewall
         }
     }
 
-    public function hasEventToBeUpdated(ParserData $parserData, Event $event)
+    public function hasEventToBeUpdated(ParserData $parserData, Event $event): bool
     {
         $parserDataDate = $parserData->getLastUpdated();
         $eventDateModification = $event->getExternalUpdatedAt();

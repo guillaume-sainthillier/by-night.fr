@@ -26,7 +26,7 @@ class DateExtension extends Extension
         ];
     }
 
-    public function getDateTime($string)
+    public function getDateTime($string): DateTime
     {
         return new DateTime($string);
     }
@@ -36,7 +36,12 @@ class DateExtension extends Extension
         return $this->statsDiffDate($date)['full'];
     }
 
-    public function statsDiffDate(DateTimeInterface $date)
+    /**
+     * @return string[]
+     *
+     * @psalm-return array{short: string, long: string, full: string}
+     */
+    public function statsDiffDate(DateTimeInterface $date): array
     {
         $diff = $date->diff(new DateTime());
 

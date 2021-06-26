@@ -22,7 +22,7 @@ class TweetExtension extends Extension
         ];
     }
 
-    public function tweet($tweet)
+    public function tweet($tweet): ?string
     {
         $linkified = '@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@';
         $hashified = '/(^|[\n\s])#([^\s"\t\n\r<:]*)/is';
@@ -37,7 +37,7 @@ class TweetExtension extends Extension
             [
                 '<a href="$1" class="link-tweet" target="_blank">$1</a>',
                 '$1<a class="link-hashtag" href="https://twitter.com/search?q=%23$2&src=hash" target="_blank">#$2</a>',
-                '$1<a class="link-mention" href="http://twitter.com/$2" target="_blank">@$2</a>',
+                '$1<a class="link-mention" href="https://twitter.com/$2" target="_blank">@$2</a>',
             ],
             $tweet
         );

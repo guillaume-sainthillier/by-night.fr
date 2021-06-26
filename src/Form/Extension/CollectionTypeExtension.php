@@ -10,6 +10,7 @@
 
 namespace App\Form\Extension;
 
+use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormInterface;
@@ -18,6 +19,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CollectionTypeExtension extends AbstractTypeExtension
 {
+    /**
+     * @return void
+     */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         parent::finishView($view, $form, $options);
@@ -30,6 +34,9 @@ class CollectionTypeExtension extends AbstractTypeExtension
         $view->vars['add_entry_label'] = $options['add_entry_label'];
     }
 
+    /**
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
@@ -45,6 +52,9 @@ class CollectionTypeExtension extends AbstractTypeExtension
         ]);
     }
 
+    /**
+     * @psalm-return Generator<int, CollectionType::class, mixed, void>
+     */
     public static function getExtendedTypes(): iterable
     {
         yield CollectionType::class;

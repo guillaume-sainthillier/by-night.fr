@@ -10,18 +10,18 @@
 
 namespace App\Controller\User;
 
+use App\Controller\AbstractController;
 use App\Entity\UserEvent;
 use App\Form\Type\ChangePasswordFormType;
 use App\Form\Type\ProfileFormType;
 use App\Repository\CommentRepository;
 use App\Repository\EventRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @Route("/profile")
@@ -41,7 +41,7 @@ class ProfileController extends AbstractController
 
             $deleteEvents = $form->get('delete_events')->getData();
 
-            $user = $this->getUser();
+            $user = $this->getAppUser();
             $events = $eventRepository->findBy([
                 'user' => $user,
             ]);
@@ -91,9 +91,9 @@ class ProfileController extends AbstractController
     /**
      * @Route("/edit", name="app_user_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
+    public function edit(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
-        $user = $this->getUser();
+        $user = $this->getAppUser();
 
         $form = $this->createForm(ProfileFormType::class, $user);
         $form->handleRequest($request);
@@ -108,7 +108,7 @@ class ProfileController extends AbstractController
         $formChangePassword->handleRequest($request);
         if ($formChangePassword->isSubmitted() && $formChangePassword->isValid()) {
             $user->setPassword(
-                $passwordEncoder->encodePassword(
+                $passwordHasher->hashPassword(
                     $user,
                     $formChangePassword->get('plainPassword')->getData()
                 )

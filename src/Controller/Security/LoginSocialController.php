@@ -71,7 +71,7 @@ class LoginSocialController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        return $this->render('connect-success.html.twig', [
+        return $this->render('security/connect-success.html.twig', [
             'userInformation' => [
                 'name' => $user->getUsername(),
                 'email' => $user->getEmail(),

@@ -61,7 +61,7 @@ class ParserHistory
     /**
      * @ORM\PrePersist
      */
-    public function majDateFin()
+    public function majDateFin(): void
     {
         $this->dateFin = new DateTime();
     }

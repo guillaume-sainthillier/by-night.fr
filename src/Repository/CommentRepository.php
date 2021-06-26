@@ -29,7 +29,7 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    public function findAllByEvent(Event $event, $page = 1, $limit = 10)
+    public function findAllByEvent(Event $event, int $page = 1, int $limit = 10)
     {
         return $this->_em
             ->createQueryBuilder()
@@ -56,7 +56,7 @@ class CommentRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function findAllReponses(Comment $comment, $page = 1, $limit = 10)
+    public function findAllReponses(Comment $comment, int $page = 1, int $limit = 10)
     {
         return $this->_em
             ->createQueryBuilder()

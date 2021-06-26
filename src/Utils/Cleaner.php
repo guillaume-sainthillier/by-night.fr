@@ -23,7 +23,7 @@ class Cleaner
         $this->util = $util;
     }
 
-    public function cleanEvent(Event $event)
+    public function cleanEvent(Event $event): void
     {
         if (!$event->getDateFin() instanceof DateTimeInterface) {
             $event->setDateFin($event->getDateDebut());
@@ -41,12 +41,12 @@ class Cleaner
             ->setHoraires(mb_substr($event->getHoraires(), 0, 255) ?: null);
     }
 
-    private function clean($string)
+    private function clean(?string $string): string
     {
         return trim($string);
     }
 
-    public function cleanPlace(Place $place)
+    public function cleanPlace(Place $place): void
     {
         $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
             ->setRue($this->cleanNormalString($place->getRue()) ?: null)
@@ -56,12 +56,12 @@ class Cleaner
             ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
     }
 
-    private function cleanNormalString($string)
+    private function cleanNormalString(?string $string)
     {
         return $this->cleanString($string, '');
     }
 
-    private function cleanString($string, $delimiters = [])
+    private function cleanString($string, $delimiters = []): string
     {
         $step1 = $this->util->utf8TitleCase($string);
         $step2 = $this->util->deleteMultipleSpaces($step1);
@@ -70,7 +70,7 @@ class Cleaner
         return trim($step3);
     }
 
-    private function cleanPostalString($string)
+    private function cleanPostalString(?string $string)
     {
         return $this->cleanString($string, ['-']);
     }

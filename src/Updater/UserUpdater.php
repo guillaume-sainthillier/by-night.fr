@@ -35,6 +35,9 @@ class UserUpdater extends Updater
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * @return void
+     */
     public function update(DateTimeInterface $from)
     {
         $repo = $this->userRepository;
@@ -54,7 +57,12 @@ class UserUpdater extends Updater
         }
     }
 
-    private function extractFbIds(array $users)
+    /**
+     * @return string[]
+     *
+     * @psalm-return array<string>
+     */
+    private function extractFbIds(array $users): array
     {
         return array_filter(array_unique(array_map(fn (User $user) => $user->getOAuth()->getFacebookId(), $users)));
     }
@@ -62,7 +70,7 @@ class UserUpdater extends Updater
     /**
      * @param User[] $users
      */
-    private function doUpdate(array $users, array $downloadUrls)
+    private function doUpdate(array $users, array $downloadUrls): void
     {
         $responses = [];
 
@@ -97,7 +105,7 @@ class UserUpdater extends Updater
         }
     }
 
-    private function doFlush()
+    private function doFlush(): void
     {
         $this->entityManager->flush();
         $this->entityManager->clear(User::class);

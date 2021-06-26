@@ -13,17 +13,21 @@ namespace App\Social;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use App\App\Location;
 use Exception;
+use const JSON_THROW_ON_ERROR;
 
 class Twitter extends Social
 {
     private ?TwitterOAuth $client = null;
 
+    /**
+     * @return void
+     */
     public function constructClient()
     {
         $this->client = new TwitterOAuth($this->id, $this->secret);
     }
 
-    public function getTimeline(Location $location, $max_id, $limit)
+    public function getTimeline(Location $location, ?int $max_id, int $limit)
     {
         $this->init();
 
@@ -40,7 +44,7 @@ class Twitter extends Social
         }
 
         try {
-            return json_decode(json_encode($this->client->get('search/tweets', $params), \JSON_THROW_ON_ERROR), true, 512, \JSON_THROW_ON_ERROR);
+            return json_decode(json_encode($this->client->get('search/tweets', $params), JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), [
                 'exception' => $e,

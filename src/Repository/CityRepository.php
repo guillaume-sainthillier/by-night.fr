@@ -38,7 +38,7 @@ class CityRepository extends ServiceEntityRepository
             ->join($alias . '.country', 'country');
     }
 
-    public function findSiteMap()
+    public function findSiteMap(): iterable
     {
         return parent::createQueryBuilder('c')
             ->select('c.slug')
@@ -46,10 +46,10 @@ class CityRepository extends ServiceEntityRepository
             ->join('App:Event', 'a', 'WITH', 'a.place = p')
             ->groupBy('c.slug')
             ->getQuery()
-            ->iterate();
+            ->toIterable();
     }
 
-    public function findTagSiteMap()
+    public function findTagSiteMap(): iterable
     {
         return parent::createQueryBuilder('c')
             ->select('c.slug, e.typeManifestation, e.categorieManifestation, e.themeManifestation')
@@ -59,10 +59,13 @@ class CityRepository extends ServiceEntityRepository
             ->setParameter('from', date('Y-m-d'))
             ->groupBy('c.slug, e.typeManifestation, e.categorieManifestation, e.themeManifestation')
             ->getQuery()
-            ->iterate();
+            ->toIterable();
     }
 
-    public function findRandomNames(Country $country = null, $limit = 5)
+    /**
+     * @psalm-return list<mixed>
+     */
+    public function findRandomNames(Country $country = null, $limit = 5): array
     {
         $qb = parent::createQueryBuilder('c')
             ->select('c.name, c.slug, c2.name AS country')
@@ -85,7 +88,7 @@ class CityRepository extends ServiceEntityRepository
         return \array_slice($results, 0, $limit);
     }
 
-    public function findByName($city, $country = null)
+    public function findByName(?string $city, ?string $country = null)
     {
         $cities = [];
         $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
@@ -115,6 +118,9 @@ class CityRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @param scalar|null $slug
+     */
     public function findBySlug($slug)
     {
         return parent::createQueryBuilder('c')

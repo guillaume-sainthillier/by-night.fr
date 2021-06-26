@@ -12,6 +12,7 @@ namespace App\OAuth;
 
 use Abraham\TwitterOAuth\TwitterOAuth as BaseClient;
 use Abraham\TwitterOAuth\TwitterOAuthException;
+use const JSON_THROW_ON_ERROR;
 use KnpU\OAuth2ClientBundle\Exception\InvalidStateException;
 use KnpU\OAuth2ClientBundle\Exception\MissingAuthorizationCodeException;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
@@ -92,7 +93,7 @@ class TwitterOAuth
         $client = new BaseClient($this->clientId, $this->clientSecret, $token->getToken(), $token->getTokenSecret());
         $content = $client->get('account/verify_credentials', ['include_email' => true]);
 
-        return new TwitterUser(json_decode(json_encode($content, \JSON_THROW_ON_ERROR), true, 512, \JSON_THROW_ON_ERROR));
+        return new TwitterUser(json_decode(json_encode($content, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR));
     }
 
     private function getCurrentSession(): SessionInterface

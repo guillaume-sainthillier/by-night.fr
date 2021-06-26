@@ -72,7 +72,10 @@ class Reject
         return $this;
     }
 
-    public function setValid()
+    /**
+     * @return static
+     */
+    public function setValid(): self
     {
         $this->reason = self::VALID;
 

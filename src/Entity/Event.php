@@ -26,7 +26,6 @@ use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Type;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -101,7 +100,7 @@ class Event
      * @Expose
      * @Type("DateTime<'Y-m-d'>")
      */
-    private ?DateTimeInterface $dateDebut = null;
+    private ?DateTimeInterface $dateDebut;
 
     /**
      * @ORM\Column(type="date", nullable=true)
@@ -432,7 +431,7 @@ class Event
         return $this;
     }
 
-    public function isIndexable()
+    public function isIndexable(): bool
     {
         $from = new DateTime();
         $from->modify(self::INDEX_FROM);
@@ -503,16 +502,17 @@ class Event
 
     /**
      * @ORM\PrePersist
+     *
      * @ORM\PreUpdate
      */
-    public function majDateFin()
+    public function majDateFin(): void
     {
         if (null === $this->dateFin) {
             $this->dateFin = $this->dateDebut;
         }
     }
 
-    public function getLocationSlug()
+    public function getLocationSlug(): ?string
     {
         if ($this->getPlace() && $this->getPlace()->getCity()) {
             return $this->getPlace()->getCity()->getSlug();
@@ -537,7 +537,12 @@ class Event
         return $this;
     }
 
-    public function getDistinctTags()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array<int, string>
+     */
+    public function getDistinctTags(): array
     {
         $tags = $this->categorieManifestation . ',' . $this->typeManifestation . ',' . $this->themeManifestation;
 
@@ -569,7 +574,10 @@ class Event
         return $this->id;
     }
 
-    public function setId($id)
+    /**
+     * @return static
+     */
+    public function setId($id): self
     {
         $this->id = $id;
 

@@ -18,7 +18,7 @@ use App\Entity\Country;
 use App\Entity\ZipCity;
 use App\Repository\CountryRepository;
 use App\Utils\Monitor;
-use Doctrine\DBAL\DBALException;
+use const DIRECTORY_SEPARATOR;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -41,10 +41,7 @@ class CountryImporter
         $this->countryRepository = $countryRepository;
     }
 
-    /**
-     * @throws DBALException
-     */
-    public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null)
+    public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null): void
     {
         /**
          * @var Country
@@ -71,6 +68,9 @@ class CountryImporter
         $this->deleteEmptyDatas($country);
     }
 
+    /**
+     * @return void
+     */
     private function createAdminZones(Country $country)
     {
         $filepath = $this->downloadAndExtractGeoname(
@@ -128,17 +128,17 @@ class CountryImporter
         fclose($fd);
     }
 
-    private function downloadAndExtractGeoname($zipUrl, $filename, $countryId)
+    private function downloadAndExtractGeoname(string $zipUrl, string $filename, ?string $countryId): string
     {
         // Create var/datas/<CountryCode>
-        $filedir = $this->dataDir . \DIRECTORY_SEPARATOR . $countryId;
-        $filepath = $filedir . \DIRECTORY_SEPARATOR . $filename;
+        $filedir = $this->dataDir . DIRECTORY_SEPARATOR . $countryId;
+        $filepath = $filedir . DIRECTORY_SEPARATOR . $filename;
         $fs = new Filesystem();
         $fs->mkdir($filedir);
 
         // Create /tmp/<CountryCode>
-        $tempdir = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $countryId;
-        $tempfile = $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.zip';
+        $tempdir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $countryId;
+        $tempfile = $tempdir . DIRECTORY_SEPARATOR . $countryId . '.zip';
         $fs = new Filesystem();
         $fs->mkdir($tempdir);
 
@@ -156,7 +156,7 @@ class CountryImporter
 
         //move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
         $fs->rename(
-            $tempdir . \DIRECTORY_SEPARATOR . $countryId . '.txt',
+            $tempdir . DIRECTORY_SEPARATOR . $countryId . '.txt',
             $filepath,
             true
         );
@@ -168,7 +168,7 @@ class CountryImporter
         return $filepath;
     }
 
-    private function formatAdminZoneCode($code)
+    private function formatAdminZoneCode(?string $code): ?string
     {
         if ('0' === $code || '00' === $code) {
             return $code;
@@ -183,7 +183,7 @@ class CountryImporter
         return $code;
     }
 
-    private function sanitizeAdminZone(AdminZone $entity)
+    private function sanitizeAdminZone(AdminZone $entity): void
     {
         switch ($entity->getCountry()->getId()) {
             case 'FR':
@@ -204,6 +204,9 @@ class CountryImporter
         }
     }
 
+    /**
+     * @return void
+     */
     private function createZipCities(Country $country)
     {
         $filepath = $this->downloadAndExtractGeoname(
@@ -259,22 +262,19 @@ class CountryImporter
         fclose($fd);
     }
 
-    /**
-     * @throws DBALException
-     */
-    private function cleanDatas(Country $country)
+    private function cleanDatas(Country $country): void
     {
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE admin_zone SET parent_id = NULL
             WHERE country_id = :country
         ', ['country' => $country->getId()]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE zip_city SET parent_id = NULL
             WHERE country_id = :country
         ', ['country' => $country->getId()]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE admin_zone as t1
             INNER JOIN admin_zone t2 ON (
                 t2.type = \'ADM2\'
@@ -286,7 +286,7 @@ class CountryImporter
             WHERE t1.type = \'PPL\' AND t1.country_id = :country
         ', ['country' => $country->getId()]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE admin_zone as t1
             INNER JOIN admin_zone t2 ON (
                 t2.type = \'ADM1\'
@@ -297,7 +297,7 @@ class CountryImporter
             WHERE t1.type = \'ADM2\' AND t1.country_id = :country
         ', ['country' => $country->getId()]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             update admin_zone as t1
             inner join admin_zone t2 ON (
                 t2.type = \'ADM1\'
@@ -310,7 +310,7 @@ class CountryImporter
         ]);
 
         //Delete doublon
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             DELETE FROM zip_city WHERE id IN (
                 SELECT * FROM (
                     SELECT a2.id FROM zip_city a2 GROUP BY a2.country_id, a2.postal_code, a2.name  HAVING(COUNT(a2.id)) > 1 AND a2.id <> MIN(a2.id)
@@ -320,7 +320,7 @@ class CountryImporter
         ]);
 
         //Delete doublon
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             DELETE a2
             FROM admin_zone AS a2
             JOIN (
@@ -339,7 +339,7 @@ class CountryImporter
             'country' => $country->getId(),
         ]);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE zip_city as zc
             INNER JOIN admin_zone c ON (
                 c.type = \'PPL\'
@@ -355,7 +355,7 @@ class CountryImporter
 
         $this->fixDatas($country);
 
-        $this->em->getConnection()->executeUpdate('
+        $this->em->getConnection()->executeStatement('
             UPDATE zip_city as zc
             INNER JOIN admin_zone c ON (
                 c.type = \'PPL\'
@@ -370,14 +370,11 @@ class CountryImporter
         ]);
     }
 
-    /**
-     * @throws DBALException
-     */
-    private function fixDatas(Country $country)
+    private function fixDatas(Country $country): void
     {
         switch ($country->getId()) {
             case 'BE':
-                $this->em->getConnection()->executeUpdate('
+                $this->em->getConnection()->executeStatement('
                    update zip_city as zc
                     inner join admin_zone c ON (
                         c.type = \'PPL\'
@@ -425,7 +422,7 @@ class CountryImporter
                     'oostende' => 'mariakerke',
                     'mont-de-lenclus' => 'orroir',
                 ], $country);
-                $this->em->getConnection()->executeUpdate("
+                $this->em->getConnection()->executeStatement("
                     UPDATE zip_city zc
                     SET zc.parent_id = (
                       SELECT id
@@ -489,17 +486,14 @@ class CountryImporter
         }
     }
 
-    /**
-     * @throws DBALException
-     */
-    private function manualAssociation(array $associations, Country $country)
+    private function manualAssociation(array $associations, Country $country): void
     {
         foreach ($associations as $zipSlug => $citySlug) {
             if (is_numeric($zipSlug)) {
                 $zipSlug = $citySlug;
             }
 
-            $this->em->getConnection()->executeUpdate('
+            $this->em->getConnection()->executeStatement('
                 UPDATE zip_city zc
                 SET zc.parent_id = (
                   SELECT id
@@ -518,7 +512,7 @@ class CountryImporter
         }
     }
 
-    private function deleteEmptyDatas(Country $country)
+    private function deleteEmptyDatas(Country $country): void
     {
         $this->em->createQuery(' DELETE FROM App:ZipCity zc WHERE zc.parent IS NULL AND zc.country = :country')->execute([
             'country' => $country->getId(),

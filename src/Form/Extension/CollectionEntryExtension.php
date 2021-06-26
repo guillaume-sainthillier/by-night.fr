@@ -10,6 +10,7 @@
 
 namespace App\Form\Extension;
 
+use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -21,11 +22,17 @@ use Vich\UploaderBundle\Form\Type\VichFileType;
 
 class CollectionEntryExtension extends AbstractTypeExtension
 {
+    /**
+     * @return void
+     */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         $view->vars['confirm_delete_entry_label'] = $options['confirm_delete_entry_label'];
     }
 
+    /**
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
@@ -33,6 +40,9 @@ class CollectionEntryExtension extends AbstractTypeExtension
         ]);
     }
 
+    /**
+     * @psalm-return Generator<int, string, mixed, void>
+     */
     public static function getExtendedTypes(): iterable
     {
         yield TextType::class;

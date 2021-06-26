@@ -89,11 +89,18 @@ abstract class AdminZone
 
     /**
      * @VirtualProperty
+     *
      * @SerializedName("location")
+     *
      * @Groups({"list_city", "list_event"})
+     *
      * @Expose
+     *
+     * @return float[]
+     *
+     * @psalm-return array{lat: float, lon: float}
      */
-    public function getLocation()
+    public function getLocation(): array
     {
         return [
             'lat' => $this->latitude,

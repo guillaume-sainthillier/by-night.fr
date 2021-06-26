@@ -36,7 +36,7 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
         $paths = [];
 
         /** @var AMQPMessage $message */
-        foreach ($messages as $i => $message) {
+        foreach ($messages as $message) {
             $path = $message->getBody();
             $paths[] = $path;
         }

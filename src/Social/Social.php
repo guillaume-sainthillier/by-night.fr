@@ -80,29 +80,29 @@ abstract class Social
 
     abstract protected function getRoleName(): string;
 
-    public function connectSite(AppOAuth $info, array $datas)
+    public function connectSite(AppOAuth $info, array $datas): void
     {
         $this->connectInfo($info, $datas);
     }
 
-    public function disconnectSite(AppOAuth $info)
+    public function disconnectSite(AppOAuth $info): void
     {
         $this->disconnectInfo($info);
     }
 
-    public function connectUser(User $user, array $datas)
+    public function connectUser(User $user, array $datas): void
     {
         $user->addRole($this->getRoleName());
         $this->connectInfo($user->getOAuth(), $datas);
     }
 
-    public function disconnectUser(User $user)
+    public function disconnectUser(User $user): void
     {
         $user->removeRole($this->getRoleName());
         $this->disconnectInfo($user->getOAuth());
     }
 
-    protected function connectInfo(OAuth $info, array $datas)
+    protected function connectInfo(OAuth $info, array $datas): void
     {
         $propertyPrefix = $this->getInfoPropertyPrefix();
         $propertyAccess = PropertyAccess::createPropertyAccessor();
@@ -117,7 +117,7 @@ abstract class Social
         }
     }
 
-    protected function disconnectInfo(OAuth $info)
+    protected function disconnectInfo(OAuth $info): void
     {
         $propertyPrefix = $this->getInfoPropertyPrefix();
         $propertyAccess = PropertyAccess::createPropertyAccessor();
@@ -133,6 +133,9 @@ abstract class Social
         return ['id', 'accessToken', 'refreshToken', 'expires', 'realname', 'email', 'profilePicture'];
     }
 
+    /**
+     * @return void
+     */
     protected function init()
     {
         if (!$this->isInitialized) {

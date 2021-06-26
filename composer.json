@@ -105,7 +105,8 @@
         "symfony/maker-bundle": "^1.11",
         "symfony/phpunit-bridge": "^5.1",
         "symfony/profiler-pack": "*",
-        "symfony/test-pack": "*"
+        "symfony/test-pack": "*",
+        "vimeo/psalm": "^4.8"
     },
     "config": {
         "preferred-install": {

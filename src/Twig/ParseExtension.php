@@ -33,7 +33,7 @@ class ParseExtension extends Extension
         return $link;
     }
 
-    public function parseTags($texte)
+    public function parseTags($texte): ?string
     {
         $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", '<a href="$2" target="_blank" rel="nofollow">', $texte);
         $texte = preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', $texte);
@@ -45,7 +45,7 @@ class ParseExtension extends Extension
         return strip_tags($texte, '<a><abbr><acronym><address><article><aside><b><bdo><big><blockquote><br><caption><cite><code><col><colgroup><dd><del><details><dfn><div><dl><dt><em><figcaption><figure><font><h1><h2><h3><h4><h5><h6><hgroup><hr><i><img><ins><li><map><mark><menu><meter><ol><p><pre><q><rp><rt><ruby><s><samp><section><small><span><strong><style><sub><summary><sup><table><tbody><td><tfoot><th><thead><time><tr><tt><u><ul><var><wbr>');
     }
 
-    public function resume($texte)
+    public function resume($texte): string
     {
         $replaced_text = str_replace('&#13;', '<br>', $texte);
         $stripped_text = strip_tags($replaced_text);
@@ -63,7 +63,7 @@ class ParseExtension extends Extension
         return trim($final_text);
     }
 
-    private function trimBr($string)
+    private function trimBr(?string $string): ?string
     {
         $string = preg_replace('/^\s*(?:<br\s*\/?>\s*)*/i', '', $string);
 

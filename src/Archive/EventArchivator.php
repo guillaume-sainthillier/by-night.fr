@@ -12,6 +12,7 @@ namespace App\Archive;
 
 use App\Repository\EventRepository;
 use App\Utils\Monitor;
+use function count;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -39,7 +40,7 @@ class EventArchivator
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function archive()
+    public function archive(): void
     {
         $repo = $this->eventRepository;
         $qb = $repo->findNonIndexablesBuilder();

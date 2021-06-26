@@ -55,7 +55,7 @@ abstract class AbstractParser implements ParserInterface
         return $this->parsedEvents;
     }
 
-    protected function logException(Throwable $exception, array $context = [])
+    protected function logException(Throwable $exception, array $context = []): void
     {
         $this->logger->error($exception->getMessage(), [
             'exception' => $exception,

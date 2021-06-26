@@ -34,7 +34,7 @@ class ReCaptchaListener implements EventSubscriberInterface
         ];
     }
 
-    public function onPreSubmit(FormEvent $event)
+    public function onPreSubmit(FormEvent $event): void
     {
         $request = $this->requestStack->getCurrentRequest();
         $captchaResponse = $request->get('g-recaptcha-response');

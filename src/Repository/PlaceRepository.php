@@ -27,12 +27,12 @@ class PlaceRepository extends ServiceEntityRepository
         parent::__construct($registry, Place::class);
     }
 
-    public function findSiteMap()
+    public function findSiteMap(): iterable
     {
         return $this->createQueryBuilder('p')
             ->select('p.slug, c.slug AS city_slug')
             ->join('p.city', 'c')
             ->getQuery()
-            ->iterate();
+            ->toIterable();
     }
 }

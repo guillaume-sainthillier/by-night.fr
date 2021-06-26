@@ -44,7 +44,7 @@ class ConsoleListener implements EventSubscriberInterface
         $this->stopwatches[$event->getCommand()->getName()] = Monitor::start($event->getCommand()->getName());
     }
 
-    public function onConsoleTerminate(ConsoleTerminateEvent $event)
+    public function onConsoleTerminate(ConsoleTerminateEvent $event): void
     {
         Monitor::stop($event->getCommand()->getName(), $this->stopwatches[$event->getCommand()->getName()]);
         Monitor::displayStats();

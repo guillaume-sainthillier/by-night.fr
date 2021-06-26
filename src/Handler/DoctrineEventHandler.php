@@ -10,7 +10,6 @@
 
 namespace App\Handler;
 
-use App\Entity\City;
 use App\Entity\Event;
 use App\Entity\ParserData;
 use App\Entity\Place;
@@ -104,7 +103,7 @@ class DoctrineEventHandler
         return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
     }
 
-    private function loadParserDatas(array $events)
+    private function loadParserDatas(array $events): void
     {
         $ids = $this->getParserDataIds($events);
 
@@ -116,7 +115,9 @@ class DoctrineEventHandler
     /**
      * @param Event[] $events
      *
-     * @return int[]
+     * @return (int|string)[]
+     *
+     * @psalm-return list<0|string>
      */
     private function getParserDataIds(array $events): array
     {
@@ -137,7 +138,7 @@ class DoctrineEventHandler
     /**
      * @param Event[] $events
      */
-    private function doFilterAndClean(array $events)
+    private function doFilterAndClean(array $events): void
     {
         foreach ($events as $event) {
             $event->setReject(new Reject())->setPlaceReject(new Reject());
@@ -192,6 +193,9 @@ class DoctrineEventHandler
         }
     }
 
+    /**
+     * @return void
+     */
     public function guessEventLocation(Place $place)
     {
         //Pas besoin de trouver un lieu déjà blacklisté
@@ -202,6 +206,9 @@ class DoctrineEventHandler
         $this->guessEventCity($place);
     }
 
+    /**
+     * @return void
+     */
     private function guessEventCity(Place $place)
     {
         //Recherche du pays en premier lieu
@@ -274,7 +281,7 @@ class DoctrineEventHandler
         }
     }
 
-    private function flushParserDatas()
+    private function flushParserDatas(): void
     {
         $explorations = $this->firewall->getParserDatas();
 
@@ -421,7 +428,7 @@ class DoctrineEventHandler
         return $flat;
     }
 
-    private function commit()
+    private function commit(): void
     {
         try {
             $this->em->flush();
@@ -433,13 +440,13 @@ class DoctrineEventHandler
         }
     }
 
-    private function clearEvents()
+    private function clearEvents(): void
     {
         $this->em->clear(Event::class);
         $this->echantillonHandler->clearEvents();
     }
 
-    private function clearPlaces()
+    private function clearPlaces(): void
     {
         $this->em->clear(Place::class);
         $this->echantillonHandler->clearPlaces();

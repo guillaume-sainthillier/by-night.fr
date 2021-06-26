@@ -26,6 +26,9 @@ class EventParserDataListener
         $this->parserDataRepository = $parserDataRepository;
     }
 
+    /**
+     * @return void
+     */
     public function preRemove(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();

@@ -23,7 +23,7 @@ class Thumb extends BaseManipulator
     /**
      * Maximum image size in pixels.
      */
-    private ?int $maxImageSize = null;
+    private ?int $maxImageSize;
 
     public function __construct(?int $maxImageSize = null)
     {
@@ -51,6 +51,6 @@ class Thumb extends BaseManipulator
         $size->setParams($this->params + ['fit' => 'stretch']);
         $new = $size->run($new);
 
-        return $new->insert($image, 'center-center', 0, 0);
+        return $new->insert($image, 'center-center');
     }
 }

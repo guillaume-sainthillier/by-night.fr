@@ -15,6 +15,7 @@ use App\Form\Type\ShortcutType;
 use DateTime;
 use DateTimeInterface;
 use IntlDateFormatter;
+use const JSON_THROW_ON_ERROR;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -23,17 +24,17 @@ use Symfony\Component\Form\FormView;
 
 class DateRangeBuilder
 {
-    public function finishView(FormView $view, FormInterface $form)
+    public function finishView(FormView $view, FormInterface $form): void
     {
         $fromName = $form->get('shortcut')->getConfig()->getOption('from');
         $toName = $form->get('shortcut')->getConfig()->getOption('to');
 
         $view->children['shortcut']->vars['attr']['data-from'] = $view->children[$fromName]->vars['id'];
         $view->children['shortcut']->vars['attr']['data-to'] = $view->children[$toName]->vars['id'];
-        $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($fromName = $form->get('shortcut')->getConfig()->getOption('ranges'), \JSON_THROW_ON_ERROR);
+        $view->children['shortcut']->vars['attr']['data-ranges'] = json_encode($form->get('shortcut')->getConfig()->getOption('ranges'), JSON_THROW_ON_ERROR);
     }
 
-    public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName)
+    public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName): void
     {
         $ranges = [
             'N\'importe quand' => [(new DateTime('now'))->format('Y-m-d'), null],
@@ -46,7 +47,7 @@ class DateRangeBuilder
         $this->addDateFields($builder, $fromName, $toName, $ranges);
     }
 
-    public function addDateFields(FormBuilderInterface $builder, string $fromName, string $toName, array $ranges = [])
+    public function addDateFields(FormBuilderInterface $builder, string $fromName, string $toName, array $ranges = []): void
     {
         $builder
             ->add($fromName, HiddenDateType::class)
@@ -62,10 +63,10 @@ class DateRangeBuilder
                 $fromName = $shortcut->getConfig()->getOption('from');
                 $toName = $shortcut->getConfig()->getOption('to');
 
-                /** @var \DateTimeInterface $from */
+                /** @var DateTimeInterface $from */
                 $from = $form->get($fromName)->getData();
 
-                /** @var \DateTimeInterface|null $to */
+                /** @var DateTimeInterface|null $to */
                 $to = $form->get($toName)->getData();
 
                 if (null === $from) {
@@ -86,9 +87,9 @@ class DateRangeBuilder
                 }
 
                 //Custom dates
-                $from = new \DateTime($from);
+                $from = new DateTime($from);
                 if (null !== $to) {
-                    $to = new \DateTime($to);
+                    $to = new DateTime($to);
                 }
 
                 if (null === $to) {
@@ -124,9 +125,9 @@ class DateRangeBuilder
                 }
 
                 //Custom dates
-                $from = new \DateTime($from);
+                $from = new DateTime($from);
                 if (null !== $to) {
-                    $to = new \DateTime($to);
+                    $to = new DateTime($to);
                 }
 
                 if (null === $to) {
@@ -141,6 +142,9 @@ class DateRangeBuilder
             });
     }
 
+    /**
+     * @return false|string
+     */
     private function formatDate(DateTimeInterface $date)
     {
         $formatter = IntlDateFormatter::create(

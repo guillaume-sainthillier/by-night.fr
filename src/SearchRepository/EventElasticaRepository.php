@@ -14,11 +14,12 @@ use App\Search\SearchEvent;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\GeoDistance;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
+use FOS\ElasticaBundle\Paginator\PaginatorAdapterInterface;
 use FOS\ElasticaBundle\Repository;
 
 class EventElasticaRepository extends Repository
@@ -29,7 +30,7 @@ class EventElasticaRepository extends Repository
     public const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
     public const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
-    public function findWithSearch(SearchEvent $search, bool $sortByScore = false)
+    public function findWithSearch(SearchEvent $search, bool $sortByScore = false): PaginatorAdapterInterface
     {
         $mainQuery = new BoolQuery();
 
@@ -133,7 +134,7 @@ class EventElasticaRepository extends Repository
         }
 
         if ([] !== $search->getTypeManifestation()) {
-            $communeTypeManifestationQuery = new Match();
+            $communeTypeManifestationQuery = new MatchQuery();
             $communeTypeManifestationQuery->setField('type_manifestation', implode(' ', $search->getTypeManifestation()));
             $mainQuery->addMust($communeTypeManifestationQuery);
         }

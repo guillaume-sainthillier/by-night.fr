@@ -38,43 +38,43 @@ class TagsInvalidator
         $this->tags = [];
     }
 
-    public static function getMenuTag()
+    public static function getMenuTag(): string
     {
         return 'menu';
     }
 
-    public function addCity(City $city)
+    public function addCity(City $city): void
     {
         $this->tags[] = 'autocomplete-city';
         $this->tags[] = self::getCityTag($city);
     }
 
-    public static function getCityTag(City $city)
+    public static function getCityTag(City $city): string
     {
         return sprintf('city-%d', $city->getId());
     }
 
-    public function addUser(User $user)
+    public function addUser(User $user): void
     {
         $this->tags[] = self::getUserTag($user);
     }
 
-    public static function getUserTag(User $user)
+    public static function getUserTag(User $user): string
     {
         return sprintf('user-%d', $user->getId());
     }
 
-    public function addUserEvent(UserEvent $userEvent)
+    public function addUserEvent(UserEvent $userEvent): void
     {
         $this->tags[] = self::getTendanceTag($userEvent->getEvent());
     }
 
-    public static function getTendanceTag(Event $event)
+    public static function getTendanceTag(Event $event): string
     {
         return sprintf('tendances-%d', $event->getId());
     }
 
-    public function addEvent(Event $event)
+    public function addEvent(Event $event): void
     {
         if ($event->getId()) {
             $this->tags[] = self::getEventTag($event);
@@ -85,17 +85,17 @@ class TagsInvalidator
         }
     }
 
-    public static function getEventTag(Event $event)
+    public static function getEventTag(Event $event): string
     {
         return sprintf('event-%d', $event->getId());
     }
 
-    public static function getLocationTag(Location $location)
+    public static function getLocationTag(Location $location): string
     {
         return sprintf('location-%s', $location->getId());
     }
 
-    public function addPlace(Place $place)
+    public function addPlace(Place $place): void
     {
         if ($place->getId()) {
             $this->tags[] = self::getPlaceTag($place);
@@ -104,11 +104,14 @@ class TagsInvalidator
         $this->tags[] = self::getLocationTag($place->getLocation());
     }
 
-    public static function getPlaceTag(Place $place)
+    public static function getPlaceTag(Place $place): string
     {
         return sprintf('place-%d', $place->getId());
     }
 
+    /**
+     * @return void
+     */
     public function flush()
     {
         if ($this->debug) {

@@ -15,6 +15,7 @@ use App\Entity\User;
 use App\Picture\EventProfilePicture;
 use App\Picture\UserProfilePicture;
 use App\Twig\AssetExtension;
+use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -42,6 +43,8 @@ class ImageTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
@@ -60,7 +63,7 @@ class ImageTypeExtension extends AbstractTypeExtension
                 $view->vars['image_thumb_uri'] = $this->userProfilePicture->getProfilePicture($object, $options['thumb_params']);
                 $view->vars['image_thumb_uri_retina'] = $this->userProfilePicture->getProfilePicture($object, $options['thumb_params'] + ['dpr' => 2]);
             } else {
-                $path = $this->storage->resolveUri($object, $form->getName(), null);
+                $path = $this->storage->resolveUri($object, $form->getName());
                 if (null !== $path) {
                     $view->vars['image_thumb_uri'] = $this->assetExtension->thumbAsset($path, $options['thumb_params']);
                     $view->vars['image_thumb_uri_retina'] = $this->assetExtension->thumbAsset($object, $options['thumb_params'] + ['dpr' => 2]);
@@ -71,6 +74,8 @@ class ImageTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -83,6 +88,8 @@ class ImageTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-return Generator<int, VichImageType::class, mixed, void>
      */
     public static function getExtendedTypes(): iterable
     {

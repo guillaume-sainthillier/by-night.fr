@@ -16,7 +16,7 @@ use IntlDateFormatter;
 
 class EventSEO
 {
-    public function getEventDescription(Event $event)
+    public function getEventDescription(Event $event): string
     {
         $description = sprintf('Découvrez %s.', $event->getNom());
 
@@ -42,7 +42,7 @@ class EventSEO
         return $description;
     }
 
-    public function getEventDateTime(Event $event)
+    public function getEventDateTime(Event $event): string
     {
         $datetime = $this->getEventDate($event);
 
@@ -55,7 +55,7 @@ class EventSEO
         return trim($datetime);
     }
 
-    public function getEventDate(Event $event)
+    public function getEventDate(Event $event): string
     {
         if (!$event->getDateFin() || $event->getDateDebut() === $event->getDateFin()) {
             return sprintf('le %s',
@@ -69,7 +69,10 @@ class EventSEO
         );
     }
 
-    private function formatDate(DateTimeInterface $date, $dateFormat, $timeFormat)
+    /**
+     * @return false|string
+     */
+    private function formatDate(DateTimeInterface $date, int $dateFormat, int $timeFormat)
     {
         $formatter = IntlDateFormatter::create(null, $dateFormat, $timeFormat);
 
@@ -87,7 +90,7 @@ class EventSEO
         return $title;
     }
 
-    public function getEventShortTitle(Event $event)
+    public function getEventShortTitle(Event $event): ?string
     {
         $shortTitle = $event->getNom();
         if ($event->getModificationDerniereMinute()) {

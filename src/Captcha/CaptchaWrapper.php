@@ -27,7 +27,7 @@ class CaptchaWrapper
 
     public function verify(?string $value): bool
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
         $response = $this->reCaptcha->verify(
             $value,
             $request->getClientIp()

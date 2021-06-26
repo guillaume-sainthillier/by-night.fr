@@ -30,7 +30,7 @@ class UserProfilePicture
         $this->packages = $packages;
     }
 
-    public function getOriginalProfilePicture(User $user)
+    public function getOriginalProfilePicture(User $user): ?string
     {
         if ($user->getImage()->getName()) {
             return $this->packages->getUrl(

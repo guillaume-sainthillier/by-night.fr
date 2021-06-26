@@ -32,11 +32,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
-    public function loadUserByUsername($usernameOrEmail)
+    public function loadUserByUsername(string $username)
+    {
+        return $this->loadUserByIdentifier($username);
+    }
+
+    public function loadUserByIdentifier(string $identifier): ?UserInterface
     {
         return $this->createQueryBuilder('u')
             ->where('u.username = :usernameOrEmail OR u.email = :usernameOrEmail')
-            ->setParameter('usernameOrEmail', $usernameOrEmail)
+            ->setParameter('usernameOrEmail', $identifier)
             ->getQuery()
             ->getOneOrNullResult();
     }
@@ -44,25 +49,25 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
-    public function upgradePassword(UserInterface $user, string $newEncodedPassword): void
+    public function upgradePassword(UserInterface $user, string $newHashedPassword): void
     {
         if (!$user instanceof User) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
         }
 
-        $user->setPassword($newEncodedPassword);
+        $user->setPassword($newHashedPassword);
         $this->_em->persist($user);
         $this->_em->flush();
     }
 
-    public function findSiteMap()
+    public function findSiteMap(): iterable
     {
         return $this->createQueryBuilder('u')
             ->getQuery()
-            ->iterate();
+            ->toIterable();
     }
 
-    public function getUserFbIdsCount(DateTimeInterface $from)
+    public function getUserFbIdsCount(DateTimeInterface $from): int
     {
         return (int) $this->createQueryBuilder('u')
             ->select('count(i.facebook_id)')
@@ -90,7 +95,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
-    public function findTopUsers($page = 1, $limit = 7)
+    public function findTopUsers(int $page = 1, int $limit = 7)
     {
         return $this->createQueryBuilder('u')
             ->select('u')

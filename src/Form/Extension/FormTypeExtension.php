@@ -10,6 +10,7 @@
 
 namespace App\Form\Extension;
 
+use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,6 +19,8 @@ class FormTypeExtension extends AbstractTypeExtension
 {
     /**
      * {@inheritdoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -28,6 +31,8 @@ class FormTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritdoc}
+     *
+     * @psalm-return Generator<int, FormType::class, mixed, void>
      */
     public static function getExtendedTypes(): iterable
     {

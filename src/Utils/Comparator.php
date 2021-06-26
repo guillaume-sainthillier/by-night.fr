@@ -55,7 +55,7 @@ class Comparator
         return $bestItem;
     }
 
-    public function isExactSamePlace(Place $a = null, Place $b = null)
+    public function isExactSamePlace(Place $a = null, Place $b = null): bool
     {
         if (null === $a || null === $b) {
             return false;
@@ -65,7 +65,7 @@ class Comparator
             ($a->getId() && $a->getId() === $b->getId());
     }
 
-    public function getMatchingScorePlace(Place $a = null, Place $b = null)
+    public function getMatchingScorePlace(Place $a = null, Place $b = null): int
     {
         if (null === $a || null === $b) {
             return 0;
@@ -99,7 +99,7 @@ class Comparator
         return 0;
     }
 
-    private function getMatchingScoreTextWithoutCity($a, City $cityA = null, ZipCity $zipCityA = null, $b = null, City $cityB = null, ZipCity $zipCityB = null)
+    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, ?string $b = null, City $cityB = null, ZipCity $zipCityB = null)
     {
         if ($a && $a === $b) {
             return 100;
@@ -123,7 +123,7 @@ class Comparator
         return $this->getMatchingScore($a, $b);
     }
 
-    public function sanitize($string)
+    public function sanitize(string $string)
     {
         return Monitor::bench('Sanitize', function () use ($string) {
             $string = $this->util->deleteStopWords($string);
@@ -159,12 +159,15 @@ class Comparator
         return $pourcentage;
     }
 
+    /**
+     * @return float|int
+     */
     private function getDiffPourcentage($a, $b)
     {
         return (1 - levenshtein($a, $b) / max(mb_strlen($a), mb_strlen($b))) * 100;
     }
 
-    private function getMatchingScoreRue($a, $b)
+    private function getMatchingScoreRue(?string $a, ?string $b)
     {
         if ($a && $a === $b) {
             return 100;
@@ -176,7 +179,7 @@ class Comparator
         return $this->getMatchingScore($trimedA, $trimedB);
     }
 
-    public function sanitizeRue($string)
+    public function sanitizeRue($string): string
     {
         $step1 = $this->util->utf8LowerCase($string);
         $step2 = $this->util->replaceAccents($step1);
@@ -185,7 +188,7 @@ class Comparator
         return trim($step3);
     }
 
-    public function sanitizeNumber($string)
+    public function sanitizeNumber(?string $string): ?string
     {
         return preg_replace('/\D/', '', $string);
     }

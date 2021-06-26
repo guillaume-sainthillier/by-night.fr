@@ -23,6 +23,7 @@ use JMS\Serializer\Annotation\Expose;
 use Serializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
@@ -36,7 +37,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @UniqueEntity(fields={"email"}, message="Un utilisateur existe déjà pour cet email")
  * @UniqueEntity(fields={"username"}, message="Un utilisateur existe déjà pour ce nom")
  */
-class User implements UserInterface, Serializable
+class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable
 {
     use EntityTimestampableTrait;
 
@@ -216,7 +217,7 @@ class User implements UserInterface, Serializable
         return $this;
     }
 
-    public function removeRole($role): self
+    public function removeRole(string $role): self
     {
         if (false !== $key = array_search(strtoupper($role), $this->roles, true)) {
             unset($this->roles[$key]);
@@ -287,6 +288,11 @@ class User implements UserInterface, Serializable
         return ucfirst($this->username);
     }
 
+    public function getUserIdentifier()
+    {
+        return $this->email;
+    }
+
     public function __toString()
     {
         return sprintf('%s (#%s)', $this->username, $this->id);
@@ -302,6 +308,8 @@ class User implements UserInterface, Serializable
 
     /**
      * @see UserInterface
+     *
+     * @return void
      */
     public function eraseCredentials()
     {
@@ -326,9 +334,9 @@ class User implements UserInterface, Serializable
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
+    public function unserialize($data)
     {
-        $data = unserialize($serialized);
+        $data = unserialize($data);
 
         list(
             $this->password,
@@ -359,11 +367,11 @@ class User implements UserInterface, Serializable
     }
 
     /**
-     * @see UserInterface
+     * {@inheritDoc}
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
-        return (string) $this->password;
+        return $this->password;
     }
 
     public function setPassword(string $password): self

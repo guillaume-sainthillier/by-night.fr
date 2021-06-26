@@ -21,6 +21,9 @@ class CheckboxTypeExtension extends AbstractTypeExtension
         return [CheckboxType::class];
     }
 
+    /**
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

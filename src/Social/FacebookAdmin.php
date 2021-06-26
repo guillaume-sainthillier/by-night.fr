@@ -12,12 +12,16 @@ namespace App\Social;
 
 use App\Entity\AppOAuth;
 use Facebook\FacebookClient;
+use Facebook\GraphNodes\GraphPage;
 
 class FacebookAdmin extends Facebook
 {
     private AppOAuth $appOAuth;
     private bool $_isInitialized;
 
+    /**
+     * @return void
+     */
     protected function init()
     {
         parent::init();
@@ -32,7 +36,7 @@ class FacebookAdmin extends Facebook
         }
     }
 
-    public function getPageFromId($id_page, $params = [])
+    public function getPageFromId($id_page, $params = []): GraphPage
     {
         $this->init();
         $accessToken = $this->appOAuth ? $this->appOAuth->getFacebookAccessToken() : null;
@@ -45,7 +49,12 @@ class FacebookAdmin extends Facebook
         return $request->getGraphPage();
     }
 
-    public function getUserImagesFromIds(array $ids_users)
+    /**
+     * @return string[]
+     *
+     * @psalm-return array<string>
+     */
+    public function getUserImagesFromIds(array $ids_users): array
     {
         $urls = [];
         foreach ($ids_users as $id_user) {

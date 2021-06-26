@@ -27,12 +27,12 @@ class EntityTagger
         $this->eventInvalidator = $eventInvalidator;
     }
 
-    public function postFlush()
+    public function postFlush(): void
     {
         $this->eventInvalidator->flush();
     }
 
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
 
@@ -43,7 +43,7 @@ class EntityTagger
         }
     }
 
-    public function preUpdate(LifecycleEventArgs $args)
+    public function preUpdate(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
 
@@ -53,19 +53,19 @@ class EntityTagger
         }
     }
 
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         $this->tag($entity);
     }
 
-    public function preRemove(LifecycleEventArgs $args)
+    public function preRemove(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         $this->tag($entity);
     }
 
-    private function tag($entity)
+    private function tag(?object $entity): void
     {
         if ($entity instanceof User) {
             $this->eventInvalidator->addUser($entity);

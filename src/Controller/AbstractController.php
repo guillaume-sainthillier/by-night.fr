@@ -11,6 +11,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as BaseController;
 
 abstract class AbstractController extends BaseController
@@ -19,7 +20,7 @@ abstract class AbstractController extends BaseController
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
-            throw new \RuntimeException('Not an app user');
+            throw new RuntimeException('Not an app user');
         }
 
         return $user;

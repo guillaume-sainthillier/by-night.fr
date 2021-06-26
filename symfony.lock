@@ -2,6 +2,12 @@
     "abraham/twitteroauth": {
         "version": "1.1.0"
     },
+    "amphp/amp": {
+        "version": "v2.5.2"
+    },
+    "amphp/byte-stream": {
+        "version": "v1.8.1"
+    },
     "aws/aws-sdk-php": {
         "version": "3.154.4"
     },
@@ -23,8 +29,17 @@
     "composer/package-versions-deprecated": {
         "version": "1.11.99"
     },
+    "composer/semver": {
+        "version": "3.2.5"
+    },
     "composer/spdx-licenses": {
         "version": "1.5.4"
+    },
+    "composer/xdebug-handler": {
+        "version": "2.0.1"
+    },
+    "dnoegel/php-xdg-base-dir": {
+        "version": "v0.1.1"
     },
     "doctrine/annotations": {
         "version": "1.0",
@@ -132,6 +147,12 @@
     },
     "facebook/graph-sdk": {
         "version": "5.7.0"
+    },
+    "felixfbecker/advanced-json-rpc": {
+        "version": "v3.2.1"
+    },
+    "felixfbecker/language-server-protocol": {
+        "version": "1.5.1"
     },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.2"
@@ -289,6 +310,9 @@
     "neitanod/forceutf8": {
         "version": "v2.0.4"
     },
+    "netresearch/jsonmapper": {
+        "version": "v4.0.0"
+    },
     "nikic/php-parser": {
         "version": "v4.9.1"
     },
@@ -306,6 +330,9 @@
     },
     "ocramius/package-versions": {
         "version": "1.2.0"
+    },
+    "openlss/lib-array2xml": {
+        "version": "1.0.0"
     },
     "pagerfanta/pagerfanta": {
         "version": "v2.4.1"
@@ -987,8 +1014,14 @@
             "ref": "c4f5755b37fb65b9c6a3cbdae91205c15a137ed4"
         }
     },
+    "vimeo/psalm": {
+        "version": "4.8.1"
+    },
     "webmozart/assert": {
         "version": "1.9.1"
+    },
+    "webmozart/path-util": {
+        "version": "2.3.0"
     },
     "zendframework/zend-code": {
         "version": "3.3.0"

@@ -120,7 +120,7 @@ class AgendaController extends BaseController
         ]);
     }
 
-    private function handleSearch(SearchEvent $search, Location $location, $type, $tag, Place $place = null)
+    private function handleSearch(SearchEvent $search, Location $location, ?string $type, ?string $tag, Place $place = null): string
     {
         $term = null;
         if (null !== $place) {

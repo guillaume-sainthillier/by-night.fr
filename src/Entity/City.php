@@ -36,7 +36,7 @@ class City extends AdminZone
         return $this->getFullName();
     }
 
-    public function getFullName()
+    public function getFullName(): string
     {
         $parts = [];
         if ($this->getParent()) {
@@ -49,10 +49,8 @@ class City extends AdminZone
 
     /**
      * Get parent.
-     *
-     * @return AdminZone
      */
-    public function getParent()
+    public function getParent(): ?AdminZone
     {
         return $this->parent;
     }

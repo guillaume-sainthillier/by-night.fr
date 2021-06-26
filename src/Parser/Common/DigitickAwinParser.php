@@ -56,7 +56,7 @@ class DigitickAwinParser extends AbstractAwinParser
         ];
     }
 
-    private function replaceBBCodes($text)
+    private function replaceBBCodes($text): ?string
     {
         // BBcode array
         $find = [

@@ -36,6 +36,9 @@ class ReverseProxyListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @return void
+     */
     public function onKernelResponse(ResponseEvent $event)
     {
         if ($this->debug) {

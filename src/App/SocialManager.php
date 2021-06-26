@@ -12,19 +12,18 @@ namespace App\App;
 
 use App\Entity\AppOAuth;
 use App\Repository\AppOAuthRepository;
+use RuntimeException;
 
 class SocialManager
 {
     private string $facebookIdPage;
-
     private string $twitterIdPage;
-
     private bool $_siteInfoInitialized = false;
     private ?AppOAuth $appOAuth = null;
 
     private AppOAuthRepository $appOAuthRepository;
 
-    public function __construct($facebookIdPage, $twitterIdPage, AppOAuthRepository $appOAuthRepository)
+    public function __construct(string $facebookIdPage, string $twitterIdPage, AppOAuthRepository $appOAuthRepository)
     {
         $this->facebookIdPage = $facebookIdPage;
         $this->twitterIdPage = $twitterIdPage;
@@ -36,6 +35,10 @@ class SocialManager
         if (!$this->_siteInfoInitialized) {
             $this->_siteInfoInitialized = true;
             $this->appOAuth = $this->appOAuthRepository->findOneBy([]);
+        }
+
+        if (null === $this->appOAuth) {
+            throw new RuntimeException('No social app login');
         }
 
         return $this->appOAuth;

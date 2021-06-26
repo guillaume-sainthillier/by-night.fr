@@ -36,6 +36,8 @@ class LoginFormController extends AbstractController
 
     /**
      * @Route("/logout", name="app_logout", methods={"GET", "POST"})
+     *
+     * @return never
      */
     public function logout()
     {

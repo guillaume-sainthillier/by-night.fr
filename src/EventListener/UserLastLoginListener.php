@@ -36,6 +36,9 @@ class UserLastLoginListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @return void
+     */
     public function onInteractiveLogin(InteractiveLoginEvent $event)
     {
         $user = $event->getAuthenticationToken()->getUser();

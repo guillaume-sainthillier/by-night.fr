@@ -11,6 +11,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\OAuth\TwitterAccessToken;
 use App\OAuth\TwitterOAuth;
 use App\Repository\UserRepository;
 use App\Social\SocialProvider;
@@ -139,7 +140,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
         ];
     }
 
-    private function fetchTwitterAccessToken()
+    private function fetchTwitterAccessToken(): TwitterAccessToken
     {
         try {
             return $this->twitterOAuth->getAccessToken();

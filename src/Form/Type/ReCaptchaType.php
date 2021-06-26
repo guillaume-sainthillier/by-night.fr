@@ -28,11 +28,17 @@ class ReCaptchaType extends AbstractType
         $this->reCaptchaListener = $reCaptchaListener;
     }
 
+    /**
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addEventSubscriber($this->reCaptchaListener);
     }
 
+    /**
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

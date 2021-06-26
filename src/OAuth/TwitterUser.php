@@ -56,7 +56,7 @@ class TwitterUser implements ResourceOwnerInterface
         return $this->response;
     }
 
-    private function getResponseValue($key)
+    private function getResponseValue(string $key)
     {
         if (\array_key_exists($key, $this->response)) {
             return $this->response[$key];

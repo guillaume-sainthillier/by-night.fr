@@ -11,6 +11,7 @@
 namespace App\Utils;
 
 use function Symfony\Component\String\u;
+use Symfony\Component\String\UnicodeString;
 
 class Util
 {
@@ -48,17 +49,17 @@ class Util
         $this->stopWordsRegex = "/\b(" . implode('|', $parts) . ")\b/imu";
     }
 
-    public function replaceNonNumericChars($string)
+    public function replaceNonNumericChars($string): string
     {
         return trim(preg_replace('/[^\d.-]/u', '', $string));
     }
 
-    public function replaceNonAlphanumericChars($string)
+    public function replaceNonAlphanumericChars($string): string
     {
         return trim(preg_replace('/[^A-Za-z0-9 ]/u', '', $string));
     }
 
-    public function deleteSpaceBetween($string, $delimiters = '-')
+    public function deleteSpaceBetween($string, $delimiters = '-'): string
     {
         if (\is_string($delimiters) && isset($delimiters[0])) { //Strlen > 0
             return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
@@ -69,12 +70,15 @@ class Util
         return trim($string);
     }
 
-    public function deleteStopWords($string)
+    public function deleteStopWords($string): string
     {
         return trim(preg_replace($this->stopWordsRegex, ' ', $string));
     }
 
-    public function deleteMultipleSpaces(?string $string)
+    /**
+     * @return UnicodeString|null
+     */
+    public function deleteMultipleSpaces(?string $string): ?self
     {
         if (null === $string) {
             return null;
@@ -83,7 +87,10 @@ class Util
         return u($string)->collapseWhitespace()->trim();
     }
 
-    public function utf8TitleCase(?string $string)
+    /**
+     * @return UnicodeString|null
+     */
+    public function utf8TitleCase(?string $string): ?self
     {
         if (null === $string) {
             return null;
@@ -92,7 +99,10 @@ class Util
         return u($string)->title(true)->trim();
     }
 
-    public function utf8LowerCase(?string $string)
+    /**
+     * @return UnicodeString|null
+     */
+    public function utf8LowerCase(?string $string): ?self
     {
         if (null === $string) {
             return null;
@@ -101,7 +111,7 @@ class Util
         return u($string)->lower()->trim();
     }
 
-    public function replaceAccents(?string $string)
+    public function replaceAccents(?string $string): string
     {
         $unwanted_array = [
             'Š' => 'S', 'š' => 's', 'Ž' => 'Z', 'ž' => 'z', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',

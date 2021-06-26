@@ -26,6 +26,9 @@ class SocialConverter implements ParamConverterInterface
         $this->socialProvider = $socialProvider;
     }
 
+    /**
+     * @return void
+     */
     public function apply(Request $request, ParamConverter $configuration)
     {
         $service = $request->attributes->get('service');

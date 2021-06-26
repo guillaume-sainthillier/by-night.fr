@@ -12,6 +12,9 @@ namespace App\Social;
 
 class Google extends Social
 {
+    /**
+     * @return void
+     */
     public function constructClient()
     {
     }

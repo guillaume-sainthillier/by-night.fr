@@ -28,22 +28,22 @@ trait EntityTimestampableTrait
      */
     private ?DateTimeImmutable $updatedAt = null;
 
-    public function getCreatedAt()
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $updatedAt)
+    public function setCreatedAt(DateTimeImmutable $updatedAt): void
     {
         $this->createdAt = $updatedAt;
     }
 
-    public function getUpdatedAt()
+    public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTimeImmutable $updatedAt)
+    public function setUpdatedAt(DateTimeImmutable $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }

@@ -19,6 +19,9 @@ class Location
 
     private ?Country $country = null;
 
+    /**
+     * @return int|string|null
+     */
     public function getId()
     {
         if (null !== $this->city) {
@@ -32,7 +35,7 @@ class Location
         return 'unknown';
     }
 
-    public function getAppName()
+    public function getAppName(): string
     {
         if (null !== $this->city) {
             return sprintf('%s By Night', $this->city->getName());
@@ -41,7 +44,7 @@ class Location
         return sprintf('By Night %s', $this->country->getDisplayName());
     }
 
-    public function getAtName()
+    public function getAtName(): ?string
     {
         if (null !== $this->city) {
             return sprintf('à %s', $this->city->getName());
@@ -54,7 +57,7 @@ class Location
         return '';
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         if (null !== $this->city) {
             return $this->city->getName();
@@ -67,7 +70,7 @@ class Location
         return '';
     }
 
-    public function getSlug()
+    public function getSlug(): ?string
     {
         if (null !== $this->city) {
             return $this->city->getSlug();
@@ -80,12 +83,12 @@ class Location
         return 'unknown';
     }
 
-    public function isCity()
+    public function isCity(): bool
     {
         return null !== $this->city;
     }
 
-    public function isCountry()
+    public function isCountry(): bool
     {
         return null !== $this->country;
     }

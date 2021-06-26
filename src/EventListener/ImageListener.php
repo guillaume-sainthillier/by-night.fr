@@ -13,6 +13,7 @@ namespace App\EventListener;
 use App\File\DeletableFile;
 use App\Producer\PurgeCdnCacheUrlProducer;
 use App\Producer\RemoveImageThumbnailsProducer;
+use const DIRECTORY_SEPARATOR;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Vich\UploaderBundle\Event\Event;
@@ -46,6 +47,10 @@ class ImageListener implements EventSubscriberInterface
     }
 
     // Remove manual uploads from container
+
+    /**
+     * @return void
+     */
     public function onImageUpload(Event $event)
     {
         //file become an instance of File just after upload, we have to track it before the change
@@ -57,7 +62,7 @@ class ImageListener implements EventSubscriberInterface
         $this->files[] = $file;
     }
 
-    public function onImageUploaded()
+    public function onImageUploaded(): void
     {
         foreach ($this->files as $file) {
             $fs = new Filesystem();
@@ -68,16 +73,16 @@ class ImageListener implements EventSubscriberInterface
         $this->files = [];
     }
 
-    public function onImageDelete(Event $event)
+    public function onImageDelete(Event $event): void
     {
         $object = $event->getObject();
         $mapping = $event->getMapping();
 
-        $path = $mapping->getUriPrefix() . \DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . \DIRECTORY_SEPARATOR . $mapping->getFileName($object);
+        $path = $mapping->getUriPrefix() . DIRECTORY_SEPARATOR . $mapping->getUploadDir($object) . DIRECTORY_SEPARATOR . $mapping->getFileName($object);
         $this->paths[] = $path;
     }
 
-    public function onImageDeleted()
+    public function onImageDeleted(): void
     {
         //Schedule thumbnails delete
         foreach ($this->paths as $path) {

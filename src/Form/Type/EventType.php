@@ -44,12 +44,18 @@ class EventType extends AbstractType
         $this->dateRangeBuilder = $dateRangeBuilder;
     }
 
+    /**
+     * @return void
+     */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         parent::finishView($view, $form, $options);
         $this->dateRangeBuilder->finishView($view, $form);
     }
 
+    /**
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $this->dateRangeBuilder->addDateFields($builder, 'dateDebut', 'dateFin');
@@ -204,6 +210,9 @@ class EventType extends AbstractType
         ));
     }
 
+    /**
+     * @return void
+     */
     public function onSubmit(FormEvent $event)
     {
         $data = $event->getData();
@@ -216,6 +225,9 @@ class EventType extends AbstractType
         $event->setData($data);
     }
 
+    /**
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
@@ -223,7 +235,7 @@ class EventType extends AbstractType
         ]);
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'app_event';
     }

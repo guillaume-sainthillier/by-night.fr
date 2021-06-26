@@ -32,8 +32,8 @@ class SearchController extends AbstractController
      */
     public function index(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm): Response
     {
-        $q = trim($request->get('q', null));
-        $type = $request->get('type', null);
+        $q = trim($request->get('q'));
+        $type = $request->get('type');
         $page = (int) ($request->get('page', 1));
         $maxItems = 20;
 

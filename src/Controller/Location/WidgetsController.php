@@ -59,6 +59,7 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}", name="app_widget_next_events", methods={"GET"})
+     *
      * @ReverseProxy(expires="tomorrow")
      */
     public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1): Response
@@ -96,6 +97,7 @@ class WidgetsController extends BaseController
 
     /**
      * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}", name="app_widget_similar_events", methods={"GET"})
+     *
      * @ReverseProxy(expires="tomorrow")
      */
     public function similarEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response

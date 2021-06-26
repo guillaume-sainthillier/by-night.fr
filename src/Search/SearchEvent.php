@@ -45,7 +45,12 @@ class SearchEvent
         $this->from = new DateTime();
     }
 
-    public function getTerms()
+    /**
+     * @return string[]
+     *
+     * @psalm-return array<int, string>
+     */
+    public function getTerms(): array
     {
         return array_unique(array_filter(explode(' ', $this->getTerm())));
     }
