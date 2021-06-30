@@ -273,7 +273,7 @@
                         {% endif %}
 
                         {% set maPatisserieDisplayed = false %}
-                        {% for word in ['patisserie', 'pâtisserie', 'chocolat', 'Gateau', 'Gâteau', 'atelier culinaire'] %}
+                        {% for word in ['patisserie', 'pâtisserie', 'chocolat', 'gateau', 'gâteau', 'atelier culinaire'] %}
                             {% if not maPatisserieDisplayed and (word in event.descriptif|lower or word in event.nom|lower) %}
                                 {% set maPatisserieDisplayed = true %}
                                 <div class="detail-item">

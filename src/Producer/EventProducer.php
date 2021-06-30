@@ -10,17 +10,13 @@
 
 namespace App\Producer;
 
-use const JSON_THROW_ON_ERROR;
-use JsonException;
+use App\Dto\EventDto;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 
 class EventProducer extends Producer
 {
-    /**
-     * @throws JsonException
-     */
-    public function scheduleEvent(array $event): void
+    public function scheduleEvent(EventDto $event): void
     {
-        $this->publish(json_encode($event, JSON_THROW_ON_ERROR));
+        $this->publish(serialize($event));
     }
 }

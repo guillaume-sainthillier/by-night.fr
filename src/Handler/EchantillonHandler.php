@@ -20,6 +20,7 @@ class EchantillonHandler
 {
     public $newPlaces;
     public $fbPlaces;
+
     /**
      * @var Place[][]
      */
@@ -39,9 +40,9 @@ class EchantillonHandler
 
     public function __construct(PlaceRepository $placeRepository, EventRepository $eventRepository)
     {
-        $this->init();
         $this->placeRepository = $placeRepository;
         $this->eventRepository = $eventRepository;
+        $this->init();
     }
 
     private function init(): void

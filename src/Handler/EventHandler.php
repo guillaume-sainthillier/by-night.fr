@@ -10,6 +10,7 @@
 
 namespace App\Handler;
 
+use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Entity\Place;
 use App\Exception\UnsupportedFileException;
@@ -51,11 +52,11 @@ class EventHandler
         $this->tempPath = $tempPath;
     }
 
-    public function cleanEvent(Event $event): void
+    public function cleanEvent(EventDto $dto): void
     {
-        $this->cleaner->cleanEvent($event);
-        if (null !== $event->getPlace()) {
-            $this->cleaner->cleanPlace($event->getPlace());
+        $this->cleaner->cleanEvent($dto);
+        if (null !== $dto->place) {
+            $this->cleaner->cleanPlace($dto->place);
         }
     }
 

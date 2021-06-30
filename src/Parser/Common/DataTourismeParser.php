@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -10,10 +10,14 @@
 
 namespace App\Parser\Common;
 
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
-use DateTime;
+use DateTimeImmutable;
 use const DIRECTORY_SEPARATOR;
 use const JSON_THROW_ON_ERROR;
 use const PHP_URL_PATH;
@@ -63,6 +67,14 @@ class DataTourismeParser extends AbstractParser
     /**
      * {@inheritDoc}
      */
+    public static function getParserVersion(): string
+    {
+        return '1.2';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function parse(bool $incremental): void
     {
         $url = $incremental ? self::INCREMENTAL_WEBSERVICE_FEED : self::UPCOMING_WEBSERVICE_FEED;
@@ -78,16 +90,52 @@ class DataTourismeParser extends AbstractParser
         $fs = new Filesystem();
         foreach ($files as $file) {
             $datas = json_decode(file_get_contents($file->getPathname()), true, 512, JSON_THROW_ON_ERROR);
-            $events = array_filter($this->getInfoEvents($datas));
+            $dtos = array_filter($this->arrayToDtos($datas));
 
-            foreach ($events as $event) {
-                $this->publish($event);
+            foreach ($dtos as $dto) {
+                $this->publish($dto);
             }
             $fs->remove($file->getPathname());
         }
     }
 
-    private function getInfoEvents(array $datas): array
+    private function getFeed(string $url): string
+    {
+        //Remove previous extracts
+        $fs = new Filesystem();
+
+        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
+        $extractDirectory = $this->tempPath . DIRECTORY_SEPARATOR . md5($url);
+
+        if ($fs->exists($extractDirectory)) {
+            $fs->remove($extractDirectory);
+        }
+
+        //Download fresh version
+        $client = HttpClient::create();
+        $response = $client->request('GET', $url);
+
+        $fileHandler = fopen($filePath, 'w');
+        foreach ($client->stream($response) as $chunk) {
+            fwrite($fileHandler, $chunk->getContent());
+        }
+
+        //Extract zip
+        $zip = new ZipArchive();
+        $res = $zip->open($filePath);
+        if (true !== $res) {
+            throw new RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
+        }
+
+        $zip->extractTo($extractDirectory);
+        $zip->close();
+
+        $fs->remove($filePath);
+
+        return $extractDirectory;
+    }
+
+    private function arrayToDtos(array $datas): array
     {
         if (empty($datas['isLocatedAt']) || empty($datas['takesPlaceAt'])) {
             return [];
@@ -139,11 +187,11 @@ class DataTourismeParser extends AbstractParser
         $phones = array_filter(array_unique($phones));
         $emails = array_filter(array_unique($emails));
 
-        $lastUpdate = new DateTime($datas['lastUpdate']);
+        $lastUpdate = new DateTimeImmutable($datas['lastUpdate']);
         $lastUpdate->setTime(0, 0);
 
         if (isset($datas['lastUpdateDatatourisme'])) {
-            $lastUpdateDatatourisme = new DateTime($datas['lastUpdateDatatourisme']);
+            $lastUpdateDatatourisme = new DateTimeImmutable($datas['lastUpdateDatatourisme']);
         } else {
             $lastUpdateDatatourisme = null;
         }
@@ -157,41 +205,46 @@ class DataTourismeParser extends AbstractParser
 
         $url = $this->getDataValue($datas, '[hasMainRepresentation][0][ebucore:hasRelatedResource][0][ebucore:locator][0]');
 
-        $event = [
-            'external_updated_at' => $updatedAt,
-            'nom' => $this->getDataValue($datas, '[rdfs:label][fr][0]'),
-            'descriptif' => $description,
-            'type_manifestation' => implode(', ', $typesManifestation) ?: null,
-            'categorie_manifestation' => implode(', ', $categoriesManifestation) ?: null,
-            'source' => $datas['@id'],
-            'placeName' => $this->getDataValue($datas, [
-                '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
-                '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
-            ]),
-            'placeCity' => $this->getDataValue($datas, [
-                '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
-                '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
-            ]),
-            'placeStreet' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:streetAddress][0]'),
-            'placePostalCode' => $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:postalCode]'),
-            'placeExternalId' => 'DT-' . $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')),
-            'placeCountryName' => $country,
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'url' => $url,
-            'websiteContacts' => $websites ?: null,
-            'mailContacts' => $emails ?: null,
-            'phoneContacts' => $phones ?: null,
-        ];
+        $event = new EventDto();
+        $event->externalUpdatedAt = $updatedAt;
+        $event->name = $this->getDataValue($datas, '[rdfs:label][fr][0]');
+        $event->description = $description;
+        $event->type = implode(', ', $typesManifestation) ?: null;
+        $event->category = implode(', ', $categoriesManifestation) ?: null;
+        $event->source = $datas['@id'];
+        $event->latitude = $latitude;
+        $event->longitude = $longitude;
+        $event->imageUrl = $url;
+        $event->websiteContacts = $websites;
+        $event->emailContacts = $emails;
+        $event->phoneContacts = $phones;
+
+        $place = new PlaceDto();
+        $place->name = $this->getDataValue($datas, [
+            '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
+            '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
+        ]);
+        $place->street = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:streetAddress][0]');
+        $place->postalCode = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:postalCode]');
+        $place->externalId = sprintf('DT-%s', $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')));
+
+        $city = new CityDto();
+        $city->name = $this->getDataValue($datas, [
+            '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
+            '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
+        ]);
+
+        $country = new CountryDto();
+        $country->name = $country;
 
         //Multiple date handling
         foreach ($datas['takesPlaceAt'] as $date) {
             if (empty($date['endDate'])) {
                 continue;
             }
-            $from = new DateTime($date['startDate']);
-            $to = new DateTime($date['endDate']);
-            $horaires = null;
+            $startDate = new DateTimeImmutable($date['startDate']);
+            $endDate = new DateTimeImmutable($date['endDate']);
+            $hours = null;
 
             $startTime = $date['startTime'] ?? null;
             $endTime = $date['endTime'] ?? null;
@@ -199,84 +252,22 @@ class DataTourismeParser extends AbstractParser
             if ($startTime && $endTime) {
                 $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $startTime);
                 $endTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $endTime);
-                $horaires = sprintf('De %s à %s', $startTime, $endTime);
+                $hours = sprintf('De %s à %s', $startTime, $endTime);
             } elseif ($startTime) {
                 $startTime = preg_replace('#^(\d{2}):(\d{2}).*$#', '$1h$2', $startTime);
-                $horaires = sprintf('À %s', $startTime);
+                $hours = sprintf('À %s', $startTime);
             }
 
-            $event += [
-                'external_id' => 'DT-' . $datas['dc:identifier'] . '-' . $this->getExternalIdFromUrl($date['@id']),
-                'date_debut' => $from,
-                'date_fin' => $to,
-                'horaires' => $horaires,
-            ];
-            $events[] = $event;
+            $currentEvent = clone $event;
+            $currentEvent->externalId = sprintf('DT-%s-%s', $datas['dc:identifier'], $this->getExternalIdFromUrl($date['@id']));
+            $currentEvent->startDate = $startDate;
+            $currentEvent->endDate = $endDate;
+            $currentEvent->hours = $hours;
+
+            $events[] = $currentEvent;
         }
 
         return $events;
-    }
-
-    private function getExternalIdFromUrl(string $url): string
-    {
-        $path = ltrim(parse_url($url, PHP_URL_PATH), '/');
-
-        if (!preg_match(self::UUID_REGEX, $path)) {
-            throw new RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
-        }
-
-        return $path;
-    }
-
-    private function getFeed(string $url): string
-    {
-        //Remove previous extracts
-        $fs = new Filesystem();
-
-        $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
-        $extractDirectory = $this->tempPath . DIRECTORY_SEPARATOR . md5($url);
-
-        if ($fs->exists($extractDirectory)) {
-            $fs->remove($extractDirectory);
-        }
-
-        //Download fresh version
-        $client = HttpClient::create();
-        $response = $client->request('GET', $url);
-
-        $fileHandler = fopen($filePath, 'w');
-        foreach ($client->stream($response) as $chunk) {
-            fwrite($fileHandler, $chunk->getContent());
-        }
-
-        //Extract zip
-        $zip = new ZipArchive();
-        $res = $zip->open($filePath);
-        if (true !== $res) {
-            throw new RuntimeException(sprintf('Unable to unzip "%s": "%d" error code', $filePath, $res));
-        }
-
-        $zip->extractTo($extractDirectory);
-        $zip->close();
-
-        $fs->remove($filePath);
-
-        return $extractDirectory;
-    }
-
-    /**
-     * @param string|string[] $paths
-     */
-    private function getDataValue(array $datas, $paths, $defaultValue = null)
-    {
-        foreach ((array) $paths as $path) {
-            try {
-                return $this->propertyAccessor->getValue($datas, $path);
-            } catch (AccessException|UnexpectedTypeException $e) {
-            }
-        }
-
-        return $defaultValue;
     }
 
     private function getFrenchType(string $type): ?string
@@ -320,10 +311,36 @@ class DataTourismeParser extends AbstractParser
     }
 
     /**
+     * @param string|string[] $paths
+     */
+    private function getDataValue(array $datas, $paths, $defaultValue = null)
+    {
+        foreach ((array) $paths as $path) {
+            try {
+                return $this->propertyAccessor->getValue($datas, $path);
+            } catch (AccessException | UnexpectedTypeException $e) {
+            }
+        }
+
+        return $defaultValue;
+    }
+
+    private function getExternalIdFromUrl(string $url): string
+    {
+        $path = ltrim(parse_url($url, PHP_URL_PATH), '/');
+
+        if (!preg_match(self::UUID_REGEX, $path)) {
+            throw new RuntimeException(sprintf('Unable to guess id FROM url "%s"', $url));
+        }
+
+        return $path;
+    }
+
+    /**
      * {@inheritDoc}
      */
-    public static function getParserVersion(): string
+    public function getCommandName(): string
     {
-        return '1.2';
+        return 'datatourisme';
     }
 }

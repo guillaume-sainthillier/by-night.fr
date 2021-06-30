@@ -10,20 +10,18 @@
 
 namespace App\Parser;
 
+use App\Contracts\ParserInterface;
+use App\Dto\EventDto;
 use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
-use JsonException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
 abstract class AbstractParser implements ParserInterface
 {
-    private EventProducer $eventProducer;
-
-    private LoggerInterface $logger;
-
     protected ReservationsHandler $reservationsHandler;
-
+    private EventProducer $eventProducer;
+    private LoggerInterface $logger;
     private int $parsedEvents = 0;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler)
@@ -44,24 +42,21 @@ abstract class AbstractParser implements ParserInterface
     /**
      * {@inheritDoc}
      */
-    public function publish(array $item): void
+    public static function getParserVersion(): string
     {
-        $item['from_data'] = static::getParserName();
-        $item['parser_version'] = static::getParserVersion();
-        try {
-            $this->eventProducer->scheduleEvent($item);
-            ++$this->parsedEvents;
-        } catch (JsonException $e) {
-            $this->logException($e, ['item' => $item]);
-        }
+        return '1.0';
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getParsedEvents(): int
+    public function publish(EventDto $eventDto): void
     {
-        return $this->parsedEvents;
+        $eventDto->parserName = static::getParserName();
+        $eventDto->parserVersion = static::getParserVersion();
+
+        $this->eventProducer->scheduleEvent($eventDto);
+        ++$this->parsedEvents;
     }
 
     protected function logException(Throwable $exception, array $context = []): void
@@ -75,8 +70,8 @@ abstract class AbstractParser implements ParserInterface
     /**
      * {@inheritDoc}
      */
-    public static function getParserVersion(): string
+    public function getParsedEvents(): int
     {
-        return '1.0';
+        return $this->parsedEvents;
     }
 }

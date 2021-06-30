@@ -10,11 +10,16 @@
 
 namespace App\Parser\Common;
 
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
 use App\Repository\CountryRepository;
 use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Parsedown;
@@ -109,28 +114,28 @@ class OpenAgendaParser extends AbstractParser
         }
     }
 
-    private function publishEvents(array $events): void
+    private function publishEvents(array $data): void
     {
-        foreach ($events as $event) {
-            $event = $this->getInfoEvent($event);
-            if (null === $event) {
+        foreach ($data as $datum) {
+            $dto = $this->arrayToDto($datum);
+            if (null === $dto) {
                 continue;
             }
-            $this->publish($event);
+            $this->publish($dto);
         }
     }
 
-    private function getInfoEvent(array $event): ?array
+    private function arrayToDto(array $data): ?object
     {
-        if (empty($event['freeText']['fr'])) {
+        if (empty($data['freeText']['fr'])) {
             return null;
         }
 
-        if (empty($event['locations'])) {
+        if (empty($data['locations'])) {
             return null;
         }
 
-        $location = current($event['locations']);
+        $location = current($data['locations']);
         if (empty($location['dates'])) {
             return null;
         }
@@ -152,52 +157,74 @@ class OpenAgendaParser extends AbstractParser
         $dates = $location['dates'];
         $startDateAsArray = current($dates);
         $endDateAsArray = end($dates);
-        $dateDebut = DateTime::createFromFormat('Y-m-d H:i:s', $startDateAsArray['date'] . ' ' . $startDateAsArray['timeStart']);
-        $dateFin = DateTime::createFromFormat('Y-m-d H:i:s', $endDateAsArray['date'] . ' ' . $endDateAsArray['timeEnd']);
+        $startDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $startDateAsArray['date'] . ' ' . $startDateAsArray['timeStart']);
+        $endDate = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $endDateAsArray['date'] . ' ' . $endDateAsArray['timeEnd']);
 
-        $horaires = null;
-        if ($dateDebut instanceof DateTimeInterface && $dateFin instanceof DateTimeInterface && $dateDebut->getTimestamp() !== $dateFin->getTimestamp()) {
-            $horaires = sprintf('De %s à %s', $dateDebut->format("H\hi"), $dateFin->format("H\hi"));
-        } elseif ($dateDebut instanceof DateTimeInterface) {
-            $horaires = sprintf('A %s', $dateDebut->format("H\hi"));
+        $hours = null;
+        if ($startDate instanceof DateTimeInterface && $endDate instanceof DateTimeInterface && $startDate->getTimestamp() !== $endDate->getTimestamp()) {
+            $hours = sprintf('De %s à %s', $startDate->format("H\hi"), $endDate->format("H\hi"));
+        } elseif ($startDate instanceof DateTimeInterface) {
+            $hours = sprintf('A %s', $startDate->format("H\hi"));
         }
 
         $mdParser = new Parsedown();
-        $description = $mdParser->text($event['freeText']['fr']);
+        $description = $mdParser->text($data['freeText']['fr']);
 
-        $type_manifestation = null;
-        if (!empty($event['tags']['fr'])) {
-            $type_manifestation = $event['tags']['fr'];
+        $type = null;
+        if (!empty($data['tags']['fr'])) {
+            $type = $data['tags']['fr'];
         }
 
-        if ($event['image'] && 0 === strpos($event['image'], '//')) {
-            $event['image'] = 'https:' . $event['image'];
+        if ($data['image'] && 0 === strpos($data['image'], '//')) {
+            $data['image'] = 'https:' . $data['image'];
         }
 
         $infos = $this->reservationsHandler->parseReservations($location['ticketLink'] ?? null);
 
-        return [
-            'nom' => $event['title']['fr'],
-            'descriptif' => $description,
-            'source' => $event['link'],
-            'external_id' => 'OA-' . $event['uid'],
-            'url' => $event['image'],
-            'external_updated_at' => new DateTime($event['updatedAt']),
-            'date_debut' => $dateDebut,
-            'date_fin' => $dateFin,
-            'horaires' => $horaires,
-            'latitude' => (float) $location['latitude'],
-            'longitude' => (float) $location['longitude'],
-            'adresse' => $location['address'] ?? null,
-            'placeName' => $location['placename'] ?? null,
-            'placePostalCode' => $location['postalCode'] ?? null,
-            'placeCity' => $location['city'] ?? null,
-            'placeCountryName' => $countryCode,
-            'placeExternalId' => 'OA-' . $location['uid'],
-            'type_manifestation' => $type_manifestation,
-            'websiteContacts' => $infos['urls'],
-            'phoneContacts' => $infos['phones'],
-            'mailContacts' => $infos['emails'],
-        ];
+        $event = new EventDto();
+        $event->name = $data['title']['fr'];
+        $event->description = $description;
+        $event->source = $data['link'];
+        $event->externalId = sprintf('OA-%s', $data['uid']);
+        $event->imageUrl = $data['image'];
+        $event->externalUpdatedAt = new DateTimeImmutable($data['updatedAt']);
+        $event->startDate = $startDate;
+        $event->endDate = $endDate;
+        $event->hours = $hours;
+        $event->latitude = $location['latitude'];
+        $event->longitude = $location['longitude'];
+        $event->address = $location['address'];
+        $event->type = $type;
+        $event->websiteContacts = $infos['urls'];
+        $event->phoneContacts = $infos['phones'];
+        $event->emailContacts = $infos['emails'];
+
+        $place = new PlaceDto();
+        $place->name = $location['placename'] ?? null;
+        $place->postalCode = $location['postalCode'] ?? null;
+        $place->externalId = sprintf('OA-%s', $location['uid']);
+
+        $city = new CityDto();
+        $city->name = $location['city'] ?? null;
+
+        $country = new CountryDto();
+        $country->code = $countryCode;
+
+        $city->country = $country;
+
+        $place->country = $country;
+        $place->city = $city;
+
+        $event->place = $place;
+
+        return $event;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCommandName(): string
+    {
+        return 'openagenda';
     }
 }

@@ -10,9 +10,13 @@
 
 namespace App\Parser\Common;
 
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
-use DateTime;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -33,6 +37,22 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
     /**
      * {@inheritDoc}
      */
+    public static function getParserName(): string
+    {
+        return 'Fnac Spectacles';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCommandName(): string
+    {
+        return 'awin.fnac';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected function getAwinUrl(): string
     {
         return self::DATAFEED_URL;
@@ -41,60 +61,74 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
     /**
      * {@inheritDoc}
      */
-    protected function getInfoEvents(array $datas): array
+    protected function arrayToDto(array $data): ?object
     {
-        if ('0' === $datas['is_for_sale'] || '' === trim($datas['custom_2'])) {
-            return [];
+        if ('0' === $data['is_for_sale'] || '' === trim($data['custom_2'])) {
+            return null;
         }
 
-        $seenHoraires = [];
-        $horaires = null;
-        $fromDate = null;
-        $startDates = array_filter(explode(';', $datas['custom_1']));
+        $seenHours = [];
+        $hours = null;
+        $startDate = null;
+        $startDates = array_filter(explode(';', $data['custom_1']));
 
         if (0 === \count($startDates)) {
-            return [];
-        }
-        foreach ($startDates as $startDate) {
-            $startDate = DateTime::createFromFormat('d/m/Y H:i', $startDate);
-            $seenHoraires[] = sprintf('À %s', $startDate->format('H\hi'));
-            $fromDate = $startDate;
-        }
-        $seenHoraires = array_unique($seenHoraires);
-
-        if (1 === \count($seenHoraires)) {
-            $horaires = $seenHoraires[0];
+            return null;
         }
 
-        $toDate = DateTime::createFromFormat('d/m/Y H:i', $datas['valid_to']);
+        foreach ($startDates as $startDateStr) {
+            $startDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $startDateStr);
+            $seenHours[] = sprintf('À %s', $startDate->format('H\hi'));
+        }
+        $seenHours = array_unique($seenHours);
 
-        if ('31/12 23:59' === $fromDate->format('d/m H:i') && $fromDate->format('d/m/Y') === $toDate->format('d/m/Y')) {
-            $horaires = null;
-            $fromDate->setDate($fromDate->format('Y'), 1, 1);
+        if (1 === \count($seenHours)) {
+            $hours = $seenHours[0];
+        }
+
+        $endDate = DateTimeImmutable::createFromFormat('d/m/Y H:i', $data['valid_to']);
+
+        if ('31/12 23:59' === $startDate->format('d/m H:i') && $startDate->format('d/m/Y') === $endDate->format('d/m/Y')) {
+            $hours = null;
+            $startDate->setDate((int) $startDate->format('Y'), 1, 1);
         }
 
         //Prevents Reject::BAD_EVENT_DATE_INTERVAL
-        $toDate->setTime(0, 0);
-        $fromDate->setTime(0, 0);
+        $endDate = $endDate->setTime(0, 0);
+        $startDate = $startDate->setTime(0, 0);
 
-        return [
-            'external_id' => 'FS-' . $datas['merchant_product_id'],
-            'date_debut' => $fromDate,
-            'date_fin' => $toDate,
-            'horaires' => $horaires,
-            'source' => $datas['aw_deep_link'],
-            'nom' => $datas['product_name'],
-            'descriptif' => nl2br(trim(sprintf("%s\n\n%s", $datas['description'], $datas['product_short_description']))),
-            'url' => $this->getImageUrl($datas['merchant_image_url']),
-            'tarif' => sprintf('%s€', $datas['search_price']),
-            'placeName' => $datas['custom_2'],
-            'placePostalCode' => $datas['custom_4'],
-            'placeCity' => $datas['venue_address'],
-            'placeStreet' => \in_array($datas['custom_6'], ['.', '-', ''], true) ? null : $datas['custom_6'],
-            'placeCountryName' => $datas['custom_3'],
-            'latitude' => (float) $datas['latitude'],
-            'longitude' => (float) $datas['longitude'],
-        ];
+        $event = new EventDto();
+        $event->externalId = sprintf('FS-%s', $data['merchant_product_id']);
+        $event->startDate = $startDate;
+        $event->endDate = $endDate;
+        $event->hours = $hours;
+        $event->source = $data['aw_deep_link'];
+        $event->name = $data['product_name'];
+        $event->description = nl2br(trim(sprintf("%s\n\n%s", $data['description'], $data['product_short_description'])));
+        $event->imageUrl = $this->getImageUrl($data['merchant_image_url']);
+        $event->prices = sprintf('%s€', $data['search_price']);
+        $event->latitude = (float) $data['latitude'];
+        $event->longitude = (float) $data['longitude'];
+
+        $place = new PlaceDto();
+        $place->name = $data['custom_2'];
+        $place->postalCode = $data['custom_4'];
+        $place->street = \in_array($data['custom_6'], ['.', '-', ''], true) ? null : $data['custom_6'];
+
+        $city = new CityDto();
+        $city->name = $data['venue_address'];
+
+        $country = new CountryDto();
+        $country->name = $data['custom_3'];
+
+        $city->country = $country;
+
+        $place->country = $country;
+        $place->city = $city;
+
+        $event->place = $place;
+
+        return $event;
     }
 
     private function getImageUrl(string $url)
@@ -114,13 +148,5 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
             return $url;
         });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function getParserName(): string
-    {
-        return 'Fnac Spectacles';
     }
 }

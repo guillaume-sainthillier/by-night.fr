@@ -38,6 +38,21 @@ services:
             $monitor: "%env(APP_MONITOR)%"
             $disableTwitterFeed: "%disable_polled_feeds%"
             $assetThumb: "@app.asset_thumb"
+            $dataDir: "%kernel.project_dir%/var/datas"
+            $parsers: !tagged_iterator app.parser
+            $entityProviders: !tagged_iterator app.entity_provider
+            $dtoConverters: !tagged_iterator app.dto_converter
+            $entityFactories: !tagged_iterator app.entity_factory
+
+    _instanceof:
+        App\Contracts\ParserInterface:
+            tags: [ 'app.parser' ]
+        App\Contracts\EntityProviderInterface:
+            tags: [ 'app.entity_provider' ]
+        App\Contracts\EntityFactoryInterface:
+            tags: [ 'app.entity_factory' ]
+        App\Contracts\DtoConverterInterface:
+            tags: [ 'app.dto_converter' ]
 
     App\:
         resource: '../src/*'
@@ -86,21 +101,6 @@ services:
     App\Archive\EventArchivator:
         arguments:
             $objectPersister: "@fos_elastica.object_persister.event.event"
-
-    App\Command\AppEventsImportCommand:
-        arguments:
-            $parsers:
-                toulouse.opendata: '@App\Parser\Toulouse\ToulouseParser'
-                toulouse.bikini: '@App\Parser\Toulouse\BikiniParser'
-                datatourisme: '@App\Parser\Common\DataTourismeParser'
-                openagenda: '@App\Parser\Common\OpenAgendaParser'
-                sowprog: '@App\Parser\Common\SowProgParser'
-                awin.fnac: '@App\Parser\Common\FnacSpectaclesAwinParser'
-                awin.digitick: '@App\Parser\Common\DigitickAwinParser'
-
-    App\Importer\CountryImporter:
-        arguments:
-            $dataDir: "%kernel.project_dir%/var/datas"
 
     App\Form\Type\ReCaptchaType:
         arguments:

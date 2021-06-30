@@ -10,8 +10,6 @@
 
 namespace App\Entity;
 
-use App\Parser\Common\DigitickAwinParser;
-use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
 use DateTime;
@@ -437,11 +435,6 @@ class Event
         $from->modify(self::INDEX_FROM);
 
         return $this->dateFin >= $from;
-    }
-
-    public function isAffiliate(): bool
-    {
-        return \in_array($this->fromData, [FnacSpectaclesAwinParser::getParserName(), DigitickAwinParser::getParserName()], true);
     }
 
     /**

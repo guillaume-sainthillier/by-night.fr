@@ -8,7 +8,9 @@
  * with this source code in the file LICENSE.
  */
 
-namespace App\Parser;
+namespace App\Contracts;
+
+use App\Dto\EventDto;
 
 interface ParserInterface
 {
@@ -22,5 +24,7 @@ interface ParserInterface
 
     public function getParsedEvents(): int;
 
-    public function publish(array $item): void;
+    public function publish(EventDto $eventDto): void;
+
+    public function getCommandName(): string;
 }

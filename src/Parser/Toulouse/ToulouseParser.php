@@ -10,8 +10,11 @@
 
 namespace App\Parser\Toulouse;
 
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
-use DateTime;
 use ForceUTF8\Encoding;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -68,36 +71,57 @@ class ToulouseParser extends AbstractParser
 
             $nom = $tab[1] ?: $tab[2];
 
-            $date_debut = new DateTime($tab[5]);
-            $date_fin = new DateTime($tab[6]);
+            $startDate = new \DateTimeImmutable($tab[5]);
+            $endDate = new \DateTimeImmutable($tab[6]);
 
-            $event = [
-                'external_id' => 'TOU-' . $tab[0],
-                'nom' => $nom,
-                'descriptif' => $tab[4],
-                'date_debut' => $date_debut,
-                'date_fin' => $date_fin,
-                'horaires' => $tab[7],
-                'modification_derniere_minute' => $tab[9],
-                'placeName' => $tab[10],
-                'placeStreet' => $tab[12],
-                'latitude' => (float) $tab[20] ?: null,
-                'longitude' => (float) $tab[21] ?: null,
-                'placePostalCode' => $tab[14],
-                'placeCity' => $tab[15],
-                'placeCountryName' => 'France',
-                'type_manifestation' => $tab[16],
-                'categorie_manifestation' => $tab[17],
-                'theme_manifestation' => $tab[18],
-                'phoneContacts' => [$tab[22]] ?: null,
-                'mailContacts' => [$tab[23]] ?: null,
-                'websiteContacts' => [$tab[24]] ?: null,
-                'tarif' => $tab[26],
-                'source' => 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/information/',
-            ];
+            $event = new EventDto();
+            $event->externalId = sprintf('TOU-%s', $tab[0]);
+
+            $event->name = $nom;
+            $event->description = $tab[4];
+            $event->startDate = $startDate;
+            $event->endDate = $endDate;
+            $event->hours = $tab[7];
+            $event->status = $tab[9];
+            $event->latitude = (float) $tab[20] ?: null;
+            $event->longitude = (float) $tab[21] ?: null;
+            $event->type = $tab[16];
+            $event->category = $tab[17];
+            $event->theme = $tab[18];
+            $event->phoneContacts = [$tab[22]];
+            $event->emailContacts = [$tab[23]];
+            $event->websiteContacts = [$tab[24]];
+            $event->prices = $tab[26];
+            $event->source = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/information/';
+
+            $place = new PlaceDto();
+            $place->name = $tab[10];
+            $place->street = $tab[12];
+            $place->postalCode = $tab[14];
+
+            $city = new CityDto();
+            $city->name = $tab[15];
+
+            $country = new CountryDto();
+            $country->code = 'FR';
+
+            $city->country = $country;
+
+            $place->city = $city;
+            $place->country = $country;
+
+            $event->place = $place;
 
             $this->publish($event);
         }
         fclose($fic);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCommandName(): string
+    {
+        return 'toulouse.opendata';
     }
 }

@@ -10,6 +10,10 @@
 
 namespace App\Parser\Toulouse;
 
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
 use DateTime;
 use const JSON_THROW_ON_ERROR;
@@ -29,55 +33,75 @@ class BikiniParser extends AbstractParser
     public function parse(bool $incremental): void
     {
         //Récupère les différents liens à parser depuis le flux RSS
-        $datas = json_decode(file_get_contents(self::EVENTS_URL), true, 512, JSON_THROW_ON_ERROR);
+        $data = json_decode(file_get_contents(self::EVENTS_URL), true, 512, JSON_THROW_ON_ERROR);
 
-        foreach ($datas['events'] as $event) {
-            $event = $this->getInfosEvent($event);
-            $this->publish($event);
+        foreach ($data['events'] as $eventAsArray) {
+            $dto = $this->arrayToDto($eventAsArray);
+            $this->publish($dto);
         }
     }
 
-    private function getInfosEvent(array $event): array
+    private function arrayToDto(array $data): object
     {
-        $from = DateTime::createFromFormat('U', $event['startTime']);
-        $to = DateTime::createFromFormat('U', $event['endTime']);
+        $startDate = DateTime::createFromFormat('U', $data['startTime']);
+        $endDate = DateTime::createFromFormat('U', $data['endTime']);
 
-        if ($from->getTimestamp() === $to->getTimestamp()) {
-            $horaires = sprintf('À %s', $from->format('H:i'));
+        if ($startDate->getTimestamp() === $endDate->getTimestamp()) {
+            $hours = sprintf('À %s', $startDate->format('H:i'));
         } else {
-            $horaires = sprintf('De %s à %s', $from->format('H:i'), $to->format('H:i'));
+            $hours = sprintf('De %s à %s', $startDate->format('H:i'), $endDate->format('H:i'));
         }
 
-        $tab_retour = [
-            'external_id' => 'BKN-' . $event['id'],
-            'nom' => $event['title'],
-            'date_debut' => $from,
-            'date_fin' => $to,
-            'horaires' => $horaires,
-            'descriptif' => $event['htmlDescription'],
-            'type_manifestation' => 'Concert, Musique',
-            'categorie_manifestation' => $event['style'],
-            'source' => $event['url'],
-            'websiteContacts' => [$event['ticketUrl']],
-            'url' => $event['image'],
-            'modification_derniere_minute' => 'postponed' === $event['status'] ? 'REPORTE' : null,
-            'placeName' => $event['place']['name'],
-            'placeCountryName' => 'FR',
-            'tarif' => implode(' // ', $event['prices']),
-        ];
-
-        $placeParts = explode("\n", $event['place']['address']);
+        $placeParts = explode("\n", $data['place']['address']);
         $placeParts = array_map('trim', $placeParts);
+
+        $event = new EventDto();
+        $event->externalId = sprintf('BKN-%s', $data['id']);
+        $event->name = $data['title'];
+        $event->startDate = $startDate;
+        $event->endDate = $endDate;
+        $event->hours = $hours;
+        $event->description = $data['htmlDescription'];
+        $event->type = 'Concert, Musique';
+        $event->category = $data['style'];
+        $event->source = $data['url'];
+        $event->websiteContacts = [$data['ticketUrl']];
+        $event->imageUrl = $data['image'];
+        $event->status = 'postponed' === $data['status'] ? 'REPORTE' : null;
+        $event->prices = implode(' // ', $data['prices']);
+
+        $place = new PlaceDto();
+        $place->name = $data['place']['name'];
+
+        $city = new CityDto();
 
         if (\count($placeParts) >= 2) {
             if (preg_match("#^(\d+) (.+)$#", end($placeParts), $postalCodeAndCity)) {
-                $tab_retour['placePostalCode'] = $postalCodeAndCity[1];
-                $tab_retour['placeCity'] = $postalCodeAndCity[2];
+                $place->postalCode = $postalCodeAndCity[1];
+                $city->name = $postalCodeAndCity[2];
             }
 
-            $tab_retour['placeStreet'] = 3 === \count($placeParts) ? $placeParts[1] : $placeParts[0];
+            $place->street = 3 === \count($placeParts) ? $placeParts[1] : $placeParts[0];
         }
 
-        return $tab_retour;
+        $country = new CountryDto();
+        $country->code = 'FR';
+
+        $city->country = $country;
+
+        $place->country = $country;
+        $place->city = $city;
+
+        $event->place = $place;
+
+        return $event;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCommandName(): string
+    {
+        return 'toulouse.bikini';
     }
 }

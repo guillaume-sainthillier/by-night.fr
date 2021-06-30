@@ -33,10 +33,6 @@ abstract class AbstractAwinParser extends AbstractParser
         $this->awinApiKey = $awinApiKey;
     }
 
-    abstract protected function getAwinUrl(): string;
-
-    abstract protected function getInfoEvents(array $datas): array;
-
     /**
      * {@inheritDoc}
      */
@@ -52,7 +48,7 @@ abstract class AbstractAwinParser extends AbstractParser
 
         while ('product' === $xml->name) {
             $event = $this->elementToArray(new SimpleXMLElement($xml->readOuterXML()));
-            $event = $this->getInfoEvents($event);
+            $event = $this->arrayToDto($event);
             if (\count($event) > 0) {
                 $this->publish($event);
             }
@@ -60,16 +56,6 @@ abstract class AbstractAwinParser extends AbstractParser
             $xml->next('product');
             unset($event);
         }
-    }
-
-    private function elementToArray(SimpleXMLElement $element): array
-    {
-        $array = [];
-        foreach ($element->children() as $node) {
-            $array[$node->getName()] = \is_array($node) ? $this->elementToArray($node) : Encoding::toUTF8(utf8_decode($node));
-        }
-
-        return $array;
     }
 
     private function downloadFile(string $url): string
@@ -85,4 +71,18 @@ abstract class AbstractAwinParser extends AbstractParser
 
         return $filePath;
     }
+
+    abstract protected function getAwinUrl(): string;
+
+    private function elementToArray(SimpleXMLElement $element): array
+    {
+        $array = [];
+        foreach ($element->children() as $node) {
+            $array[$node->getName()] = \is_array($node) ? $this->elementToArray($node) : Encoding::toUTF8(utf8_decode($node));
+        }
+
+        return $array;
+    }
+
+    abstract protected function arrayToDto(array $data): ?object;
 }

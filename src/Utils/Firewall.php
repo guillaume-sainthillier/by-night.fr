@@ -10,6 +10,7 @@
 
 namespace App\Utils;
 
+use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Entity\ParserData;
 use App\Reject\Reject;
@@ -34,7 +35,7 @@ class Firewall
         $this->parserDataRepository = $parserDataRepository;
     }
 
-    public function loadParserDatas(array $ids): void
+    public function loadExternalIdsData(array $ids): void
     {
         $parserDatas = $this->parserDataRepository->findBy([
             'externalId' => $ids,
@@ -53,75 +54,80 @@ class Firewall
         $this->parserDatas[$parserData->getExternalId()] = $parserData->setReject($reject);
     }
 
-    public function hasPlaceToBeUpdated(ParserData $parserData, Event $event): bool
+    public function hasPlaceToBeUpdated(ParserData $parserData, EventDto $dto): bool
     {
-        return $this->hasExplorationToBeUpdated($parserData, $event);
+        return $this->hasExplorationToBeUpdated($parserData, $dto);
     }
 
-    private function hasExplorationToBeUpdated(ParserData $parserData, Event $event): bool
+    private function hasExplorationToBeUpdated(ParserData $parserData, EventDto $dto): bool
     {
-        return self::VERSION !== $parserData->getFirewallVersion() || $event->getParserVersion() !== $parserData->getFirewallVersion();
+        return self::VERSION !== $parserData->getFirewallVersion() || $dto->parserVersion !== $parserData->getFirewallVersion();
     }
 
-    public function isValid(Event $event): bool
+    public function isEventDtoValid(EventDto $eventDto): bool
+    {
+        return $eventDto->reject->isValid() && $eventDto->place->reject->isValid();
+    }
+
+    public function isEventValid(Event $event): bool
     {
         return $event->getReject()->isValid() && $event->getPlaceReject()->isValid();
     }
 
-    public function filterEvent(Event $event): void
+    public function filterEvent(EventDto $dto): void
     {
-        $this->filterEventInfos($event);
-        $this->filterEventPlace($event);
+        $this->filterEventInfos($dto);
+        $this->filterEventPlace($dto);
     }
 
-    private function filterEventInfos(Event $event): void
+    private function filterEventInfos(EventDto $dto): void
     {
         //Le nom de l'événement doit comporter au moins 3 caractères
-        if (!$event->isAffiliate() && !$this->checkMinLengthValidity($event->getNom(), 3)) {
-            $event->getReject()->addReason(Reject::BAD_EVENT_NAME);
+        if (!$dto->isAffiliate() && !$this->checkMinLengthValidity($dto->name, 3)) {
+            $dto->reject->addReason(Reject::BAD_EVENT_NAME);
         }
 
         //La description de l'événement doit comporter au moins 20 caractères
-        if (!$event->isAffiliate() && !$this->checkMinLengthValidity($event->getDescriptif(), 10)) {
-            $event->getReject()->addReason(Reject::BAD_EVENT_DESCRIPTION);
+        if (!$dto->isAffiliate() && !$this->checkMinLengthValidity($dto->description, 10)) {
+            $dto->reject->addReason(Reject::BAD_EVENT_DESCRIPTION);
         }
 
         //Pas de SPAM dans la description
-        if (!$event->isAffiliate() && $this->isSPAMContent($event->getDescriptif())) {
-            $event->getReject()->addReason(Reject::SPAM_EVENT_DESCRIPTION);
+        if (!$dto->isAffiliate() && $this->isSPAMContent($dto->description)) {
+            $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
         //Pas de dates valides fournies
-        if (!$event->getDateDebut() instanceof DateTimeInterface ||
-            ($event->getDateFin() && !$event->getDateFin() instanceof DateTimeInterface)
+        if (!$dto->startDate instanceof DateTimeInterface ||
+            ($dto->endDate && !$dto->endDate instanceof DateTimeInterface)
         ) {
-            $event->getReject()->addReason(Reject::BAD_EVENT_DATE);
-        } elseif ($event->getDateFin() && $event->getDateFin() < $event->getDateDebut()) {
-            $event->getReject()->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
+            $dto->reject->addReason(Reject::BAD_EVENT_DATE);
+        } elseif ($dto->endDate && $dto->endDate < $dto->startDate) {
+            $dto->reject->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
         }
 
         //Observation de l'événement
-        if ($event->getExternalId()) {
-            $parserData = $this->getExploration($event->getExternalId());
+        if ($dto->getExternalId()) {
+            $parserData = $this->getExploration($dto->getExternalId());
             if (null === $parserData) {
                 $parserData = (new ParserData())
-                    ->setExternalId($event->getExternalId())
-                    ->setLastUpdated($event->getExternalUpdatedAt())
-                    ->setReject($event->getReject())
-                    ->setReason($event->getReject()->getReason())
+                    ->setExternalId($dto->getExternalId())
+                    ->setLastUpdated($dto->getExternalUpdatedAt())
+                    ->setReject($dto->reject)
+                    ->setReason($dto->reject->getReason())
                     ->setFirewallVersion(self::VERSION)
-                    ->setParserVersion($event->getParserVersion());
+                    ->setParserVersion($dto->parserVersion);
 
                 $this->addParserData($parserData);
             } else {
                 //Pas besoin de paniquer l'EM si les dates sont équivalentes
-                if ($parserData->getLastUpdated() !== $event->getExternalUpdatedAt()) {
-                    $parserData->setLastUpdated($event->getExternalUpdatedAt());
+                if ($parserData->getLastUpdated() !== $dto->getExternalUpdatedAt()) {
+                    $parserData->setLastUpdated($dto->getExternalUpdatedAt());
                 }
 
                 $parserData
-                    ->setReject($event->getReject())
-                    ->setReason($event->getReject()->getReason());
+                    ->setReject($dto->reject)
+                    ->setReason($dto->reject->getReason());
             }
         }
     }
@@ -170,33 +176,39 @@ class Firewall
         return $this->parserDatas[$externalId];
     }
 
-    private function filterEventPlace(Event $event): void
+    private function filterEventPlace(EventDto $dto): void
     {
-        //Le nom du lieu doit comporter au moins 2 caractères
-        if (!$this->checkMinLengthValidity($event->getPlaceName(), 2)) {
-            $event->getPlaceReject()->addReason(Reject::BAD_PLACE_NAME);
+        if (null === $dto->place) {
+            $dto->reject->addReason(Reject::NO_PLACE_PROVIDED);
+
+            return;
         }
 
-        $codePostal = $this->comparator->sanitizeNumber($event->getPlacePostalCode());
+        //Le nom du lieu doit comporter au moins 2 caractères
+        if (!$this->checkMinLengthValidity($dto->place->name, 2)) {
+            $dto->place->reject->addReason(Reject::BAD_PLACE_NAME);
+        }
+
+        $codePostal = $this->comparator->sanitizeNumber($dto->place->postalCode);
         if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
-            $event->getPlaceReject()->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
+            $dto->place->reject->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
         }
 
         //Observation du lieu
-        if ($event->getPlaceExternalId()) {
-            $parserData = $this->getExploration($event->getPlaceExternalId());
+        if (null !== $dto->place->getExternalId()) {
+            $parserData = $this->getExploration($dto->place->getExternalId());
             if (null === $parserData) {
                 $parserData = (new ParserData())
-                    ->setExternalId($event->getPlaceExternalId())
-                    ->setReject($event->getPlaceReject())
-                    ->setReason($event->getPlaceReject()->getReason())
+                    ->setExternalId($dto->place->getExternalId())
+                    ->setReject($dto->place->reject)
+                    ->setReason($dto->place->reject->getReason())
                     ->setFirewallVersion(self::VERSION)
-                    ->setParserVersion($event->getParserVersion());
+                    ->setParserVersion($dto->parserVersion);
                 $this->addParserData($parserData);
             } else {
                 $parserData
-                    ->setReject($event->getPlaceReject())
-                    ->setReason($event->getPlaceReject()->getReason());
+                    ->setReject($dto->place->reject)
+                    ->setReason($dto->place->reject->getReason());
             }
         }
     }
@@ -206,23 +218,20 @@ class Firewall
         return mb_strlen($this->comparator->sanitize($str)) === $length;
     }
 
-    /**
-     * @return void
-     */
-    public function filterEventLocation(Event $event)
+    public function filterEventLocation(EventDto $dto): void
     {
-        if (!$event->getPlace() || !$event->getPlace()->getReject()) {
+        if (null === $dto->place || null === $dto->place->reject) {
             return;
         }
 
-        $reject = $event->getPlace()->getReject();
+        $reject = $dto->place->reject;
         if (!$reject->isValid()) {
-            $event->getPlaceReject()->addReason($reject->getReason());
-            $event->getReject()->addReason($reject->getReason());
+            $dto->place->reject->addReason($reject->getReason());
+            $dto->reject->addReason($reject->getReason());
         }
     }
 
-    public function filterEventExploration(ParserData $parserData, Event $event): void
+    public function filterEventExploration(ParserData $parserData, EventDto $eventDto): void
     {
         $reject = $parserData->getReject();
 
@@ -231,8 +240,8 @@ class Firewall
             return;
         }
 
-        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($parserData, $event);
-        $hasToBeUpdated = $this->hasEventToBeUpdated($parserData, $event);
+        $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($parserData, $eventDto);
+        $hasToBeUpdated = $this->hasEventToBeUpdated($parserData, $eventDto);
 
         //L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
@@ -246,7 +255,7 @@ class Firewall
         if ($hasFirewallVersionChanged) {
             $parserData
                 ->setFirewallVersion(self::VERSION)
-                ->setParserVersion($event->getParserVersion());
+                ->setParserVersion($eventDto->parserVersion);
 
             if (!$reject->hasNoNeedToUpdate()) {
                 $reject->setValid();
@@ -254,10 +263,10 @@ class Firewall
         }
     }
 
-    public function hasEventToBeUpdated(ParserData $parserData, Event $event): bool
+    public function hasEventToBeUpdated(ParserData $parserData, EventDto $dto): bool
     {
         $parserDataDate = $parserData->getLastUpdated();
-        $eventDateModification = $event->getExternalUpdatedAt();
+        $eventDateModification = $dto->getExternalUpdatedAt();
 
         if (!$parserDataDate || !$eventDateModification) {
             return true;

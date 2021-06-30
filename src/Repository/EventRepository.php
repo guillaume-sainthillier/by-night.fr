@@ -11,6 +11,7 @@
 namespace App\Repository;
 
 use App\App\Location;
+use App\Contracts\ExternalIdentifiableRepositoryInterface;
 use App\Entity\Event;
 use App\Entity\User;
 use DateTime;
@@ -26,11 +27,26 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Event[]    findAll()
  * @method Event[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class EventRepository extends ServiceEntityRepository
+class EventRepository extends ServiceEntityRepository implements ExternalIdentifiableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Event::class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return Event[]
+     */
+    public function findAllByExternalIds(array $externalIds): array
+    {
+        return $this
+            ->createQueryBuilder('e')
+            ->where('e.externalId IN (:externalIds)')
+            ->setParameter('externalIds', $externalIds)
+            ->getQuery()
+            ->execute();
     }
 
     /**

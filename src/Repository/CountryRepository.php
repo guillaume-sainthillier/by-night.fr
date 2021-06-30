@@ -71,4 +71,36 @@ class CountryRepository extends ServiceEntityRepository
             ->useQueryCache(true)
             ->getOneOrNullResult();
     }
+
+    /**
+     * @param string[] $ids
+     * @param string[] $names
+     *
+     * @return Country[]
+     */
+    public function findAllByIdsOrNames(array $ids, array $names): array
+    {
+        if (0 === \count($ids) && 0 === \count($names)) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('c');
+
+        $wheres = [];
+        if (\count($ids) > 0) {
+            $wheres[] = 'c.id IN (:ids)';
+            $qb->setParameter('ids', $ids);
+        }
+        if (\count($names) > 0) {
+            $wheres[] = 'LOWER(c.name) IN(:names) OR LOWER(c.displayName) IN(:names) OR (c.id IN :names)';
+            $qb->setParameter('names', array_map('strtolower', $names));
+        }
+
+        return $qb
+            ->orWhere(implode(' OR ', $wheres))
+            ->getQuery()
+            ->enableResultCache()
+            ->useQueryCache(true)
+            ->execute();
+    }
 }

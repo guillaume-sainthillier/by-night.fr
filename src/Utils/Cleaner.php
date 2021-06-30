@@ -10,9 +10,8 @@
 
 namespace App\Utils;
 
-use App\Entity\Event;
+use App\Dto\EventDto;
 use App\Entity\Place;
-use DateTimeInterface;
 
 class Cleaner
 {
@@ -23,22 +22,22 @@ class Cleaner
         $this->util = $util;
     }
 
-    public function cleanEvent(Event $event): void
+    public function cleanEvent(EventDto $dto): void
     {
-        if (!$event->getDateFin() instanceof DateTimeInterface) {
-            $event->setDateFin($event->getDateDebut());
+        if (null === $dto->endDate) {
+            $dto->endDate = $dto->startDate;
         }
 
-        $event->setNom($this->clean($event->getNom()) ?: null)
-            ->setDescriptif($this->clean($event->getDescriptif()) ?: null)
-            ->setPhoneContacts($event->getPhoneContacts() ?: null)
-            ->setWebsiteContacts($event->getWebsiteContacts() ?: null)
-            ->setMailContacts($event->getMailContacts() ?: null)
-            ->setAdresse(mb_substr($event->getAdresse(), 0, 255) ?: null)
-            ->setCategorieManifestation(mb_substr($event->getCategorieManifestation(), 0, 128) ?: null)
-            ->setThemeManifestation(mb_substr($event->getThemeManifestation(), 0, 128) ?: null)
-            ->setTypeManifestation(mb_substr($event->getTypeManifestation(), 0, 128) ?: null)
-            ->setHoraires(mb_substr($event->getHoraires(), 0, 255) ?: null);
+        $dto->name = ($this->clean($dto->name) ?: null);
+        $dto->description = ($this->clean($dto->description) ?: null);
+        $dto->phoneContacts = ($dto->phoneContacts ?: null);
+        $dto->websiteContacts = ($dto->websiteContacts ?: null);
+        $dto->emailContacts = ($dto->emailContacts ?: null);
+        $dto->address = (mb_substr($dto->address, 0, 255) ?: null);
+        $dto->category = (mb_substr($dto->category, 0, 128) ?: null);
+        $dto->theme = (mb_substr($dto->theme, 0, 128) ?: null);
+        $dto->type = (mb_substr($dto->type, 0, 128) ?: null);
+        $dto->hours = (mb_substr($dto->hours, 0, 255) ?: null);
     }
 
     private function clean(?string $string): string

@@ -120,6 +120,50 @@ class CityRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param array<array<string, string>> $namesAndCountries
+     *
+     * @return City[]
+     */
+    public function findAllByNamesAndCountries(array $namesAndCountries): array
+    {
+        if (0 === \count($namesAndCountries)) {
+            return [];
+        }
+
+        $qb = parent::createQueryBuilder('c');
+
+        $wheres = [];
+        foreach (array_values($namesAndCountries) as $i => list($name, $country)) {
+            $cities = [];
+            $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $name);
+            $city = str_replace('’', "'", $city);
+            $cities[] = $city;
+            $cities[] = str_replace(' ', '-', $city);
+            $cities[] = str_replace('-', ' ', $city);
+            $cities[] = str_replace("'", '', $city);
+            $cities = array_unique($cities);
+
+            $wheres[] = sprintf(
+                '(c.name IN (:cities_%d) AND c.country = :country_%d)',
+                $i,
+                $i
+            );
+            $qb
+                ->setParameter(sprintf('cities_%d', $i), $cities)
+                ->setParameter(sprintf('country_%d', $i), $country);
+        }
+
+        return $qb
+            ->where(implode(' OR ', $wheres))
+            ->getQuery()
+            ->setCacheable(true)
+            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
+            ->enableResultCache()
+            ->useQueryCache(true)
+            ->getResult();
+    }
+
+    /**
      * @param scalar|null $slug
      */
     public function findOneBySlug($slug): ?City

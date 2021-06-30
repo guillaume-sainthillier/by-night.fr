@@ -10,16 +10,21 @@
 
 namespace App\Parser\Common;
 
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
+use App\Dto\EventDto;
+use App\Dto\PlaceDto;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
-use DateTime;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SowProgParser extends AbstractParser
 {
+    private const BASE_URI = 'https://agenda.sowprog.com';
     private HttpClientInterface $client;
 
     public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $sowprogUsername, string $sowprogPassword)
@@ -27,7 +32,7 @@ class SowProgParser extends AbstractParser
         parent::__construct($logger, $eventProducer, $reservationsHandler);
 
         $this->client = HttpClient::create([
-            'base_uri' => 'https://agenda.sowprog.com',
+            'base_uri' => self::BASE_URI,
             'auth_basic' => [$sowprogUsername, $sowprogPassword],
             'headers' => [
                 'Accept' => 'application/json',
@@ -52,80 +57,114 @@ class SowProgParser extends AbstractParser
         $response = $this->client->request('GET', '/rest/v1_2/scheduledEvents?modifiedSince=' . $modifiedSince);
         $events = $response->toArray();
 
-        foreach ($events['eventDescription'] as $event) {
-            foreach ($event['eventSchedule']['eventScheduleDate'] as $schedule) {
-                $the_event = $this->getInfoEvent($event, $schedule);
-                $this->publish($the_event);
+        foreach ($events['eventDescription'] as $eventAsArray) {
+            foreach ($eventAsArray['eventSchedule']['eventScheduleDate'] as $scheduledEventAsArray) {
+                $event = $this->arrayToDto($eventAsArray, $scheduledEventAsArray);
+                if (null === $event) {
+                    continue;
+                }
+                $this->publish($event);
             }
         }
     }
 
-    private function getInfoEvent(array $event, array $currentSchedule): array
+    private function arrayToDto(array $data, array $scheduleData): ?object
     {
-        $tab_infos = [
-            'nom' => $event['event']['title'],
-            'descriptif' => $event['event']['description'],
-            'source' => 'http://www.sowprog.com/',
-            'external_id' => 'SP-' . $event['id'] . '-' . $currentSchedule['id'],
-            'url' => $event['event']['picture'] ?? null,
-            'external_updated_at' => (new DateTime())->setTimestamp($event['modificationDate'] / 1_000),
-        ];
+        if (!isset($data['location'])) {
+            return null;
+        }
 
-        $tab_infos['type_manifestation'] = $event['event']['eventType']['label'];
-        $tab_infos['categorie_manifestation'] = $event['event']['eventStyle']['label'];
+        if (!isset($data['event'])) {
+            return null;
+        }
 
-        $tab_infos['date_debut'] = new DateTime($currentSchedule['date']);
-        $tab_infos['date_fin'] = new DateTime($currentSchedule['endDate']);
+        if ($data['location']['contact']) {
+            return null;
+        }
 
-        if ($currentSchedule['startHour'] && $currentSchedule['startHour'] !== $currentSchedule['endHour']) {
-            $tab_infos['horaires'] = sprintf(
+        $locationData = $data['location'];
+        $eventData = $data['event'];
+        $contactData = $locationData['contact'];
+
+        $hours = null;
+        if ($scheduleData['startHour'] && $scheduleData['startHour'] !== $scheduleData['endHour']) {
+            $hours = sprintf(
                 'De %s à %s',
-                str_replace(':', 'h', $currentSchedule['startHour']),
-                str_replace(':', 'h', $currentSchedule['endHour'])
+                str_replace(':', 'h', $scheduleData['startHour']),
+                str_replace(':', 'h', $scheduleData['endHour'])
             );
-        } elseif ($currentSchedule['startHour']) {
-            $tab_infos['horaires'] = sprintf(
+        } elseif ($scheduleData['startHour']) {
+            $hours = sprintf(
                 'À %s',
-                str_replace(':', 'h', $currentSchedule['startHour'])
+                str_replace(':', 'h', $scheduleData['startHour'])
             );
         }
 
-        foreach ($event['artist'] as $artist) {
-            $tab_infos['descriptif'] .= sprintf(
+        $description = null;
+        foreach ($data['artist'] as $artist) {
+            $description .= sprintf(
                 "\n<h2>%s</h2>\n%s",
                 $artist['name'],
                 $artist['description']
             );
         }
 
-        if (!empty($event['eventPrice'])) {
-            $prices = array_map(fn (array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $event['eventPrice']);
-            $tab_infos['tarif'] = implode(' - ', $prices);
+        $prices = null;
+        if (!empty($data['eventPrice'])) {
+            $prices = array_map(fn (array $price) => sprintf('%s : %d%s', $price['label'], $price['price'], 'EUR' === $price['currency'] ? '€' : $price['currency']), $data['eventPrice']);
+            $prices = implode(' - ', $prices);
         }
 
-        if (!empty($event['ticketStore'])) {
-            $tickets = array_map(fn (array $ticket) => $ticket['url'], $event['ticketStore']);
-            $tab_infos['websiteContacts'] = $tickets;
+        $websiteContacts = [];
+        if (!empty($data['ticketStore'])) {
+            $tickets = array_map(fn (array $ticket) => $ticket['url'], $data['ticketStore']);
+            $websiteContacts = $tickets;
         }
 
-        if ($event['location']) {
-            $location = $event['location'];
+        $event = new EventDto();
+        $event->name = $eventData['title'];
+        $event->description = $eventData['description'];
+        $event->source = 'https://www.sowprog.com/';
+        $event->externalId = sprintf('SP-%s-%s', $data['id'], $scheduleData['id']);
+        $event->imageUrl = $eventData['picture'] ?? null;
+        $event->externalUpdatedAt = (new DateTimeImmutable())->setTimestamp($data['modificationDate'] / 1_000);
+        $event->type = $eventData['eventType']['label'];
+        $event->category = $eventData['eventStyle']['label'];
+        $event->startDate = new DateTimeImmutable($scheduleData['date']);
+        $event->endDate = new DateTimeImmutable($scheduleData['endDate']);
+        $event->hours = $hours;
+        $event->websiteContacts = $websiteContacts;
+        $event->prices = $prices;
+        $event->latitude = (float) $contactData['lattitude'];
+        $event->longitude = (float) $contactData['longitude'];
 
-            $tab_infos['placeName'] = $location['name'];
-            $tab_infos['placeExternalId'] = 'SP-' . $location['id'];
+        $place = new PlaceDto();
+        $place->name = $locationData['name'];
+        $place->externalId = sprintf('SP-%s', $locationData['id']);
+        $place->street = trim(sprintf('%s %s', $contactData['addressLine1'], $contactData['addressLine2']));
+        $place->postalCode = $contactData['zipCode'];
 
-            if ($location['contact']) {
-                $contact = $event['location']['contact'];
-                $tab_infos['latitude'] = (float) $contact['lattitude'];
-                $tab_infos['longitude'] = (float) $contact['longitude'];
+        $city = new CityDto();
+        $city->name = $contactData['city'];
 
-                $tab_infos['placeStreet'] = trim(sprintf('%s %s', $contact['addressLine1'], $contact['addressLine2']));
-                $tab_infos['placePostalCode'] = $contact['zipCode'];
-                $tab_infos['placeCity'] = $contact['city'];
-                $tab_infos['placeCountryName'] = $contact['country'];
-            }
-        }
+        $country = new CountryDto();
+        $country->name = $contactData['country'];
 
-        return $tab_infos;
+        $city->country = $country;
+
+        $place->country = $country;
+        $place->city = $city;
+
+        $event->place = $place;
+
+        return $event;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCommandName(): string
+    {
+        return 'sowprog';
     }
 }
