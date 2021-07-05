@@ -18,9 +18,9 @@ class CountryEntityFactory implements EntityFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function supports(string $dtoClassName): bool
+    public function supports(string $resourceClass): bool
     {
-        return CountryDto::class === $dtoClassName;
+        return CountryDto::class === $resourceClass;
     }
 
     /**

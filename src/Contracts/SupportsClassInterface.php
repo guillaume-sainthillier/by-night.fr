@@ -10,14 +10,7 @@
 
 namespace App\Contracts;
 
-interface ExternalIdentifiableRepositoryInterface
+interface SupportsClassInterface
 {
-    /**
-     * Returns entities by.
-     *
-     * @param string[] $externalIds
-     *
-     * @return object[]
-     */
-    public function findAllByExternalIds(array $externalIds): array;
+    public function supports(string $resourceClass): bool;
 }

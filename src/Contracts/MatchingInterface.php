@@ -10,10 +10,9 @@
 
 namespace App\Contracts;
 
-interface DtoConverterInterface extends SupportsObjectInterface
+interface MatchingInterface
 {
-    /**
-     * Convert a stdClass object from RabbitMQ feeders to the corresponding DTO instance.
-     */
-    public function convert(object $object): object;
+    public function getEntity(): ?object;
+
+    public function getConfidence(): float;
 }

@@ -28,9 +28,9 @@ class CityEntityProvider implements EntityProviderInterface
         $this->cityRepository = $cityRepository;
     }
 
-    public function supports(string $dtoClassName): bool
+    public function supports(string $resourceClass): bool
     {
-        return CityDto::class === $dtoClassName;
+        return CityDto::class === $resourceClass;
     }
 
     public function prefetchEntities(array $dtos): void
@@ -55,11 +55,11 @@ class CityEntityProvider implements EntityProviderInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @param CityDto $dto
      */
     public function getEntity(object $dto): ?object
     {
+        \assert($dto instanceof CityDto);
+
         foreach ($this->cities as $city) {
             if ($dto->country->id !== $city->getCountry()->getId()) {
                 continue;
@@ -75,11 +75,11 @@ class CityEntityProvider implements EntityProviderInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @param City $entity
      */
     public function addEntity(object $entity): void
     {
+        \assert($entity instanceof City);
+
         $this->cities[] = $entity;
     }
 

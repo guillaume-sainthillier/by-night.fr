@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Contracts\ExternalIdentifiableInterface;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
 use DateTime;
@@ -37,7 +38,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *     @ORM\Index(name="event_categorie_manifestation_idx", columns={"categorie_manifestation"}),
  *     @ORM\Index(name="event_search_idx", columns={"place_id", "date_fin", "date_debut"}),
  *     @ORM\Index(name="event_top_soiree_idx", columns={"date_fin", "participations"}),
- *     @ORM\Index(name="event_external_id_idx", columns={"external_id"})
+ *     @ORM\Index(name="event_external_id_idx", columns={"external_id", "external_origin"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
  * @ORM\HasLifecycleCallbacks
@@ -45,7 +46,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @Vich\Uploadable
  * @EventConstraint
  */
-class Event
+class Event implements ExternalIdentifiableInterface
 {
     use EntityTimestampableTrait;
     public const INDEX_FROM = '-6 months';
@@ -63,6 +64,11 @@ class Event
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     private ?string $externalId = null;
+
+    /**
+     * @ORM\Column(type="string", length=63, nullable=true)
+     */
+    private $externalOrigin;
 
     /**
      * @Gedmo\Slug(fields={"nom"})
@@ -1247,6 +1253,18 @@ class Event
     public function setWebsiteContacts(?array $websiteContacts): self
     {
         $this->websiteContacts = $websiteContacts;
+
+        return $this;
+    }
+
+    public function getExternalOrigin(): ?string
+    {
+        return $this->externalOrigin;
+    }
+
+    public function setExternalOrigin(?string $externalOrigin): self
+    {
+        $this->externalOrigin = $externalOrigin;
 
         return $this;
     }

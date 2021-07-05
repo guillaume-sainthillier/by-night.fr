@@ -10,9 +10,10 @@
 
 namespace App\EntityProvider;
 
+use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\EntityProviderInterface;
 use App\Contracts\ExternalIdentifiableInterface;
-use App\Contracts\ExternalIdentifiableRepositoryInterface;
+use App\Contracts\ExternalIdentifiablesInterface;
 
 abstract class AbstractEntityProvider implements EntityProviderInterface
 {
@@ -30,19 +31,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
 
     public function prefetchEntities(array $dtos): void
     {
-        $externalIds = [];
-        foreach ($dtos as $dto) {
-            \assert($dto instanceof ExternalIdentifiableInterface);
-
-            if (null === $dto->getExternalId()) {
-                throw new \RuntimeException('Unable to find echantillon without an external ID');
-            }
-
-            $externalIds[$dto->getExternalId()] = true;
-        }
-
-        $externalIds = array_keys($externalIds);
-        $entities = $this->getRepository()->findAllByExternalIds($externalIds);
+        $entities = $this->getRepository()->findAllByDtos($dtos);
         foreach ($entities as $entity) {
             $this->addEntity($entity);
         }
@@ -53,10 +42,19 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
      */
     public function addEntity(object $entity): void
     {
-        \assert($entity instanceof ExternalIdentifiableInterface);
+        if ($entity instanceof ExternalIdentifiablesInterface) {
+            $externals = $entity->getExternalIdentifiables();
+        } elseif ($entity instanceof ExternalIdentifiableInterface) {
+            $externals = [$entity];
+        } else {
+            throw new \LogicException('Unable to fetch external ids from "%s" class', \get_class($entity));
+        }
 
-        if ($entity->getExternalId()) {
-            $this->entities[$entity->getExternalId()] = $entity;
+        foreach ($externals as $external) {
+            \assert($external instanceof ExternalIdentifiableInterface);
+            $key = $this->getKey($external);
+
+            $this->entities[$key] = $entity;
         }
     }
 
@@ -74,5 +72,10 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
         return $this->entities[$dto->getExternalId()];
     }
 
-    abstract protected function getRepository(): ExternalIdentifiableRepositoryInterface;
+    private function getKey(ExternalIdentifiableInterface $object): string
+    {
+        return sprintf('%s-%s', $object->getExternalId(), $object->getExternalOrigin());
+    }
+
+    abstract protected function getRepository(): DtoFindableRepositoryInterface;
 }

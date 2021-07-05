@@ -11,50 +11,49 @@
 namespace App\EntityProvider;
 
 use App\Contracts\EntityProviderInterface;
-use App\Dto\CityDto;
 use App\Dto\PlaceDto;
-use App\Entity\City;
 use App\Entity\Place;
+use App\Handler\ComparatorHandler;
 use App\Repository\PlaceRepository;
-use App\Utils\SluggerUtils;
 
 class PlaceEntityProvider implements EntityProviderInterface
 {
     private PlaceRepository $placeRepository;
 
+    private ComparatorHandler $comparatorHandler;
+
     /** @var Place[] */
     private array $places = [];
 
-    public function __construct(PlaceRepository $placeRepository)
+    public function __construct(PlaceRepository $placeRepository, ComparatorHandler $comparatorHandler)
     {
         $this->placeRepository = $placeRepository;
+        $this->comparatorHandler = $comparatorHandler;
     }
 
-    public function supports(string $dtoClassName): bool
+    public function supports(string $resourceClass): bool
     {
-        return PlaceDto::class === $dtoClassName;
+        return PlaceDto::class === $resourceClass;
     }
 
     public function prefetchEntities(array $dtos): void
     {
-        dd($dtos);
+        $places = $this->placeRepository->findAllByDtos($dtos);
+        foreach ($places as $place) {
+            $this->addEntity($place);
+        }
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @param CityDto $dto
      */
     public function getEntity(object $dto): ?object
     {
-        foreach ($this->cities as $city) {
-            if ($dto->country->id !== $city->getCountry()->getId()) {
-                continue;
-            }
+        $comparator = $this->comparatorHandler->getComparator($dto);
+        $matching = $comparator->getMostMatching($this->places, $dto);
 
-            if (SluggerUtils::generateSlug($dto->name) === $city->getSlug()) {
-                return $city;
-            }
+        if (null !== $matching && $matching->getConfidence() >= 90.0) {
+            return $matching->getEntity();
         }
 
         return null;
@@ -62,12 +61,10 @@ class PlaceEntityProvider implements EntityProviderInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @param City $entity
      */
     public function addEntity(object $entity): void
     {
-        $this->cities[] = $entity;
+        $this->places[] = $entity;
     }
 
     public function clear(): void

@@ -209,8 +209,8 @@ class DataTourismeParser extends AbstractParser
         $event->externalUpdatedAt = $updatedAt;
         $event->name = $this->getDataValue($datas, '[rdfs:label][fr][0]');
         $event->description = $description;
-        $event->type = implode(', ', $typesManifestation) ?: null;
-        $event->category = implode(', ', $categoriesManifestation) ?: null;
+        $event->type = implode(', ', $typesManifestation);
+        $event->category = implode(', ', $categoriesManifestation);
         $event->source = $datas['@id'];
         $event->latitude = $latitude;
         $event->longitude = $longitude;

@@ -10,10 +10,10 @@
 
 namespace App\Contracts;
 
-interface DtoConverterInterface extends SupportsObjectInterface
+interface ExternalIdentifiablesInterface
 {
     /**
-     * Convert a stdClass object from RabbitMQ feeders to the corresponding DTO instance.
+     * @return ExternalIdentifiableInterface[] the external resources
      */
-    public function convert(object $object): object;
+    public function getExternalIdentifiables(): iterable;
 }

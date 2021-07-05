@@ -10,13 +10,8 @@
 
 namespace App\Contracts;
 
-interface EntityFactoryInterface
+interface EntityFactoryInterface extends SupportsClassInterface
 {
-    /**
-     * @return bool true if current factory supports this class name, false otherwise
-     */
-    public function supports(string $dtoClassName): bool;
-
     /**
      * Create or update the entity from a DTO instance.
      */

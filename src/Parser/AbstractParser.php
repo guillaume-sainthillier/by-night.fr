@@ -55,8 +55,17 @@ abstract class AbstractParser implements ParserInterface
         $eventDto->parserName = static::getParserName();
         $eventDto->parserVersion = static::getParserVersion();
 
+        $this->sanitize($eventDto);
         $this->eventProducer->scheduleEvent($eventDto);
         ++$this->parsedEvents;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getParsedEvents(): int
+    {
+        return $this->parsedEvents;
     }
 
     protected function logException(Throwable $exception, array $context = []): void
@@ -67,11 +76,30 @@ abstract class AbstractParser implements ParserInterface
         ]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getParsedEvents(): int
+    private function sanitize(object $object): void
     {
-        return $this->parsedEvents;
+        foreach ($object as $key => $value) {
+            $object->{$key} = $this->getSanitizedValue($value);
+        }
+    }
+
+    private function getSanitizedValue($value)
+    {
+        if (\is_object($value)) {
+            $this->sanitize($value);
+        } elseif (\is_array($value)) {
+            foreach ($value as $key => $itemValue) {
+                $itemValue = $this->getSanitizedValue($itemValue);
+                if (null !== $itemValue) {
+                    $value[$key] = $itemValue;
+                } else {
+                    unset($value[$key]);
+                }
+            }
+        } elseif (\is_string($value) && '' === trim($value)) {
+            $value = null;
+        }
+
+        return $value;
     }
 }

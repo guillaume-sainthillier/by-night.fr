@@ -11,7 +11,7 @@
 namespace App\Repository;
 
 use App\App\Location;
-use App\Contracts\ExternalIdentifiableRepositoryInterface;
+use App\Contracts\DtoFindableRepositoryInterface;
 use App\Entity\Event;
 use App\Entity\User;
 use DateTime;
@@ -27,8 +27,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method Event[]    findAll()
  * @method Event[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class EventRepository extends ServiceEntityRepository implements ExternalIdentifiableRepositoryInterface
+class EventRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
+    use DtoFindableTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Event::class);
@@ -39,12 +41,13 @@ class EventRepository extends ServiceEntityRepository implements ExternalIdentif
      *
      * @return Event[]
      */
-    public function findAllByExternalIds(array $externalIds): array
+    public function findAllByDtos(array $dtos): array
     {
-        return $this
-            ->createQueryBuilder('e')
-            ->where('e.externalId IN (:externalIds)')
-            ->setParameter('externalIds', $externalIds)
+        $qb = parent::createQueryBuilder('e');
+
+        $this->addDtosToQueryBuilding($qb, 'e', $dtos);
+
+        return $qb
             ->getQuery()
             ->execute();
     }
@@ -78,7 +81,8 @@ class EventRepository extends ServiceEntityRepository implements ExternalIdentif
     {
         $qb = parent::createQueryBuilder($alias, $indexBy);
 
-        return $qb->select($alias, 'p')
+        return $qb
+            ->select($alias, 'p')
             ->addSelect('c')
             ->addSelect('c2')
             ->join($alias . '.place', 'p')

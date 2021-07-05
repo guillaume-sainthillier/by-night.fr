@@ -16,15 +16,23 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ParserDataRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="parser_data_idx", columns={"external_id", "external_origin"})
+ * })
  */
 class ParserData
 {
     use EntityIdentityTrait;
 
     /**
-     * @ORM\Column(type="string", length=127, unique=true)
+     * @ORM\Column(type="string", length=127)
      */
     private ?string $externalId = null;
+
+    /**
+     * @ORM\Column(type="string", length=63)
+     */
+    private ?string $externalOrigin = null;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -116,6 +124,18 @@ class ParserData
     public function setParserVersion(?string $parserVersion): self
     {
         $this->parserVersion = $parserVersion;
+
+        return $this;
+    }
+
+    public function getExternalOrigin(): ?string
+    {
+        return $this->externalOrigin;
+    }
+
+    public function setExternalOrigin(string $externalOrigin): self
+    {
+        $this->externalOrigin = $externalOrigin;
 
         return $this;
     }

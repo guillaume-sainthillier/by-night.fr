@@ -43,6 +43,7 @@ services:
             $entityProviders: !tagged_iterator app.entity_provider
             $dtoConverters: !tagged_iterator app.dto_converter
             $entityFactories: !tagged_iterator app.entity_factory
+            $comparators: !tagged_iterator app.comparator
 
     _instanceof:
         App\Contracts\ParserInterface:
@@ -53,6 +54,8 @@ services:
             tags: [ 'app.entity_factory' ]
         App\Contracts\DtoConverterInterface:
             tags: [ 'app.dto_converter' ]
+        App\Contracts\ComparatorInterface:
+            tags: [ 'app.comparator' ]
 
     App\:
         resource: '../src/*'

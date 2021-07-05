@@ -10,7 +10,7 @@
 
 namespace App\EntityProvider;
 
-use App\Contracts\ExternalIdentifiableRepositoryInterface;
+use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\EventDto;
 use App\Repository\EventRepository;
 
@@ -23,12 +23,12 @@ class EventEntityProvider extends AbstractEntityProvider
         $this->eventRepository = $eventRepository;
     }
 
-    public function supports(string $dtoClassName): bool
+    public function supports(string $resourceClass): bool
     {
-        return EventDto::class === $dtoClassName;
+        return EventDto::class === $resourceClass;
     }
 
-    protected function getRepository(): ExternalIdentifiableRepositoryInterface
+    protected function getRepository(): DtoFindableRepositoryInterface
     {
         return $this->eventRepository;
     }

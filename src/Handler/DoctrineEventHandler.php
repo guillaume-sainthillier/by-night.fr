@@ -354,24 +354,23 @@ class DoctrineEventHandler
 
                 foreach ($chunk as $i => $dto) {
                     $entity = $entityProvider->getEntity($dto);
+                    $isFactoryOptional = null !== $previousDependencyCatalogue && $previousDependencyCatalogue->has($dto) && $previousDependencyCatalogue->get($dto)->isOptional();
                     $isNewEntity = null === $entity;
 
-                    //We don't want to create an empty entity into the database if existing reference is not found
-                    if ($isNewEntity
-                        && null !== $previousDependencyCatalogue
-                        && $previousDependencyCatalogue->has($dto)
-                        && $previousDependencyCatalogue->get($dto)->isOptional()) {
+                    if (!$isNewEntity) {
+                        $dto->id = $entity->getId();
+                    }
+
+                    //We don't create an empty entity into database if existing reference is not found
+                    if ($isFactoryOptional) {
                         $entities[$i] = null;
                         continue;
                     }
 
                     $entity = $factory->create($entity, $dto);
-
                     $this->entityManager->persist($entity);
                     if ($isNewEntity) {
                         $entityProvider->addEntity($entity);
-                    } else {
-                        $dto->id = $entity->getId();
                     }
                     $entities[$i] = $entity;
                 }

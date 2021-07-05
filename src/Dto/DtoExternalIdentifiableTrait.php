@@ -15,8 +15,16 @@ trait DtoExternalIdentifiableTrait
     /** @var string|null */
     public $externalId;
 
+    /** @var string|null */
+    public $externalOrigin;
+
     public function getExternalId(): ?string
     {
         return $this->externalId;
+    }
+
+    public function getExternalOrigin(): ?string
+    {
+        return $this->externalOrigin;
     }
 }

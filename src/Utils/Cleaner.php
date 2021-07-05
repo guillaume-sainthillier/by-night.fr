@@ -47,7 +47,8 @@ class Cleaner
 
     public function cleanPlace(Place $place): void
     {
-        $place->setNom($this->cleanNormalString($place->getNom()) ?: null)
+        $place
+            ->setNom($this->cleanNormalString($place->getNom()) ?: null)
             ->setRue($this->cleanNormalString($place->getRue()) ?: null)
             ->setLatitude((float) ($this->util->replaceNonNumericChars($place->getLatitude())) ?: null)
             ->setLongitude((float) ($this->util->replaceNonNumericChars($place->getLongitude())) ?: null)

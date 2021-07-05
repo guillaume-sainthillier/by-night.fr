@@ -10,10 +10,14 @@
 
 namespace App\Contracts;
 
-interface DtoConverterInterface extends SupportsObjectInterface
+interface DtoFindableRepositoryInterface
 {
     /**
-     * Convert a stdClass object from RabbitMQ feeders to the corresponding DTO instance.
+     * Returns entities by.
+     *
+     * @param string[] $dtos
+     *
+     * @return object[]
      */
-    public function convert(object $object): object;
+    public function findAllByDtos(array $dtos): array;
 }

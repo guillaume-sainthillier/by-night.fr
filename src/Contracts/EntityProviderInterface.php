@@ -10,13 +10,8 @@
 
 namespace App\Contracts;
 
-interface EntityProviderInterface
+interface EntityProviderInterface extends SupportsClassInterface
 {
-    /**
-     * @return bool true if current provider supports this class name, false otherwise
-     */
-    public function supports(string $dtoClassName): bool;
-
     /**
      * Prefetch all entities for given objects.
      */

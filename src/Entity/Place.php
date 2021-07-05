@@ -11,7 +11,11 @@
 namespace App\Entity;
 
 use App\App\Location;
+use App\Contracts\ExternalIdentifiableInterface;
+use App\Contracts\ExternalIdentifiablesInterface;
 use App\Reject\Reject;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -30,7 +34,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ExclusionPolicy("all")
  * @ORM\Entity
  */
-class Place
+class Place implements ExternalIdentifiablesInterface
 {
     use EntityTimestampableTrait;
 
@@ -44,25 +48,34 @@ class Place
     private ?int $id = null;
 
     /**
+     * @ORM\OneToMany(targetEntity=PlaceMetadata::class, mappedBy="place", cascade={"persist", "remove"})
+     */
+    private $metadatas;
+
+    /**
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     private ?string $externalId = null;
+
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
     private ?string $ville = null;
+
     /**
      * @ORM\Column(type="string", length=7, nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
     private ?string $codePostal = null;
+
     /**
      * @ORM\Column(type="string", length=256, nullable=true)
      */
     private ?string $facebookId = null;
+
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\City", fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
@@ -70,7 +83,9 @@ class Place
      * @Expose
      */
     private ?City $city = null;
+
     private ?ZipCity $zipCity = null;
+
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Country")
      * @ORM\JoinColumn(nullable=true)
@@ -94,18 +109,21 @@ class Place
      * @Expose
      */
     private ?string $rue = null;
+
     /**
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
     private ?float $latitude = null;
+
     /**
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"list_event"})
      * @Expose
      */
     private ?float $longitude = null;
+
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Vous devez indiquer le lieu de votre événement")
@@ -113,19 +131,46 @@ class Place
      * @Expose
      */
     private ?string $nom = null;
+
     /**
      * @Gedmo\Slug(fields={"nom"})
      * @ORM\Column(type="string", length=255, unique=true)
      */
     private ?string $slug = null;
+
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private ?string $path = null;
+
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private ?string $url = null;
+
+    public function __construct()
+    {
+        $this->metadatas = new ArrayCollection();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getExternalIdentifiables(): iterable
+    {
+        return $this->metadatas;
+    }
+
+    public function hasMetadata(ExternalIdentifiableInterface $externalIdentifiable): bool
+    {
+        foreach ($this->getExternalIdentifiables() as $metadata) {
+            if ($metadata->getExternalId() === $externalIdentifiable->getExternalId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public function getLocationSlug(): string
     {
@@ -365,6 +410,36 @@ class Place
     public function setLongitude(?float $longitude): self
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PlaceMetadata[]
+     */
+    public function getMetadatas(): Collection
+    {
+        return $this->metadatas;
+    }
+
+    public function addMetadata(PlaceMetadata $metadata): self
+    {
+        if (!$this->metadatas->contains($metadata)) {
+            $this->metadatas[] = $metadata;
+            $metadata->setPlace($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMetadata(PlaceMetadata $metadata): self
+    {
+        if ($this->metadatas->removeElement($metadata)) {
+            // set the owning side to null (unless already changed)
+            if ($metadata->getPlace() === $this) {
+                $metadata->setPlace(null);
+            }
+        }
 
         return $this;
     }

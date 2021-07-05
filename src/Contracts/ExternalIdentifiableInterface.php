@@ -18,4 +18,11 @@ interface ExternalIdentifiableInterface
      * @return string the external id of object
      */
     public function getExternalId(): ?string;
+
+    /**
+     * Tells how to get the external source of an object (entity or dto).
+     *
+     * @return string the external source of object
+     */
+    public function getExternalOrigin(): ?string;
 }

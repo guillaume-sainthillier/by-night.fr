@@ -27,9 +27,9 @@ class CountryEntityProvider implements EntityProviderInterface
         $this->countryRepository = $countryRepository;
     }
 
-    public function supports(string $dtoClassName): bool
+    public function supports(string $resourceClass): bool
     {
-        return CountryDto::class === $dtoClassName;
+        return CountryDto::class === $resourceClass;
     }
 
     public function prefetchEntities(array $dtos): void
