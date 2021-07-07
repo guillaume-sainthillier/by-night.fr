@@ -10,6 +10,8 @@
 
 namespace App\Repository;
 
+use App\Contracts\DtoFindableRepositoryInterface;
+use App\Dto\CityDto;
 use App\Entity\City;
 use App\Entity\Country;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -23,7 +25,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method City[]    findAll()
  * @method City[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CityRepository extends ServiceEntityRepository
+class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -37,6 +39,69 @@ class CityRepository extends ServiceEntityRepository
             ->addSelect('country')
             ->leftJoin($alias . '.parent', 'p')
             ->join($alias . '.country', 'country');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findAllByDtos(array $dtos): array
+    {
+        $wheres = [];
+        $groupedWheres = [];
+
+        foreach ($dtos as $dto) {
+            \assert($dto instanceof CityDto);
+
+            if (null === $dto->name || null === $dto->country || null === $dto->country->id) {
+                continue;
+            }
+
+            $cities = [];
+            $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $dto->name);
+            $city = str_replace('’', "'", $city);
+            $cities[] = $city;
+            $cities[] = str_replace(' ', '-', $city);
+            $cities[] = str_replace('-', ' ', $city);
+            $cities[] = str_replace("'", '', $city);
+            $cities = array_unique($cities);
+
+            foreach ($cities as $city) {
+                $groupedWheres[$dto->country->id][$city] = true;
+            }
+        }
+
+        if (0 === \count($groupedWheres)) {
+            return [];
+        }
+
+        $queryBuilder = parent::createQueryBuilder('c')
+            ->addSelect('country')
+            ->join('c.country', 'country');
+
+        $i = 1;
+        foreach ($groupedWheres as $countryId => $cities) {
+            $countryPlaceholder = sprintf('country_%d', $i);
+            $namesPlaceholder = sprintf('names_%d', $i);
+            $wheres[] = sprintf(
+                '(c.country = :%s AND c.name IN(:%s))',
+                $countryPlaceholder,
+                $namesPlaceholder
+            );
+
+            $queryBuilder
+                ->setParameter($countryPlaceholder, $countryId)
+                ->setParameter($namesPlaceholder, array_keys($cities));
+            ++$i;
+        }
+
+        return $queryBuilder
+            ->where(implode(' OR ', $wheres))
+            ->getQuery()
+            ->setCacheable(true)
+            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
+            ->enableResultCache()
+            ->useQueryCache(true)
+            ->getResult();
     }
 
     public function findAllSitemap(): iterable
@@ -111,50 +176,6 @@ class CityRepository extends ServiceEntityRepository
         }
 
         return $qb
-            ->getQuery()
-            ->setCacheable(true)
-            ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)
-            ->enableResultCache()
-            ->useQueryCache(true)
-            ->getResult();
-    }
-
-    /**
-     * @param array<array<string, string>> $namesAndCountries
-     *
-     * @return City[]
-     */
-    public function findAllByNamesAndCountries(array $namesAndCountries): array
-    {
-        if (0 === \count($namesAndCountries)) {
-            return [];
-        }
-
-        $qb = parent::createQueryBuilder('c');
-
-        $wheres = [];
-        foreach (array_values($namesAndCountries) as $i => list($name, $country)) {
-            $cities = [];
-            $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $name);
-            $city = str_replace('’', "'", $city);
-            $cities[] = $city;
-            $cities[] = str_replace(' ', '-', $city);
-            $cities[] = str_replace('-', ' ', $city);
-            $cities[] = str_replace("'", '', $city);
-            $cities = array_unique($cities);
-
-            $wheres[] = sprintf(
-                '(c.name IN (:cities_%d) AND c.country = :country_%d)',
-                $i,
-                $i
-            );
-            $qb
-                ->setParameter(sprintf('cities_%d', $i), $cities)
-                ->setParameter(sprintf('country_%d', $i), $country);
-        }
-
-        return $qb
-            ->where(implode(' OR ', $wheres))
             ->getQuery()
             ->setCacheable(true)
             ->setCacheMode(ClassMetadata::CACHE_USAGE_READ_ONLY)

@@ -17,40 +17,38 @@ trait DtoFindableTrait
 {
     protected function addDtosToQueryBuilding(QueryBuilder $queryBuilder, $rootAlias, array $dtos): void
     {
-        $alreadyAdded = [];
-        $wheres = [];
-        $i = 0;
+        $groupedWheres = [];
         foreach ($dtos as $dto) {
             \assert($dto instanceof ExternalIdentifiableInterface);
 
-            if (null === $dto->getExternalId() && null === $dto->getExternalOrigin()) {
+            if (null === $dto->getExternalId() || null === $dto->getExternalOrigin()) {
                 continue;
             }
 
-            $key = sprintf('%s.%s', $dto->getExternalId(), $dto->getExternalOrigin());
-            if (isset($alreadyAdded[$key])) {
-                continue;
-            }
+            $groupedWheres[$dto->getExternalOrigin()][$dto->getExternalId()] = true;
+        }
 
-            $alreadyAdded[$key] = true;
-            $externalIdPlaceholder = sprintf('externalId_%d', $i);
+        if (0 === \count($groupedWheres)) {
+            return;
+        }
+
+        $i = 1;
+        $wheres = [];
+        foreach ($groupedWheres as $externalOrigin => $ids) {
             $externalOriginPlaceholder = sprintf('externalOrigin_%d', $i);
+            $externalIdsPlaceholder = sprintf('externalIds_%d', $i);
             $wheres[] = sprintf(
-                '(%s.externalId = :%s AND %s.externalOrigin = :%s)',
+                '(%s.externalOrigin = :%s AND %s.externalId IN(:%s))',
                 $rootAlias,
-                $externalIdPlaceholder,
+                $externalOriginPlaceholder,
                 $rootAlias,
-                $externalOriginPlaceholder
+                $externalIdsPlaceholder
             );
 
             $queryBuilder
-                ->setParameter($externalIdPlaceholder, $dto->getExternalId())
-                ->setParameter($externalOriginPlaceholder, $dto->getExternalOrigin());
+                ->setParameter($externalOriginPlaceholder, $externalOrigin)
+                ->setParameter($externalIdsPlaceholder, array_keys($ids));
             ++$i;
-        }
-
-        if (0 === \count($wheres)) {
-            return;
         }
 
         $queryBuilder->orWhere(implode(' OR ', $wheres));

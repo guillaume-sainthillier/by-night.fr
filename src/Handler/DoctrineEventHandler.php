@@ -376,12 +376,13 @@ class DoctrineEventHandler
                 }
 
                 if (!$alreadyInTransaction) {
-                    $entityProvider->clear();
                     $this->entityManager->flush();
                     $this->entityManager->clear();
+                    $entityProvider->clear();
                     if ($previousDependencyCatalogue) {
                         $previousDependencyCatalogue->clear();
                     }
+                    dump('CLEAR', $dtoClassName);
                     //dump(MemoryUtils::getMemoryUsage(), MemoryUtils::getPeakMemoryUsage());
                 }
             }

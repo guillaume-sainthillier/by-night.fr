@@ -20,10 +20,10 @@ abstract class AbstractComparator implements ComparatorInterface
 {
     public function getMostMatching(iterable $entities, object $dto): ?MatchingInterface
     {
-        \assert($dto instanceof ExternalIdentifiableInterface);
-
         //Search by exact matching only
-        if (null !== $dto->getExternalId() && null !== $dto->getExternalOrigin()) {
+        if ($dto instanceof ExternalIdentifiableInterface &&
+            null !== $dto->getExternalId() &&
+            null !== $dto->getExternalOrigin()) {
             foreach ($entities as $entity) {
                 if ($entity instanceof ExternalIdentifiablesInterface) {
                     $externals = $entity->getExternalIdentifiables();
@@ -34,7 +34,8 @@ abstract class AbstractComparator implements ComparatorInterface
                 }
 
                 foreach ($externals as $external) {
-                    if ($external->getExternalId() === $dto->getExternalId()) {
+                    if ($external->getExternalId() === $dto->getExternalId() &&
+                        $external->getExternalOrigin() === $dto->getExternalOrigin()) {
                         return new Matching($entity, 100.0);
                     }
                 }

@@ -164,7 +164,8 @@ class Place implements ExternalIdentifiablesInterface
     public function hasMetadata(ExternalIdentifiableInterface $externalIdentifiable): bool
     {
         foreach ($this->getExternalIdentifiables() as $metadata) {
-            if ($metadata->getExternalId() === $externalIdentifiable->getExternalId()) {
+            if ($metadata->getExternalId() === $externalIdentifiable->getExternalId() &&
+                $metadata->getExternalOrigin() === $externalIdentifiable->getExternalOrigin()) {
                 return true;
             }
         }

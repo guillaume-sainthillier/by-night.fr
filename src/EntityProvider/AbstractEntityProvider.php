@@ -12,8 +12,6 @@ namespace App\EntityProvider;
 
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Contracts\EntityProviderInterface;
-use App\Contracts\ExternalIdentifiableInterface;
-use App\Contracts\ExternalIdentifiablesInterface;
 
 abstract class AbstractEntityProvider implements EntityProviderInterface
 {
@@ -23,12 +21,14 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function clear(): void
+    public function getChunks(array $dtos, int $defaultSize): array
     {
-        unset($this->entities); // Call GC
-        $this->entities = [];
+        return array_chunk($dtos, $defaultSize, true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function prefetchEntities(array $dtos): void
     {
         $entities = $this->getRepository()->findAllByDtos($dtos);
@@ -42,39 +42,16 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
      */
     public function addEntity(object $entity): void
     {
-        if ($entity instanceof ExternalIdentifiablesInterface) {
-            $externals = $entity->getExternalIdentifiables();
-        } elseif ($entity instanceof ExternalIdentifiableInterface) {
-            $externals = [$entity];
-        } else {
-            throw new \LogicException('Unable to fetch external ids from "%s" class', \get_class($entity));
-        }
-
-        foreach ($externals as $external) {
-            \assert($external instanceof ExternalIdentifiableInterface);
-            $key = $this->getKey($external);
-
-            $this->entities[$key] = $entity;
-        }
+        $this->entities[] = $entity;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getEntity(object $dto): ?object
+    public function clear(): void
     {
-        \assert($dto instanceof ExternalIdentifiableInterface);
-
-        if (!isset($this->entities[$dto->getExternalId()])) {
-            return null;
-        }
-
-        return $this->entities[$dto->getExternalId()];
-    }
-
-    private function getKey(ExternalIdentifiableInterface $object): string
-    {
-        return sprintf('%s-%s', $object->getExternalId(), $object->getExternalOrigin());
+        unset($this->entities); // Call GC
+        $this->entities = [];
     }
 
     abstract protected function getRepository(): DtoFindableRepositoryInterface;

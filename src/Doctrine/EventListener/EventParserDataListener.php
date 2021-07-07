@@ -29,11 +29,12 @@ class EventParserDataListener
     public function preRemove(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
-        if (!$entity instanceof Event || null === $entity->getExternalId()) {
+        if (!$entity instanceof Event || null === $entity->getExternalId() || null === $entity->getExternalOrigin()) {
             return;
         }
         $entityManager = $args->getEntityManager();
         $parserData = $this->parserDataRepository->findOneBy([
+            'externalOrigin' => $entity->getExternalOrigin(),
             'externalId' => $entity->getExternalId(),
         ]);
 

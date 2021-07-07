@@ -13,6 +13,13 @@ namespace App\Contracts;
 interface EntityProviderInterface extends SupportsClassInterface
 {
     /**
+     * Generate chunks based on internal prefetching method
+     *
+     * @return object[][]
+     */
+    public function getChunks(array $dtos, int $defaultSize): array;
+
+    /**
      * Prefetch all entities for given objects.
      */
     public function prefetchEntities(array $dtos): void;

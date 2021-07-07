@@ -10,21 +10,21 @@
 
 namespace App\EntityProvider;
 
-use App\Contracts\EntityProviderInterface;
+use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CountryDto;
-use App\Entity\Country;
+use App\Handler\ComparatorHandler;
 use App\Repository\CountryRepository;
 
-class CountryEntityProvider implements EntityProviderInterface
+class CountryEntityProvider extends AbstractEntityProvider
 {
     private CountryRepository $countryRepository;
 
-    /** @var Country[] */
-    private array $countries = [];
+    private ComparatorHandler $comparatorHandler;
 
-    public function __construct(CountryRepository $countryRepository)
+    public function __construct(CountryRepository $countryRepository, ComparatorHandler $comparatorHandler)
     {
         $this->countryRepository = $countryRepository;
+        $this->comparatorHandler = $comparatorHandler;
     }
 
     public function supports(string $resourceClass): bool
@@ -32,45 +32,16 @@ class CountryEntityProvider implements EntityProviderInterface
         return CountryDto::class === $resourceClass;
     }
 
-    public function prefetchEntities(array $dtos): void
-    {
-        $perIds = [];
-        $perNames = [];
-
-        /** @var CountryDto $dto */
-        foreach ($dtos as $dto) {
-            if (null !== $dto->code) {
-                $perIds[$dto->code] = true;
-            } elseif (null !== $dto->name) {
-                $perNames[$dto->name] = true;
-            }
-        }
-
-        $countries = $this->countryRepository->findAllByIdsOrNames(array_keys($perIds), array_keys($perNames));
-        foreach ($countries as $country) {
-            $this->addEntity($country);
-        }
-    }
-
     /**
      * {@inheritDoc}
-     *
-     * @param CountryDto $dto
      */
     public function getEntity(object $dto): ?object
     {
-        foreach ($this->countries as $country) {
-            if ($country->getId() === $dto->code) {
-                return $country;
-            }
+        $comparator = $this->comparatorHandler->getComparator($dto);
+        $matching = $comparator->getMostMatching($this->entities, $dto);
 
-            if ($country->getName() === $dto->name) {
-                return $country;
-            }
-
-            if ($country->getDisplayName() === $dto->name) {
-                return $country;
-            }
+        if (null !== $matching && $matching->getConfidence() >= 100.0) {
+            return $matching->getEntity();
         }
 
         return null;
@@ -78,22 +49,9 @@ class CountryEntityProvider implements EntityProviderInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @param Country $entity
      */
-    public function addEntity(object $entity): void
+    protected function getRepository(): DtoFindableRepositoryInterface
     {
-        //dump(__METHOD__, $entity);
-        $this->countries[] = $entity;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function clear(): void
-    {
-        //dump(__METHOD__);
-        unset($this->countries); // Call GC
-        $this->countries = [];
+        return $this->countryRepository;
     }
 }

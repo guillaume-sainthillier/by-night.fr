@@ -47,35 +47,29 @@ class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepo
             ->leftJoin('p.metadatas', 'metadatas')
             ->leftJoin('p.city', 'city')
             ->leftJoin('p.country', 'country')
-            ->leftJoin('city.country', 'cityCountry')
-        ;
+            ->leftJoin('city.country', 'cityCountry');
 
-        $wheres = [];
-        $alreadyAdded = [];
-        $i = 1;
+        $cityWheres = [];
+        $countryWheres = [];
         foreach ($dtos as $dto) {
             \assert($dto instanceof PlaceDto);
 
             if (null !== $dto->city && null !== $dto->city->id) {
-                $key = sprintf('city.%s', $dto->city->id);
-                if (isset($alreadyAdded[$key])) {
-                    continue;
-                }
-                $alreadyAdded[$key] = true;
-                $cityPlaceholder = sprintf('city_%d', $i);
-                $wheres[] = sprintf('p.city = :%s', $cityPlaceholder);
-                $qb->setParameter($cityPlaceholder, $dto->city->id);
-                ++$i;
+                $cityWheres[$dto->city->id] = true;
             } elseif (null !== $dto->country && null !== $dto->country->id) {
-                $key = sprintf('country.%s', $dto->country->id);
-                if (isset($alreadyAdded[$key])) {
-                    continue;
-                }
-                $countryPlaceholder = sprintf('country_%d', $i);
-                $wheres[] = sprintf('(p.country = :%s AND p.city IS NULL)', $countryPlaceholder);
-                $qb->setParameter($countryPlaceholder, $dto->country->id);
-                ++$i;
+                $countryWheres[$dto->country->id] = true;
             }
+        }
+
+        $wheres = [];
+        if (\count($cityWheres) > 0) {
+            $wheres[] = 'p.city IN(:cities)';
+            $qb->setParameter('cities', array_keys($cityWheres));
+        }
+
+        if (\count($countryWheres) > 0) {
+            $wheres[] = 'p.country IN(:countries) AND p.city IS NULL';
+            $qb->setParameter('countries', array_keys($countryWheres));
         }
 
         if (\count($wheres) > 0) {

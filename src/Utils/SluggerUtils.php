@@ -15,7 +15,12 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class SluggerUtils
 {
-    private static ?AsciiSlugger $slugger = null;
+    private static ?SluggerInterface $slugger = null;
+
+    public function __construct(SluggerInterface $slugger)
+    {
+        self::$slugger = $slugger;
+    }
 
     public static function generateSlug(string $content): string
     {

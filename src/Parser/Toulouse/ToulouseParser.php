@@ -75,13 +75,13 @@ class ToulouseParser extends AbstractParser
             $endDate = new \DateTimeImmutable($tab[6]);
 
             $event = new EventDto();
-            $event->externalId = sprintf('TOU-%s', $tab[0]);
+            $event->externalId = $tab[0];
 
             $event->name = $nom;
             $event->description = $tab[4];
             $event->startDate = $startDate;
             $event->endDate = $endDate;
-            $event->hours = $tab[7];
+            $event->hours = implode('.', array_unique(explode('.', $tab[7])));
             $event->status = $tab[9];
             $event->latitude = (float) $tab[20];
             $event->longitude = (float) $tab[21];

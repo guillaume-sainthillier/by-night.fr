@@ -10,47 +10,29 @@
 
 namespace App\EntityProvider;
 
-use App\Contracts\EntityProviderInterface;
+use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CityDto;
-use App\Entity\City;
+use App\Handler\ComparatorHandler;
 use App\Repository\CityRepository;
-use App\Utils\SluggerUtils;
 
-class CityEntityProvider implements EntityProviderInterface
+class CityEntityProvider extends AbstractEntityProvider
 {
     private CityRepository $cityRepository;
 
-    /** @var City[] */
-    private array $cities = [];
+    private ComparatorHandler $comparatorHandler;
 
-    public function __construct(CityRepository $cityRepository)
+    public function __construct(CityRepository $cityRepository, ComparatorHandler $comparatorHandler)
     {
         $this->cityRepository = $cityRepository;
+        $this->comparatorHandler = $comparatorHandler;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function supports(string $resourceClass): bool
     {
         return CityDto::class === $resourceClass;
-    }
-
-    public function prefetchEntities(array $dtos): void
-    {
-        $namesAndCountries = [];
-        /** @var CityDto $dto */
-        foreach ($dtos as $dto) {
-            if (null === $dto->name || null === $dto->country || null === $dto->country->id) {
-                continue;
-            }
-
-            $key = sprintf('%s-%s', $dto->name, $dto->country->id);
-            $namesAndCountries[$key] = [$dto->name, $dto->country->id];
-        }
-
-        $cities = $this->cityRepository->findAllByNamesAndCountries($namesAndCountries);
-
-        foreach ($cities as $city) {
-            $this->addEntity($city);
-        }
     }
 
     /**
@@ -58,16 +40,11 @@ class CityEntityProvider implements EntityProviderInterface
      */
     public function getEntity(object $dto): ?object
     {
-        \assert($dto instanceof CityDto);
+        $comparator = $this->comparatorHandler->getComparator($dto);
+        $matching = $comparator->getMostMatching($this->entities, $dto);
 
-        foreach ($this->cities as $city) {
-            if ($dto->country->id !== $city->getCountry()->getId()) {
-                continue;
-            }
-
-            if (SluggerUtils::generateSlug($dto->name) === $city->getSlug()) {
-                return $city;
-            }
+        if (null !== $matching && $matching->getConfidence() >= 100.0) {
+            return $matching->getEntity();
         }
 
         return null;
@@ -76,16 +53,8 @@ class CityEntityProvider implements EntityProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function addEntity(object $entity): void
+    protected function getRepository(): DtoFindableRepositoryInterface
     {
-        \assert($entity instanceof City);
-
-        $this->cities[] = $entity;
-    }
-
-    public function clear(): void
-    {
-        unset($this->cities); // Call GC
-        $this->cities = [];
+        return $this->cityRepository;
     }
 }

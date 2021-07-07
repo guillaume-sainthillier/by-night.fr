@@ -54,6 +54,11 @@ abstract class AbstractParser implements ParserInterface
     {
         $eventDto->parserName = static::getParserName();
         $eventDto->parserVersion = static::getParserVersion();
+        $eventDto->externalOrigin = $this->getCommandName();
+
+        if (null !== $eventDto->place) {
+            $eventDto->place->externalOrigin = $eventDto->externalOrigin;
+        }
 
         $this->sanitize($eventDto);
         $this->eventProducer->scheduleEvent($eventDto);

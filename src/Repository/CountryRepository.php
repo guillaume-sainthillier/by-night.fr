@@ -10,6 +10,8 @@
 
 namespace App\Repository;
 
+use App\Contracts\DtoFindableRepositoryInterface;
+use App\Dto\CountryDto;
 use App\Entity\AdminZone1;
 use App\Entity\AdminZone2;
 use App\Entity\Country;
@@ -23,7 +25,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Country[]    findAll()
  * @method Country[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CountryRepository extends ServiceEntityRepository
+class CountryRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -73,27 +75,38 @@ class CountryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string[] $ids
-     * @param string[] $names
-     *
-     * @return Country[]
+     * {@inheritDoc}
      */
-    public function findAllByIdsOrNames(array $ids, array $names): array
+    public function findAllByDtos(array $dtos): array
     {
-        if (0 === \count($ids) && 0 === \count($names)) {
+        $wheres = [];
+        $idsWheres = [];
+        $namesWheres = [];
+
+        foreach ($dtos as $dto) {
+            \assert($dto instanceof CountryDto);
+
+            if (null !== $dto->code) {
+                $idsWheres[$dto->code] = true;
+            } elseif (null !== $dto->name) {
+                $namesWheres[strtolower($dto->name)] = true;
+            }
+        }
+
+        if (0 === \count($idsWheres) && 0 === \count($namesWheres)) {
             return [];
         }
 
         $qb = $this->createQueryBuilder('c');
 
-        $wheres = [];
-        if (\count($ids) > 0) {
+        if (\count($idsWheres) > 0) {
             $wheres[] = 'c.id IN (:ids)';
-            $qb->setParameter('ids', $ids);
+            $qb->setParameter('ids', array_keys($idsWheres));
         }
-        if (\count($names) > 0) {
+
+        if (\count($namesWheres) > 0) {
             $wheres[] = 'LOWER(c.name) IN(:names) OR LOWER(c.displayName) IN(:names) OR (c.id IN :names)';
-            $qb->setParameter('names', array_map('strtolower', $names));
+            $qb->setParameter('names', array_keys($namesWheres));
         }
 
         return $qb
