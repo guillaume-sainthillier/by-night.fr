@@ -51,6 +51,7 @@ class User implements UserInterface, Serializable
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\Length(max=180)
      */
     private ?string $email = null;
 
@@ -61,6 +62,7 @@ class User implements UserInterface, Serializable
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\Length(max=180)
      */
     private ?string $username = null;
 
@@ -98,6 +100,7 @@ class User implements UserInterface, Serializable
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max=255)
      * @Serializer\Groups({"list_user"})
      * @Expose
      */
@@ -105,13 +108,14 @@ class User implements UserInterface, Serializable
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max=255)
      * @Serializer\Groups({"list_user"})
      * @Expose
      */
     private ?string $lastname = null;
 
     /**
-     * @ORM\Column(type="string", length=127, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private ?string $description = null;
 
@@ -144,6 +148,8 @@ class User implements UserInterface, Serializable
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Url
+     * @Assert\Length(max=255)
      */
     private ?string $website = null;
 
