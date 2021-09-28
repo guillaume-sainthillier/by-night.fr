@@ -47,8 +47,9 @@ security:
     access_control:
         - { path: ^/login-social/service/eventbrite, roles: ROLE_ADMIN }
         - { path: ^/_administration, roles: ROLE_ADMIN }
-        - { path: ^/social, roles: IS_AUTHENTICATED_REMEMBERED }
-        - { path: ^/espace-perso, roles: IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/social, roles: ROLE_USER }
+        - { path: ^/espace-perso, roles: ROLE_USER }
+        - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login-social, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/inscription, roles: IS_AUTHENTICATED_ANONYMOUSLY }
