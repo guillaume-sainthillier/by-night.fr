@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -51,7 +51,7 @@ class ThumbController extends Controller
         $glide->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $glide->getImageResponse($path, $parameters);
-        } catch (InvalidArgumentException | FileNotFoundException $e) {
+        } catch (InvalidArgumentException|FileNotFoundException $e) {
             throw $this->createNotFoundException($e->getMessage(), $e);
         }
 
@@ -83,7 +83,7 @@ class ThumbController extends Controller
         $assetThumb->setResponseFactory(new SymfonyResponseFactory($request));
         try {
             $response = $assetThumb->getImageResponse($path, $parameters);
-        } catch (InvalidArgumentException | FileNotFoundException $e) {
+        } catch (InvalidArgumentException|FileNotFoundException $e) {
             throw $this->createNotFoundException($e->getMessage(), $e);
         }
 

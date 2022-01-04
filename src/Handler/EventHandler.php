@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -64,7 +64,7 @@ class EventHandler
             $response = $this->client->request('GET', $url);
             $content = $response->getContent();
             $this->uploadFile($event, $content);
-        } catch (TransportExceptionInterface | HttpExceptionInterface $e) {
+        } catch (TransportExceptionInterface|HttpExceptionInterface $e) {
             if ($e instanceof HttpExceptionInterface && 403 === $e->getResponse()->getStatusCode()) {
                 return;
             }
