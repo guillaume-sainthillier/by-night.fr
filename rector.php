@@ -59,5 +59,11 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set(AnnotationToAttributeRector::class)->configure([
         new AnnotationToAttribute('Vich\\UploaderBundle\\Mapping\\Annotation\\Uploadable'),
         new AnnotationToAttribute('Vich\\UploaderBundle\\Mapping\\Annotation\\UploadableField'),
+        new AnnotationToAttribute('JMS\\Serializer\\Annotation\\ExclusionPolicy'),
+        new AnnotationToAttribute('JMS\\Serializer\\Annotation\\Groups'),
+        new AnnotationToAttribute('JMS\\Serializer\\Annotation\\Expose'),
+        new AnnotationToAttribute('JMS\\Serializer\\Annotation\\Exclude'),
+        new AnnotationToAttribute('Gedmo\\Mapping\\Annotation\\Slug'),
+        new AnnotationToAttribute('Gedmo\\Mapping\\Annotation\\Timestampable'),
     ]);
 };

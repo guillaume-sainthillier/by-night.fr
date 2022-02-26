@@ -10,6 +10,7 @@
 
 namespace App\Form\Extension;
 
+use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormInterface;
@@ -58,9 +59,9 @@ class CollectionTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritDoc}
      *
-     * @psalm-return \Generator<int, CollectionType::class, mixed, void>
+     * @psalm-return Generator<int, CollectionType::class, mixed, void>
      */
-    public static function getExtendedTypes(): \Generator
+    public static function getExtendedTypes(): iterable
     {
         yield CollectionType::class;
     }

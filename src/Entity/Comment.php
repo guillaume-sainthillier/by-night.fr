@@ -10,55 +10,38 @@
 
 namespace App\Entity;
 
+use App\Repository\CommentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
- */
+#[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment implements Stringable
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
-
-    /**
-     * @ORM\Column(type="text")
-     */
     #[Assert\Length(min: 3, minMessage: 'Le commentaire doit faire au moins {{ limit }} caractères')]
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
+    #[ORM\Column(type: 'text')]
     private ?string $commentaire = null;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     protected bool $approuve = true;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="commentaires")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'commentaires')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Comment", inversedBy="reponses")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'reponses')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Comment $parent = null;
-
     /**
      * @var Collection<int, Comment>
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
-     * @ORM\OrderBy({"createdAt": "DESC"})
      */
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent', cascade: ['persist', 'remove'], fetch: 'EXTRA_LAZY')]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
     protected Collection $reponses;
 
     public function __construct()

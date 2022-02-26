@@ -10,25 +10,19 @@
 
 namespace App\Entity;
 
+use App\Repository\CityRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CityRepository", readOnly=true)
- * @ExclusionPolicy("NONE")
- */
+#[ORM\Entity(repositoryClass: CityRepository::class, readOnly: true)]
+#[ExclusionPolicy('NONE')]
 class City extends AdminZone
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\AdminZone", fetch="EAGER")
-     * @Groups({"list_city"})
-     */
+    #[ORM\ManyToOne(targetEntity: AdminZone::class, fetch: 'EAGER')]
+    #[Groups(['list_city'])]
     protected ?AdminZone $parent = null;
-
-    /**
-     * @Groups({"list_city"})
-     */
+    #[Groups(['list_city'])]
     protected ?Country $country = null;
 
     public function __toString()
@@ -57,8 +51,6 @@ class City extends AdminZone
 
     /**
      * Set parent.
-     *
-     * @return City
      */
     public function setParent(AdminZone $parent = null): self
     {

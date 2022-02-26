@@ -10,46 +10,27 @@
 
 namespace App\Entity;
 
+use App\Repository\ParserHistoryRepository;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\ParserHistoryRepository", readOnly=true)
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Entity(repositoryClass: ParserHistoryRepository::class, readOnly: true)]
+#[ORM\HasLifecycleCallbacks]
 class ParserHistory
 {
     use EntityIdentityTrait;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private DateTimeInterface $dateDebut;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private DateTimeInterface $dateFin;
-
-    /**
-     * @ORM\Column(type="string", length=127)
-     */
+    #[ORM\Column(type: 'string', length: 127)]
     private ?string $fromData = null;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $nouvellesSoirees = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $updateSoirees = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $explorations = 0;
 
     public function __construct()
@@ -58,9 +39,7 @@ class ParserHistory
         $this->dateFin = new DateTime();
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function majDateFin(): void
     {
         $this->dateFin = new DateTime();

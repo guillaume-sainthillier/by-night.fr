@@ -16,35 +16,20 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=PlaceMetadataRepository::class)
- * @ORM\Table(indexes={
- *     @ORM\Index(name="place_metadata_idx", columns={"external_id", "external_origin"})
- * })
- */
+#[ORM\Entity(repositoryClass: PlaceMetadataRepository::class)]
+#[ORM\Table]
+#[ORM\Index(name: 'place_metadata_idx', columns: ['external_id', 'external_origin'])]
 class PlaceMetadata implements ExternalIdentifiableInterface
 {
     use EntityIdentityTrait;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Place::class, inversedBy="metadatas")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: Place::class, inversedBy: 'metadatas')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Place $place = null;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private ?string $externalId = null;
-
-    /**
-     * @ORM\Column(type="string", length=63)
-     */
+    #[ORM\Column(type: 'string', length: 63)]
     private ?string $externalOrigin = null;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $externalUpdatedAt = null;
 
     public function getExternalId(): ?string

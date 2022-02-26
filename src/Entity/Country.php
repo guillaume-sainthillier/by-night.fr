@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Repository\CountryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
@@ -17,60 +18,35 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CountryRepository", readOnly=true)
- * @ExclusionPolicy("NONE")
- */
+#[ORM\Entity(repositoryClass: CountryRepository::class, readOnly: true)]
+#[ExclusionPolicy('NONE')]
 class Country implements Stringable
 {
-    /**
-     * @ORM\Column(type="string", length=2)
-     * @ORM\Id
-     * @Serializer\Groups({"list_event", "list_user", "list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 2)]
+    #[ORM\Id]
+    #[Serializer\Groups(['list_event', 'list_user', 'list_city'])]
     private ?string $id = null;
-
-    /**
-     * @Gedmo\Slug(fields={"name"}, prefix="c--")
-     * @ORM\Column(length=63, unique=true)
-     * @Exclude
-     */
+    #[ORM\Column(length: 63, unique: true)]
+    #[Exclude]
+    #[Gedmo\Slug(fields: ['name'], prefix: 'c--')]
     private ?string $slug = null;
-
-    /**
-     * @ORM\Column(type="string", length=5, nullable=true)
-     * @Exclude
-     */
+    #[ORM\Column(type: 'string', length: 5, nullable: true)]
+    #[Exclude]
     private ?string $locale = null;
-
-    /**
-     * @ORM\Column(type="string", length=63)
-     * @Serializer\Groups({"list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 63)]
+    #[Serializer\Groups(['list_city'])]
     private ?string $name = null;
-
-    /**
-     * @ORM\Column(type="string", length=63)
-     * @Serializer\Groups({"list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 63)]
+    #[Serializer\Groups(['list_city'])]
     private ?string $displayName = null;
-
-    /**
-     * @ORM\Column(type="string", length=63)
-     * @Serializer\Groups({"list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 63)]
+    #[Serializer\Groups(['list_city'])]
     private ?string $atDisplayName = null;
-
-    /**
-     * @ORM\Column(type="string", length=63)
-     * @Exclude
-     */
+    #[ORM\Column(type: 'string', length: 63)]
+    #[Exclude]
     private ?string $capital = null;
-
-    /**
-     * @ORM\Column(type="string", length=511, nullable=true)
-     * @Exclude
-     */
+    #[ORM\Column(type: 'string', length: 511, nullable: true)]
+    #[Exclude]
     private ?string $postalCodeRegex = null;
 
     public function __toString(): string
@@ -85,8 +61,6 @@ class Country implements Stringable
 
     /**
      * Set id.
-     *
-     * @return Country
      */
     public function setId(string $id): self
     {

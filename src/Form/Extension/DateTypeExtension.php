@@ -10,6 +10,7 @@
 
 namespace App\Form\Extension;
 
+use Generator;
 use IntlDateFormatter;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -21,9 +22,9 @@ class DateTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritDoc}
      *
-     * @psalm-return \Generator<int, DateType::class, mixed, void>
+     * @psalm-return Generator<int, DateType::class, mixed, void>
      */
-    public static function getExtendedTypes(): \Generator
+    public static function getExtendedTypes(): iterable
     {
         yield DateType::class;
     }

@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -30,140 +31,95 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ExclusionPolicy("all")
- * @ORM\HasLifecycleCallbacks
- */
 #[Vich\Uploadable]
 #[UniqueEntity(fields: ['email'], message: 'Un utilisateur existe déjà pour cet email')]
 #[UniqueEntity(fields: ['username'], message: 'Un utilisateur existe déjà pour ce nom')]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[ExclusionPolicy('all')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable
 {
     use EntityTimestampableTrait;
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serializer\Groups({"list_event", "list_user"})
-     * @Expose
-     */
+
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[Serializer\Groups(['list_event', 'list_user'])]
+    #[Expose]
     private ?int $id = null;
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     */
     #[Assert\Length(max: 180)]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $salt = null;
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     */
     #[Assert\Length(max: 180)]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $username = null;
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $enabled = true;
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $lastLogin;
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $passwordRequestedAt = null;
-    /**
-     * @ORM\Column(type="array")
-     */
+    #[ORM\Column(type: 'array')]
     private array $roles = [];
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
      */
+    #[ORM\Column(type: 'string')]
     private ?string $password = null;
-    /**
-     * @Gedmo\Slug(fields={"username"})
-     * @ORM\Column(length=128, unique=true)
-     */
+    #[ORM\Column(length: 128, unique: true)]
+    #[Gedmo\Slug(fields: ['username'])]
     private ?string $slug = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Groups({"list_user"})
-     * @Expose
-     */
     #[Assert\Length(max: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Serializer\Groups(['list_user'])]
+    #[Expose]
     private ?string $firstname = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Serializer\Groups({"list_user"})
-     * @Expose
-     */
     #[Assert\Length(max: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Serializer\Groups(['list_user'])]
+    #[Expose]
     private ?string $lastname = null;
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\UserOAuth", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\OneToOne(targetEntity: UserOAuth::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true)]
     private ?UserOAuth $oAuth;
     /**
      * @var Collection<int, UserEvent>
-     * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="user")
      */
+    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'user')]
     private Collection $userEvents;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\City")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: City::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?City $city = null;
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $fromLogin = false;
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $showSocials = true;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
     #[Assert\Url]
     #[Assert\Length(max: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $website = null;
     #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     #[Assert\Valid]
     #[Assert\File(maxSize: '6M')]
     #[Assert\Image]
     private ?File $imageFile = null;
-    /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
-     */
+    #[ORM\Embedded(class: \Vich\UploaderBundle\Entity\File::class)]
     private EmbeddedFile $image;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageHash = null;
     #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M')]
     private ?File $imageSystemFile = null;
-    /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
-     */
+    #[ORM\Embedded(class: \Vich\UploaderBundle\Entity\File::class)]
     private EmbeddedFile $imageSystem;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageSystemHash = null;
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
 
     public function __construct()

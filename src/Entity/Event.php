@@ -12,6 +12,7 @@ namespace App\Entity;
 
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Reject\Reject;
+use App\Repository\EventRepository;
 use App\Validator\Constraints\EventConstraint;
 use DateTime;
 use DateTimeImmutable;
@@ -31,313 +32,208 @@ use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
- * @ORM\Table(indexes={
- *     @ORM\Index(name="event_slug_idx", columns={"slug"}),
- *     @ORM\Index(name="event_date_debut_idx", columns={"date_debut"}),
- *     @ORM\Index(name="event_theme_manifestation_idx", columns={"theme_manifestation"}),
- *     @ORM\Index(name="event_type_manifestation_idx", columns={"type_manifestation"}),
- *     @ORM\Index(name="event_categorie_manifestation_idx", columns={"categorie_manifestation"}),
- *     @ORM\Index(name="event_search_idx", columns={"place_id", "date_fin", "date_debut"}),
- *     @ORM\Index(name="event_top_soiree_idx", columns={"date_fin", "participations"}),
- *     @ORM\Index(name="event_external_id_idx", columns={"external_id", "external_origin"})
- * })
- * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
- * @ORM\HasLifecycleCallbacks
- * @ExclusionPolicy("all")
  * @EventConstraint
  */
 #[Vich\Uploadable]
+#[ORM\Table]
+#[ORM\Index(name: 'event_slug_idx', columns: ['slug'])]
+#[ORM\Index(name: 'event_date_debut_idx', columns: ['date_debut'])]
+#[ORM\Index(name: 'event_theme_manifestation_idx', columns: ['theme_manifestation'])]
+#[ORM\Index(name: 'event_type_manifestation_idx', columns: ['type_manifestation'])]
+#[ORM\Index(name: 'event_categorie_manifestation_idx', columns: ['categorie_manifestation'])]
+#[ORM\Index(name: 'event_search_idx', columns: ['place_id', 'date_fin', 'date_debut'])]
+#[ORM\Index(name: 'event_top_soiree_idx', columns: ['date_fin', 'participations'])]
+#[ORM\Index(name: 'event_external_id_idx', columns: ['external_id', 'external_origin'])]
+#[ORM\Entity(repositoryClass: EventRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[ExclusionPolicy('all')]
 class Event implements ExternalIdentifiableInterface, Stringable
 {
     use EntityTimestampableTrait;
     public const INDEX_FROM = '-6 months';
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?int $id = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $externalId = null;
-    /**
-     * @ORM\Column(type="string", length=63, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 63, nullable: true)]
     private ?string $externalOrigin = null;
-    /**
-     * @Gedmo\Slug(fields={"nom"})
-     * @ORM\Column(length=255)
-     */
+    #[ORM\Column(length: 255)]
+    #[Gedmo\Slug(fields: ['nom'])]
     private ?string $slug = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
     #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement !")]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $nom = null;
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
     #[Assert\NotBlank(message: "N'oubliez pas de décrire votre événement !")]
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $descriptif = null;
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTimeInterface $externalUpdatedAt = null;
     /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
      * @Type("DateTime<'Y-m-d'>")
      */
     #[Assert\NotBlank(message: 'Vous devez donner une date à votre événement')]
+    #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?DateTimeInterface $dateDebut;
     /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
      * @Type("DateTime<'Y-m-d'>")
      */
+    #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?DateTimeInterface $dateFin = null;
-    /**
-     * @ORM\Column(type="string", length=256, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 256, nullable: true)]
     private ?string $horaires = null;
-    /**
-     * @ORM\Column(type="string", length=16, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 16, nullable: true)]
     private ?string $modificationDerniereMinute = null;
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?float $latitude = null;
-    /**
-     * @ORM\Column(type="float", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?float $longitude = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $adresse = null;
-    /**
-     * @ORM\Column(type="string", length=128, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $typeManifestation = null;
-    /**
-     * @ORM\Column(type="string", length=128, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $categorieManifestation = null;
-    /**
-     * @ORM\Column(type="string", length=128, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $themeManifestation = null;
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: 'json', nullable: true)]
     private ?array $phoneContacts = null;
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: 'json', nullable: true)]
     private ?array $mailContacts = null;
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: 'json', nullable: true)]
     private ?array $websiteContacts = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $reservationTelephone = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
     #[Assert\Email]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $reservationEmail = null;
-    /**
-     * @ORM\Column(type="string", length=512, nullable=true)
-     */
     #[Assert\Url]
+    #[ORM\Column(type: 'string', length: 512, nullable: true)]
     private ?string $reservationInternet = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $tarif = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $fromData = null;
-    /**
-     * @ORM\Column(type="string", length=7, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
     private ?string $parserVersion = null;
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     #[Assert\Valid]
     #[Assert\File(maxSize: '6M')]
     #[Assert\Image]
     private ?File $imageFile = null;
-    /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
-     */
+    #[ORM\Embedded(class: \Vich\UploaderBundle\Entity\File::class)]
     private EmbeddedFile $image;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageHash = null;
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M')]
     private ?File $imageSystemFile = null;
-    /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
-     */
+    #[ORM\Embedded(class: \Vich\UploaderBundle\Entity\File::class)]
     private EmbeddedFile $imageSystem;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageSystemHash = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $name = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $url = null;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $user = null;
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['list_event'])]
+    #[Expose]
     private bool $brouillon = false;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $tweetPostId = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $facebookEventId = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $tweetPostSystemId = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $fbPostId = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $fbPostSystemId = null;
     /**
      * @var Collection<int, UserEvent>
-     * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      */
+    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'event', cascade: ['persist', 'merge', 'remove'], fetch: 'EXTRA_LAZY')]
     protected Collection $userEvents;
     /**
      * @var Collection<int, Comment>
-     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
-     * @ORM\OrderBy({"createdAt": "DESC"})
      */
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'event', cascade: ['persist', 'merge', 'remove'], fetch: 'EXTRA_LAZY')]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
     protected Collection $commentaires;
-    /**
-     * @ORM\Column(type="string", length=31, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 31, nullable: true)]
     private ?string $facebookOwnerId = null;
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?int $fbParticipations = null;
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $fbInterets = null;
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $participations = null;
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $interets = null;
-    /**
-     * @ORM\Column(type="string", length=256, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 256, nullable: true)]
     private ?string $source = null;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Place", cascade={"persist", "merge"})
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"list_event"})
-     * @Expose
-     */
     #[Assert\Valid]
+    #[ORM\ManyToOne(targetEntity: Place::class, cascade: ['persist', 'merge'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?Place $place = null;
     private ?Reject $reject = null;
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private bool $archive = false;
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"list_event"})
-     * @Expose
-     */
     #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $placeName = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $placeStreet = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $placeCity = null;
-    /**
-     * @ORM\Column(type="string", length=7, nullable=true)
-     * @Groups({"list_event"})
-     * @Expose
-     */
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    #[Groups(['list_event'])]
+    #[Expose]
     private ?string $placePostalCode = null;
-    /**
-     * @ORM\Column(type="string", length=127, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $placeExternalId = null;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $placeFacebookId = null;
     private ?Reject $placeReject = null;
     private ?string $placeCountryName = null;
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Country")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: Country::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Country $placeCountry = null;
 
     public function __construct()
@@ -431,10 +327,8 @@ class Event implements ExternalIdentifiableInterface, Stringable
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
     public function majDateFin(): void
     {
         if (null === $this->dateFin) {

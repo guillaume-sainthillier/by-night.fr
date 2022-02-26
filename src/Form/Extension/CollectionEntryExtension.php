@@ -10,6 +10,7 @@
 
 namespace App\Form\Extension;
 
+use Generator;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -46,9 +47,9 @@ class CollectionEntryExtension extends AbstractTypeExtension
     /**
      * {@inheritDoc}
      *
-     * @psalm-return \Generator<int, string, mixed, void>
+     * @psalm-return Generator<int, string, mixed, void>
      */
-    public static function getExtendedTypes(): \Generator
+    public static function getExtendedTypes(): iterable
     {
         yield TextType::class;
         yield ChoiceType::class;

@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Repository\AdminZoneRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation\Exclude;
@@ -22,70 +23,42 @@ use Stringable;
 
 /**
  * OAuth.
- *
- * @ORM\Table(indexes={
- *     @ORM\Index(name="admin_zone_type_name_idx", columns={"type", "name"}),
- *     @ORM\Index(name="admin_zone_type_population_idx", columns={"type", "population"})
- * })
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="type", type="string", length=10)
- * @ORM\DiscriminatorMap({"PPL": "City", "ADM1": "AdminZone1", "ADM2": "AdminZone2"})
- * @ORM\Entity(repositoryClass="App\Repository\AdminZoneRepository", readOnly=true)
- * @ORM\HasLifecycleCallbacks
- * @ExclusionPolicy("NONE")
  */
+#[ORM\Table]
+#[ORM\Index(name: 'admin_zone_type_name_idx', columns: ['type', 'name'])]
+#[ORM\Index(name: 'admin_zone_type_population_idx', columns: ['type', 'population'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string', length: 10)]
+#[ORM\DiscriminatorMap(['PPL' => 'City', 'ADM1' => 'AdminZone1', 'ADM2' => 'AdminZone2'])]
+#[ORM\Entity(repositoryClass: AdminZoneRepository::class, readOnly: true)]
+#[ORM\HasLifecycleCallbacks]
+#[ExclusionPolicy('NONE')]
 abstract class AdminZone implements Stringable
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @Groups({"list_event", "list_city", "list_user"})
-     */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[Groups(['list_event', 'list_city', 'list_user'])]
     protected ?int $id = null;
-
-    /**
-     * @Gedmo\Slug(fields={"name"})
-     * @ORM\Column(length=200, unique=true)
-     * @Exclude
-     */
+    #[ORM\Column(length: 200, unique: true)]
+    #[Exclude]
+    #[Gedmo\Slug(fields: ['name'])]
     protected ?string $slug = null;
-
-    /**
-     * @ORM\Column(type="string", length=200)
-     * @Groups({"list_city"})
-     */
+    #[ORM\Column(type: 'string', length: 200)]
+    #[Groups(['list_city'])]
     protected ?string $name = null;
-
-    /**
-     * @ORM\Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
     protected float $latitude = 0.0;
-
-    /**
-     * @ORM\Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
     protected float $longitude = 0.0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     protected int $population = 0;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Country", fetch="EXTRA_LAZY")
-     */
+    #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]
     protected ?Country $country = null;
-
-    /**
-     * @ORM\Column(name="admin1_code", type="string", length=20, nullable=true)
-     * @Exclude
-     */
+    #[ORM\Column(name: 'admin1_code', type: 'string', length: 20, nullable: true)]
+    #[Exclude]
     protected ?string $admin1Code = null;
-
-    /**
-     * @ORM\Column(name="admin2_code", type="string", length=80, nullable=true)
-     * @Exclude
-     */
+    #[ORM\Column(name: 'admin2_code', type: 'string', length: 80, nullable: true)]
+    #[Exclude]
     protected ?string $admin2Code = null;
 
     /**
@@ -93,14 +66,12 @@ abstract class AdminZone implements Stringable
      *
      * @SerializedName("location")
      *
-     * @Groups({"list_city", "list_event"})
-     *
-     * @Expose
-     *
      * @return float[]
      *
      * @psalm-return array{lat: float, lon: float}
      */
+    #[Groups(['list_city', 'list_event'])]
+    #[Expose]
     public function getLocation(): array
     {
         return [
