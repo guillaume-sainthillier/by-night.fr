@@ -26,8 +26,10 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-return -1|1
      */
-    public function batchExecute(array $messages)
+    public function batchExecute(array $messages): int
     {
         $paths = [];
 

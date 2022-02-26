@@ -30,8 +30,13 @@ class SitemapSuscriber implements EventSubscriberInterface
 
     private DateTime $now;
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator, private CityRepository $cityRepository, private PlaceRepository $placeRepository, private EventRepository $eventRepository, private UserRepository $userRepository)
-    {
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+        private CityRepository $cityRepository,
+        private PlaceRepository $placeRepository,
+        private EventRepository $eventRepository,
+        private UserRepository $userRepository
+    ) {
         $this->now = new DateTime();
     }
 
@@ -41,7 +46,7 @@ class SitemapSuscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            SitemapPopulateEvent::ON_SITEMAP_POPULATE => 'registerRoutes',
+            SitemapPopulateEvent::class => 'registerRoutes',
         ];
     }
 
@@ -84,7 +89,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $tags = array_unique(array_map('trim', array_map('ucfirst', array_filter(preg_split('#[,/]#', $tags)))));
 
             foreach ($tags as $tag) {
-                if (!empty($cache[$tag])) {
+                if (isset($cache[$tag])) {
                     continue;
                 }
 

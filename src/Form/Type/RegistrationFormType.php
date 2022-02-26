@@ -25,6 +25,8 @@ class RegistrationFormType extends AbstractType
      * Builds the embedded form representing the user.
      *
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -53,6 +55,8 @@ class RegistrationFormType extends AbstractType
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {

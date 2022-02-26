@@ -55,7 +55,9 @@ class DoctrineEventHandler
     /**
      * @param EventDto[] $dtos
      *
-     * @return Event[]
+     * @return (null|object)[]
+     *
+     * @psalm-return array<null|object>
      */
     public function handleMany(array $dtos, bool $flush = true): array
     {
@@ -306,7 +308,9 @@ class DoctrineEventHandler
     /**
      * @param object[] $dtos
      *
-     * @return Event[]
+     * @return (null|object)[]
+     *
+     * @psalm-return array<null|object>
      */
     private function mergeWithDatabase(array $dtos, bool $flush, DependencyCatalogue $previousDependencyCatalogue = null): array
     {

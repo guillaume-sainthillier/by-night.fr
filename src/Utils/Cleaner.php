@@ -53,12 +53,17 @@ class Cleaner
             ->setCodePostal($this->util->replaceNonNumericChars($place->getCodePostal()) ?: null);
     }
 
-    private function cleanNormalString(?string $string)
+    private function cleanNormalString(?string $string): string
     {
         return $this->cleanString($string, '');
     }
 
-    private function cleanString($string, $delimiters = []): string
+    /**
+     * @param string|string[] $delimiters
+     *
+     * @psalm-param ''|array{0?: '-'} $delimiters
+     */
+    private function cleanString(string|null $string, array|string $delimiters = []): string
     {
         $step1 = $this->util->utf8TitleCase($string);
         $step2 = $this->util->deleteMultipleSpaces($step1);

@@ -449,7 +449,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     }
 
     /**
-     * @return UserEvent[]
+     * @return Collection<int, UserEvent>
      */
     public function getUserEvents(): Collection
     {

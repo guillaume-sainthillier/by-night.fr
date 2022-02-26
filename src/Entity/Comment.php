@@ -55,7 +55,7 @@ class Comment implements Stringable
     private ?Comment $parent = null;
 
     /**
-     * @var Collection<Comment>
+     * @var Collection<int, Comment>
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"createdAt": "DESC"})
      */
@@ -108,7 +108,7 @@ class Comment implements Stringable
     }
 
     /**
-     * @return Collection<int, Comment>
+     * @psalm-return Collection<int, self>
      */
     public function getReponses(): Collection
     {

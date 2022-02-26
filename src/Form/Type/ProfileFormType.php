@@ -25,6 +25,8 @@ class ProfileFormType extends AbstractType
 {
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -62,6 +64,8 @@ class ProfileFormType extends AbstractType
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {

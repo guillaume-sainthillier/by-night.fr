@@ -25,8 +25,10 @@ class AddEventConsumer extends AbstractConsumer implements BatchConsumerInterfac
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-return 1
      */
-    public function batchExecute(array $messages)
+    public function batchExecute(array $messages): int
     {
         $dtos = [];
         foreach ($messages as $message) {

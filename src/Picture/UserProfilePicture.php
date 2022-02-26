@@ -21,7 +21,7 @@ class UserProfilePicture
     {
     }
 
-    public function getOriginalProfilePicture(User $user): string
+    public function getOriginalProfilePicture(User $user): string|null
     {
         if ($user->getImage()->getName()) {
             return $this->packages->getUrl(
@@ -51,7 +51,7 @@ class UserProfilePicture
         return $this->packages->getUrl('build/images/empty_user.png');
     }
 
-    public function getProfilePicture(User $user, array $params = []): string
+    public function getProfilePicture(User $user, array $params = []): string|null
     {
         if ($user->getImage()->getName()) {
             return $this->assetExtension->thumb($this->helper->asset($user, 'imageFile'), $params);

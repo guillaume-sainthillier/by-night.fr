@@ -22,14 +22,14 @@ class PopulateSubscriber implements EventSubscriberInterface
     {
     }
 
-    public function preIndexPopulate(PreIndexPopulateEvent $event)
+    public function preIndexPopulate(PreIndexPopulateEvent $event): void
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $settings = $index->getSettings();
         $settings->setRefreshInterval(-1);
     }
 
-    public function postIndexPopulate(PostIndexPopulateEvent $event)
+    public function postIndexPopulate(PostIndexPopulateEvent $event): void
     {
         $index = $this->indexManager->getIndex($event->getIndex());
         $index->getClient()->request('_forcemerge', 'POST', [], ['max_num_segments' => 5]);

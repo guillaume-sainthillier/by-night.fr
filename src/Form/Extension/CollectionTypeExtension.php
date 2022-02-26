@@ -20,6 +20,8 @@ class CollectionTypeExtension extends AbstractTypeExtension
 {
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
@@ -35,6 +37,8 @@ class CollectionTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -53,8 +57,10 @@ class CollectionTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-return \Generator<int, CollectionType::class, mixed, void>
      */
-    public static function getExtendedTypes(): iterable
+    public static function getExtendedTypes(): \Generator
     {
         yield CollectionType::class;
     }

@@ -31,7 +31,9 @@ class ChunkUtils
     /**
      * @param object[] $objects
      *
-     * @return object[][][]
+     * @return (object|object[])[][]
+     *
+     * @psalm-return array<array<array<object>|object>>
      */
     public static function getNestedChunksByClass(array $objects, int $chunkSize): array
     {

@@ -139,8 +139,10 @@ class Place implements ExternalIdentifiablesInterface, Stringable
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-return Collection<int, PlaceMetadata>
      */
-    public function getExternalIdentifiables(): iterable
+    public function getExternalIdentifiables(): Collection
     {
         return $this->metadatas;
     }
@@ -157,7 +159,7 @@ class Place implements ExternalIdentifiablesInterface, Stringable
         return false;
     }
 
-    public function getLocationSlug(): string
+    public function getLocationSlug(): string|null
     {
         return $this->getLocation()->getSlug();
     }

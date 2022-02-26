@@ -26,6 +26,8 @@ class CheckboxTypeExtension extends AbstractTypeExtension
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {

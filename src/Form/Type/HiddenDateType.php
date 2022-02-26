@@ -20,6 +20,8 @@ class HiddenDateType extends DateType
 {
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
@@ -29,6 +31,8 @@ class HiddenDateType extends DateType
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {

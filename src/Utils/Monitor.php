@@ -135,12 +135,12 @@ class Monitor
         ];
     }
 
-    public static function formatDuration($microseconds): string
+    public static function formatDuration(int|float $microseconds): string
     {
         return sprintf('%01.2f ms', $microseconds);
     }
 
-    public static function formatMemory($bytes): string
+    public static function formatMemory(float|int $bytes): string
     {
         return round($bytes / 1_000 / 1_000, 2) . ' MB';
     }

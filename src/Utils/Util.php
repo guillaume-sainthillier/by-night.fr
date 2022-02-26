@@ -11,7 +11,6 @@
 namespace App\Utils;
 
 use function Symfony\Component\String\u;
-use Symfony\Component\String\UnicodeString;
 
 class Util
 {
@@ -59,7 +58,12 @@ class Util
         return trim(preg_replace('/[^A-Za-z0-9 ]/u', '', $string));
     }
 
-    public function deleteSpaceBetween(?string $string, $delimiters = '-'): string
+    /**
+     * @param string|string[] $delimiters
+     *
+     * @psalm-param ''|'-'|array{0?: '-'} $delimiters
+     */
+    public function deleteSpaceBetween(?string $string, array|string $delimiters = '-'): string
     {
         if (\is_string($delimiters) && isset($delimiters[0])) { //Strlen > 0
             return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
@@ -84,10 +88,7 @@ class Util
         return u($string)->collapseWhitespace()->trim()->toString();
     }
 
-    /**
-     * @return UnicodeString|null
-     */
-    public function utf8TitleCase(?string $string): ?string
+    public function utf8TitleCase(?string $string): string|null
     {
         if (null === $string) {
             return null;
@@ -96,10 +97,7 @@ class Util
         return u($string)->title(true)->trim()->toString();
     }
 
-    /**
-     * @return UnicodeString|null
-     */
-    public function utf8LowerCase(?string $string): ?string
+    public function utf8LowerCase(?string $string): string|null
     {
         if (null === $string) {
             return null;

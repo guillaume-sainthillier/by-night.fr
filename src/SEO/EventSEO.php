@@ -69,9 +69,6 @@ class EventSEO
         );
     }
 
-    /**
-     * @return false|string
-     */
     private function formatDate(DateTimeInterface $date, int $dateFormat, int $timeFormat): string
     {
         $formatter = IntlDateFormatter::create(null, $dateFormat, $timeFormat);

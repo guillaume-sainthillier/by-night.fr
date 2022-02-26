@@ -18,6 +18,8 @@ class ShortcutType extends AbstractType
 {
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {

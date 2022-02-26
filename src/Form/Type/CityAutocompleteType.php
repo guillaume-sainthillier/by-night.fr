@@ -28,6 +28,8 @@ class CityAutocompleteType extends AbstractType
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
@@ -37,6 +39,8 @@ class CityAutocompleteType extends AbstractType
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -65,6 +69,8 @@ class CityAutocompleteType extends AbstractType
 
     /**
      * {@inheritDoc}
+     *
+     * @return void
      */
     public function configureOptions(OptionsResolver $resolver)
     {

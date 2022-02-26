@@ -93,7 +93,7 @@ class Comparator
         return 0;
     }
 
-    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, ?string $b = null, City $cityB = null, ZipCity $zipCityB = null): int
+    private function getMatchingScoreTextWithoutCity(?string $a, City $cityA = null, ZipCity $zipCityA = null, ?string $b = null, City $cityB = null, ZipCity $zipCityB = null): int|float
     {
         if ($a && $a === $b) {
             return 100;
@@ -131,7 +131,7 @@ class Comparator
         });
     }
 
-    private function getMatchingScore($a, $b): int
+    private function getMatchingScore(string $a, string $b): float|int
     {
         $pourcentage = 0;
         // = strlen > 0
@@ -153,15 +153,12 @@ class Comparator
         return $pourcentage;
     }
 
-    /**
-     * @return float|int
-     */
-    private function getDiffPourcentage($a, $b): int
+    private function getDiffPourcentage(string $a, string $b): int
     {
         return (int) ((1 - levenshtein($a, $b) / max(mb_strlen($a), mb_strlen($b))) * 100);
     }
 
-    private function getMatchingScoreRue(?string $a, ?string $b): int
+    private function getMatchingScoreRue(?string $a, ?string $b): int|float
     {
         if ($a && $a === $b) {
             return 100;
