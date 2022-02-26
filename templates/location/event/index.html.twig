@@ -73,7 +73,7 @@
                 <div class="col-lg-4 event-details">
                     <div class="card-body">
                         <div class="detail-item">
-                            <i class="fa fa-calendar"></i>
+                            <i class="fa fa-calendar-days"></i>
                             <h2>
                                 {% set dateDebut = event.dateDebut|date('d/m/Y') %}
                                 {% set dateFin = event.dateFin|date('d/m/Y') %}
@@ -106,7 +106,7 @@
                             {% set mapValue = "" %}
                             {% if event.placeName %}
                                 {% set mapValue = event.placeName %}
-                                <i class="fa fa-map-marker"></i>
+                                <i class="fa fa-location-dot"></i>
                                 <h2 class="mb-0">
                                     <strong class="font-weight-normal" itemprop="name">{{ event.placeName }}</strong>
                                 </h2>

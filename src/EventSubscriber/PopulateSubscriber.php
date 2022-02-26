@@ -10,42 +10,46 @@
 
 namespace App\EventSubscriber;
 
-use FOS\ElasticaBundle\Event\IndexPopulateEvent;
+use Elastica\Index\Settings;
+use FOS\ElasticaBundle\Event\PostIndexPopulateEvent;
+use FOS\ElasticaBundle\Event\PreIndexPopulateEvent;
 use FOS\ElasticaBundle\Index\IndexManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PopulateSubscriber implements EventSubscriberInterface
 {
-    private IndexManager $indexManager;
+    /**
+     * @var IndexManager
+     */
+    private $indexManager;
 
     public function __construct(IndexManager $indexManager)
     {
         $this->indexManager = $indexManager;
     }
 
+    public function preIndexPopulate(PreIndexPopulateEvent $event)
+    {
+        $index = $this->indexManager->getIndex($event->getIndex());
+        $settings = $index->getSettings();
+        $settings->setRefreshInterval(-1);
+    }
+
+    public function postIndexPopulate(PostIndexPopulateEvent $event)
+    {
+        $index = $this->indexManager->getIndex($event->getIndex());
+        $index->getClient()->request('_forcemerge', 'POST', [], ['max_num_segments' => 5]);
+        $index->getSettings()->setRefreshInterval(Settings::DEFAULT_REFRESH_INTERVAL);
+    }
+
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public static function getSubscribedEvents()
     {
         return [
-            IndexPopulateEvent::PRE_INDEX_POPULATE => 'preIndexPopulate',
-            IndexPopulateEvent::POST_INDEX_POPULATE => 'postIndexPopulate',
+            PreIndexPopulateEvent::class => 'preIndexPopulate',
+            PostIndexPopulateEvent::class => 'postIndexPopulate',
         ];
-    }
-
-    public function preIndexPopulate(IndexPopulateEvent $event): void
-    {
-        $index = $this->indexManager->getIndex($event->getIndex());
-        $settings = $index->getSettings();
-        $settings->setRefreshInterval('-1');
-    }
-
-    public function postIndexPopulate(IndexPopulateEvent $event): void
-    {
-        $index = $this->indexManager->getIndex($event->getIndex());
-        $settings = $index->getSettings();
-        $index->forcemerge(['max_num_segments' => 5]);
-        $settings->setRefreshInterval('1s');
     }
 }

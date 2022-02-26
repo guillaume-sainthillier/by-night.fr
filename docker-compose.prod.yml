@@ -14,11 +14,17 @@ services:
         build: .
         env_file: .env.local
 
+
     assets:
+        image: nginx:1.17-alpine
+        ports:
+            - 8002:80
         volumes:
             - ./docker/prod/assets/nginx.conf:/etc/nginx/nginx.conf:ro
             - assets:/assets/build:ro
             - bundles:/assets/bundles:ro
+        networks:
+            - local
 
     varnish:
         volumes:

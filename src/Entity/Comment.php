@@ -54,6 +54,7 @@ class Comment
     private ?Comment $parent = null;
 
     /**
+     * @var Collection<Comment>
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="parent", cascade={"persist", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"createdAt": "DESC"})
      */
@@ -106,7 +107,7 @@ class Comment
     }
 
     /**
-     * @return Collection|Comment[]
+     * @return Collection<int, Comment>
      */
     public function getReponses(): Collection
     {

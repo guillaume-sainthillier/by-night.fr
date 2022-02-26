@@ -6,140 +6,135 @@ fos_elastica:
             port: '%env(ES_PORT)%'
             compression: true
 
+    messenger: ~
     serializer:
         serializer: jms_serializer
 
     indexes:
         event:
-            index_name: "app.event"
-            client: default
+            indexable_callback: "isIndexable"
             settings:
-                index:
-                    analysis:
-                        analyzer:
-                            event_description_analyzer:
-                                type: custom
-                                tokenizer: standard
-                                filter: [lowercase, asciifolding, stopwords, snowball, elision]
-                                char_filter: [html_strip]
-                            event_analyzer:
-                                type: custom
-                                tokenizer: nGram_event
-                                filter: [lowercase, asciifolding, stopwords, snowball, elision]
-                            event_city_analyzer:
-                                type: custom
-                                tokenizer: nGram_event
-                                filter: [lowercase, asciifolding, elision]
-                        tokenizer:
-                            nGram_event:
-                                type:     nGram
-                                min_gram: 3
-                                max_gram: 4
-                        filter:
-                            snowball:
-                                type:     snowball
-                                language: French
-                            elision:
-                                type:     elision
-                                articles: [l, m, t, qu, n, s, j, d]
-                            stopwords:
-                                type:      stop
-                                stopwords: [_french_]
-                                ignore_case: true
-            types:
-                event:
-                    serializer:
-                        groups: [list_event]
-                    indexable_callback: "isIndexable"
+                analysis:
+                    filter:
+                        french_elision:
+                            type: "elision"
+                            articles_case: true
+                            articles: [ "l", "m", "t", "qu", "n", "s", "j", "d", "c", "jusqu", "quoiqu", "lorsqu", "puisqu" ]
+                        french_stop:
+                            type: stop
+                            stopwords: _french_
+                        french_stemmer:
+                            type: "stemmer"
+                            language: "light_french"
+
+                    analyzer:
+                        french_heavy:
+                            tokenizer: "standard"
+                            #tokenizer: "icu_tokenizer"
+                            char_filter:
+                                - "html_strip"
+                            filter:
+                                - "french_elision"
+                                #- "icu_folding"
+                                - "lowercase"
+                                - "french_stop"
+                                - "french_stemmer"
+                        french_light:
+                            tokenizer: "standard"
+                            #tokenizer: "icu_tokenizer"
+                            char_filter:
+                                - "html_strip"
+                            filter:
+                                - "french_elision"
+                                #- "icu_folding"
+                                - "lowercase"
+                                - "french_stop"
+
+            persistence:
+                model: App\Entity\Event
+                repository: App\SearchRepository\EventElasticaRepository
+                listener:
+                    insert: true
+                    update: true
+                    delete: true
+                provider:
+                    query_builder_method: createIsActiveQueryBuilder
+                    batch_size: 500
+            serializer:
+                groups: [ list_event ]
+            properties:
+                nom: { boost: 5, type: "text", analyzer: french_heavy, search_analyzer: french_heavy  }
+                descriptif: { analyzer: french_heavy, search_analyzer: french_heavy }
+                date_debut: { type: "date", format: 'yyyy-MM-dd' }
+                date_fin: { type: "date", format: 'yyyy-MM-dd' }
+                place:
+                    type: "object"
                     properties:
-                        nom: { boost: 5, type: "text", analyzer: event_analyzer, search_analyzer: event_analyzer  }
-                        descriptif: { analyzer: event_description_analyzer, search_analyzer: event_description_analyzer }
-                        date_debut: { type: "date", format: 'yyyy-MM-dd' }
-                        date_fin: { type: "date", format: 'yyyy-MM-dd' }
-                        place:
+                        nom: { boost: 3, type: "text", analyzer: french_heavy, search_analyzer: french_heavy }
+                        rue: { analyzer: french_heavy, search_analyzer: french_heavy }
+                        ville: { boost: 2, type: "text", analyzer: french_heavy, search_analyzer: french_heavy }
+                        city:
                             type: "object"
                             properties:
-                                nom: { boost: 3, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
-                                rue: { analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
-                                ville: { boost: 2, type: "text", analyzer: event_city_analyzer, search_analyzer: event_city_analyzer }
-                                city:
-                                    type: "object"
-                                    properties:
-                                        location: {type: "geo_point"}
-                    persistence:
-                        driver: orm
-                        model:  App\Entity\Event
-                        repository: App\SearchRepository\EventElasticaRepository
-                        provider:
-                            query_builder_method: createIsActiveQueryBuilder
-                            batch_size: 500
+                                location: {type: "geo_point"}
+
         city:
-            index_name: "app.city"
-            client: default
             settings:
-                index:
-                    analysis:
-                        tokenizer:
-                            nGram_city:
-                                type:     nGram
-                                min_gram: 3
-                                max_gram: 4
-                        filter:
-                            elision:
-                                type:     elision
-                                articles: [l, m, t, qu, n, s, j, d]
-                        analyzer:
-                            city_analyzer:
-                                type: custom
-                                tokenizer: nGram_city
-                                filter: [lowercase, asciifolding, elision]
-            types:
-                city:
-                    serializer:
-                        groups: [list_city]
+                analysis:
+                    tokenizer:
+                        nGram_city:
+                            type:     nGram
+                            min_gram: 3
+                            max_gram: 4
+                    filter:
+                        elision:
+                            type:     elision
+                            articles: [l, m, t, qu, n, s, j, d]
+                    analyzer:
+                        city_analyzer:
+                            type: custom
+                            tokenizer: nGram_city
+                            filter: [lowercase, asciifolding, elision]
+
+            serializer:
+                groups: [list_city]
+            properties:
+                name: { type: "text", boost: 3, analyzer: city_analyzer, search_analyzer: city_analyzer }
+                country:
+                    type: "object"
                     properties:
-                        name: { type: "text", boost: 3, analyzer: city_analyzer, search_analyzer: city_analyzer }
-                        country:
-                            type: "object"
-                            properties:
-                                name: { boost: 5, type: "text" }
-                        parent:
-                            type: "object"
-                            properties:
-                                name: { type: "text" }
-                    persistence:
-                        driver: orm
-                        model:  App\Entity\City
-                        repository: App\SearchRepository\CityElasticaRepository
-                        provider:
-                            batch_size: 500
+                        name: { boost: 5, type: "text" }
+                parent:
+                    type: "object"
+                    properties:
+                        name: { type: "text" }
+            persistence:
+                driver: orm
+                model:  App\Entity\City
+                repository: App\SearchRepository\CityElasticaRepository
+                provider:
+                    batch_size: 500
         user:
-            index_name: "app.user"
-            client: default
             settings:
-                index:
-                    analysis:
-                        tokenizer:
-                            nGram_user:
-                                type:     nGram
-                                min_gram: 5
-                                max_gram: 8
-                        analyzer:
-                            user_analyzer:
-                                type: custom
-                                tokenizer: nGram_user
-                                filter: [asciifolding, lowercase]
-            types:
-                user:
-                    serializer:
-                        groups: [list_user]
-                    properties:
-                        username: { boost: 5, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
-                        firstname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
-                        lastname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
-                    persistence:
-                        driver: orm
-                        model:  App\Entity\User
-                        repository: App\SearchRepository\UserElasticaRepository
-                        provider:
-                            batch_size: 1000
+                analysis:
+                    tokenizer:
+                        nGram_user:
+                            type:     edge_ngram
+                            min_gram: 5
+                            max_gram: 8
+                    analyzer:
+                        user_analyzer:
+                            type: custom
+                            tokenizer: nGram_user
+                            filter: [asciifolding, lowercase]
+            serializer:
+                groups: [list_user]
+            properties:
+                username: { boost: 5, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                firstname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+                lastname: { boost: 1, type: "text", analyzer: user_analyzer, search_analyzer: user_analyzer }
+            persistence:
+                model:  App\Entity\User
+                repository: App\SearchRepository\UserElasticaRepository
+                provider:
+                    batch_size: 1000

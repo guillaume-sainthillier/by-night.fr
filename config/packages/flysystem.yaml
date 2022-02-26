@@ -1,14 +1,11 @@
-services:
-    s3_reader:
-        class: 'Twistor\Flysystem\Http\HttpAdapter'
-        arguments:
-            $base: "%env(AWS_S3_URL)%"
-
 # Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
 flysystem:
     storages:
         s3.storage.reader:
-            adapter: 's3_reader'
+            adapter: 'aws'
+            options:
+                client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
+                bucket: "%env(AWS_S3_BUCKET_NAME)%"
 
         users.storage:
             adapter: 'aws'

@@ -52,13 +52,12 @@
 
         .search_container {
             z-index: 2;
-            max-width: 360px;
+            width: 100%;
+            max-width: 20rem;
             margin: 1rem auto 0 auto;
 
-            @include media-breakpoint-down(md) {
-                .form-control {
-                    margin-bottom: 10px;
-                }
+            @include media-breakpoint-up(lg) {
+                max-width: 30rem;
             }
         }
     }

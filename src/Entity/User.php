@@ -127,7 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     private ?UserOAuth $oAuth;
 
     /**
-     * @var UserEvent[]|Collection
+     * @var Collection<int, UserEvent>
      * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="user")
      */
     private Collection $userEvents;
@@ -289,9 +289,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return ucfirst($this->username);
     }
 
-    public function getUserIdentifier()
+    public function getUserIdentifier(): string
     {
-        return $this->email;
+        return $this->email ?? '';
     }
 
     public function __toString()

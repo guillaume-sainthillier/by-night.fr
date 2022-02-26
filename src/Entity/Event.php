@@ -68,7 +68,7 @@ class Event implements ExternalIdentifiableInterface
     /**
      * @ORM\Column(type="string", length=63, nullable=true)
      */
-    private $externalOrigin;
+    private ?string $externalOrigin = null;
 
     /**
      * @Gedmo\Slug(fields={"nom"})
@@ -295,11 +295,13 @@ class Event implements ExternalIdentifiableInterface
     private ?string $fbPostSystemId = null;
 
     /**
+     * @var Collection<int, UserEvent>
      * @ORM\OneToMany(targetEntity="App\Entity\UserEvent", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      */
     protected Collection $userEvents;
 
     /**
+     * @var Collection<int, Comment>
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", cascade={"persist", "merge", "remove"}, fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"createdAt": "DESC"})
      */
@@ -501,7 +503,6 @@ class Event implements ExternalIdentifiableInterface
 
     /**
      * @ORM\PrePersist
-     *
      * @ORM\PreUpdate
      */
     public function majDateFin(): void
@@ -1040,7 +1041,7 @@ class Event implements ExternalIdentifiableInterface
     }
 
     /**
-     * @return Collection|UserEvent[]
+     * @return Collection<int, UserEvent>
      */
     public function getUserEvents(): Collection
     {
@@ -1071,7 +1072,7 @@ class Event implements ExternalIdentifiableInterface
     }
 
     /**
-     * @return Collection|Comment[]
+     * @return Collection<int, Comment>
      */
     public function getCommentaires(): Collection
     {

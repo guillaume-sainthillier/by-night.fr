@@ -40,7 +40,7 @@ class ChangePasswordFormType extends AbstractType
                             'max' => 4_096,
                         ]),
                     ],
-                    'label' => 'New password',
+                    'label' => 'Nouveau mot de passe',
                 ],
                 'second_options' => [
                     'label' => 'Répetez le mot  de passe',

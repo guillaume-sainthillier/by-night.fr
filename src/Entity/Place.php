@@ -48,9 +48,10 @@ class Place implements ExternalIdentifiablesInterface
     private ?int $id = null;
 
     /**
+     * @var Collection<int, PlaceMetadata>
      * @ORM\OneToMany(targetEntity=PlaceMetadata::class, mappedBy="place", cascade={"persist", "remove"})
      */
-    private $metadatas;
+    private Collection $metadatas;
 
     /**
      * @ORM\Column(type="string", length=127, nullable=true)
@@ -416,7 +417,7 @@ class Place implements ExternalIdentifiablesInterface
     }
 
     /**
-     * @return Collection|PlaceMetadata[]
+     * @return Collection<int, PlaceMetadata>
      */
     public function getMetadatas(): Collection
     {

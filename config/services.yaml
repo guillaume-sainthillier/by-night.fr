@@ -103,7 +103,7 @@ services:
 
     App\Archive\EventArchivator:
         arguments:
-            $objectPersister: "@fos_elastica.object_persister.event.event"
+            $objectPersister: "@fos_elastica.object_persister.event"
 
     App\Form\Type\ReCaptchaType:
         arguments:

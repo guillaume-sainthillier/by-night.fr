@@ -46,7 +46,7 @@
                         {% set dateDebut = event.dateDebut|date('d/m/Y') %}
                         {% set dateFin = event.dateFin|date('d/m/Y') %}
 
-                        <i class="fa fa-calendar"></i>
+                        <i class="fa fa-calendar-days"></i>
                         <span>
                         {% if event.dateFin == null or ( event.dateFin != null and event.dateDebut == event.dateFin) %}
                             {% if microdata %}
@@ -75,7 +75,7 @@
                     {% set place = event.place %}
                     {% if event.placeName %}
                         <div class="detail-item" {% if microdata %}itemprop="location" itemscope itemtype="http://schema.org/Place"{% endif %}>
-                            <i class="fa fa-map-marker float-left"></i>
+                            <i class="fa fa-location-dot float-left"></i>
                             <span {% if microdata %}itemprop="name"{% endif %}
                                title="Sortir à {{ event.placeName }}">
                                 <strong class="font-weight-normal">{{ event.placeName }}</strong>

@@ -26,7 +26,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="type">Parmi</label>
-                                    <select id="type" name="type" class="form-control">
+                                    <select id="type" name="type" class="form-select">
                                         {% for value, label in options %}
                                             <option value="{{ value }}" {{ value == currentType ? 'selected' }}>{{ label }}</option>
                                         {% endfor %}

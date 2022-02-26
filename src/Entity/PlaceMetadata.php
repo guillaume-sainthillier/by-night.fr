@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -29,23 +29,22 @@ class PlaceMetadata implements ExternalIdentifiableInterface
      * @ORM\ManyToOne(targetEntity=Place::class, inversedBy="metadatas")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $place;
+    private ?Place $place = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $externalId;
+    private ?string $externalId = null;
 
     /**
      * @ORM\Column(type="string", length=63)
      */
-    private $externalOrigin;
+    private ?string $externalOrigin = null;
 
     /**
-     * @var DateTime
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $externalUpdatedAt;
+    private ?DateTime $externalUpdatedAt = null;
 
     public function getExternalId(): ?string
     {

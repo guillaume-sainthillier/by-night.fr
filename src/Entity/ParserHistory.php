@@ -28,14 +28,14 @@ class ParserHistory
     private DateTimeInterface $dateDebut;
 
     /**
-     * @ORM\Column(type="string", length=127)
-     */
-    private ?string $fromData = null;
-
-    /**
      * @ORM\Column(type="datetime")
      */
     private DateTimeInterface $dateFin;
+
+    /**
+     * @ORM\Column(type="string", length=127)
+     */
+    private ?string $fromData = null;
 
     /**
      * @ORM\Column(type="integer")
