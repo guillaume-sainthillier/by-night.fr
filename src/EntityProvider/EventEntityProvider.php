@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -15,14 +15,12 @@ use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\ExternalIdentifiablesInterface;
 use App\Dto\EventDto;
 use App\Repository\EventRepository;
+use LogicException;
 
 class EventEntityProvider extends AbstractEntityProvider
 {
-    private EventRepository $eventRepository;
-
-    public function __construct(EventRepository $eventRepository)
+    public function __construct(private EventRepository $eventRepository)
     {
-        $this->eventRepository = $eventRepository;
     }
 
     /**
@@ -43,7 +41,7 @@ class EventEntityProvider extends AbstractEntityProvider
         } elseif ($entity instanceof ExternalIdentifiableInterface) {
             $externals = [$entity];
         } else {
-            throw new \LogicException('Unable to fetch external ids from "%s" class', \get_class($entity));
+            throw new LogicException('Unable to fetch external ids from "%s" class', $entity::class);
         }
 
         foreach ($externals as $external) {

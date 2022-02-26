@@ -23,25 +23,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends AbstractController
 {
     /**
-     * @Route("/", name="app_index", methods={"GET", "POST"})
      * @ReverseProxy(expires="tomorrow")
      */
+    #[Route(path: '/', name: 'app_index', methods: ['GET', 'POST'])]
     public function index(Request $request, CityManager $cityManager, EventRepository $eventRepository): Response
     {
         $datas = [
             'from' => new DateTime(),
         ];
-
         if (null !== ($city = $cityManager->getCity())) {
             $datas += [
                 'name' => $city->getFullName(),
                 'city' => $city->getSlug(),
             ];
         }
-
         $stats = $eventRepository->getCountryEvents();
         $form = $this->createForm(CityAutocompleteType::class, $datas);
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $datas = $form->getData();

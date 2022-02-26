@@ -26,24 +26,13 @@ class SitemapSuscriber implements EventSubscriberInterface
 {
     private const ITEMS_PER_PAGE = 5_000;
 
-    private UrlGeneratorInterface $urlGenerator;
-
     private ?UrlContainerInterface $urlContainer = null;
 
     private DateTime $now;
-    private CityRepository $cityRepository;
-    private PlaceRepository $placeRepository;
-    private EventRepository $eventRepository;
-    private UserRepository $userRepository;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, CityRepository $cityRepository, PlaceRepository $placeRepository, EventRepository $eventRepository, UserRepository $userRepository)
+    public function __construct(private UrlGeneratorInterface $urlGenerator, private CityRepository $cityRepository, private PlaceRepository $placeRepository, private EventRepository $eventRepository, private UserRepository $userRepository)
     {
-        $this->urlGenerator = $urlGenerator;
         $this->now = new DateTime();
-        $this->cityRepository = $cityRepository;
-        $this->placeRepository = $placeRepository;
-        $this->eventRepository = $eventRepository;
-        $this->userRepository = $userRepository;
     }
 
     /**

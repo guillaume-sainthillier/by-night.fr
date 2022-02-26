@@ -19,11 +19,8 @@ use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
 
 class MailerManager
 {
-    private MailerInterface $mailer;
-
-    public function __construct(MailerInterface $mailer)
+    public function __construct(private MailerInterface $mailer)
     {
-        $this->mailer = $mailer;
     }
 
     public function sendConfirmEmailEmail(User $user, array $context): void

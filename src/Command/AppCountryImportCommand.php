@@ -20,16 +20,14 @@ use Symfony\Component\Console\Question\Question;
 
 class AppCountryImportCommand extends Command
 {
-    private CountryImporter $countryImporter;
+    protected static $defaultName = 'app:country:import';
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(CountryImporter $countryImporter)
+    public function __construct(private CountryImporter $countryImporter)
     {
         parent::__construct();
-
-        $this->countryImporter = $countryImporter;
     }
 
     /**
@@ -39,9 +37,7 @@ class AppCountryImportCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('app:country:import')
-            ->setDescription('Ajoute un nouveau pays')
+        $this->setDescription('Ajoute un nouveau pays')
             ->addArgument('id', InputArgument::REQUIRED)
             ->addArgument('name', InputArgument::OPTIONAL)
             ->addArgument('capital', InputArgument::OPTIONAL)

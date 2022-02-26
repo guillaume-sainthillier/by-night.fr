@@ -18,13 +18,10 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class EventConstraintValidator extends ConstraintValidator
 {
-    private RouterInterface $router;
-
     private bool $checkIfUpdate = false;
 
-    public function __construct(RouterInterface $router)
+    public function __construct(private RouterInterface $router)
     {
-        $this->router = $router;
     }
 
     public function setUpdatabilityCkeck(bool $checkIfUpdate): void

@@ -19,6 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use RuntimeException;
 
 class ParserHistoryCrudController extends AbstractCrudController
 {
@@ -61,6 +62,6 @@ class ParserHistoryCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$dateDebut, $fromData, $dateFin, $nouvellesSoirees, $updateSoirees, $explorations];
         }
-        throw new \RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

@@ -15,12 +15,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -37,19 +37,8 @@ class UserFormAuthenticator extends AbstractFormLoginAuthenticator implements Pa
 
     public const LOGIN_ROUTE = 'app_login';
 
-    private TranslatorInterface $translator;
-    private EntityManagerInterface  $entityManager;
-    private UrlGeneratorInterface  $urlGenerator;
-    private CsrfTokenManagerInterface  $csrfTokenManager;
-    private UserPasswordEncoderInterface $passwordEncoder;
-
-    public function __construct(TranslatorInterface $translator, EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(private TranslatorInterface $translator, private EntityManagerInterface $entityManager, private UrlGeneratorInterface $urlGenerator, private CsrfTokenManagerInterface $csrfTokenManager, private UserPasswordHasherInterface $passwordEncoder)
     {
-        $this->translator = $translator;
-        $this->entityManager = $entityManager;
-        $this->urlGenerator = $urlGenerator;
-        $this->csrfTokenManager = $csrfTokenManager;
-        $this->passwordEncoder = $passwordEncoder;
     }
 
     public function supports(Request $request)
@@ -82,7 +71,7 @@ class UserFormAuthenticator extends AbstractFormLoginAuthenticator implements Pa
 
         $user = $this->entityManager->getRepository(User::class)->loadUserByUsername($credentials['username']);
         if (!$user) {
-            throw new UsernameNotFoundException();
+            throw new UserNotFoundException();
         }
 
         return $user;
@@ -116,10 +105,7 @@ class UserFormAuthenticator extends AbstractFormLoginAuthenticator implements Pa
         return new RedirectResponse($this->urlGenerator->generate('app_event_list'));
     }
 
-    /**
-     * @return JsonResponse|RedirectResponse
-     */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse|RedirectResponse
     {
         if ($request->isXmlHttpRequest()) {
             $result = [

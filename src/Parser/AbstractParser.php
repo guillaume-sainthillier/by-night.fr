@@ -19,16 +19,10 @@ use Throwable;
 
 abstract class AbstractParser implements ParserInterface
 {
-    protected ReservationsHandler $reservationsHandler;
-    private EventProducer $eventProducer;
-    private LoggerInterface $logger;
     private int $parsedEvents = 0;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler)
+    public function __construct(private LoggerInterface $logger, private EventProducer $eventProducer, protected ReservationsHandler $reservationsHandler)
     {
-        $this->logger = $logger;
-        $this->eventProducer = $eventProducer;
-        $this->reservationsHandler = $reservationsHandler;
     }
 
     /**

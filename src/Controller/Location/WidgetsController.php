@@ -27,13 +27,12 @@ class WidgetsController extends BaseController
     public const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/tweeter-feed/{max_id}", name="app_widget_tweeter", requirements={"max_id": "\d+"}, methods={"GET"})
      * @ReverseProxy(expires="1 hour")
      */
+    #[Route(path: '/tweeter-feed/{max_id}', name: 'app_widget_tweeter', requirements: ['max_id' => '\d+'], methods: ['GET'])]
     public function twitter(bool $disableTwitterFeed, Location $location, Twitter $twitter, int $max_id = null): Response
     {
         $results = !$disableTwitterFeed ? $twitter->getTimeline($location, $max_id, self::TWEET_LIMIT) : [];
-
         $nextLink = null;
         if (isset($results['search_metadata']['next_results'])) {
             parse_str($results['search_metadata']['next_results'], $infos);
@@ -45,7 +44,6 @@ class WidgetsController extends BaseController
                 ]);
             }
         }
-
         if (!isset($results['statuses'])) {
             $results['statuses'] = [];
         }
@@ -58,10 +56,9 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}", name="app_widget_next_events", methods={"GET"})
-     *
      * @ReverseProxy(expires="tomorrow")
      */
+    #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/prochaines-soirees/{page<%patterns.page%>}', name: 'app_widget_next_events', methods: ['GET'])]
     public function nextEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_widget_next_events', ['page' => $page]);
@@ -70,10 +67,8 @@ class WidgetsController extends BaseController
             return $eventCheck->getResponse();
         }
         $event = $eventCheck->getEvent();
-
         $count = $eventRepository->getAllNextCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
-
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('app_widget_next_events', [
                 'slug' => $event->getSlug(),
@@ -96,10 +91,9 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}", name="app_widget_similar_events", methods={"GET"})
-     *
      * @ReverseProxy(expires="tomorrow")
      */
+    #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}/autres-soirees/{page<%patterns.page%>}', name: 'app_widget_similar_events', methods: ['GET'])]
     public function similarEvents(Location $location, EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $slug, ?int $id = null, ?int $page = 1): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_widget_similar_events', ['page' => $page]);
@@ -110,7 +104,6 @@ class WidgetsController extends BaseController
         $event = $eventCheck->getEvent();
         $count = $eventRepository->getAllSimilarsCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
-
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('app_widget_similar_events', [
                 'location' => $location->getSlug(),
@@ -133,14 +126,13 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/top/soirees/{page<%patterns.page%>}", name="app_widget_top_events", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
+    #[Route(path: '/top/soirees/{page<%patterns.page%>}', name: 'app_widget_top_events', methods: ['GET'])]
     public function topEvents(Location $location, EventRepository $eventRepository, int $page = 1): Response
     {
         $current = $page * self::WIDGET_ITEM_LIMIT;
         $count = $eventRepository->getTopEventCount($location);
-
         if ($current < $count) {
             $hasNextLink = $this->generateUrl('app_widget_top_events', [
                 'page' => $page + 1,

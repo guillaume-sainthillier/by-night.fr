@@ -17,17 +17,8 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 class UserProfilePicture
 {
-    private UploaderHelper $helper;
-
-    private Packages $packages;
-
-    private AssetExtension $assetExtension;
-
-    public function __construct(UploaderHelper $helper, Packages $packages, AssetExtension $assetExtension)
+    public function __construct(private UploaderHelper $helper, private Packages $packages, private AssetExtension $assetExtension)
     {
-        $this->assetExtension = $assetExtension;
-        $this->helper = $helper;
-        $this->packages = $packages;
     }
 
     public function getOriginalProfilePicture(User $user): string

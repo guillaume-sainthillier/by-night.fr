@@ -18,14 +18,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PopulateSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var IndexManager
-     */
-    private $indexManager;
-
-    public function __construct(IndexManager $indexManager)
+    public function __construct(private IndexManager $indexManager)
     {
-        $this->indexManager = $indexManager;
     }
 
     public function preIndexPopulate(PreIndexPopulateEvent $event)

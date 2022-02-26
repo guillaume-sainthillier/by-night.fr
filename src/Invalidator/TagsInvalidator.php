@@ -22,20 +22,10 @@ use Psr\Log\LoggerInterface;
 
 class TagsInvalidator
 {
-    private CacheManager $tagHandler;
+    private array $tags = [];
 
-    private LoggerInterface $logger;
-
-    private bool $debug;
-
-    private array $tags;
-
-    public function __construct(CacheManager $tagHandler, LoggerInterface $logger, $debug)
+    public function __construct(private CacheManager $tagHandler, private LoggerInterface $logger, private bool $debug)
     {
-        $this->tagHandler = $tagHandler;
-        $this->logger = $logger;
-        $this->debug = $debug;
-        $this->tags = [];
     }
 
     public static function getMenuTag(): string

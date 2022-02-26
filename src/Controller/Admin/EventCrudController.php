@@ -28,6 +28,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+use RuntimeException;
 
 class EventCrudController extends AbstractCrudController
 {
@@ -129,6 +130,6 @@ class EventCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$panel1, $user, $createdAt, $updatedAt, $externalId, $slug, $nom, $dateDebut, $dateFin, $horaires, $descriptif, $externalUpdatedAt, $modificationDerniereMinute, $typeManifestation, $categorieManifestation, $themeManifestation, $phoneContacts, $mailContacts, $websiteContacts, $tarif, $brouillon, $archive, $panel2, $place, $placeName, $placeStreet, $placeCity, $placePostalCode, $placeExternalId, $placeFacebookId, $placeCountry, $latitude, $longitude, $adresse, $panel3, $url, $imageName, $imageSystemName, $panel4, $fromData, $parserVersion, $source];
         }
-        throw new \RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Repository\PlaceMetadataRepository;
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -70,12 +71,12 @@ class PlaceMetadata implements ExternalIdentifiableInterface
         return $this;
     }
 
-    public function getExternalUpdatedAt(): ?\DateTimeInterface
+    public function getExternalUpdatedAt(): ?DateTimeInterface
     {
         return $this->externalUpdatedAt;
     }
 
-    public function setExternalUpdatedAt(?\DateTimeInterface $externalUpdatedAt): self
+    public function setExternalUpdatedAt(?DateTimeInterface $externalUpdatedAt): self
     {
         $this->externalUpdatedAt = $externalUpdatedAt;
 

@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
 /**
  * @ORM\Table(indexes={
@@ -21,7 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorMap({"user": "UserOAuth", "site": "AppOAuth"})
  * @ORM\Entity(repositoryClass="App\Repository\OAuthRepository")
  */
-abstract class OAuth
+abstract class OAuth implements Stringable
 {
     /**
      * @ORM\Id
@@ -148,7 +149,7 @@ abstract class OAuth
         return $this->id;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return '#' . $this->id ?: '?';
     }

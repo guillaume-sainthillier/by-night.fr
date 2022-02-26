@@ -34,14 +34,8 @@ use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class EventType extends AbstractType
 {
-    private DoctrineEventHandler $doctrineEventHandler;
-
-    private DateRangeBuilder $dateRangeBuilder;
-
-    public function __construct(DoctrineEventHandler $doctrineEventHandler, DateRangeBuilder $dateRangeBuilder)
+    public function __construct(private DoctrineEventHandler $doctrineEventHandler, private DateRangeBuilder $dateRangeBuilder)
     {
-        $this->doctrineEventHandler = $doctrineEventHandler;
-        $this->dateRangeBuilder = $dateRangeBuilder;
     }
 
     /**
@@ -235,7 +229,7 @@ class EventType extends AbstractType
         ]);
     }
 
-    public function getName(): string
+    public function getBlockPrefix(): string
     {
         return 'app_event';
     }

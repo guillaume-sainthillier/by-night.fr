@@ -33,25 +33,8 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserSocialAuthenticator extends SocialAuthenticator
 {
-    private Security $security;
-    private ClientRegistry $clientRegistry;
-    private EntityManagerInterface $em;
-    private UrlGeneratorInterface $router;
-    private SocialProvider $socialProvider;
-    private UserRepository $userRepository;
-    private OAuthDataProvider $oAuthDataProvider;
-    private TwitterOAuth $twitterOAuth;
-
-    public function __construct(Security $security, ClientRegistry $clientRegistry, EntityManagerInterface $em, UrlGeneratorInterface $router, SocialProvider $socialProvider, OAuthDataProvider $oAuthDataProvider, TwitterOAuth $twitterOAuth, UserRepository $userRepository)
+    public function __construct(private Security $security, private ClientRegistry $clientRegistry, private EntityManagerInterface $em, private UrlGeneratorInterface $router, private SocialProvider $socialProvider, private OAuthDataProvider $oAuthDataProvider, private TwitterOAuth $twitterOAuth, private UserRepository $userRepository)
     {
-        $this->security = $security;
-        $this->clientRegistry = $clientRegistry;
-        $this->em = $em;
-        $this->router = $router;
-        $this->socialProvider = $socialProvider;
-        $this->userRepository = $userRepository;
-        $this->oAuthDataProvider = $oAuthDataProvider;
-        $this->twitterOAuth = $twitterOAuth;
     }
 
     public function supports(Request $request)
@@ -86,9 +69,9 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 ->setEmail($datas['email']);
 
             //Avoir duplicate exception
-            $initialUsername = $existingUser->getUsername();
+            $initialUsername = $existingUser->getUserIdentifier();
             for ($i = 1;; ++$i) {
-                $persistedUser = $this->userRepository->findOneBy(['username' => $existingUser->getUsername()]);
+                $persistedUser = $this->userRepository->findOneBy(['username' => $existingUser->getUserIdentifier()]);
                 if (null === $persistedUser) {
                     break;
                 }

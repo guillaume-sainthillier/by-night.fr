@@ -13,21 +13,22 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
  */
-class Comment
+class Comment implements Stringable
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
 
     /**
      * @ORM\Column(type="text")
-     * @Assert\Length(min="3", minMessage="Le commentaire doit faire au moins {{ limit }} caractères")
-     * @Assert\NotBlank(message="Le commentaire ne peut pas être vide")
      */
+    #[Assert\Length(min: 3, minMessage: 'Le commentaire doit faire au moins {{ limit }} caractères')]
+    #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     private ?string $commentaire = null;
 
     /**
@@ -65,7 +66,7 @@ class Comment
         $this->reponses = new ArrayCollection();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('#%s', $this->id ?: '?');
     }

@@ -15,18 +15,11 @@ use App\Repository\AppOAuthRepository;
 
 class SocialManager
 {
-    private string $facebookIdPage;
-    private string $twitterIdPage;
     private bool $_siteInfoInitialized = false;
     private ?AppOAuth $appOAuth = null;
 
-    private AppOAuthRepository $appOAuthRepository;
-
-    public function __construct(string $facebookIdPage, string $twitterIdPage, AppOAuthRepository $appOAuthRepository)
+    public function __construct(private string $facebookIdPage, private string $twitterIdPage, private AppOAuthRepository $appOAuthRepository)
     {
-        $this->facebookIdPage = $facebookIdPage;
-        $this->twitterIdPage = $twitterIdPage;
-        $this->appOAuthRepository = $appOAuthRepository;
     }
 
     public function hasAppOAuth(): bool

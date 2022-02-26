@@ -37,23 +37,9 @@ abstract class Social
 
     protected string $secret;
 
-    protected TokenStorageInterface $tokenStorage;
-
-    protected RouterInterface $router;
-
-    protected SessionInterface $session;
-
-    protected RequestStack $requestStack;
-
-    protected LoggerInterface $logger;
-
-    protected EventProfilePicture $eventProfilePicture;
-
-    protected SocialManager $socialManager;
-
     protected bool $isInitialized;
 
-    public function __construct(array $config, TokenStorageInterface $tokenStorage, RouterInterface $router, SessionInterface $session, RequestStack $requestStack, LoggerInterface $logger, EventProfilePicture $eventProfilePicture, SocialManager $socialManager)
+    public function __construct(array $config, protected TokenStorageInterface $tokenStorage, protected RouterInterface $router, protected SessionInterface $session, protected RequestStack $requestStack, protected LoggerInterface $logger, protected EventProfilePicture $eventProfilePicture, protected SocialManager $socialManager)
     {
         if (!isset($config['id'])) {
             throw new SocialException("Le paramètre 'id' est absent");
@@ -66,13 +52,6 @@ abstract class Social
         $this->id = $config['id'];
         $this->secret = $config['secret'];
         $this->config = $config;
-        $this->tokenStorage = $tokenStorage;
-        $this->router = $router;
-        $this->session = $session;
-        $this->requestStack = $requestStack;
-        $this->logger = $logger;
-        $this->eventProfilePicture = $eventProfilePicture;
-        $this->socialManager = $socialManager;
         $this->isInitialized = false;
     }
 

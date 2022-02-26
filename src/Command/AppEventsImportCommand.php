@@ -20,14 +20,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AppEventsImportCommand extends Command
 {
-    /** @var ParserInterface[] */
-    private iterable $parsers;
+    protected static $defaultName = 'app:events:import';
 
-    public function __construct(iterable $parsers)
+    /**
+     * @param ParserInterface[] $parsers
+     */
+    public function __construct(private iterable $parsers)
     {
         parent::__construct();
-
-        $this->parsers = $parsers;
     }
 
     /**
@@ -37,9 +37,7 @@ class AppEventsImportCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('app:events:import')
-            ->setDescription('Ajouter / mettre à jour des nouveaux événements')
+        $this->setDescription('Ajouter / mettre à jour des nouveaux événements')
             ->addArgument('parser', InputArgument::OPTIONAL, 'Nom du parser à lancer', 'all')
             ->addOption('full', 'f', InputOption::VALUE_NONE, 'Effectue un full import du catalogue disponible');
     }

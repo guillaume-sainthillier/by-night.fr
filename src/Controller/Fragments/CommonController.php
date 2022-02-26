@@ -23,16 +23,15 @@ class CommonController extends AbstractController
     public const LIFE_TIME_CACHE = 86_400;
 
     /**
-     * @Route("/_private/header/{id<%patterns.id%>}", name="app_private_header", methods={"GET"})
      * @ReverseProxy(expires="+1 day")
      */
+    #[Route(path: '/_private/header/{id<%patterns.id%>}', name: 'app_private_header', methods: ['GET'])]
     public function header(CityManager $cityManager, CityRepository $cityRepository, ?int $id = null): Response
     {
         $city = null;
         if ($id) {
             $city = $cityRepository->find($id);
         }
-
         $city = $city ?: $cityManager->getCity();
 
         return $this->render('fragments/menu.html.twig', [

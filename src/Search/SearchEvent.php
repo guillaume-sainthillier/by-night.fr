@@ -17,17 +17,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class SearchEvent
 {
-    /**
-     * @Assert\NotBlank
-     */
+    #[Assert\NotBlank]
     private ?DateTimeInterface $from;
 
     private ?DateTimeInterface $to = null;
 
-    /**
-     * @Assert\NotBlank
-     * @Assert\GreaterThan(0)
-     */
+    #[Assert\NotBlank]
+    #[Assert\GreaterThan(0)]
     private ?int $range = 25;
 
     private ?string $tag = null;

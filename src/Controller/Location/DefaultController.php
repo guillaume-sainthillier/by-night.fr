@@ -23,18 +23,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController extends BaseController
 {
     /**
-     * @Route("/", name="app_location_index", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
+    #[Route(path: '/', name: 'app_location_index', methods: ['GET'])]
     public function index(Location $location, PaginatorInterface $paginator, EventRepository $eventRepository): Response
     {
         $datas = [
             'from' => new DateTime(),
         ];
-
         $query = $eventRepository->findUpcomingEvents($location);
         $events = $paginator->paginate($query, 1, 7);
-
         $form = $this->createForm(SimpleEventSearchType::class, $datas);
 
         return $this->render('location/index.html.twig', [

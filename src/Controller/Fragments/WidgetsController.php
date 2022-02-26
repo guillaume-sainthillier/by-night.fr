@@ -27,14 +27,13 @@ class WidgetsController extends BaseController
     public const WIDGET_ITEM_LIMIT = 7;
 
     /**
-     * @Route("/top/membres/{page<%patterns.page%>}", name="app_agenda_top_users", methods={"GET"})
      * @ReverseProxy(expires="6 hours")
      */
+    #[Route(path: '/top/membres/{page<%patterns.page%>}', name: 'app_agenda_top_users', methods: ['GET'])]
     public function topUsers(UserRepository $userRepository, int $page = 1): Response
     {
         $count = $userRepository->getCount();
         $current = $page * self::WIDGET_ITEM_LIMIT;
-
         $hasNextLink = $current < $count ? $this->generateUrl('app_agenda_top_users', [
             'page' => $page + 1,
         ]) : null;
@@ -48,14 +47,13 @@ class WidgetsController extends BaseController
     }
 
     /**
-     * @Route("/_private/tendances/{id<%patterns.id%>}", name="app_event_trends", methods={"GET"})
      * @ReverseProxy(expires="1 year")
      */
+    #[Route(path: '/_private/tendances/{id<%patterns.id%>}', name: 'app_event_trends', methods: ['GET'])]
     public function trends(Event $event, EventProfilePicture $eventProfilePicture, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
     {
         $participer = false;
         $interet = false;
-
         $user = $this->getUser();
         if ($user) {
             $userEvent = $userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
@@ -64,15 +62,12 @@ class WidgetsController extends BaseController
                 $interet = $userEvent->getInteret();
             }
         }
-
         $link = $this->generateUrl('app_event_details', [
             'slug' => $event->getSlug(),
             'id' => $event->getId(),
             'location' => $event->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
-
         $eventProfile = $eventProfilePicture->getOriginalPicture($event);
-
         $page = new Page([
             'url' => $link,
             'title' => $event->getNom(),

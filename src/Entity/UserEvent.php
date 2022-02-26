@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserEventRepository")
@@ -19,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  * }
  * )
  */
-class UserEvent
+class UserEvent implements Stringable
 {
     use EntityIdentityTrait;
     use EntityTimestampableTrait;
@@ -46,7 +47,7 @@ class UserEvent
      */
     private ?Event $event = null;
 
-    public function __toString()
+    public function __toString(): string
     {
         return '#' . $this->id ?: '?';
     }

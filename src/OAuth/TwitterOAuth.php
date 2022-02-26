@@ -22,19 +22,11 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class TwitterOAuth
 {
-    private string $clientId;
-    private string $clientSecret;
-
-    private RequestStack $requestStack;
-
     private const OAUTH_TOKEN_SESSION_KEY = '_oauth_token';
     private const OAUTH_TOKEN_SECRET_SESSION_KEY = '_oauth_token_secret';
 
-    public function __construct(string $clientId, string $clientSecret, RequestStack $requestStack)
+    public function __construct(private string $clientId, private string $clientSecret, private RequestStack $requestStack)
     {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-        $this->requestStack = $requestStack;
     }
 
     public function redirect(string $redirectUri): RedirectResponse

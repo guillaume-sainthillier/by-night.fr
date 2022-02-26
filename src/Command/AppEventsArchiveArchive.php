@@ -17,16 +17,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AppEventsArchiveArchive extends Command
 {
-    private EventArchivator $eventArchivator;
+    protected static $defaultName = 'app:events:archive';
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(EventArchivator $eventArchivator)
+    public function __construct(private EventArchivator $eventArchivator)
     {
         parent::__construct();
-
-        $this->eventArchivator = $eventArchivator;
     }
 
     /**
@@ -36,9 +34,7 @@ class AppEventsArchiveArchive extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('app:events:archive')
-            ->setDescription('Archive les vieux événements dans ElasticSearch');
+        $this->setDescription('Archive les vieux événements dans ElasticSearch');
     }
 
     /**

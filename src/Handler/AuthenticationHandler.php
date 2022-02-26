@@ -23,20 +23,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, AuthenticationFailureHandlerInterface
 {
-    protected TranslatorInterface $translator;
-
-    protected RouterInterface $router;
-
-    public function __construct(TranslatorInterface $translator, RouterInterface $router)
+    public function __construct(protected TranslatorInterface $translator, protected RouterInterface $router)
     {
-        $this->translator = $translator;
-        $this->router = $router;
     }
 
-    /**
-     * @return JsonResponse|RedirectResponse
-     */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token): JsonResponse|RedirectResponse
     {
         if ($request->isXmlHttpRequest()) {
             $result = ['success' => true];
@@ -65,10 +56,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
         return new RedirectResponse($url);
     }
 
-    /**
-     * @return JsonResponse|RedirectResponse
-     */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse|RedirectResponse
     {
         if ($request->isXmlHttpRequest()) {
             $result = [

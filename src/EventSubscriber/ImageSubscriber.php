@@ -26,14 +26,8 @@ class ImageSubscriber implements EventSubscriberInterface
     /** @var DeletableFile[] */
     private array $files = [];
 
-    private PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer;
-
-    private RemoveImageThumbnailsProducer $removeImageThumbnailsProducer;
-
-    public function __construct(PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer, RemoveImageThumbnailsProducer $removeImageThumbnailsProducer)
+    public function __construct(private PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer, private RemoveImageThumbnailsProducer $removeImageThumbnailsProducer)
     {
-        $this->purgeCdnCacheUrlProducer = $purgeCdnCacheUrlProducer;
-        $this->removeImageThumbnailsProducer = $removeImageThumbnailsProducer;
     }
 
     /**

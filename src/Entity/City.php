@@ -58,8 +58,6 @@ class City extends AdminZone
     /**
      * Set parent.
      *
-     * @param AdminZone $parent
-     *
      * @return City
      */
     public function setParent(AdminZone $parent = null)

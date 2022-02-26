@@ -20,14 +20,12 @@ use League\Glide\Manipulators\Size;
  */
 class Thumb extends BaseManipulator
 {
-    /**
-     * Maximum image size in pixels.
-     */
-    private ?int $maxImageSize;
-
-    public function __construct(?int $maxImageSize = null)
-    {
-        $this->maxImageSize = $maxImageSize;
+    public function __construct(
+        /**
+         * Maximum image size in pixels.
+         */
+        private ?int $maxImageSize = null
+    ) {
     }
 
     /**

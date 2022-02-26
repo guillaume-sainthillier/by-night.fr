@@ -22,15 +22,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UserUrlCheckSubscriber implements EventSubscriberInterface
 {
-    private UserRepository $userRepository;
-    private RequestStack $requestStack;
-    private UrlGeneratorInterface $router;
-
-    public function __construct(RequestStack $requestStack, UrlGeneratorInterface $router, UserRepository $userRepository)
+    public function __construct(private RequestStack $requestStack, private UrlGeneratorInterface $router, private UserRepository $userRepository)
     {
-        $this->requestStack = $requestStack;
-        $this->router = $router;
-        $this->userRepository = $userRepository;
     }
 
     /**
@@ -59,7 +52,7 @@ class UserUrlCheckSubscriber implements EventSubscriberInterface
         if (null === $this->requestStack->getParentRequest() && (
                 null === $e->getUserId()
                 || (null !== $e->getUserSlug() && $user->getSlug() !== $e->getUserSlug())
-                || (null !== $e->getUserUsername() && $user->getUsername() !== $e->getUserUsername())
+                || (null !== $e->getUserUsername() && $user->getUserIdentifier() !== $e->getUserUsername())
             )) {
             $routeParams = array_merge([
                 'id' => $user->getId(),

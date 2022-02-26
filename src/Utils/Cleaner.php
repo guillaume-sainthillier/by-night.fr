@@ -15,11 +15,8 @@ use App\Entity\Place;
 
 class Cleaner
 {
-    private Util $util;
-
-    public function __construct(Util $util)
+    public function __construct(private Util $util)
     {
-        $this->util = $util;
     }
 
     public function cleanEvent(EventDto $dto): void

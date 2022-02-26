@@ -25,11 +25,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SearchType extends AbstractType
 {
-    private DateRangeBuilder $dateRangeBuilder;
-
-    public function __construct(DateRangeBuilder $dateRangeBuilder)
+    public function __construct(private DateRangeBuilder $dateRangeBuilder)
     {
-        $this->dateRangeBuilder = $dateRangeBuilder;
     }
 
     public function onPreSubmit(FormEvent $event): void

@@ -28,36 +28,33 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
-use EasyCorp\Bundle\EasyAdminBundle\Router\CrudUrlGenerator;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class DashboardController extends AbstractDashboardController
 {
-    private UserProfilePicture $userProfilePicture;
-
-    public function __construct(UserProfilePicture $userProfilePicture)
+    public function __construct(private UserProfilePicture $userProfilePicture, private AdminUrlGenerator $adminUrlGenerator)
     {
-        $this->userProfilePicture = $userProfilePicture;
     }
 
-    /**
-     * @Route("/", name="admin")
-     */
+    #[Route(path: '/', name: 'admin')]
     public function index(): Response
     {
         // redirect to some CRUD controller
-        $routeBuilder = $this->get(CrudUrlGenerator::class)->build();
+        $url = $this
+            ->adminUrlGenerator
+            ->setController(EventCrudController::class)
+            ->generateUrl();
 
-        return $this->redirect($routeBuilder->setController(EventCrudController::class)->generateUrl());
+        return $this->redirect($url);
     }
 
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('By Night Administration')
-            ->setTranslationDomain(false);
+            ->setTitle('By Night Administration');
     }
 
     public function configureCrud(): Crud

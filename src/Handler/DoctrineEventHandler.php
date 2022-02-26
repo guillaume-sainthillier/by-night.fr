@@ -31,39 +31,20 @@ use Exception;
 class DoctrineEventHandler
 {
     public const CHUNK_SIZE = 50;
-
-    private EntityManagerInterface $entityManager;
-    private CityRepository $repoCity;
-    private ZipCityRepository $repoZipCity;
-    private CountryRepository $countryRepository;
-    private EventHandler $handler;
-    private Firewall $firewall;
-    private EntityProviderHandler $entityProviderHandler;
-    private EntityFactoryHandler $entityFactoryHandler;
-    private EchantillonHandler $echantillonHandler;
     private ParserHistoryHandler $parserHistoryHandler;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
-        EventHandler $handler,
-        Firewall $firewall,
-        EntityProviderHandler $entityProviderHandler,
-        EchantillonHandler $echantillonHandler,
-        EntityFactoryHandler $entityFactoryHandler,
-        CityRepository $cityRepository,
-        ZipCityRepository $zipCityRepository,
-        CountryRepository $countryRepository
+        private EntityManagerInterface $entityManager,
+        private EventHandler $handler,
+        private Firewall $firewall,
+        private EntityProviderHandler $entityProviderHandler,
+        private EchantillonHandler $echantillonHandler,
+        private EntityFactoryHandler $entityFactoryHandler,
+        private CityRepository $repoCity,
+        private ZipCityRepository $repoZipCity,
+        private CountryRepository $countryRepository
     ) {
-        $this->entityManager = $entityManager;
-        $this->repoCity = $cityRepository;
-        $this->repoZipCity = $zipCityRepository;
-        $this->handler = $handler;
-        $this->firewall = $firewall;
-        $this->entityProviderHandler = $entityProviderHandler;
-        $this->entityFactoryHandler = $entityFactoryHandler;
-        $this->echantillonHandler = $echantillonHandler;
         $this->parserHistoryHandler = new ParserHistoryHandler();
-        $this->countryRepository = $countryRepository;
     }
 
     public function handleOne(EventDto $dto, bool $flush = true): Event

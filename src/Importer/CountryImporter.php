@@ -29,16 +29,8 @@ class CountryImporter
     private const ZIP_CODES_PER_TRANSACTION = 500;
     private const CITIES_PER_TRANSACTION = 50;
 
-    private EntityManagerInterface $em;
-
-    private string $dataDir;
-    private CountryRepository $countryRepository;
-
-    public function __construct(EntityManagerInterface $em, string $dataDir, CountryRepository $countryRepository)
+    public function __construct(private EntityManagerInterface $em, private string $dataDir, private CountryRepository $countryRepository)
     {
-        $this->em = $em;
-        $this->dataDir = $dataDir;
-        $this->countryRepository = $countryRepository;
     }
 
     public function import(string $id, ?string $name = null, ?string $capital = null, ?string $locale = null): void

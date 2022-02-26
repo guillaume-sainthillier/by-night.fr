@@ -31,11 +31,8 @@ class Merger
 
     public const DEFAULT_MERGE = self::MERGE_RIGHT;
 
-    private Comparator $comparator;
-
-    public function __construct(Comparator $comparator)
+    public function __construct(private Comparator $comparator)
     {
-        $this->comparator = $comparator;
     }
 
     public function mergeEvent(Event $a = null, Event $b = null): object

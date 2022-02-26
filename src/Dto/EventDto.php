@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -18,6 +18,7 @@ use App\Dependency\DependencyCatalogue;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
+use DateTimeInterface;
 
 class EventDto implements ExternalIdentifiableInterface, DependenciableInterface
 {
@@ -27,10 +28,10 @@ class EventDto implements ExternalIdentifiableInterface, DependenciableInterface
     /** @var int|null */
     public $id;
 
-    /** @var \DateTimeInterface|null */
+    /** @var DateTimeInterface|null */
     public $startDate;
 
-    /** @var \DateTimeInterface|null */
+    /** @var DateTimeInterface|null */
     public $endDate;
 
     /** @var string|null */

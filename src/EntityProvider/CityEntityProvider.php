@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -17,14 +17,8 @@ use App\Repository\CityRepository;
 
 class CityEntityProvider extends AbstractEntityProvider
 {
-    private CityRepository $cityRepository;
-
-    private ComparatorHandler $comparatorHandler;
-
-    public function __construct(CityRepository $cityRepository, ComparatorHandler $comparatorHandler)
+    public function __construct(private CityRepository $cityRepository, private ComparatorHandler $comparatorHandler)
     {
-        $this->cityRepository = $cityRepository;
-        $this->comparatorHandler = $comparatorHandler;
     }
 
     /**

@@ -24,14 +24,13 @@ use Vich\UploaderBundle\Storage\StorageInterface;
 class OldMediaController extends AbstractController
 {
     /**
-     * @Route("/media/cache/{filter}/{path<%patterns.path%>}", methods={"GET"})
-     * @Route("/uploads/{path<%patterns.path%>}", methods={"GET"})
      * @ReverseProxy(expires="1 year")
      */
+    #[Route(path: '/media/cache/{filter}/{path<%patterns.path%>}', methods: ['GET'])]
+    #[Route(path: '/uploads/{path<%patterns.path%>}', methods: ['GET'])]
     public function index(string $path, StorageInterface $storage, AssetExtension $assetExtension, EventRepository $eventRepository, UserRepository $userRepository): Response
     {
         $infos = pathinfo($path);
-
         /** @var Event $event */
         $event = $eventRepository
             ->createQueryBuilder('e')
@@ -40,7 +39,6 @@ class OldMediaController extends AbstractController
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
-
         if ($event) {
             if ($event->getImage()->getName() === $infos['basename']) {
                 $url = $assetExtension->thumb($storage->resolvePath($event, 'imageFile'));
@@ -50,7 +48,6 @@ class OldMediaController extends AbstractController
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
-
         /** @var User $user */
         $user = $userRepository
             ->createQueryBuilder('u')
@@ -59,7 +56,6 @@ class OldMediaController extends AbstractController
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
-
         if ($user) {
             if ($user->getImage()->getName() === $infos['basename']) {
                 $url = $assetExtension->thumb($storage->resolvePath($user, 'imageFile'));
@@ -69,7 +65,6 @@ class OldMediaController extends AbstractController
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
-
         throw $this->createNotFoundException(sprintf('Unable to find event or user for path "%s"', $path));
     }
 }

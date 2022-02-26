@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -17,11 +17,8 @@ use App\Utils\SluggerUtils;
 
 class CountryComparator extends AbstractComparator
 {
-    private SluggerUtils $sluggerUtils;
-
-    public function __construct(SluggerUtils $sluggerUtils)
+    public function __construct(private SluggerUtils $sluggerUtils)
     {
-        $this->sluggerUtils = $sluggerUtils;
     }
 
     public function supports(object $object): bool

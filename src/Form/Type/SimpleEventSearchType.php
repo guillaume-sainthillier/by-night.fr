@@ -20,11 +20,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SimpleEventSearchType extends AbstractType
 {
-    private DateRangeBuilder $dateRangeBuilder;
-
-    public function __construct(DateRangeBuilder $dateRangeBuilder)
+    public function __construct(private DateRangeBuilder $dateRangeBuilder)
     {
-        $this->dateRangeBuilder = $dateRangeBuilder;
     }
 
     /**

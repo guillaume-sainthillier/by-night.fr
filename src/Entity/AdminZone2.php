@@ -33,8 +33,6 @@ class AdminZone2 extends AdminZone
     /**
      * Set parent.
      *
-     * @param AdminZone1 $parent
-     *
      * @return AdminZone2
      */
     public function setParent(AdminZone1 $parent = null)

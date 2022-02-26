@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -18,12 +18,8 @@ use App\Handler\EntityProviderHandler;
 
 class PlaceEntityFactory implements EntityFactoryInterface
 {
-    /** @var EntityProviderHandler */
-    private $entityProviderHandler;
-
-    public function __construct(EntityProviderHandler $entityProviderHandler)
+    public function __construct(private EntityProviderHandler $entityProviderHandler)
     {
-        $this->entityProviderHandler = $entityProviderHandler;
     }
 
     /**
@@ -39,7 +35,7 @@ class PlaceEntityFactory implements EntityFactoryInterface
      */
     public function create(?object $entity, object $dto): object
     {
-        $entity = $entity ?? new Place();
+        $entity ??= new Place();
         \assert($entity instanceof Place);
         \assert($dto instanceof PlaceDto);
 
@@ -55,13 +51,13 @@ class PlaceEntityFactory implements EntityFactoryInterface
         $entity->setVille($dto->city->name ?? $entity->getVille());
 
         if (null !== $dto->city) {
-            $cityEntityProvider = $this->entityProviderHandler->getEntityProvider(\get_class($dto->city));
+            $cityEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->city::class);
             $city = $cityEntityProvider->getEntity($dto->city);
             $entity->setCity($city);
         }
 
         if (null !== $dto->country) {
-            $countryEntityProvider = $this->entityProviderHandler->getEntityProvider(\get_class($dto->country));
+            $countryEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->country::class);
             $country = $countryEntityProvider->getEntity($dto->country);
             $entity->setCountry($country);
         }

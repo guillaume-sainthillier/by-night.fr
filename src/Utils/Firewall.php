@@ -24,15 +24,9 @@ class Firewall
     /** @var ParserData[] */
     private array $parserDatas;
 
-    private Comparator $comparator;
-
-    private ParserDataRepository $parserDataRepository;
-
-    public function __construct(Comparator $comparator, ParserDataRepository $parserDataRepository)
+    public function __construct(private Comparator $comparator, private ParserDataRepository $parserDataRepository)
     {
-        $this->comparator = $comparator;
         $this->parserDatas = [];
-        $this->parserDataRepository = $parserDataRepository;
     }
 
     public function loadExternalIdsData(array $ids): void

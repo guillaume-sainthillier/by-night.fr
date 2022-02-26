@@ -16,21 +16,11 @@ use Symfony\Contracts\EventDispatcher\Event as ContractEvent;
 
 class UserCheckUrlEvent extends ContractEvent
 {
-    private ?int $userId;
-    private ?string $userSlug;
-    private ?string $userUsername;
-    private string $routeName;
-    private array $routeParams;
     private ?Response $response = null;
     private ?User $user = null;
 
-    public function __construct(?int $userId, ?string $userSlug, ?string $userUsername, string $routeName, array $routeParams = [])
+    public function __construct(private ?int $userId, private ?string $userSlug, private ?string $userUsername, private string $routeName, private array $routeParams = [])
     {
-        $this->userId = $userId;
-        $this->userSlug = $userSlug;
-        $this->userUsername = $userUsername;
-        $this->routeName = $routeName;
-        $this->routeParams = $routeParams;
     }
 
     public function setResponse(?Response $response): void

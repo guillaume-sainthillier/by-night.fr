@@ -19,13 +19,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ReCaptchaType extends AbstractType
 {
-    private string $siteKey;
-    private ReCaptchaSubscriber $reCaptchaSubscriber;
-
-    public function __construct(string $siteKey, ReCaptchaSubscriber $reCaptchaSubscriber)
+    public function __construct(private string $siteKey, private ReCaptchaSubscriber $reCaptchaSubscriber)
     {
-        $this->siteKey = $siteKey;
-        $this->reCaptchaSubscriber = $reCaptchaSubscriber;
     }
 
     /**

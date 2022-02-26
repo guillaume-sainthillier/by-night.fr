@@ -15,12 +15,13 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
+use Stringable;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CountryRepository", readOnly=true)
  * @ExclusionPolicy("NONE")
  */
-class Country
+class Country implements Stringable
 {
     /**
      * @ORM\Column(type="string", length=2)
@@ -72,7 +73,7 @@ class Country
      */
     private ?string $postalCodeRegex = null;
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name ?? '';
     }

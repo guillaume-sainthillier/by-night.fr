@@ -14,11 +14,8 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class TwitterUser implements ResourceOwnerInterface
 {
-    private array $response;
-
-    public function __construct(array $response)
+    public function __construct(private array $response)
     {
-        $this->response = $response;
     }
 
     public function getId()

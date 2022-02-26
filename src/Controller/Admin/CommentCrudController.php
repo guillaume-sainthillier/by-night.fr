@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use RuntimeException;
 
 class CommentCrudController extends AbstractCrudController
 {
@@ -55,6 +56,6 @@ class CommentCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$event, $user, $createdAt, $updatedAt, $approuve, $commentaire];
         }
-        throw new \RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

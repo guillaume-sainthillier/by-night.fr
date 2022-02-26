@@ -20,13 +20,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AppImagesUpdateCommand extends Command
 {
-    private UserUpdater $userUpdater;
+    protected static $defaultName = 'app:images:update';
 
-    public function __construct(UserUpdater $userUpdater)
+    public function __construct(private UserUpdater $userUpdater)
     {
         parent::__construct();
-
-        $this->userUpdater = $userUpdater;
     }
 
     /**
@@ -36,9 +34,7 @@ class AppImagesUpdateCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('app:images:update')
-            ->setDescription('Mettre à jour les images (events, users) en provenance des réseaux sociaux')
+        $this->setDescription('Mettre à jour les images (events, users) en provenance des réseaux sociaux')
             ->addOption('from', null, InputOption::VALUE_OPTIONAL, 'Date de dernière mise à jour', 'monday this week');
     }
 

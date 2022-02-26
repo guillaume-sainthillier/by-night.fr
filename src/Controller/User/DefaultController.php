@@ -23,15 +23,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-/**
- * @Route("/membres")
- */
+#[Route(path: '/membres')]
 class DefaultController extends BaseController
 {
-    /**
-     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}", name="app_user_index", methods={"GET"})
-     * @Route("/{username<%patterns.slug%>}", name="app_user_index_old", methods={"GET"})
-     */
+    #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_user_index', methods: ['GET'])]
+    #[Route(path: '/{username<%patterns.slug%>}', name: 'app_user_index_old', methods: ['GET'])]
     public function index(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
         $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_index');
@@ -50,34 +46,23 @@ class DefaultController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/{slug<%patterns.slug%>}--{id<%patterns.id%>}/stats/{type}", name="app_user_stats", requirements={"type": "semaine|mois|annee"}, methods={"GET"})
-     * @Route("/{username<%patterns.slug%>}/stats/{type}", name="app_user_stats_old", requirements={"type": "semaine|mois|annee"}, methods={"GET"})
-     */
+    #[Route(path: '/{slug<%patterns.slug%>}--{id<%patterns.id%>}/stats/{type}', name: 'app_user_stats', requirements: ['type' => 'semaine|mois|annee'], methods: ['GET'])]
+    #[Route(path: '/{username<%patterns.slug%>}/stats/{type}', name: 'app_user_stats_old', requirements: ['type' => 'semaine|mois|annee'], methods: ['GET'])]
     public function stats(EventDispatcherInterface $eventDispatcher, EventRepository $eventRepository, string $type, ?int $id = null, ?string $slug = null, ?string $username = null): Response
     {
+        $datas = null;
         $userCheck = new UserCheckUrlEvent($id, $slug, $username, 'app_user_stats', ['type' => $type]);
         $eventDispatcher->dispatch($userCheck, Events::CHECK_USER_URL);
         if (null !== $userCheck->getResponse()) {
             return $userCheck->getResponse();
         }
         $user = $userCheck->getUser();
-
-        switch ($type) {
-            case 'semaine':
-                $datas = $this->getDataOfWeek($eventRepository, $user);
-
-                break;
-            case 'mois':
-                $datas = $this->getDataOfMonth($eventRepository, $user);
-
-                break;
-            default:
-            case 'annee':
-                $datas = $this->getDataOfYear($eventRepository, $user);
-
-                break;
-        }
+        $datas = match ($type) {
+            'semaine' => $this->getDataOfWeek($eventRepository, $user),
+            'mois' => $this->getDataOfMonth($eventRepository, $user),
+            'annee' => $this->getDataOfYear($eventRepository, $user),
+            default => new JsonResponse($datas),
+        };
 
         return new JsonResponse($datas);
     }

@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -18,12 +18,8 @@ use App\Handler\EntityProviderHandler;
 
 class EventEntityFactory implements EntityFactoryInterface
 {
-    /** @var EntityProviderHandler */
-    private $entityProviderHandler;
-
-    public function __construct(EntityProviderHandler $entityProviderHandler)
+    public function __construct(private EntityProviderHandler $entityProviderHandler)
     {
-        $this->entityProviderHandler = $entityProviderHandler;
     }
 
     /**
@@ -39,7 +35,7 @@ class EventEntityFactory implements EntityFactoryInterface
      */
     public function create(?object $entity, object $dto): object
     {
-        $entity = $entity ?? new Event();
+        $entity ??= new Event();
         \assert($entity instanceof Event);
         \assert($dto instanceof EventDto);
 
@@ -64,7 +60,7 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setNom($dto->name);
         $entity->setHoraires($dto->hours);
 
-        $placeEntityProvider = $this->entityProviderHandler->getEntityProvider(\get_class($dto->place));
+        $placeEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->place::class);
 
         /** @var Place|null $placeEntity */
         $placeEntity = $placeEntityProvider->getEntity($dto->place);

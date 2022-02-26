@@ -22,11 +22,8 @@ class EventVoter extends Voter
     public const EDIT = 'edit';
     public const DELETE = 'delete';
 
-    private Security $security;
-
-    public function __construct(Security $security)
+    public function __construct(private Security $security)
     {
-        $this->security = $security;
     }
 
     /**
@@ -44,14 +41,11 @@ class EventVoter extends Voter
             return true;
         }
 
-        switch ($attribute) {
-            case self::EDIT:
-                return $this->canEdit($subject, $user);
-            case self::DELETE:
-                return $this->canDelete($subject, $user);
-        }
-
-        throw new LogicException('This code should not be reached!');
+        return match ($attribute) {
+            self::EDIT => $this->canEdit($subject, $user),
+            self::DELETE => $this->canDelete($subject, $user),
+            default => throw new LogicException('This code should not be reached!'),
+        };
     }
 
     private function canEdit(Event $event, User $user): bool

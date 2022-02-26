@@ -27,11 +27,10 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class EventController extends BaseController
 {
     /**
-     * @Route("/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}", name="app_event_details", methods={"GET"})
-     * @Route("/soiree/{slug<%patterns.slug%>}", name="app_event_details_old", methods={"GET"})
-     *
      * @ReverseProxy(expires="+1 month")
      */
+    #[Route(path: '/soiree/{slug<%patterns.slug%>}--{id<%patterns.id%>}', name: 'app_event_details', methods: ['GET'])]
+    #[Route(path: '/soiree/{slug<%patterns.slug%>}', name: 'app_event_details_old', methods: ['GET'])]
     public function index(Location $location, EventDispatcherInterface $eventDispatcher, string $slug, ?int $id = null): Response
     {
         $eventCheck = new EventCheckUrlEvent($id, $slug, $location->getSlug(), 'app_event_details');
@@ -39,7 +38,6 @@ class EventController extends BaseController
         if (null !== $eventCheck->getResponse()) {
             return $eventCheck->getResponse();
         }
-
         $event = $eventCheck->getEvent();
 
         return $this->render('location/event/index.html.twig', [

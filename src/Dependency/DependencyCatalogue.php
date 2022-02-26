@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -12,11 +12,12 @@ namespace App\Dependency;
 
 use App\Contracts\DependencyCatalogueInterface;
 use App\Contracts\DependencyInterface;
+use RuntimeException;
 
 class DependencyCatalogue implements DependencyCatalogueInterface
 {
     /** @var DependencyInterface[] */
-    private $dependencies = [];
+    private array $dependencies = [];
 
     public function __construct(array $dependencies = [])
     {
@@ -42,7 +43,7 @@ class DependencyCatalogue implements DependencyCatalogueInterface
     {
         $key = spl_object_hash($object);
         if (!isset($this->dependencies[$key])) {
-            throw new \RuntimeException('Given dependency is not found');
+            throw new RuntimeException('Given dependency is not found');
         }
 
         return $this->dependencies[$key];
@@ -80,9 +81,7 @@ class DependencyCatalogue implements DependencyCatalogueInterface
      */
     public function objects(): array
     {
-        return array_map(function (DependencyInterface $dependency) {
-            return $dependency->getObject();
-        }, $this->all());
+        return array_map(fn (DependencyInterface $dependency) => $dependency->getObject(), $this->all());
     }
 
     public function clear(): void

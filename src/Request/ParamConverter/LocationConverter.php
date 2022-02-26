@@ -24,15 +24,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LocationConverter implements ParamConverterInterface
 {
-    private CityManager $cityManager;
-    private CityRepository $cityRepository;
-    private CountryRepository $countryRepository;
-
-    public function __construct(CityManager $cityManager, CityRepository $cityRepository, CountryRepository $countryRepository)
+    public function __construct(private CityManager $cityManager, private CityRepository $cityRepository, private CountryRepository $countryRepository)
     {
-        $this->cityManager = $cityManager;
-        $this->cityRepository = $cityRepository;
-        $this->countryRepository = $countryRepository;
     }
 
     /**
@@ -40,6 +33,7 @@ class LocationConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration): void
     {
+        $location = null;
         $locationSlug = $request->attributes->get('location', '');
 
         if (null === $locationSlug && !$configuration->isOptional()) {
@@ -64,7 +58,7 @@ class LocationConverter implements ParamConverterInterface
 
         $location = new Location();
         $entity = null;
-        if (0 !== strpos((string) $locationSlug, 'c--')) {
+        if (!str_starts_with((string) $locationSlug, 'c--')) {
             $entity = $this->cityRepository->findOneBySlug($locationSlug);
         } else {
             $entity = $this->countryRepository->findOneBy(['slug' => $locationSlug]);

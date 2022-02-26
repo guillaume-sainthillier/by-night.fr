@@ -19,11 +19,8 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class EventParserDataListener
 {
-    private ParserDataRepository $parserDataRepository;
-
-    public function __construct(ParserDataRepository $parserDataRepository)
+    public function __construct(private ParserDataRepository $parserDataRepository)
     {
-        $this->parserDataRepository = $parserDataRepository;
     }
 
     public function preRemove(LifecycleEventArgs $args): void

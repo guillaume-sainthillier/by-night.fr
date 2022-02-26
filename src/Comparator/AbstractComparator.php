@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -15,6 +15,7 @@ use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\ExternalIdentifiablesInterface;
 use App\Contracts\MatchingInterface;
 use App\Utils\StringManipulator;
+use LogicException;
 
 abstract class AbstractComparator implements ComparatorInterface
 {
@@ -30,7 +31,7 @@ abstract class AbstractComparator implements ComparatorInterface
                 } elseif ($entity instanceof ExternalIdentifiableInterface) {
                     $externals = [$entity];
                 } else {
-                    throw new \LogicException(sprintf('Unable to fetch ids from "%s" class', \get_class($entity)));
+                    throw new LogicException(sprintf('Unable to fetch ids from "%s" class', $entity::class));
                 }
 
                 foreach ($externals as $external) {

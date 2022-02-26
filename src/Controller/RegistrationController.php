@@ -24,21 +24,15 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    private EmailVerifier $emailVerifier;
-
-    public function __construct(EmailVerifier $emailVerifier)
+    public function __construct(private EmailVerifier $emailVerifier)
     {
-        $this->emailVerifier = $emailVerifier;
     }
 
-    /**
-     * @Route("/inscription", name="app_register")
-     */
+    #[Route(path: '/inscription', name: 'app_register')]
     public function index(Request $request, UserPasswordHasherInterface $passwordHasher, GuardAuthenticatorHandler $guardHandler, UserFormAuthenticator $authenticator): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
@@ -72,9 +66,7 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/verifier-email", name="app_verify_email")
-     */
+    #[Route(path: '/verifier-email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request): Response
     {
         try {
@@ -84,7 +76,6 @@ class RegistrationController extends AbstractController
 
             return $this->redirectToRoute('app_register');
         }
-
         $this->addFlash('success', 'Your email a bien été vérifié.');
 
         return $this->redirectToRoute('app_event_list');

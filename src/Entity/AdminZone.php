@@ -18,6 +18,7 @@ use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
+use Stringable;
 
 /**
  * OAuth.
@@ -33,7 +34,7 @@ use JMS\Serializer\Annotation\VirtualProperty;
  * @ORM\HasLifecycleCallbacks
  * @ExclusionPolicy("NONE")
  */
-abstract class AdminZone
+abstract class AdminZone implements Stringable
 {
     /**
      * @ORM\Column(type="integer")
@@ -108,7 +109,7 @@ abstract class AdminZone
         ];
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name ?: '';
     }

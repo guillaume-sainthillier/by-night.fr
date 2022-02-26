@@ -20,11 +20,8 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class EntityTagger
 {
-    private TagsInvalidator $eventInvalidator;
-
-    public function __construct(TagsInvalidator $eventInvalidator)
+    public function __construct(private TagsInvalidator $eventInvalidator)
     {
-        $this->eventInvalidator = $eventInvalidator;
     }
 
     public function postFlush(): void

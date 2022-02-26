@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -38,18 +38,11 @@ class DataTourismeParser extends AbstractParser
     private const INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
     private const UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
 
-    private string $tempPath;
-
-    private string $dataTourismeAppKey;
-
     private PropertyAccessorInterface $propertyAccessor;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $tempPath, string $dataTourismeAppKey)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, private string $tempPath, private string $dataTourismeAppKey)
     {
         parent::__construct($logger, $eventProducer, $reservationsHandler);
-
-        $this->tempPath = $tempPath;
-        $this->dataTourismeAppKey = $dataTourismeAppKey;
         $this->propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
             ->enableExceptionOnInvalidIndex()
             ->enableExceptionOnInvalidPropertyPath()
@@ -313,12 +306,12 @@ class DataTourismeParser extends AbstractParser
     /**
      * @param string|string[] $paths
      */
-    private function getDataValue(array $datas, $paths, $defaultValue = null)
+    private function getDataValue(array $datas, array|string $paths, $defaultValue = null)
     {
         foreach ((array) $paths as $path) {
             try {
                 return $this->propertyAccessor->getValue($datas, $path);
-            } catch (AccessException | UnexpectedTypeException $e) {
+            } catch (AccessException|UnexpectedTypeException) {
             }
         }
 

@@ -17,11 +17,8 @@ use Exception;
 
 class Comparator
 {
-    private Util $util;
-
-    public function __construct(Util $util)
+    public function __construct(private Util $util)
     {
-        $this->util = $util;
     }
 
     public function getBestPlace(array $places, Place $testedPlace = null, $minScore = 90): ?Place
@@ -148,7 +145,7 @@ class Comparator
             } else {
                 try {
                     $pourcentage = $this->getDiffPourcentage($a, $b);
-                } catch (Exception $ex) {
+                } catch (Exception) {
                 }
             }
         }

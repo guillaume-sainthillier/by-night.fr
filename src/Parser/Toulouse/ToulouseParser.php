@@ -15,6 +15,7 @@ use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Parser\AbstractParser;
+use DateTimeImmutable;
 use ForceUTF8\Encoding;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -71,8 +72,8 @@ class ToulouseParser extends AbstractParser
 
             $nom = $tab[1] ?: $tab[2];
 
-            $startDate = new \DateTimeImmutable($tab[5]);
-            $endDate = new \DateTimeImmutable($tab[6]);
+            $startDate = new DateTimeImmutable($tab[5]);
+            $endDate = new DateTimeImmutable($tab[6]);
 
             $event = new EventDto();
             $event->externalId = $tab[0];

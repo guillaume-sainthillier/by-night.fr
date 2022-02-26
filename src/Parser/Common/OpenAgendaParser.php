@@ -35,16 +35,10 @@ class OpenAgendaParser extends AbstractParser
     private const EVENT_BATCH_SIZE = 50;
 
     private HttpClientInterface $client;
-    private CountryRepository $countryRepository;
 
-    private string $openAgendaKey;
-
-    public function __construct(string $openAgendaKey, LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, CountryRepository $countryRepository)
+    public function __construct(private string $openAgendaKey, LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, private CountryRepository $countryRepository)
     {
         parent::__construct($logger, $eventProducer, $reservationsHandler);
-
-        $this->countryRepository = $countryRepository;
-        $this->openAgendaKey = $openAgendaKey;
         $this->client = HttpClient::create();
     }
 
@@ -145,7 +139,7 @@ class OpenAgendaParser extends AbstractParser
             try {
                 $country = $this->countryRepository->getFromRegionOrDepartment($location['region'] ?? null, $location['department'] ?? null);
                 $countryCode = null !== $country ? $country->getId() : null;
-            } catch (NonUniqueResultException $exception) {
+            } catch (NonUniqueResultException) {
                 return null;
             }
         }
@@ -175,7 +169,7 @@ class OpenAgendaParser extends AbstractParser
             $type = $data['tags']['fr'];
         }
 
-        if ($data['image'] && 0 === strpos($data['image'], '//')) {
+        if ($data['image'] && str_starts_with($data['image'], '//')) {
             $data['image'] = 'https:' . $data['image'];
         }
 

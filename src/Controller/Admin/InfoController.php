@@ -16,14 +16,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/info")
- */
+#[Route(path: '/info')]
 class InfoController extends AbstractController
 {
-    /**
-     * @Route("/", name="app_administration_info_index", methods={"GET"})
-     */
+    #[Route(path: '/', name: 'app_administration_info_index', methods: ['GET'])]
     public function list(SocialManager $socialManager): Response
     {
         if (false === $socialManager->hasAppOAuth()) {
@@ -40,9 +36,7 @@ class InfoController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/{id<%patterns.id%>}", name="app_administration_info_edit", methods={"GET"})
-     */
+    #[Route(path: '/{id<%patterns.id%>}', name: 'app_administration_info_edit', methods: ['GET'])]
     public function view(AppOAuth $appOAuth): Response
     {
         return $this->render('admin/social/view.html.twig', [

@@ -22,29 +22,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/recherche")
- */
+#[Route(path: '/recherche')]
 class SearchController extends AbstractController
 {
-    /**
-     * @Route("/", name="app_search_index", methods={"GET"})
-     */
+    #[Route(path: '/', name: 'app_search_index', methods: ['GET'])]
     public function index(Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $rm): Response
     {
         $q = trim($request->get('q'));
         $type = $request->get('type');
         $page = (int) ($request->get('page', 1));
         $maxItems = 20;
-
         if ($page <= 0) {
             $page = 1;
         }
-
         if ($type && !\in_array($type, ['evenements', 'membres'])) {
             $type = null;
         }
-
         $events = $paginator->paginate([]);
         $users = $paginator->paginate([]);
         if ('' !== $q) {

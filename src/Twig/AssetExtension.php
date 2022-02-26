@@ -18,14 +18,8 @@ use Twig\TwigFunction;
 
 class AssetExtension extends Extension
 {
-    private RouterInterface $router;
-
-    private string $secret;
-
-    public function __construct(RouterInterface $router, string $secret)
+    public function __construct(private RouterInterface $router, private string $secret)
     {
-        $this->router = $router;
-        $this->secret = $secret;
     }
 
     /**
@@ -42,7 +36,7 @@ class AssetExtension extends Extension
     public function thumb(?string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
         $parameters['fm'] = 'pjpg';
-        if ('png' === substr($path, -3)) {
+        if (str_ends_with($path, 'png')) {
             $parameters['fm'] = 'png';
         }
 
@@ -55,7 +49,7 @@ class AssetExtension extends Extension
     public function thumbAsset(string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
         $parameters['fm'] = 'pjpg';
-        if ('png' === substr($path, -3)) {
+        if (str_ends_with($path, 'png')) {
             $parameters['fm'] = 'png';
         }
 

@@ -30,26 +30,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EventHandler
 {
-    private Cleaner $cleaner;
-
-    private Comparator $comparator;
-
-    private Merger $merger;
-
-    private LoggerInterface $logger;
-
     private HttpClientInterface $client;
 
-    private string $tempPath;
-
-    public function __construct(Cleaner $cleaner, Comparator $comparator, Merger $merger, LoggerInterface $logger, string $tempPath)
+    public function __construct(private Cleaner $cleaner, private Comparator $comparator, private Merger $merger, private LoggerInterface $logger, private string $tempPath)
     {
-        $this->cleaner = $cleaner;
-        $this->comparator = $comparator;
-        $this->merger = $merger;
-        $this->logger = $logger;
         $this->client = HttpClient::create();
-        $this->tempPath = $tempPath;
     }
 
     public function cleanEvent(EventDto $dto): void
@@ -111,20 +96,12 @@ class EventHandler
 
         $mimeTypes = new MimeTypes();
         $contentType = $mimeTypes->guessMimeType($tempFilePath);
-        switch ($contentType) {
-            case 'image/gif':
-                $ext = 'gif';
-                break;
-            case 'image/png':
-                $ext = 'png';
-                break;
-            case 'image/jpg':
-            case 'image/jpeg':
-                $ext = 'jpeg';
-                break;
-            default:
-                throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType));
-        }
+        $ext = match ($contentType) {
+            'image/gif' => 'gif',
+            'image/png' => 'png',
+            'image/jpg', 'image/jpeg' => 'jpeg',
+            default => throw new UnsupportedFileException(sprintf('Unable to find extension for mime type %s', $contentType)),
+        };
 
         $originalName = pathinfo($event->getUrl(), PATHINFO_BASENAME) ?: ($tempFileBasename . '.' . $ext);
         $file = new DeletableFile($tempFilePath, $originalName, $contentType, null, true);

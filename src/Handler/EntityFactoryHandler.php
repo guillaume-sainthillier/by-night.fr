@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -11,15 +11,15 @@
 namespace App\Handler;
 
 use App\Contracts\EntityFactoryInterface;
+use RuntimeException;
 
 class EntityFactoryHandler
 {
-    /** @var EntityFactoryInterface[] */
-    private $entityFactories;
-
-    public function __construct(iterable $entityFactories)
+    /**
+     * @param EntityFactoryInterface[] $entityFactories
+     */
+    public function __construct(private iterable $entityFactories)
     {
-        $this->entityFactories = $entityFactories;
     }
 
     public function getFactory(string $className): EntityFactoryInterface
@@ -30,6 +30,6 @@ class EntityFactoryHandler
             }
         }
 
-        throw new \RuntimeException(sprintf('Unable to get entity factory for class "%s"', $className));
+        throw new RuntimeException(sprintf('Unable to get entity factory for class "%s"', $className));
     }
 }

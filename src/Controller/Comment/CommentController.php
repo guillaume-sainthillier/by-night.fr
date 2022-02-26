@@ -26,13 +26,10 @@ class CommentController extends BaseController
 {
     public const COMMENTS_PER_PAGE = 10;
 
-    /**
-     * @Route("/form/{id<%patterns.id%>}", name="app_comment_form", methods={"GET"})
-     */
+    #[Route(path: '/form/{id<%patterns.id%>}', name: 'app_comment_form', methods: ['GET'])]
     public function form(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         $comment = new Comment();
-
         $form = null;
         if ($this->isGranted('ROLE_USER')) {
             $form = $this
@@ -53,9 +50,9 @@ class CommentController extends BaseController
     }
 
     /**
-     * @Route("/{id<%patterns.id%>}/{page<%patterns.page%>}", name="app_comment_list", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
+    #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
     public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
     {
         return $this->render('comment/list.html.twig', [
@@ -68,20 +65,18 @@ class CommentController extends BaseController
     }
 
     /**
-     * @Route("/{id<%patterns.id%>}/nouveau", name="app_comment_new", methods={"GET", "POST"})
      * @IsGranted("ROLE_USER")
      */
+    #[Route(path: '/{id<%patterns.id%>}/nouveau', name: 'app_comment_new', methods: ['GET', 'POST'])]
     public function newComment(Request $request, Event $event, CommentRepository $commentRepository): Response
     {
         $user = $this->getAppUser();
         $comment = new Comment();
         $comment->setUser($user);
         $comment->setEvent($event);
-
         $form = $this->createForm(CommentType::class, $comment, [
             'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
         ]);
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();

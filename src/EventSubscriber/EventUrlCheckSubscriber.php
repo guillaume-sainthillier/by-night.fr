@@ -22,15 +22,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EventUrlCheckSubscriber implements EventSubscriberInterface
 {
-    private EventRepository $eventRepository;
-    private RequestStack $requestStack;
-    private UrlGeneratorInterface $router;
-
-    public function __construct(RequestStack $requestStack, UrlGeneratorInterface $router, EventRepository $eventRepository)
+    public function __construct(private RequestStack $requestStack, private UrlGeneratorInterface $router, private EventRepository $eventRepository)
     {
-        $this->requestStack = $requestStack;
-        $this->router = $router;
-        $this->eventRepository = $eventRepository;
     }
 
     /**

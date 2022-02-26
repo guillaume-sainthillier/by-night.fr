@@ -24,22 +24,9 @@ class AppMigrateContactsCommand extends Command
 {
     protected static $defaultName = 'app:migrate:contacts';
 
-    private PaginatorInterface $paginator;
-
-    private EventRepository $eventRepository;
-
-    private EntityManagerInterface $entityManager;
-
-    private ReservationsHandler $reservationsHandler;
-
-    public function __construct(PaginatorInterface $paginator, EntityManagerInterface $entityManager, EventRepository $eventRepository, ReservationsHandler $reservationsHandler)
+    public function __construct(private PaginatorInterface $paginator, private EntityManagerInterface $entityManager, private EventRepository $eventRepository, private ReservationsHandler $reservationsHandler)
     {
         parent::__construct();
-
-        $this->paginator = $paginator;
-        $this->entityManager = $entityManager;
-        $this->eventRepository = $eventRepository;
-        $this->reservationsHandler = $reservationsHandler;
     }
 
     /**

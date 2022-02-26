@@ -24,18 +24,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/api")
- */
+#[Route(path: '/api')]
 class CityController extends AbstractController
 {
     public const MAX_RESULTS = 7;
 
     /**
-     * @Route("/villes", name="app_api_city", methods={"GET"})
      * @ReverseProxy(expires="1 year")
      * @Tag("autocomplete-city")
      */
+    #[Route(path: '/villes', name: 'app_api_city', methods: ['GET'])]
     public function city(ResponseTagger $responseTagger, Request $request, PaginatorInterface $paginator, RepositoryManagerInterface $repositoryManager): Response
     {
         $term = trim($request->get('q'));
@@ -47,7 +45,6 @@ class CityController extends AbstractController
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }
-
         $jsonResults = [];
         /** @var City $result */
         foreach ($results as $result) {

@@ -24,9 +24,7 @@ class ReplyController extends BaseController
 {
     public const REPLIES_PER_PAGE = 5;
 
-    /**
-     * @Route("/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}", name="app_comment_reponse_list", methods={"GET"})
-     */
+    #[Route(path: '/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}', name: 'app_comment_reponse_list', methods: ['GET'])]
     public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response
     {
         return $this->render('comment/reply/list.html.twig', [
@@ -39,20 +37,18 @@ class ReplyController extends BaseController
     }
 
     /**
-     * @Route("/{id<%patterns.id%>}/repondre", name="app_comment_reponse_new", methods={"GET", "POST"})
      * @IsGranted("ROLE_USER")
      */
+    #[Route(path: '/{id<%patterns.id%>}/repondre', name: 'app_comment_reponse_new', methods: ['GET', 'POST'])]
     public function new(Request $request, Comment $comment, CommentRepository $commentRepository): Response
     {
         $user = $this->getAppUser();
         $reponse = new Comment();
         $reponse->setUser($user);
         $reponse->setEvent($comment->getEvent());
-
         $form = $this->createForm(CommentType::class, $reponse, [
             'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
         ]);
-
         $form->handleRequest($request);
         if ($form->isValid()) {
             $reponse->setParent($comment);

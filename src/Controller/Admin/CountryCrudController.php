@@ -14,6 +14,7 @@ use App\Entity\Country;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use RuntimeException;
 
 class CountryCrudController extends AbstractCrudController
 {
@@ -50,6 +51,6 @@ class CountryCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$id, $locale, $name, $displayName, $atDisplayName, $capital, $postalCodeRegex];
         }
-        throw new \RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
+        throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

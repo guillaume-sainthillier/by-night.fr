@@ -2,56 +2,62 @@
 
 declare(strict_types=1);
 
-use Rector\CodeQuality\Rector\Array_\ArrayThisCallToThisMethodCallRector;
-use Rector\CodeQuality\Rector\Array_\CallableThisArrayToAnonymousFunctionRector;
+/*
+ * This file is part of By Night.
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 use Rector\Core\Configuration\Option;
-use Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector;
-use Rector\Php71\Rector\List_\ListToArrayDestructRector;
-use Rector\Set\ValueObject\SetList;
+use Rector\Doctrine\Set\DoctrineSetList;
+use Rector\Php80\Rector\Class_\AnnotationToAttributeRector;
+use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
+use Rector\Php80\ValueObject\AnnotationToAttribute;
+use Rector\Set\ValueObject\LevelSetList;
+use Rector\Symfony\Rector\MethodCall\ContainerGetToConstructorInjectionRector;
+use Rector\Symfony\Rector\MethodCall\SimplifyWebTestCaseAssertionsRector;
+use Rector\Symfony\Set\SymfonyLevelSetList;
+use Rector\Symfony\Set\SymfonySetList;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
 return static function (ContainerConfigurator $containerConfigurator): void {
+    // get parameters
     $parameters = $containerConfigurator->parameters();
 
-    $parameters->set(Option::AUTO_IMPORT_NAMES, true);
-    $parameters->set(Option::SYMFONY_CONTAINER_XML_PATH_PARAMETER, __DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml');
+    $parameters
+        ->set(Option::IMPORT_DOC_BLOCKS, true)
+        ->set(Option::AUTO_IMPORT_NAMES, true)
+        ->set(Option::PATHS, [
+            __DIR__ . '/src',
+            __DIR__ . '/migrations',
+        ])
+        ->set(Option::AUTOLOAD_PATHS, [
+            __DIR__ . '/vendor/autoload.php',
+        ])
+        ->set(Option::SYMFONY_CONTAINER_XML_PATH_PARAMETER, __DIR__ . '/var/cache/dev/App_KernelDevDebugContainer.xml')
+        ->set(Option::SKIP, [
+            SimplifyWebTestCaseAssertionsRector::class,
+            ClassPropertyAssignToConstructorPromotionRector::class => [
+                __DIR__ . '/src/Entity/*',
+                __DIR__ . '/src/*/Entity/*',
+            ],
+            ContainerGetToConstructorInjectionRector::class => [
+                __DIR__ . '/migrations',
+            ],
+        ]);
 
-    $parameters->set(Option::AUTOLOAD_PATHS, [
-        __DIR__ . '/vendor/autoload.php',
-        __DIR__ . '/bin/.phpunit/phpunit/vendor/autoload.php',
+    $containerConfigurator->import(LevelSetList::UP_TO_PHP_80);
+    $containerConfigurator->import(SymfonySetList::SYMFONY_CODE_QUALITY);
+    $containerConfigurator->import(SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION);
+    $containerConfigurator->import(SymfonySetList::ANNOTATIONS_TO_ATTRIBUTES);
+    $containerConfigurator->import(DoctrineSetList::ANNOTATIONS_TO_ATTRIBUTES);
+    $containerConfigurator->import(SymfonyLevelSetList::UP_TO_SYMFONY_54);
+
+    $services = $containerConfigurator->services();
+    $services->set(AnnotationToAttributeRector::class)->configure([
+        new AnnotationToAttribute('Vich\\UploaderBundle\\Mapping\\Annotation\\Uploadable'),
+        new AnnotationToAttribute('Vich\\UploaderBundle\\Mapping\\Annotation\\UploadableField'),
     ]);
-
-
-    $parameters->set(Option::PATHS, [
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
-    ]);
-
-    $parameters->set(Option::SETS, [
-        SetList::CODE_QUALITY,
-        SetList::PHP_70,
-        SetList::PHP_71,
-        SetList::PHP_72,
-        SetList::PHP_73,
-        SetList::PHP_74,
-        SetList::SYMFONY_40,
-        SetList::SYMFONY_41,
-        SetList::SYMFONY_42,
-        SetList::SYMFONY_43,
-        SetList::SYMFONY_44,
-        SetList::SYMFONY_50,
-        SetList::SYMFONY_50_TYPES,
-        SetList::SYMFONY_52,
-    ]);
-
-    //"Syntax error, unexpected T_MATCH:136".
-    $parameters->set(Option::SKIP, [
-        __DIR__ . '/src/SearchRepository/EventElasticaRepository.php',
-        CallableThisArrayToAnonymousFunctionRector::class,
-        ArrayThisCallToThisMethodCallRector::class,
-        RemoveExtraParametersRector::class,
-        ListToArrayDestructRector::class,
-    ]);
-
-    $parameters->set(Option::ENABLE_CACHE, true);
 };

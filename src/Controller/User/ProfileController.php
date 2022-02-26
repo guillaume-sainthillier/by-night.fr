@@ -23,18 +23,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/profile")
- */
+#[Route(path: '/profile')]
 class ProfileController extends AbstractController
 {
-    /**
-     * @Route("/delete", name="app_user_delete", methods={"GET", "POST"})
-     */
+    #[Route(path: '/delete', name: 'app_user_delete', methods: ['GET', 'POST'])]
     public function delete(Request $request, EventRepository $eventRepository, CommentRepository $commentRepository): Response
     {
         $form = $this->createDeleteForm();
-
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -88,13 +83,10 @@ class ProfileController extends AbstractController
         return $this->redirectToRoute('app_user_edit');
     }
 
-    /**
-     * @Route("/edit", name="app_user_edit", methods={"GET", "POST"})
-     */
+    #[Route(path: '/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = $this->getAppUser();
-
         $form = $this->createForm(ProfileFormType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -103,7 +95,6 @@ class ProfileController extends AbstractController
 
             $this->addFlash('success', 'Votre profil a été mis à jour');
         }
-
         $formChangePassword = $this->createForm(ChangePasswordFormType::class, $user);
         $formChangePassword->handleRequest($request);
         if ($formChangePassword->isSubmitted() && $formChangePassword->isValid()) {
@@ -118,7 +109,6 @@ class ProfileController extends AbstractController
 
             $this->addFlash('success', 'Votre mot de passe a été mis à jour');
         }
-
         $formDelete = $this->createDeleteForm();
 
         return $this->render('profile/edit.html.twig', [

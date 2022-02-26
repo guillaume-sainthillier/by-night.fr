@@ -22,15 +22,9 @@ use XMLReader;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
-    private string $awinApiKey;
-
-    private string $tempPath;
-
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $tempPath, string $awinApiKey)
+    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, private string $tempPath, private string $awinApiKey)
     {
         parent::__construct($logger, $eventProducer, $reservationsHandler);
-        $this->tempPath = $tempPath;
-        $this->awinApiKey = $awinApiKey;
     }
 
     /**
@@ -49,7 +43,7 @@ abstract class AbstractAwinParser extends AbstractParser
         while ('product' === $xml->name) {
             $event = $this->elementToArray(new SimpleXMLElement($xml->readOuterXML()));
             $event = $this->arrayToDto($event);
-            if (\count($event) > 0) {
+            if ((null === $event ? 0 : \count($event)) > 0) {
                 $this->publish($event);
             }
 

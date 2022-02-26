@@ -15,14 +15,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class CaptchaWrapper
 {
-    private RequestStack $requestStack;
-
-    private ReCaptcha $reCaptcha;
-
-    public function __construct(RequestStack $requestStack, ReCaptcha $reCaptcha)
+    public function __construct(private RequestStack $requestStack, private ReCaptcha $reCaptcha)
     {
-        $this->requestStack = $requestStack;
-        $this->reCaptcha = $reCaptcha;
     }
 
     public function verify(?string $value): bool

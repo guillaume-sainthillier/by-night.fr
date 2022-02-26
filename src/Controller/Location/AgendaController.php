@@ -34,22 +34,20 @@ class AgendaController extends BaseController
     public const EVENT_PER_PAGE = 15;
 
     /**
-     * @Route("/agenda/{page<%patterns.page%>}", name="app_agenda_index", methods={"GET"})
-     * @Route("/agenda/sortir/{type}/{page<%patterns.page%>}", name="app_agenda_by_type", requirements={"type": "concert|spectacle|etudiant|famille|exposition"}, methods={"GET"})
-     * @Route("/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}", name="app_agenda_by_place", methods={"GET"})
-     * @Route("/agenda/tag/{tag}/{page<%patterns.page%>}", name="app_agenda_by_tags", methods={"GET"})
      * @ReverseProxy(expires="tomorrow")
      */
+    #[Route(path: '/agenda/{page<%patterns.page%>}', name: 'app_agenda_index', methods: ['GET'])]
+    #[Route(path: '/agenda/sortir/{type}/{page<%patterns.page%>}', name: 'app_agenda_by_type', requirements: ['type' => 'concert|spectacle|etudiant|famille|exposition'], methods: ['GET'])]
+    #[Route(path: '/agenda/sortir-a/{slug<%patterns.slug%>}/{page<%patterns.page%>}', name: 'app_agenda_by_place', methods: ['GET'])]
+    #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
     public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
     {
         //État de la page
         $isAjax = $request->isXmlHttpRequest();
-
         $routeParams = array_merge($request->query->all(), [
             'page' => $page + 1,
             'location' => $location->getSlug(),
         ]);
-
         if (null !== $type) {
             $routeParams['type'] = $type;
         } elseif (null !== $tag) {
@@ -57,11 +55,9 @@ class AgendaController extends BaseController
         } elseif (null !== $slug) {
             $routeParams['slug'] = $slug;
         }
-
         //Recherche des événements
         $search = new SearchEvent();
         $place = null;
-
         if (null !== $slug) {
             $place = $placeRepository->findOneBy(['slug' => $slug]);
             if (null === $place) {
@@ -73,17 +69,14 @@ class AgendaController extends BaseController
             }
         }
         $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
-
         //Récupération des lieux, types événements et villes
         $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
-
         //Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
             'action' => $formAction,
             'method' => 'get',
             'types_manif' => $types_manif,
         ]);
-
         //Bind du formulaire avec la requête courante
         $form->handleRequest($request);
         if (!$form->isSubmitted() || $form->isValid()) {
@@ -97,7 +90,6 @@ class AgendaController extends BaseController
             $isValid = false;
             $events = $paginator->paginate([], $page, self::EVENT_PER_PAGE);
         }
-
         if ($events instanceof SlidingPagination && $page > max(1, $events->getPageCount())) {
             return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getPageCount())]));
         }

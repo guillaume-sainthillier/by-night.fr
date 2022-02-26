@@ -20,33 +20,25 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ContentController extends BaseController
 {
-    /**
-     * @Route("/cookie", name="app_main_cookie", methods={"GET"})
-     */
+    #[Route(path: '/cookie', name: 'app_main_cookie', methods: ['GET'])]
     public function cookie(): Response
     {
         return $this->render('content/cookies.html.twig');
     }
 
-    /**
-     * @Route("/mentions-legales", name="app_legal_mentions", methods={"GET"})
-     */
+    #[Route(path: '/mentions-legales', name: 'app_legal_mentions', methods: ['GET'])]
     public function legalMentions(): Response
     {
         return $this->render('content/legal-mentions.html.twig');
     }
 
-    /**
-     * @Route("/a-propos", name="app_about", methods={"GET"})
-     */
+    #[Route(path: '/a-propos', name: 'app_about', methods: ['GET'])]
     public function about(): Response
     {
         return $this->render('content/about.html.twig');
     }
 
-    /**
-     * @Route("/en-savoir-plus", name="app_plus", methods={"GET"})
-     */
+    #[Route(path: '/en-savoir-plus', name: 'app_plus', methods: ['GET'])]
     public function plus(): Response
     {
         return $this->render('content/plus.html.twig');

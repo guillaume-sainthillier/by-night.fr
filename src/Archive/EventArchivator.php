@@ -23,17 +23,8 @@ class EventArchivator
 {
     public const ITEMS_PER_TRANSACTION = 5_000;
 
-    private ObjectPersisterInterface $objectPersister;
-
-    private EntityManagerInterface $entityManager;
-
-    private EventRepository $eventRepository;
-
-    public function __construct(EntityManagerInterface $entityManager, ObjectPersisterInterface $objectPersister, EventRepository $eventRepository)
+    public function __construct(private EntityManagerInterface $entityManager, private ObjectPersisterInterface $objectPersister, private EventRepository $eventRepository)
     {
-        $this->entityManager = $entityManager;
-        $this->objectPersister = $objectPersister;
-        $this->eventRepository = $eventRepository;
     }
 
     /**
@@ -55,7 +46,7 @@ class EventArchivator
                 ->getQuery()
                 ->getResult();
 
-            if (0 === \count($events)) {
+            if (0 === (is_countable($events) ? \count($events) : 0)) {
                 continue;
             }
 
