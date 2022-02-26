@@ -30,7 +30,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(name: 'place_external_id_idx', columns: ['external_id'])]
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Entity]
 #[ExclusionPolicy('all')]
 class Place implements ExternalIdentifiablesInterface, Stringable
 {
