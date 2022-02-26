@@ -45,10 +45,8 @@ class TwitterUser implements ResourceOwnerInterface
 
     /**
      * Get user data as an array.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->response;
     }

@@ -199,9 +199,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    /**
-     * @return File
-     */
     public function getImageFile(): ?File
     {
         return $this->imageFile;
@@ -227,9 +224,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    /**
-     * @return File
-     */
     public function getImageSystemFile(): ?File
     {
         return $this->imageSystemFile;

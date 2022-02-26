@@ -68,10 +68,8 @@ class ParserHistory
 
     /**
      * Get duree.
-     *
-     * @return int
      */
-    public function getDuree()
+    public function getDuree(): int
     {
         return $this->dateFin->getTimestamp() - $this->dateDebut->getTimestamp();
     }

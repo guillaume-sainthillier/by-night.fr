@@ -19,10 +19,7 @@ class Location
 
     private ?Country $country = null;
 
-    /**
-     * @return int|string|null
-     */
-    public function getId()
+    public function getId(): int|string|null
     {
         if (null !== $this->city) {
             return $this->city->getId();

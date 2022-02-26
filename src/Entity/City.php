@@ -60,7 +60,7 @@ class City extends AdminZone
      *
      * @return City
      */
-    public function setParent(AdminZone $parent = null)
+    public function setParent(AdminZone $parent = null): self
     {
         $this->parent = $parent;
 

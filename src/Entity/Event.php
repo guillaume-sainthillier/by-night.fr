@@ -381,9 +381,6 @@ class Event implements ExternalIdentifiableInterface, Stringable
         return $this->dateFin >= $from;
     }
 
-    /**
-     * @return File
-     */
     public function getImageFile(): ?File
     {
         return $this->imageFile;
@@ -409,9 +406,6 @@ class Event implements ExternalIdentifiableInterface, Stringable
         return $this;
     }
 
-    /**
-     * @return File
-     */
     public function getImageSystemFile(): ?File
     {
         return $this->imageSystemFile;

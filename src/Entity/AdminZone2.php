@@ -35,7 +35,7 @@ class AdminZone2 extends AdminZone
      *
      * @return AdminZone2
      */
-    public function setParent(AdminZone1 $parent = null)
+    public function setParent(AdminZone1 $parent = null): self
     {
         $this->parent = $parent;
 

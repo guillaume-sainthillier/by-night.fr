@@ -88,7 +88,7 @@ class Country implements Stringable
      *
      * @return Country
      */
-    public function setId(string $id)
+    public function setId(string $id): self
     {
         $this->id = $id;
 

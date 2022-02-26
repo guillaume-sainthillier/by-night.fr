@@ -25,18 +25,12 @@ class CityManager
     {
     }
 
-    /**
-     * @return City|null
-     */
-    public function getCity()
+    public function getCity(): ?City
     {
         return $this->getCurrentCity() ?: $this->getCookieCity();
     }
 
-    /**
-     * @return City|null
-     */
-    public function getCurrentCity()
+    public function getCurrentCity(): ?City
     {
         return $this->currentCity;
     }
@@ -44,17 +38,14 @@ class CityManager
     /**
      * @return $this
      */
-    public function setCurrentCity(City $city)
+    public function setCurrentCity(City $city): self
     {
         $this->currentCity = $city;
 
         return $this;
     }
 
-    /**
-     * @return City|null
-     */
-    public function getCookieCity()
+    public function getCookieCity(): ?City
     {
         if (!$this->initCooky) {
             $this->computeCityFromCookie();
