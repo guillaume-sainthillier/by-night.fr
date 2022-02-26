@@ -148,9 +148,6 @@
     "ezimuel/ringphp": {
         "version": "1.2.0"
     },
-    "facebook/graph-sdk": {
-        "version": "5.7.0"
-    },
     "felixfbecker/advanced-json-rpc": {
         "version": "v3.2.1"
     },
