@@ -23,11 +23,14 @@ class UserEvent implements Stringable
     use EntityTimestampableTrait;
     #[ORM\Column(type: 'boolean')]
     private bool $participe = false;
+
     #[ORM\Column(type: 'boolean')]
     private bool $interet = false;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'userEvents')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
     #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'userEvents')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;

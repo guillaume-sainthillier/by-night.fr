@@ -26,25 +26,32 @@ class Country implements Stringable
     #[ORM\Id]
     #[Serializer\Groups(['list_event', 'list_user', 'list_city'])]
     private ?string $id = null;
+
     #[ORM\Column(length: 63, unique: true)]
     #[Exclude]
     #[Gedmo\Slug(fields: ['name'], prefix: 'c--')]
     private ?string $slug = null;
+
     #[ORM\Column(type: 'string', length: 5, nullable: true)]
     #[Exclude]
     private ?string $locale = null;
+
     #[ORM\Column(type: 'string', length: 63)]
     #[Serializer\Groups(['list_city'])]
     private ?string $name = null;
+
     #[ORM\Column(type: 'string', length: 63)]
     #[Serializer\Groups(['list_city'])]
     private ?string $displayName = null;
+
     #[ORM\Column(type: 'string', length: 63)]
     #[Serializer\Groups(['list_city'])]
     private ?string $atDisplayName = null;
+
     #[ORM\Column(type: 'string', length: 63)]
     #[Exclude]
     private ?string $capital = null;
+
     #[ORM\Column(type: 'string', length: 511, nullable: true)]
     #[Exclude]
     private ?string $postalCodeRegex = null;

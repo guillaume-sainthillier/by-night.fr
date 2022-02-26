@@ -26,17 +26,22 @@ class Comment implements Stringable
     #[Assert\NotBlank(message: 'Le commentaire ne peut pas être vide')]
     #[ORM\Column(type: 'text')]
     private ?string $commentaire = null;
+
     #[ORM\Column(type: 'boolean')]
     protected bool $approuve = true;
+
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
     #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'commentaires')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
+
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'reponses')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Comment $parent = null;
+
     /**
      * @var Collection<int, Comment>
      */

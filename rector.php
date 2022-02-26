@@ -63,6 +63,9 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         new AnnotationToAttribute('JMS\\Serializer\\Annotation\\Groups'),
         new AnnotationToAttribute('JMS\\Serializer\\Annotation\\Expose'),
         new AnnotationToAttribute('JMS\\Serializer\\Annotation\\Exclude'),
+        new AnnotationToAttribute('JMS\\Serializer\\Annotation\\VirtualProperty'),
+        new AnnotationToAttribute('JMS\\Serializer\\Annotation\\SerializedName'),
+        new AnnotationToAttribute('JMS\\Serializer\\Annotation\\Type'),
         new AnnotationToAttribute('Gedmo\\Mapping\\Annotation\\Slug'),
         new AnnotationToAttribute('Gedmo\\Mapping\\Annotation\\Timestampable'),
     ]);

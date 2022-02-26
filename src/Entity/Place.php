@@ -41,61 +41,80 @@ class Place implements ExternalIdentifiablesInterface, Stringable
     #[Groups(['list_event'])]
     #[Expose]
     private ?int $id = null;
+
     /**
      * @var Collection<int, PlaceMetadata>
      */
     #[ORM\OneToMany(targetEntity: PlaceMetadata::class, mappedBy: 'place', cascade: ['persist', 'remove'])]
     private Collection $metadatas;
+
     #[ORM\Column(type: 'string', length: 127, nullable: true)]
     private ?string $externalId = null;
+
     #[ORM\Column(type: 'string', length: 127, nullable: true)]
     #[Groups(['list_event'])]
     #[Expose]
     private ?string $ville = null;
+
     #[ORM\Column(type: 'string', length: 7, nullable: true)]
     #[Groups(['list_event'])]
     #[Expose]
     private ?string $codePostal = null;
+
     #[ORM\Column(type: 'string', length: 256, nullable: true)]
     private ?string $facebookId = null;
+
     #[ORM\ManyToOne(targetEntity: City::class, fetch: 'EAGER')]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['list_event'])]
     #[Expose]
     private ?City $city = null;
+
     private ?ZipCity $zipCity = null;
+
     #[ORM\ManyToOne(targetEntity: Country::class)]
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['list_event'])]
     #[Expose]
     private ?Country $country = null;
+
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $junk = null;
+
     private ?string $countryName = null;
+
     private ?Reject $reject = null;
+
     private ?Location $location = null;
+
     #[ORM\Column(type: 'string', length: 127, nullable: true)]
     #[Groups(['list_event'])]
     #[Expose]
     private ?string $rue = null;
+
     #[ORM\Column(type: 'float', nullable: true)]
     #[Groups(['list_event'])]
     #[Expose]
     private ?float $latitude = null;
+
     #[ORM\Column(type: 'float', nullable: true)]
     #[Groups(['list_event'])]
     #[Expose]
     private ?float $longitude = null;
+
     #[Assert\NotBlank(message: 'Vous devez indiquer le lieu de votre événement')]
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['list_event'])]
     #[Expose]
     private ?string $nom = null;
+
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     #[Gedmo\Slug(fields: ['nom'])]
     private ?string $slug = null;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $path = null;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $url = null;
 

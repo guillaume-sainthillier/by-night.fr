@@ -27,27 +27,38 @@ class ZipCity
     #[Serializer\Groups(['list_event', 'list_city', 'list_user'])]
     #[Serializer\Expose]
     private ?int $id = null;
+
     #[ORM\Column(length: 201, unique: true)]
     #[Gedmo\Slug(fields: ['postalCode', 'name'])]
     private ?string $slug = null;
+
     #[ORM\ManyToOne(targetEntity: Country::class, fetch: 'EXTRA_LAZY')]
     private ?Country $country = null;
+
     #[ORM\Column(type: 'string', length: 20)]
     private ?string $postalCode = null;
+
     #[ORM\Column(type: 'string', length: 180)]
     private ?string $name = null;
+
     #[ORM\Column(type: 'float')]
     protected float $latitude = 0.0;
+
     #[ORM\Column(type: 'float')]
     protected float $longitude = 0.0;
+
     #[ORM\Column(name: 'admin1_code', type: 'string', length: 20)]
     private ?string $admin1Code = null;
+
     #[ORM\Column(name: 'admin1_name', type: 'string', length: 100, nullable: true)]
     private ?string $admin1Name = null;
+
     #[ORM\Column(name: 'admin2_code', type: 'string', length: 80)]
     private ?string $admin2Code = null;
+
     #[ORM\Column(name: 'admin2_name', type: 'string', length: 100, nullable: true)]
     private ?string $admin2Name = null;
+
     #[ORM\ManyToOne(targetEntity: City::class, fetch: 'EXTRA_LAZY')]
     private ?City $parent = null;
 

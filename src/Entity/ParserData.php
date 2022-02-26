@@ -23,16 +23,22 @@ class ParserData
     use EntityIdentityTrait;
     #[ORM\Column(type: 'string', length: 127)]
     private ?string $externalId = null;
+
     #[ORM\Column(type: 'string', length: 63)]
     private ?string $externalOrigin = null;
+
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTimeInterface $lastUpdated = null;
+
     #[ORM\Column(type: 'integer', nullable: false)]
     private int $reason = Reject::VALID;
+
     #[ORM\Column(type: 'string', length: 7)]
     private string $firewallVersion = '1.0';
+
     #[ORM\Column(type: 'string', length: 7, nullable: true)]
     private ?string $parserVersion = null;
+
     private ?Reject $reject = null;
 
     public function getReject(): ?Reject

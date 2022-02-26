@@ -26,48 +26,70 @@ abstract class OAuth implements Stringable
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected ?int $id = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_id = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_access_token = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_refresh_token = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_email = null;
+
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $facebook_expires = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_realname = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $facebook_profile_picture = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_id = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_access_token = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_refresh_token = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_email = null;
+
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $google_expires = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_realname = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $google_profile_picture = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_id = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_access_token = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_refresh_token = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_email = null;
+
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $twitter_expires = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_nickname = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_realname = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $twitter_profile_picture = null;
 

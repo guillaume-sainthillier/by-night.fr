@@ -47,78 +47,100 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     #[Serializer\Groups(['list_event', 'list_user'])]
     #[Expose]
     private ?int $id = null;
+
     #[Assert\Length(max: 180)]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
+
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $salt = null;
+
     #[Assert\Length(max: 180)]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $username = null;
+
     #[ORM\Column(type: 'boolean')]
     private bool $enabled = true;
+
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $lastLogin;
+
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?DateTime $passwordRequestedAt = null;
+
     #[ORM\Column(type: 'array')]
     private array $roles = [];
-    /**
-     * @var string The hashed password
-     */
+
     #[ORM\Column(type: 'string')]
     private ?string $password = null;
+
     #[ORM\Column(length: 128, unique: true)]
     #[Gedmo\Slug(fields: ['username'])]
     private ?string $slug = null;
+
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Serializer\Groups(['list_user'])]
     #[Expose]
     private ?string $firstname = null;
+
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Serializer\Groups(['list_user'])]
     #[Expose]
     private ?string $lastname = null;
+
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
+
     #[ORM\OneToOne(targetEntity: UserOAuth::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?UserOAuth $oAuth;
+
     /**
      * @var Collection<int, UserEvent>
      */
     #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'user')]
     private Collection $userEvents;
+
     #[ORM\ManyToOne(targetEntity: City::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?City $city = null;
+
     #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $fromLogin = false;
+
     #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $showSocials = true;
+
     #[Assert\Url]
     #[Assert\Length(max: 255)]
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $website = null;
+
     #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     #[Assert\Valid]
     #[Assert\File(maxSize: '6M')]
     #[Assert\Image]
     private ?File $imageFile = null;
+
     #[ORM\Embedded(class: \Vich\UploaderBundle\Entity\File::class)]
     private EmbeddedFile $image;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageHash = null;
+
     #[Vich\UploadableField(mapping: 'user_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M')]
     private ?File $imageSystemFile = null;
+
     #[ORM\Embedded(class: \Vich\UploaderBundle\Entity\File::class)]
     private EmbeddedFile $imageSystem;
+
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $imageSystemHash = null;
+
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
 

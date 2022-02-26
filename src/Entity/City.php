@@ -22,6 +22,7 @@ class City extends AdminZone
     #[ORM\ManyToOne(targetEntity: AdminZone::class, fetch: 'EAGER')]
     #[Groups(['list_city'])]
     protected ?AdminZone $parent = null;
+
     #[Groups(['list_city'])]
     protected ?Country $country = null;
 
