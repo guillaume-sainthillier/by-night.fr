@@ -23,13 +23,13 @@
                 {% endif %}
                 <div class="image-container">
                     {% if event.fbParticipations %}
-                        <span class="badge badge-warning">
+                        <span class="badge bg-warning">
                             <i class="fab fa-facebook-f"></i>
                             <span class="number">{{ event.fbParticipations }}</span>
                         </span>
                     {% endif %}
                     <a class="image-gallery" href="{{ original }}" title="{{ event.nom }}">
-                        {{ macros.eventLazyThumb(event, 400, 200) }}
+                        {{ macros.eventLazyThumb(event, 300) }}
                     </a>
                 </div>
             </div>

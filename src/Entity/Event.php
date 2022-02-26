@@ -11,6 +11,8 @@
 namespace App\Entity;
 
 use App\Contracts\ExternalIdentifiableInterface;
+use App\Parser\Common\DigitickAwinParser;
+use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
 use App\Validator\Constraints\EventConstraint;
@@ -331,6 +333,14 @@ class Event implements ExternalIdentifiableInterface, Stringable
         $from->modify(self::INDEX_FROM);
 
         return $this->dateFin >= $from;
+    }
+
+    public function isAffiliate(): bool
+    {
+        return \in_array($this->fromData, [
+            FnacSpectaclesAwinParser::getParserName(),
+            DigitickAwinParser::getParserName(),
+        ], true);
     }
 
     public function getImageFile(): ?File

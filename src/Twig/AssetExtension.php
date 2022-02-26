@@ -35,9 +35,11 @@ class AssetExtension extends Extension
 
     public function thumb(?string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
-        $parameters['fm'] = 'pjpg';
-        if (str_ends_with($path, 'png')) {
-            $parameters['fm'] = 'png';
+        if (empty($parameters['fm'])) {
+            $parameters['fm'] = 'pjpg';
+            if (str_ends_with($path, 'png')) {
+                $parameters['fm'] = 'png';
+            }
         }
 
         $parameters['s'] = SignatureFactory::create($this->secret)->generateSignature($path, $parameters);
@@ -48,9 +50,11 @@ class AssetExtension extends Extension
 
     public function thumbAsset(string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
     {
-        $parameters['fm'] = 'pjpg';
-        if (str_ends_with($path, 'png')) {
-            $parameters['fm'] = 'png';
+        if (empty($parameters['fm'])) {
+            $parameters['fm'] = 'pjpg';
+            if (str_ends_with($path, 'png')) {
+                $parameters['fm'] = 'png';
+            }
         }
 
         $parameters['s'] = SignatureFactory::create($this->secret)->generateSignature($path, $parameters);

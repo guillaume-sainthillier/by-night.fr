@@ -49,6 +49,7 @@ class ThumbController extends Controller
         try {
             $response = $glide->getImageResponse($path, $parameters);
         } catch (InvalidArgumentException|FileNotFoundException $e) {
+            throw $e;
             throw $this->createNotFoundException($e->getMessage(), $e);
         }
 

@@ -19,7 +19,7 @@
          height="{{ height }}"
          src="{{ thumbAsset(asset(path, 'local'), {'h': height, 'w': width}) }}"
          srcset="{{ thumbAsset(asset(path, 'local'), {'h': height, 'w': width, 'dpr': 2}) }} 2x"
-        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
+    {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
 
 {% macro userThumb(user, width, height, attrs) %}
@@ -29,7 +29,7 @@
          src="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop'}) }}"
          srcset="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'dpr': 2, 'fit': 'crop'}) }} 2x"
          alt="{{ user.username }}"
-        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
+    {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
 
 {% macro userLazyThumb(user, width, height, attrs) %}
@@ -40,20 +40,102 @@
          srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
          data-srcset="{{ userProfilePicture.profilePicture(user, {'h': height, 'w': width, 'fit': 'crop', 'dpr': 2}) }} 2x"
          alt="{{ user.username }}"
-        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
+    {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
 {% endmacro %}
 
-{% macro eventThumb(event, width, height, attrs) %}
-    <img class="img-fluid {{ attrs.class|default('') }}"
+{% macro eventThumb(event, width, attrs, lazyPlaceholder = true) %}
+    {% set aspectRatio = 9 / 16 %}
+    {% set breakpoints = [
+        width * 0.25,
+        width * 0.5,
+        width * 0.75,
+        width * 1,
+        width * 1.25,
+        width * 1.5,
+        width * 1.75,
+        width * 2,
+        width * 3,
+    ] %}
+    {% set placeholderSrc = eventProfilePicture.picture(event, {
+        'h': (40 * aspectRatio)|round,
+        'w': 40,
+        'fit':
+        'stretch',
+        'blur': 2
+    }) %}
+    {% set sources = [
+        'avif',
+        'webp',
+        '.jpg?' in placeholderSrc ? 'jpg',
+        '.jpeg?' in placeholderSrc ? 'jpg',
+        '.png?' in placeholderSrc ? 'png',
+        '.gif?' in placeholderSrc ? 'gif',
+    ] %}
+    <div class="image-wrapper" style="position:relative;overflow:hidden">
+        <div aria-hidden="true" style="width:100%;padding-bottom:{{ aspectRatio * 100 }}%"></div>
+        {% if not lazyPlaceholder %}
+            <img class="img-placeholder"
+                 src="{{ placeholderSrc|raw }}"
+                 alt="{{ event_seo.getEventShortTitle(event) }}"
+            />
+        {% else %}
+            <img class="img-placeholder lazyload"
+                 src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                 data-src="{{ placeholderSrc|raw }}"
+                 alt="{{ event_seo.getEventShortTitle(event) }}"
+            />
+        {% endif %}
+        <picture>
+            {% for source in sources|filter(v => v) %}
+                {% set srcSet = [] %}
+                {% for breakpoint in breakpoints %}
+                    {% set srcSet = srcSet|merge(['%s %dw'|format(
+                        eventProfilePicture.picture(event, {
+                            'w': breakpoint,
+                            'h': (breakpoint * aspectRatio)|round,
+                            'fm': source == 'jpg' ? 'pjpg' : source
+                        }),
+                        breakpoint
+                    )]) %}
+                {% endfor %}
+                <source
+                        type="image/{{ source == 'jpg' ? 'jpeg' : source }}"
+                        size="(max-width: {{ width }}px) 100vw, {{ width }}px"
+                        data-srcset="{{ srcSet|join(", \n")|raw }}"
+                >
+            {% endfor %}
+            {% set srcSet = [] %}
+            {% for breakpoint in breakpoints %}
+                {% set srcSet = srcSet|merge(['%s %dw'|format(
+                    eventProfilePicture.picture(event, {
+                        'w': breakpoint,
+                        'h': (breakpoint * aspectRatio)|round
+                    }),
+                    breakpoint
+                )]) %}
+            {% endfor %}
+            <img
+                    class="img-fluid img-main lazyload"
+                    sizes="(max-width: {{ width }}px) 100vw, {{ width }}px"
+                    src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+                    data-srcset="{{ srcSet|join(', ')|raw }}"
+                    alt="{{ event_seo.getEventShortTitle(event) }}"
+            >
+        </picture>
+    </div>
+    {# <img class="img-fluid {{ attrs.class|default('') }}"
          width="{{ width }}"
          height="{{ height }}"
          src="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1}) }}"
          srcset="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1, 'dpr': 2}) }} 2x"
          alt="{{ event_seo.getEventShortTitle(event) }}"
         {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
+    #}
 {% endmacro %}
 
-{% macro eventLazyThumb(event, width, height, attrs) %}
+{% macro eventLazyThumb(event, width, attrs) %}
+    {{ _self.eventThumb(event, width, attrs, false) }}
+    {#
     <img class="img-fluid blur-up lazyload {{ attrs.class|default('') }}"
          width="{{ width }}"
          height="{{ height }}"
@@ -61,5 +143,6 @@
          srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
          data-srcset="{{ eventProfilePicture.picture(event, {'h': height, 'w': width, 'thumb': 1, 'dpr': 2}) }} 2x"
          alt="{{ event_seo.getEventShortTitle(event) }}"
-        {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
+    {% for name,value in attrs|default([])|filter((v, k) => k != 'class') %}{{ name }}="{{ value|e }}" {% endfor %} />
+    #}
 {% endmacro %}

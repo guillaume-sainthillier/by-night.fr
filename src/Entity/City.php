@@ -26,7 +26,7 @@ class City extends AdminZone
     #[Groups(['list_city'])]
     protected ?Country $country = null;
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getFullName();
     }

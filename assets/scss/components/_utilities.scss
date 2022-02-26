@@ -4,16 +4,6 @@
     text-overflow: ellipsis;
 }
 
-.image-gallery {
-    display: inline-block;
-    height: 100%;
-
-    &:hover {
-        cursor: -webkit-zoom-in;
-        cursor: -moz-zoom-in;
-    }
-}
-
 .share {
     display: block;
     color: white;

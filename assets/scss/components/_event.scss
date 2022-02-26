@@ -7,7 +7,10 @@
         .badge {
             padding: 0.5em 1em;
             position: absolute;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
             top: 10px;
+            z-index: 1;
         }
     }
 
