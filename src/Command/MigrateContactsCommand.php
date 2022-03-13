@@ -20,7 +20,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppMigrateContactsCommand extends Command
+class MigrateContactsCommand extends Command
 {
     protected static $defaultName = 'app:migrate:contacts';
 

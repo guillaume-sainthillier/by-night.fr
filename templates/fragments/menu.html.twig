@@ -50,7 +50,10 @@
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <li class="nav-item dropdown nav-avatar">
                         <a href="#" title="{{ app.user.username }}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            {{ macros.userThumb(app.user, 30, 30) }}
+                            {{ macros.userThumb(app.user, 30, 30, {
+                                placeholder: false,
+                                priority: true,
+                            }) }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
                             <a class="dropdown-item" title="Accéder à mon compte" href="{{ path('app_user_edit') }}">

@@ -1,9 +1,9 @@
-{% extends 'layouts/simple-stretch.html.twig' %}
+{% extends 'layouts/default.html.twig' %}
 
 {% block title 'Inscription' %}
 
 {% block titre -%}
-    Rejoignez la communauté By Night
+    Rejoindre la communauté
 {%- endblock %}
 
 {% block breadcrumb -%}
@@ -13,5 +13,24 @@
 {% block meta_description 'Devenez membre de By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}
 
 {% block body %}
-    {% include 'registration/register-content.html.twig' with({'partial': false}) %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    {% include 'registration/register-content.html.twig' with({'partial': false}) %}
+                </div>
+                <div class="card-footer text-center py-2">
+                    <button class="btn btn-lg btn-primary" type="submit">
+                        Créer mon profil
+                    </button>
+                </div>
+            </div>
+            <p>
+                Vous avez déjà un compte ?
+                <a class="connexion" href="{{ path('app_login') }}" title="Connectez-vous sur By Night">
+                    Connectez-vous !
+                </a>
+            </p>
+        </div>
+    </div>
 {% endblock %}

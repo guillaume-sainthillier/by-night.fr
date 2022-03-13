@@ -64,22 +64,6 @@
         }
     </script>
 
-    {% if not partial %}
-        <div class="text-center">
-            <button class="btn btn-lg btn-primary" type="submit">
-                Créer mon profil
-            </button>
-        </div>
-    {% endif %}
-
     {{ form_rest(form) }}
-    <br />
-    <br />
-    <p>
-        Vous avez déjà un compte ?
-        <a class="connexion" href="{{ path('app_login') }}" title="Connectez-vous sur By Night">
-            Connectez-vous !
-        </a>
-    </p>
     {{ form_end(form) }}
 </div>

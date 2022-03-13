@@ -67,7 +67,13 @@
                 {% endif %}
                 <div class="col-lg-7">
                     <a class="image-gallery" href="{{ original }}" title="{{ nomSoiree }}">
-                        {{ macros.eventThumb(event, 800, {'class': 'img', 'itemprop': 'image'}) }}
+                        {{ macros.eventThumb(event, 1200, {
+                            placeholderPriority: true,
+                            attr: {
+                                class: 'img',
+                                itemprop: 'image'
+                            }
+                        }) }}
                     </a>
                 </div>
                 <div class="col-lg-5 event-details">

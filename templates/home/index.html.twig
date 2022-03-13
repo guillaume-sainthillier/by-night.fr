@@ -30,19 +30,21 @@
             </div>
         </div>
         <div class="footer_wrapper">
-            <h2 class="text-primary h4">Trouvez votre idée de sortie parmis plus de 900K événements depuis 2013</h2>
+            <h2 class="text-primary h4">Trouvez votre idée de sortie parmi plus de 900K événements depuis 2013</h2>
         </div>
     </section>
     <section class="py-4">
         <div class="container">
-            <h2>Ça bouge par ici</h2>
+            <h2>Les événements par pays</h2>
             <div class="row">
                 {% for stat in stats %}
                     <div class="col-sm-6 col-lg-4">
                         <div class="card text-center">
                             <div class="card-body">
                                 <h2 class="card-title">{{ stat.displayName }}</h2>
-                                <h6 class="card-subtitle mb-2 text-muted">{{ stat.events }}</span> événement{{ stat.events > 1 ? 's' }} à venir</h6>
+                                <h6 class="card-subtitle text-muted">{{ stat.events }}</span> événement{{ stat.events > 1 ? 's' }} à venir</h6>
+                            </div>
+                            <div class="card-footer text-center py-2">
                                 <a class="btn btn-outline-primary" href="{{ path('app_agenda_index', {'location': stat.slug}) }}" title="L'agenda des événements {{ stat.atDisplayName }}">
                                     Sortir {{ stat.atDisplayName }}
                                 </a>

@@ -4,6 +4,13 @@
 
 {% block body -%}
     {% include 'security/login-content.html.twig' with({'partial': true}) %}
+    <p class="mt-4 mb-0">
+        Pas encore inscrit ?
+        <a class="register" href="{{ path('app_register') }}"
+           title="Rejoignez By Night en vous inscrivant">
+            Rejoignez-nous dès maintenant !
+        </a>
+    </p>
 {%- endblock %}
 
 {% block footer -%}

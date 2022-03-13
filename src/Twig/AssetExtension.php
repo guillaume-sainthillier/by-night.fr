@@ -10,56 +10,22 @@
 
 namespace App\Twig;
 
-use League\Glide\Signatures\SignatureFactory;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
+use App\Helper\AssetHelper;
 use Twig\Extension\AbstractExtension as Extension;
 use Twig\TwigFunction;
 
 class AssetExtension extends Extension
 {
-    public function __construct(private RouterInterface $router, private string $secret)
-    {
+    public function __construct(
+        private AssetHelper $assetHelper,
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
-            new TwigFunction('thumb', [$this, 'thumb'], ['is_safe' => ['html']]),
-            new TwigFunction('thumbAsset', [$this, 'thumbAsset'], ['is_safe' => ['html']]),
+            new TwigFunction('thumb', [$this->assetHelper, 'getThumbUrl'], ['is_safe' => ['html']]),
+            new TwigFunction('thumbAsset', [$this->assetHelper, 'getThumbAssetUrl'], ['is_safe' => ['html']]),
         ];
-    }
-
-    public function thumb(?string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
-    {
-        if (empty($parameters['fm'])) {
-            $parameters['fm'] = 'pjpg';
-            if (str_ends_with($path, 'png')) {
-                $parameters['fm'] = 'png';
-            }
-        }
-
-        $parameters['s'] = SignatureFactory::create($this->secret)->generateSignature($path, $parameters);
-        $parameters['path'] = ltrim($path, '/');
-
-        return $this->router->generate('thumb_url', $parameters, $referenceType);
-    }
-
-    public function thumbAsset(string $path, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string
-    {
-        if (empty($parameters['fm'])) {
-            $parameters['fm'] = 'pjpg';
-            if (str_ends_with($path, 'png')) {
-                $parameters['fm'] = 'png';
-            }
-        }
-
-        $parameters['s'] = SignatureFactory::create($this->secret)->generateSignature($path, $parameters);
-        $parameters['path'] = ltrim($path, '/');
-
-        return $this->router->generate('thumb_asset_url', $parameters, $referenceType);
     }
 }

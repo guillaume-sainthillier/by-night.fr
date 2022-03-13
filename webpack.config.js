@@ -66,8 +66,6 @@ Encore
     .enableSassLoader()
     //.enableIntegrityHashes(Encore.isProduction())
 
-    // uncomment if you're having problems with a jQuery plugin
-    .autoProvidejQuery()
     .autoProvideVariables({
         $: 'jquery',
         jQuery: 'jquery',
@@ -81,8 +79,9 @@ Encore
         })
     )
     .addAliases({
-        jquery: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
-        $: path.resolve(__dirname, 'node_modules/jquery/src/jquery'),
+        jQuery: 'jquery', //Summernote
+        jquery: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
+        $: path.resolve(__dirname, 'node_modules/jquery/dist/jquery.js'),
     });
 
 if (Encore.isProduction()) {

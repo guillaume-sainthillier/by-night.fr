@@ -10,6 +10,7 @@ import Container from './services/Container';
 import registerServices from './services';
 
 //Global listeners
+import lazyload from './page-listeners/lazyload';
 import breadcrumb from './page-listeners/breadcrumb';
 import headerSearch from './page-listeners/header-search';
 import navbarScroll from './page-listeners/navbar-scroll';
@@ -34,6 +35,7 @@ class App {
         this._listeners = [
             breadcrumb,
             headerSearch,
+            lazyload,
             //navbarScroll,
             scrollToTop,
         ];
@@ -107,6 +109,12 @@ class App {
 
     resetButtons(container) {
         $('.btn-submit', container).attr('disabled', false).find('.spinner-border').remove();
+    }
+
+    runPageEspacePersoEvent() {
+        return import('./pages/espace_perso_event')
+            .catch(this.handleError)
+            .then((module) => module.default());
     }
 }
 

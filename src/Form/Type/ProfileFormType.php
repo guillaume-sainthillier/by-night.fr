@@ -58,7 +58,9 @@ class ProfileFormType extends AbstractType
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'label' => 'Photo de profil',
-                'thumb_params' => ['w' => 200, 'h' => 200, 'fit' => 'fill'],
+                'thumb_params' => [
+                    'height' => 200,
+                ],
             ]);
     }
 

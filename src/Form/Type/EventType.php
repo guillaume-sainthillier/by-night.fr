@@ -191,7 +191,7 @@ class EventType extends AbstractType
                     'mapped' => false,
                     'required' => false,
                     'attr' => [
-                        'rows' => 8,
+                        'rows' => 5,
                         'placeholder' => 'Laisser un commentaire qui sera visible par les internautes',
                     ],
                 ]);

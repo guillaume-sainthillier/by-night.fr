@@ -10,12 +10,15 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\User;
 use App\File\DeletableFile;
 use App\Producer\PurgeCdnCacheUrlProducer;
 use App\Producer\RemoveImageThumbnailsProducer;
 use const DIRECTORY_SEPARATOR;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Event\Event;
 use Vich\UploaderBundle\Event\Events;
 
@@ -24,10 +27,13 @@ class ImageSubscriber implements EventSubscriberInterface
     private array $paths = [];
 
     /** @var DeletableFile[] */
-    private array $files = [];
+    private array $filesToDelete = [];
 
-    public function __construct(private PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer, private RemoveImageThumbnailsProducer $removeImageThumbnailsProducer)
-    {
+    public function __construct(
+        private LoggerInterface $logger,
+        private PurgeCdnCacheUrlProducer $purgeCdnCacheUrlProducer,
+        private RemoveImageThumbnailsProducer $removeImageThumbnailsProducer
+    ) {
     }
 
     /**
@@ -46,24 +52,49 @@ class ImageSubscriber implements EventSubscriberInterface
     // Remove manual uploads from container
     public function onImageUpload(Event $event): void
     {
-        //file become an instance of File just after upload, we have to track it before the change
+        // file become an instance of File just after upload, we have to track it before the change
         $file = $event->getMapping()->getFile($event->getObject());
-        if (null === $file || !$file instanceof DeletableFile) {
+        if (!$file instanceof DeletableFile) {
             return;
         }
 
-        $this->files[] = $file;
+        $this->filesToDelete[] = $file;
+
+        // Extract metadatas
+        $object = $event->getObject();
+        if ($object instanceof User || $object instanceof Event) {
+            try {
+                [
+                    'mainColor' => $mainColor,
+                    'checksum' => $checksum
+                ] = $this->getImageMetadata($event->getMapping()->getFile($event->getObject()));
+
+                if ('imageFile' === $event->getMapping()->getFilePropertyName()) {
+                    $object
+                        ->setImageHash($checksum)
+                        ->setImageMainColor($mainColor);
+                } elseif ('imageSystemFile' === $event->getMapping()->getFilePropertyName()) {
+                    $object
+                        ->setImageSystemHash($checksum)
+                        ->setImageMainColor($mainColor);
+                }
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), [
+                    'exception' => $e,
+                ]);
+            }
+        }
     }
 
     public function onImageUploaded(): void
     {
-        foreach ($this->files as $file) {
+        foreach ($this->filesToDelete as $file) {
             $fs = new Filesystem();
             $fs->remove($file->getPathname());
         }
 
-        unset($this->files);
-        $this->files = [];
+        unset($this->filesToDelete);
+        $this->filesToDelete = [];
     }
 
     public function onImageDelete(Event $event): void
@@ -77,17 +108,24 @@ class ImageSubscriber implements EventSubscriberInterface
 
     public function onImageDeleted(): void
     {
-        //Schedule thumbnails delete
+        // Schedule thumbnails delete
         foreach ($this->paths as $path) {
             $this->removeImageThumbnailsProducer->scheduleRemove($path);
         }
 
-        //Schedule CDN purging of old image path
+        // Schedule CDN purging of old image path
         foreach ($this->paths as $path) {
             $this->purgeCdnCacheUrlProducer->schedulePurge($path);
         }
 
         unset($this->paths);
         $this->paths = [];
+    }
+
+    private function getImageMetadata(File $file): array
+    {
+        return [
+            'checksum' => md5_file($file->getFilename()),
+        ];
     }
 }

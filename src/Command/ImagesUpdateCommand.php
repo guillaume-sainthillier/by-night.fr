@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppImagesUpdateCommand extends Command
+class ImagesUpdateCommand extends Command
 {
     protected static $defaultName = 'app:images:update';
 

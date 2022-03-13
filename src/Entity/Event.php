@@ -52,6 +52,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Event implements ExternalIdentifiableInterface, Stringable
 {
     use EntityTimestampableTrait;
+
     public const INDEX_FROM = '-6 months';
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
@@ -167,22 +168,28 @@ class Event implements ExternalIdentifiableInterface, Stringable
     #[Assert\Image]
     private ?File $imageFile = null;
 
-    #[ORM\Embedded(class: \Vich\UploaderBundle\Entity\File::class)]
+    #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $image;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageHash = null;
+
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    private ?string $imageMainColor = null;
 
     #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageSystem.name', size: 'imageSystem.size', mimeType: 'imageSystem.mimeType', originalName: 'imageSystem.originalName', dimensions: 'imageSystem.dimensions')]
     #[Assert\Valid]
     #[Assert\Image(maxSize: '6M')]
     private ?File $imageSystemFile = null;
 
-    #[ORM\Embedded(class: \Vich\UploaderBundle\Entity\File::class)]
+    #[ORM\Embedded(class: EmbeddedFile::class)]
     private EmbeddedFile $imageSystem;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private ?string $imageSystemHash = null;
+
+    #[ORM\Column(type: 'string', length: 7, nullable: true)]
+    private ?string $imageSystemMainColor = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $name = null;
@@ -301,6 +308,12 @@ class Event implements ExternalIdentifiableInterface, Stringable
         $this->commentaires = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
+    }
+
+    public function hasImage(): bool
+    {
+        return (null !== $this->image->getName() && '' !== $this->image->getName())
+            || (null !== $this->imageSystem->getName() && '' !== $this->imageSystem->getName());
     }
 
     public function getReject(): ?Reject
@@ -1153,6 +1166,30 @@ class Event implements ExternalIdentifiableInterface, Stringable
     public function setExternalOrigin(?string $externalOrigin): self
     {
         $this->externalOrigin = $externalOrigin;
+
+        return $this;
+    }
+
+    public function getImageMainColor(): ?string
+    {
+        return $this->imageMainColor;
+    }
+
+    public function setImageMainColor(?string $imageMainColor): self
+    {
+        $this->imageMainColor = $imageMainColor;
+
+        return $this;
+    }
+
+    public function getImageSystemMainColor(): ?string
+    {
+        return $this->imageSystemMainColor;
+    }
+
+    public function setImageSystemMainColor(?string $imageSystemMainColor): self
+    {
+        $this->imageSystemMainColor = $imageSystemMainColor;
 
         return $this;
     }

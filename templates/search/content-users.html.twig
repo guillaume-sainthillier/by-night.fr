@@ -1,8 +1,4 @@
-<div class="row">
-    {% for user in users %}
-        {% include 'user/block-details-user.html.twig' %}
-    {% endfor %}
-</div>
+{% include '_partials/user/list-grid.html.twig' %}
 
 {% if users.paginationData.next is defined %}
     <div class="text-center my-4">

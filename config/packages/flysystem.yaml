@@ -12,14 +12,14 @@ flysystem:
             options:
                 client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
                 bucket: "%env(AWS_S3_BUCKET_NAME)%"
-                prefix: '/uploads/users'
+                prefix: 'uploads/users'
 
         events.storage:
             adapter: 'aws'
             options:
                 client: 'Aws\S3\S3Client' # The service ID of the Aws\S3\S3Client instance
                 bucket: "%env(AWS_S3_BUCKET_NAME)%"
-                prefix: '/uploads/documents'
+                prefix: 'uploads/documents'
 
         thumbs.storage:
             adapter: 'local'

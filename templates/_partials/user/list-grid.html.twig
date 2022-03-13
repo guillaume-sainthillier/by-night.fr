@@ -5,19 +5,27 @@
         {{ fos_httpcache_tag(tags('user', user)) }}
         <div class="col-sm-6">
             <div class="card">
-                <div class="d-flex">
-                    {{ macros.userLazyThumb(user, 115, 115, {'class': 'rounded-0'}) }}
-                    <div class="card-body">
-                        <h3 class="card-title">
-                            <a class="one-line" href="{{ path('app_user_index', {'id' : user.id, 'slug': user.slug}) }}">
-                                {{ user.username }}
-                            </a>
-                        </h3>‡
-                        <p class="card-text">
-                            Membre depuis le
-                            <span class="date text-primary">{{ user.createdAt|date('d/m/Y') }}</span>
-                        </p>
-                        {% include '_partials/user/socials.html.twig' %}
+                <div class="row justify-content-center align-items-center g-0">
+                    <div class="col-auto">
+                        {{ macros.userThumb(user, 115, 115, {
+                            wrapperAttr: {
+                                class: ''
+                            }
+                        }) }}
+                    </div>
+                    <div class="col">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                <a class="one-line" href="{{ path('app_user_index', {'id' : user.id, 'slug': user.slug}) }}">
+                                    {{ user.username }}
+                                </a>
+                            </h3>
+                            <p class="card-text">
+                                Membre depuis le
+                                <span class="date text-primary">{{ user.createdAt|date('d/m/Y') }}</span>
+                            </p>
+                            {% include '_partials/user/socials.html.twig' %}
+                        </div>
                     </div>
                 </div>
             </div>

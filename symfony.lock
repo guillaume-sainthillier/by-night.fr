@@ -20,6 +20,9 @@
     "behat/transliterator": {
         "version": "v1.3.0"
     },
+    "brianmcdo/image-palette": {
+        "version": "v2.0.1"
+    },
     "clue/stream-filter": {
         "version": "v1.4.1"
     },
@@ -248,6 +251,9 @@
     },
     "laminas/laminas-code": {
         "version": "3.4.1"
+    },
+    "league/color-extractor": {
+        "version": "0.3.2"
     },
     "league/flysystem": {
         "version": "1.1.3"

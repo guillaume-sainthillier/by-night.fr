@@ -25,6 +25,7 @@ services:
             $memoryCache: "@redis.app_cache_pool"
             $secret: "%kernel.secret%"
             $webDir: "%kernel.project_dir%/public"
+            $publicDirectory: "%kernel.project_dir%/public"
             $tempPath: "%kernel.project_dir%/var/storage/temp"
             $facebookIdPage: "%facebook_id_page%"
             $twitterIdPage: "%twitter_id_page%"
@@ -56,6 +57,8 @@ services:
             tags: [ 'app.dto_converter' ]
         App\Contracts\ComparatorInterface:
             tags: [ 'app.comparator' ]
+        App\Contracts\ImageLoaderInterface:
+            tags: [ 'app.image.loader' ]
 
     App\:
         resource: '../src/*'
@@ -173,3 +176,8 @@ services:
             -   source: '@assets.storage.reader'
                 cache: '@thumbs.storage'
                 driver: 'imagick'
+
+
+    App\Image\Loader\LoaderRegistry:
+        arguments:
+            - !tagged_iterator { tag: app.image.loader }

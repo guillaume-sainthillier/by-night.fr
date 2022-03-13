@@ -4,6 +4,12 @@
 
 {% block body -%}
     {% include 'registration/register-content.html.twig' with({'partial': true}) %}
+    <p class="mb-0">
+        Vous avez déjà un compte ?
+        <a class="connexion" href="{{ path('app_login') }}" title="Connectez-vous sur By Night">
+            Connectez-vous !
+        </a>
+    </p>
 {%- endblock %}
 
 {% block footer -%}
