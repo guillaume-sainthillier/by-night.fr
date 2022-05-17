@@ -110,7 +110,7 @@ class CountryRepository extends ServiceEntityRepository implements DtoFindableRe
         }
 
         return $qb
-            ->orWhere(implode(' OR ', $wheres))
+            ->where(implode(' OR ', $wheres))
             ->getQuery()
             ->enableResultCache()
             ->useQueryCache(true)

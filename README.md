@@ -11,10 +11,10 @@ https://by-night.fr
 
 ## Stack technique
 
--   PHP 7.4
+-   PHP 8.0
 -   Symfony 5.1
 -   MySQL 5.7
--   Elastic Search 6.8
+-   Elastic Search7
 -   Varnish 6
 -   Redis 5
 -   Sass

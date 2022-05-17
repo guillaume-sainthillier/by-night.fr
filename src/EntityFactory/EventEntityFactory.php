@@ -48,24 +48,26 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setModificationDerniereMinute($dto->status);
         $entity->setMailContacts($dto->emailContacts);
         $entity->setName($dto->name);
-        $entity->setPlaceName($dto->place->name);
-        $entity->setPlaceCity($dto->place->city->name);
-        $entity->setPlaceCountryName($dto->place->country->name);
-        $entity->setPlacePostalCode($dto->place->postalCode);
-        $entity->setPlaceStreet($dto->place->street);
-        $entity->setPlaceExternalId($dto->place->externalId);
+        $entity->setPlaceName($dto->place?->name);
+        $entity->setPlaceCity($dto->place?->city->name);
+        $entity->setPlaceCountryName($dto->place?->country->name);
+        $entity->setPlacePostalCode($dto->place?->postalCode);
+        $entity->setPlaceStreet($dto->place?->street);
+        $entity->setPlaceExternalId($dto->place?->externalId);
         // $entity->setPlaceFacebookId();
         $entity->setLongitude($dto->longitude);
         $entity->setLatitude($dto->latitude);
         $entity->setNom($dto->name);
         $entity->setHoraires($dto->hours);
 
-        $placeEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->place::class);
+        if (null !== $dto->place) {
+            $placeEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->place::class);
 
-        /** @var Place|null $placeEntity */
-        $placeEntity = $placeEntityProvider->getEntity($dto->place);
-        $entity->setPlace($placeEntity);
-        $entity->setPlaceCountry($placeEntity?->getCountry());
+            /** @var Place|null $placeEntity */
+            $placeEntity = $placeEntityProvider->getEntity($dto->place);
+            $entity->setPlace($placeEntity);
+            $entity->setPlaceCountry($placeEntity?->getCountry());
+        }
 
         return $entity;
     }

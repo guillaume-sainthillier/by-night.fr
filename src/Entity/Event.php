@@ -871,7 +871,7 @@ class Event implements ExternalIdentifiableInterface, InternalIdentifiableInterf
         return $this->placeName;
     }
 
-    public function setPlaceName(string $placeName): self
+    public function setPlaceName(?string $placeName): self
     {
         $this->placeName = $placeName;
 

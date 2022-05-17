@@ -34,7 +34,7 @@ use Psr\Log\LoggerInterface;
 
 class DoctrineEventHandler
 {
-    public const CHUNK_SIZE = 50;
+    private const CHUNK_SIZE = 50;
     private ParserHistoryHandler $parserHistoryHandler;
 
     public function __construct(
@@ -68,6 +68,46 @@ class DoctrineEventHandler
     {
         if (0 === \count($dtos)) {
             return [];
+        }
+
+        $uniqueObjectKeys = [
+            'places' => [],
+            'countries' => [],
+            'cities' => [],
+        ];
+
+        foreach ($dtos as $dto) {
+            if (!$dto->place) {
+                continue;
+            }
+
+            $key = $dto->place->getUniqueKey();
+            if (!isset($uniqueObjectKeys['places'][$key])) {
+                $uniqueObjectKeys['places'][$key] = $dto->place;
+            } else {
+                unset($dto->place); // Call GC
+                $dto->place = $uniqueObjectKeys['places'][$key];
+            }
+
+            if ($dto->place->city) {
+                $key = $dto->place->city->getUniqueKey();
+                if (!isset($uniqueObjectKeys['cities'][$key])) {
+                    $uniqueObjectKeys['cities'][$key] = $dto->place->city;
+                } else {
+                    unset($dto->place->city); // Call GC
+                    $dto->place->city = $uniqueObjectKeys['cities'][$key];
+                }
+            }
+
+            if ($dto->place->country) {
+                $key = $dto->place->country->getUniqueKey();
+                if (!isset($uniqueObjectKeys['countries'][$key])) {
+                    $uniqueObjectKeys['countries'][$key] = $dto->place->country;
+                } else {
+                    unset($dto->place->country); // Call GC
+                    $dto->place->country = $uniqueObjectKeys['countries'][$key];
+                }
+            }
         }
 
         return $this->mergeWithDatabase($dtos);

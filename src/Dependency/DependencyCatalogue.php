@@ -17,7 +17,7 @@ use App\Contracts\DependencyObjectInterface;
 class DependencyCatalogue implements DependencyCatalogueInterface
 {
     /** @var DependencyInterface[] */
-    private $dependencies = [];
+    private array $dependencies = [];
 
     public function __construct(array $dependencies = [])
     {

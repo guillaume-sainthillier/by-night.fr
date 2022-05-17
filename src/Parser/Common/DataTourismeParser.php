@@ -228,15 +228,19 @@ class DataTourismeParser extends AbstractParser
         $place->street = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:streetAddress][0]');
         $place->postalCode = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][schema:postalCode]');
         $place->externalId = sprintf('DT-%s', $this->getExternalIdFromUrl($this->getDataValue($datas, '[isLocatedAt][0][@id]')));
+        $event->place = $place;
 
         $city = new CityDto();
         $city->name = $this->getDataValue($datas, [
             '[isLocatedAt][0][schema:address][0][schema:addressLocality][0]',
             '[isLocatedAt][0][schema:address][0][schema:addressLocality]',
         ]);
+        $place->city = $city;
 
         $country = new CountryDto();
         $country->name = $country;
+        $city->country = $country;
+        $place->country = $country;
 
         // Multiple date handling
         foreach ($datas['takesPlaceAt'] as $date) {
