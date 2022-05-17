@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use App\Contracts\ExternalIdentifiableInterface;
+use App\Contracts\InternalIdentifiableInterface;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
@@ -49,7 +50,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ExclusionPolicy('all')]
-class Event implements ExternalIdentifiableInterface, Stringable
+class Event implements ExternalIdentifiableInterface, InternalIdentifiableInterface, Stringable
 {
     use EntityTimestampableTrait;
 
@@ -68,7 +69,7 @@ class Event implements ExternalIdentifiableInterface, Stringable
     private ?string $externalOrigin = null;
 
     #[ORM\Column(length: 255)]
-    #[Gedmo\Slug(fields: ['nom'])]
+    #[Gedmo\Slug(fields: ['nom'], unique: false)]
     private ?string $slug = null;
 
     #[Assert\NotBlank(message: "N'oubliez pas de nommer votre événement !")]
@@ -308,6 +309,15 @@ class Event implements ExternalIdentifiableInterface, Stringable
         $this->commentaires = new ArrayCollection();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf('event-%s', $this->getId());
     }
 
     public function hasImage(): bool

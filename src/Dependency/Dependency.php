@@ -11,17 +11,26 @@
 namespace App\Dependency;
 
 use App\Contracts\DependencyInterface;
+use App\Contracts\DependencyObjectInterface;
 
 class Dependency implements DependencyInterface
 {
-    public function __construct(private object $object, private bool $isOptional = true)
+    /** @var DependencyObjectInterface */
+    private $object;
+
+    /** @var bool */
+    private $isReference;
+
+    public function __construct(DependencyObjectInterface $object, bool $isReference = true)
     {
+        $this->object = $object;
+        $this->isReference = $isReference;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getObject(): object
+    public function getObject(): DependencyObjectInterface
     {
         return $this->object;
     }
@@ -29,8 +38,8 @@ class Dependency implements DependencyInterface
     /**
      * {@inheritDoc}
      */
-    public function isOptional(): bool
+    public function isReference(): bool
     {
-        return $this->isOptional;
+        return $this->isReference;
     }
 }

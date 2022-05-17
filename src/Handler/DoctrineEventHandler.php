@@ -10,8 +10,10 @@
 
 namespace App\Handler;
 
-use App\Contracts\DependenciableInterface;
 use App\Contracts\DependencyCatalogueInterface;
+use App\Contracts\DependencyProvidableInterface;
+use App\Contracts\DependencyRequirableInterface;
+use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Dependency\DependencyCatalogue;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
@@ -24,9 +26,11 @@ use App\Repository\CountryRepository;
 use App\Repository\ZipCityRepository;
 use App\Utils\ChunkUtils;
 use App\Utils\Firewall;
+use App\Utils\MemoryUtils;
 use App\Utils\Monitor;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use Psr\Log\LoggerInterface;
 
 class DoctrineEventHandler
 {
@@ -35,6 +39,7 @@ class DoctrineEventHandler
 
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private LoggerInterface $logger,
         private EventHandler $handler,
         private Firewall $firewall,
         private EntityProviderHandler $entityProviderHandler,
@@ -65,21 +70,21 @@ class DoctrineEventHandler
             return [];
         }
 
-        return $this->mergeWithDatabase($dtos, $flush);
+        return $this->mergeWithDatabase($dtos);
 
-        //On récupère toutes les explorations existantes pour ces événements
-        //$this->loadExternalIdsData($dtos);
+        // On récupère toutes les explorations existantes pour ces événements
+        // $this->loadExternalIdsData($dtos);
 
-        //Grace à ça, on peut déjà filtrer une bonne partie des événements
-        //$this->doFilterAndClean($dtos);
+        // Grace à ça, on peut déjà filtrer une bonne partie des événements
+        // $this->doFilterAndClean($dtos);
 
-        //On met ensuite à jour le statut de ces explorations en base
-        //$this->flushParserDatas();
+        // On met ensuite à jour le statut de ces explorations en base
+        // $this->flushParserDatas();
 
-        //$allowedEvents = $this->getAllowedEvents($dtos);
-        //$notAllowedEvents = $this->getNotAllowedEvents($dtos);
-        //$dtos = null; // Call GC
-        //unset($dtos);
+        // $allowedEvents = $this->getAllowedEvents($dtos);
+        // $notAllowedEvents = $this->getNotAllowedEvents($dtos);
+        // $dtos = null; // Call GC
+        // unset($dtos);
 
         /*
         foreach ($notAllowedEvents as $notAllowedEvent) {
@@ -95,7 +100,7 @@ class DoctrineEventHandler
             }
         }*/
 
-        //return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
+        // return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
     }
 
     /**
@@ -147,12 +152,12 @@ class DoctrineEventHandler
             if (null !== $dto->getExternalId()) {
                 $exploration = $this->firewall->getExploration($dto->getExternalId());
 
-                //Une exploration a déjà eu lieu
+                // Une exploration a déjà eu lieu
                 if (null !== $exploration) {
                     $this->firewall->filterEventExploration($exploration, $dto);
                     $reject = $exploration->getReject();
 
-                    //Celle-ci a déjà conduit à l'élimination de l'événement
+                    // Celle-ci a déjà conduit à l'élimination de l'événement
                     if (false === $reject->isValid()) {
                         $dto->reject->setReason($reject->getReason());
 
@@ -161,7 +166,7 @@ class DoctrineEventHandler
                 }
             }
 
-            //Même algorithme pour le lieu
+            // Même algorithme pour le lieu
             if (null !== $dto->place && null !== $dto->place->getExternalId()) {
                 $exploration = $this->firewall->getExploration($dto->place->getExternalId());
 
@@ -184,7 +189,7 @@ class DoctrineEventHandler
 
     public function guessEventLocation(PlaceDto $dto): void
     {
-        //Pas besoin de trouver un lieu déjà blacklisté
+        // Pas besoin de trouver un lieu déjà blacklisté
         if (false === $dto->reject->isValid()) {
             return;
         }
@@ -194,13 +199,13 @@ class DoctrineEventHandler
 
     private function guessPlaceCity(PlaceDto $dto): void
     {
-        //Recherche du pays en premier lieu
+        // Recherche du pays en premier lieu
         if ($dto->getCountryName() && (!$dto->getCountry() || $dto->getCountry()->getName() !== $dto->getCountryName())) {
             $country = $this->countryRepository->findOneByName($dto->getCountryName());
             $dto->setCountry($country);
         }
 
-        //Pas de pays détecté -> next
+        // Pas de pays détecté -> next
         if (null === $dto->getCountry()) {
             if ($dto->getCountryName()) {
                 $dto->getReject()->addReason(Reject::BAD_COUNTRY);
@@ -215,16 +220,16 @@ class DoctrineEventHandler
             return;
         }
 
-        //Location fournie -> Vérification dans la base des villes existantes
+        // Location fournie -> Vérification dans la base des villes existantes
         $zipCity = null;
         $city = null;
 
-        //Ville + CP
+        // Ville + CP
         if ($dto->getVille() && $dto->getCodePostal()) {
             $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->getCodePostal(), $dto->getVille(), $dto->getCountry()->getId());
         }
 
-        //Ville
+        // Ville
         if (!$zipCity && $dto->getVille()) {
             $zipCities = $this->repoZipCity->findAllByCity($dto->getVille(), $dto->getCountry()->getId());
             if (1 === \count($zipCities)) {
@@ -232,7 +237,7 @@ class DoctrineEventHandler
             }
         }
 
-        //CP
+        // CP
         if (!$zipCity && $dto->getCodePostal()) {
             $zipCities = $this->repoZipCity->findAllByPostalCode($dto->getCodePostal(), $dto->getCountry()->getId());
             if (1 === \count($zipCities)) {
@@ -244,7 +249,7 @@ class DoctrineEventHandler
             $city = $zipCity->getParent();
         }
 
-        //City
+        // City
         if (!$city && $dto->getVille()) {
             $cities = $this->repoCity->findAllByName($dto->getVille(), $dto->getCountry()->getId());
             if (1 === \count($cities)) {
@@ -312,78 +317,152 @@ class DoctrineEventHandler
      *
      * @psalm-return array<null|object>
      */
-    private function mergeWithDatabase(array $dtos, bool $flush, DependencyCatalogue $previousDependencyCatalogue = null): array
-    {
+    private function mergeWithDatabase(
+        array $dtos,
+        DependencyCatalogue $previousCatalogue = null,
+        array &$allCatalogues = [],
+        array $paths = []
+    ): array {
         if (0 === \count($dtos)) {
             return [];
         }
 
-        $alreadyInTransaction = $flush && null !== $previousDependencyCatalogue;
+        $isRootTransaction = null === $previousCatalogue;
 
-        $entities = [];
+        $rootEntities = [];
         $chunks = ChunkUtils::getNestedChunksByClass($dtos, self::CHUNK_SIZE);
 
-        //Per DTO class
+        // Per DTO class
         foreach ($chunks as $dtoClassName => $dtoChunks) {
+            $currentPaths = $paths;
+            $currentPaths[] = $dtoClassName;
+            $this->logger->info(sprintf(
+                '[%s] Traversing %d objects',
+                implode(' > ', $currentPaths),
+                \count($dtoChunks)
+            ));
+
             $entityProvider = $this->entityProviderHandler->getEntityProvider($dtoClassName);
-            $factory = $this->entityFactoryHandler->getFactory($dtoClassName);
+            $entityFactory = $this->entityFactoryHandler->getFactory($dtoClassName);
 
-            //Per BATCH_SIZE
+            // Per BATCH_SIZE
             foreach ($dtoChunks as $chunk) {
-                //Resolve current dependencies before persisting root objects
-                $dependencyCatalogue = $this->computeDependencyCatalogue($chunk);
-                $this->mergeWithDatabase($dependencyCatalogue->objects(), $flush, $dependencyCatalogue);
+                // Resolve current dependencies before persisting root objects
+                $requiredCatalogue = $this->computeRequiredCatalogue($chunk);
+                $allCatalogues[] = $requiredCatalogue;
+                $this->mergeWithDatabase($requiredCatalogue->objects(), $requiredCatalogue, $allCatalogues, $currentPaths);
 
-                //Then perform a global SQL request to fetch entities by external ids
+                // Then perform a global SQL request to fetch entities by external ids
                 $entityProvider->prefetchEntities($chunk);
 
                 foreach ($chunk as $i => $dto) {
+                    $isObjectReference = null !== $previousCatalogue
+                        && $previousCatalogue->has($dto)
+                        && $previousCatalogue->get($dto)->isReference();
+
+                    // Fetch entity from previously prefetched ones
                     $entity = $entityProvider->getEntity($dto);
-                    $isFactoryOptional = null !== $previousDependencyCatalogue && $previousDependencyCatalogue->has($dto) && $previousDependencyCatalogue->get($dto)->isOptional();
                     $isNewEntity = null === $entity;
 
-                    if (!$isNewEntity) {
-                        $dto->id = $entity->getId();
+                    // Resolve id
+                    if (!$isNewEntity && $dto instanceof DtoEntityIdentifierResolvableInterface) {
+                        $dto->setIdentifierFromEntity($entity);
                     }
 
-                    //We don't create an empty entity into database if existing reference is not found
-                    if ($isFactoryOptional) {
-                        $entities[$i] = null;
+                    // We don't create an empty entity into database if existing reference is not found
+                    if ($isObjectReference) {
+                        if ($isRootTransaction) {
+                            $rootEntities[$i] = null;
+                        }
                         continue;
                     }
 
-                    $entity = $factory->create($entity, $dto);
+                    // Either create a new entity from scratch
+                    // Or merge dto with already existing one
+                    $entity = $entityFactory->create($entity, $dto);
+
                     $this->entityManager->persist($entity);
+
+                    if ($entity instanceof Event) {
+                        if (
+                            null === $entity->getPlace()
+                            || null === $entity->getPlaceCountry()
+                            || null === $entity->getPlace()->getCity()
+                            || null === $entity->getPlace()->getCity()->getCountry()
+                            || null === $entity->getPlace()->getCountry()
+                        ) {
+                            $foo = $this->entityProviderHandler->getEntityProvider(PlaceDto::class);
+                            $bar = $dto->place;
+                            $bar2 = $foo->getObjectKeys($dto->place);
+                            dump($this->entityProviderHandler->getEntityProvider(PlaceDto::class)->getEntity($dto->place));
+                            dd('NOK');
+                        }
+
+                        if (!$this->entityManager->contains($entity)) {
+                            dump('nok');
+                        }
+                        if (!$this->entityManager->contains($entity->getPlaceCountry())) {
+                            dump('nok');
+                        }
+                        if (!$this->entityManager->contains($entity->getPlace())) {
+                            dump('nok');
+                        }
+                        if (!$this->entityManager->contains($entity->getPlace()->getCountry())) {
+                            dump('nok');
+                        }
+                        if (!$this->entityManager->contains($entity->getPlace()->getCity())) {
+                            dump('nok');
+                        }
+                    }
+
+                    // Add all new entities to current samples in order to prevent duplicate creates
                     if ($isNewEntity) {
                         $entityProvider->addEntity($entity);
                     }
-                    $entities[$i] = $entity;
+
+                    if ($isRootTransaction) {
+                        $rootEntities[$i] = $entity;
+                    }
                 }
 
-                if (!$alreadyInTransaction) {
+                // Resolve current dependencies after persisting parent objects
+                $provideCatalogue = $this->computeProvidedCatalogue($chunk);
+                $allCatalogues[] = $provideCatalogue;
+                $this->mergeWithDatabase($provideCatalogue->objects(), $provideCatalogue, $allCatalogues, $currentPaths);
+
+                if ($isRootTransaction) {
+                    $this->logger->info(sprintf(
+                        '[%s] FLUSH',
+                        implode(' > ', $currentPaths),
+                    ));
                     $this->entityManager->flush();
-                    $this->entityManager->clear();
+
                     $entityProvider->clear();
-                    if ($previousDependencyCatalogue) {
-                        $previousDependencyCatalogue->clear();
+                    foreach ($allCatalogues as $catalogue) {
+                        $catalogue->clear();
                     }
-                    dump('CLEAR', $dtoClassName);
-                    //dump(MemoryUtils::getMemoryUsage(), MemoryUtils::getPeakMemoryUsage());
+                    $allCatalogues = [];
+                    $this->entityManager->clear();
+                    $this->logger->info(sprintf(
+                        'Memory usage after flush: %s - Memory peak usage: %s',
+                        MemoryUtils::getMemoryUsage(),
+                        MemoryUtils::getPeakMemoryUsage(),
+                    ));
                 }
             }
         }
 
-        return $entities;
+        return $rootEntities;
 
-        //Par localisation
+        // Par localisation
         foreach ($chunks as $chunk) {
             $this->echantillonHandler->prefetchPlaceEchantillons($this->unChunk($chunk));
 
-            //Par n événements
+            // Par n événements
             foreach ($chunk as $currentEvents) {
                 $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
 
-                //Par événement
+                // Par événement
                 foreach ($currentEvents as $i => $event) {
                     /** @var Event $event */
                     $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
@@ -394,7 +473,7 @@ class DoctrineEventHandler
                     if (!$this->firewall->isValid($event)) {
                         $this->parserHistoryHandler->addBlackList();
                     } else {
-                        //Image URL has changed or never downloaded
+                        // Image URL has changed or never downloaded
                         if ($event->getUrl() && (!$event->getImageSystem()->getName() || $event->getUrl() !== $url)) {
                             $this->handler->handleDownload($event);
                         }
@@ -425,15 +504,29 @@ class DoctrineEventHandler
         return $dtos;
     }
 
-    private function computeDependencyCatalogue(array $dtos): DependencyCatalogueInterface
+    private function computeRequiredCatalogue(array $dtos): DependencyCatalogueInterface
     {
         $catalogue = new DependencyCatalogue();
         foreach ($dtos as $dto) {
-            if (!$dto instanceof DependenciableInterface) {
+            if (!$dto instanceof DependencyRequirableInterface) {
                 continue;
             }
 
-            $catalogue->addCatalogue($dto->getDependencyCatalogue());
+            $catalogue->addCatalogue($dto->getRequiredCatalogue());
+        }
+
+        return $catalogue;
+    }
+
+    private function computeProvidedCatalogue(array $dtos): DependencyCatalogueInterface
+    {
+        $catalogue = new DependencyCatalogue();
+        foreach ($dtos as $dto) {
+            if (!$dto instanceof DependencyProvidableInterface) {
+                continue;
+            }
+
+            $catalogue->addCatalogue($dto->getProvidedCatalogue());
         }
 
         return $catalogue;

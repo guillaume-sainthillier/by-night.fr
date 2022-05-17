@@ -52,7 +52,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
         foreach ($dtos as $dto) {
             \assert($dto instanceof CityDto);
 
-            if (null === $dto->name || null === $dto->country || null === $dto->country->id) {
+            if (null === $dto->name || null === $dto->country || null === $dto->country->entityId) {
                 continue;
             }
 
@@ -66,7 +66,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             $cities = array_unique($cities);
 
             foreach ($cities as $city) {
-                $groupedWheres[$dto->country->id][$city] = true;
+                $groupedWheres[$dto->country->entityId][$city] = true;
             }
         }
 

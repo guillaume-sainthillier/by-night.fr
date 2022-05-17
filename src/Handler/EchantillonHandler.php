@@ -86,7 +86,7 @@ class EchantillonHandler
 
         $repoPlace = $this->placeRepository;
 
-        //On prend toutes les places déjà connues par leur city ID
+        // On prend toutes les places déjà connues par leur city ID
         if (\count($cityIds) > 0) {
             $places = $repoPlace->findBy([
                 'city' => array_keys($cityIds),
@@ -97,7 +97,7 @@ class EchantillonHandler
             }
         }
 
-        //On prend ensuite toutes les places selon leur localisation
+        // On prend ensuite toutes les places selon leur localisation
         if (\count($countryIds) > 0) {
             $places = $repoPlace->findBy([
                 'country' => array_keys($countryIds),
@@ -112,7 +112,7 @@ class EchantillonHandler
 
     private function addPlace(Place $place): void
     {
-        $key = $place->getId() ?: spl_object_hash($place);
+        $key = $place->getId() ?: spl_object_id($place);
 
         if (null !== $place->getCity()) {
             $this->cityPlaces[$place->getCity()->getId()][$key] = $place;

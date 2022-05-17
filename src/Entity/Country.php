@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Contracts\InternalIdentifiableInterface;
 use App\Repository\CountryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -20,7 +21,7 @@ use Stringable;
 
 #[ORM\Entity(repositoryClass: CountryRepository::class, readOnly: true)]
 #[ExclusionPolicy('NONE')]
-class Country implements Stringable
+class Country implements Stringable, InternalIdentifiableInterface
 {
     #[ORM\Column(type: 'string', length: 2)]
     #[ORM\Id]
@@ -59,6 +60,15 @@ class Country implements Stringable
     public function __toString(): string
     {
         return $this->name ?? '';
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf('country-%s', $this->getId());
     }
 
     public function getId(): ?string

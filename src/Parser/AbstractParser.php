@@ -12,6 +12,7 @@ namespace App\Parser;
 
 use App\Contracts\ParserInterface;
 use App\Dto\EventDto;
+use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
 use Psr\Log\LoggerInterface;
@@ -21,8 +22,12 @@ abstract class AbstractParser implements ParserInterface
 {
     private int $parsedEvents = 0;
 
-    public function __construct(private LoggerInterface $logger, private EventProducer $eventProducer, protected ReservationsHandler $reservationsHandler)
-    {
+    public function __construct(
+        private LoggerInterface $logger,
+        private EventProducer $eventProducer,
+        private EventHandler $eventHandler,
+        protected ReservationsHandler $reservationsHandler,
+    ) {
     }
 
     /**
@@ -55,6 +60,7 @@ abstract class AbstractParser implements ParserInterface
         }
 
         $this->sanitize($eventDto);
+        $this->eventHandler->cleanEvent($eventDto);
         $this->eventProducer->scheduleEvent($eventDto);
         ++$this->parsedEvents;
     }

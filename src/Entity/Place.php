@@ -13,6 +13,7 @@ namespace App\Entity;
 use App\App\Location;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\ExternalIdentifiablesInterface;
+use App\Contracts\InternalIdentifiableInterface;
 use App\Reject\Reject;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -31,7 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
 #[ExclusionPolicy('all')]
-class Place implements ExternalIdentifiablesInterface, Stringable
+class Place implements ExternalIdentifiablesInterface, InternalIdentifiableInterface, Stringable
 {
     use EntityTimestampableTrait;
     #[ORM\Column(type: 'integer')]
@@ -122,10 +123,19 @@ class Place implements ExternalIdentifiablesInterface, Stringable
         $this->metadatas = new ArrayCollection();
     }
 
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf('place-%s', $this->getId());
+    }
+
     /**
      * {@inheritDoc}
      *
-     * @psalm-return Collection<int, PlaceMetadata>
+     * @return Collection<int, PlaceMetadata>
      */
     public function getExternalIdentifiables(): Collection
     {

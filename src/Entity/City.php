@@ -10,6 +10,7 @@
 
 namespace App\Entity;
 
+use App\Contracts\InternalIdentifiableInterface;
 use App\Repository\CityRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -17,7 +18,7 @@ use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CityRepository::class, readOnly: true)]
 #[ExclusionPolicy('NONE')]
-class City extends AdminZone
+class City extends AdminZone implements InternalIdentifiableInterface
 {
     #[ORM\ManyToOne(targetEntity: AdminZone::class, fetch: 'EAGER')]
     #[Groups(['list_city'])]
@@ -29,6 +30,15 @@ class City extends AdminZone
     public function __toString(): string
     {
         return $this->getFullName();
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf('city-%s', $this->getId());
     }
 
     public function getFullName(): string

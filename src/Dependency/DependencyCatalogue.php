@@ -12,12 +12,12 @@ namespace App\Dependency;
 
 use App\Contracts\DependencyCatalogueInterface;
 use App\Contracts\DependencyInterface;
-use RuntimeException;
+use App\Contracts\DependencyObjectInterface;
 
 class DependencyCatalogue implements DependencyCatalogueInterface
 {
     /** @var DependencyInterface[] */
-    private array $dependencies = [];
+    private $dependencies = [];
 
     public function __construct(array $dependencies = [])
     {
@@ -29,9 +29,9 @@ class DependencyCatalogue implements DependencyCatalogueInterface
     /**
      * {@inheritDoc}
      */
-    public function has(object $object): bool
+    public function has(DependencyObjectInterface $object): bool
     {
-        $key = spl_object_hash($object);
+        $key = $object->getUniqueKey();
 
         return isset($this->dependencies[$key]);
     }
@@ -39,11 +39,11 @@ class DependencyCatalogue implements DependencyCatalogueInterface
     /**
      * {@inheritDoc}
      */
-    public function get(object $object): DependencyInterface
+    public function get(DependencyObjectInterface $object): DependencyInterface
     {
-        $key = spl_object_hash($object);
+        $key = $object->getUniqueKey();
         if (!isset($this->dependencies[$key])) {
-            throw new RuntimeException('Given dependency is not found');
+            throw new \RuntimeException('Given dependency is not found');
         }
 
         return $this->dependencies[$key];
@@ -54,7 +54,11 @@ class DependencyCatalogue implements DependencyCatalogueInterface
      */
     public function add(DependencyInterface $dependency): void
     {
-        $key = spl_object_hash($dependency->getObject());
+        if ($this->has($dependency->getObject())) {
+            return;
+        }
+
+        $key = $dependency->getObject()->getUniqueKey();
         $this->dependencies[$key] = $dependency;
     }
 
@@ -81,12 +85,14 @@ class DependencyCatalogue implements DependencyCatalogueInterface
      */
     public function objects(): array
     {
-        return array_map(fn (DependencyInterface $dependency) => $dependency->getObject(), $this->all());
+        return array_map(function (DependencyInterface $dependency) {
+            return $dependency->getObject();
+        }, $this->all());
     }
 
     public function clear(): void
     {
-        unset($this->dependencies); //Call GC
+        unset($this->dependencies); // Call GC
         $this->dependencies = [];
     }
 }

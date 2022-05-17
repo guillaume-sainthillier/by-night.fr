@@ -14,6 +14,7 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
+use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
@@ -27,9 +28,15 @@ class SowProgParser extends AbstractParser
     private const BASE_URI = 'https://agenda.sowprog.com';
     private HttpClientInterface $client;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, string $sowprogUsername, string $sowprogPassword)
-    {
-        parent::__construct($logger, $eventProducer, $reservationsHandler);
+    public function __construct(
+        LoggerInterface $logger,
+        EventProducer $eventProducer,
+        EventHandler $eventHandler,
+        ReservationsHandler $reservationsHandler,
+        string $sowprogUsername,
+        string $sowprogPassword
+    ) {
+        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
 
         $this->client = HttpClient::create([
             'base_uri' => self::BASE_URI,

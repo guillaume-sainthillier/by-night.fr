@@ -10,7 +10,7 @@
 
 namespace App\Contracts;
 
-interface SupportsClassInterface
+interface DependencyObjectInterface
 {
-    public function supports(string $dtoClassName): bool;
+    public function getUniqueKey(): string;
 }

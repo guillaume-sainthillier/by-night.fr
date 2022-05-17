@@ -24,17 +24,9 @@ class PlaceEntityProvider extends AbstractEntityProvider
     /**
      * {@inheritDoc}
      */
-    public function supports(string $resourceClass): bool
+    public function supports(string $dtoClassName): bool
     {
-        return PlaceDto::class === $resourceClass;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getRepository(): DtoFindableRepositoryInterface
-    {
-        return $this->placeRepository;
+        return PlaceDto::class === $dtoClassName;
     }
 
     /**
@@ -42,13 +34,26 @@ class PlaceEntityProvider extends AbstractEntityProvider
      */
     public function getEntity(object $dto): ?object
     {
+        $entity = parent::getEntity($dto);
+        if (null !== $entity) {
+            return $entity;
+        }
+
         $comparator = $this->comparatorHandler->getComparator($dto);
-        $matching = $comparator->getMostMatching($this->entities, $dto);
+        $matching = $comparator->getMostMatching(array_unique($this->entities), $dto);
 
         if (null !== $matching && $matching->getConfidence() >= 90.0) {
             return $matching->getEntity();
         }
 
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getRepository(string $dtoClassName): DtoFindableRepositoryInterface
+    {
+        return $this->placeRepository;
     }
 }

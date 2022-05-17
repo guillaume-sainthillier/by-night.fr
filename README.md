@@ -21,3 +21,11 @@ https://by-night.fr
 -   Webpack
 -   Docker
 -   Amazon S3 / Cloudfront
+
+## Commandes utiles
+
+```bash
+bin/console rabbitmq:setup-fabric
+bin/console app:events:import toulouse.opendata
+bin/console rabbitmq:batch:consumer add_event -vv
+```

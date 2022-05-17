@@ -54,10 +54,10 @@ class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepo
         foreach ($dtos as $dto) {
             \assert($dto instanceof PlaceDto);
 
-            if (null !== $dto->city && null !== $dto->city->id) {
-                $cityWheres[$dto->city->id] = true;
-            } elseif (null !== $dto->country && null !== $dto->country->id) {
-                $countryWheres[$dto->country->id] = true;
+            if (null !== $dto->city && null !== $dto->city->entityId) {
+                $cityWheres[$dto->city->entityId] = true;
+            } elseif (null !== $dto->country && null !== $dto->country->entityId) {
+                $countryWheres[$dto->country->entityId] = true;
             }
         }
 
@@ -73,7 +73,7 @@ class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepo
         }
 
         if (\count($wheres) > 0) {
-            $qb->orWhere(implode(' OR ', $wheres));
+            $qb->andWhere(implode(' OR ', $wheres));
         }
 
         $this->addDtosToQueryBuilding($qb, 'metadatas', $dtos);

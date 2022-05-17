@@ -14,6 +14,7 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
+use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
@@ -36,9 +37,15 @@ class OpenAgendaParser extends AbstractParser
 
     private HttpClientInterface $client;
 
-    public function __construct(private string $openAgendaKey, LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, private CountryRepository $countryRepository)
-    {
-        parent::__construct($logger, $eventProducer, $reservationsHandler);
+    public function __construct(
+        LoggerInterface $logger,
+        EventProducer $eventProducer,
+        EventHandler $eventHandler,
+        ReservationsHandler $reservationsHandler,
+        private CountryRepository $countryRepository
+    ) {
+        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
+
         $this->client = HttpClient::create();
     }
 
@@ -55,7 +62,7 @@ class OpenAgendaParser extends AbstractParser
      */
     public function parse(bool $incremental): void
     {
-        //Fetch event uids from public.opendatasoft.com
+        // Fetch event uids from public.opendatasoft.com
         $query = [
             'rows' => '-1',
             'select' => 'uid',
@@ -75,7 +82,7 @@ class OpenAgendaParser extends AbstractParser
         $eventIds = array_filter($eventIds);
         $eventChunks = array_chunk($eventIds, self::EVENT_BATCH_SIZE);
 
-        //Then fetch agenda uids from api.openagenda.com
+        // Then fetch agenda uids from api.openagenda.com
         $responses = [];
         foreach ($eventChunks as $eventChunk) {
             $url = 'https://api.openagenda.com/v1/events';
@@ -100,7 +107,7 @@ class OpenAgendaParser extends AbstractParser
                     continue;
                 }
 
-                //Parse events
+                // Parse events
                 $this->publishEvents($datas['data']);
             } catch (TransportExceptionInterface|HttpExceptionInterface $exception) {
                 $this->logException($exception);

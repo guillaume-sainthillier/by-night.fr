@@ -10,7 +10,7 @@
 
 namespace App\Contracts;
 
-interface SupportsClassInterface
+interface DtoEntityIdentifierResolvableInterface
 {
-    public function supports(string $dtoClassName): bool;
+    public function setIdentifierFromEntity(object $entity): void;
 }

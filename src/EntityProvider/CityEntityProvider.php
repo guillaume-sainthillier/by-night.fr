@@ -17,16 +17,18 @@ use App\Repository\CityRepository;
 
 class CityEntityProvider extends AbstractEntityProvider
 {
-    public function __construct(private CityRepository $cityRepository, private ComparatorHandler $comparatorHandler)
-    {
+    public function __construct(
+        private CityRepository $cityRepository,
+        private ComparatorHandler $comparatorHandler
+    ) {
     }
 
     /**
      * {@inheritDoc}
      */
-    public function supports(string $resourceClass): bool
+    public function supports(string $dtoClassName): bool
     {
-        return CityDto::class === $resourceClass;
+        return CityDto::class === $dtoClassName;
     }
 
     /**
@@ -34,8 +36,13 @@ class CityEntityProvider extends AbstractEntityProvider
      */
     public function getEntity(object $dto): ?object
     {
+        $entity = parent::getEntity($dto);
+        if (null !== $entity) {
+            return $entity;
+        }
+
         $comparator = $this->comparatorHandler->getComparator($dto);
-        $matching = $comparator->getMostMatching($this->entities, $dto);
+        $matching = $comparator->getMostMatching(array_unique($this->entities), $dto);
 
         if (null !== $matching && $matching->getConfidence() >= 100.0) {
             return $matching->getEntity();
@@ -47,7 +54,7 @@ class CityEntityProvider extends AbstractEntityProvider
     /**
      * {@inheritDoc}
      */
-    protected function getRepository(): DtoFindableRepositoryInterface
+    protected function getRepository(string $dtoClassName): DtoFindableRepositoryInterface
     {
         return $this->cityRepository;
     }

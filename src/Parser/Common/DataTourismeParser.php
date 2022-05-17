@@ -14,6 +14,7 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
+use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
@@ -40,9 +41,16 @@ class DataTourismeParser extends AbstractParser
 
     private PropertyAccessorInterface $propertyAccessor;
 
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, private string $tempPath, private string $dataTourismeAppKey)
-    {
-        parent::__construct($logger, $eventProducer, $reservationsHandler);
+    public function __construct(
+        LoggerInterface $logger,
+        EventProducer $eventProducer,
+        EventHandler $eventHandler,
+        ReservationsHandler $reservationsHandler,
+        private string $tempPath,
+        private string $dataTourismeAppKey
+    ) {
+        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
+
         $this->propertyAccessor = PropertyAccess::createPropertyAccessorBuilder()
             ->enableExceptionOnInvalidIndex()
             ->enableExceptionOnInvalidPropertyPath()
@@ -94,7 +102,7 @@ class DataTourismeParser extends AbstractParser
 
     private function getFeed(string $url): string
     {
-        //Remove previous extracts
+        // Remove previous extracts
         $fs = new Filesystem();
 
         $filePath = $this->tempPath . DIRECTORY_SEPARATOR . sprintf('%s.zip', md5($url));
@@ -104,7 +112,7 @@ class DataTourismeParser extends AbstractParser
             $fs->remove($extractDirectory);
         }
 
-        //Download fresh version
+        // Download fresh version
         $client = HttpClient::create();
         $response = $client->request('GET', $url);
 
@@ -113,7 +121,7 @@ class DataTourismeParser extends AbstractParser
             fwrite($fileHandler, $chunk->getContent());
         }
 
-        //Extract zip
+        // Extract zip
         $zip = new ZipArchive();
         $res = $zip->open($filePath);
         if (true !== $res) {
@@ -230,7 +238,7 @@ class DataTourismeParser extends AbstractParser
         $country = new CountryDto();
         $country->name = $country;
 
-        //Multiple date handling
+        // Multiple date handling
         foreach ($datas['takesPlaceAt'] as $date) {
             if (empty($date['endDate'])) {
                 continue;
@@ -271,9 +279,9 @@ class DataTourismeParser extends AbstractParser
             'schema:ComedyEvent' => 'Spectacle',
             'schema:CourseInstance' => 'Cours',
             'schema:DanceEvent' => 'Dance',
-            //'schema:DeliveryEvent' => 'DeliveryEvent',
+            // 'schema:DeliveryEvent' => 'DeliveryEvent',
             'schema:EducationEvent' => 'Famille',
-            //'schema:EventSeries' => 'Exposition',
+            // 'schema:EventSeries' => 'Exposition',
             'schema:ExhibitionEvent' => 'ExhibitionEvent',
             'schema:Festival' => 'Concert, Musique',
             'schema:FoodEvent' => 'Nourriture',
@@ -281,9 +289,9 @@ class DataTourismeParser extends AbstractParser
             'schema:MusicEvent' => 'Musique',
             'schema:PublicationEvent' => 'Recherche',
             'schema:BroadcastEvent' => 'Radio',
-            //'schema:OnDemandEvent' => 'OnDemandEvent',
+            // 'schema:OnDemandEvent' => 'OnDemandEvent',
             'schema:SaleEvent' => 'Commerce',
-            //'schema:ScreeningEvent' => 'ScreeningEvent',
+            // 'schema:ScreeningEvent' => 'ScreeningEvent',
             'schema:SocialEvent' => 'Communautaire',
             'schema:SportsEvent' => 'Sport',
             'schema:TheaterEvent' => 'Théâtre',

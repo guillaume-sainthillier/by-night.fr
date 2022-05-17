@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -12,9 +12,9 @@ namespace App\Contracts;
 
 interface DependencyCatalogueInterface
 {
-    public function has(object $object): bool;
+    public function has(DependencyObjectInterface $object): bool;
 
-    public function get(object $object): DependencyInterface;
+    public function get(DependencyObjectInterface $object): DependencyInterface;
 
     /**
      * @return DependencyInterface[]

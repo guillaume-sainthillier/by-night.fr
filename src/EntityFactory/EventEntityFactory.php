@@ -54,7 +54,7 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setPlacePostalCode($dto->place->postalCode);
         $entity->setPlaceStreet($dto->place->street);
         $entity->setPlaceExternalId($dto->place->externalId);
-        //$entity->setPlaceFacebookId();
+        // $entity->setPlaceFacebookId();
         $entity->setLongitude($dto->longitude);
         $entity->setLatitude($dto->latitude);
         $entity->setNom($dto->name);
@@ -65,9 +65,7 @@ class EventEntityFactory implements EntityFactoryInterface
         /** @var Place|null $placeEntity */
         $placeEntity = $placeEntityProvider->getEntity($dto->place);
         $entity->setPlace($placeEntity);
-        if ($placeEntity) {
-            $entity->setPlaceCountry($placeEntity->getCountry());
-        }
+        $entity->setPlaceCountry($placeEntity?->getCountry());
 
         return $entity;
     }

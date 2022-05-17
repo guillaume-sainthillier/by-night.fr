@@ -31,8 +31,8 @@ class CityComparator extends AbstractComparator
         \assert($entity instanceof City);
         \assert($dto instanceof CityDto);
 
-        //We don't compare cities of different countries
-        if ($dto->country->id !== $entity->getCountry()->getId()) {
+        // We don't compare cities of different countries
+        if ($dto->country->entityId !== $entity->getCountry()->getId()) {
             return null;
         }
 

@@ -239,7 +239,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         return $this;
     }
 
-    public function getUsername()
+    public function getUsername(): string
     {
         return ucfirst($this->username);
     }
@@ -257,17 +257,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
     /**
      * @see UserInterface
      */
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return $this->salt;
     }
 
     /**
      * @see UserInterface
-     *
-     * @return void
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
     }

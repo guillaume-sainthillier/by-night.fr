@@ -42,6 +42,9 @@ class EventHandler
         $this->cleaner->cleanEvent($dto);
         if (null !== $dto->place) {
             $this->cleaner->cleanPlace($dto->place);
+            if (null !== $dto->place->city) {
+                $this->cleaner->cleanCity($dto->place->city);
+            }
         }
     }
 
@@ -120,7 +123,7 @@ class EventHandler
     {
         $bestPlace = Monitor::bench('getBestPlace', fn () => $this->comparator->getBestPlace($persistedPlaces, $notPersistedPlace));
 
-        //On fusionne la place existant avec celle découverte (même si NULL)
+        // On fusionne la place existant avec celle découverte (même si NULL)
         return Monitor::bench('mergePlace', fn () => $this->merger->mergePlace($bestPlace, $notPersistedPlace));
     }
 
@@ -128,7 +131,7 @@ class EventHandler
     {
         $bestEvent = \count($persistedEvents) > 0 ? current($persistedEvents) : null;
 
-        //On fusionne l'event existant avec celui découvert (même si NULL)
+        // On fusionne l'event existant avec celui découvert (même si NULL)
         return Monitor::bench('mergeEvent', fn () => $this->merger->mergeEvent($bestEvent, $notPersistedEvent));
     }
 }

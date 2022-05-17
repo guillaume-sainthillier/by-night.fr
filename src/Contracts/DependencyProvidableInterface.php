@@ -10,7 +10,10 @@
 
 namespace App\Contracts;
 
-interface SupportsClassInterface
+interface DependencyProvidableInterface
 {
-    public function supports(string $dtoClassName): bool;
+    /**
+     * Give what will be persisted AFTER current dto.
+     */
+    public function getProvidedCatalogue(): DependencyCatalogueInterface;
 }

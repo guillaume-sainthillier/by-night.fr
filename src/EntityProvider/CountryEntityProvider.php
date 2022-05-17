@@ -21,9 +21,9 @@ class CountryEntityProvider extends AbstractEntityProvider
     {
     }
 
-    public function supports(string $resourceClass): bool
+    public function supports(string $dtoClassName): bool
     {
-        return CountryDto::class === $resourceClass;
+        return CountryDto::class === $dtoClassName;
     }
 
     /**
@@ -31,8 +31,13 @@ class CountryEntityProvider extends AbstractEntityProvider
      */
     public function getEntity(object $dto): ?object
     {
+        $entity = parent::getEntity($dto);
+        if (null !== $entity) {
+            return $entity;
+        }
+
         $comparator = $this->comparatorHandler->getComparator($dto);
-        $matching = $comparator->getMostMatching($this->entities, $dto);
+        $matching = $comparator->getMostMatching(array_unique($this->entities), $dto);
 
         if (null !== $matching && $matching->getConfidence() >= 100.0) {
             return $matching->getEntity();
@@ -44,7 +49,7 @@ class CountryEntityProvider extends AbstractEntityProvider
     /**
      * {@inheritDoc}
      */
-    protected function getRepository(): DtoFindableRepositoryInterface
+    protected function getRepository(string $dtoClassName): DtoFindableRepositoryInterface
     {
         return $this->countryRepository;
     }

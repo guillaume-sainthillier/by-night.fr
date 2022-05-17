@@ -10,23 +10,27 @@
 
 namespace App\Dto;
 
-use App\Contracts\DependenciableInterface;
 use App\Contracts\DependencyCatalogueInterface;
+use App\Contracts\DependencyObjectInterface;
+use App\Contracts\DependencyRequirableInterface;
+use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\ExternalIdentifiableInterface;
+use App\Contracts\InternalIdentifiableInterface;
 use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
+use App\Entity\Event;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use DateTimeInterface;
 
-class EventDto implements ExternalIdentifiableInterface, DependenciableInterface
+class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, DtoEntityIdentifierResolvableInterface
 {
     use DtoExternalDateFilterableTrait;
     use DtoExternalIdentifiableTrait;
 
     /** @var int|null */
-    public $id;
+    public $entityId;
 
     /** @var DateTimeInterface|null */
     public $startDate;
@@ -82,7 +86,7 @@ class EventDto implements ExternalIdentifiableInterface, DependenciableInterface
     /** @var string[] */
     public $emailContacts = [];
 
-    /** @var PlaceDto */
+    /** @var PlaceDto|null */
     public $place;
 
     /** @var Reject|null */
@@ -96,13 +100,16 @@ class EventDto implements ExternalIdentifiableInterface, DependenciableInterface
 
     public function isAffiliate(): bool
     {
-        return \in_array($this->parserName, [FnacSpectaclesAwinParser::getParserName(), DigitickAwinParser::getParserName()], true);
+        return \in_array($this->parserName, [
+            FnacSpectaclesAwinParser::getParserName(),
+            DigitickAwinParser::getParserName(),
+        ], true);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getDependencyCatalogue(): DependencyCatalogueInterface
+    public function getRequiredCatalogue(): DependencyCatalogueInterface
     {
         $catalogue = new DependencyCatalogue();
         if (null !== $this->place) {
@@ -110,5 +117,33 @@ class EventDto implements ExternalIdentifiableInterface, DependenciableInterface
         }
 
         return $catalogue;
+    }
+
+    public function getUniqueKey(): string
+    {
+        if (null !== $this->externalId && null !== $this->externalOrigin) {
+            return sprintf(
+                '%s-%s',
+                $this->externalId,
+                $this->externalOrigin
+            );
+        }
+
+        return spl_object_id($this);
+    }
+
+    public function setIdentifierFromEntity(object $entity): void
+    {
+        \assert($entity instanceof Event);
+        $this->entityId = $entity->getId();
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->entityId) {
+            return null;
+        }
+
+        return sprintf('event-%s', $this->entityId);
     }
 }

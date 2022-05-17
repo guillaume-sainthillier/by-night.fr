@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -13,11 +13,11 @@ namespace App\Contracts;
 interface EntityProviderInterface extends SupportsClassInterface
 {
     /**
-     * Generate chunks based on internal prefetching method
+     * @psalm-param class-string $dtoClassName
      *
-     * @return object[][]
+     * @return bool true if current provider supports this class name, false otherwise
      */
-    public function getChunks(array $dtos, int $defaultSize): array;
+    public function supports(string $dtoClassName): bool;
 
     /**
      * Prefetch all entities for given objects.

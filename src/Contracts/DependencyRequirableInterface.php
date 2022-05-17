@@ -10,7 +10,10 @@
 
 namespace App\Contracts;
 
-interface SupportsClassInterface
+interface DependencyRequirableInterface
 {
-    public function supports(string $dtoClassName): bool;
+    /**
+     * Give what will be persisted BEFORE current dto.
+     */
+    public function getRequiredCatalogue(): DependencyCatalogueInterface;
 }

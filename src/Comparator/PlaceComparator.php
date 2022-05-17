@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -27,17 +27,17 @@ class PlaceComparator extends AbstractComparator
         \assert($entity instanceof Place);
         \assert($dto instanceof PlaceDto);
 
-        //We cannot compare places of different locations
+        // We cannot compare places of different locations
         if (
             (
                 null === $entity->getCountry() ||
                 null === $dto->country ||
-                $entity->getCountry()->getId() !== $dto->country->id
+                $entity->getCountry()->getId() !== $dto->country->entityId
             ) &&
             (
                 null === $entity->getCity() ||
                 null === $dto->city ||
-                $entity->getCity()->getId() !== $dto->city->id
+                $entity->getCity()->getId() !== $dto->city->entityId
             ) &&
             (
                 null === $entity->getZipCity() ||
@@ -57,12 +57,12 @@ class PlaceComparator extends AbstractComparator
             return null;
         }
 
-        //Même rue & ~ même nom
+        // Même rue & ~ même nom
         if ($this->getStreetMatchingConfidence($entity->getRue(), $dto->street) >= 90.0) {
             return new Matching($entity, 100.00);
         }
 
-        //~ Même nom
+        // ~ Même nom
         return new Matching($entity, 90.0);
     }
 

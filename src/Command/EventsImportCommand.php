@@ -23,7 +23,7 @@ class EventsImportCommand extends Command
     protected static $defaultName = 'app:events:import';
 
     /**
-     * @param ParserInterface[] $parsers
+     * @param iterable<ParserInterface> $parsers
      */
     public function __construct(private iterable $parsers)
     {

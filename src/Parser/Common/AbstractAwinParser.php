@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
 use App\Producer\EventProducer;
@@ -22,9 +23,14 @@ use XMLReader;
 
 abstract class AbstractAwinParser extends AbstractParser
 {
-    public function __construct(LoggerInterface $logger, EventProducer $eventProducer, ReservationsHandler $reservationsHandler, private string $tempPath, private string $awinApiKey)
+    public function __construct(
+        LoggerInterface $logger,
+        EventProducer $eventProducer,
+        EventHandler $eventHandler,
+        ReservationsHandler $reservationsHandler,
+        private string $tempPath, private string $awinApiKey)
     {
-        parent::__construct($logger, $eventProducer, $reservationsHandler);
+        parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
     }
 
     /**
