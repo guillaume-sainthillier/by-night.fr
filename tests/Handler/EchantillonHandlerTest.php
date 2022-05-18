@@ -27,7 +27,7 @@ class EchantillonHandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->echantillonHandler = self::$container->get(EchantillonHandler::class);
+        $this->echantillonHandler = self::getContainer()->get(EchantillonHandler::class);
 
         $this->echantillonHandler->clearPlaces();
         $this->echantillonHandler->clearEvents();

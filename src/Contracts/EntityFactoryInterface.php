@@ -10,6 +10,8 @@
 
 namespace App\Contracts;
 
+use App\Exception\UncreatableEntityException;
+
 interface EntityFactoryInterface extends SupportsClassInterface
 {
     /**
@@ -19,6 +21,8 @@ interface EntityFactoryInterface extends SupportsClassInterface
 
     /**
      * Create or update the entity from a DTO instance.
+     *
+     * @throws UncreatableEntityException if entity cannot be created
      */
     public function create(?object $entity, object $dto): object;
 }

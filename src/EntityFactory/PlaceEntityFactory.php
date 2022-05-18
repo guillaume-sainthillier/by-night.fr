@@ -17,6 +17,7 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Place;
 use App\Entity\PlaceMetadata;
+use App\Exception\UncreatableEntityException;
 use App\Handler\EntityProviderHandler;
 
 class PlaceEntityFactory implements EntityFactoryInterface
@@ -44,6 +45,10 @@ class PlaceEntityFactory implements EntityFactoryInterface
 
         if (null === $entity) {
             dd($dto);
+        }
+
+        if (null === $dto->name) {
+            throw new UncreatableEntityException('Place has no name');
         }
 
         $entity->setNom($dto->name);

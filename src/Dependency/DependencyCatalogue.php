@@ -124,5 +124,8 @@ class DependencyCatalogue implements DependencyCatalogueInterface
     {
         unset($this->dependencies); // Call GC
         $this->dependencies = [];
+
+        unset($this->aliases); // Call GC
+        $this->aliases = [];
     }
 }

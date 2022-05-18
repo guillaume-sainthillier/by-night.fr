@@ -16,11 +16,14 @@ use App\Contracts\DependencyProvidableInterface;
 use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Dependency\DependencyCatalogue;
+use App\Dto\CityDto;
+use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use App\Entity\Event;
 use App\Entity\ParserData;
 use App\Entity\Place;
+use App\Exception\UncreatableEntityException;
 use App\Reject\Reject;
 use App\Repository\CityRepository;
 use App\Repository\CountryRepository;
@@ -71,21 +74,24 @@ class DoctrineEventHandler
             return [];
         }
 
-        return $this->mergeWithDatabase($dtos);
-
         // On récupère toutes les explorations existantes pour ces événements
-        // $this->loadExternalIdsData($dtos);
+        $this->loadExternalIdsData($dtos);
 
         // Grace à ça, on peut déjà filtrer une bonne partie des événements
-        // $this->doFilterAndClean($dtos);
+        $this->filterEvents($dtos);
 
         // On met ensuite à jour le statut de ces explorations en base
-        // $this->flushParserDatas();
+        $this->flushParserDatas();
 
-        // $allowedEvents = $this->getAllowedEvents($dtos);
-        // $notAllowedEvents = $this->getNotAllowedEvents($dtos);
-        // $dtos = null; // Call GC
-        // unset($dtos);
+        $allowedEvents = $this->getAllowedEvents($dtos);
+        $notAllowedEvents = $this->getNotAllowedEvents($dtos);
+        $dtos = null; // Call GC
+        unset($dtos);
+
+        // Clean event data
+        $this->cleanEvents($allowedEvents);
+
+        return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
 
         /*
         foreach ($notAllowedEvents as $notAllowedEvent) {
@@ -141,7 +147,17 @@ class DoctrineEventHandler
     /**
      * @param EventDto[] $dtos
      */
-    private function doFilterAndClean(array $dtos): void
+    private function cleanEvents(array $dtos): void
+    {
+        foreach ($dtos as $dto) {
+            $this->handler->cleanEvent($dto);
+        }
+    }
+
+    /**
+     * @param EventDto[] $dtos
+     */
+    private function filterEvents(array $dtos): void
     {
         foreach ($dtos as $dto) {
             $dto->reject = new Reject();
@@ -180,11 +196,6 @@ class DoctrineEventHandler
             }
 
             $this->firewall->filterEvent($dto);
-            if ($this->firewall->isEventDtoValid($dto)) {
-                $this->guessEventLocation($dto->place);
-                $this->firewall->filterEventLocation($dto);
-                $this->handler->cleanEvent($dto);
-            }
         }
     }
 
@@ -201,23 +212,23 @@ class DoctrineEventHandler
     private function guessPlaceCity(PlaceDto $dto): void
     {
         // Recherche du pays en premier lieu
-        if ($dto->getCountryName() && (!$dto->getCountry() || $dto->getCountry()->getName() !== $dto->getCountryName())) {
-            $country = $this->countryRepository->findOneByName($dto->getCountryName());
-            $dto->setCountry($country);
+        if (null !== $dto->country && null !== $dto->country->name && null === $dto->country->code) {
+            $country = $this->countryRepository->findOneByName($dto->country->name);
+            $dto->country->code = $country->getId();
         }
 
         // Pas de pays détecté -> next
-        if (null === $dto->getCountry()) {
-            if ($dto->getCountryName()) {
-                $dto->getReject()->addReason(Reject::BAD_COUNTRY);
+        if (null === $dto->country || null === $dto->country->code) {
+            if ($dto->country?->name) {
+                $dto->reject->addReason(Reject::BAD_COUNTRY);
             } else {
-                $dto->getReject()->addReason(Reject::NO_COUNTRY_PROVIDED);
+                $dto->reject->addReason(Reject::NO_COUNTRY_PROVIDED);
             }
 
             return;
         }
 
-        if (!$dto->getCodePostal() && !$dto->getVille()) {
+        if (!$dto->postalCode && !$dto->city?->name) {
             return;
         }
 
@@ -226,21 +237,21 @@ class DoctrineEventHandler
         $city = null;
 
         // Ville + CP
-        if ($dto->getVille() && $dto->getCodePostal()) {
-            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->getCodePostal(), $dto->getVille(), $dto->getCountry()->getId());
+        if ($dto->city?->name && $dto->postalCode) {
+            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->postalCode, $dto->city?->name, $dto->country->code);
         }
 
         // Ville
-        if (!$zipCity && $dto->getVille()) {
-            $zipCities = $this->repoZipCity->findAllByCity($dto->getVille(), $dto->getCountry()->getId());
+        if (!$zipCity && $dto->city?->name) {
+            $zipCities = $this->repoZipCity->findAllByCity($dto->city?->name, $dto->country->code);
             if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
         }
 
         // CP
-        if (!$zipCity && $dto->getCodePostal()) {
-            $zipCities = $this->repoZipCity->findAllByPostalCode($dto->getCodePostal(), $dto->getCountry()->getId());
+        if (!$zipCity && $dto->postalCode) {
+            $zipCities = $this->repoZipCity->findAllByPostalCode($dto->postalCode, $dto->country->code);
             if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
@@ -251,22 +262,24 @@ class DoctrineEventHandler
         }
 
         // City
-        if (!$city && $dto->getVille()) {
-            $cities = $this->repoCity->findAllByName($dto->getVille(), $dto->getCountry()->getId());
+        if (!$city && $dto->city?->name) {
+            $cities = $this->repoCity->findAllByName($dto->city?->name, $dto->country->code);
             if (1 === \count($cities)) {
                 $city = $cities[0];
             }
         }
 
-        $dto->setCity($city)->setZipCity($zipCity);
+        $dto->city ??= new CityDto();
+        $dto->city->entityId = $city->getId();
         if ($city) {
-            $dto->setCountry($city->getCountry());
+            $dto->country ??= new CountryDto();
+            $dto->country->code = $city->getCountry()->getId();
         } elseif (null !== $zipCity) {
-            $dto->setCountry($zipCity->getCountry());
+            $dto->country->code = $city->getCountry()->getId();
         }
 
-        if (null !== $dto->getCity()) {
-            $dto->getReject()->setReason(Reject::VALID);
+        if (null !== $dto->city) {
+            $dto->reject->setReason(Reject::VALID);
         }
     }
 
@@ -292,23 +305,23 @@ class DoctrineEventHandler
     }
 
     /**
-     * @param Event[] $events
+     * @param EventDto[] $dtos
      *
-     * @return Event[]
+     * @return EventDto[]
      */
-    private function getAllowedEvents(array $events): array
+    private function getAllowedEvents(array $dtos): array
     {
-        return array_filter($events, fn (Event $event) => $this->firewall->isEventDtoValid($event));
+        return array_filter($dtos, fn (EventDto $dto) => $this->firewall->isEventDtoValid($dto));
     }
 
     /**
-     * @param Event[] $events
+     * @param EventDto[] $dtos
      *
-     * @return Event[]
+     * @return EventDto[]
      */
-    private function getNotAllowedEvents(array $events): array
+    private function getNotAllowedEvents(array $dtos): array
     {
-        return array_filter($events, fn ($event) => !$this->firewall->isEventDtoValid($event));
+        return array_filter($dtos, fn (EventDto $dto) => !$this->firewall->isEventDtoValid($dto));
     }
 
     /**
@@ -394,7 +407,12 @@ class DoctrineEventHandler
 
                     // Either create a new entity from scratch
                     // Or merge dto with already existing one
-                    $entity = $entityFactory->create($entity, $dto);
+                    try {
+                        $entity = $entityFactory->create($entity, $dto);
+                    } catch (UncreatableEntityException) {
+                        $rootEntities[$i] = null;
+                        continue;
+                    }
 
                     $this->entityManager->persist($entity);
 
@@ -402,8 +420,6 @@ class DoctrineEventHandler
                         if (
                             null === $entity->getPlace()
                             || null === $entity->getPlaceCountry()
-                            || null === $entity->getPlace()->getCity()
-                            || null === $entity->getPlace()->getCity()->getCountry()
                             || null === $entity->getPlace()->getCountry()
                         ) {
                             $foo = $this->entityProviderHandler->getEntityProvider(PlaceDto::class);
@@ -411,23 +427,6 @@ class DoctrineEventHandler
                             $bar2 = $foo->getObjectKeys($dto->place);
                             $bar3 = $foo->getEntity($dto->place);
                             dump($bar3);
-                            dd('NOK');
-                        }
-
-                        if (!$this->entityManager->contains($entity)) {
-                            dump('nok');
-                        }
-                        if (!$this->entityManager->contains($entity->getPlaceCountry())) {
-                            dump('nok');
-                        }
-                        if (!$this->entityManager->contains($entity->getPlace())) {
-                            dump('nok');
-                        }
-                        if (!$this->entityManager->contains($entity->getPlace()->getCountry())) {
-                            dump('nok');
-                        }
-                        if (!$this->entityManager->contains($entity->getPlace()->getCity())) {
-                            dump('nok');
                         }
                     }
 
@@ -436,8 +435,8 @@ class DoctrineEventHandler
                         $entityProvider->addEntity(
                             $entity,
                             $dto instanceof DependencyObjectInterface
-                            ? $dto->getUniqueKey()
-                            : null
+                                ? $dto->getUniqueKey()
+                                : null
                         );
                     }
 
@@ -563,7 +562,7 @@ class DoctrineEventHandler
             if ($event->getPlace() && $event->getPlace()->getCity()) {
                 $key = 'city.' . $event->getPlace()->getCity()->getId();
             } elseif ($event->getPlace() && $event->getPlace()->getCountry()) {
-                $key = 'country.' . $event->getPlace()->getCountry()->getId();
+                $key = 'country.' . $event->getPlace()->country->code;
             } else {
                 $key = 'unknown';
             }

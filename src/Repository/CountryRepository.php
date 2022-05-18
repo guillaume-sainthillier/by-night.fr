@@ -59,6 +59,7 @@ class CountryRepository extends ServiceEntityRepository implements DtoFindableRe
             ->getQuery()
             ->enableResultCache()
             ->useQueryCache(true)
+            ->setMaxResults(1)
             ->getOneOrNullResult();
     }
 

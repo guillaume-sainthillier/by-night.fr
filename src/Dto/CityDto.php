@@ -24,9 +24,9 @@ class CityDto implements DependencyRequirableInterface, DependencyObjectInterfac
 {
     public ?int $entityId = null;
 
-    public ?string $name;
+    public ?string $name = null;
 
-    public ?CountryDto $country;
+    public ?CountryDto $country = null;
 
     /**
      * {@inheritDoc}

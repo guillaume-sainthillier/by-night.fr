@@ -44,21 +44,22 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setAdresse($dto->address);
         $entity->setExternalUpdatedAt($dto->externalUpdatedAt);
         $entity->setCategorieManifestation($dto->category);
+        $entity->setName($dto->name);
+        $entity->setNom($dto->name);
         $entity->setDescriptif($dto->description);
+        $entity->setHoraires($dto->hours);
         $entity->setModificationDerniereMinute($dto->status);
         $entity->setMailContacts($dto->emailContacts);
-        $entity->setName($dto->name);
+        $entity->setPhoneContacts($dto->phoneContacts);
+        $entity->setWebsiteContacts($dto->websiteContacts);
+        $entity->setLongitude($dto->longitude);
+        $entity->setLatitude($dto->latitude);
         $entity->setPlaceName($dto->place?->name);
-        $entity->setPlaceCity($dto->place?->city->name);
-        $entity->setPlaceCountryName($dto->place?->country->name);
+        $entity->setPlaceCity($dto->place?->city?->name);
+        $entity->setPlaceCountryName($dto->place?->country?->name);
         $entity->setPlacePostalCode($dto->place?->postalCode);
         $entity->setPlaceStreet($dto->place?->street);
         $entity->setPlaceExternalId($dto->place?->externalId);
-        // $entity->setPlaceFacebookId();
-        $entity->setLongitude($dto->longitude);
-        $entity->setLatitude($dto->latitude);
-        $entity->setNom($dto->name);
-        $entity->setHoraires($dto->hours);
 
         if (null !== $dto->place) {
             $placeEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->place::class);

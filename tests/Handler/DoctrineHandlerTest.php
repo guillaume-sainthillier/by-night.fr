@@ -10,6 +10,8 @@
 
 namespace App\Tests\Handler;
 
+use App\Dto\CityDto;
+use App\Dto\PlaceDto;
 use App\Entity\Place;
 use App\Handler\DoctrineEventHandler;
 use App\Reject\Reject;
@@ -23,43 +25,43 @@ class DoctrineHandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->doctrineHandler = self::$container->get(DoctrineEventHandler::class);
+        $this->doctrineHandler = self::getContainer()->get(DoctrineEventHandler::class);
     }
 
-    private function makeAsserts(Place $place, ?string $countryCode, ?string $cityName, ?string $postalCode, int $rejectReason)
+    private function makeAsserts(PlaceDto $place, ?string $countryCode, ?string $cityName, ?string $postalCode, int $rejectReason)
     {
-        $message = 'Original : ' . ($place->getNom() ?: ($place->getVille() ?: $place->getCodePostal()));
+        $message = 'Original : ' . ($place->name ?? $place->city?->name ?? $place->postalCode);
         if (null !== $countryCode) {
-            $this->assertNotNull($place->getCountry(), $message . '. Expected country : ' . $countryCode);
-            $this->assertEquals($countryCode, $place->getCountry()->getId(), $message);
+            $this->assertNotNull($place->country, $message . '. Expected country : ' . $countryCode);
+            $this->assertEquals($countryCode, $place->country->code, $message);
         } else {
-            $this->assertNull($place->getCountry(), $message);
+            $this->assertNull($place->country, $message);
         }
 
         if (null !== $cityName) {
-            $this->assertNotNull($place->getCity(), $message . '. Expected city : ' . $cityName);
-            $this->assertEquals($cityName, $place->getCity()->getName(), $message);
+            $this->assertNotNull($place->city, $message . '. Expected city : ' . $cityName);
+            $this->assertEquals($cityName, $place->city->name, $message);
+            $this->assertNotNull($place->city->entityId, $message);
         } else {
-            $this->assertNull($place->getCity(), $message);
+            $this->assertNull($place->city?->entityId, $message);
         }
 
         if (null !== $postalCode) {
-            $this->assertNotNull($place->getZipCity(), $message . '. Expected zip city : ' . $postalCode);
-            $this->assertEquals($postalCode, $place->getZipCity()->getPostalCode(), $message);
+            $this->assertEquals($postalCode, $place->postalCode, $message);
         } else {
-            $this->assertNull($place->getZipCity(), $message);
+            $this->assertNull($place->postalCode, $message);
         }
 
-        $this->assertNotNull($place->getReject(), $message);
-        $this->assertEquals($rejectReason, $place->getReject()->getReason(), $message);
+        $this->assertNotNull($place->reject, $message);
+        $this->assertEquals($rejectReason, $place->reject->getReason(), $message);
     }
 
     /**
      * @dataProvider guessEventLocationProvider()
      */
-    public function testGuessEventLocation(Place $place, ?string $countryCode, ?string $cityName, ?string $postalCode, int $rejectReason)
+    public function testGuessEventLocation(PlaceDto $place, ?string $countryCode, ?string $cityName, ?string $postalCode, int $rejectReason)
     {
-        $place->setReject(new Reject());
+        $place->reject = new Reject();
         $this->doctrineHandler->guessEventLocation($place);
 
         $this->makeAsserts($place, $countryCode, $cityName, $postalCode, $rejectReason);
@@ -68,8 +70,12 @@ class DoctrineHandlerTest extends ContainerTestCase
     public function guessEventLocationProvider(): iterable
     {
         // Pas de pays
+        $place = new PlaceDto();
+        $place->postalCode = '99999';
+        $place->city = new CityDto();
+        $place->city->name = 'LoremIpsum';
         yield [
-            (new Place())->setCodePostal('99999')->setVille('LoremIpsum'),
+            $place,
             null,
             null,
             null,

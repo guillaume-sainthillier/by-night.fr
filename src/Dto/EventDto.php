@@ -30,37 +30,37 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
     use DtoExternalDateFilterableTrait;
     use DtoExternalIdentifiableTrait;
 
-    public ?int $entityId;
+    public ?int $entityId = null;
 
-    public ?DateTimeInterface $startDate;
+    public ?DateTimeInterface $startDate = null;
 
-    public ?DateTimeInterface $endDate;
+    public ?DateTimeInterface $endDate = null;
 
-    public ?string $name;
+    public ?string $name = null;
 
-    public ?string $description;
+    public ?string $description = null;
 
-    public ?string $imageUrl;
+    public ?string $imageUrl = null;
 
-    public ?string $prices;
+    public ?string $prices = null;
 
-    public ?string $hours;
+    public ?string $hours = null;
 
-    public ?string $source;
+    public ?string $source = null;
 
-    public ?string $type;
+    public ?string $type = null;
 
-    public ?string $status;
+    public ?string $status = null;
 
-    public ?string $category;
+    public ?string $category = null;
 
-    public ?string $theme;
+    public ?string $theme = null;
 
-    public ?float $latitude;
+    public ?float $latitude = null;
 
-    public ?float $longitude;
+    public ?float $longitude = null;
 
-    public ?string $address;
+    public ?string $address = null;
 
     /** @var string[] */
     public ?array $websiteContacts = [];
@@ -71,13 +71,13 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
     /** @var string[] */
     public ?array $emailContacts = [];
 
-    public ?PlaceDto $place;
+    public ?PlaceDto $place = null;
 
-    public ?Reject $reject;
+    public ?Reject $reject = null;
 
-    public ?string $parserVersion;
+    public ?string $parserVersion = null;
 
-    public ?string $parserName;
+    public ?string $parserName = null;
 
     public function isAffiliate(): bool
     {

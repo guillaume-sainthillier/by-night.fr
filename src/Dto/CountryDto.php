@@ -18,11 +18,11 @@ use App\Entity\Country;
 
 class CountryDto implements DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
-    public ?string $entityId;
+    public ?string $entityId = null;
 
-    public ?string $code;
+    public ?string $code = null;
 
-    public ?string $name;
+    public ?string $name = null;
 
     public function getKeyPrefix(): string
     {

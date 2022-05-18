@@ -21,8 +21,7 @@ class ReservationsHandlerTest extends ContainerTestCase
     {
         parent::setUp();
 
-        $this->reservationsHandler = new ReservationsHandler();
-        // $this->reservationsHandler = self::$container->get(ReservationsHandler::class);
+        $this->reservationsHandler = self::getContainer()->get(ReservationsHandler::class);
     }
 
     /**

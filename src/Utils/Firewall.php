@@ -11,7 +11,6 @@
 namespace App\Utils;
 
 use App\Dto\EventDto;
-use App\Entity\Event;
 use App\Entity\ParserData;
 use App\Reject\Reject;
 use App\Repository\ParserDataRepository;
@@ -63,15 +62,11 @@ class Firewall
         return $eventDto->reject->isValid() && $eventDto->place->reject->isValid();
     }
 
-    public function isEventValid(Event $event): bool
-    {
-        return $event->getReject()->isValid() && $event->getPlaceReject()->isValid();
-    }
-
     public function filterEvent(EventDto $dto): void
     {
         $this->filterEventInfos($dto);
         $this->filterEventPlace($dto);
+        $this->mapPlaceRejectToEvent($dto);
     }
 
     private function filterEventInfos(EventDto $dto): void
@@ -106,6 +101,7 @@ class Firewall
             if (null === $parserData) {
                 $parserData = (new ParserData())
                     ->setExternalId($dto->getExternalId())
+                    ->setExternalOrigin($dto->getExternalOrigin())
                     ->setLastUpdated($dto->getExternalUpdatedAt())
                     ->setReject($dto->reject)
                     ->setReason($dto->reject->getReason())
@@ -194,6 +190,7 @@ class Firewall
             if (null === $parserData) {
                 $parserData = (new ParserData())
                     ->setExternalId($dto->place->getExternalId())
+                    ->setExternalOrigin($dto->place->getExternalOrigin())
                     ->setReject($dto->place->reject)
                     ->setReason($dto->place->reject->getReason())
                     ->setFirewallVersion(self::VERSION)
@@ -212,7 +209,7 @@ class Firewall
         return mb_strlen($this->comparator->sanitize($str)) === $length;
     }
 
-    public function filterEventLocation(EventDto $dto): void
+    private function mapPlaceRejectToEvent(EventDto $dto): void
     {
         if (null === $dto->place || null === $dto->place->reject) {
             return;
@@ -220,7 +217,6 @@ class Firewall
 
         $reject = $dto->place->reject;
         if (!$reject->isValid()) {
-            $dto->place->reject->addReason($reject->getReason());
             $dto->reject->addReason($reject->getReason());
         }
     }

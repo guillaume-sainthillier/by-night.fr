@@ -22,7 +22,6 @@ use App\Repository\CountryRepository;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Doctrine\ORM\NonUniqueResultException;
 use Parsedown;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -126,7 +125,7 @@ class OpenAgendaParser extends AbstractParser
         }
     }
 
-    private function arrayToDto(array $data): ?object
+    private function arrayToDto(array $data): ?EventDto
     {
         if (empty($data['freeText']['fr'])) {
             return null;
@@ -143,12 +142,8 @@ class OpenAgendaParser extends AbstractParser
 
         $countryCode = null;
         if (empty($location['countryCode'])) {
-            try {
-                $country = $this->countryRepository->getFromRegionOrDepartment($location['region'] ?? null, $location['department'] ?? null);
-                $countryCode = null !== $country ? $country->getId() : null;
-            } catch (NonUniqueResultException) {
-                return null;
-            }
+            $country = $this->countryRepository->getFromRegionOrDepartment($location['region'] ?? null, $location['department'] ?? null);
+            $countryCode = $country?->getId();
         }
 
         if (null === $countryCode) {

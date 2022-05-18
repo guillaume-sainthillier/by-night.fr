@@ -109,8 +109,8 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
     #[Expose]
     private ?string $nom = null;
 
-    #[ORM\Column(type: 'string', length: 255, unique: true)]
-    #[Gedmo\Slug(fields: ['nom'])]
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Gedmo\Slug(fields: ['nom'], unique: false)]
     private ?string $slug = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
@@ -267,7 +267,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
         return $this->nom;
     }
 
-    public function setNom(string $nom): self
+    public function setNom(?string $nom): self
     {
         $this->nom = $nom;
 
@@ -279,7 +279,7 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
         return $this->slug;
     }
 
-    public function setSlug(string $slug): self
+    public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
 

@@ -15,7 +15,7 @@ use Doctrine\ORM\QueryBuilder;
 
 trait DtoFindableTrait
 {
-    protected function addDtosToQueryBuilding(QueryBuilder $queryBuilder, $rootAlias, array $dtos): void
+    protected function addDtosToQueryBuilding(QueryBuilder $queryBuilder, string $rootAlias, array $dtos): void
     {
         $groupedWheres = [];
         foreach ($dtos as $dto) {
