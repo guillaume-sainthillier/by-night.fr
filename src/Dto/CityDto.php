@@ -15,20 +15,18 @@ use App\Contracts\DependencyObjectInterface;
 use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\City;
 
-class CityDto implements DependencyRequirableInterface, DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface
+class CityDto implements DependencyRequirableInterface, DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
-    /** @var int|null */
-    public $entityId;
+    public ?int $entityId = null;
 
-    /** @var string|null */
-    public $name;
+    public ?string $name;
 
-    /** @var CountryDto|null */
-    public $country;
+    public ?CountryDto $country;
 
     /**
      * {@inheritDoc}
@@ -43,17 +41,34 @@ class CityDto implements DependencyRequirableInterface, DependencyObjectInterfac
         return $catalogue;
     }
 
+    public function getKeyPrefix(): string
+    {
+        return 'city';
+    }
+
     public function getUniqueKey(): string
     {
-        $cityKey = $this->name
-            ?? spl_object_id($this);
+        if (null === $this->name) {
+            return sprintf(
+                '%s-spl-%s',
+                $this->getKeyPrefix(),
+                spl_object_hash($this)
+            );
+        }
+
+        $cityKey = mb_strtolower($this->name);
 
         if (null === $this->country) {
-            return sprintf('city-u-%s', $cityKey);
+            return sprintf(
+                '%s-data-%s',
+                $this->getKeyPrefix(),
+                $cityKey
+            );
         }
 
         return sprintf(
-            'city-u-%s-%s',
+            '%s-data-%s-%s',
+            $this->getKeyPrefix(),
             $cityKey,
             $this->country->getUniqueKey()
         );
@@ -71,6 +86,10 @@ class CityDto implements DependencyRequirableInterface, DependencyObjectInterfac
             return null;
         }
 
-        return sprintf('city-%s', $this->entityId);
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->entityId
+        );
     }
 }

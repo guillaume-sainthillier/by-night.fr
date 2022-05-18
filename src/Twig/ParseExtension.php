@@ -15,7 +15,7 @@ use Twig\TwigFilter;
 
 class ParseExtension extends Extension
 {
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('parse_tags', [$this, 'parseTags']),
@@ -51,7 +51,7 @@ class ParseExtension extends Extension
         $stripped_text = strip_tags($replaced_text);
         $shorted_text = mb_substr($stripped_text, 0, 250);
 
-        //striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
+        // striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
         $linked_text = preg_replace_callback('
             #((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|"|\'|:|\<|$|\.\s)#i',
             fn ($matches) => '<a rel="nofollow" href="$1" target="_blank">$3</a>$4',

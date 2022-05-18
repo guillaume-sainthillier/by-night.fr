@@ -28,7 +28,7 @@ class DefaultController extends AbstractController
         $user = $this->getUser();
         $social->disconnectUser($user);
         $this->getDoctrine()->getManager()->flush();
-        //Reload user roles as they have changed
+        // Reload user roles as they have changed
         $token = $socialAuthenticator->createAuthenticatedToken($user, 'main');
         $guardAuthenticatorHandler->authenticateWithToken($token, $request);
 

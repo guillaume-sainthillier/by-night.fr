@@ -49,7 +49,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
         $social = $this->socialProvider->getSocial($service);
         $datas = $this->oAuthDataProvider->getDatasFromToken($service, $token);
 
-        //In case of adding new socials in profile
+        // In case of adding new socials in profile
         if (null !== $this->security->getUser()) {
             /** @var User $existingUser */
             $existingUser = $this->security->getUser();
@@ -68,7 +68,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 ->setIsVerified(true)
                 ->setEmail($datas['email']);
 
-            //Avoir duplicate exception
+            // Avoir duplicate exception
             $initialUsername = $existingUser->getUserIdentifier();
             for ($i = 1;; ++$i) {
                 $persistedUser = $this->userRepository->findOneBy(['username' => $existingUser->getUserIdentifier()]);
@@ -108,7 +108,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
     {
         $service = $request->attributes->get('service');
 
-        //Still use Oauth 1.0...
+        // Still use Oauth 1.0...
         if (SocialProvider::TWITTER === $service) {
             return [
                 'service' => $service,

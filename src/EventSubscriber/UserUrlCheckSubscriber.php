@@ -38,7 +38,7 @@ class UserUrlCheckSubscriber implements EventSubscriberInterface
 
     public function onUserCheck(UserCheckUrlEvent $e): void
     {
-        //Old route handle
+        // Old route handle
         if (null === $e->getUserId()) {
             $user = $this->userRepository->findOneBy(['username' => $e->getUserUsername()]);
         } else {
@@ -69,7 +69,7 @@ class UserUrlCheckSubscriber implements EventSubscriberInterface
             return;
         }
 
-        //All is ok :-)
+        // All is ok :-)
         $e->setUser($user);
     }
 }

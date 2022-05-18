@@ -31,4 +31,8 @@ interface DependencyCatalogueInterface
     public function add(DependencyInterface $dependency): void;
 
     public function addCatalogue(self $catalogue): void;
+
+    public function hasAliases(DependencyObjectInterface $object): bool;
+
+    public function getAliases(DependencyObjectInterface $object): array;
 }

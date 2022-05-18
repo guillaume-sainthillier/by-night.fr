@@ -86,7 +86,7 @@ class DateRangeBuilder
                     }
                 }
 
-                //Custom dates
+                // Custom dates
                 $from = new DateTime($from);
                 if (null !== $to) {
                     $to = new DateTime($to);
@@ -124,7 +124,7 @@ class DateRangeBuilder
                     }
                 }
 
-                //Custom dates
+                // Custom dates
                 $from = new DateTime($from);
                 if (null !== $to) {
                     $to = new DateTime($to);

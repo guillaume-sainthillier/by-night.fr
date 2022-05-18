@@ -29,7 +29,7 @@ class MergerTest extends ContainerTestCase
 
     public function testPlaceMerge()
     {
-        //Simple places
+        // Simple places
         $persistedPlace = (new Place())->setId(1)->setNom('Dynamo')->setVille('Toulouse')->setCodePostal('31000');
         $parsedPlace = (new Place())->setNom('La Dynamo')->setVille('Toulouse')->setCodePostal('31000')->setLatitude(43.6)->setUrl('https://www.google.com')->setFacebookId('FB ID');
 
@@ -50,9 +50,9 @@ class MergerTest extends ContainerTestCase
         $parsedEvent = (new Event())->setId(2)->setNom('My Event V2')->setDescriptif('Event description V2');
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
-        $this->assertEquals($persistedEvent->getId(), 1); //ID is intact
-        $this->assertEquals($persistedEvent->getNom(), 'My Event V2'); //Newest field
-        $this->assertEquals($persistedEvent->getDescriptif(), 'Event description V2'); //Newest field
+        $this->assertEquals($persistedEvent->getId(), 1); // ID is intact
+        $this->assertEquals($persistedEvent->getNom(), 'My Event V2'); // Newest field
+        $this->assertEquals($persistedEvent->getDescriptif(), 'Event description V2'); // Newest field
 
         $databaseDate = new DateTime('now');
         $parsedDate = new DateTime('now');
@@ -61,7 +61,7 @@ class MergerTest extends ContainerTestCase
         $parsedEvent = (new Event())->setDateDebut($parsedDate);
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
-        $this->assertEquals($persistedEvent->getDateDebut(), $databaseDate); //DateTime have not changed (prevents ORM panic)
+        $this->assertEquals($persistedEvent->getDateDebut(), $databaseDate); // DateTime have not changed (prevents ORM panic)
 
         $databaseDate = new DateTime('now');
         $parsedDate = new DateTime('tomorrow');
@@ -70,6 +70,6 @@ class MergerTest extends ContainerTestCase
         $parsedEvent = (new Event())->setDateDebut($parsedDate);
 
         $this->merger->mergeEvent($persistedEvent, $parsedEvent);
-        $this->assertEquals($persistedEvent->getDateDebut(), $parsedDate); //DateTime have changed because it's not same day
+        $this->assertEquals($persistedEvent->getDateDebut(), $parsedDate); // DateTime have changed because it's not same day
     }
 }

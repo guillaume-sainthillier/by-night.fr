@@ -74,7 +74,7 @@ class OAuthDataProvider
                 throw new AuthenticationException(sprintf('Unable to guess how to find user for service "%s"', $serviceName));
         }
 
-        //So ugly...
+        // So ugly...
         if (empty($datas['email'])) {
             $datas['email'] = sprintf('john.doe-%s@by-night.fr', uniqid('', true));
         }

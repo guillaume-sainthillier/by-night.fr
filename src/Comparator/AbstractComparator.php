@@ -21,7 +21,7 @@ abstract class AbstractComparator implements ComparatorInterface
 {
     public function getMostMatching(iterable $entities, object $dto): ?MatchingInterface
     {
-        //Search by exact matching only
+        // Search by exact matching only
         if ($dto instanceof ExternalIdentifiableInterface &&
             null !== $dto->getExternalId() &&
             null !== $dto->getExternalOrigin()) {

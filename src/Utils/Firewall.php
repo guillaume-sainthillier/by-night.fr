@@ -76,22 +76,22 @@ class Firewall
 
     private function filterEventInfos(EventDto $dto): void
     {
-        //Le nom de l'événement doit comporter au moins 3 caractères
+        // Le nom de l'événement doit comporter au moins 3 caractères
         if (!$dto->isAffiliate() && !$this->checkMinLengthValidity($dto->name, 3)) {
             $dto->reject->addReason(Reject::BAD_EVENT_NAME);
         }
 
-        //La description de l'événement doit comporter au moins 20 caractères
+        // La description de l'événement doit comporter au moins 20 caractères
         if (!$dto->isAffiliate() && !$this->checkMinLengthValidity($dto->description, 10)) {
             $dto->reject->addReason(Reject::BAD_EVENT_DESCRIPTION);
         }
 
-        //Pas de SPAM dans la description
+        // Pas de SPAM dans la description
         if (!$dto->isAffiliate() && $this->isSPAMContent($dto->description)) {
             $dto->reject->addReason(Reject::SPAM_EVENT_DESCRIPTION);
         }
 
-        //Pas de dates valides fournies
+        // Pas de dates valides fournies
         if (!$dto->startDate instanceof DateTimeInterface ||
             ($dto->endDate && !$dto->endDate instanceof DateTimeInterface)
         ) {
@@ -100,7 +100,7 @@ class Firewall
             $dto->reject->addReason(Reject::BAD_EVENT_DATE_INTERVAL);
         }
 
-        //Observation de l'événement
+        // Observation de l'événement
         if ($dto->getExternalId()) {
             $parserData = $this->getExploration($dto->getExternalId());
             if (null === $parserData) {
@@ -114,7 +114,7 @@ class Firewall
 
                 $this->addParserData($parserData);
             } else {
-                //Pas besoin de paniquer l'EM si les dates sont équivalentes
+                // Pas besoin de paniquer l'EM si les dates sont équivalentes
                 if ($parserData->getLastUpdated() !== $dto->getExternalUpdatedAt()) {
                     $parserData->setLastUpdated($dto->getExternalUpdatedAt());
                 }
@@ -178,7 +178,7 @@ class Firewall
             return;
         }
 
-        //Le nom du lieu doit comporter au moins 2 caractères
+        // Le nom du lieu doit comporter au moins 2 caractères
         if (!$this->checkMinLengthValidity($dto->place->name, 2)) {
             $dto->place->reject->addReason(Reject::BAD_PLACE_NAME);
         }
@@ -188,7 +188,7 @@ class Firewall
             $dto->place->reject->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
         }
 
-        //Observation du lieu
+        // Observation du lieu
         if (null !== $dto->place->getExternalId()) {
             $parserData = $this->getExploration($dto->place->getExternalId());
             if (null === $parserData) {
@@ -229,7 +229,7 @@ class Firewall
     {
         $reject = $parserData->getReject();
 
-        //Aucune action sur un événement supprimé sur la plateforme par son créateur
+        // Aucune action sur un événement supprimé sur la plateforme par son créateur
         if ($reject->isEventDeleted()) {
             return;
         }
@@ -237,15 +237,15 @@ class Firewall
         $hasFirewallVersionChanged = $this->hasExplorationToBeUpdated($parserData, $eventDto);
         $hasToBeUpdated = $this->hasEventToBeUpdated($parserData, $eventDto);
 
-        //L'évémenement n'a pas changé -> non valide
+        // L'évémenement n'a pas changé -> non valide
         if (!$hasToBeUpdated && !$reject->hasNoNeedToUpdate()) {
             $reject->addReason(Reject::NO_NEED_TO_UPDATE);
-        //L'événement a changé -> valide
+        // L'événement a changé -> valide
         } elseif ($hasToBeUpdated && $reject->hasNoNeedToUpdate()) {
             $reject->removeReason(Reject::NO_NEED_TO_UPDATE);
         }
 
-        //L'exploration est ancienne -> maj de la version
+        // L'exploration est ancienne -> maj de la version
         if ($hasFirewallVersionChanged) {
             $parserData
                 ->setFirewallVersion(self::VERSION)

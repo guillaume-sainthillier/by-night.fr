@@ -15,7 +15,7 @@ use Twig\TwigFunction;
 
 class ImageExtension extends AbstractExtension
 {
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('image', [ImageRuntime::class, 'image'], ['needs_environment' => true, 'is_safe' => ['html']]),

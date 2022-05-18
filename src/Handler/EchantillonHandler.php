@@ -112,7 +112,7 @@ class EchantillonHandler
 
     private function addPlace(Place $place): void
     {
-        $key = $place->getId() ?: spl_object_id($place);
+        $key = $place->getId() ?? spl_object_id($place);
 
         if (null !== $place->getCity()) {
             $this->cityPlaces[$place->getCity()->getId()][$key] = $place;

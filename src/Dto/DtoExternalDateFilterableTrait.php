@@ -14,8 +14,7 @@ use DateTimeInterface;
 
 trait DtoExternalDateFilterableTrait
 {
-    /** @var DateTimeInterface|null */
-    public $externalUpdatedAt;
+    public ?DateTimeInterface $externalUpdatedAt = null;
 
     public function getExternalUpdatedAt(): ?DateTimeInterface
     {

@@ -42,13 +42,13 @@ class ComparatorTest extends ContainerTestCase
         $toulouse = (new City())->setId(1)->setName('Toulouse')->setCountry($france);
 
         return [
-            //Basic Place check
+            // Basic Place check
             [null, null, 0],
             [null, new Place(), 0],
             [new Place(), null, 0],
             [new Place(), new Place(), 0],
 
-            //By External ids check
+            // By External ids check
             [(new Place())->setId(1), (new Place())->setId(1), 100],
             [(new Place())->setExternalId('EXT-1'), (new Place())->setExternalId('EXT-1'), 100],
             [(new Place())->setExternalId('EXT-1'), (new Place())->setExternalId('EXT-2'), 0],
@@ -57,7 +57,7 @@ class ComparatorTest extends ContainerTestCase
             [(new Place())->setId(1)->setExternalId('EXT-1'), (new Place())->setId(2)->setExternalId('EXT-1'), 100],
             [(new Place())->setId(1)->setExternalId('EXT-1'), (new Place())->setId(1)->setExternalId('EXT-2'), 100],
 
-            //By city check
+            // By city check
             [(new Place()), (new Place())->setCity($toulouse), 0],
             [(new Place())->setCity($toulouse), (new Place()), 0],
             [(new Place())->setCity($toulouse), (new Place())->setCity($toulouse), 0],
@@ -66,7 +66,7 @@ class ComparatorTest extends ContainerTestCase
             [(new Place())->setCity($toulouse)->setNom('Bikini')->setRue('3 Rue Théodore Monod'), (new Place())->setCity($toulouse)->setNom('Le bikini')->setRue('rue theodore monod'), 100],
             [(new Place())->setCity($toulouse)->setNom('Bikini'), (new Place())->setCity($toulouse)->setNom('Le bikini'), 90],
 
-            //By country check
+            // By country check
             [(new Place()), (new Place())->setCountry($france), 0],
             [(new Place())->setCountry($france), (new Place()), 0],
             [(new Place())->setCountry($france), (new Place())->setCountry($france), 0],

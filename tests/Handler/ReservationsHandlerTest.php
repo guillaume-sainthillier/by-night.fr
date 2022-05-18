@@ -22,7 +22,7 @@ class ReservationsHandlerTest extends ContainerTestCase
         parent::setUp();
 
         $this->reservationsHandler = new ReservationsHandler();
-        //$this->reservationsHandler = self::$container->get(ReservationsHandler::class);
+        // $this->reservationsHandler = self::$container->get(ReservationsHandler::class);
     }
 
     /**
@@ -54,7 +54,7 @@ class ReservationsHandlerTest extends ContainerTestCase
             ],
         ];
 
-        //Website without protocol
+        // Website without protocol
         yield [
             'www.fnac.com www.sallenougaro.com',
             [

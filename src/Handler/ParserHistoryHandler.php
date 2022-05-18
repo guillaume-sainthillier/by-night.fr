@@ -102,7 +102,7 @@ class ParserHistoryHandler
 
     public function reset(): void
     {
-        //Call GC
+        // Call GC
         unset($this->parserHistory, $this->stats);
 
         $this->stats = [

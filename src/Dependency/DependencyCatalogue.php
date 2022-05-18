@@ -19,6 +19,9 @@ class DependencyCatalogue implements DependencyCatalogueInterface
     /** @var DependencyInterface[] */
     private array $dependencies = [];
 
+    /** @var DependencyObjectInterface[][] */
+    private array $aliases = [];
+
     public function __construct(array $dependencies = [])
     {
         foreach ($dependencies as $dependency) {
@@ -49,12 +52,39 @@ class DependencyCatalogue implements DependencyCatalogueInterface
         return $this->dependencies[$key];
     }
 
+    public function hasAliases(DependencyObjectInterface $object): bool
+    {
+        $key = $object->getUniqueKey();
+
+        return !empty($this->aliases[$key]);
+    }
+
+    public function getAliases(DependencyObjectInterface $object): array
+    {
+        $key = $object->getUniqueKey();
+
+        return array_values($this->aliases[$key] ?? []);
+    }
+
+    private function addAlias(DependencyObjectInterface $original, DependencyObjectInterface $alias): void
+    {
+        $key = $original->getUniqueKey();
+        if (!\in_array($alias, $this->aliases[$key] ?? [], true)) {
+            $this->aliases[$key][] = $alias;
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     public function add(DependencyInterface $dependency): void
     {
         if ($this->has($dependency->getObject())) {
+            $this->addAlias(
+                $this->get($dependency->getObject())->getObject(),
+                $dependency->getObject()
+            );
+
             return;
         }
 

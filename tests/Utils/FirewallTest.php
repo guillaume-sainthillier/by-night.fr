@@ -37,35 +37,35 @@ class FirewallTest extends ContainerTestCase
         $now = new DateTimeImmutable();
         $tomorrow = new DateTimeImmutable('tomorrow');
 
-        //L'événement ne doit pas être valide car il n'a pas changé
+        // L'événement ne doit pas être valide car il n'a pas changé
         $exploration = (new ParserData())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
         $event = (new Event())->setExternalUpdatedAt($now);
         $this->firewall->filterEventExploration($exploration, $event);
         $this->assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $exploration->getReject()->getReason());
         $this->assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        //L'événement doit être valide car il a été mis à jour
+        // L'événement doit être valide car il a été mis à jour
         $exploration = (new ParserData())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now);
         $event = (new Event())->setExternalUpdatedAt($tomorrow);
         $this->firewall->filterEventExploration($exploration, $event);
         $this->assertEquals(Reject::VALID, $exploration->getReject()->getReason());
         $this->assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        //L'événement ne doit pas être valide car la version du firewall a changé mais qu'il n'a pas changé
+        // L'événement ne doit pas être valide car la version du firewall a changé mais qu'il n'a pas changé
         $exploration = (new ParserData())->setReject(clone $noNeedToUpdateReject)->setLastUpdated($now)->setFirewallVersion('old version');
         $event = (new Event())->setExternalUpdatedAt($now);
         $this->firewall->filterEventExploration($exploration, $event);
         $this->assertEquals(Reject::NO_NEED_TO_UPDATE | Reject::VALID, $exploration->getReject()->getReason());
         $this->assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        //L'événement doit être valide car la version du firewall a changé et qu'il n'était pas valide avant
+        // L'événement doit être valide car la version du firewall a changé et qu'il n'était pas valide avant
         $exploration = (new ParserData())->setReject($badReject)->setLastUpdated($now)->setFirewallVersion('old version');
         $event = (new Event())->setReject(new Reject());
         $this->firewall->filterEventExploration($exploration, $event);
         $this->assertEquals(Reject::VALID, $exploration->getReject()->getReason());
         $this->assertEquals(Firewall::VERSION, $exploration->getFirewallVersion());
 
-        //L'événement ne doit pas être mis à jour car son créateur l'a supprimé
+        // L'événement ne doit pas être mis à jour car son créateur l'a supprimé
         $exploration = (new ParserData())->setReject(clone $deletedReject)->setLastUpdated($now)->setFirewallVersion('old version');
         $event = (new Event())->setReject(new Reject())->setParserVersion('new version');
         $this->firewall->filterEventExploration($exploration, $event);

@@ -41,7 +41,7 @@ class SearchController extends AbstractController
         $events = $paginator->paginate([]);
         $users = $paginator->paginate([]);
         if ('' !== $q) {
-            if (!$type || 'evenements' === $type) { //Recherche d'événements
+            if (!$type || 'evenements' === $type) { // Recherche d'événements
                 $results = $this->searchEvents($rm, $q);
                 $events = $paginator->paginate($results, $page, $maxItems);
 
@@ -55,7 +55,7 @@ class SearchController extends AbstractController
                 }
             }
 
-            if (!$type || 'membres' === $type) { //Recherche de membres
+            if (!$type || 'membres' === $type) { // Recherche de membres
                 $results = $this->searchUsers($rm, $q);
                 $users = $paginator->paginate($results, $page, $maxItems);
 

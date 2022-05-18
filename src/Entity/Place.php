@@ -14,6 +14,7 @@ use App\App\Location;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\ExternalIdentifiablesInterface;
 use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Reject\Reject;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -32,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
 #[ExclusionPolicy('all')]
-class Place implements ExternalIdentifiablesInterface, InternalIdentifiableInterface, Stringable
+class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
     #[ORM\Column(type: 'integer')]
@@ -123,13 +124,22 @@ class Place implements ExternalIdentifiablesInterface, InternalIdentifiableInter
         $this->metadatas = new ArrayCollection();
     }
 
+    public function getKeyPrefix(): string
+    {
+        return 'place';
+    }
+
     public function getInternalId(): ?string
     {
         if (null === $this->getId()) {
             return null;
         }
 
-        return sprintf('place-%s', $this->getId());
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
     }
 
     /**

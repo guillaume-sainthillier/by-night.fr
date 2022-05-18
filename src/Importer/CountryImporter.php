@@ -146,7 +146,7 @@ class CountryImporter
         $zip->extractTo($tempdir);
         $zip->close();
 
-        //move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
+        // move /tmp/<CountryCode>/<CountryCode>.txt to var/datas/<CountryCode>/<filename>
         $fs->rename(
             $tempdir . DIRECTORY_SEPARATOR . $countryId . '.txt',
             $filepath,
@@ -207,7 +207,7 @@ class CountryImporter
             $country->getId()
         );
 
-        //Delete all zip cities
+        // Delete all zip cities
         $this->em->createQuery('
             DELETE FROM App:ZipCity zc
             WHERE zc.country = :country
@@ -301,7 +301,7 @@ class CountryImporter
             'country' => $country->getId(),
         ]);
 
-        //Delete doublon
+        // Delete doublon
         $this->em->getConnection()->executeStatement('
             DELETE FROM zip_city WHERE id IN (
                 SELECT * FROM (
@@ -311,7 +311,7 @@ class CountryImporter
             'country' => $country->getId(),
         ]);
 
-        //Delete doublon
+        // Delete doublon
         $this->em->getConnection()->executeStatement('
             DELETE a2
             FROM admin_zone AS a2

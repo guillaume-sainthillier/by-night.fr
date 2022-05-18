@@ -84,16 +84,16 @@ class EchantillonHandlerTest extends ContainerTestCase
         $this->echantillonHandler->prefetchPlaceEchantillons($events);
         $this->echantillonHandler->prefetchEventEchantillons($events);
 
-        //There must not have any event candidates for this event
+        // There must not have any event candidates for this event
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($parsedEvent1);
         $countPersistedPlaces = \count($persistedPlaces);
         $this->makeAddNewEventAsserts($parsedEvent1, 0, $countPersistedPlaces);
 
-        //After adding event, there is one candidate
+        // After adding event, there is one candidate
         $this->echantillonHandler->addNewEvent($parsedEvent1);
         $this->makeAddNewEventAsserts($parsedEvent1, 1, $countPersistedPlaces + 1);
 
-        //After adding the same event, nothing must have changed
+        // After adding the same event, nothing must have changed
         $this->echantillonHandler->addNewEvent($parsedEvent1);
         $this->makeAddNewEventAsserts($parsedEvent1, 1, $countPersistedPlaces + 1);
     }
@@ -122,7 +122,7 @@ class EchantillonHandlerTest extends ContainerTestCase
         $events = [$eventWithCity, $eventWithExternalId, $eventWithCountry];
         $this->echantillonHandler->prefetchPlaceEchantillons($events);
 
-        //Check that echantillon places must be in Saint-Lys
+        // Check that echantillon places must be in Saint-Lys
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($eventWithCity);
         $this->assertNotCount(0, $persistedPlaces);
         foreach ($persistedPlaces as $persistedPlace) {
@@ -131,7 +131,7 @@ class EchantillonHandlerTest extends ContainerTestCase
             $this->assertEquals($saintLys->getId(), $persistedPlace->getCity()->getId());
         }
 
-        //Check that there is only one echantillon with the same externalID
+        // Check that there is only one echantillon with the same externalID
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($eventWithExternalId);
         $this->assertCount(1, $persistedPlaces);
         foreach ($persistedPlaces as $persistedPlace) {
@@ -141,7 +141,7 @@ class EchantillonHandlerTest extends ContainerTestCase
             $this->assertEquals($eventWithExternalId->getPlace()->getExternalId(), $persistedPlace->getExternalId());
         }
 
-        //Check that echantillon places must be in Saint-Lys
+        // Check that echantillon places must be in Saint-Lys
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($eventWithCity);
         $this->assertNotCount(0, $persistedPlaces);
         foreach ($persistedPlaces as $persistedPlace) {
@@ -150,7 +150,7 @@ class EchantillonHandlerTest extends ContainerTestCase
             $this->assertEquals($saintLys->getId(), $persistedPlace->getCity()->getId());
         }
 
-        //Check that echantillon places must be in France
+        // Check that echantillon places must be in France
         $persistedPlaces = $this->echantillonHandler->getPlaceEchantillons($eventWithCountry);
         $this->assertNotCount(0, $persistedPlaces);
         foreach ($persistedPlaces as $persistedPlace) {

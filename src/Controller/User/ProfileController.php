@@ -67,7 +67,7 @@ class ProfileController extends AbstractController
             }
             $em->flush();
 
-            //TODO: Optimize flush & check constraints
+            // TODO: Optimize flush & check constraints
             $em->remove($user);
             $em->flush();
 

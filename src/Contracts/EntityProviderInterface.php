@@ -32,7 +32,7 @@ interface EntityProviderInterface extends SupportsClassInterface
     /**
      * Add a new entity into prefeteched entities collection.
      */
-    public function addEntity(object $entity): void;
+    public function addEntity(object $entity, ?string $alias = null): void;
 
     /**
      * Clear previously prefeteched entities collection.

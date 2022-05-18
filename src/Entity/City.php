@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\CityRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -18,7 +19,7 @@ use JMS\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CityRepository::class, readOnly: true)]
 #[ExclusionPolicy('NONE')]
-class City extends AdminZone implements InternalIdentifiableInterface
+class City extends AdminZone implements InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     #[ORM\ManyToOne(targetEntity: AdminZone::class, fetch: 'EAGER')]
     #[Groups(['list_city'])]
@@ -32,13 +33,22 @@ class City extends AdminZone implements InternalIdentifiableInterface
         return $this->getFullName();
     }
 
+    public function getKeyPrefix(): string
+    {
+        return 'city';
+    }
+
     public function getInternalId(): ?string
     {
         if (null === $this->getId()) {
             return null;
         }
 
-        return sprintf('city-%s', $this->getId());
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
     }
 
     public function getFullName(): string

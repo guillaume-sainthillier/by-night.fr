@@ -38,7 +38,7 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
 
     public function onEventCheck(EventCheckUrlEvent $e): void
     {
-        //Old route handle
+        // Old route handle
         if (null === $e->getEventId()) {
             $event = $this->eventRepository->findOneBy(['slug' => $e->getEventSlug()]);
         } else {
@@ -70,7 +70,7 @@ class EventUrlCheckSubscriber implements EventSubscriberInterface
             return;
         }
 
-        //All is ok :-)
+        // All is ok :-)
         $e->setEvent($event);
     }
 }

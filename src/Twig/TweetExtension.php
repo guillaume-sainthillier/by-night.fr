@@ -15,7 +15,7 @@ use Twig\TwigFilter;
 
 class TweetExtension extends Extension
 {
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new TwigFilter('tweet', [$this, 'tweet']),

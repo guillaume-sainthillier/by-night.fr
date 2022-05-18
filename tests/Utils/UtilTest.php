@@ -32,7 +32,7 @@ class UtilTest extends ContainerTestCase
         $this->assertEquals($expected, $this->utils->replaceNonNumericChars($actual), 'Original : ' . $actual);
     }
 
-    //Latitude or Postal Code
+    // Latitude or Postal Code
     public function nonNumericCharsProvider()
     {
         return [
@@ -73,12 +73,12 @@ class UtilTest extends ContainerTestCase
     public function deleteSpaceBetweenProvider()
     {
         return [
-            ['Lorem Ipsum', 'Lorem Ipsum', ''], //Nothing happen
+            ['Lorem Ipsum', 'Lorem Ipsum', ''], // Nothing happen
             ['Lorem / Ipsum', 'Lorem/Ipsum', '/'],
-            ['Saint-Lys', 'Saint-Lys', ['-']], //Postal String
-            ['Saint - Lys', 'Saint-Lys', ['-']], //Postal String
-            ['Saint-Lys', 'Saint-Lys', '-'], //Postal String
-            ['Saint - Lys', 'Saint-Lys', '-'], //Postal String
+            ['Saint-Lys', 'Saint-Lys', ['-']], // Postal String
+            ['Saint - Lys', 'Saint-Lys', ['-']], // Postal String
+            ['Saint-Lys', 'Saint-Lys', '-'], // Postal String
+            ['Saint - Lys', 'Saint-Lys', '-'], // Postal String
         ];
     }
 

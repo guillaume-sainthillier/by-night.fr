@@ -34,14 +34,14 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
             return new JsonResponse($result);
         }
-        $key = '_security.main.target_path'; //where "main" is your firewall name
+        $key = '_security.main.target_path'; // where "main" is your firewall name
 
         if ($targetPath = $request->getSession()->get($key)) {
             $url = $targetPath;
         } elseif ($request->getSession()->has($key)) {
-            //set the url based on the link they were trying to access before being authenticated
+            // set the url based on the link they were trying to access before being authenticated
             $url = $request->getSession()->get($key);
-            //remove the session key
+            // remove the session key
             $request->getSession()->remove($key);
         } else {
             $user = $token->getUser();

@@ -11,6 +11,7 @@
 namespace App\Entity;
 
 use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\CountryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -21,7 +22,7 @@ use Stringable;
 
 #[ORM\Entity(repositoryClass: CountryRepository::class, readOnly: true)]
 #[ExclusionPolicy('NONE')]
-class Country implements Stringable, InternalIdentifiableInterface
+class Country implements Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     #[ORM\Column(type: 'string', length: 2)]
     #[ORM\Id]
@@ -62,13 +63,22 @@ class Country implements Stringable, InternalIdentifiableInterface
         return $this->name ?? '';
     }
 
+    public function getKeyPrefix(): string
+    {
+        return 'country';
+    }
+
     public function getInternalId(): ?string
     {
         if (null === $this->getId()) {
             return null;
         }
 
-        return sprintf('country-%s', $this->getId());
+        return sprintf(
+            '%s-id-%s',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
     }
 
     public function getId(): ?string

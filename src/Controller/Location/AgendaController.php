@@ -42,7 +42,7 @@ class AgendaController extends BaseController
     #[Route(path: '/agenda/tag/{tag}/{page<%patterns.page%>}', name: 'app_agenda_by_tags', methods: ['GET'])]
     public function index(Location $location, Request $request, PaginatorInterface $paginator, CacheInterface $memoryCache, RepositoryManagerInterface $repositoryManager, EventRepository $eventRepository, PlaceRepository $placeRepository, int $page = 1, ?string $type = null, ?string $tag = null, ?string $slug = null): Response
     {
-        //État de la page
+        // État de la page
         $isAjax = $request->isXmlHttpRequest();
         $routeParams = array_merge($request->query->all(), [
             'page' => $page + 1,
@@ -55,7 +55,7 @@ class AgendaController extends BaseController
         } elseif (null !== $slug) {
             $routeParams['slug'] = $slug;
         }
-        //Recherche des événements
+        // Recherche des événements
         $search = new SearchEvent();
         $place = null;
         if (null !== $slug) {
@@ -69,15 +69,15 @@ class AgendaController extends BaseController
             }
         }
         $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
-        //Récupération des lieux, types événements et villes
+        // Récupération des lieux, types événements et villes
         $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
-        //Création du formulaire
+        // Création du formulaire
         $form = $this->createForm(SearchType::class, $search, [
             'action' => $formAction,
             'method' => 'get',
             'types_manif' => $types_manif,
         ]);
-        //Bind du formulaire avec la requête courante
+        // Bind du formulaire avec la requête courante
         $form->handleRequest($request);
         if (!$form->isSubmitted() || $form->isValid()) {
             $isValid = true;

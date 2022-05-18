@@ -102,7 +102,7 @@ class TagsInvalidator
     public function flush(): void
     {
         if ($this->debug) {
-            unset($this->tags); //Call GC
+            unset($this->tags); // Call GC
             $this->tags = [];
 
             return;
@@ -122,7 +122,7 @@ class TagsInvalidator
             ]);
         }
 
-        unset($this->tags); //Call GC
+        unset($this->tags); // Call GC
         $this->tags = [];
     }
 }

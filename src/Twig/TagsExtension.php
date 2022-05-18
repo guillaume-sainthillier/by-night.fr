@@ -17,7 +17,7 @@ use Twig\TwigFunction;
 
 class TagsExtension extends Extension
 {
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('tags', [$this, 'getTags']),

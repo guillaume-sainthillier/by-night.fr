@@ -2,7 +2,7 @@
 
 /*
  * This file is part of By Night.
- * (c) 2013-2021 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
+ * (c) 2013-2022 Guillaume Sainthillier <guillaume.sainthillier@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -73,7 +73,7 @@ class EventElasticaRepository extends Repository
                  * 4) fin € [debForm; finForm]
                 */
 
-                //Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
+                // Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
                 $cas1 = new BoolQuery();
                 $cas1->addMust(new Range('date_debut', [
                         'lte' => $search->getFrom()->format('Y-m-d'),
@@ -82,7 +82,7 @@ class EventElasticaRepository extends Repository
                     'gte' => $search->getTo()->format('Y-m-d'),
                 ]));
 
-                //Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
+                // Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
                 $cas2 = new BoolQuery();
                 $cas2->addMust(new Range('date_debut', [
                         'gte' => $search->getFrom()->format('Y-m-d'),
@@ -91,13 +91,13 @@ class EventElasticaRepository extends Repository
                     'lte' => $search->getTo()->format('Y-m-d'),
                 ]));
 
-                //Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
+                // Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
                 $cas3 = new Range('date_debut', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                     'lte' => $search->getTo()->format('Y-m-d'),
                 ]);
 
-                //Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
+                // Cas4 : fin € [debForm; finForm] -> (fin > debForm AND fin < finForm)
                 $cas4 = new Range('date_fin', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                     'lte' => $search->getTo()->format('Y-m-d'),
@@ -113,7 +113,7 @@ class EventElasticaRepository extends Repository
             }
         }
 
-        //Query
+        // Query
         if ($search->getTerm()) {
             $query = new MultiMatch();
             $query->setQuery($search->getTerm())
@@ -139,7 +139,7 @@ class EventElasticaRepository extends Repository
             $mainQuery->addMust($communeTypeManifestationQuery);
         }
 
-        //Construction de la requête finale
+        // Construction de la requête finale
         $finalQuery = Query::create($mainQuery);
 
         if (!$sortByScore) {

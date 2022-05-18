@@ -44,7 +44,7 @@ class EntityTagger
     {
         $entity = $args->getEntity();
 
-        //Flag old place too in case it has changed
+        // Flag old place too in case it has changed
         if ($entity instanceof Event && $entity->getPlace()) {
             $this->tag($entity->getPlace());
         }

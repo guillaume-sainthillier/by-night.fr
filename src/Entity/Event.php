@@ -12,6 +12,7 @@ namespace App\Entity;
 
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
@@ -50,7 +51,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ExclusionPolicy('all')]
-class Event implements ExternalIdentifiableInterface, InternalIdentifiableInterface, Stringable
+class Event implements Stringable, ExternalIdentifiableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
 
@@ -311,13 +312,22 @@ class Event implements ExternalIdentifiableInterface, InternalIdentifiableInterf
         $this->imageSystem = new EmbeddedFile();
     }
 
+    public function getKeyPrefix(): string
+    {
+        return 'event';
+    }
+
     public function getInternalId(): ?string
     {
         if (null === $this->getId()) {
             return null;
         }
 
-        return sprintf('event-%s', $this->getId());
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
     }
 
     public function hasImage(): bool

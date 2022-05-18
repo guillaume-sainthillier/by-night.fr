@@ -32,7 +32,7 @@ class BikiniParser extends AbstractParser
      */
     public function parse(bool $incremental): void
     {
-        //Récupère les différents liens à parser depuis le flux RSS
+        // Récupère les différents liens à parser depuis le flux RSS
         $data = json_decode(file_get_contents(self::EVENTS_URL), true, 512, JSON_THROW_ON_ERROR);
 
         foreach ($data['events'] as $eventAsArray) {

@@ -16,41 +16,33 @@ use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\Place;
 use App\Reject\Reject;
 
-class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, DtoEntityIdentifierResolvableInterface
+class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
 {
     use DtoExternalIdentifiableTrait;
 
-    /** @var int|null */
-    public $entityId;
+    public ?int $entityId = null;
 
-    /** @var string|null */
-    public $name;
+    public ?string $name = null;
 
-    /** @var string|null */
-    public $postalCode;
+    public ?string $postalCode = null;
 
-    /** @var CityDto|null */
-    public $city;
+    public ?CityDto $city = null;
 
-    /** @var string|null */
-    public $street;
+    public ?string $street = null;
 
-    /** @var float|null */
-    public $latitude;
+    public ?float $latitude = null;
 
-    /** @var float|null */
-    public $longitude;
+    public ?float $longitude = null;
 
-    /** @var CountryDto|null */
-    public $country;
+    public ?CountryDto $country = null;
 
-    /** @var Reject|null */
-    public $reject;
+    public ?Reject $reject = null;
 
     /**
      * {@inheritDoc}
@@ -69,26 +61,46 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
         return $catalogue;
     }
 
+    public function getKeyPrefix(): string
+    {
+        return 'place';
+    }
+
     public function getUniqueKey(): string
     {
+        if (
+            (null === $this->externalId || null === $this->externalOrigin)
+            && null === $this->name
+            && null === $this->postalCode
+            && null === $this->street
+        ) {
+            return sprintf(
+                '%s-spl-%s',
+                $this->getKeyPrefix(),
+                spl_object_hash($this)
+            );
+        }
+
         if (null !== $this->externalId && null !== $this->externalOrigin) {
             return sprintf(
-                '%s-%s',
+                '%s-external-%s-%s',
+                $this->getKeyPrefix(),
                 $this->externalId,
                 $this->externalOrigin
             );
         }
 
-        $placeKey = sprintf(
+        $placeKey = mb_strtolower(sprintf(
             '%s-%s-%s',
             $this->name,
             $this->postalCode,
             $this->street
-        );
+        ));
 
         if ($this->city) {
             return sprintf(
-                'place-u-%s-%s',
+                '%s-data-%s-%s',
+                $this->getKeyPrefix(),
                 $placeKey,
                 $this->city->getUniqueKey()
             );
@@ -96,14 +108,16 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
 
         if ($this->country) {
             return sprintf(
-                'place-u-%s-%s',
+                '%s-data-%s-%s',
+                $this->getKeyPrefix(),
                 $placeKey,
                 $this->country->getUniqueKey()
             );
         }
 
         return sprintf(
-            'place-u-%s',
+            '%s-data-%s',
+            $this->getKeyPrefix(),
             $placeKey
         );
     }
@@ -120,6 +134,10 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             return null;
         }
 
-        return sprintf('place-%s', $this->entityId);
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->entityId
+        );
     }
 }

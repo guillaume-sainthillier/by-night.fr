@@ -28,7 +28,7 @@ class UserElasticaRepository extends Repository
 
         $query->addFilter($match);
 
-        //Final Query
+        // Final Query
         return $this->createPaginatorAdapter($query);
     }
 }

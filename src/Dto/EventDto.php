@@ -16,6 +16,7 @@ use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Dependency\Dependency;
 use App\Dependency\DependencyCatalogue;
 use App\Entity\Event;
@@ -24,79 +25,59 @@ use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use DateTimeInterface;
 
-class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, DtoEntityIdentifierResolvableInterface
+class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
 {
     use DtoExternalDateFilterableTrait;
     use DtoExternalIdentifiableTrait;
 
-    /** @var int|null */
-    public $entityId;
+    public ?int $entityId;
 
-    /** @var DateTimeInterface|null */
-    public $startDate;
+    public ?DateTimeInterface $startDate;
 
-    /** @var DateTimeInterface|null */
-    public $endDate;
+    public ?DateTimeInterface $endDate;
 
-    /** @var string|null */
-    public $name;
+    public ?string $name;
 
-    /** @var string|null */
-    public $description;
+    public ?string $description;
 
-    /** @var string|null */
-    public $imageUrl;
+    public ?string $imageUrl;
 
-    /** @var string|null */
-    public $prices;
+    public ?string $prices;
 
-    /** @var string|null */
-    public $hours;
+    public ?string $hours;
 
-    /** @var string|null */
-    public $source;
+    public ?string $source;
 
-    /** @var string|null */
-    public $type;
+    public ?string $type;
 
-    /** @var string|null */
-    public $status;
+    public ?string $status;
 
-    /** @var string|null */
-    public $category;
+    public ?string $category;
 
-    /** @var string|null */
-    public $theme;
+    public ?string $theme;
 
-    /** @var float|null */
-    public $latitude;
+    public ?float $latitude;
 
-    /** @var float|null */
-    public $longitude;
+    public ?float $longitude;
 
-    /** @var string|null */
-    public $address;
+    public ?string $address;
 
     /** @var string[] */
-    public $websiteContacts = [];
+    public ?array $websiteContacts = [];
 
     /** @var string[] */
-    public $phoneContacts = [];
+    public ?array $phoneContacts = [];
 
     /** @var string[] */
-    public $emailContacts = [];
+    public ?array $emailContacts = [];
 
-    /** @var PlaceDto|null */
-    public $place;
+    public ?PlaceDto $place;
 
-    /** @var Reject|null */
-    public $reject;
+    public ?Reject $reject;
 
-    /** @var string|null */
-    public $parserVersion;
+    public ?string $parserVersion;
 
-    /** @var string|null */
-    public $parserName;
+    public ?string $parserName;
 
     public function isAffiliate(): bool
     {
@@ -119,17 +100,27 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
         return $catalogue;
     }
 
+    public function getKeyPrefix(): string
+    {
+        return 'event';
+    }
+
     public function getUniqueKey(): string
     {
-        if (null !== $this->externalId && null !== $this->externalOrigin) {
+        if (null === $this->externalId || null === $this->externalOrigin) {
             return sprintf(
-                '%s-%s',
-                $this->externalId,
-                $this->externalOrigin
+                '%s-spl-%s',
+                $this->getKeyPrefix(),
+                spl_object_hash($this)
             );
         }
 
-        return spl_object_id($this);
+        return sprintf(
+            '%s-external-%s-%s',
+            $this->getKeyPrefix(),
+            $this->externalId,
+            $this->externalOrigin
+        );
     }
 
     public function setIdentifierFromEntity(object $entity): void
@@ -144,6 +135,10 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             return null;
         }
 
-        return sprintf('event-%s', $this->entityId);
+        return sprintf(
+            '%s-id-%d',
+            $this->getKeyPrefix(),
+            $this->entityId
+        );
     }
 }

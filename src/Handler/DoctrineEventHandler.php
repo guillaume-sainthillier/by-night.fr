@@ -11,6 +11,7 @@
 namespace App\Handler;
 
 use App\Contracts\DependencyCatalogueInterface;
+use App\Contracts\DependencyObjectInterface;
 use App\Contracts\DependencyProvidableInterface;
 use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
@@ -68,46 +69,6 @@ class DoctrineEventHandler
     {
         if (0 === \count($dtos)) {
             return [];
-        }
-
-        $uniqueObjectKeys = [
-            'places' => [],
-            'countries' => [],
-            'cities' => [],
-        ];
-
-        foreach ($dtos as $dto) {
-            if (!$dto->place) {
-                continue;
-            }
-
-            $key = $dto->place->getUniqueKey();
-            if (!isset($uniqueObjectKeys['places'][$key])) {
-                $uniqueObjectKeys['places'][$key] = $dto->place;
-            } else {
-                unset($dto->place); // Call GC
-                $dto->place = $uniqueObjectKeys['places'][$key];
-            }
-
-            if ($dto->place->city) {
-                $key = $dto->place->city->getUniqueKey();
-                if (!isset($uniqueObjectKeys['cities'][$key])) {
-                    $uniqueObjectKeys['cities'][$key] = $dto->place->city;
-                } else {
-                    unset($dto->place->city); // Call GC
-                    $dto->place->city = $uniqueObjectKeys['cities'][$key];
-                }
-            }
-
-            if ($dto->place->country) {
-                $key = $dto->place->country->getUniqueKey();
-                if (!isset($uniqueObjectKeys['countries'][$key])) {
-                    $uniqueObjectKeys['countries'][$key] = $dto->place->country;
-                } else {
-                    unset($dto->place->country); // Call GC
-                    $dto->place->country = $uniqueObjectKeys['countries'][$key];
-                }
-            }
         }
 
         return $this->mergeWithDatabase($dtos);
@@ -405,8 +366,22 @@ class DoctrineEventHandler
                     $isNewEntity = null === $entity;
 
                     // Resolve id
-                    if (!$isNewEntity && $dto instanceof DtoEntityIdentifierResolvableInterface) {
-                        $dto->setIdentifierFromEntity($entity);
+                    if (!$isNewEntity) {
+                        $dtosToResolve = [$dto];
+                        if ($previousCatalogue && $previousCatalogue->hasAliases($dto)) {
+                            $dtosToResolve = [
+                                ...$dtosToResolve,
+                                ...$previousCatalogue->getAliases($dto),
+                            ];
+                        }
+
+                        foreach ($dtosToResolve as $dtoToResolve) {
+                            if (!$dtoToResolve instanceof DtoEntityIdentifierResolvableInterface) {
+                                continue;
+                            }
+
+                            $dtoToResolve->setIdentifierFromEntity($entity);
+                        }
                     }
 
                     // We don't create an empty entity into database if existing reference is not found
@@ -434,7 +409,8 @@ class DoctrineEventHandler
                             $foo = $this->entityProviderHandler->getEntityProvider(PlaceDto::class);
                             $bar = $dto->place;
                             $bar2 = $foo->getObjectKeys($dto->place);
-                            dump($this->entityProviderHandler->getEntityProvider(PlaceDto::class)->getEntity($dto->place));
+                            $bar3 = $foo->getEntity($dto->place);
+                            dump($bar3);
                             dd('NOK');
                         }
 
@@ -457,7 +433,12 @@ class DoctrineEventHandler
 
                     // Add all new entities to current samples in order to prevent duplicate creates
                     if ($isNewEntity) {
-                        $entityProvider->addEntity($entity);
+                        $entityProvider->addEntity(
+                            $entity,
+                            $dto instanceof DependencyObjectInterface
+                            ? $dto->getUniqueKey()
+                            : null
+                        );
                     }
 
                     if ($isRootTransaction) {
@@ -466,9 +447,9 @@ class DoctrineEventHandler
                 }
 
                 // Resolve current dependencies after persisting parent objects
-                $provideCatalogue = $this->computeProvidedCatalogue($chunk);
-                $allCatalogues[] = $provideCatalogue;
-                $this->mergeWithDatabase($provideCatalogue->objects(), $provideCatalogue, $allCatalogues, $currentPaths);
+                $providedCatalogue = $this->computeProvidedCatalogue($chunk);
+                $allCatalogues[] = $providedCatalogue;
+                $this->mergeWithDatabase($providedCatalogue->objects(), $providedCatalogue, $allCatalogues, $currentPaths);
 
                 if ($isRootTransaction) {
                     $this->logger->info(sprintf(

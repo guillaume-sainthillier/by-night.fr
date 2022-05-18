@@ -65,7 +65,7 @@ class Util
      */
     public function deleteSpaceBetween(?string $string, array|string $delimiters = '-'): string
     {
-        if (\is_string($delimiters) && isset($delimiters[0])) { //Strlen > 0
+        if (\is_string($delimiters) && isset($delimiters[0])) { // Strlen > 0
             return trim(preg_replace('/\s+(' . preg_quote($delimiters, '/') . ')\s+/u', '$1', $string));
         } elseif (\is_array($delimiters) && \count($delimiters) > 0) {
             return trim(preg_replace_callback('/\s+([' . implode('', $delimiters) . '])\s+/u', fn ($matches) => $matches[1], $string));

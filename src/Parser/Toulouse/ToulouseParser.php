@@ -61,7 +61,7 @@ class ToulouseParser extends AbstractParser
     private function parseCSV(string $fichier): void
     {
         $fic = fopen($fichier, 'r');
-        fgetcsv($fic, 0, ';', '"', '"'); //Ouverture de la première ligne
+        fgetcsv($fic, 0, ';', '"', '"'); // Ouverture de la première ligne
 
         while ($cursor = fgetcsv($fic, 0, ';', '"', '"')) {
             $tab = array_map(fn ($e) => Encoding::toUTF8($e), $cursor);

@@ -10,10 +10,10 @@
 
 namespace App\Contracts;
 
-interface ExternalIdentifiablesInterface
+interface PrefixableObjectKeyInterface
 {
     /**
-     * @return ExternalIdentifiableInterface[] the external resources
+     * @return string the key prefix for object key
      */
-    public function getExternalIdentifiables(): iterable;
+    public function getKeyPrefix(): string;
 }

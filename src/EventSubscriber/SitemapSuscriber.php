@@ -81,7 +81,7 @@ class SitemapSuscriber implements EventSubscriberInterface
             $event = current($event);
             $slug = $event['slug'];
             if ($slug !== $lastSlug) {
-                unset($cache); //call GC
+                unset($cache); // call GC
                 $cache = [];
             }
 

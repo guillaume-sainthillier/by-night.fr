@@ -16,6 +16,7 @@ use App\Contracts\EntityProviderInterface;
 use App\Contracts\ExternalIdentifiableInterface;
 use App\Contracts\ExternalIdentifiablesInterface;
 use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Utils\ChunkUtils;
 
 abstract class AbstractEntityProvider implements EntityProviderInterface
@@ -69,9 +70,13 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function addEntity(object $entity): void
+    public function addEntity(object $entity, ?string $alias = null): void
     {
         $keys = $this->getObjectKeys($entity);
+        if ($alias) {
+            $keys[] = $alias;
+        }
+
         foreach ($keys as $key) {
             $this->entities[$key] = $entity;
         }
@@ -93,11 +98,21 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
                     continue;
                 }
 
-                $keys[] = sprintf(
-                    '%s-%s',
+                $key = sprintf(
+                    'external-%s-%s',
                     $externalIdentifiable->getExternalId(),
                     $externalIdentifiable->getExternalOrigin()
                 );
+
+                if ($object instanceof PrefixableObjectKeyInterface) {
+                    $key = sprintf(
+                        '%s-%s',
+                        $object->getKeyPrefix(),
+                        $key,
+                    );
+                }
+
+                $keys[] = $key;
             }
         }
 
@@ -110,7 +125,15 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
         }
 
         if (0 === \count($keys)) {
-            $keys[] = spl_object_id($object);
+            $key = sprintf('spl-%s', spl_object_hash($object));
+            if ($object instanceof PrefixableObjectKeyInterface) {
+                $key = sprintf(
+                    '%s-%s',
+                    $object->getKeyPrefix(),
+                    $key,
+                );
+            }
+            $keys[] = $key;
         }
 
         return $keys;
