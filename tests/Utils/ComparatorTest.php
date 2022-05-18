@@ -36,7 +36,7 @@ class ComparatorTest extends ContainerTestCase
         $this->assertEquals($score, $this->comparator->getMatchingScorePlace($a, $b));
     }
 
-    public function matchingScorePlaceProvider()
+    public function matchingScorePlaceProvider(): iterable
     {
         $france = (new Country())->setId('FR');
         $toulouse = (new City())->setId(1)->setName('Toulouse')->setCountry($france);
@@ -92,7 +92,7 @@ class ComparatorTest extends ContainerTestCase
         }
     }
 
-    public function bestPlaceProvider()
+    public function bestPlaceProvider(): iterable
     {
         $france = (new Country())->setId('FR');
         $toulouse = (new City())->setId(1)->setName('Toulouse')->setCountry($france);
