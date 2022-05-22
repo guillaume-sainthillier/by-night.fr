@@ -1,7 +1,7 @@
 import Widgets from '../components/Widgets';
 import CommentApp from '../components/CommentApp';
 
-$(function () {
+$(document).ready(function () {
     new Widgets().init();
     new CommentApp().init();
 

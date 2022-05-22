@@ -1,8 +1,12 @@
 @import 'variables';
+
+//Vendors
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~@fortawesome/fontawesome-free/scss/brands';
 @import '~bootstrap/scss/bootstrap';
+
+//Components
 @import 'components/alert';
 @import 'components/badge';
 @import 'components/breadcrumb';
@@ -12,7 +16,6 @@
 @import 'components/collections';
 @import 'components/comment';
 @import 'components/criteres';
-@import 'components/datepicker';
 @import 'components/event';
 @import 'components/footer';
 @import 'components/form';
@@ -25,15 +28,14 @@
 @import 'components/placeholder';
 @import 'components/print';
 @import 'components/scroll';
-@import 'components/select';
 @import 'components/social_icons';
 @import 'components/social_login';
 @import 'components/table';
-@import 'components/typeahead';
 @import 'components/typography';
 @import 'components/utilities';
 @import 'components/widgets';
 
+//Pages
 @import 'pages/en_savoir_plus';
 @import 'pages/erreurs';
 @import 'pages/event_details';

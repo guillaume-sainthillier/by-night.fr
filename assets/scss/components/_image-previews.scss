@@ -1,0 +1,9 @@
+.image-gallery {
+    display: block;
+    height: 100%;
+
+    &:hover {
+        cursor: -webkit-zoom-in;
+        cursor: -moz-zoom-in;
+    }
+}

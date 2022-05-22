@@ -49,10 +49,5 @@
 {%- endblock %}
 
 {% block js -%}
-    <script>
-        function onPageLoaded(App) {
-            App.runPageEspacePersoEvent();
-        }
-    </script>
     {{ encore_entry_script_tags('espace_perso_event') }}
 {%- endblock %}

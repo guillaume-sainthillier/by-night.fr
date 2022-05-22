@@ -1,4 +1,9 @@
-export default (di, container) => {
+import 'fancybox/dist/js/jquery.fancybox';
+import 'fancybox/dist/css/jquery.fancybox.css';
+
+import '../../scss/components/_image-previews.scss';
+
+export default function init(container = document) {
     $('.image-gallery', container).each(function () {
         $(this)
             .fancybox({
@@ -16,4 +21,4 @@ export default (di, container) => {
                 return false;
             });
     });
-};
+}

@@ -10,23 +10,20 @@ import Container from './services/Container';
 import registerServices from './services';
 
 //Global listeners
-import lazyload from './page-listeners/lazyload';
-import breadcrumb from './page-listeners/breadcrumb';
-import headerSearch from './page-listeners/header-search';
-import navbarScroll from './page-listeners/navbar-scroll';
-import scrollToTop from './page-listeners/scroll-to-top';
+import lazyload from './global-listeners/lazyload';
+import breadcrumb from './global-listeners/breadcrumb';
+import headerSearch from './global-listeners/header-search';
+import scrollToTop from './global-listeners/scroll-to-top';
 
 //Listeners
-import dates from './listeners/dates';
 import formCollection from './listeners/form-collection';
 import formErrors from './listeners/form-errors';
-import imageGallery from './listeners/image-gallery';
+import imagePreviews from './listeners/image-previews';
 import like from './listeners/like';
 import loadMore from './listeners/load-more';
 import login from './listeners/login';
 import popup from './listeners/popup';
 import register from './listeners/register';
-import selects from './listeners/selects';
 import tooltip from './listeners/tooltip';
 
 class App {
@@ -35,24 +32,13 @@ class App {
         this._listeners = [
             breadcrumb,
             headerSearch,
+            imagePreviews,
             lazyload,
             //navbarScroll,
             scrollToTop,
         ];
 
-        this._pageListeners = [
-            dates,
-            formCollection,
-            formErrors,
-            imageGallery,
-            like,
-            loadMore,
-            login,
-            popup,
-            register,
-            selects,
-            tooltip,
-        ];
+        this._pageListeners = [formCollection, formErrors, like, loadMore, login, popup, register, tooltip];
     }
 
     handleError(error) {
@@ -79,20 +65,20 @@ class App {
         registerServices(this._di);
 
         // Execute the page load listeners
-        this._listeners.forEach((listener) => {
+        this._pageListeners.forEach((listener) => {
             listener(this._di);
         });
 
         this.dispatchPageLoadedEvent();
     }
 
-    dispatchPageLoadedEvent(container) {
-        this._pageListeners.forEach((listener) => {
-            listener(this._di, container || document);
+    dispatchPageLoadedEvent(container = document) {
+        this._listeners.forEach((listener) => {
+            listener(this._di, container);
         });
 
         if (typeof window.onPageLoaded === 'function') {
-            window.onPageLoaded(this, container || document);
+            window.onPageLoaded(this, container);
             window.onPageLoaded = null;
         }
     }
@@ -109,12 +95,6 @@ class App {
 
     resetButtons(container) {
         $('.btn-submit', container).attr('disabled', false).find('.spinner-border').remove();
-    }
-
-    runPageEspacePersoEvent() {
-        return import('./pages/espace_perso_event')
-            .catch(this.handleError)
-            .then((module) => module.default());
     }
 }
 

@@ -1,21 +1,24 @@
 import '../../scss/pages/espace_perso_event.scss';
 
 import $ from 'jquery';
-import 'typeahead.js/dist/bloodhound';
-import 'typeahead.js/dist/typeahead.bundle';
-import 'typeahead-addresspicker/dist/typeahead-addresspicker';
-import 'moment/locale/fr';
-import 'daterangepicker';
-import 'bootstrap-select/dist/js/bootstrap-select.min.js';
-import 'bootstrap-select/js/i18n/defaults-fr_FR.js';
-import 'summernote/dist/summernote-bs4.css';
-import 'summernote/dist/summernote-bs4';
+import 'summernote/dist/summernote-bs5.css';
+import 'summernote/dist/summernote-bs5';
 import 'summernote/dist/lang/summernote-fr-FR';
-import 'select2';
-import 'select2/src/scss/core.scss';
-import 'select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.css';
 
-export default function init() {
+import initDates from '../lazy-listeners/dates';
+import initSelects from '../lazy-listeners/selects';
+import initTypeAHead from '../lazy-listeners/typeahead';
+import 'typeahead-addresspicker/dist/typeahead-addresspicker';
+
+$(document).ready(function () {
+    initDates();
+    initSelects();
+    initTypeAHead();
+
+    init();
+});
+
+function init() {
     initWYSIWYG();
     initGMap();
 

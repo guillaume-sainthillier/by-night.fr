@@ -1,6 +1,12 @@
+//JS
+import 'moment/locale/fr';
+import 'daterangepicker';
 import { isTouchDevice } from '../utils/utils';
 
-export default (di, container) => {
+//CSS
+import '../../scss/lazy-components/_datepicker.scss';
+
+export default function init(container = document) {
     $('input.shorcuts_date', container).each(function () {
         $(this).removeAttr('name');
         var input = this;
@@ -25,7 +31,6 @@ export default (di, container) => {
                 autoUpdateInput: false,
                 ranges: ranges,
                 alwaysShowCalendars: Object.keys(ranges).length === 0,
-                //showCustomRangeLabel: Object.keys(ranges).length > 0,
                 locale: {
                     applyLabel: 'OK',
                     cancelLabel: 'Annuler',
@@ -34,10 +39,10 @@ export default (di, container) => {
                     customRangeLabel: 'Personnalisé',
                 },
             },
-            cb
+            callback
         );
 
-        function cb(start, end, label) {
+        function callback(start, end, label) {
             var datas = $(input).data('daterangepicker');
             if (typeof datas.ranges[label] !== 'undefined') {
                 $(input).val(label);
@@ -55,4 +60,4 @@ export default (di, container) => {
             toInput.val(end.isValid() ? end.format('YYYY-MM-DD') : '');
         }
     });
-};
+}

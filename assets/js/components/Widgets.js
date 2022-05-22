@@ -1,7 +1,7 @@
 export default class Widgets {
     init(selecteur) {
         const self = this;
-        $(function () {
+        $(document).ready(function () {
             self.initMoreWidgets($('.widget', selecteur || document));
         });
     }

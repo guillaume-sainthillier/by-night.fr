@@ -3,33 +3,31 @@ import { popup } from '../utils/utils';
 export default class SocialLogin {
     init() {
         const self = this;
-        $(function () {
-            self.initOnOff();
+        self.initOnOff();
 
-            //Actions par défaut
-            $('body')
-                .on('wantConnect', function (event, ck) {
-                    self.launchSocialConnect(ck);
-                })
-                .on('wantDisconnect', function (event, ck) {
-                    self.launchSocialDisconnect(ck);
-                })
-                .on('hasDisconnected', function (event, ck) {
-                    self.onDisconnectedSocial(ck);
-                })
-                .on('hasConnected', function (event, ui) {
-                    const ck = ui.target;
-                    const user = ui.user;
+        //Actions par défaut
+        $('body')
+            .on('wantConnect', function (event, ck) {
+                self.launchSocialConnect(ck);
+            })
+            .on('wantDisconnect', function (event, ck) {
+                self.launchSocialDisconnect(ck);
+            })
+            .on('hasDisconnected', function (event, ck) {
+                self.onDisconnectedSocial(ck);
+            })
+            .on('hasConnected', function (event, ui) {
+                const ck = ui.target;
+                const user = ui.user;
 
-                    const bloc_config = $(ck).closest('.bloc_config');
+                const bloc_config = $(ck).closest('.bloc_config');
 
-                    $(ck).prop('checked', true);
-                    bloc_config.find('.username').text(user.username);
-                    bloc_config.find('.when_on').show('normal', function () {
-                        $(this).removeClass('hidden');
-                    });
+                $(ck).prop('checked', true);
+                bloc_config.find('.username').text(user.username);
+                bloc_config.find('.when_on').show('normal', function () {
+                    $(this).removeClass('hidden');
                 });
-        });
+            });
     }
 
     initOnOff() {
