@@ -1,4 +1,4 @@
-{% extends 'layouts/default.html.twig' %}
+{% extends 'layouts/default-stretch.html.twig' %}
 
 {% block title 'Inscription' %}
 
@@ -14,25 +14,21 @@
 
 {% block body %}
     {{ form_start(form, {'action': path('app_register')}) }}
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card">
-                <div class="card-body">
-                    {% include 'registration/register-content.html.twig' with({'partial': false}) %}
-                </div>
-                <div class="card-footer text-center py-2">
-                    <button class="btn btn-lg btn-primary" type="submit">
-                        Créer mon profil
-                    </button>
-                </div>
-            </div>
-            <p>
-                Vous avez déjà un compte ?
-                <a class="connexion" href="{{ path('app_login') }}" title="Connectez-vous sur By Night">
-                    Connectez-vous !
-                </a>
-            </p>
+    <div class="card">
+        <div class="card-body">
+            {% include 'registration/register-content.html.twig' with({'partial': false}) %}
+        </div>
+        <div class="card-footer text-center py-2">
+            <button class="btn btn-lg btn-primary" type="submit">
+                Créer mon profil
+            </button>
         </div>
     </div>
+    <p>
+        Vous avez déjà un compte ?
+        <a class="connexion" href="{{ path('app_login') }}" title="Connectez-vous sur By Night">
+            Connectez-vous !
+        </a>
+    </p>
     {{ form_end(form) }}
 {% endblock %}

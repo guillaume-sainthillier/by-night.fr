@@ -12,18 +12,17 @@
                 <div class="card-body">
                     <form method="GET" class="no-margin-form" action="{{ path('app_search_index') }}">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-lg-8">
                                 <div class="mb-3">
                                     <label for="search">Je cherche</label>
                                     <input name="q"
                                            id="search"
                                            class="form-control"
-                                           size="16"
                                            type="search"
                                            value="{{ term }}">
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 col-lg-4">
                                 <div class="mb-3">
                                     <label for="type">Parmi</label>
                                     <select id="type" name="type" class="form-select">
