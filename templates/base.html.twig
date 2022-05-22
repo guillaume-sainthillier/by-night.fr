@@ -75,7 +75,9 @@ _______     __  _   _ _____ _____ _    _ _______
     <link rel="canonical" href="{{ url(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}" />
 
     <!-- CSS -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300|Roboto:300,400,500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     {{ encore_entry_link_tags('app') }}
     {% block css %}{% endblock %}
     <!-- ./CSS -->

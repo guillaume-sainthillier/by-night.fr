@@ -41,3 +41,12 @@
     display: block;
     width: 100%;
 }
+
+.btn-xl {
+    @include button-size(
+        $btn-padding-y-lg * 1.5,
+        $btn-padding-x-lg * 1.5,
+        $btn-font-size-lg * 1.25,
+        $btn-border-radius-lg
+    );
+}

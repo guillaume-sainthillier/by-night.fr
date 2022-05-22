@@ -6,6 +6,7 @@ import 'summernote/dist/summernote-bs5';
 import 'summernote/dist/lang/summernote-fr-FR';
 
 import initDates from '../lazy-listeners/dates';
+import initImagePreview from '../lazy-listeners/image-previews';
 import initSelects from '../lazy-listeners/selects';
 import initTypeAHead from '../lazy-listeners/typeahead';
 import 'typeahead-addresspicker/dist/typeahead-addresspicker';
@@ -14,6 +15,7 @@ $(document).ready(function () {
     initDates();
     initSelects();
     initTypeAHead();
+    initImagePreview();
 
     init();
 });

@@ -7,15 +7,15 @@
     </h2>
     <div class="card-body">
         <div class="row main_criteres">
-            <div class="col-md-6">
+            <div class="col-md-6 col-lg-4">
                 {{ form_widget(form.from) }}
                 {{ form_widget(form.to) }}
                 {{ form_errors(form.from) }}
                 {{ form_errors(form.to) }}
                 {{ form_row(form.shortcut, {'label': 'Quand ?'}) }}
             </div>
-            <div class="col-md-6">
-                {{ form_row(form.type_manifestation) }}
+            <div class="col-md-6 col-lg-8">
+                {{ form_row(form.term) }}
             </div>
         </div>
         {% if search.term or search.range != 25 %}
@@ -33,7 +33,7 @@
         <div class="{{ options.hiddenClass }} criteres">
             <div class="row">
                 <div class="col-md-9">
-                    {{ form_row(form.term) }}
+                    {{ form_row(form.type_manifestation) }}
                 </div>
                 <div class="col-md-3">
                     {{ form_row(form.range) }}
