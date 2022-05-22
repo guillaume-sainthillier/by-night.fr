@@ -62,6 +62,7 @@ class ParserHistoryCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$dateDebut, $fromData, $dateFin, $nouvellesSoirees, $updateSoirees, $explorations];
         }
+
         throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

@@ -35,6 +35,9 @@ class UserFormAuthenticator extends AbstractFormLoginAuthenticator implements Pa
 {
     use TargetPathTrait;
 
+    /**
+     * @var string
+     */
     public const LOGIN_ROUTE = 'app_login';
 
     public function __construct(private TranslatorInterface $translator, private EntityManagerInterface $entityManager, private UrlGeneratorInterface $urlGenerator, private CsrfTokenManagerInterface $csrfTokenManager, private UserPasswordHasherInterface $passwordEncoder)

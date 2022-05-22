@@ -93,6 +93,7 @@ class UserCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$panel1, $lastLogin, $slug, $username, $roles, $email, $firstname, $lastname, $description, $oAuth, $website, $fromLogin, $showSocials, $enabled, $isVerified, $panel2, $imageName, $imageSystemName];
         }
+
         throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

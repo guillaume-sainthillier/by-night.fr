@@ -38,9 +38,9 @@ class RemoveImageThumbnailsConsumer extends AbstractConsumer implements BatchCon
             try {
                 $this->deleteThumbnails($path);
                 $result[$message->getDeliveryTag()] = ConsumerInterface::MSG_ACK;
-            } catch (Exception $e) {
-                $this->logger->error($e->getMessage(), [
-                    'exception' => $e,
+            } catch (Exception $exception) {
+                $this->logger->error($exception->getMessage(), [
+                    'exception' => $exception,
                     'extra' => [
                         'path' => $path,
                     ],

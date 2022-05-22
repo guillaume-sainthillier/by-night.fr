@@ -22,7 +22,14 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class TwitterOAuth
 {
+    /**
+     * @var string
+     */
     private const OAUTH_TOKEN_SESSION_KEY = '_oauth_token';
+
+    /**
+     * @var string
+     */
     private const OAUTH_TOKEN_SECRET_SESSION_KEY = '_oauth_token_secret';
 
     public function __construct(private string $clientId, private string $clientSecret, private RequestStack $requestStack)
@@ -62,15 +69,15 @@ class TwitterOAuth
         $givenOauthVerifier = $request->query->get('oauth_verifier');
 
         if ($givenOauthToken !== $oauthToken) {
-            throw new InvalidStateException('States don\'t match');
+            throw new InvalidStateException("States don't match");
         }
 
         $client = new BaseClient($this->clientId, $this->clientSecret, $givenOauthToken, $oauthTokenSecret);
 
         try {
             $access_token = $client->oauth('oauth/access_token', ['oauth_verifier' => $givenOauthVerifier]);
-        } catch (TwitterOAuthException $exception) {
-            throw new InvalidStateException($exception->getMessage(), $exception->getCode(), $exception);
+        } catch (TwitterOAuthException $twitteroAuthException) {
+            throw new InvalidStateException($twitteroAuthException->getMessage(), $twitteroAuthException->getCode(), $twitteroAuthException);
         }
 
         return new TwitterAccessToken([

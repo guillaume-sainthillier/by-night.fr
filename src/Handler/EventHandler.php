@@ -69,9 +69,9 @@ class EventHandler
                     ],
                 ],
             ]);
-        } catch (UnsupportedFileException $e) {
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
+        } catch (UnsupportedFileException $unsupportedFileException) {
+            $this->logger->error($unsupportedFileException->getMessage(), [
+                'exception' => $unsupportedFileException,
                 'extra' => [
                     'event' => [
                         'id' => $event->getId(),

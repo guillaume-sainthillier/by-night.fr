@@ -50,12 +50,12 @@ class Util
 
     public function replaceNonNumericChars(?string $string): string
     {
-        return trim(preg_replace('/[^\d.-]/u', '', $string));
+        return trim(preg_replace('#[^\d.-]#u', '', $string));
     }
 
     public function replaceNonAlphanumericChars(?string $string): string
     {
-        return trim(preg_replace('/[^A-Za-z0-9 ]/u', '', $string));
+        return trim(preg_replace('#[^A-Za-z0-9 ]#u', '', $string));
     }
 
     /**

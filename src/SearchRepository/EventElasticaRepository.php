@@ -24,10 +24,29 @@ use FOS\ElasticaBundle\Repository;
 
 class EventElasticaRepository extends Repository
 {
+    /**
+     * @var string
+     */
     public const EXPO_TERMS = 'exposition, salon';
+
+    /**
+     * @var string
+     */
     public const CONCERT_TERMS = 'concert, musique, artiste';
+
+    /**
+     * @var string
+     */
     public const FAMILY_TERMS = 'famille, enfants';
+
+    /**
+     * @var string
+     */
     public const SHOW_TERMS = 'spectacle, exposition, théâtre, comédie';
+
+    /**
+     * @var string
+     */
     public const STUDENT_TERMS = 'soirée, étudiant, bar, discothèque, boîte de nuit, after work';
 
     public function findWithSearch(SearchEvent $search, bool $sortByScore = false): PaginatorAdapterInterface

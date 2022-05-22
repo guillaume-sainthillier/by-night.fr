@@ -163,6 +163,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
                     $key,
                 );
             }
+
             $keys[] = $key;
         }
 

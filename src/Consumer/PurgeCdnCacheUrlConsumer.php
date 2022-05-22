@@ -52,9 +52,9 @@ class PurgeCdnCacheUrlConsumer extends AbstractConsumer implements BatchConsumer
             ]);
 
             return ConsumerInterface::MSG_ACK;
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage(), [
+                'exception' => $exception,
                 'extra' => [
                     'paths' => $paths,
                 ],

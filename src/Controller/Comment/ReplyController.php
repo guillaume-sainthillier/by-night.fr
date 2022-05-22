@@ -23,6 +23,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ReplyController extends BaseController
 {
+    /**
+     * @var int
+     */
     public const REPLIES_PER_PAGE = 5;
 
     #[Route(path: '/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}', name: 'app_comment_reponse_list', methods: ['GET'])]
@@ -50,6 +53,7 @@ class ReplyController extends BaseController
         $reponse = new Comment();
         $reponse->setUser($user);
         $reponse->setEvent($comment->getEvent());
+
         $form = $this->createForm(CommentType::class, $reponse, [
             'action' => $this->generateUrl('app_comment_reponse_new', ['id' => $comment->getId()]),
         ]);

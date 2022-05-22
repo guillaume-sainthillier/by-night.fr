@@ -28,7 +28,7 @@ final class Version20200509205750 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
         $this->addSql('RENAME TABLE `Agenda` TO `event`');
         $this->addSql('RENAME TABLE `Calendrier` TO `user_event`');
         $this->addSql('RENAME TABLE `Comment` TO `comment_tmp`');

@@ -116,9 +116,9 @@ class TagsInvalidator
 
         try {
             $this->tagHandler->invalidateTags($tags);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage(), [
+                'exception' => $exception,
             ]);
         }
 

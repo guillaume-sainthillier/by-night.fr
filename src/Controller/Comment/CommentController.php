@@ -25,6 +25,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommentController extends BaseController
 {
+    /**
+     * @var int
+     */
     public const COMMENTS_PER_PAGE = 10;
 
     #[Route(path: '/form/{id<%patterns.id%>}', name: 'app_comment_form', methods: ['GET'])]
@@ -81,6 +84,7 @@ class CommentController extends BaseController
         $comment = new Comment();
         $comment->setUser($user);
         $comment->setEvent($event);
+
         $form = $this->createForm(CommentType::class, $comment, [
             'action' => $this->generateUrl('app_comment_new', ['id' => $event->getId()]),
         ]);

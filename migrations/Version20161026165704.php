@@ -21,7 +21,7 @@ class Version20161026165704 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql("UPDATE Site SET twitter_id_widget = NULL, twitter_url_widget = NULL WHERE subdomain NOT IN ('toulouse', 'paris')");
     }

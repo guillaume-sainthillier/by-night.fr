@@ -38,6 +38,7 @@ class EventController extends BaseController
         if (null !== $eventCheck->getResponse()) {
             return $eventCheck->getResponse();
         }
+
         $event = $eventCheck->getEvent();
 
         return $this->render('location/event/index.html.twig', [

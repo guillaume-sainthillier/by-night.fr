@@ -28,7 +28,7 @@ final class Version20200509214558 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE event RENAME INDEX idx_2b41cd41a76ed395 TO IDX_3BAE0AA7A76ED395');
         $this->addSql('ALTER TABLE event RENAME INDEX idx_2b41cd41da6a219 TO IDX_3BAE0AA7DA6A219');
@@ -57,7 +57,7 @@ final class Version20200509214558 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE comment RENAME INDEX idx_9474526c727aca70 TO IDX_5BC96BF0727ACA70');
         $this->addSql('ALTER TABLE comment RENAME INDEX idx_9474526c71f7e88b TO IDX_5BC96BF071F7E88B');

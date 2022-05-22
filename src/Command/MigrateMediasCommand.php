@@ -43,6 +43,7 @@ class MigrateMediasCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $io->info('Users');
+
         $objects = $this
             ->entityManager
             ->getRepository(User::class)
@@ -72,8 +73,8 @@ class MigrateMediasCommand extends Command
                         $object
                             ->setImageSystemHash($checksum)
                             ->setImageSystemMainColor($mainColor);
-                    } catch (Exception $e) {
-                        $this->logger->error($e->getMessage());
+                    } catch (Exception $exception) {
+                        $this->logger->error($exception->getMessage());
                     }
                 }
             }
@@ -96,12 +97,13 @@ class MigrateMediasCommand extends Command
                         $object
                             ->setImageHash($checksum)
                             ->setImageMainColor($mainColor);
-                    } catch (Exception $e) {
-                        $this->logger->error($e->getMessage());
+                    } catch (Exception $exception) {
+                        $this->logger->error($exception->getMessage());
                     }
                 }
             }
         }
+
         $this->entityManager->flush();
         $this->entityManager->clear();
 

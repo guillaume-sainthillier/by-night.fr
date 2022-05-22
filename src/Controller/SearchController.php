@@ -34,9 +34,11 @@ class SearchController extends AbstractController
         if ($page <= 0) {
             $page = 1;
         }
+
         if ($type && !\in_array($type, ['evenements', 'membres'])) {
             $type = null;
         }
+
         $events = $paginator->paginate([]);
         $users = $paginator->paginate([]);
         if ('' !== $q) {

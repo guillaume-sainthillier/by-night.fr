@@ -22,7 +22,7 @@ class Twitter extends Social
     /**
      * {@inheritDoc}
      */
-    public function constructClient(): void
+    protected function constructClient(): void
     {
         $this->client = new TwitterOAuth($this->id, $this->secret);
     }
@@ -45,9 +45,9 @@ class Twitter extends Social
 
         try {
             return json_decode(json_encode($this->client->get('search/tweets', $params), JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), [
-                'exception' => $e,
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage(), [
+                'exception' => $exception,
                 'extra' => [
                     'params' => $params,
                 ],

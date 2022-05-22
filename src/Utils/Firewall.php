@@ -18,10 +18,13 @@ use DateTimeInterface;
 
 class Firewall
 {
+    /**
+     * @var string
+     */
     public const VERSION = '1.1';
 
     /** @var ParserData[] */
-    private array $parserDatas;
+    private array $parserDatas = [];
 
     public function __construct(private Comparator $comparator, private ParserDataRepository $parserDataRepository)
     {

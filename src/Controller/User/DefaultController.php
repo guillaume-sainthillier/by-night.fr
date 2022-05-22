@@ -35,6 +35,7 @@ class DefaultController extends BaseController
         if (null !== $userCheck->getResponse()) {
             return $userCheck->getResponse();
         }
+
         $user = $userCheck->getUser();
 
         return $this->render('user/index.html.twig', [
@@ -56,6 +57,7 @@ class DefaultController extends BaseController
         if (null !== $userCheck->getResponse()) {
             return $userCheck->getResponse();
         }
+
         $user = $userCheck->getUser();
         $datas = match ($type) {
             'semaine' => $this->getDataOfWeek($eventRepository, $user),

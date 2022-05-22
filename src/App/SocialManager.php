@@ -16,6 +16,7 @@ use App\Repository\AppOAuthRepository;
 class SocialManager
 {
     private bool $_siteInfoInitialized = false;
+
     private ?AppOAuth $appOAuth = null;
 
     public function __construct(private string $facebookIdPage, private string $twitterIdPage, private AppOAuthRepository $appOAuthRepository)

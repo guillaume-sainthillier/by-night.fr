@@ -38,7 +38,7 @@ class ParseExtension extends Extension
         $texte = preg_replace("#<a(.*)href=['\"]([^'^\"]*)['\"]([^>]*)>#", '<a href="$2" target="_blank" rel="nofollow">', $texte);
         $texte = preg_replace("#(^|[\n ])((http|https|ftp)://)?([\w]+?://[\w\#$%&~/.\-;:=,?@\[\]+]*)#is", '\\1<a href="\\4" target="_blank" rel="nofollow">\\4</a>', $texte);
 
-        if (!preg_match('/<(.*)(script|style|link)/i', $texte)) {
+        if (!preg_match('#<(.*)(script|style|link)#i', $texte)) {
             return $texte;
         }
 
@@ -53,7 +53,7 @@ class ParseExtension extends Extension
 
         // striptags[:250]|replace({'&#13;': '<br>'})|trim|raw|trim('<br><br />')|raw
         $linked_text = preg_replace_callback('
-            #((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|"|\'|:|\<|$|\.\s)#i',
+            \#((http|https|ftp)://(\S*?\.\S*?))(\s|\;|\)|\]|\[|\{|\}|,|"|\'|:|\<|$|\.\s)\#i',
             fn ($matches) => '<a rel="nofollow" href="$1" target="_blank">$3</a>$4',
             $shorted_text
         );
@@ -65,8 +65,8 @@ class ParseExtension extends Extension
 
     private function trimBr(?string $string): ?string
     {
-        $string = preg_replace('/^\s*(?:<br\s*\/?>\s*)*/i', '', $string);
+        $string = preg_replace('#^\s*(?:<br\s*\/?>\s*)*#i', '', $string);
 
-        return preg_replace('/\s*(?:<br\s*\/?>\s*)*$/i', '', $string);
+        return preg_replace('#\s*(?:<br\s*\/?>\s*)*$#i', '', $string);
     }
 }

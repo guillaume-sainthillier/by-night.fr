@@ -58,6 +58,7 @@ class ProfileController extends AbstractController
                 } else {
                     $event->setInterets($event->getInterets() - 1);
                 }
+
                 $em->remove($userEvent);
             }
 
@@ -65,6 +66,7 @@ class ProfileController extends AbstractController
             foreach ($comments as $comment) {
                 $em->remove($comment);
             }
+
             $em->flush();
 
             // TODO: Optimize flush & check constraints
@@ -75,6 +77,7 @@ class ProfileController extends AbstractController
 
             return $this->redirectToRoute('app_index');
         }
+
         $errors = $form->getErrors(true);
         foreach ($errors as $error) {
             $this->addFlash('error', $error);
@@ -95,6 +98,7 @@ class ProfileController extends AbstractController
 
             $this->addFlash('success', 'Votre profil a été mis à jour');
         }
+
         $formChangePassword = $this->createForm(ChangePasswordFormType::class, $user);
         $formChangePassword->handleRequest($request);
         if ($formChangePassword->isSubmitted() && $formChangePassword->isValid()) {
@@ -109,6 +113,7 @@ class ProfileController extends AbstractController
 
             $this->addFlash('success', 'Votre mot de passe a été mis à jour');
         }
+
         $formDelete = $this->createDeleteForm();
 
         return $this->render('profile/edit.html.twig', [

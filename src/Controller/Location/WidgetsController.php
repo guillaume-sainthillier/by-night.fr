@@ -23,7 +23,14 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class WidgetsController extends BaseController
 {
+    /**
+     * @var int
+     */
     public const TWEET_LIMIT = 25;
+
+    /**
+     * @var int
+     */
     public const WIDGET_ITEM_LIMIT = 7;
 
     /**
@@ -44,6 +51,7 @@ class WidgetsController extends BaseController
                 ]);
             }
         }
+
         if (!isset($results['statuses'])) {
             $results['statuses'] = [];
         }
@@ -66,6 +74,7 @@ class WidgetsController extends BaseController
         if (null !== $eventCheck->getResponse()) {
             return $eventCheck->getResponse();
         }
+
         $event = $eventCheck->getEvent();
         $count = $eventRepository->getAllNextCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;
@@ -101,6 +110,7 @@ class WidgetsController extends BaseController
         if (null !== $eventCheck->getResponse()) {
             return $eventCheck->getResponse();
         }
+
         $event = $eventCheck->getEvent();
         $count = $eventRepository->getAllSimilarsCount($event);
         $current = $page * self::WIDGET_ITEM_LIMIT;

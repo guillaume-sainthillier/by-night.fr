@@ -78,9 +78,9 @@ class ImageSubscriber implements EventSubscriberInterface
                         ->setImageSystemHash($checksum)
                         ->setImageMainColor($mainColor);
                 }
-            } catch (\Exception $e) {
-                $this->logger->error($e->getMessage(), [
-                    'exception' => $e,
+            } catch (\Exception $exception) {
+                $this->logger->error($exception->getMessage(), [
+                    'exception' => $exception,
                 ]);
             }
         }

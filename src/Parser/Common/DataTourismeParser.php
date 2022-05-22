@@ -35,8 +35,19 @@ use ZipArchive;
 
 class DataTourismeParser extends AbstractParser
 {
+    /**
+     * @var string
+     */
     private const UUID_REGEX = '#^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$#';
+
+    /**
+     * @var string
+     */
     private const INCREMENTAL_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b37dd2ac54a022db5eef44e88eee42c/%s';
+
+    /**
+     * @var string
+     */
     private const UPCOMING_WEBSERVICE_FEED = 'https://diffuseur.datatourisme.gouv.fr/webservice/0b226e3ced3583df970c753ab66e085f/%s';
 
     private PropertyAccessorInterface $propertyAccessor;
@@ -96,6 +107,7 @@ class DataTourismeParser extends AbstractParser
             foreach ($dtos as $dto) {
                 $this->publish($dto);
             }
+
             $fs->remove($file->getPathname());
         }
     }
@@ -152,12 +164,14 @@ class DataTourismeParser extends AbstractParser
         foreach ($datas['@type'] as $type) {
             $typesManifestation[] = $this->getFrenchType($type);
         }
+
         $typesManifestation = array_filter(array_unique($typesManifestation));
 
         $categoriesManifestation = [];
         foreach ($datas['hasTheme'] as $theme) {
             $categoriesManifestation[] = $this->getDataValue($theme, '[rdfs:label][fr][0]');
         }
+
         $categoriesManifestation = array_filter(array_unique($categoriesManifestation));
 
         $country = $this->getDataValue($datas, '[isLocatedAt][0][schema:address][0][hasAddressCity][0][isPartOfDepartment][0][isPartOfRegion][0][isPartOfCountry][0][rdfs:label][fr][0]');
@@ -196,6 +210,7 @@ class DataTourismeParser extends AbstractParser
         } else {
             $lastUpdateDatatourisme = null;
         }
+
         $updatedAt = max($lastUpdate, $lastUpdateDatatourisme);
 
         $description = $this->getDataValue($datas, [
@@ -247,6 +262,7 @@ class DataTourismeParser extends AbstractParser
             if (empty($date['endDate'])) {
                 continue;
             }
+
             $startDate = new DateTimeImmutable($date['startDate']);
             $endDate = new DateTimeImmutable($date['endDate']);
             $hours = null;

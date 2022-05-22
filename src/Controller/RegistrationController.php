@@ -72,11 +72,12 @@ class RegistrationController extends AbstractController
     {
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $this->getAppUser());
-        } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('error', $exception->getReason());
+        } catch (VerifyEmailExceptionInterface $verifyEmailException) {
+            $this->addFlash('error', $verifyEmailException->getReason());
 
             return $this->redirectToRoute('app_register');
         }
+
         $this->addFlash('success', 'Your email a bien été vérifié.');
 
         return $this->redirectToRoute('app_event_list');

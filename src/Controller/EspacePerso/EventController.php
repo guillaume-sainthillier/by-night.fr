@@ -33,6 +33,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends BaseController
 {
+    /**
+     * @var int
+     */
     private const EVENT_PER_PAGE = 50;
 
     #[Route(path: '/mes-soirees', name: 'app_event_list', methods: ['GET'])]
@@ -80,6 +83,7 @@ class EventController extends BaseController
                     ->setUser($user);
                 $em->persist($comment);
             }
+
             $em->flush();
             $this->addFlash(
                 'success',
@@ -173,6 +177,7 @@ class EventController extends BaseController
                 ->setEvent($event);
             $em->persist($userEvent);
         }
+
         $isLike = 'true' === $request->request->get('like', 'true');
         $userEvent->setParticipe($isLike);
         $em->flush();

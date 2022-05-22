@@ -17,6 +17,7 @@ use Symfony\Contracts\EventDispatcher\Event as ContractEvent;
 class EventCheckUrlEvent extends ContractEvent
 {
     private ?Response $response = null;
+
     private ?Event $event = null;
 
     public function __construct(private ?int $eventId, private string $eventSlug, private string $locationSlug, private string $routeName, private array $routeParams = [])

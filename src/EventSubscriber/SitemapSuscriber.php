@@ -24,6 +24,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SitemapSuscriber implements EventSubscriberInterface
 {
+    /**
+     * @var int
+     */
     private const ITEMS_PER_PAGE = 5_000;
 
     private ?UrlContainerInterface $urlContainer = null;
@@ -106,6 +109,7 @@ class SitemapSuscriber implements EventSubscriberInterface
                     0.8
                 );
             }
+
             $lastSlug = $slug;
         }
     }

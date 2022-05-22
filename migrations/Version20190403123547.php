@@ -28,20 +28,20 @@ final class Version20190403123547 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda ADD external_id VARCHAR(127) DEFAULT NULL');
         $this->addSql('CREATE INDEX agenda_external_id_idx ON Agenda (external_id)');
         $this->addSql('ALTER TABLE Place ADD external_id VARCHAR(127) DEFAULT NULL');
         $this->addSql('CREATE INDEX place_external_id_idx ON Place (external_id)');
-        $this->addSql('UPDATE Agenda SET external_id = CONCAT(\'FB-\', facebook_event_id)');
-        $this->addSql('UPDATE Place SET external_id = CONCAT(\'FB-\', facebook_id)');
+        $this->addSql("UPDATE Agenda SET external_id = CONCAT('FB-', facebook_event_id)");
+        $this->addSql("UPDATE Place SET external_id = CONCAT('FB-', facebook_id)");
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('DROP INDEX agenda_external_id_idx ON Agenda');
         $this->addSql('ALTER TABLE Agenda DROP external_id');

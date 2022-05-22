@@ -93,7 +93,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             $this->street
         ));
 
-        if ($this->city) {
+        if (null !== $this->city) {
             return sprintf(
                 '%s-data-%s-%s',
                 $this->getKeyPrefix(),
@@ -102,7 +102,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             );
         }
 
-        if ($this->country) {
+        if (null !== $this->country) {
             return sprintf(
                 '%s-data-%s-%s',
                 $this->getKeyPrefix(),

@@ -104,7 +104,8 @@ class ComparatorTest extends ContainerTestCase
         $moloko = (new Place())->setId(3)->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setZipCity($toulouseZip)->setCity($toulouse);
         $moloko2 = clone $moloko;
         $moloko2->setId(4);
-        $macdo = (new Place())->setId(5)->setNom('McDonald\'s Capitole')->setRue('Place du Capitole')->setZipCity(clone $toulouseZip)->setCity($toulouse);
+
+        $macdo = (new Place())->setId(5)->setNom("McDonald's Capitole")->setRue('Place du Capitole')->setZipCity(clone $toulouseZip)->setCity($toulouse);
 
         return [
             [1, (new Place())->setNom('La Dynamo')->setRue('6 rue Amelie')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
@@ -116,7 +117,7 @@ class ComparatorTest extends ContainerTestCase
             [3, (new Place())->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setZipCity($toulouseZip2)->setCity($toulouse), [$dynamo, $bikini, $moloko, $macdo, $moloko2]],
             [4, (new Place())->setNom('Moloko')->setRue('6 Rue Joutx Aigues')->setZipCity($toulouseZip2)->setCity($toulouse), [$dynamo, $bikini, $moloko2, $macdo, $moloko]],
 
-            [null, (new Place())->setNom('McDonald\'s Esquirol')->setRue('43444 Place Esquirol')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $dynamo, $macdo]],
+            [null, (new Place())->setNom("McDonald's Esquirol")->setRue('43444 Place Esquirol')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $dynamo, $macdo]],
             [null, (new Place())->setNom('La gouaille')->setRue('6 Rue Joutx Aigues')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
             [null, (new Place())->setNom('Autre Lieu Que La Dynamo')->setRue('6 rue Amélie')->setZipCity($toulouseZip)->setCity($toulouse), [$bikini, $moloko, $macdo, $dynamo]],
         ];

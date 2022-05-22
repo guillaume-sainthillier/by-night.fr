@@ -51,6 +51,7 @@ class CountryCrudController extends AbstractCrudController
         } elseif (Crud::PAGE_EDIT === $pageName) {
             return [$id, $locale, $name, $displayName, $atDisplayName, $capital, $postalCodeRegex];
         }
+
         throw new RuntimeException(sprintf('Unable to configure fields for page "%s"', $pageName));
     }
 }

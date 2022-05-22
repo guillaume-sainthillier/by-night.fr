@@ -18,6 +18,9 @@ use DateTimeImmutable;
 
 class DigitickAwinParser extends AbstractAwinParser
 {
+    /**
+     * @var string
+     */
     private const DATAFEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/%key%/language/fr/fid/22739/columns/aw_deep_link,product_name,aw_product_id,merchant_product_id,merchant_image_url,description,merchant_category,search_price,Tickets%3Aevent_date,Tickets%3Avenue_name,Tickets%3Avenue_address,Tickets%3Aevent_name,Tickets%3Alongitude,Tickets%3Alatitude,is_for_sale/format/xml-tree/compression/gzip/';
 
     /**
@@ -96,6 +99,7 @@ class DigitickAwinParser extends AbstractAwinParser
         $city->country = $country;
 
         $place->country = $country;
+
         $place->city = $city;
 
         $event->place = $place;

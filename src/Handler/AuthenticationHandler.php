@@ -34,6 +34,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface, Au
 
             return new JsonResponse($result);
         }
+
         $key = '_security.main.target_path'; // where "main" is your firewall name
 
         if ($targetPath = $request->getSession()->get($key)) {

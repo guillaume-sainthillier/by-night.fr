@@ -51,7 +51,11 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 {
     use EntityTimestampableTrait;
 
+    /**
+     * @var string
+     */
     public const INDEX_FROM = '-6 months';
+
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue(strategy: 'AUTO')]

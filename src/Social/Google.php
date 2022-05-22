@@ -15,7 +15,7 @@ class Google extends Social
     /**
      * {@inheritDoc}
      */
-    public function constructClient(): void
+    protected function constructClient(): void
     {
     }
 

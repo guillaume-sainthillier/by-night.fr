@@ -65,6 +65,7 @@ class Monitor
         if (!self::$enableMonitoring) {
             return;
         }
+
         $datas = $datas[0] ?? [$datas];
         $headers = array_keys($datas[0]);
 
@@ -79,6 +80,7 @@ class Monitor
         if (!self::$enableMonitoring) {
             return;
         }
+
         $table = new Table(self::$output);
         $table
             ->setHeaders([
@@ -91,6 +93,7 @@ class Monitor
         foreach ($stats as $key => $stat) {
             $table->addRow([$key, $stat['nb'], $stat['total'], $stat['avg'], $stat['avg_memory']]);
         }
+
         $table->render();
         self::$stats = [];
     }
@@ -122,6 +125,7 @@ class Monitor
                 'total' => 0,
             ];
         }
+
         $somme = array_sum($stat['time']);
         $sommeMemory = array_sum($stat['memory']);
 

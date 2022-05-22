@@ -33,6 +33,7 @@ class LoginSocialController extends AbstractController
             $client = $clientRegistry->getClient($service);
             $accessToken = $client->getAccessToken();
         }
+
         $datas = $OAuthDataProvider->getDatasFromToken($service, $accessToken);
         $appOAuth = $socialManager->getAppOAuth();
         $social->connectSite($appOAuth, $datas);

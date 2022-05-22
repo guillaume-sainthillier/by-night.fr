@@ -19,7 +19,14 @@ use Symfony\Component\Security\Core\Security;
 
 class EventVoter extends Voter
 {
+    /**
+     * @var string
+     */
     public const EDIT = 'edit';
+
+    /**
+     * @var string
+     */
     public const DELETE = 'delete';
 
     public function __construct(private Security $security)

@@ -21,6 +21,9 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ToulouseParser extends AbstractParser
 {
+    /**
+     * @var string
+     */
     private const DOWNLOAD_URL = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true';
 
     /**
@@ -122,6 +125,7 @@ class ToulouseParser extends AbstractParser
 
             $this->publish($event);
         }
+
         fclose($fic);
     }
 

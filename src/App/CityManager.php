@@ -19,6 +19,7 @@ class CityManager
     private ?City $currentCity = null;
 
     private ?City $cookieCity = null;
+
     private bool $initCooky = false;
 
     public function __construct(private RequestStack $requestStack, private CityRepository $cityRepository)

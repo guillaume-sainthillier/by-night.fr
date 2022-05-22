@@ -28,7 +28,7 @@ final class Version20190415103354 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda DROP FOREIGN KEY FK_2B41CD41F92F3E70');
         $this->addSql('DROP INDEX IDX_2B41CD41F92F3E70 ON Agenda');
@@ -38,7 +38,7 @@ final class Version20190415103354 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda ADD country_id VARCHAR(2) DEFAULT NULL COLLATE utf8_unicode_ci, ADD city_id INT DEFAULT NULL, ADD zip_city_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE Agenda ADD CONSTRAINT FK_2B41CD41F92F3E70 FOREIGN KEY (country_id) REFERENCES country (id)');

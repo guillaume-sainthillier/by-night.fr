@@ -181,7 +181,7 @@ class Comparator
 
     public function sanitizeNumber(?string $string): ?string
     {
-        return preg_replace('/\D/', '', $string);
+        return preg_replace('#\D#', '', $string);
     }
 
     public function sanitizeVille(?string $string): string

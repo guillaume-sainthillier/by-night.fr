@@ -31,6 +31,9 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class AgendaController extends BaseController
 {
+    /**
+     * @var int
+     */
     public const EVENT_PER_PAGE = 15;
 
     /**
@@ -55,6 +58,7 @@ class AgendaController extends BaseController
         } elseif (null !== $slug) {
             $routeParams['slug'] = $slug;
         }
+
         // Recherche des événements
         $search = new SearchEvent();
         $place = null;
@@ -68,6 +72,7 @@ class AgendaController extends BaseController
                 return $this->redirectToRoute('app_agenda_by_place', ['location' => $place->getLocationSlug(), 'slug' => $place->getSlug()]);
             }
         }
+
         $formAction = $this->handleSearch($search, $location, $type, $tag, $place);
         // Récupération des lieux, types événements et villes
         $types_manif = $this->getTypesEvenements($memoryCache, $eventRepository, $location);
@@ -90,6 +95,7 @@ class AgendaController extends BaseController
             $isValid = false;
             $events = $paginator->paginate([], $page, self::EVENT_PER_PAGE);
         }
+
         if ($events instanceof SlidingPagination && $page > max(1, $events->getPageCount())) {
             return $this->redirectToRoute($request->attributes->get('_route'), array_merge($routeParams, ['page' => max(1, $events->getPageCount())]));
         }
@@ -169,6 +175,7 @@ class AgendaController extends BaseController
                     }
                 }
             }
+
             ksort($type_manifestation);
             $item->expiresAfter(24 * 60 * 60);
 

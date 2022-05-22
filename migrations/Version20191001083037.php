@@ -27,7 +27,7 @@ final class Version20191001083037 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('UPDATE country SET slug = CONCAT(\'c--\', slug)');
+        $this->addSql("UPDATE country SET slug = CONCAT('c--', slug)");
         // this up() migration is auto-generated, please modify it to your needs
     }
 

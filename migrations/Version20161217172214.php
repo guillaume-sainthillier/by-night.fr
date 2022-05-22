@@ -21,7 +21,7 @@ class Version20161217172214 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda ADD system_path VARCHAR(255) DEFAULT NULL');
         $this->addSql('ALTER TABLE User ADD system_path VARCHAR(255) DEFAULT NULL');
@@ -34,7 +34,7 @@ class Version20161217172214 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' != $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('UPDATE User SET path = system_path WHERE salt IS NULL');
         $this->addSql('UPDATE Agenda SET path = system_path WHERE user_id IS NULL');

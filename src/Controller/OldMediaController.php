@@ -47,6 +47,7 @@ class OldMediaController extends AbstractController
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
+
         /** @var User $user */
         $user = $userRepository
             ->createQueryBuilder('u')
@@ -64,6 +65,7 @@ class OldMediaController extends AbstractController
 
             return $this->redirect($url, Response::HTTP_MOVED_PERMANENTLY);
         }
+
         throw $this->createNotFoundException(sprintf('Unable to find event or user for path "%s"', $path));
     }
 }

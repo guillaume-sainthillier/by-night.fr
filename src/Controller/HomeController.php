@@ -36,6 +36,7 @@ class HomeController extends AbstractController
                 'city' => $city->getSlug(),
             ];
         }
+
         $stats = $eventRepository->getCountryEvents();
         $form = $this->createForm(CityAutocompleteType::class, $datas);
         $form->handleRequest($request);

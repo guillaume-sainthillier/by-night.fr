@@ -28,7 +28,7 @@ final class Version20200519182027 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE event ADD phone_contacts JSON DEFAULT NULL, ADD mail_contacts JSON DEFAULT NULL, ADD website_contacts JSON DEFAULT NULL');
         $this->addSql('ALTER TABLE user_event DROP FOREIGN KEY FK_FD283F6971F7E88B');
@@ -40,7 +40,7 @@ final class Version20200519182027 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE comment DROP FOREIGN KEY FK_9474526C71F7E88B');
         $this->addSql('ALTER TABLE comment ADD CONSTRAINT FK_5BC96BF071F7E88B FOREIGN KEY (event_id) REFERENCES Agenda (id)');

@@ -24,6 +24,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class WidgetsController extends BaseController
 {
+    /**
+     * @var int
+     */
     public const WIDGET_ITEM_LIMIT = 7;
 
     /**
@@ -55,13 +58,14 @@ class WidgetsController extends BaseController
         $participer = false;
         $interet = false;
         $user = $this->getUser();
-        if ($user) {
+        if (null !== $user) {
             $userEvent = $userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
             if (null !== $userEvent) {
                 $participer = $userEvent->getParticipe();
                 $interet = $userEvent->getInteret();
             }
         }
+
         $link = $this->generateUrl('app_event_details', [
             'slug' => $event->getSlug(),
             'id' => $event->getId(),

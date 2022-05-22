@@ -90,6 +90,7 @@ abstract class Social
             if (empty($datas[$property])) {
                 continue;
             }
+
             $value = $datas[$property];
             $fullProperty = $propertyPrefix . ucfirst($property);
             $propertyAccess->setValue($info, $fullProperty, $value);

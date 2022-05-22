@@ -21,6 +21,9 @@ use FOS\ElasticaBundle\Persister\ObjectPersisterInterface;
 
 class EventArchivator
 {
+    /**
+     * @var int
+     */
     public const ITEMS_PER_TRANSACTION = 5_000;
 
     public function __construct(private EntityManagerInterface $entityManager, private ObjectPersisterInterface $objectPersister, private EventRepository $eventRepository)
@@ -55,6 +58,7 @@ class EventArchivator
             unset($events);
             $this->entityManager->clear();
         }
+
         $repo->updateNonIndexables();
         Monitor::finishProgressBar();
     }

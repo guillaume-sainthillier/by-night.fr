@@ -25,7 +25,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SowProgParser extends AbstractParser
 {
+    /**
+     * @var string
+     */
     private const BASE_URI = 'https://agenda.sowprog.com';
+
     private HttpClientInterface $client;
 
     public function __construct(
@@ -70,6 +74,7 @@ class SowProgParser extends AbstractParser
                 if (null === $event) {
                     continue;
                 }
+
                 $this->publish($event);
             }
         }
@@ -160,6 +165,7 @@ class SowProgParser extends AbstractParser
         $city->country = $country;
 
         $place->country = $country;
+
         $place->city = $city;
 
         $event->place = $place;

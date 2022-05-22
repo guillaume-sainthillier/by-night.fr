@@ -22,6 +22,9 @@ use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 
 class UserUpdater extends Updater
 {
+    /**
+     * @var int
+     */
     private const PAGINATION_SIZE = 50;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger, FacebookAdmin $facebookAdmin, protected UserHandler $userHandler, private UserRepository $userRepository)
@@ -92,8 +95,8 @@ class UserUpdater extends Updater
                         $this->userHandler->uploadFile($user, $content, $contentType);
                     }
                 }
-            } catch (HttpExceptionInterface $e) {
-                $infos = $e->getResponse()->getInfo();
+            } catch (HttpExceptionInterface $httpException) {
+                $infos = $httpException->getResponse()->getInfo();
                 unset($infos['user_data']);
             }
         }

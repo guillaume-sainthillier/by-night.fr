@@ -37,7 +37,11 @@ use Psr\Log\LoggerInterface;
 
 class DoctrineEventHandler
 {
+    /**
+     * @var int
+     */
     private const CHUNK_SIZE = 50;
+
     private ParserHistoryHandler $parserHistoryHandler;
 
     public function __construct(
@@ -144,7 +148,7 @@ class DoctrineEventHandler
         foreach ($dtos as $dto) {
             $dto->reject = new Reject();
 
-            if ($dto->place) {
+            if (null !== $dto->place) {
                 $dto->place->reject = new Reject();
             }
 
@@ -280,8 +284,10 @@ class DoctrineEventHandler
                 $this->parserHistoryHandler->addExploration();
                 $this->entityManager->persist($exploration);
             }
+
             $this->entityManager->flush();
         }
+
         $this->entityManager->clear(ParserData::class);
         $this->firewall->flushParserDatas();
     }
@@ -400,6 +406,7 @@ class DoctrineEventHandler
                     if (!$isNewEntity && !$this->entityManager->contains($entity)) {
                         dump($entity);
                     }
+
                     $this->entityManager->persist($entity);
 
                     if ($isRootTransaction) {
@@ -534,10 +541,10 @@ class DoctrineEventHandler
     {
         try {
             $this->entityManager->flush();
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             Monitor::writeln(sprintf(
                 '<error>%s</error>',
-                $e->getMessage()
+                $exception->getMessage()
             ));
         }
     }

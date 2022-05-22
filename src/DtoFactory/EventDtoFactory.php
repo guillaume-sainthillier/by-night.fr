@@ -56,13 +56,13 @@ class EventDtoFactory
         $city->name = $entity->getPlaceCity();
         $city->postalCode = $entity->getPlacePostalCode();
 
-        if ($entity->getUser()) {
+        if (null !== $entity->getUser()) {
             $user = new UserDto();
             $user->entityId = $entity->getUser()->getId();
             $event->user = $user;
         }
 
-        if ($entity->getPlaceCountry()) {
+        if (null !== $entity->getPlaceCountry()) {
             $country = new CountryDto();
             $country->entityId = $entity->getPlaceCountry()->getId();
             $country->code = $entity->getPlaceCountry()->getId();

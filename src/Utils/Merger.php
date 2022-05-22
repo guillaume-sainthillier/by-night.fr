@@ -15,20 +15,44 @@ use App\Entity\Place;
 
 class Merger
 {
+    /**
+     * @var string
+     */
     public const MERGE_LEFT = 'do_merge_left';
 
+    /**
+     * @var string
+     */
     public const MERGE_RIGHT = 'do_merge_right';
 
+    /**
+     * @var string
+     */
     public const MERGE_MAX = 'do_merge_max';
 
+    /**
+     * @var string
+     */
     public const MERGE_RIGHT_IF_DIFFERENT = 'do_merge_right_if_different';
 
+    /**
+     * @var string
+     */
     public const MERGE_RIGHT_IF_DATE_DIFFERENT = 'do_merge_right_if_date_different';
 
+    /**
+     * @var string
+     */
     public const FORCE_MERGE_LEFT = 'do_force_merge_left';
 
+    /**
+     * @var string
+     */
     public const FORCE_MERGE_RIGHT = 'do_force_merge_right';
 
+    /**
+     * @var string
+     */
     public const DEFAULT_MERGE = self::MERGE_RIGHT;
 
     public function __construct(private Comparator $comparator)

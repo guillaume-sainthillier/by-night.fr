@@ -26,7 +26,14 @@ use ZipArchive;
 
 class CountryImporter
 {
+    /**
+     * @var int
+     */
     private const ZIP_CODES_PER_TRANSACTION = 500;
+
+    /**
+     * @var int
+     */
     private const CITIES_PER_TRANSACTION = 50;
 
     public function __construct(private EntityManagerInterface $em, private string $dataDir, private CountryRepository $countryRepository)
@@ -81,6 +88,7 @@ class CountryImporter
             if (!\in_array($data[7], ['ADM1', 'ADM2']) && 'P' !== $data[6]) {
                 continue;
             }
+
             ++$i;
 
             if ('P' === $data[6]) {
@@ -116,6 +124,7 @@ class CountryImporter
                 $i = 0;
             }
         }
+
         $this->em->flush();
         fclose($fd);
     }
@@ -177,22 +186,19 @@ class CountryImporter
 
     private function sanitizeAdminZone(AdminZone $entity): void
     {
-        switch ($entity->getCountry()->getId()) {
-            case 'FR':
-                if ($entity instanceof AdminZone2) {
-                    $entity->setName(str_replace([
-                            "Département d'",
-                            "Département de l'",
-                            'Département de la ',
-                            'Département des ',
-                            'Département de ',
-                            'Département du ',
-                            'Territoire de ',
-                        ], '', $entity->getName())
-                    );
-                }
-
-                break;
+        if ('FR' == $entity->getCountry()->getId()) {
+            if ($entity instanceof AdminZone2) {
+                $entity->setName(str_replace([
+                        "Département d'",
+                        "Département de l'",
+                        'Département de la ',
+                        'Département des ',
+                        'Département de ',
+                        'Département du ',
+                        'Territoire de ',
+                    ], '', $entity->getName())
+                );
+            }
         }
     }
 
@@ -225,6 +231,7 @@ class CountryImporter
             if (!$data[4] || !$data[6]) {
                 continue;
             }
+
             ++$i;
 
             $city = new ZipCity();
@@ -250,6 +257,7 @@ class CountryImporter
                 $i = 0;
             }
         }
+
         $this->em->flush();
         fclose($fd);
     }

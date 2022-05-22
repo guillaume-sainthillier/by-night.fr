@@ -20,6 +20,9 @@ use const JSON_THROW_ON_ERROR;
 
 class BikiniParser extends AbstractParser
 {
+    /**
+     * @var string
+     */
     private const EVENTS_URL = 'https://lebikini.com/events.json';
 
     public static function getParserName(): string
@@ -90,6 +93,7 @@ class BikiniParser extends AbstractParser
         $city->country = $country;
 
         $place->country = $country;
+
         $place->city = $city;
 
         $event->place = $place;

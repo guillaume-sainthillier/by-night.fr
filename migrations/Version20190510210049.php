@@ -28,7 +28,7 @@ final class Version20190510210049 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda RENAME INDEX agenda_theme_manifestation_idx TO event_theme_manifestation_idx');
         $this->addSql('ALTER TABLE Agenda RENAME INDEX agenda_type_manifestation_idx TO event_type_manifestation_idx');
@@ -53,7 +53,7 @@ final class Version20190510210049 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), "Migration can only be executed safely on 'mysql'.");
 
         $this->addSql('ALTER TABLE Agenda RENAME INDEX event_external_id_idx TO agenda_external_id_idx');
         $this->addSql('ALTER TABLE Agenda RENAME INDEX event_type_manifestation_idx TO agenda_type_manifestation_idx');

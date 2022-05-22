@@ -15,13 +15,36 @@ use Twig\Environment;
 
 class ImageHelper
 {
+    /**
+     * @var float
+     */
     private const DEFAULT_ASPECT_RATIO = 4 / 3;
+
+    /**
+     * @var float[]|int[]
+     */
     private const DEFAULT_PIXEL_DENSITIES = [0.25, 0.5, 1, 2];
+
+    /**
+     * @var int[]
+     */
     private const DEFAULT_BREAKPOINTS = [750, 1080, 1366, 1920];
+
+    /**
+     * @var int[]
+     */
     private const EVERY_BREAKPOINT = [
         320, 654, 768, 1024, 1366, 1600, 1920, 2048, 2560, 3440, 3840, 4096,
     ];
+
+    /**
+     * @var int
+     */
     private const DEFAULT_FLUID_WIDTH = 800;
+
+    /**
+     * @var int
+     */
     private const DEFAULT_FIXED_WIDTH = 800;
 
     private array $defaultParams;
@@ -108,6 +131,7 @@ class ImageHelper
         if ($objectFit) {
             $attr['style']['object-fit'] = $objectFit;
         }
+
         if ($objectFitPosition) {
             $attr['style']['object-position'] = $objectFitPosition;
         }
@@ -120,9 +144,11 @@ class ImageHelper
             if ($placeholderObjectFit) {
                 $placeholderAttr['style']['object-fit'] = $placeholderObjectFit;
             }
+
             if ($placeholderObjectFitPosition) {
                 $placeholderAttr['style']['object-position'] = $placeholderObjectFitPosition;
             }
+
             $placeholderTemplate['attr'] = $this->normalizeAttr($placeholderAttr);
         }
 
@@ -162,6 +188,7 @@ class ImageHelper
 
                     $cssValues[] = sprintf('%s: %s', $propertyName, $propertyValue);
                 }
+
                 $value = implode('; ', $cssValues);
             } elseif ('class' === $key && \is_array($value)) {
                 // ["foo", "bar"] to "foo bar"
@@ -196,6 +223,7 @@ class ImageHelper
                     [$propertyName, $propertyValue] = $cssValueParts;
                     $styleValue[$propertyName] = $propertyValue;
                 }
+
                 $value = $styleValue;
             } elseif ('class' === $key && \is_string($value)) {
                 // "foo bar" to ["foo", "bar"]
@@ -639,9 +667,11 @@ class ImageHelper
                 if ($options['width'] && !$options['height']) {
                     $height = round($options['width'] / $imageAspectRatio);
                 }
+
                 if ($options['height'] && !$options['width']) {
                     $width = round($options['height'] * $imageAspectRatio);
                 }
+
                 break;
         }
 

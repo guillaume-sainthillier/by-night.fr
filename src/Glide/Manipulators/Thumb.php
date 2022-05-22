@@ -40,9 +40,11 @@ class Thumb extends BaseManipulator
         $new = clone $image;
         $blur = new Blur();
         $blur->setParams(['blur' => 90]);
+
         $new = $blur->run($new);
         $size = new Size($this->maxImageSize);
         $size->setParams($this->params + ['fit' => 'stretch']);
+
         $new = $size->run($new);
 
         return $new->insert($image, 'center-center');

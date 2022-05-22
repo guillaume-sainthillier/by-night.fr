@@ -64,9 +64,10 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     public function getFullName(): string
     {
         $parts = [];
-        if ($this->getParent()) {
+        if (null !== $this->getParent()) {
             $parts[] = $this->getParent()->getName();
         }
+
         $parts[] = $this->getCountry()->getName();
 
         return sprintf('%s (%s)', $this->getName(), implode(', ', $parts));

@@ -29,6 +29,7 @@ class EventParserDataListener
         if (!$entity instanceof Event || null === $entity->getExternalId() || null === $entity->getExternalOrigin()) {
             return;
         }
+
         $entityManager = $args->getEntityManager();
         $parserData = $this->parserDataRepository->findOneBy([
             'externalOrigin' => $entity->getExternalOrigin(),

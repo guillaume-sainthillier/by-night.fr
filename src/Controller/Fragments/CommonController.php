@@ -20,6 +20,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommonController extends AbstractController
 {
+    /**
+     * @var int
+     */
     public const LIFE_TIME_CACHE = 86_400;
 
     /**
@@ -32,6 +35,7 @@ class CommonController extends AbstractController
         if ($id) {
             $city = $cityRepository->find($id);
         }
+
         $city ??= $cityManager->getCity();
 
         return $this->render('fragments/menu.html.twig', [

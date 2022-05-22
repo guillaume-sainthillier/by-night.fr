@@ -32,6 +32,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class OpenAgendaParser extends AbstractParser
 {
+    /**
+     * @var int
+     */
     private const EVENT_BATCH_SIZE = 50;
 
     private HttpClientInterface $client;
@@ -75,11 +78,13 @@ class OpenAgendaParser extends AbstractParser
         } else {
             $query['where'] = sprintf("date_end >= '%s'", date('Y-m-d'));
         }
+
         $url = 'https://public.opendatasoft.com/api/v2/catalog/datasets/evenements-publics-cibul/exports/json';
 
         $response = $this->client->request('GET', $url, ['query' => $query]);
         $eventIds = array_map(fn (array $data) => (int) $data['uid'], $response->toArray());
         $eventIds = array_filter($eventIds);
+
         $eventChunks = array_chunk($eventIds, self::EVENT_BATCH_SIZE);
 
         // Then fetch agenda uids from api.openagenda.com
@@ -122,6 +127,7 @@ class OpenAgendaParser extends AbstractParser
             if (null === $dto) {
                 continue;
             }
+
             $this->publish($dto);
         }
     }
@@ -210,6 +216,7 @@ class OpenAgendaParser extends AbstractParser
         $city->country = $country;
 
         $place->country = $country;
+
         $place->city = $city;
 
         $event->place = $place;

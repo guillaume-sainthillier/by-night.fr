@@ -75,6 +75,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 if (null === $persistedUser) {
                     break;
                 }
+
                 $existingUser->setUsername(sprintf('%s-%d', $initialUsername, $i));
             }
 
@@ -115,6 +116,7 @@ class UserSocialAuthenticator extends SocialAuthenticator
                 'token' => $this->fetchTwitterAccessToken(),
             ];
         }
+
         $client = $this->clientRegistry->getClient($service);
 
         return [
@@ -127,10 +129,10 @@ class UserSocialAuthenticator extends SocialAuthenticator
     {
         try {
             return $this->twitterOAuth->getAccessToken();
-        } catch (MissingAuthorizationCodeException $e) {
+        } catch (MissingAuthorizationCodeException) {
             throw new NoAuthCodeAuthenticationException();
-        } catch (InvalidStateException $e) {
-            throw new InvalidStateAuthenticationException($e);
+        } catch (InvalidStateException $invalidStateException) {
+            throw new InvalidStateAuthenticationException($invalidStateException);
         }
     }
 

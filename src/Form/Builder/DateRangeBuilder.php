@@ -37,8 +37,8 @@ class DateRangeBuilder
     public function addShortcutDateFields(FormBuilderInterface $builder, string $fromName, string $toName): void
     {
         $ranges = [
-            'N\'importe quand' => [(new DateTime('now'))->format('Y-m-d'), null],
-            'Aujourd\'hui' => [(new DateTime('now'))->format('Y-m-d'), (new DateTime('now'))->format('Y-m-d')],
+            "N'importe quand" => [(new DateTime('now'))->format('Y-m-d'), null],
+            "Aujourd'hui" => [(new DateTime('now'))->format('Y-m-d'), (new DateTime('now'))->format('Y-m-d')],
             'Demain' => [(new DateTime('tomorrow'))->format('Y-m-d'), (new DateTime('tomorrow'))->format('Y-m-d')],
             'Ce week-end' => [(new DateTime('friday this week'))->format('Y-m-d'), (new DateTime('sunday this week'))->format('Y-m-d')],
             'Cette semaine' => [(new DateTime('monday this week'))->format('Y-m-d'), (new DateTime('sunday this week'))->format('Y-m-d')],
@@ -99,6 +99,7 @@ class DateRangeBuilder
                 } else {
                     $label = sprintf('Du %s au %s', $this->formatDate($from), $this->formatDate($to));
                 }
+
                 $shortcut->setData($label);
             })
             ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($ranges) {
@@ -137,6 +138,7 @@ class DateRangeBuilder
                 } else {
                     $label = sprintf('Du %s au %s', $this->formatDate($from), $this->formatDate($to));
                 }
+
                 $data['shortcut'] = $label;
                 $event->setData($data);
             });

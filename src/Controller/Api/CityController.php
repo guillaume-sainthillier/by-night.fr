@@ -27,6 +27,9 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/api')]
 class CityController extends AbstractController
 {
+    /**
+     * @var int
+     */
     public const MAX_RESULTS = 7;
 
     /**
@@ -45,6 +48,7 @@ class CityController extends AbstractController
             $results = $repo->findWithSearch($term);
             $results = $paginator->paginate($results, 1, self::MAX_RESULTS);
         }
+
         $jsonResults = [];
         /** @var City $result */
         foreach ($results as $result) {

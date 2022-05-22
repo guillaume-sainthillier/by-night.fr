@@ -19,22 +19,23 @@ use RuntimeException;
 class EchantillonHandler
 {
     public $newPlaces;
+
     public $fbPlaces;
 
     /**
      * @var Place[][]
      */
-    private array $countryPlaces;
+    private array $countryPlaces = [];
 
     /**
      * @var Place[][]
      */
-    private array $cityPlaces;
+    private array $cityPlaces = [];
 
     /**
      * @var Event[]
      */
-    private array $events;
+    private array $events = [];
 
     public function __construct(private PlaceRepository $placeRepository, private EventRepository $eventRepository)
     {
