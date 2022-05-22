@@ -94,10 +94,8 @@ class EventController extends BaseController
         ]);
     }
 
-    /**
-     * @IsGranted("edit", subject="event")
-     */
     #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('edit', subject: 'event')]
     public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
         if ($event->getExternalId()) {
@@ -121,10 +119,8 @@ class EventController extends BaseController
         ]);
     }
 
-    /**
-     * @IsGranted("delete", subject="event")
-     */
     #[Route(path: '{id<%patterns.id%>}', name: 'app_event_delete', methods: ['DELETE'])]
+    #[IsGranted('delete', subject: 'event')]
     public function delete(Event $event): Response
     {
         $em = $this->getEntityManager();
@@ -138,10 +134,8 @@ class EventController extends BaseController
         return $this->redirectToRoute('app_event_list');
     }
 
-    /**
-     * @IsGranted("edit", subject="event")
-     */
     #[Route(path: '{id<%patterns.id%>}/annuler', name: 'app_event_annuler', methods: ['POST'])]
+    #[IsGranted('edit', subject: 'event')]
     public function annuler(Request $request, Event $event): Response
     {
         $annuler = $request->request->get('annuler', 'true');
@@ -153,10 +147,8 @@ class EventController extends BaseController
         return new JsonResponse(['success' => true]);
     }
 
-    /**
-     * @IsGranted("edit", subject="event")
-     */
     #[Route(path: '{id<%patterns.id%>}/brouillon', name: 'app_event_brouillon', methods: ['POST'])]
+    #[IsGranted('edit', subject: 'event')]
     public function brouillon(Request $request, Event $event): Response
     {
         $brouillon = $request->request->get('brouillon', 'true');

@@ -73,10 +73,8 @@ class CommentController extends BaseController
         ]);
     }
 
-    /**
-     * @IsGranted("ROLE_USER")
-     */
     #[Route(path: '/{id<%patterns.id%>}/nouveau', name: 'app_comment_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
     public function new(Request $request, Event $event, CommentRepository $commentRepository, PaginatorInterface $paginator): Response
     {
         $user = $this->getAppUser();

@@ -46,9 +46,7 @@ class EventController extends BaseController
         ]);
     }
 
-    /**
-     * @Cache(expires="+12 hours", smaxage="43200")
-     */
+    #[Cache(expires: '+12 hours', smaxage: 43200)]
     public function share(Event $event, EventProfilePicture $eventProfilePicture): Response
     {
         $link = $this->generateUrl('app_event_details', [
@@ -56,9 +54,7 @@ class EventController extends BaseController
             'id' => $event->getId(),
             'location' => $event->getLocationSlug(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
-
         $eventProfile = $eventProfilePicture->getOriginalPicture($event);
-
         $page = new Page([
             'url' => $link,
             'title' => $event->getNom(),

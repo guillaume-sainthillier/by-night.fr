@@ -42,10 +42,8 @@ class ReplyController extends BaseController
         ]);
     }
 
-    /**
-     * @IsGranted("ROLE_USER")
-     */
     #[Route(path: '/{id<%patterns.id%>}/repondre', name: 'app_comment_reponse_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
     public function new(Request $request, Comment $comment): Response
     {
         $user = $this->getAppUser();
