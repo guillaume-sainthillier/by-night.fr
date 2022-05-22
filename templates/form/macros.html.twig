@@ -32,6 +32,10 @@
         wrapperAttr: {
             class: 'rounded-circle'
         },
+        attr: {
+            alt: user.username,
+            title: user.username,
+        }|merge(params.attr|default({})),
     }|merge(params|default({}))) }}
 {% endmacro %}
 

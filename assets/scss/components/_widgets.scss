@@ -261,17 +261,20 @@
         overflow: hidden;
     }
 
-    .list-group-item-image {
-        width: 40px;
-        height: 40px;
+    .list-group-item-image,
+    .list-group-item-date {
         margin-right: 1rem;
         overflow: hidden;
-        flex-shrink: 0;
-        display: flex;
-        flex-flow: column wrap;
-        justify-content: center;
-        align-items: center;
+    }
 
+    .list-group-item-date {
+        width: 40px;
+        max-width: 40px;
+    }
+
+    .list-group-item-date {
+        width: 50px;
+        max-width: 50px;
         small {
             white-space: nowrap;
         }
