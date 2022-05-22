@@ -11,8 +11,8 @@
 namespace App\Controller\Admin;
 
 use App\App\SocialManager;
+use App\Controller\AbstractController;
 use App\Social\Social;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +25,7 @@ class SocialController extends AbstractController
     {
         $appOAuth = $socialManager->getAppOAuth();
         $social->disconnectSite($appOAuth);
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getEntityManager();
         $em->persist($appOAuth);
         $em->flush();
 

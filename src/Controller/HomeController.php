@@ -15,7 +15,6 @@ use App\App\CityManager;
 use App\Form\Type\CityAutocompleteType;
 use App\Repository\EventRepository;
 use DateTime;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

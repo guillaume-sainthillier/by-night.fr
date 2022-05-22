@@ -52,7 +52,7 @@ class EventController extends BaseController
     public function new(Request $request, EventConstraintValidator $validator, EntityManagerInterface $entityManager): Response
     {
         $userDto = new UserDto();
-        $userDto->entityId = $this->getUser()->getId();
+        $userDto->entityId = $this->getAppUser()->getId();
 
         $eventDto = new EventDto();
         $eventDto->user = $userDto;
@@ -68,7 +68,7 @@ class EventController extends BaseController
                 ->setUser($user)
                 ->setParticipe(true);
             $event->addUserEvent($userEvent);
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
 
             $em->persist($event);
             if ($form->get('comment')->getData()) {
@@ -109,7 +109,7 @@ class EventController extends BaseController
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $this->getEntityManager()->flush();
             $this->addFlash('success', 'Votre événement a bien été modifié');
 
             return $this->redirectToRoute('app_event_list');
@@ -127,7 +127,7 @@ class EventController extends BaseController
     #[Route(path: '{id<%patterns.id%>}', name: 'app_event_delete', methods: ['DELETE'])]
     public function delete(Event $event): Response
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getEntityManager();
         $em->remove($event);
         $em->flush();
         $this->addFlash(
@@ -147,7 +147,7 @@ class EventController extends BaseController
         $annuler = $request->request->get('annuler', 'true');
         $modificationDerniereMinute = ('true' === $annuler ? 'ANNULÉ' : null);
         $event->setModificationDerniereMinute($modificationDerniereMinute);
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getEntityManager();
         $em->flush();
 
         return new JsonResponse(['success' => true]);
@@ -162,7 +162,7 @@ class EventController extends BaseController
         $brouillon = $request->request->get('brouillon', 'true');
         $isBrouillon = 'true' === $brouillon;
         $event->setBrouillon($isBrouillon);
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->getEntityManager();
         $em->flush();
 
         return new JsonResponse(['success' => true]);
@@ -171,8 +171,8 @@ class EventController extends BaseController
     #[Route(path: '/{id<%patterns.id%>}/participer', name: 'app_user_like', methods: ['POST'])]
     public function like(Request $request, Event $event, EventRepository $eventRepository, UserEventRepository $userEventRepository): Response
     {
-        $user = $this->getUser();
-        $em = $this->getDoctrine()->getManager();
+        $user = $this->getAppUser();
+        $em = $this->getEntityManager();
         $userEvent = $userEventRepository->findOneBy(['user' => $user, 'event' => $event]);
         if (null === $userEvent) {
             $userEvent = new UserEvent();

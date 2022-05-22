@@ -53,7 +53,7 @@ class ReplyController extends BaseController
         if ($form->isValid()) {
             $reponse->setParent($comment);
             $comment->addReponse($reponse);
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
             $em->persist($comment);
             $em->flush();
 

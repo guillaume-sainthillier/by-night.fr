@@ -14,7 +14,7 @@ use App\Entity\User;
 use App\Form\ChangePasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
 use App\Manager\MailerManager;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,8 +29,9 @@ class ResetPasswordController extends AbstractController
 {
     use ResetPasswordControllerTrait;
 
-    public function __construct(private ResetPasswordHelperInterface $resetPasswordHelper)
+    public function __construct(EntityManagerInterface $entityManager, private ResetPasswordHelperInterface $resetPasswordHelper)
     {
+        parent::__construct($entityManager);
     }
 
     /**
@@ -110,7 +111,7 @@ class ResetPasswordController extends AbstractController
             );
 
             $user->setPassword($encodedPassword);
-            $this->getDoctrine()->getManager()->flush();
+            $this->getEntityManager()->flush();
 
             // The session is cleaned up after the password has been changed.
             $this->cleanSessionAfterReset();

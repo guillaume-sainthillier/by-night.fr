@@ -10,9 +10,9 @@
 
 namespace App\Controller\Social;
 
+use App\Controller\AbstractController;
 use App\Security\UserSocialAuthenticator;
 use App\Social\Social;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,9 +25,9 @@ class DefaultController extends AbstractController
     #[Route(path: '/deconnexion', name: 'app_disconnect_service', methods: ['POST'])]
     public function disconnect(Social $social, Request $request, GuardAuthenticatorHandler $guardAuthenticatorHandler, UserSocialAuthenticator $socialAuthenticator): Response
     {
-        $user = $this->getUser();
+        $user = $this->getAppUser();
         $social->disconnectUser($user);
-        $this->getDoctrine()->getManager()->flush();
+        $this->getEntityManager()->flush();
         // Reload user roles as they have changed
         $token = $socialAuthenticator->createAuthenticatedToken($user, 'main');
         $guardAuthenticatorHandler->authenticateWithToken($token, $request);

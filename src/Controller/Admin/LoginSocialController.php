@@ -11,12 +11,12 @@
 namespace App\Controller\Admin;
 
 use App\App\SocialManager;
+use App\Controller\AbstractController;
 use App\OAuth\TwitterOAuth;
 use App\Security\OAuthDataProvider;
 use App\Social\Social;
 use App\Social\SocialProvider;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -36,7 +36,7 @@ class LoginSocialController extends AbstractController
         $datas = $OAuthDataProvider->getDatasFromToken($service, $accessToken);
         $appOAuth = $socialManager->getAppOAuth();
         $social->connectSite($appOAuth, $datas);
-        $this->getDoctrine()->getManager()->flush();
+        $this->getEntityManager()->flush();
 
         return $this->render('security/connect-success.html.twig', [
             'userInformation' => [

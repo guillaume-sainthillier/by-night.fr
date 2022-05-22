@@ -11,6 +11,7 @@
 namespace App\Controller\Api;
 
 use App\Annotation\ReverseProxy;
+use App\Controller\AbstractController;
 use App\Entity\City;
 use App\Invalidator\TagsInvalidator;
 use App\SearchRepository\CityElasticaRepository;
@@ -18,7 +19,6 @@ use FOS\ElasticaBundle\Manager\RepositoryManagerInterface;
 use FOS\HttpCache\ResponseTagger;
 use FOS\HttpCacheBundle\Configuration\Tag;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

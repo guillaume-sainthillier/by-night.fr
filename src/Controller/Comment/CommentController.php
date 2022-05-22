@@ -79,7 +79,7 @@ class CommentController extends BaseController
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
             $em->persist($comment);
             $em->flush();
 

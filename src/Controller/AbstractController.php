@@ -11,11 +11,21 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as BaseController;
 
 abstract class AbstractController extends BaseController
 {
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
+    }
+
+    protected function getEntityManager(): EntityManagerInterface
+    {
+        return $this->entityManager;
+    }
+
     public function getAppUser(): User
     {
         $user = $this->getUser();

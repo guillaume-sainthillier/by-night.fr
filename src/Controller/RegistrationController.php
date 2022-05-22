@@ -14,7 +14,7 @@ use App\Entity\User;
 use App\Form\Type\RegistrationFormType;
 use App\Security\EmailVerifier;
 use App\Security\UserFormAuthenticator;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -24,8 +24,9 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
+    public function __construct(EntityManagerInterface $entityManager, private EmailVerifier $emailVerifier)
     {
+        parent::__construct($entityManager);
     }
 
     #[Route(path: '/inscription', name: 'app_register')]
@@ -45,7 +46,7 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager = $this->getEntityManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -70,7 +71,7 @@ class RegistrationController extends AbstractController
     public function verifyUserEmail(Request $request): Response
     {
         try {
-            $this->emailVerifier->handleEmailConfirmation($request, $this->getUser());
+            $this->emailVerifier->handleEmailConfirmation($request, $this->getAppUser());
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('error', $exception->getReason());
 

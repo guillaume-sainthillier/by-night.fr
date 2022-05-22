@@ -11,8 +11,8 @@
 namespace App\Controller\Admin;
 
 use App\App\SocialManager;
+use App\Controller\AbstractController;
 use App\Entity\AppOAuth;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,7 +24,7 @@ class InfoController extends AbstractController
     {
         if (false === $socialManager->hasAppOAuth()) {
             $info = new AppOAuth();
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
             $em->persist($info);
             $em->flush();
         } else {

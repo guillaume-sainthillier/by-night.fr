@@ -32,7 +32,7 @@ class ProfileController extends AbstractController
         $form = $this->createDeleteForm();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
 
             $deleteEvents = $form->get('delete_events')->getData();
 
@@ -90,7 +90,7 @@ class ProfileController extends AbstractController
         $form = $this->createForm(ProfileFormType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
             $em->flush();
 
             $this->addFlash('success', 'Votre profil a été mis à jour');
@@ -104,7 +104,7 @@ class ProfileController extends AbstractController
                     $formChangePassword->get('plainPassword')->getData()
                 )
             );
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->getEntityManager();
             $em->flush();
 
             $this->addFlash('success', 'Votre mot de passe a été mis à jour');
