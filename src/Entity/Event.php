@@ -17,7 +17,6 @@ use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Repository\EventRepository;
-use App\Validator\Constraints\EventConstraint;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -35,9 +34,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @EventConstraint
- */
 #[Vich\Uploadable]
 #[ORM\Table]
 #[ORM\Index(name: 'event_slug_idx', columns: ['slug'])]

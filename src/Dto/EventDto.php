@@ -23,14 +23,30 @@ use App\Entity\Event;
 use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
+use App\Validator\Constraints\EventConstraint;
 use DateTimeInterface;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
+use Vich\UploaderBundle\Mapping\Annotation\Uploadable;
+use Vich\UploaderBundle\Mapping\Annotation\UploadableField;
 
+#[Uploadable]
+#[EventConstraint]
 class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInterface, DependencyObjectInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface, DtoEntityIdentifierResolvableInterface
 {
     use DtoExternalDateFilterableTrait;
     use DtoExternalIdentifiableTrait;
 
     public ?int $entityId = null;
+
+    public ?UserDto $user = null;
+
+    public ?int $userId = null;
+
+    #[UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
+    public ?File $imageFile = null;
+
+    public EmbeddedFile $image;
 
     public ?DateTimeInterface $startDate = null;
 
@@ -79,6 +95,11 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
 
     public ?string $parserName = null;
 
+    public function __construct()
+    {
+        $this->image = new EmbeddedFile();
+    }
+
     public function isAffiliate(): bool
     {
         return \in_array($this->parserName, [
@@ -95,6 +116,10 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
         $catalogue = new DependencyCatalogue();
         if (null !== $this->place) {
             $catalogue->add(new Dependency($this->place, false));
+        }
+
+        if (null !== $this->user) {
+            $catalogue->add(new Dependency($this->user));
         }
 
         return $catalogue;

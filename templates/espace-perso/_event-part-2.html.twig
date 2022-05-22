@@ -5,13 +5,13 @@
 {% block widget_class 'active' %}
 
 {% block body %}
-    {{ form_row(form.dateDebut) }}
-    {{ form_row(form.dateFin) }}
+    {{ form_row(form.startDate) }}
+    {{ form_row(form.endDate) }}
     {{ form_row(form.shortcut, {'label': 'Dates'}) }}
-    {{ form_row(form.horaires) }}
-    {{ form_row(form.categorieManifestation) }}
-    {{ form_row(form.themeManifestation) }}
-    {{ form_row(form.tarif) }}
+    {{ form_row(form.hours) }}
+    {{ form_row(form.category) }}
+    {{ form_row(form.theme) }}
+    {{ form_row(form.prices) }}
 {% endblock %}
 
 {% block footer '' %}

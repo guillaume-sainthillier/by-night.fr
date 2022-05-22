@@ -55,9 +55,9 @@ class DoctrineEventHandler
         $this->parserHistoryHandler = new ParserHistoryHandler();
     }
 
-    public function handleOne(EventDto $dto, bool $flush = true): Event
+    public function handleOne(EventDto $dto, bool $flush = true): void
     {
-        return $this->handleMany([$dto], $flush)[0];
+        $this->handleMany([$dto], $flush);
     }
 
     /**
@@ -67,10 +67,10 @@ class DoctrineEventHandler
      *
      * @psalm-return array<null|object>
      */
-    public function handleMany(array $dtos, bool $flush = true): array
+    public function handleMany(array $dtos, bool $flush = true): void
     {
         if (0 === \count($dtos)) {
-            return [];
+            return;
         }
 
         // On récupère toutes les explorations existantes pour ces événements
@@ -83,30 +83,13 @@ class DoctrineEventHandler
         $this->flushParserDatas();
 
         $allowedEvents = $this->getAllowedEvents($dtos);
-        $notAllowedEvents = $this->getNotAllowedEvents($dtos);
         $dtos = null; // Call GC
         unset($dtos);
 
         // Clean event data
         $this->cleanEvents($allowedEvents);
 
-        return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents);
-
-        /*
-        foreach ($notAllowedEvents as $notAllowedEvent) {
-            if ($notAllowedEvent->getId()) {
-                $this->entityManager->detach($notAllowedEvent);
-            }
-        }
-
-        if ($this->parserHistoryHandler->isStarted()) {
-            $nbNotAllowedEvents = \count($notAllowedEvents);
-            for ($i = 0; $i < $nbNotAllowedEvents; ++$i) {
-                $this->parserHistoryHandler->addBlackList();
-            }
-        }*/
-
-        // return $notAllowedEvents + $this->mergeWithDatabase($allowedEvents, $flush);
+        $this->mergeWithDatabase($allowedEvents);
     }
 
     /**
@@ -336,14 +319,13 @@ class DoctrineEventHandler
         array &$allCatalogues = [],
         array &$allEntityProviders = [],
         array $paths = []
-    ): array {
+    ): void {
         if (0 === \count($dtos)) {
-            return [];
+            return;
         }
 
         $isRootTransaction = null === $previousCatalogue;
 
-        $rootEntities = [];
         $chunks = ChunkUtils::getNestedChunksByClass($dtos, self::CHUNK_SIZE);
 
         // Per DTO class
@@ -373,7 +355,7 @@ class DoctrineEventHandler
                 // Then perform a global SQL request to fetch entities by external ids
                 $entityProvider->prefetchEntities($chunk);
 
-                foreach ($chunk as $i => $dto) {
+                foreach ($chunk as $dto) {
                     $isObjectReference = null !== $previousCatalogue
                         && $previousCatalogue->has($dto)
                         && $previousCatalogue->get($dto)->isReference();
@@ -386,10 +368,10 @@ class DoctrineEventHandler
                     if (!$isNewEntity) {
                         $dtosToResolve = [$dto];
                         if ($previousCatalogue && $previousCatalogue->hasAliases($dto)) {
-                            $dtosToResolve = [
-                                ...$dtosToResolve,
-                                ...$previousCatalogue->getAliases($dto),
-                            ];
+                            $dtosToResolve = array_merge(
+                                $dtosToResolve,
+                                $previousCatalogue->getAliases($dto),
+                            );
                         }
 
                         foreach ($dtosToResolve as $dtoToResolve) {
@@ -403,9 +385,6 @@ class DoctrineEventHandler
 
                     // We don't create an empty entity into database if existing reference is not found
                     if ($isObjectReference) {
-                        if ($isRootTransaction) {
-                            $rootEntities[$i] = null;
-                        }
                         continue;
                     }
 
@@ -414,7 +393,6 @@ class DoctrineEventHandler
                     try {
                         $entity = $entityFactory->create($entity, $dto);
                     } catch (UncreatableEntityException) {
-                        $rootEntities[$i] = null;
                         continue;
                     }
 
@@ -445,10 +423,6 @@ class DoctrineEventHandler
                             $entity,
                             $dto
                         );
-                    }
-
-                    if ($isRootTransaction) {
-                        $rootEntities[$i] = $entity;
                     }
                 }
 
@@ -483,57 +457,6 @@ class DoctrineEventHandler
                 }
             }
         }
-
-        return $rootEntities;
-
-        // Par localisation
-        foreach ($chunks as $chunk) {
-            $this->echantillonHandler->prefetchPlaceEchantillons($this->unChunk($chunk));
-
-            // Par n événements
-            foreach ($chunk as $currentEvents) {
-                $this->echantillonHandler->prefetchEventEchantillons($currentEvents);
-
-                // Par événement
-                foreach ($currentEvents as $i => $event) {
-                    /** @var Event $event */
-                    $echantillonPlaces = $this->echantillonHandler->getPlaceEchantillons($event);
-                    $echantillonEvents = $this->echantillonHandler->getEventEchantillons($event);
-
-                    $url = $event->getUrl();
-                    $event = $this->handler->handle($echantillonEvents, $echantillonPlaces, $event);
-                    if (!$this->firewall->isValid($event)) {
-                        $this->parserHistoryHandler->addBlackList();
-                    } else {
-                        // Image URL has changed or never downloaded
-                        if ($event->getUrl() && (!$event->getImageSystem()->getName() || $event->getUrl() !== $url)) {
-                            $this->handler->handleDownload($event);
-                        }
-
-                        $this->em->persist($event);
-                        $this->echantillonHandler->addNewEvent($event);
-                        if (null !== $event->getId()) {
-                            $this->parserHistoryHandler->addUpdate();
-                        } else {
-                            $this->parserHistoryHandler->addInsert();
-                        }
-                    }
-                    Monitor::advanceProgressBar();
-                    $events[$i] = $event;
-                }
-
-                if ($flush) {
-                    $this->commit();
-                    $this->clearEvents();
-                }
-            }
-
-            if ($flush) {
-                $this->clearPlaces();
-            }
-        }
-
-        return $dtos;
     }
 
     private function computeRequiredCatalogue(array $dtos): DependencyCatalogueInterface

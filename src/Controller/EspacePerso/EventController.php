@@ -11,6 +11,8 @@
 namespace App\Controller\EspacePerso;
 
 use App\Controller\AbstractController as BaseController;
+use App\Dto\EventDto;
+use App\Dto\UserDto;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\UserEvent;
@@ -46,6 +48,11 @@ class EventController extends BaseController
     #[Route(path: '/nouvelle-soiree', name: 'app_event_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EventConstraintValidator $validator): Response
     {
+        $userDto = new UserDto();
+        $userDto->entityId = $this->getUser()->getId();
+
+        $eventDto = new EventDto();
+        $eventDto->user = $userDto;
         $user = $this->getUser();
         $event = (new Event())
             ->setUser($user)
@@ -54,7 +61,7 @@ class EventController extends BaseController
             ->setUser($user)
             ->setParticipe(true);
         $event->addUserEvent($userEvent);
-        $form = $this->createForm(EventType::class, $event);
+        $form = $this->createForm(EventType::class, $eventDto);
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -74,7 +81,7 @@ class EventController extends BaseController
                 'Votre événement a bien été créé. Merci !'
             );
 
-            return $this->redirectToRoute('app_event_list');
+            // return $this->redirectToRoute('app_event_list');
         }
 
         return $this->render('espace-perso/new.html.twig', [

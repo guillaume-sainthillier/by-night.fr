@@ -10,6 +10,8 @@
 
 namespace App\Repository;
 
+use App\Contracts\DtoFindableRepositoryInterface;
+use App\Dto\UserDto;
 use App\Entity\User;
 use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -25,7 +27,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface, DtoFindableRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -146,5 +148,33 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->setMaxResults(1)
             ->getOneOrNullResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findAllByDtos(array $dtos): array
+    {
+        $idsWheres = [];
+        foreach ($dtos as $dto) {
+            \assert($dto instanceof UserDto);
+
+            if (null !== $dto->entityId) {
+                $idsWheres[$dto->entityId] = true;
+            }
+        }
+
+        if (0 === \count($idsWheres)) {
+            return [];
+        }
+
+        return $this
+            ->createQueryBuilder('u')
+            ->where('u.id IN (:ids)')
+            ->setParameter('ids', array_keys($idsWheres))
+            ->getQuery()
+            ->enableResultCache()
+            ->useQueryCache(true)
+            ->execute();
     }
 }

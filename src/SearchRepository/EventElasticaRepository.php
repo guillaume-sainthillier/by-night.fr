@@ -34,33 +34,33 @@ class EventElasticaRepository extends Repository
     {
         $mainQuery = new BoolQuery();
 
-        $mainQuery->addMust(new Term([
+        $mainQuery->addFilter(new Term([
             'brouillon' => false,
         ]));
 
         $location = null;
         if ([] !== $search->getLieux()) {
-            $mainQuery->addMust(
+            $mainQuery->addFilter(
                 new Terms('place.id', $search->getLieux())
             );
         } elseif ($search->getLocation() && $search->getLocation()->isCountry()) {
-            $mainQuery->addMust(
+            $mainQuery->addFilter(
                 new Term(['place.country.id' => mb_strtolower($search->getLocation()->getCountry()->getId())])
             );
         } elseif ($search->getLocation() && $search->getLocation()->isCity()) {
             $location = $search->getLocation()->getCity()->getLocation();
             $filterBool = new BoolQuery();
-            $filterBool->addShould([
-                new GeoDistance('place.city.location', $search->getLocation()->getCity()->getLocation(), $search->getRange() . 'km'),
-                new Term(['place.city.id' => $search->getLocation()->getCity()->getId()]),
-            ]);
+            $filterBool
+                ->addShould(new GeoDistance('place.city.location', $search->getLocation()->getCity()->getLocation(), $search->getRange() . 'km'))
+                ->addShould(new Term(['place.city.id' => $search->getLocation()->getCity()->getId()]))
+            ;
 
-            $mainQuery->addMust($filterBool);
+            $mainQuery->addFilter($filterBool);
         }
 
         if (null !== $search->getFrom()) {
             if (null === $search->getTo()) {
-                $mainQuery->addMust(new Range('date_fin', [
+                $mainQuery->addFilter(new Range('date_fin', [
                     'gte' => $search->getFrom()->format('Y-m-d'),
                 ]));
             } else {
@@ -75,21 +75,25 @@ class EventElasticaRepository extends Repository
 
                 // Cas1 : [debForm; finForm] € [deb; fin] -> (deb < debForm AND fin > finForm)
                 $cas1 = new BoolQuery();
-                $cas1->addMust(new Range('date_debut', [
-                        'lte' => $search->getFrom()->format('Y-m-d'),
-                    ])
-                )->addMust(new Range('date_fin', [
-                    'gte' => $search->getTo()->format('Y-m-d'),
-                ]));
+                $cas1
+                    ->addMust(new Range('date_debut', [
+                            'lte' => $search->getFrom()->format('Y-m-d'),
+                        ])
+                    )
+                    ->addMust(new Range('date_fin', [
+                        'gte' => $search->getTo()->format('Y-m-d'),
+                    ]));
 
                 // Cas2 : [deb; fin] € [debForm; finForm] -> (deb > debForm AND fin < finForm)
                 $cas2 = new BoolQuery();
-                $cas2->addMust(new Range('date_debut', [
-                        'gte' => $search->getFrom()->format('Y-m-d'),
-                    ])
-                )->addMust(new Range('date_fin', [
-                    'lte' => $search->getTo()->format('Y-m-d'),
-                ]));
+                $cas2
+                    ->addMust(new Range('date_debut', [
+                            'gte' => $search->getFrom()->format('Y-m-d'),
+                        ])
+                    )
+                    ->addMust(new Range('date_fin', [
+                        'lte' => $search->getTo()->format('Y-m-d'),
+                    ]));
 
                 // Cas3 : deb € [debForm; finForm] -> (deb > debForm AND deb < finForm)
                 $cas3 = new Range('date_debut', [
@@ -107,16 +111,18 @@ class EventElasticaRepository extends Repository
                     ->addShould($cas1)
                     ->addShould($cas2)
                     ->addShould($cas3)
-                    ->addShould($cas4);
+                    ->addShould($cas4)
+                ;
 
-                $mainQuery->addMust($filterDate);
+                $mainQuery->addFilter($filterDate);
             }
         }
 
         // Query
         if ($search->getTerm()) {
             $query = new MultiMatch();
-            $query->setQuery($search->getTerm())
+            $query
+                ->setQuery($search->getTerm())
                 ->setFields([
                     'nom', 'descriptif',
                     'type_manifestation', 'theme_manifestation', 'categorie_manifestation',
@@ -128,15 +134,16 @@ class EventElasticaRepository extends Repository
 
         if ($search->getTag()) {
             $query = new MultiMatch();
-            $query->setQuery($search->getTag())
+            $query
+                ->setQuery($search->getTag())
                 ->setFields(['type_manifestation', 'theme_manifestation', 'categorie_manifestation']);
-            $mainQuery->addMust($query);
+            $mainQuery->addFilter($query);
         }
 
         if ([] !== $search->getTypeManifestation()) {
             $communeTypeManifestationQuery = new MatchQuery();
             $communeTypeManifestationQuery->setField('type_manifestation', implode(' ', $search->getTypeManifestation()));
-            $mainQuery->addMust($communeTypeManifestationQuery);
+            $mainQuery->addFilter($communeTypeManifestationQuery);
         }
 
         // Construction de la requête finale

@@ -14,6 +14,7 @@ use App\Contracts\EntityFactoryInterface;
 use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Entity\Place;
+use App\Entity\User;
 use App\Handler\EntityProviderHandler;
 
 class EventEntityFactory implements EntityFactoryInterface
@@ -48,6 +49,7 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setNom($dto->name);
         $entity->setDescriptif($dto->description);
         $entity->setHoraires($dto->hours);
+        $entity->setTarif($dto->prices);
         $entity->setModificationDerniereMinute($dto->status);
         $entity->setMailContacts($dto->emailContacts);
         $entity->setPhoneContacts($dto->phoneContacts);
@@ -55,11 +57,19 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setLongitude($dto->longitude);
         $entity->setLatitude($dto->latitude);
         $entity->setPlaceName($dto->place?->name);
-        $entity->setPlaceCity($dto->place?->city?->name);
-        $entity->setPlaceCountryName($dto->place?->country?->name);
-        $entity->setPlacePostalCode($dto->place?->city?->postalCode);
         $entity->setPlaceStreet($dto->place?->street);
         $entity->setPlaceExternalId($dto->place?->externalId);
+        $entity->setPlaceCity($dto->place?->city?->name);
+        $entity->setPlacePostalCode($dto->place?->city?->postalCode);
+        $entity->setPlaceCountryName($dto->place?->country?->name);
+
+        if (null !== $dto->user) {
+            $userEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->user::class);
+
+            /** @var User|null $userEntity */
+            $userEntity = $userEntityProvider->getEntity($dto->user);
+            $entity->setUser($userEntity);
+        }
 
         if (null !== $dto->place) {
             $placeEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->place::class);
