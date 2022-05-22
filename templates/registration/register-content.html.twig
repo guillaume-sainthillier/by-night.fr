@@ -20,7 +20,6 @@
 </div>
 
 <div class="no-margin-form mt-4">
-    {{ form_start(form, {'action': path('app_register')}) }}
     {% if error is defined and error %}
         <div class="alert alert-danger">
             <i class="fa fa-warning"></i>
@@ -65,5 +64,4 @@
     </script>
 
     {{ form_rest(form) }}
-    {{ form_end(form) }}
 </div>

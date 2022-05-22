@@ -4,6 +4,6 @@
     {% include 'layouts/_flash-messages.html.twig' %}
     <div class="{% block container_class 'container' %}" id="{% block page_id 'page' %}">
         <h1>{% block titre 'Hello' %}</h1>
-        {% block body %}{% endblock %}
+        {% block layout_body %}{% block body %}{% endblock %}{% endblock %}
     </div>
 {% endblock %}

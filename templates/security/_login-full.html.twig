@@ -12,25 +12,27 @@
 {% block meta_description 'Connectez-vous sur By Night, créez vos événements et partagez les avec vos amis sur les réseaux sociaux !' %}
 
 {% block body %}
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card">
-                <div class="card-body">
-                    {% include 'security/login-content.html.twig' with({'partial': false}) %}
+    <form method="post" action="{{ path('app_login') }}">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        {% include 'security/login-content.html.twig' with({'partial': false}) %}
+                    </div>
+                    <div class="card-footer text-center py-2">
+                        <button class="btn btn-lg btn-primary" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
+                            Connexion
+                        </button>
+                    </div>
                 </div>
-                <div class="card-footer text-center py-2">
-                    <button class="btn btn-lg btn-primary" type="submit" id="_submit" name="_submit" data-loading-text="Veuillez patienter...">
-                        Connexion
-                    </button>
-                </div>
+                <p>
+                    Pas encore inscrit ?
+                    <a class="register" href="{{ path('app_register') }}"
+                       title="Rejoignez By Night en vous inscrivant">
+                        Rejoignez-nous dès maintenant !
+                    </a>
+                </p>
             </div>
-            <p>
-                Pas encore inscrit ?
-                <a class="register" href="{{ path('app_register') }}"
-                   title="Rejoignez By Night en vous inscrivant">
-                    Rejoignez-nous dès maintenant !
-                </a>
-            </p>
         </div>
-    </div>
+    </form>
 {% endblock %}

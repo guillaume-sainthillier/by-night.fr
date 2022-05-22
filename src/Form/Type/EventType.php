@@ -65,6 +65,7 @@ class EventType extends AbstractType
                 'label' => 'Description',
                 'required' => false,
                 'attr' => [
+                    'class' => 'wysiwyg',
                     'placeholder' => 'Décrivez votre événement...',
                 ],
             ])

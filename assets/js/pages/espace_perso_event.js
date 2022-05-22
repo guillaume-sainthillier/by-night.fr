@@ -9,6 +9,8 @@ import initDates from '../lazy-listeners/dates';
 import initImagePreview from '../lazy-listeners/image-previews';
 import initSelects from '../lazy-listeners/selects';
 import initTypeAHead from '../lazy-listeners/typeahead';
+import initWYSIWYG from '../lazy-listeners/wysiwyg';
+
 import 'typeahead-addresspicker/dist/typeahead-addresspicker';
 
 $(document).ready(function () {
@@ -16,41 +18,16 @@ $(document).ready(function () {
     initSelects();
     initTypeAHead();
     initImagePreview();
+    initWYSIWYG();
 
     init();
 });
 
 function init() {
-    initWYSIWYG();
     initGMap();
-
-    $('select.form-select:not(.hidden)').select2({
-        theme: 'bootstrap-5',
-        minimumResultsForSearch: 10,
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-    });
 
     $('.form-delete form').submit(function () {
         return confirm("Cette action va supprimer l'événement ainsi que toutes les données rattachées. Continuer ?");
-    });
-}
-
-function initWYSIWYG() {
-    //SummerNote
-    $('#app_event_description').summernote({
-        lang: 'fr-FR',
-        toolbar: [
-            ['heading', ['style']],
-            ['style', ['bold', 'italic', 'underline']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['insert', ['link', 'picture', 'video', 'hr']],
-            ['misc', ['fullscreen']],
-        ],
-        height: 280,
-        codemirror: {
-            mode: 'text/html',
-            htmlMode: true,
-        },
     });
 }
 
