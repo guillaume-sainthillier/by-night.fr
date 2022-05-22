@@ -14,6 +14,7 @@ use App\Dto\CityDto;
 use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
+use App\Entity\Event;
 use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Producer\EventProducer;
@@ -66,7 +67,7 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
     /**
      * {@inheritDoc}
      */
-    protected function arrayToDto(array $data): ?object
+    protected function arrayToDto(array $data): ?EventDto
     {
         if ('0' === $data['is_for_sale'] || '' === trim($data['custom_2'])) {
             return null;
@@ -118,6 +119,14 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
         $place = new PlaceDto();
         $place->name = $data['custom_2'];
         $place->street = \in_array($data['custom_6'], ['.', '-', ''], true) ? null : $data['custom_6'];
+        $place->externalId = sha1(sprintf(
+            '%s %s %s %s %s',
+            $data['custom_2'],
+            $data['custom_6'],
+            $data['venue_address'],
+            $data['custom_4'],
+            $data['custom_3'],
+        ));
 
         $city = new CityDto();
         $city->name = $data['venue_address'];

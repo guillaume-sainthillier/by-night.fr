@@ -31,7 +31,7 @@ class CountryComparator extends AbstractComparator
         \assert($entity instanceof Country);
         \assert($dto instanceof CountryDto);
 
-        if ($entity->getId() === $dto->code) {
+        if ($entity->getId() === $dto->code || $entity->getId() === $dto->name) {
             return new Matching($entity, 100.0);
         }
 

@@ -1,3 +1,5 @@
+import { isTouchDevice } from '../utils/utils';
+
 export default (di, container) => {
     $('input.shorcuts_date', container).each(function () {
         $(this).removeAttr('name');
@@ -11,6 +13,10 @@ export default (di, container) => {
         $.each($(input).data('ranges'), function (label, values) {
             ranges[label] = [moment(values[0]), values[1] === null ? null : moment(values[1])];
         });
+
+        if (isTouchDevice()) {
+            $(input).attr('readonly', true).addClass('form-control-readonly');
+        }
 
         $(input).daterangepicker(
             {

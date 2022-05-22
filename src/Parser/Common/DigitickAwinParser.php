@@ -11,6 +11,7 @@
 namespace App\Parser\Common;
 
 use App\Dto\CityDto;
+use App\Dto\CountryDto;
 use App\Dto\EventDto;
 use App\Dto\PlaceDto;
 use DateTimeImmutable;
@@ -46,7 +47,7 @@ class DigitickAwinParser extends AbstractAwinParser
     /**
      * {@inheritDoc}
      */
-    protected function arrayToDto(array $data): ?object
+    protected function arrayToDto(array $data): ?EventDto
     {
         if ('0' === $data['is_for_sale']) {
             return null;
@@ -77,11 +78,24 @@ class DigitickAwinParser extends AbstractAwinParser
         $place = new PlaceDto();
         $place->name = $data['venue_name'];
         $place->street = $placeMatches[1];
+        $place->externalId = sha1(sprintf(
+            '%s %s %s %s',
+            $data['venue_name'],
+            $placeMatches[1],
+            $placeMatches[2],
+            $placeMatches[3],
+        ));
 
         $city = new CityDto();
         $city->postalCode = $placeMatches[2];
         $city->name = $placeMatches[3];
 
+        $country = new CountryDto();
+        $country->code = 'FR';
+
+        $city->country = $country;
+
+        $place->country = $country;
         $place->city = $city;
 
         $event->place = $place;

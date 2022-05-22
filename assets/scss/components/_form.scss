@@ -2,6 +2,10 @@ form {
     margin-bottom: 0;
 }
 
+.form-control[readonly].form-control-readonly {
+    background-color: $input-bg;
+}
+
 .no-margin-form {
     .form-group {
         margin-top: 0;

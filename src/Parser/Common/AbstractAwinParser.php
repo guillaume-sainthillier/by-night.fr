@@ -10,6 +10,7 @@
 
 namespace App\Parser\Common;
 
+use App\Dto\EventDto;
 use App\Handler\EventHandler;
 use App\Handler\ReservationsHandler;
 use App\Parser\AbstractParser;
@@ -49,7 +50,7 @@ abstract class AbstractAwinParser extends AbstractParser
         while ('product' === $xml->name) {
             $event = $this->elementToArray(new SimpleXMLElement($xml->readOuterXML()));
             $event = $this->arrayToDto($event);
-            if ((null === $event ? 0 : \count($event)) > 0) {
+            if (null !== $event) {
                 $this->publish($event);
             }
 
@@ -84,5 +85,5 @@ abstract class AbstractAwinParser extends AbstractParser
         return $array;
     }
 
-    abstract protected function arrayToDto(array $data): ?object;
+    abstract protected function arrayToDto(array $data): ?EventDto;
 }

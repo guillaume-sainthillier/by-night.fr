@@ -75,7 +75,7 @@ class SowProgParser extends AbstractParser
         }
     }
 
-    private function arrayToDto(array $data, array $scheduleData): ?object
+    private function arrayToDto(array $data, array $scheduleData): ?EventDto
     {
         if (!isset($data['location'])) {
             return null;
@@ -85,7 +85,7 @@ class SowProgParser extends AbstractParser
             return null;
         }
 
-        if ($data['location']['contact']) {
+        if (!isset($data['location']['contact'])) {
             return null;
         }
 

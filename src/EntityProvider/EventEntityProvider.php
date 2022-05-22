@@ -13,11 +13,13 @@ namespace App\EntityProvider;
 use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\EventDto;
 use App\Repository\EventRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class EventEntityProvider extends AbstractEntityProvider
 {
-    public function __construct(private EventRepository $eventRepository)
+    public function __construct(EntityManagerInterface $entityManager, private EventRepository $eventRepository)
     {
+        parent::__construct($entityManager);
     }
 
     /**

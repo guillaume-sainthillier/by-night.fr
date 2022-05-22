@@ -14,13 +14,16 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CityDto;
 use App\Handler\ComparatorHandler;
 use App\Repository\CityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class CityEntityProvider extends AbstractEntityProvider
 {
     public function __construct(
+        EntityManagerInterface $entityManager,
         private CityRepository $cityRepository,
         private ComparatorHandler $comparatorHandler
     ) {
+        parent::__construct($entityManager);
     }
 
     /**

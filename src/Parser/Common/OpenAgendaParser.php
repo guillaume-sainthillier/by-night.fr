@@ -41,7 +41,8 @@ class OpenAgendaParser extends AbstractParser
         EventProducer $eventProducer,
         EventHandler $eventHandler,
         ReservationsHandler $reservationsHandler,
-        private CountryRepository $countryRepository
+        private CountryRepository $countryRepository,
+        private string $openAgendaKey,
     ) {
         parent::__construct($logger, $eventProducer, $eventHandler, $reservationsHandler);
 

@@ -59,7 +59,9 @@ class Firewall
 
     public function isEventDtoValid(EventDto $eventDto): bool
     {
-        return $eventDto->reject->isValid() && $eventDto->place->reject->isValid();
+        return null === $eventDto->reject
+        || null === $eventDto->place?->reject
+        || ($eventDto->reject->isValid() && $eventDto->place->reject->isValid());
     }
 
     public function filterEvent(EventDto $dto): void

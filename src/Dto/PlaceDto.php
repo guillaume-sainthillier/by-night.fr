@@ -74,7 +74,7 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
             return sprintf(
                 '%s-spl-%s',
                 $this->getKeyPrefix(),
-                spl_object_hash($this)
+                spl_object_id($this)
             );
         }
 

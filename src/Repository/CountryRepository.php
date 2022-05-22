@@ -106,7 +106,7 @@ class CountryRepository extends ServiceEntityRepository implements DtoFindableRe
         }
 
         if (\count($namesWheres) > 0) {
-            $wheres[] = 'LOWER(c.name) IN(:names) OR LOWER(c.displayName) IN(:names) OR (c.id IN :names)';
+            $wheres[] = 'LOWER(c.name) IN(:names) OR LOWER(c.displayName) IN(:names) OR c.id IN(:names)';
             $qb->setParameter('names', array_keys($namesWheres));
         }
 

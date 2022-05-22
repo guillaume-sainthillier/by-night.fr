@@ -96,6 +96,13 @@ class ToulouseParser extends AbstractParser
             $event->source = 'https://data.toulouse-metropole.fr/explore/dataset/agenda-des-manifestations-culturelles-so-toulouse/information/';
 
             $place = new PlaceDto();
+            $place->externalId = sha1(mb_strtolower(sprintf(
+                '%s %s %s %s',
+                $tab[10],
+                $tab[12],
+                $tab[14],
+                $tab[15],
+            )));
             $place->name = $tab[10];
             $place->street = $tab[12];
 

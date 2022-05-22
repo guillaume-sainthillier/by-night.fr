@@ -11,7 +11,6 @@
 namespace App\Handler;
 
 use App\Contracts\DependencyCatalogueInterface;
-use App\Contracts\DependencyObjectInterface;
 use App\Contracts\DependencyProvidableInterface;
 use App\Contracts\DependencyRequirableInterface;
 use App\Contracts\DtoEntityIdentifierResolvableInterface;
@@ -335,6 +334,7 @@ class DoctrineEventHandler
         array $dtos,
         DependencyCatalogue $previousCatalogue = null,
         array &$allCatalogues = [],
+        array &$allEntityProviders = [],
         array $paths = []
     ): array {
         if (0 === \count($dtos)) {
@@ -359,12 +359,16 @@ class DoctrineEventHandler
             $entityProvider = $this->entityProviderHandler->getEntityProvider($dtoClassName);
             $entityFactory = $this->entityFactoryHandler->getFactory($dtoClassName);
 
+            if (!\in_array($entityProvider, $allEntityProviders, true)) {
+                $allEntityProviders[] = $entityProvider;
+            }
+
             // Per BATCH_SIZE
             foreach ($dtoChunks as $chunk) {
                 // Resolve current dependencies before persisting root objects
                 $requiredCatalogue = $this->computeRequiredCatalogue($chunk);
                 $allCatalogues[] = $requiredCatalogue;
-                $this->mergeWithDatabase($requiredCatalogue->objects(), $requiredCatalogue, $allCatalogues, $currentPaths);
+                $this->mergeWithDatabase($requiredCatalogue->objects(), $requiredCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
                 // Then perform a global SQL request to fetch entities by external ids
                 $entityProvider->prefetchEntities($chunk);
@@ -414,10 +418,6 @@ class DoctrineEventHandler
                         continue;
                     }
 
-                    if ($isNewEntity || !$entity->getId()) {
-                        dump($entity);
-                    }
-
                     if (!$isNewEntity && !$this->entityManager->contains($entity)) {
                         dump($entity);
                     }
@@ -443,9 +443,7 @@ class DoctrineEventHandler
                     if ($isNewEntity) {
                         $entityProvider->addEntity(
                             $entity,
-                            $dto instanceof DependencyObjectInterface
-                                ? $dto->getUniqueKey()
-                                : null
+                            $dto
                         );
                     }
 
@@ -457,7 +455,7 @@ class DoctrineEventHandler
                 // Resolve current dependencies after persisting parent objects
                 $providedCatalogue = $this->computeProvidedCatalogue($chunk);
                 $allCatalogues[] = $providedCatalogue;
-                $this->mergeWithDatabase($providedCatalogue->objects(), $providedCatalogue, $allCatalogues, $currentPaths);
+                $this->mergeWithDatabase($providedCatalogue->objects(), $providedCatalogue, $allCatalogues, $allEntityProviders, $currentPaths);
 
                 if ($isRootTransaction) {
                     $this->logger->info(sprintf(
@@ -466,10 +464,15 @@ class DoctrineEventHandler
                     ));
                     $this->entityManager->flush();
 
-                    $entityProvider->clear();
+                    foreach ($allEntityProviders as $entityProvider) {
+                        $entityProvider->clear();
+                    }
+
                     foreach ($allCatalogues as $catalogue) {
                         $catalogue->clear();
                     }
+
+                    $allEntityProviders = [];
                     $allCatalogues = [];
                     $this->entityManager->clear();
                     $this->logger->info(sprintf(

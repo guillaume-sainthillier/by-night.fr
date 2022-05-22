@@ -18,11 +18,16 @@ use App\Contracts\ExternalIdentifiablesInterface;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Utils\ChunkUtils;
+use Doctrine\ORM\EntityManagerInterface;
 
 abstract class AbstractEntityProvider implements EntityProviderInterface
 {
     /** @var object[] */
     protected $entities = [];
+
+    public function __construct(protected EntityManagerInterface $entityManager)
+    {
+    }
 
     /**
      * {@inheritDoc}
@@ -60,6 +65,11 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
         $keys = $this->getObjectKeys($dto);
         foreach ($keys as $key) {
             if (isset($this->entities[$key])) {
+                if (!$this->entityManager->contains($this->entities[$key])) {
+                    $foo = $this->entities[$key];
+                    dump($foo);
+                }
+
                 return $this->entities[$key];
             }
         }
@@ -70,11 +80,15 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     /**
      * {@inheritDoc}
      */
-    public function addEntity(object $entity, ?string $alias = null): void
+    public function addEntity(object $entity, ?object $fromDto = null): void
     {
         $keys = $this->getObjectKeys($entity);
-        if (null !== $alias) {
-            $keys[] = $alias;
+        if (null !== $fromDto) {
+            $keys = array_unique(array_merge($keys, $this->getObjectKeys($fromDto)));
+        }
+
+        if (!$this->entityManager->contains($entity)) {
+            dump($entity);
         }
 
         foreach ($keys as $key) {
@@ -102,6 +116,11 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     public function getObjectKeys(object $object): array
     {
         $keys = [];
+
+        if ($object instanceof InternalIdentifiableInterface && $object->getInternalId()) {
+            $keys[] = $object->getInternalId();
+        }
+
         if ($object instanceof ExternalIdentifiablesInterface || $object instanceof ExternalIdentifiableInterface) {
             /** @var iterable<ExternalIdentifiableInterface> $externalIdentifiables */
             $externalIdentifiables = $object instanceof ExternalIdentifiablesInterface
@@ -135,12 +154,8 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
             $keys[] = $object->getUniqueKey();
         }
 
-        if ($object instanceof InternalIdentifiableInterface && $object->getInternalId()) {
-            $keys[] = $object->getInternalId();
-        }
-
         if (0 === \count($keys)) {
-            $key = sprintf('spl-%s', spl_object_hash($object));
+            $key = sprintf('spl-%s', spl_object_id($object));
             if ($object instanceof PrefixableObjectKeyInterface) {
                 $key = sprintf(
                     '%s-%s',
