@@ -10,10 +10,8 @@
 {% set place = event.place %}
 
 {% block page_id 'page-event' %}
-{% block title event_seo.eventFullTitle(event) %}
-{% block titre -%}
-    {{ block('title') }}
-{%- endblock %}
+{% block meta_title event_seo.eventFullTitle(event) %}
+{% block titre event_seo.eventFullTitle(event) %}
 
 {% block breadcrumb %}
     {% if location.isCountry %}
@@ -43,7 +41,7 @@
     {% endfor %}
 {% endblock %}
 
-{% block og_titre nomSoiree %}
+{% block og_title nomSoiree %}
 {% block og_url url('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) %}
 {% block og_image original %}
 

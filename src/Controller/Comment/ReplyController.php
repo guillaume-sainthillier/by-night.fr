@@ -14,6 +14,7 @@ use App\Controller\AbstractController as BaseController;
 use App\Entity\Comment;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,12 +26,17 @@ class ReplyController extends BaseController
     public const REPLIES_PER_PAGE = 5;
 
     #[Route(path: '/{id<%patterns.id%>}/reponses/{page<%patterns.page%>}', name: 'app_comment_reponse_list', methods: ['GET'])]
-    public function list(Comment $comment, CommentRepository $commentRepository, int $page = 1): Response
+    public function list(Comment $comment, CommentRepository $commentRepository, PaginatorInterface $paginator, int $page = 1): Response
     {
+        $comments = $paginator->paginate(
+            $commentRepository->getAnswersCount($comment),
+            $page,
+            self::REPLIES_PER_PAGE
+        );
+
         return $this->render('comment/reply/list.html.twig', [
-            'comments' => $commentRepository->findAllAnswers($comment, $page, self::REPLIES_PER_PAGE),
-            'main_comment' => $comment,
-            'nb_comments' => $commentRepository->getAnswersCount($comment),
+            'comments' => $comments,
+            'mainComment' => $comment,
             'page' => $page,
             'offset' => self::REPLIES_PER_PAGE,
         ]);

@@ -1,0 +1,28 @@
+{% import 'form/macros.html.twig' as macros %}
+<div class="block_poster_commentaire mb-3">
+    {% if is_granted('ROLE_USER') %}
+        {{ form_start(form) }}
+
+        <div class="row align-items-center">
+            <div class="col col-auto">
+                {{ macros.userLazyThumb(app.user, 115, 115) }}
+            </div>
+            <div class="col">
+                <strong class="ms-2">{{ app.user.username }}</strong>
+                {% block form_commentaire %}
+                    {{ form_row(form.commentaire) }}
+                {% endblock %}
+                <button type="submit" class="btn btn-primary btn-submit btn-raised">Poster</button>
+            </div>
+        </div>
+        {{ form_rest(form) }}
+        <hr />
+    {% else %}
+        <div class="text-center mt-4">
+            <a class="btn btn-outline-secondary connexion" title="Se connecter pour laisser un commentaire"
+               href="{{ path('app_login') }}">
+                Laisser un commentaire
+            </a>
+        </div>
+    {% endif %}
+</div>

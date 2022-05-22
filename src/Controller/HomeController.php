@@ -32,7 +32,7 @@ class HomeController extends AbstractController
         ];
         if (null !== ($city = $cityManager->getCity())) {
             $datas += [
-                'name' => $city->getFullName(),
+                'name' => $city->getName(),
                 'city' => $city->getSlug(),
             ];
         }

@@ -16,10 +16,10 @@ _______     __  _   _ _____ _____ _    _ _______
     <meta http-equiv="Content-Language" content="fr">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% apply spaceless %}{% block full_title %}{% apply spaceless %}{%- block title -%}{%- endblock -%}{% endapply %} - {% block nom_site 'By Night' %}{% endblock %}{% endapply %}</title>
-    <meta name="title" content="{{ block('og_titre') }}">
+    <title>{% apply spaceless %}{%- block meta_title -%}{%- endblock -%}{% endapply %} - By Night</title>
+    <meta name="title" content="{{- block('meta_title') -}}">
     <meta name="keywords" content="{% block meta_full_keywords %}{% block meta_keywords %}{% endblock %}aujourd'hui,ce,soir,soiree,sortie,concert,spectacle,musique,discotheque,boite,de,nuit{% endblock %}">
-    <meta name="description" content="{% block description %}{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}By Night vous fait découvrir tous les événements du moment !{% endblock %}">
 
     <!-- Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=yyQOxPP629">
@@ -33,20 +33,20 @@ _______     __  _   _ _____ _____ _    _ _______
     <!-- ./Icons -->
 
     <!-- OpenGraph -->
-    <meta property="og:site_name" content="{{ block('nom_site') }}">
-    <meta property="og:description" content="{% block og_description %}{{ block('description') }}{% endblock %}">
-    <meta property="og:title" content="{% block og_titre %}{{ block('title') }}{% endblock %}">
-    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
-    <meta property="og:url" content="{% block og_url %}{{ url('app_index') }}{% endblock %}">
+    <meta property="og:site_name" content="By Night">
+    <meta property="og:description" content="{% block og_description block('meta_description') %}">
+    <meta property="og:title" content="{% block og_title block('meta_title') %}">
+    <meta property="og:type" content="{% block og_type 'website' %}">
+    <meta property="og:url" content="{% block og_url url('app_index') %}">
     <meta property="og:locale" content="fr" />
-    <meta property="og:image" content="{% block og_image %}{{ asset('build/images/by-night.png') }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image asset('build/images/by-night.png') %}">
     <!-- ./OpenGraph -->
 
     <!-- Twitter -->
     {% if social_manager.twitterIdPage %}
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@{{ social_manager.twitterIdPage }}" />
-        <meta name="twitter:title" content="{{ block('og_titre') }}" />
+        <meta name="twitter:title" content="{{ block('og_title') }}" />
         <meta name="twitter:description" content="{{ block('og_description') }}" />
         <meta name="twitter:image:src" content="{{ block('og_image') }}" />
     {% endif %}
@@ -66,7 +66,7 @@ _______     __  _   _ _____ _____ _    _ _______
 
     <!-- DC -->
     <meta name="dc.description" content="{{ block('og_description') }}">
-    <meta name="dc.title" content="{{ block('og_titre') }}">
+    <meta name="dc.title" content="{{ block('og_title') }}">
     <meta name="dc.keywords" content="{{ block('meta_full_keywords') }}" />
     <!-- ./DC -->
 
@@ -118,7 +118,7 @@ _______     __  _   _ _____ _____ _    _ _______
         {% endif %}
         <!-- ./Menu -->
 
-        {% block full_breadcrumb %}
+        {% block breadcrumb_widget %}
         <div id="bread">
             <div class="container d-flex">
                 <button type="button" class="btn btn-light d-lg-none">

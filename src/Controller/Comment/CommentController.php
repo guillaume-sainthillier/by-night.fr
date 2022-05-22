@@ -16,6 +16,7 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Form\Type\CommentType;
 use App\Repository\CommentRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +28,7 @@ class CommentController extends BaseController
     public const COMMENTS_PER_PAGE = 10;
 
     #[Route(path: '/form/{id<%patterns.id%>}', name: 'app_comment_form', methods: ['GET'])]
-    public function form(Event $event, CommentRepository $commentRepository, int $page = 1): Response
+    public function form(Event $event, CommentRepository $commentRepository, PaginatorInterface $paginator, int $page = 1): Response
     {
         $comment = new Comment();
         $form = null;
@@ -39,12 +40,15 @@ class CommentController extends BaseController
                 ->createView();
         }
 
+        $comments = $paginator->paginate(
+            $commentRepository->findAllByEventQuery($event),
+            $page,
+            self::COMMENTS_PER_PAGE
+        );
+
         return $this->render('comment/list-and-form.html.twig', [
-            'nb_comments' => $commentRepository->getCommentsCount($event),
-            'comments' => $commentRepository->findAllByEvent($event, $page, self::COMMENTS_PER_PAGE),
+            'comments' => $comments,
             'event' => $event,
-            'page' => $page,
-            'offset' => self::COMMENTS_PER_PAGE,
             'form' => $form,
         ]);
     }
@@ -53,11 +57,16 @@ class CommentController extends BaseController
      * @ReverseProxy(expires="tomorrow")
      */
     #[Route(path: '/{id<%patterns.id%>}/{page<%patterns.page%>}', name: 'app_comment_list', methods: ['GET'])]
-    public function list(Event $event, CommentRepository $commentRepository, int $page = 1): Response
+    public function list(Event $event, CommentRepository $commentRepository, PaginatorInterface $paginator, int $page = 1): Response
     {
+        $comments = $paginator->paginate(
+            $commentRepository->findAllByEventQuery($event),
+            $page,
+            self::COMMENTS_PER_PAGE
+        );
+
         return $this->render('comment/list.html.twig', [
-            'nb_comments' => $commentRepository->getCommentsCount($event),
-            'comments' => $commentRepository->findAllByEvent($event, $page, self::COMMENTS_PER_PAGE),
+            'comments' => $comments,
             'event' => $event,
             'page' => $page,
             'offset' => self::COMMENTS_PER_PAGE,
@@ -68,7 +77,7 @@ class CommentController extends BaseController
      * @IsGranted("ROLE_USER")
      */
     #[Route(path: '/{id<%patterns.id%>}/nouveau', name: 'app_comment_new', methods: ['GET', 'POST'])]
-    public function newComment(Request $request, Event $event, CommentRepository $commentRepository): Response
+    public function new(Request $request, Event $event, CommentRepository $commentRepository): Response
     {
         $user = $this->getAppUser();
         $comment = new Comment();
@@ -87,11 +96,10 @@ class CommentController extends BaseController
                 'success' => true,
                 'comment' => $this->renderView('Comment/details.html.twig', [
                     'comment' => $comment,
-                    'success_confirmation' => true,
-                    'nb_reponses' => 0,
+                    'success' => true,
                 ]),
                 'header' => $this->renderView('Comment/header.html.twig', [
-                    'nb_comments' => $commentRepository->getCommentsCount($event),
+                    'commentsCount' => $commentRepository->getCommentsCount($event),
                 ]),
             ]);
         }

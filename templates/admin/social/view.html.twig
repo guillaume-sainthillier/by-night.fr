@@ -1,7 +1,7 @@
 {% extends 'admin/layout.html.twig' %}
 
 {% block titre_admin 'Réseaux Sociaux' %}
-{% block title_admin 'Paramétrage des Réseaux Sociaux' %}
+{% block meta_title_admin 'Paramétrage des Réseaux Sociaux' %}
 
 {% block breadcrumb_admin -%}
     {% do menu.addItem('Réseaux Sociaux', url('app_administration_info_edit', {'id': info.id})) %}

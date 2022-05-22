@@ -1,8 +1,7 @@
 {% extends 'layouts/full.html.twig' %}
 {% do fos_httpcache_tag(tags('location', location)) %}
 
-{% block titre 'Sortir ' ~ location.atName %}
-{% block title 'Concerts, soirées : toutes les sorties ' ~ location.atName %}
+{% block meta_title 'Concerts, soirées : toutes les sorties ' ~ location.atName %}
 
 {% block meta_description -%}
     Sortir {{ location.atName }}. L'agenda des concerts, spectacles, soirées, sorties, bars, after work et boîtes de nuit ce soir {{ location.atName }}.

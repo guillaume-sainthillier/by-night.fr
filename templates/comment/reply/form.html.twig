@@ -1,4 +1,4 @@
-{% extends 'comment/post.html.twig' %}
+{% extends 'comment/form.html.twig' %}
 
 {% block form_commentaire %}
     {{ form_row(form.commentaire, {'attr' : {'placeholder': 'Répondez à ' ~ comment.user.username}}) }}

@@ -1,9 +1,8 @@
 {% extends 'layouts/full.html.twig' %}
 
-{% block full_breadcrumb '' %}
-{% block titre "Les événements dans votre ville" %}
-{% block title "Le compagnon de vos sorties et soirées en France" %}
+{% block meta_title "Le compagnon de vos sorties et soirées en France" %}
 {% block meta_description 'Le compagnon pour vos sorties. Choisissez votre ville et découvrez les événements du moment !' %}
+{% block breadcrumb_widget '' %}
 
 {% block body %}
     <section class="full_wrapper" style="background-image: url({{ asset('build/images/landing.jpg') }})">

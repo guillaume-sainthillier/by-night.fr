@@ -14,6 +14,7 @@ use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -29,20 +30,14 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    /**
-     * @return Comment[]
-     */
-    public function findAllByEvent(Event $event, int $page = 1, int $limit = 10): array
+    public function findAllByEventQuery(Event $event): Query
     {
         return $this
             ->createQueryBuilder('c')
             ->where('c.event = :event AND c.parent IS NULL AND c.approuve = true')
             ->setParameters([':event' => $event])
             ->orderBy('c.createdAt', 'DESC')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
+            ->getQuery();
     }
 
     /**
@@ -61,17 +56,14 @@ class CommentRepository extends ServiceEntityRepository
     /**
      * @return Comment[]
      */
-    public function findAllAnswers(Comment $comment, int $page = 1, int $limit = 10): array
+    public function findAllAnswersQuery(Comment $comment): Query
     {
         return $this
             ->createQueryBuilder('c')
             ->where('c.parent = :parent AND c.approuve = true')
             ->setParameters([':parent' => $comment])
             ->orderBy('c.createdAt', 'DESC')
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->execute();
+            ->getQuery();
     }
 
     public function getCommentsCount(Event $event): int
