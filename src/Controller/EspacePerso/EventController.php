@@ -13,14 +13,17 @@ namespace App\Controller\EspacePerso;
 use App\Controller\AbstractController as BaseController;
 use App\Dto\EventDto;
 use App\Dto\UserDto;
+use App\DtoFactory\EventDtoFactory;
 use App\Entity\Comment;
 use App\Entity\Event;
+use App\Entity\User;
 use App\Entity\UserEvent;
 use App\Form\Type\EventType;
 use App\Repository\EventRepository;
 use App\Repository\UserEventRepository;
 use App\Validator\Constraints\EventConstraintValidator;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,26 +49,28 @@ class EventController extends BaseController
     }
 
     #[Route(path: '/nouvelle-soiree', name: 'app_event_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EventConstraintValidator $validator): Response
+    public function new(Request $request, EventConstraintValidator $validator, EntityManagerInterface $entityManager): Response
     {
         $userDto = new UserDto();
         $userDto->entityId = $this->getUser()->getId();
 
         $eventDto = new EventDto();
         $eventDto->user = $userDto;
-        $user = $this->getUser();
-        $event = (new Event())
-            ->setUser($user)
-            ->setParticipations(1);
-        $userEvent = (new UserEvent())
-            ->setUser($user)
-            ->setParticipe(true);
-        $event->addUserEvent($userEvent);
         $form = $this->createForm(EventType::class, $eventDto);
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $user = $entityManager->getReference(User::class, $eventDto->user->entityId);
+            $event = $entityManager->getReference(Event::class, $eventDto->entityId);
+            $event->setParticipations(1);
+
+            $userEvent = (new UserEvent())
+                ->setUser($user)
+                ->setParticipe(true);
+            $event->addUserEvent($userEvent);
             $em = $this->getDoctrine()->getManager();
+
+            $em->persist($event);
             if ($form->get('comment')->getData()) {
                 $event = $form->getData();
                 $comment = new Comment();
@@ -93,12 +98,14 @@ class EventController extends BaseController
      * @IsGranted("edit", subject="event")
      */
     #[Route(path: '/{id<%patterns.id%>}', name: 'app_event_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Event $event, EventConstraintValidator $validator): Response
+    public function edit(Request $request, Event $event, EventConstraintValidator $validator, EventDtoFactory $eventDtoFactory): Response
     {
         if ($event->getExternalId()) {
             $event->setExternalUpdatedAt(new DateTime());
         }
-        $form = $this->createForm(EventType::class, $event);
+
+        $dto = $eventDtoFactory->create($event);
+        $form = $this->createForm(EventType::class, $dto);
         $validator->setUpdatabilityCkeck(false);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

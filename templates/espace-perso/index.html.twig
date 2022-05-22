@@ -32,7 +32,8 @@
                     {% for event in events %}
                         <tr>
                             <td>
-                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" title="Accéder à l'événement">{{ event.nom }}</a></td>
+                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" title="Accéder à l'événement">{{ event.nom }}</a>
+                            </td>
                             <td>{{ event.placeName }}</td>
                             <td>{{ event.placeCity }}</td>
                             <td>
@@ -51,18 +52,20 @@
                                 </div>
                             </td>
                             <td class="actions">
-                                <a class="btn btn-light" href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
-                                    <i class="fa fa-eye text-secondary"></i>
-                                </a>
-                                <a class="btn btn-light" href="{{ path('app_event_edit', {'id': event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
-                                    <i class="fa fa-pencil-alt text-secondary"></i>
-                                </a>
-                                <form class="d-inline-block form-delete" method="post" action="{{ path('app_event_delete', {'id': event.id}) }}">
-                                    <input name="_method" type="hidden" value="DELETE">
-                                    <button type="submit" class="btn btn-light" data-bs-toggle="tooltip" title="Supprimer l'événement">
-                                        <i class="fa fa-trash text-danger"></i>
-                                    </button>
-                                </form>
+                                <div class="btn-group">
+                                    <a class="btn btn-light" href="{{ path('app_event_details', {'slug': event.slug, 'id': event.id, 'location': event.locationSlug}) }}" data-bs-toggle="tooltip" title="Voir l'événement">
+                                        <i class="fa fa-eye text-secondary"></i>
+                                    </a>
+                                    <a class="btn btn-light" href="{{ path('app_event_edit', {'id': event.id}) }}" data-bs-toggle="tooltip" title="Corriger l'événement">
+                                        <i class="fa fa-pencil-alt text-primary"></i>
+                                    </a>
+                                    <form class="d-inline-block form-delete" method="post" action="{{ path('app_event_delete', {'id': event.id}) }}">
+                                        <input name="_method" type="hidden" value="DELETE">
+                                        <button type="submit" class="btn btn-light" data-bs-toggle="tooltip" title="Supprimer l'événement">
+                                            <i class="fa fa-trash text-danger"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}

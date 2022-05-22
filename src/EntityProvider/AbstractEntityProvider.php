@@ -124,7 +124,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
         if ($object instanceof ExternalIdentifiablesInterface || $object instanceof ExternalIdentifiableInterface) {
             /** @var iterable<ExternalIdentifiableInterface> $externalIdentifiables */
             $externalIdentifiables = $object instanceof ExternalIdentifiablesInterface
-                ? $object
+                ? $object->getExternalIdentifiables()
                 : [$object];
 
             foreach ($externalIdentifiables as $externalIdentifiable) {
@@ -166,6 +166,6 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
             $keys[] = $key;
         }
 
-        return $keys;
+        return array_unique($keys);
     }
 }

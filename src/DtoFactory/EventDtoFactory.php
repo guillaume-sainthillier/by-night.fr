@@ -25,8 +25,15 @@ class EventDtoFactory
         $event->entityId = $entity->getId();
         $event->externalId = $entity->getExternalId();
         $event->externalOrigin = $entity->getExternalOrigin();
-        $event->address = $entity->getAdresse();
         $event->externalUpdatedAt = $entity->getExternalUpdatedAt();
+        $event->startDate = clone $entity->getDateDebut();
+        $event->endDate = clone $entity->getDateFin();
+        $event->createdAt = clone $entity->getCreatedAt();
+        $event->updatedAt = clone $entity->getUpdatedAt();
+        $event->imageFile = $entity->getImageFile();
+        $event->image = $entity->getImage();
+        $event->fromData = $entity->getFromData();
+        $event->address = $entity->getAdresse();
         $event->category = $entity->getCategorieManifestation();
         $event->name = $entity->getNom();
         $event->description = $entity->getDescriptif();
@@ -57,6 +64,7 @@ class EventDtoFactory
 
         if ($entity->getPlaceCountry()) {
             $country = new CountryDto();
+            $country->entityId = $entity->getPlaceCountry()->getId();
             $country->code = $entity->getPlaceCountry()->getId();
 
             $city->country = $country;

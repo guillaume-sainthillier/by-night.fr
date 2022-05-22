@@ -10,6 +10,8 @@
 
 namespace App\Entity;
 
+use App\Contracts\InternalIdentifiableInterface;
+use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\UserRepository;
 use DateTime;
 use DateTimeImmutable;
@@ -37,7 +39,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ExclusionPolicy('all')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable
+class User implements UserInterface, PasswordAuthenticatedUserInterface, Serializable, Stringable, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     use EntityTimestampableTrait;
 
@@ -157,6 +159,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
         $this->oAuth = new UserOAuth();
         $this->image = new EmbeddedFile();
         $this->imageSystem = new EmbeddedFile();
+    }
+
+    public function getInternalId(): ?string
+    {
+        if (null === $this->getId()) {
+            return null;
+        }
+
+        return sprintf(
+            '%s-id-%s',
+            $this->getKeyPrefix(),
+            $this->getId()
+        );
+    }
+
+    public function getKeyPrefix(): string
+    {
+        return 'user';
     }
 
     public function hasImage(): bool

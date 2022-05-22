@@ -10,6 +10,8 @@
 
 namespace App\Form\Extension;
 
+use App\Dto\EventDto;
+use App\Dto\UserDto;
 use App\Entity\Event;
 use App\Entity\User;
 use App\Picture\EventProfilePicture;
@@ -44,13 +46,13 @@ class ImageTypeExtension extends AbstractTypeExtension
         $view->vars['image_thumb_params'] = [];
 
         if (null !== $object) {
-            if ($object instanceof Event) {
+            if ($object instanceof Event || $object instanceof EventDto) {
                 $view->vars['download_uri'] = $this->eventProfilePicture->getOriginalPicture($object);
                 $view->vars['image_thumb_params'] = array_merge([
                     'event' => $object,
                     'loader' => 'event',
                 ], $options['thumb_params']);
-            } elseif ($object instanceof User) {
+            } elseif ($object instanceof User || $object instanceof UserDto) {
                 $view->vars['download_uri'] = $this->userProfilePicture->getOriginalProfilePicture($object);
                 $view->vars['image_thumb_params'] = array_merge([
                     'user' => $object,

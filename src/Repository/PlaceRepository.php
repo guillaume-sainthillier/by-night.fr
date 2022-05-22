@@ -76,7 +76,11 @@ class PlaceRepository extends ServiceEntityRepository implements DtoFindableRepo
             $qb->andWhere(implode(' OR ', $wheres));
         }
 
-        $this->addDtosToQueryBuilding($qb, 'metadatas', $dtos);
+        $this->addDtosToQueryBuilder($qb, 'metadatas', $dtos);
+
+        if (0 === \count($qb->getParameters())) {
+            return [];
+        }
 
         return $qb
             ->getQuery()

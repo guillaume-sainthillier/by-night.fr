@@ -355,7 +355,8 @@ class DoctrineEventHandler
                 // Then perform a global SQL request to fetch entities by external ids
                 $entityProvider->prefetchEntities($chunk);
 
-                foreach ($chunk as $dto) {
+                $rootEntities = [];
+                foreach ($chunk as $i => $dto) {
                     $isObjectReference = null !== $previousCatalogue
                         && $previousCatalogue->has($dto)
                         && $previousCatalogue->get($dto)->isReference();
@@ -401,6 +402,10 @@ class DoctrineEventHandler
                     }
                     $this->entityManager->persist($entity);
 
+                    if ($isRootTransaction) {
+                        $rootEntities[$i] = $entity;
+                    }
+
                     /*
                     if ($entity instanceof Event) {
                         if (
@@ -437,6 +442,19 @@ class DoctrineEventHandler
                         implode(' > ', $currentPaths),
                     ));
                     $this->entityManager->flush();
+
+                    // Update post insert ids
+                    foreach ($chunk as $i => $dto) {
+                        if (!$dto instanceof DtoEntityIdentifierResolvableInterface) {
+                            continue;
+                        }
+
+                        if (empty($rootEntities[$i])) {
+                            continue;
+                        }
+
+                        $dto->setIdentifierFromEntity($rootEntities[$i]);
+                    }
 
                     foreach ($allEntityProviders as $entityProvider) {
                         $entityProvider->clear();

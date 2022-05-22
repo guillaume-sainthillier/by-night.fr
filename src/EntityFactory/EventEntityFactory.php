@@ -42,8 +42,23 @@ class EventEntityFactory implements EntityFactoryInterface
 
         $entity->setExternalId($dto->externalId);
         $entity->setExternalOrigin($dto->externalOrigin);
-        $entity->setAdresse($dto->address);
         $entity->setExternalUpdatedAt($dto->externalUpdatedAt);
+        if ($entity->getDateDebut()?->getTimestamp() !== $dto->startDate?->getTimestamp()) {
+            $entity->setDateDebut($dto->startDate);
+        }
+        if ($entity->getDateFin()?->getTimestamp() !== $dto->endDate?->getTimestamp()) {
+            $entity->setDateFin($dto->endDate);
+        }
+        $entity->setAdresse($dto->address);
+        if ($entity->getCreatedAt()?->getTimestamp() !== $dto->createdAt?->getTimestamp()) {
+            $entity->setCreatedAt($dto->createdAt);
+        }
+        if ($entity->getCreatedAt()?->getTimestamp() !== $dto->updatedAt?->getTimestamp()) {
+            $entity->setCreatedAt($dto->updatedAt);
+        }
+        $entity->setImage($dto->image);
+        $entity->setImageFile($dto->imageFile);
+        $entity->setFromData($dto->fromData);
         $entity->setCategorieManifestation($dto->category);
         $entity->setName($dto->name);
         $entity->setNom($dto->name);

@@ -22,7 +22,7 @@ class UserDto implements DependencyObjectInterface, DtoEntityIdentifierResolvabl
 
     public function getKeyPrefix(): string
     {
-        return 'country';
+        return 'user';
     }
 
     public function getUniqueKey(): string

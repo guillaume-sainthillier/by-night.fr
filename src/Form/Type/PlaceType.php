@@ -24,6 +24,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PlaceType extends AbstractType
 {
+    public function __construct(private CountryRepository $countryRepository)
+    {
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -72,8 +76,12 @@ class PlaceType extends AbstractType
 
         $builder->get('country')
             ->addModelTransformer(new CallbackTransformer(
-                function ($tagsAsArray) {
-                    return $tagsAsArray;
+                function (?CountryDto $dto) {
+                    if (null === $dto?->entityId) {
+                        return null;
+                    }
+
+                    return $this->countryRepository->find($dto->entityId);
                 },
                 function (?Country $country) {
                     if (null === $country) {

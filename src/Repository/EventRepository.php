@@ -12,6 +12,7 @@ namespace App\Repository;
 
 use App\App\Location;
 use App\Contracts\DtoFindableRepositoryInterface;
+use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Entity\User;
 use DateTime;
@@ -45,7 +46,28 @@ class EventRepository extends ServiceEntityRepository implements DtoFindableRepo
     {
         $qb = parent::createQueryBuilder('e');
 
-        $this->addDtosToQueryBuilding($qb, 'e', $dtos);
+        $this->addDtosToQueryBuilder($qb, 'e', $dtos);
+
+        $entityIdsWheres = [];
+        foreach ($dtos as $dto) {
+            \assert($dto instanceof EventDto);
+
+            if (null === $dto->entityId) {
+                continue;
+            }
+
+            $entityIdsWheres[$dto->entityId] = true;
+        }
+
+        if (\count($entityIdsWheres) > 0) {
+            $qb
+                ->orWhere('e.id IN (:ids)')
+                ->setParameter('ids', array_keys($entityIdsWheres));
+        }
+
+        if (0 === \count($qb->getParameters())) {
+            return [];
+        }
 
         return $qb
             ->getQuery()

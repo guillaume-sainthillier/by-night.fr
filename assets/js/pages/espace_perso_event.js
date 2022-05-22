@@ -32,7 +32,7 @@ export default function init() {
 
 function initWYSIWYG() {
     //SummerNote
-    $('#app_event_descriptif').summernote({
+    $('#app_event_description').summernote({
         lang: 'fr-FR',
         toolbar: [
             ['heading', ['style']],
@@ -72,7 +72,7 @@ function initGMap() {
         },
     });
 
-    var $field = $('#app_event_adresse');
+    var $field = $('#app_event_address');
     // Proxy inputs typeahead events to addressPicker
     addressPicker.bindDefaultTypeaheadEvent($field);
     $(addressPicker).on('addresspicker:selected', function (event, result) {
@@ -86,7 +86,7 @@ function initGMap() {
     });
 
     //Lieux
-    var $field = $('#app_event_placeName');
+    var $field = $('#app_event_place_name');
     // instantiate the placePicker suggestion engine (based on bloodhound)
     var placePicker = new AddressPicker({
         autocompleteService: {
@@ -100,7 +100,7 @@ function initGMap() {
         assignGMapInfo(event, result);
 
         if (typeof result.placeResult.formatted_address !== 'undefined' && result.placeResult.formatted_address) {
-            $('app_#event_adresse').typeahead('val', result.placeResult.formatted_address);
+            $('#app_event_address').typeahead('val', result.placeResult.formatted_address);
             addressPicker.updateMap(event, result.placeResult);
         }
 
@@ -120,10 +120,10 @@ function initGMap() {
 }
 
 function assignGMapInfo(event, result) {
-    $('#event_latitude').val(result.lat());
-    $('#event_longitude').val(result.lng());
-    $('#event_placeCity').val(result.nameForType('locality'));
-    $('#event_placePostalCode').val(result.nameForType('postal_code'));
+    $('#app_event_place_latitude').val(result.lat());
+    $('#app_event_place_longitude').val(result.lng());
+    $('#app_event_place_city_name').val(result.nameForType('locality'));
+    $('#app_event_place_city_postalCode').val(result.nameForType('postal_code'));
 
     var rue = (
         (result.nameForType('street_number') ? result.nameForType('street_number') : '') +
@@ -131,7 +131,7 @@ function assignGMapInfo(event, result) {
         (result.nameForType('route') || '')
     ).trim();
     $('#event_placeStreet').val(rue);
-    $('#event_placeCountry')
+    $('#app_event_place_country')
         .val(result.nameForType('country', true) || '')
         .trigger('change');
 }

@@ -10,6 +10,7 @@
 
 namespace App\Image\Loader;
 
+use App\Dto\EventDto;
 use App\Entity\Event;
 use App\Picture\EventProfilePicture;
 
@@ -27,7 +28,7 @@ class EventLoader extends AbstractImageLoader
             'event' => $event,
         ] = $params;
 
-        \assert($event instanceof Event);
+        \assert($event instanceof Event || $event instanceof EventDto);
 
         ['path' => $path, 'source' => $source] = $this->eventProfilePicture->getPicturePathAndSource($event);
         $params['path'] = $path;
@@ -50,24 +51,19 @@ class EventLoader extends AbstractImageLoader
             'originalFormat' => $originalFormat,
         ] = $params;
 
-        if ((!$originalWidth || !$originalHeight) && $event->getImage()->getDimensions()) {
-            $originalWidth = (int) $event->getImage()->getDimensions()[0];
-            $originalHeight = (int) $event->getImage()->getDimensions()[1];
-        } elseif ((!$originalWidth || !$originalHeight) && $event->getImageSystem()->getDimensions()) {
-            $originalWidth = (int) $event->getImageSystem()->getDimensions()[0];
-            $originalHeight = (int) $event->getImageSystem()->getDimensions()[1];
+        $image = $event instanceof EventDto ? $event->image : $event->getImage();
+        $systemImage = $event instanceof EventDto ? null : $event->getImageSystem();
+        if ((!$originalWidth || !$originalHeight) && $image->getDimensions()) {
+            $originalWidth = (int) $image->getDimensions()[0];
+            $originalHeight = (int) $image->getDimensions()[1];
+        } elseif ((!$originalWidth || !$originalHeight) && $systemImage?->getDimensions()) {
+            $originalWidth = (int) $systemImage->getDimensions()[0];
+            $originalHeight = (int) $systemImage->getDimensions()[1];
         }
 
         if (!$originalFormat) {
             $originalFormat = $this->guessExtensionFromPath($path);
         }
-
-        dump([
-            'path' => $path,
-            'originalWidth' => $originalWidth,
-            'originalHeight' => $originalHeight,
-            'originalFormat' => $originalFormat,
-        ]);
 
         return array_merge($defaultParams, [
             'originalWidth' => $originalWidth,
@@ -86,7 +82,7 @@ class EventLoader extends AbstractImageLoader
             'loaderOptions' => $loaderOptions,
         ] = $params;
 
-        \assert($event instanceof Event);
+        \assert($event instanceof Event || $event instanceof EventDto);
 
         return $this->eventProfilePicture->getPicture($event, array_filter([
             'w' => $width,

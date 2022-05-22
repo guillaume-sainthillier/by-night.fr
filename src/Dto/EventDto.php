@@ -24,6 +24,7 @@ use App\Parser\Common\DigitickAwinParser;
 use App\Parser\Common\FnacSpectaclesAwinParser;
 use App\Reject\Reject;
 use App\Validator\Constraints\EventConstraint;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Entity\File as EmbeddedFile;
@@ -41,7 +42,11 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
 
     public ?UserDto $user = null;
 
-    public ?int $userId = null;
+    // For vich form upload
+    public ?DateTimeImmutable $createdAt = null;
+
+    // For vich form upload
+    public ?DateTimeImmutable $updatedAt = null;
 
     #[UploadableField(mapping: 'event_image', fileNameProperty: 'image.name', size: 'image.size', mimeType: 'image.mimeType', originalName: 'image.originalName', dimensions: 'image.dimensions')]
     public ?File $imageFile = null;
@@ -51,6 +56,8 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
     public ?DateTimeInterface $startDate = null;
 
     public ?DateTimeInterface $endDate = null;
+
+    public ?string $fromData = null;
 
     public ?string $name = null;
 
@@ -98,6 +105,26 @@ class EventDto implements ExternalIdentifiableInterface, DependencyRequirableInt
     public function __construct()
     {
         $this->image = new EmbeddedFile();
+    }
+
+    /**
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     */
+    public function setImageFile(File $image = null): self
+    {
+        $this->imageFile = $image;
+
+        if (null !== $image) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new DateTimeImmutable();
+        }
+
+        return $this;
     }
 
     public function isAffiliate(): bool
