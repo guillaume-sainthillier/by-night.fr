@@ -1213,4 +1213,14 @@ class Event implements Stringable, ExternalIdentifiableInterface, InternalIdenti
 
         return $this;
     }
+
+    public function isBrouillon(): ?bool
+    {
+        return $this->brouillon;
+    }
+
+    public function isArchive(): ?bool
+    {
+        return $this->archive;
+    }
 }

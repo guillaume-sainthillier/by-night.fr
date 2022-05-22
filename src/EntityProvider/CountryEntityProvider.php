@@ -37,7 +37,7 @@ class CountryEntityProvider extends AbstractEntityProvider
         }
 
         $comparator = $this->comparatorHandler->getComparator($dto);
-        $matching = $comparator->getMostMatching(array_unique($this->entities), $dto);
+        $matching = $comparator->getMostMatching($this->getEntities(), $dto);
 
         if (null !== $matching && $matching->getConfidence() >= 100.0) {
             return $matching->getEntity();

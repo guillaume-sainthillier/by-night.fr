@@ -14,6 +14,7 @@ use App\Contracts\DtoFindableRepositoryInterface;
 use App\Dto\CityDto;
 use App\Entity\City;
 use App\Entity\Country;
+use App\Utils\CityManipulator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
@@ -27,7 +28,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CityRepository extends ServiceEntityRepository implements DtoFindableRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private CityManipulator $cityManipulator)
     {
         parent::__construct($registry, City::class);
     }
@@ -47,30 +48,31 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
     public function findAllByDtos(array $dtos): array
     {
         $wheres = [];
-        $groupedWheres = [];
+        $cityNameWheres = [];
+        $postalCodesWheres = [];
 
         foreach ($dtos as $dto) {
             \assert($dto instanceof CityDto);
 
-            if (null === $dto->name || null === $dto->country || null === $dto->country->entityId) {
+            if (
+                (null === $dto->name && null === $dto->postalCode)
+                || null === $dto->country?->entityId) {
                 continue;
             }
 
-            $cities = [];
-            $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $dto->name);
-            $city = str_replace('’', "'", $city);
-            $cities[] = $city;
-            $cities[] = str_replace(' ', '-', $city);
-            $cities[] = str_replace('-', ' ', $city);
-            $cities[] = str_replace("'", '', $city);
-            $cities = array_unique($cities);
+            if (null !== $dto->name) {
+                $cities = $this->cityManipulator->getCityNameAlternatives($dto->name);
+                foreach ($cities as $city) {
+                    $cityNameWheres[$dto->country->entityId][$city] = true;
+                }
+            }
 
-            foreach ($cities as $city) {
-                $groupedWheres[$dto->country->entityId][$city] = true;
+            if (null !== $dto->postalCode) {
+                $postalCodesWheres[$dto->country->entityId][$dto->postalCode] = true;
             }
         }
 
-        if (0 === \count($groupedWheres)) {
+        if (0 === \count($cityNameWheres) && 0 === \count($postalCodesWheres)) {
             return [];
         }
 
@@ -79,19 +81,38 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             ->join('c.country', 'country');
 
         $i = 1;
-        foreach ($groupedWheres as $countryId => $cities) {
-            $countryPlaceholder = sprintf('country_%d', $i);
-            $namesPlaceholder = sprintf('names_%d', $i);
+        foreach ($cityNameWheres as $countryId => $cityNames) {
+            $countryPlaceholder = sprintf('city_name_country_%d', $i);
+            $cityNamesPlaceholder = sprintf('city_name_names_%d', $i);
             $wheres[] = sprintf(
                 '(c.country = :%s AND c.name IN(:%s))',
                 $countryPlaceholder,
-                $namesPlaceholder
+                $cityNamesPlaceholder
             );
 
             $queryBuilder
                 ->setParameter($countryPlaceholder, $countryId)
-                ->setParameter($namesPlaceholder, array_keys($cities));
+                ->setParameter($cityNamesPlaceholder, array_keys($cityNames));
             ++$i;
+        }
+
+        if (\count($postalCodesWheres) > 0) {
+            $queryBuilder->leftJoin('c.zipCities', 'z');
+            $i = 1;
+            foreach ($postalCodesWheres as $countryId => $postalCodes) {
+                $countryPlaceholder = sprintf('postal_code_country_%d', $i);
+                $postalCodesPlaceholder = sprintf('postal_code_names_%d', $i);
+                $wheres[] = sprintf(
+                    '(c.country = :%s AND z.postalCode IN(:%s))',
+                    $countryPlaceholder,
+                    $postalCodesPlaceholder
+                );
+
+                $queryBuilder
+                    ->setParameter($countryPlaceholder, $countryId)
+                    ->setParameter($postalCodesPlaceholder, array_keys($postalCodes));
+                ++$i;
+            }
         }
 
         return $queryBuilder
@@ -154,25 +175,18 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
         return \array_slice($results, 0, $limit);
     }
 
-    public function findAllByName(?string $city, ?string $country = null): array
+    public function findAllByName(?string $cityName, ?string $countryId = null): array
     {
-        $cities = [];
-        $city = preg_replace("#(^|\s)st\s#i", '$1saint ', $city);
-        $city = str_replace('’', "'", $city);
-        $cities[] = $city;
-        $cities[] = str_replace(' ', '-', $city);
-        $cities[] = str_replace('-', ' ', $city);
-        $cities[] = str_replace("'", '', $city);
-        $cities = array_unique($cities);
+        $cities = $this->cityManipulator->getCityNameAlternatives($cityName);
 
         $qb = parent::createQueryBuilder('c')
             ->where('c.name IN (:cities)')
             ->setParameter('cities', $cities);
 
-        if ($country) {
+        if ($countryId) {
             $qb
                 ->andWhere('c.country = :country')
-                ->setParameter('country', $country);
+                ->setParameter('country', $countryId);
         }
 
         return $qb
@@ -184,10 +198,7 @@ class CityRepository extends ServiceEntityRepository implements DtoFindableRepos
             ->getResult();
     }
 
-    /**
-     * @param scalar|null $slug
-     */
-    public function findOneBySlug($slug): ?City
+    public function findOneBySlug(string $slug): ?City
     {
         return parent::createQueryBuilder('c')
             ->where('c.slug = :slug')

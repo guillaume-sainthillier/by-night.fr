@@ -57,7 +57,7 @@ class EventEntityFactory implements EntityFactoryInterface
         $entity->setPlaceName($dto->place?->name);
         $entity->setPlaceCity($dto->place?->city?->name);
         $entity->setPlaceCountryName($dto->place?->country?->name);
-        $entity->setPlacePostalCode($dto->place?->postalCode);
+        $entity->setPlacePostalCode($dto->place?->city?->postalCode);
         $entity->setPlaceStreet($dto->place?->street);
         $entity->setPlaceExternalId($dto->place?->externalId);
 

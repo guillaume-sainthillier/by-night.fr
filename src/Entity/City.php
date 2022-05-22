@@ -13,6 +13,8 @@ namespace App\Entity;
 use App\Contracts\InternalIdentifiableInterface;
 use App\Contracts\PrefixableObjectKeyInterface;
 use App\Repository\CityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
@@ -27,6 +29,14 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
 
     #[Groups(['list_city'])]
     protected ?Country $country = null;
+
+    #[ORM\OneToMany(targetEntity: ZipCity::class, fetch: 'EXTRA_LAZY', mappedBy: 'parent')]
+    protected ?Collection $zipCities = null;
+
+    public function __construct()
+    {
+        $this->zipCities = new ArrayCollection();
+    }
 
     public function __toString(): string
     {
@@ -88,6 +98,36 @@ class City extends AdminZone implements InternalIdentifiableInterface, Prefixabl
     public function setCountry(?Country $country): AdminZone
     {
         $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ZipCity>
+     */
+    public function getZipCities(): Collection
+    {
+        return $this->zipCities;
+    }
+
+    public function addZipCity(ZipCity $zipCity): self
+    {
+        if (!$this->zipCities->contains($zipCity)) {
+            $this->zipCities[] = $zipCity;
+            $zipCity->setParent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeZipCity(ZipCity $zipCity): self
+    {
+        if ($this->zipCities->removeElement($zipCity)) {
+            // set the owning side to null (unless already changed)
+            if ($zipCity->getParent() === $this) {
+                $zipCity->setParent(null);
+            }
+        }
 
         return $this;
     }

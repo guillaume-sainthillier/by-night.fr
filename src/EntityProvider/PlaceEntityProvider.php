@@ -40,7 +40,7 @@ class PlaceEntityProvider extends AbstractEntityProvider
         }
 
         $comparator = $this->comparatorHandler->getComparator($dto);
-        $matching = $comparator->getMostMatching($this->entities, $dto);
+        $matching = $comparator->getMostMatching($this->getEntities(), $dto);
 
         if (null !== $matching && $matching->getConfidence() >= 90.0) {
             return $matching->getEntity();

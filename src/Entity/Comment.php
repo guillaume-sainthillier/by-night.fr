@@ -149,4 +149,9 @@ class Comment implements Stringable
 
         return $this;
     }
+
+    public function isApprouve(): ?bool
+    {
+        return $this->approuve;
+    }
 }

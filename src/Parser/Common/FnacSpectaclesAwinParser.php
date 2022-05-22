@@ -117,11 +117,11 @@ class FnacSpectaclesAwinParser extends AbstractAwinParser
 
         $place = new PlaceDto();
         $place->name = $data['custom_2'];
-        $place->postalCode = $data['custom_4'];
         $place->street = \in_array($data['custom_6'], ['.', '-', ''], true) ? null : $data['custom_6'];
 
         $city = new CityDto();
         $city->name = $data['venue_address'];
+        $city->postalCode = $data['custom_4'];
 
         $country = new CountryDto();
         $country->name = $data['custom_3'];

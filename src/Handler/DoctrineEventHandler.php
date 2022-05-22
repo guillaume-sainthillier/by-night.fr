@@ -228,7 +228,7 @@ class DoctrineEventHandler
             return;
         }
 
-        if (!$dto->postalCode && !$dto->city?->name) {
+        if (!$dto->city?->postalCode && !$dto->city?->name) {
             return;
         }
 
@@ -237,8 +237,8 @@ class DoctrineEventHandler
         $city = null;
 
         // Ville + CP
-        if ($dto->city?->name && $dto->postalCode) {
-            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->postalCode, $dto->city?->name, $dto->country->code);
+        if ($dto->city?->name && $dto->city?->postalCode) {
+            $zipCity = $this->repoZipCity->findOneByPostalCodeAndCity($dto->city?->postalCode, $dto->city?->name, $dto->country->code);
         }
 
         // Ville
@@ -250,8 +250,8 @@ class DoctrineEventHandler
         }
 
         // CP
-        if (!$zipCity && $dto->postalCode) {
-            $zipCities = $this->repoZipCity->findAllByPostalCode($dto->postalCode, $dto->country->code);
+        if (!$zipCity && $dto->city?->postalCode) {
+            $zipCities = $this->repoZipCity->findAllByPostalCode($dto->city?->postalCode, $dto->country?->code);
             if (1 === \count($zipCities)) {
                 $zipCity = $zipCities[0];
             }
@@ -263,7 +263,7 @@ class DoctrineEventHandler
 
         // City
         if (!$city && $dto->city?->name) {
-            $cities = $this->repoCity->findAllByName($dto->city?->name, $dto->country->code);
+            $cities = $this->repoCity->findAllByName($dto->city?->name, $dto->country?->code);
             if (1 === \count($cities)) {
                 $city = $cities[0];
             }
@@ -414,8 +414,16 @@ class DoctrineEventHandler
                         continue;
                     }
 
+                    if ($isNewEntity || !$entity->getId()) {
+                        dump($entity);
+                    }
+
+                    if (!$isNewEntity && !$this->entityManager->contains($entity)) {
+                        dump($entity);
+                    }
                     $this->entityManager->persist($entity);
 
+                    /*
                     if ($entity instanceof Event) {
                         if (
                             null === $entity->getPlace()
@@ -429,6 +437,7 @@ class DoctrineEventHandler
                             dump($bar3);
                         }
                     }
+                    */
 
                     // Add all new entities to current samples in order to prevent duplicate creates
                     if ($isNewEntity) {
@@ -612,8 +621,8 @@ class DoctrineEventHandler
         $dtos = $this->handleMany($dtos, $flush);
         $parserHistory = $this->parserHistoryHandler->stop();
 
-        $this->entityManager->persist($parserHistory);
-        $this->entityManager->flush();
+        // $this->entityManager->persist($parserHistory);
+        // $this->entityManager->flush();
 
         Monitor::writeln('');
         Monitor::displayStats();

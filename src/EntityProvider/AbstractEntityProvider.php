@@ -73,7 +73,7 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     public function addEntity(object $entity, ?string $alias = null): void
     {
         $keys = $this->getObjectKeys($entity);
-        if ($alias) {
+        if (null !== $alias) {
             $keys[] = $alias;
         }
 
@@ -83,6 +83,21 @@ abstract class AbstractEntityProvider implements EntityProviderInterface
     }
 
     abstract protected function getRepository(string $dtoClassName): DtoFindableRepositoryInterface;
+
+    /**
+     * @return object[]
+     */
+    public function getEntities(): array
+    {
+        $uniqueEntities = [];
+        foreach ($this->entities as $entity) {
+            if (!\in_array($entity, $uniqueEntities, true)) {
+                $uniqueEntities[] = $entity;
+            }
+        }
+
+        return $uniqueEntities;
+    }
 
     public function getObjectKeys(object $object): array
     {

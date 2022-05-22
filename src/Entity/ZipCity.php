@@ -59,7 +59,7 @@ class ZipCity
     #[ORM\Column(name: 'admin2_name', type: 'string', length: 100, nullable: true)]
     private ?string $admin2Name = null;
 
-    #[ORM\ManyToOne(targetEntity: City::class, fetch: 'EXTRA_LAZY')]
+    #[ORM\ManyToOne(targetEntity: City::class, fetch: 'EXTRA_LAZY', inversedBy: 'zipCities')]
     private ?City $parent = null;
 
     public function getId(): ?int

@@ -55,9 +55,9 @@ class PlaceEntityFactory implements EntityFactoryInterface
         $entity->setLatitude($dto->latitude ?? $entity->getLatitude());
         $entity->setLongitude($dto->longitude ?? $entity->getLongitude());
         $entity->setRue($dto->street ?? $entity->getRue());
-        $entity->setCodePostal($dto->postalCode ?? $entity->getCodePostal());
-        $entity->setCountryName($dto->country->name ?? $entity->getCountryName());
-        $entity->setVille($dto->city->name ?? $entity->getVille());
+        $entity->setCodePostal($dto->city?->postalCode ?? $entity->getCodePostal());
+        $entity->setCountryName($dto->country?->name ?? $entity->getCountryName());
+        $entity->setVille($dto->city?->name ?? $entity->getVille());
 
         if (null !== $dto->city) {
             $cityEntityProvider = $this->entityProviderHandler->getEntityProvider($dto->city::class);

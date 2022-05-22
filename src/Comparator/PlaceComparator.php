@@ -29,21 +29,8 @@ class PlaceComparator extends AbstractComparator
 
         // We cannot compare places of different locations
         if (
-            (
-                null === $entity->getCountry() ||
-                null === $dto->country ||
-                $entity->getCountry()->getId() !== $dto->country->entityId
-            ) &&
-            (
-                null === $entity->getCity() ||
-                null === $dto->city ||
-                $entity->getCity()->getId() !== $dto->city->entityId
-            ) &&
-            (
-                null === $entity->getZipCity() ||
-                null === $dto->zipCity ||
-                $entity->getZipCity()->getId() !== $dto->zipCity->id
-            )
+            $entity->getCountry()?->getId() !== $dto->country?->entityId
+            || $entity->getCity()?->getId() !== $dto->city?->entityId
         ) {
             return null;
         }
@@ -57,7 +44,7 @@ class PlaceComparator extends AbstractComparator
             return null;
         }
 
-        // Même rue & ~ même nom
+        // ~ Même rue & ~ même nom
         if ($this->getStreetMatchingConfidence($entity->getRue(), $dto->street) >= 90.0) {
             return new Matching($entity, 100.00);
         }

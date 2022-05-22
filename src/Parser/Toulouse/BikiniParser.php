@@ -77,7 +77,7 @@ class BikiniParser extends AbstractParser
 
         if (\count($placeParts) >= 2) {
             if (preg_match("#^(\d+) (.+)$#", end($placeParts), $postalCodeAndCity)) {
-                $place->postalCode = $postalCodeAndCity[1];
+                $city->postalCode = $postalCodeAndCity[1];
                 $city->name = $postalCodeAndCity[2];
             }
 

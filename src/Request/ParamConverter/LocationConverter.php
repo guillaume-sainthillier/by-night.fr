@@ -31,7 +31,7 @@ class LocationConverter implements ParamConverterInterface
     /**
      * {@inheritDoc}
      */
-    public function apply(Request $request, ParamConverter $configuration): void
+    public function apply(Request $request, ParamConverter $configuration): bool
     {
         $location = null;
         $locationSlug = $request->attributes->get('location', '');
@@ -39,13 +39,14 @@ class LocationConverter implements ParamConverterInterface
         if (null === $locationSlug && !$configuration->isOptional()) {
             throw new InvalidArgumentException('Route attribute is missing');
         } elseif (null === $locationSlug) {
-            return;
+            return false;
         }
 
         if (\is_object($locationSlug)) {
-            return;
+            return false;
         }
 
+        $location = new Location();
         if ('unknown' === $locationSlug) {
             $noWhere = new Country();
             $noWhere->setName('Nowhere');
@@ -53,11 +54,9 @@ class LocationConverter implements ParamConverterInterface
             $location->setCountry($noWhere);
             $request->attributes->set($configuration->getName(), $location);
 
-            return;
+            return false;
         }
 
-        $location = new Location();
-        $entity = null;
         if (!str_starts_with((string) $locationSlug, 'c--')) {
             $entity = $this->cityRepository->findOneBySlug($locationSlug);
         } else {
@@ -75,12 +74,14 @@ class LocationConverter implements ParamConverterInterface
         }
 
         $request->attributes->set($configuration->getName(), $location);
+
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function supports(ParamConverter $configuration)
+    public function supports(ParamConverter $configuration): bool
     {
         return Location::class === $configuration->getClass();
     }

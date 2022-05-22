@@ -22,9 +22,11 @@ abstract class AbstractComparator implements ComparatorInterface
     public function getMostMatching(iterable $entities, object $dto): ?MatchingInterface
     {
         // Search by exact matching only
-        if ($dto instanceof ExternalIdentifiableInterface &&
+        if (
+            $dto instanceof ExternalIdentifiableInterface &&
             null !== $dto->getExternalId() &&
-            null !== $dto->getExternalOrigin()) {
+            null !== $dto->getExternalOrigin()
+        ) {
             foreach ($entities as $entity) {
                 if ($entity instanceof ExternalIdentifiablesInterface) {
                     $externals = $entity->getExternalIdentifiables();
@@ -69,6 +71,10 @@ abstract class AbstractComparator implements ComparatorInterface
 
         // = strlen > 0
         if (isset($leftText[0]) && isset($rightText[0]) > 0) {
+            if ($leftText === $rightText) {
+                return 100.0;
+            }
+
             if (mb_strlen($leftText) > 255 || mb_strlen($rightText) > 255) {
                 similar_text($leftText, $rightText, $confidence);
 

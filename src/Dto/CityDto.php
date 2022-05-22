@@ -23,9 +23,8 @@ use App\Entity\City;
 class CityDto implements DependencyRequirableInterface, DependencyObjectInterface, DtoEntityIdentifierResolvableInterface, InternalIdentifiableInterface, PrefixableObjectKeyInterface
 {
     public ?int $entityId = null;
-
     public ?string $name = null;
-
+    public ?string $postalCode = null;
     public ?CountryDto $country = null;
 
     /**

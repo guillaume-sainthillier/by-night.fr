@@ -30,8 +30,6 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
 
     public ?string $name = null;
 
-    public ?string $postalCode = null;
-
     public ?CityDto $city = null;
 
     public ?string $street = null;
@@ -71,7 +69,6 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
         if (
             (null === $this->externalId || null === $this->externalOrigin)
             && null === $this->name
-            && null === $this->postalCode
             && null === $this->street
         ) {
             return sprintf(
@@ -91,9 +88,8 @@ class PlaceDto implements ExternalIdentifiableInterface, DependencyRequirableInt
         }
 
         $placeKey = mb_strtolower(sprintf(
-            '%s-%s-%s',
+            '%s-%s',
             $this->name,
-            $this->postalCode,
             $this->street
         ));
 

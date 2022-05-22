@@ -197,10 +197,10 @@ class OpenAgendaParser extends AbstractParser
 
         $place = new PlaceDto();
         $place->name = $location['placename'] ?? null;
-        $place->postalCode = $location['postalCode'] ?? null;
         $place->externalId = sprintf('OA-%s', $location['uid']);
 
         $city = new CityDto();
+        $city->postalCode = $location['postalCode'] ?? null;
         $city->name = $location['city'] ?? null;
 
         $country = new CountryDto();

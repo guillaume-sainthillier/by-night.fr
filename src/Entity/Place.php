@@ -435,4 +435,9 @@ class Place implements Stringable, ExternalIdentifiablesInterface, InternalIdent
 
         return $this;
     }
+
+    public function isJunk(): ?bool
+    {
+        return $this->junk;
+    }
 }

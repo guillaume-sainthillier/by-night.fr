@@ -179,7 +179,7 @@ class Firewall
             $dto->place->reject->addReason(Reject::BAD_PLACE_NAME);
         }
 
-        $codePostal = $this->comparator->sanitizeNumber($dto->place->postalCode);
+        $codePostal = $this->comparator->sanitizeNumber($dto->place->city?->postalCode);
         if (!$this->checkLengthValidity($codePostal, 0) && !$this->checkLengthValidity($codePostal, 5)) {
             $dto->place->reject->addReason(Reject::BAD_PLACE_CITY_POSTAL_CODE);
         }

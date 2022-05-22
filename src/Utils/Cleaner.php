@@ -49,11 +49,11 @@ class Cleaner
         $dto->street = $this->cleanNormalString($dto->street ?? '') ?: null;
         $dto->latitude = (float) $this->util->replaceNonNumericChars($dto->latitude) ?: null;
         $dto->longitude = (float) $this->util->replaceNonNumericChars($dto->longitude) ?: null;
-        $dto->postalCode = $this->util->replaceNonNumericChars($dto->postalCode) ?: null;
     }
 
     public function cleanCity(CityDto $dto): void
     {
+        $dto->postalCode = $this->util->replaceNonNumericChars($dto->postalCode) ?: null;
         $dto->name = $this->cleanPostalString($dto->name ?? '') ?: null;
     }
 

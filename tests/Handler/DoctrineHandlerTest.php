@@ -30,7 +30,7 @@ class DoctrineHandlerTest extends ContainerTestCase
 
     private function makeAsserts(PlaceDto $place, ?string $countryCode, ?string $cityName, ?string $postalCode, int $rejectReason)
     {
-        $message = 'Original : ' . ($place->name ?? $place->city?->name ?? $place->postalCode);
+        $message = 'Original : ' . ($place->name ?? $place->city?->name ?? $place->city?->postalCode);
         if (null !== $countryCode) {
             $this->assertNotNull($place->country, $message . '. Expected country : ' . $countryCode);
             $this->assertEquals($countryCode, $place->country->code, $message);
@@ -47,9 +47,9 @@ class DoctrineHandlerTest extends ContainerTestCase
         }
 
         if (null !== $postalCode) {
-            $this->assertEquals($postalCode, $place->postalCode, $message);
+            $this->assertEquals($postalCode, $place->city?->postalCode, $message);
         } else {
-            $this->assertNull($place->postalCode, $message);
+            $this->assertNull($place->city?->postalCode, $message);
         }
 
         $this->assertNotNull($place->reject, $message);
@@ -71,8 +71,8 @@ class DoctrineHandlerTest extends ContainerTestCase
     {
         // Pas de pays
         $place = new PlaceDto();
-        $place->postalCode = '99999';
         $place->city = new CityDto();
+        $place->city->postalCode = '99999';
         $place->city->name = 'LoremIpsum';
         yield [
             $place,

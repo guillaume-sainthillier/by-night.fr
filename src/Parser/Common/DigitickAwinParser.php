@@ -76,10 +76,10 @@ class DigitickAwinParser extends AbstractAwinParser
 
         $place = new PlaceDto();
         $place->name = $data['venue_name'];
-        $place->postalCode = $placeMatches[2];
         $place->street = $placeMatches[1];
 
         $city = new CityDto();
+        $city->postalCode = $placeMatches[2];
         $city->name = $placeMatches[3];
 
         $place->city = $city;

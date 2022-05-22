@@ -87,4 +87,14 @@ class UserEvent implements Stringable
 
         return $this;
     }
+
+    public function isParticipe(): ?bool
+    {
+        return $this->participe;
+    }
+
+    public function isInteret(): ?bool
+    {
+        return $this->interet;
+    }
 }

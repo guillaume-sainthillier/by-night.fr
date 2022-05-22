@@ -623,4 +623,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Seriali
 
         return $this;
     }
+
+    public function isEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function isFromLogin(): ?bool
+    {
+        return $this->fromLogin;
+    }
+
+    public function isShowSocials(): ?bool
+    {
+        return $this->showSocials;
+    }
+
+    public function isIsVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
 }

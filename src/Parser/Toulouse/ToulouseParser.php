@@ -98,9 +98,9 @@ class ToulouseParser extends AbstractParser
             $place = new PlaceDto();
             $place->name = $tab[10];
             $place->street = $tab[12];
-            $place->postalCode = $tab[14];
 
             $city = new CityDto();
+            $city->postalCode = $tab[14];
             $city->name = $tab[15];
 
             $country = new CountryDto();

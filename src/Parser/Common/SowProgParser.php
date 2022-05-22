@@ -149,9 +149,9 @@ class SowProgParser extends AbstractParser
         $place->name = $locationData['name'];
         $place->externalId = sprintf('SP-%s', $locationData['id']);
         $place->street = trim(sprintf('%s %s', $contactData['addressLine1'], $contactData['addressLine2']));
-        $place->postalCode = $contactData['zipCode'];
 
         $city = new CityDto();
+        $city->postalCode = $contactData['zipCode'];
         $city->name = $contactData['city'];
 
         $country = new CountryDto();
