@@ -26,8 +26,8 @@ class TestParser extends AbstractParser
 
     public function parse(bool $incremental): void
     {
-        $placeId = 'SP-9999999-' . mt_rand(0, 100000);
-        $placeName = 'CECI ' . mt_rand(0, 50000) . 'EST UNIQUE - ' . mt_rand(0, 100000);
+        $placeId = 'SP-9999999-' . random_int(0, 100000);
+        $placeName = 'CECI ' . random_int(0, 50000) . 'EST UNIQUE - ' . random_int(0, 100000);
         for ($i = 1; $i <= 100; ++$i) {
             $eventDto = new EventDto();
             $eventDto->name = 'test';

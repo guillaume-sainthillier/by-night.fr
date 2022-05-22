@@ -32,7 +32,7 @@ class CommonController extends AbstractController
         if ($id) {
             $city = $cityRepository->find($id);
         }
-        $city = $city ?? $cityManager->getCity();
+        $city ??= $cityManager->getCity();
 
         return $this->render('fragments/menu.html.twig', [
             'city' => $city,

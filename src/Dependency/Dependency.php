@@ -15,16 +15,8 @@ use App\Contracts\DependencyObjectInterface;
 
 class Dependency implements DependencyInterface
 {
-    /** @var DependencyObjectInterface */
-    private $object;
-
-    /** @var bool */
-    private $isReference;
-
-    public function __construct(DependencyObjectInterface $object, bool $isReference = true)
+    public function __construct(private DependencyObjectInterface $object, private bool $isReference = true)
     {
-        $this->object = $object;
-        $this->isReference = $isReference;
     }
 
     /**
