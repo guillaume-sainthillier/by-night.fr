@@ -1,6 +1,6 @@
 <h4 class="heading">
-    {{ commentsCount }} Commentaire{{ commentsCount > 1 ? 's' }}
-    {% if commentsCount == 0 %}
+    {{ comments.totalItemCount }} Commentaire{{ comments.totalItemCount > 1 ? 's' }}
+    {% if comments.totalItemCount == 0 %}
         |
         <small>Soyez le premier à réagir</small>
     {% endif %}

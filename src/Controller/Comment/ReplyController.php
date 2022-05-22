@@ -29,7 +29,7 @@ class ReplyController extends BaseController
     public function list(Comment $comment, CommentRepository $commentRepository, PaginatorInterface $paginator, int $page = 1): Response
     {
         $comments = $paginator->paginate(
-            $commentRepository->getAnswersCount($comment),
+            $commentRepository->findAllAnswersQuery($comment),
             $page,
             self::REPLIES_PER_PAGE
         );
@@ -46,7 +46,7 @@ class ReplyController extends BaseController
      * @IsGranted("ROLE_USER")
      */
     #[Route(path: '/{id<%patterns.id%>}/repondre', name: 'app_comment_reponse_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, Comment $comment, CommentRepository $commentRepository): Response
+    public function new(Request $request, Comment $comment): Response
     {
         $user = $this->getAppUser();
         $reponse = new Comment();
@@ -65,23 +65,22 @@ class ReplyController extends BaseController
 
             return new JsonResponse([
                 'success' => true,
-                'comment' => $this->renderView('Comment/Reply/details.html.twig', [
+                'comment' => $this->renderView('comment/reply/details.html.twig', [
                     'comment' => $reponse,
-                    'success_confirmation' => true,
+                    'success' => true,
                 ]),
-                'nb_reponses' => $commentRepository->getAnswersCount($comment),
             ]);
         } elseif ($form->isSubmitted()) {
             return new JsonResponse([
                 'success' => false,
-                'post' => $this->renderView('Comment/Reply/post.html.twig', [
+                'post' => $this->renderView('comment/reply/form.html.twig', [
                     'comment' => $comment,
                     'form' => $form->createView(),
                 ]),
             ]);
         }
 
-        return $this->render('comment/reply/post.html.twig', [
+        return $this->render('comment/reply/form.html.twig', [
             'comment' => $comment,
             'form' => $form->createView(),
         ]);

@@ -77,7 +77,7 @@ class CommentController extends BaseController
      * @IsGranted("ROLE_USER")
      */
     #[Route(path: '/{id<%patterns.id%>}/nouveau', name: 'app_comment_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, Event $event, CommentRepository $commentRepository): Response
+    public function new(Request $request, Event $event, CommentRepository $commentRepository, PaginatorInterface $paginator): Response
     {
         $user = $this->getAppUser();
         $comment = new Comment();
@@ -92,21 +92,27 @@ class CommentController extends BaseController
             $em->persist($comment);
             $em->flush();
 
+            $comments = $paginator->paginate(
+                $commentRepository->findAllByEventQuery($event),
+                1,
+                self::COMMENTS_PER_PAGE
+            );
+
             return new JsonResponse([
                 'success' => true,
-                'comment' => $this->renderView('Comment/details.html.twig', [
+                'comment' => $this->renderView('comment/details.html.twig', [
                     'comment' => $comment,
                     'success' => true,
                 ]),
-                'header' => $this->renderView('Comment/header.html.twig', [
-                    'commentsCount' => $commentRepository->getCommentsCount($event),
+                'header' => $this->renderView('comment/header.html.twig', [
+                    'comments' => $comments,
                 ]),
             ]);
         }
 
         return new JsonResponse([
             'success' => false,
-            'post' => $this->renderView('Comment/post.html.twig', [
+            'post' => $this->renderView('comment/form.html.twig', [
                 'form' => $form->createView(),
             ]),
         ]);
