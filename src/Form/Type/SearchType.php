@@ -69,7 +69,11 @@ class SearchType extends AbstractType
                 'multiple' => true,
                 'expanded' => false,
                 'required' => false,
-                'attr' => ['title' => 'Tous', 'data-live-search' => true], ])
+                'attr' => [
+                    'title' => 'Tous',
+                    'data-live-search' => true,
+                    'size' => 1,
+                ], ])
             ->add('term', TextType::class, [
                 'required' => false,
                 'label' => 'Mot-clés',
