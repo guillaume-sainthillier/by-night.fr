@@ -29,24 +29,22 @@ fos_elastica:
 
                     analyzer:
                         french_heavy:
-                            tokenizer: "standard"
-                            #tokenizer: "icu_tokenizer"
+                            tokenizer: "icu_tokenizer"
                             char_filter:
                                 - "html_strip"
                             filter:
                                 - "french_elision"
-                                #- "icu_folding"
+                                - "icu_folding"
                                 - "lowercase"
                                 - "french_stop"
                                 - "french_stemmer"
                         french_light:
-                            tokenizer: "standard"
-                            #tokenizer: "icu_tokenizer"
+                            tokenizer: "icu_tokenizer"
                             char_filter:
                                 - "html_strip"
                             filter:
                                 - "french_elision"
-                                #- "icu_folding"
+                                - "icu_folding"
                                 - "lowercase"
                                 - "french_stop"
 
